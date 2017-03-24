@@ -22,6 +22,7 @@
     "babel-cli": "^6.24.0",
     "babel-plugin-istanbul": "^4.0.0",
     "babel-plugin-transform-flow-comments": "^6.22.0",
+    "babel-plugin-transform-flow-strip-types": "^6.22.0",
     "babel-plugin-transform-object-rest-spread": "^6.23.0",
     "babel-preset-env": "^1.2.2",
     "babel-register": "^6.24.0",
