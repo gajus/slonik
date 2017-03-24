@@ -1,5 +1,6 @@
 // @flow
 
+// eslint-disable-next-line flowtype/no-weak-types
 export type DatabaseConnectionType = any;
 
 type QueryPointResultType = {|

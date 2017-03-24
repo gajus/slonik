@@ -9,8 +9,18 @@ import {
 } from './errors';
 import type {
   QueryInsertType,
+  QueryAnyType,
   QueryOneType,
-  QueryManyType
+  QueryManyType,
+  DatabaseConnectionType
+} from './types';
+
+export type {
+  QueryInsertType,
+  QueryAnyType,
+  QueryOneType,
+  QueryManyType,
+  DatabaseConnectionType
 } from './types';
 
 export {
@@ -58,7 +68,8 @@ export const any: QueryAnyType = async (connection, sql, values) => {
   return rows;
 };
 
-const createPool = (configuration) => {
+// eslint-disable-next-line flowtype/no-weak-types
+const createPool = (configuration: Object): DatabaseConnectionType => {
   const pool = createPool2(configuration);
 
   return {
