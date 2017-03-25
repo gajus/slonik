@@ -1,7 +1,17 @@
 // @flow
 
+/* eslint-disable no-use-before-define */
+
 // eslint-disable-next-line flowtype/no-weak-types
-export type DatabaseConnectionType = any;
+type InternalDatabaseConnectionType = any;
+
+export type DatabaseConnectionType = {|
+  +any: QueryAnyType,
+  +insert: QueryInsertType,
+  +many: QueryManyType,
+  +one: QueryOneType,
+  +query: QueryType
+|};
 
 type QueryPointResultType = {|
   +x: number,
@@ -28,7 +38,15 @@ type InsertResultType = {|
   +insertId: number
 |};
 
-export type QueryInsertType = (connection: DatabaseConnectionType, sql: string, values?: DatabaseQueryValuesType) => Promise<InsertResultType>;
-export type QueryOneType = (connection: DatabaseConnectionType, sql: string, values?: DatabaseQueryValuesType) => Promise<QueryResultRowType>;
-export type QueryManyType = (connection: DatabaseConnectionType, sql: string, values?: DatabaseConnectionType) => Promise<Array<QueryResultRowType>>;
-export type QueryAnyType = (connection: DatabaseConnectionType, sql: string, values?: DatabaseConnectionType) => Promise<Array<QueryResultRowType>>;
+// eslint-disable-next-line flowtype/no-weak-types
+export type InternalQueryType = (connection: InternalDatabaseConnectionType, sql: string, values?: DatabaseQueryValuesType) => Promise<any>;
+export type InternalQueryInsertType = (connection: InternalDatabaseConnectionType, sql: string, values?: DatabaseQueryValuesType) => Promise<InsertResultType>;
+export type InternalQueryOneType = (connection: InternalDatabaseConnectionType, sql: string, values?: DatabaseQueryValuesType) => Promise<QueryResultRowType>;
+export type InternalQueryManyType = (connection: InternalDatabaseConnectionType, sql: string, values?: DatabaseQueryValuesType) => Promise<Array<QueryResultRowType>>;
+export type InternalQueryAnyType = (connection: InternalDatabaseConnectionType, sql: string, values?: DatabaseQueryValuesType) => Promise<Array<QueryResultRowType>>;
+
+export type QueryType = (sql: string, values?: DatabaseQueryValuesType) => Promise<QueryResultRowType>;
+export type QueryInsertType = (sql: string, values?: DatabaseQueryValuesType) => Promise<InsertResultType>;
+export type QueryOneType = (sql: string, values?: DatabaseQueryValuesType) => Promise<QueryResultRowType>;
+export type QueryManyType = (sql: string, values?: DatabaseQueryValuesType) => Promise<Array<QueryResultRowType>>;
+export type QueryAnyType = (sql: string, values?: DatabaseQueryValuesType) => Promise<Array<QueryResultRowType>>;

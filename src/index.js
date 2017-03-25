@@ -8,18 +8,15 @@ import {
   NotFoundError
 } from './errors';
 import type {
-  QueryInsertType,
-  QueryAnyType,
-  QueryOneType,
-  QueryManyType,
+  InternalQueryInsertType,
+  InternalQueryAnyType,
+  InternalQueryOneType,
+  InternalQueryManyType,
+  InternalQueryType,
   DatabaseConnectionType
 } from './types';
 
 export type {
-  QueryInsertType,
-  QueryAnyType,
-  QueryOneType,
-  QueryManyType,
   DatabaseConnectionType
 } from './types';
 
@@ -28,8 +25,11 @@ export {
   NotFoundError
 };
 
-export const insert: QueryInsertType = async (connection, sql, values?) => {
-  const [result] = await connection.query(sql, values);
+export const query: InternalQueryType = async (connection, sql, values) => {
+  return connection.query(sql, values);
+};
+export const insert: InternalQueryInsertType = async (connection, sql, values) => {
+  const [result] = await query(connection, sql, values);
 
   return {
     insertId: result.insertId
@@ -40,8 +40,8 @@ export const insert: QueryInsertType = async (connection, sql, values?) => {
  * @throws NotFoundError If query returns no rows.
  * @throws DataIntegrityError If query returns multiple rows.
  */
-export const one: QueryOneType = async (connection, sql, values) => {
-  const [rows] = await connection.query(sql, values);
+export const one: InternalQueryOneType = async (connection, sql, values) => {
+  const [rows] = await query(connection, sql, values);
 
   if (rows.length === 0) {
     throw new NotFoundError();
@@ -54,8 +54,13 @@ export const one: QueryOneType = async (connection, sql, values) => {
   return rows[0];
 };
 
-export const many: QueryManyType = async (connection, sql, values) => {
-  const [rows] = await connection.query(sql, values);
+/**
+ * Makes a query and expects at least 1 result.
+ *
+ * @throws NotFoundError If query returns no rows.
+ */
+export const many: InternalQueryManyType = async (connection, sql, values) => {
+  const [rows] = await query(connection, sql, values);
 
   if (rows.length === 0) {
     throw new NotFoundError();
@@ -64,8 +69,11 @@ export const many: QueryManyType = async (connection, sql, values) => {
   return rows;
 };
 
-export const any: QueryAnyType = async (connection, sql, values) => {
-  const [rows] = await connection.query(sql, values);
+/**
+ * Makes a query and expects any number of results.
+ */
+export const any: InternalQueryAnyType = async (connection, sql, values) => {
+  const [rows] = await query(connection, sql, values);
 
   return rows;
 };
@@ -79,7 +87,7 @@ const createPool = (configuration: Object): DatabaseConnectionType => {
     insert: insert.bind(null, pool),
     many: many.bind(null, pool),
     one: one.bind(null, pool),
-    query: pool.query.bind(null)
+    query: query.bind(null, pool)
   };
 };
 
