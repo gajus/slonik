@@ -1,5 +1,7 @@
 // @flow
 
+import SqlString from 'sqlstring';
+import createDebug from 'debug';
 import {
   createPool as createPool2
 } from 'mysql2/promise';
@@ -25,9 +27,16 @@ export {
   NotFoundError
 };
 
+const debug = createDebug('mightyql');
+
 export const query: InternalQueryType = async (connection, sql, values) => {
-  return connection.query(sql, values);
+  const formattedSql = SqlString.format(sql, values);
+
+  debug('query', formattedSql);
+
+  return connection.query(formattedSql);
 };
+
 export const insert: InternalQueryInsertType = async (connection, sql, values) => {
   const [result] = await query(connection, sql, values);
 
@@ -37,6 +46,8 @@ export const insert: InternalQueryInsertType = async (connection, sql, values) =
 };
 
 /**
+ * Makes a query and expects exactly one result.
+ *
  * @throws NotFoundError If query returns no rows.
  * @throws DataIntegrityError If query returns multiple rows.
  */
