@@ -31,7 +31,9 @@ export {
 export const insert: QueryInsertType = async (connection, sql, values?) => {
   const [result] = await connection.query(sql, values);
 
-  return result;
+  return {
+    insertId: result.insertId
+  };
 };
 
 /**
