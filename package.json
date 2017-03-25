@@ -16,7 +16,7 @@
     "es6-error": "^4.0.2",
     "mysql2": "^1.2.0"
   },
-  "description": "A higher-level abstraction of the node-mysql2 driver with Flowtype and convenient methods for common operations.",
+  "description": "A higher-level abstraction of the node-mysql2 driver with Flowtype and convenience methods for common operations.",
   "devDependencies": {
     "ava": "^0.18.2",
     "babel-cli": "^6.24.0",
