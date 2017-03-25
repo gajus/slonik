@@ -2,6 +2,7 @@
 
 import SqlString from 'sqlstring';
 import createDebug from 'debug';
+import prettyHrtime from 'pretty-hrtime';
 import {
   createPool as createPool2
 } from 'mysql2/promise';
@@ -34,7 +35,15 @@ export const query: InternalQueryType = async (connection, sql, values) => {
 
   debug('query', formattedSql);
 
-  return connection.query(formattedSql);
+  const start = process.hrtime();
+
+  const result = await connection.query(formattedSql);
+
+  const end = process.hrtime(start);
+
+  debug('query execution time', prettyHrtime(end));
+
+  return result;
 };
 
 export const insert: InternalQueryInsertType = async (connection, sql, values) => {
