@@ -4,6 +4,7 @@ import SqlString from 'sqlstring';
 import createDebug from 'debug';
 import prettyHrtime from 'pretty-hrtime';
 import {
+  createConnection as createConnection2,
   createPool as createPool2
 } from 'mysql2/promise';
 import {
@@ -99,6 +100,19 @@ export const any: InternalQueryAnyType = async (connection, sql, values) => {
 };
 
 // eslint-disable-next-line flowtype/no-weak-types
+const createConnection = async (configuration: Object): Promise<DatabaseConnectionType> => {
+  const pool = await createConnection2(configuration);
+
+  return {
+    any: many.bind(null, pool),
+    insert: insert.bind(null, pool),
+    many: many.bind(null, pool),
+    one: one.bind(null, pool),
+    query: query.bind(null, pool)
+  };
+};
+
+// eslint-disable-next-line flowtype/no-weak-types
 const createPool = (configuration: Object): DatabaseConnectionType => {
   const pool = createPool2(configuration);
 
@@ -112,5 +126,6 @@ const createPool = (configuration: Object): DatabaseConnectionType => {
 };
 
 export {
+  createConnection,
   createPool
 };
