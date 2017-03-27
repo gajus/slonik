@@ -115,14 +115,17 @@ export const any: InternalQueryAnyType = async (connection, sql, values) => {
 
 // eslint-disable-next-line flowtype/no-weak-types
 const createConnection = async (configuration: Object): Promise<DatabaseConnectionType> => {
-  const pool = await createConnection2(configuration);
+  const connection = await createConnection2(configuration);
 
   return {
-    any: many.bind(null, pool),
-    insert: insert.bind(null, pool),
-    many: many.bind(null, pool),
-    one: one.bind(null, pool),
-    query: query.bind(null, pool)
+    any: any.bind(null, connection),
+    end: () => {
+      return connection.end();
+    },
+    insert: insert.bind(null, connection),
+    many: many.bind(null, connection),
+    one: one.bind(null, connection),
+    query: query.bind(null, connection)
   };
 };
 
@@ -131,7 +134,7 @@ const createPool = (configuration: Object): DatabaseConnectionType => {
   const pool = createPool2(configuration);
 
   return {
-    any: many.bind(null, pool),
+    any: any.bind(null, pool),
     insert: insert.bind(null, pool),
     many: many.bind(null, pool),
     one: one.bind(null, pool),
