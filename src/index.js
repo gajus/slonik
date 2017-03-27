@@ -9,6 +9,7 @@ import {
 } from 'mysql2/promise';
 import {
   DataIntegrityError,
+  DuplicateEntryError,
   NotFoundError
 } from './errors';
 import type {
@@ -26,25 +27,38 @@ export type {
 
 export {
   DataIntegrityError,
+  DuplicateEntryError,
   NotFoundError
 };
 
 const debug = createDebug('mightyql');
 
 export const query: InternalQueryType = async (connection, sql, values) => {
-  const formattedSql = SqlString.format(sql, values);
+  try {
+    const formattedSql = SqlString.format(sql, values);
 
-  debug('query', formattedSql);
+    debug('query', formattedSql);
 
-  const start = process.hrtime();
+    const start = process.hrtime();
 
-  const result = await connection.query(formattedSql);
+    const result = await connection.query(formattedSql);
 
-  const end = process.hrtime(start);
+    const end = process.hrtime(start);
 
-  debug('query execution time', prettyHrtime(end));
+    debug('query execution time', prettyHrtime(end));
 
-  return result;
+    if (Array.isArray(result[0])) {
+      debug('query returned %d row(s)', result[0].length);
+    }
+
+    return result;
+  } catch (error) {
+    if (error.code === 'ER_DUP_ENTRY') {
+      throw new DuplicateEntryError(error.message);
+    }
+
+    throw error;
+  }
 };
 
 export const insert: InternalQueryInsertType = async (connection, sql, values) => {
