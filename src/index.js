@@ -13,16 +13,19 @@ import {
   NotFoundError
 } from './errors';
 import type {
-  InternalQueryInsertType,
+  DatabasePoolConnectionType,
+  DatabaseSingleConnectionType,
   InternalQueryAnyType,
-  InternalQueryOneType,
+  InternalQueryInsertType,
   InternalQueryManyType,
-  InternalQueryType,
-  DatabaseConnectionType
+  InternalQueryOneType,
+  InternalQueryType
 } from './types';
 
 export type {
-  DatabaseConnectionType
+  DatabaseConnectionType,
+  DatabasePoolConnectionType,
+  DatabaseSingleConnectionType
 } from './types';
 
 export {
@@ -114,7 +117,7 @@ export const any: InternalQueryAnyType = async (connection, sql, values) => {
 };
 
 // eslint-disable-next-line flowtype/no-weak-types
-const createConnection = async (configuration: Object): Promise<DatabaseConnectionType> => {
+const createConnection = async (configuration: Object): Promise<DatabaseSingleConnectionType> => {
   const connection = await createConnection2(configuration);
 
   return {
@@ -130,7 +133,7 @@ const createConnection = async (configuration: Object): Promise<DatabaseConnecti
 };
 
 // eslint-disable-next-line flowtype/no-weak-types
-const createPool = (configuration: Object): DatabaseConnectionType => {
+const createPool = (configuration: Object): DatabasePoolConnectionType => {
   const pool = createPool2(configuration);
 
   return {

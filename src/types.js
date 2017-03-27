@@ -5,13 +5,18 @@
 // eslint-disable-next-line flowtype/no-weak-types
 type InternalDatabaseConnectionType = any;
 
-export type DatabaseConnectionType = {|
+export type DatabaseSingleConnectionType = {
+  end: () => Promise<void>
+} & DatabaseConnectionType;
+export type DatabasePoolConnectionType = DatabaseConnectionType;
+
+export type DatabaseConnectionType = {
   +any: QueryAnyType,
   +insert: QueryInsertType,
   +many: QueryManyType,
   +one: QueryOneType,
   +query: QueryType
-|};
+};
 
 type QueryPointResultType = {|
   +x: number,
