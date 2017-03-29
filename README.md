@@ -10,7 +10,7 @@ A higher-level abstraction of the [`node-mysql2`](https://github.com/sidorares/n
 
 ## Usage
 
-Mightyql abstract construction of `node-mysql2` driver, the [promise interface](https://github.com/sidorares/node-mysql2/blob/master/documentation/Promise-Wrapper.md). The current implementation abstracts `createPool` and `query` methods. If those are the only two methods that you are using, then (for the most part) Mightyql is a drop-in replacement.
+Mightyql abstract construction of `node-mysql2` driver, the [promise interface](https://github.com/sidorares/node-mysql2/blob/master/documentation/Promise-Wrapper.md). The current implementation abstracts `createConnection`, `createPool` and `query` methods. If those are the only two methods that you are using, then (for the most part) Mightyql is a drop-in replacement.
 
 ```js
 import {
@@ -24,6 +24,79 @@ const connection = createPool({
 await connection.query('SELECT 1');
 
 ```
+
+## Convenience methods
+
+### `one`
+
+Selects the first row from the result.
+
+* Throws `NotFoundError` if query returns no rows.
+* Throws `DataIntegrityError` if query returns multiple rows.
+
+Example:
+
+```js
+const row = await connection.one('SELECT foo');
+
+// row.foo is the result of the `foo` column value of the first row.
+
+```
+
+#### Handling `NotFoundError`
+
+To handle the case where query returns less than one row, catch `NotFoundError` error.
+
+```js
+import {
+  NotFoundError
+} from 'mightyql';
+
+let row;
+
+try {
+  row = await connection.one('SELECT foo');
+} catch (error) {
+  if (!(error instanceof NotFoundError)) {
+    throw error;
+  }
+}
+
+if (row) {
+  // row.foo is the result of the `foo` column value of the first row.
+}
+
+```
+
+#### Handling `DataIntegrityError`
+
+To handle the case where the data result does not match the expectations, catch `DataIntegrityError` error.
+
+```js
+import {
+  NotFoundError
+} from 'mightyql';
+
+let row;
+
+try {
+  row = await connection.one('SELECT foo');
+} catch (error) {
+  if (error instanceof DataIntegrityError) {
+    console.error('There is more than one row matching the select criteria.');
+  } else {
+    throw error;
+  }
+}
+
+```
+
+> Note:
+>
+> I've got asked "How is this different from [knex.js](http://knexjs.org/) `knex('foo').limit(1)`".
+> `knex('foo').limit(1)` simply generates "SELECT * FROM foo LIMIT 1" query.
+> `knex` is a query builder; it does not assert the value of the result.
+> Mightyql `one` adds assertions about the result of the query.
 
 ## Debugging
 
