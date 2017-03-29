@@ -1,9 +1,9 @@
 // @flow
 
-// import SqlString from 'sqlstring';
-
+import SqlString from 'sqlstring';
 import createDebug from 'debug';
 import prettyHrtime from 'pretty-hrtime';
+import createToUnnamed from 'named-placeholders';
 import {
   createConnection as createConnection2,
   createPool as createPool2
@@ -15,6 +15,7 @@ import {
 } from './errors';
 import type {
   DatabasePoolConnectionType,
+  DatabaseQueryValuesType,
   DatabaseSingleConnectionType,
   InternalQueryAnyType,
   InternalQueryInsertType,
@@ -37,17 +38,29 @@ export {
 
 const debug = createDebug('mightyql');
 
+const toUnnamed = createToUnnamed();
+
+export const formatQuery = (sql: string, values?: DatabaseQueryValuesType): string => {
+  const [
+    unnamedSql,
+    indexedValues
+  ] = toUnnamed(sql, values);
+
+  const formattedSql = SqlString.format(unnamedSql, indexedValues);
+
+  debug('query', formattedSql);
+  debug('values', indexedValues);
+
+  return formattedSql;
+};
+
 export const query: InternalQueryType = async (connection, sql, values) => {
   try {
-    // const formattedSql = SqlString.format(sql, values);
-    //
-    // debug('query', formattedSql);
-    // debug('values', values);
+    const formattedSql = formatQuery(sql, values);
 
     const start = process.hrtime();
 
-    // const result = await connection.query(formattedSql);
-    const result = await connection.query(sql, values);
+    const result = await connection.query(formattedSql);
 
     const end = process.hrtime(start);
 
