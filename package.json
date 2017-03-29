@@ -15,6 +15,7 @@
     "debug": "^2.6.3",
     "es6-error": "^4.0.2",
     "mysql2": "^1.2.0",
+    "named-placeholders": "^1.1.1",
     "pretty-hrtime": "^1.0.3",
     "sqlstring": "^2.2.0"
   },
