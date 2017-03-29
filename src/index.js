@@ -1,6 +1,7 @@
 // @flow
 
-import SqlString from 'sqlstring';
+// import SqlString from 'sqlstring';
+
 import createDebug from 'debug';
 import prettyHrtime from 'pretty-hrtime';
 import {
@@ -38,13 +39,15 @@ const debug = createDebug('mightyql');
 
 export const query: InternalQueryType = async (connection, sql, values) => {
   try {
-    const formattedSql = SqlString.format(sql, values);
-
-    debug('query', formattedSql);
+    // const formattedSql = SqlString.format(sql, values);
+    //
+    // debug('query', formattedSql);
+    // debug('values', values);
 
     const start = process.hrtime();
 
-    const result = await connection.query(formattedSql);
+    // const result = await connection.query(formattedSql);
+    const result = await connection.query(sql, values);
 
     const end = process.hrtime(start);
 
