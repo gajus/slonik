@@ -24,3 +24,33 @@ const connection = createPool({
 await connection.query('SELECT 1');
 
 ```
+
+## Debugging
+
+Define `DEBUG=mightyql*` environment variable to enable logging.
+
+Logging includes information about:
+
+* the query thats about to be executed
+* placeholder values
+* the execution time
+* the number of result rows
+
+Here is the output example:
+
+```
+mightyql query execution time 196 ms +199ms
+mightyql query returned 4 row(s) +0ms
+mightyql query SELECT * FROM `movie` WHERE id IN (1000223) +3ms
+mightyql values [ 'movie', [ 1000223 ] ] +0ms
+mightyql query execution time 28 ms +29ms
+mightyql query returned 1 row(s) +0ms
+mightyql query SELECT * FROM `movie` WHERE id IN (1000292) +3ms
+mightyql values [ 'movie', [ 1000292 ] ] +0ms
+mightyql query execution time 24 ms +25ms
+mightyql query returned 1 row(s) +0ms
+mightyql query SELECT * FROM `movie` WHERE id IN (1000220) +1ms
+mightyql values [ 'movie', [ 1000220 ] ] +0ms
+mightyql query execution time 26 ms +27ms
+mightyql query returned 1 row(s) +0ms
+```
