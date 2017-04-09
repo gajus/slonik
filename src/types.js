@@ -27,13 +27,18 @@ export type QueryResultRowType = {
   [key: string]: string | number | QueryPointResultType
 };
 
+type QueryPrimitiveValueType = string | number | null;
+
 export type DatabaseQueryValuesType =
   // eslint-disable-next-line
   $ReadOnlyArray<
-    $ReadOnlyArray<string | number> |
-    string |
-    number |
-    null
+
+    // IN (?) => IN (1, 2, 3); [[1, 2, 3]]
+    $ReadOnlyArray<QueryPrimitiveValueType> |
+
+    // INSERT ... VALUES ? => INSERT ... VALUES (1), (2), (3); [[[1], [2], [3]]]
+    $ReadOnlyArray<$ReadOnlyArray<QueryPrimitiveValueType>> |
+    QueryPrimitiveValueType
     > |
   {
     [key: string]: string | number | null
