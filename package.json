@@ -24,7 +24,6 @@
     "ava": "^0.18.2",
     "babel-cli": "^6.24.0",
     "babel-plugin-istanbul": "^4.0.0",
-    "babel-plugin-transform-flow-comments": "^6.22.0",
     "babel-plugin-transform-flow-strip-types": "^6.22.0",
     "babel-plugin-transform-object-rest-spread": "^6.23.0",
     "babel-preset-env": "^1.2.2",
@@ -33,6 +32,7 @@
     "eslint": "^3.17.1",
     "eslint-config-canonical": "^7.1.0",
     "flow-bin": "^0.41.0",
+    "flow-copy-source": "^1.1.0",
     "husky": "^0.13.2",
     "nyc": "^10.1.2",
     "semantic-release": "^6.3.6",
@@ -67,7 +67,7 @@
     "url": "https://github.com/gajus/mightyql"
   },
   "scripts": {
-    "build": "babel ./src --out-dir ./dist --copy-files --source-maps",
+    "build": "rm -fr ./dist && NODE_ENV=production babel ./src --out-dir ./dist --copy-files --source-maps && flow-copy-source src dist",
     "lint": "eslint ./src ./test && flow",
     "precommit": "npm run lint && npm run test",
     "test": "ava --verbose"

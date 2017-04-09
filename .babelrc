@@ -2,24 +2,24 @@
   "env": {
     "development": {
       "plugins": [
-        "transform-object-rest-spread",
-        "transform-flow-comments"
+        "transform-object-rest-spread"
       ]
     },
     "production": {
       "plugins": [
-        "transform-object-rest-spread",
-        "transform-flow-comments"
+        "transform-object-rest-spread"
       ]
     },
     "test": {
       "plugins": [
         "transform-object-rest-spread",
-        "transform-flow-strip-types",
         "istanbul"
       ]
     }
   },
+  "plugins": [
+    "transform-flow-strip-types"
+  ],
   "presets": [
     [
       "env",
