@@ -29,8 +29,8 @@ export type QueryResultRowType = {
 
 export type DatabaseQueryValuesType =
   // eslint-disable-next-line
-  Array<
-    Array<number> |
+  $ReadOnlyArray<
+    $ReadOnlyArray<string | number> |
     string |
     number |
     null
@@ -47,11 +47,11 @@ type InsertResultType = {|
 export type InternalQueryType = (connection: InternalDatabaseConnectionType, sql: string, values?: DatabaseQueryValuesType) => Promise<any>;
 export type InternalQueryInsertType = (connection: InternalDatabaseConnectionType, sql: string, values?: DatabaseQueryValuesType) => Promise<InsertResultType>;
 export type InternalQueryOneType = (connection: InternalDatabaseConnectionType, sql: string, values?: DatabaseQueryValuesType) => Promise<QueryResultRowType>;
-export type InternalQueryManyType = (connection: InternalDatabaseConnectionType, sql: string, values?: DatabaseQueryValuesType) => Promise<Array<QueryResultRowType>>;
-export type InternalQueryAnyType = (connection: InternalDatabaseConnectionType, sql: string, values?: DatabaseQueryValuesType) => Promise<Array<QueryResultRowType>>;
+export type InternalQueryManyType = (connection: InternalDatabaseConnectionType, sql: string, values?: DatabaseQueryValuesType) => Promise<$ReadOnlyArray<QueryResultRowType>>;
+export type InternalQueryAnyType = (connection: InternalDatabaseConnectionType, sql: string, values?: DatabaseQueryValuesType) => Promise<$ReadOnlyArray<QueryResultRowType>>;
 
 export type QueryType = (sql: string, values?: DatabaseQueryValuesType) => Promise<QueryResultRowType>;
 export type QueryInsertType = (sql: string, values?: DatabaseQueryValuesType) => Promise<InsertResultType>;
 export type QueryOneType = (sql: string, values?: DatabaseQueryValuesType) => Promise<QueryResultRowType>;
-export type QueryManyType = (sql: string, values?: DatabaseQueryValuesType) => Promise<Array<QueryResultRowType>>;
-export type QueryAnyType = (sql: string, values?: DatabaseQueryValuesType) => Promise<Array<QueryResultRowType>>;
+export type QueryManyType = (sql: string, values?: DatabaseQueryValuesType) => Promise<$ReadOnlyArray<QueryResultRowType>>;
+export type QueryAnyType = (sql: string, values?: DatabaseQueryValuesType) => Promise<$ReadOnlyArray<QueryResultRowType>>;
