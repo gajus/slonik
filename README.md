@@ -6,11 +6,10 @@
 [![Canonical Code Style](https://img.shields.io/badge/code%20style-canonical-blue.svg?style=flat-square)](https://github.com/gajus/canonical)
 [![Twitter Follow](https://img.shields.io/twitter/follow/kuizinas.svg?style=social&label=Follow)](https://twitter.com/kuizinas)
 
-A higher-level abstraction of the [`node-mysql2`](https://github.com/sidorares/node-mysql2) driver with Flowtype and convenience methods for common operations.
-
-Mightyql attempts to be compatible with the [promise interface](https://github.com/sidorares/node-mysql2/blob/master/documentation/Promise-Wrapper.md) of the `node-mysql2`. Incompatibility issues should be reported.
+A higher-level abstraction of the [`node-mysql2`](https://github.com/sidorares/node-mysql2) driver with [strict types](#types) and [convenience methods](#convenience-methods) for common operations.
 
 * [Usage](#usage)
+* [Compatibility with mysql/ mysql2 drivers](#compatibility-with-mysql-mysql2-drivers)
 * [Convenience methods](#convenience-methods)
   * [`any`](#any)
   * [`insert`](#insert)
@@ -38,6 +37,10 @@ const connection = createPool({
 await connection.query('SELECT 1');
 
 ```
+
+## Compatibility with mysql/ mysql2 drivers
+
+Mightyql attempts to be compatible with the [promise interface](https://github.com/sidorares/node-mysql2/blob/master/documentation/Promise-Wrapper.md) of the `node-mysql2`. Incompatibility issues should be reported.
 
 ## Convenience methods
 
