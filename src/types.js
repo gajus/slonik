@@ -18,13 +18,17 @@ export type DatabaseConnectionType = {
   +query: QueryType
 };
 
-type QueryPointResultType = {|
-  +x: number,
-  +y: number
-|};
+// @see https://github.com/gajus/mightyql/issues/1
+// type QueryPointResultType = {|
+//   +x: number,
+//   +y: number
+// |};
 
 export type QueryResultRowType = {
-  [key: string]: string | number | QueryPointResultType
+  [key: string]: string | number
+
+  // @see https://github.com/gajus/mightyql/issues/1
+  //  | QueryPointResultType
 };
 
 type QueryPrimitiveValueType = string | number | null;
