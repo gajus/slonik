@@ -8,6 +8,20 @@
 
 A higher-level abstraction of the [`node-mysql2`](https://github.com/sidorares/node-mysql2) driver with Flowtype and convenience methods for common operations.
 
+Mightyql attempts to be compatible with the [promise interface](https://github.com/sidorares/node-mysql2/blob/master/documentation/Promise-Wrapper.md) of the `node-mysql2`. Incompatibility issues should be reported.
+
+* [Usage](#usage)
+* [Convenience methods](#convenience-methods)
+  * [`any`](#any)
+  * [`insert`](#insert)
+  * [`many`](#many)
+  * [`one`](#one)
+* [Error handling](#error-handling)
+  * [Handling `NotFoundError`](#handling-notfounderror)
+  * [Handling `DataIntegrityError`](#handling-dataintengrityerror)
+* [Types](#types)
+* [Debugging](#debugging)
+
 ## Usage
 
 Mightyql abstract construction of `node-mysql2` driver, the [promise interface](https://github.com/sidorares/node-mysql2/blob/master/documentation/Promise-Wrapper.md). The current implementation abstracts `createConnection`, `createPool` and `query` methods. If those are the only two methods that you are using, then (for the most part) Mightyql is a drop-in replacement.
@@ -27,6 +41,48 @@ await connection.query('SELECT 1');
 
 ## Convenience methods
 
+### `any`
+
+Returns result rows.
+
+> Similar to `#query` except that it returns rows without fields information.
+
+Example:
+
+```js
+const rows = await connection.any('SELECT foo');
+
+```
+
+### `insert`
+
+Designed to use when inserting 1 row.
+
+> The reason for using this method over `#query` is to leverage the strict types.
+> `#insert` method result type is `InsertResultType`.
+
+Example:
+
+```js
+const {
+  insertId
+} = await connection.insert('INSERT INTO `foo` SET `bar`="baz"');
+
+```
+
+### `many`
+
+Returns result rows.
+
+* Throws `NotFoundError` if query returns no rows.
+
+Example:
+
+```js
+const rows = await connection.many('SELECT foo');
+
+```
+
 ### `one`
 
 Selects the first row from the result.
@@ -43,7 +99,16 @@ const row = await connection.one('SELECT foo');
 
 ```
 
-#### Handling `NotFoundError`
+> Note:
+>
+> I've got asked "How is this different from [knex.js](http://knexjs.org/) `knex('foo').limit(1)`".
+> `knex('foo').limit(1)` simply generates "SELECT * FROM foo LIMIT 1" query.
+> `knex` is a query builder; it does not assert the value of the result.
+> Mightyql `one` adds assertions about the result of the query.
+
+## Error handling
+
+### Handling `NotFoundError`
 
 To handle the case where query returns less than one row, catch `NotFoundError` error.
 
@@ -68,7 +133,7 @@ if (row) {
 
 ```
 
-#### Handling `DataIntegrityError`
+### Handling `DataIntegrityError`
 
 To handle the case where the data result does not match the expectations, catch `DataIntegrityError` error.
 
@@ -91,12 +156,40 @@ try {
 
 ```
 
-> Note:
->
-> I've got asked "How is this different from [knex.js](http://knexjs.org/) `knex('foo').limit(1)`".
-> `knex('foo').limit(1)` simply generates "SELECT * FROM foo LIMIT 1" query.
-> `knex` is a query builder; it does not assert the value of the result.
-> Mightyql `one` adds assertions about the result of the query.
+## Types
+
+This package is using [Flow](https://flow.org/) types.
+
+Refer to [`./src/types.js`](./src/types.js).
+
+The public interface exports the following types:
+
+* `DatabaseConnectionType`
+* `DatabasePoolConnectionType`
+* `DatabaseSingleConnectionType`
+
+Use these types to annotate `connection` instance in your code base, e.g.
+
+```js
+// @flow
+
+import type {
+  DatabaseConnectionType
+} from 'mightyql';
+
+export default async (
+  connection: DatabaseConnectionType,
+  code: string
+): Promise<number> => {
+  const row = await connection
+    .one('SELECT id FROM country WHERE code = ? LIMIT 2', [
+      code
+    ]);
+
+  return Number(row.id);
+};
+
+```
 
 ## Debugging
 
