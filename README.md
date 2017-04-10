@@ -6,10 +6,10 @@
 [![Canonical Code Style](https://img.shields.io/badge/code%20style-canonical-blue.svg?style=flat-square)](https://github.com/gajus/canonical)
 [![Twitter Follow](https://img.shields.io/twitter/follow/kuizinas.svg?style=social&label=Follow)](https://twitter.com/kuizinas)
 
-A higher-level abstraction of the [`node-mysql2`](https://github.com/sidorares/node-mysql2) driver with [strict types](#types) and [convenience methods](#convenience-methods) for common operations.
+A MySQL driver with [strict types](#types) and [convenience methods](#convenience-methods).
 
-* [Usage](#usage)
 * [Compatibility with mysql/ mysql2 drivers](#compatibility-with-mysql-mysql2-drivers)
+* [Usage](#usage)
 * [Convenience methods](#convenience-methods)
   * [`any`](#any)
   * [`insert`](#insert)
@@ -21,9 +21,13 @@ A higher-level abstraction of the [`node-mysql2`](https://github.com/sidorares/n
 * [Types](#types)
 * [Debugging](#debugging)
 
+## Compatibility with mysql/ mysql2 drivers
+
+Mightyql is an abstraction on top of the [`node-mysql2`](https://github.com/sidorares/node-mysql2) driver. The goal is to be compatible with the [promise interface](https://github.com/sidorares/node-mysql2/blob/master/documentation/Promise-Wrapper.md) of the `node-mysql2` driver. Incompatibility issues should be reported.
+
 ## Usage
 
-Mightyql abstract construction of `node-mysql2` driver, the [promise interface](https://github.com/sidorares/node-mysql2/blob/master/documentation/Promise-Wrapper.md). The current implementation abstracts `createConnection`, `createPool` and `query` methods. If those are the only two methods that you are using, then (for the most part) Mightyql is a drop-in replacement.
+The core API of Mightyql is equivalent to the [`node-mysql2`](https://github.com/sidorares/node-mysql2) [promise interface](https://github.com/sidorares/node-mysql2/blob/master/documentation/Promise-Wrapper.md), i.e. it is a drop-in replacement.
 
 ```js
 import {
@@ -38,11 +42,9 @@ await connection.query('SELECT 1');
 
 ```
 
-## Compatibility with mysql/ mysql2 drivers
-
-Mightyql attempts to be compatible with the [promise interface](https://github.com/sidorares/node-mysql2/blob/master/documentation/Promise-Wrapper.md) of the `node-mysql2`. Incompatibility issues should be reported.
-
 ## Convenience methods
+
+In addition to the standard (`node-mysql2`) methods, Mightyql exposes convenience methods for common operations.
 
 ### `any`
 
@@ -69,7 +71,7 @@ Example:
 ```js
 const {
   insertId
-} = await connection.insert('INSERT INTO `foo` SET `bar`="baz"');
+} = await connection.insert('INSERT INTO foo SET bar="baz"');
 
 ```
 
