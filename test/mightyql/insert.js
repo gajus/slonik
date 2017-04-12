@@ -11,7 +11,7 @@ import {
 test('returns an object describing the new record', async (t) => {
   const stub = sinon.stub().returns([
     {
-      insertId: 1
+      id: 1
     }
   ]);
 

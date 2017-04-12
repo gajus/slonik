@@ -5,6 +5,16 @@
 // eslint-disable-next-line flowtype/no-weak-types
 type InternalDatabaseConnectionType = any;
 
+export type DatabaseConfigurationType = {|
+  +database?: string,
+  +host?: string,
+  +idleTimeoutMillis?: number,
+  +max?: number,
+  +password?: string,
+  +port?: number,
+  +user?: string
+|};
+
 export type DatabaseSingleConnectionType = {
   end: () => Promise<void>
 } & DatabaseConnectionType;
@@ -18,17 +28,8 @@ export type DatabaseConnectionType = {
   +query: QueryType
 };
 
-// @see https://github.com/gajus/mightyql/issues/1
-// type QueryPointResultType = {|
-//   +x: number,
-//   +y: number
-// |};
-
 export type QueryResultRowType = {
   [key: string]: string | number
-
-  // @see https://github.com/gajus/mightyql/issues/1
-  //  | QueryPointResultType
 };
 
 type QueryPrimitiveValueType = string | number | null;

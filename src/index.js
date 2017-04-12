@@ -1,19 +1,19 @@
 // @flow
 
+import pg, {
+  types
+} from 'pg';
 import SqlString from 'sqlstring';
 import createDebug from 'debug';
 import prettyHrtime from 'pretty-hrtime';
 import createToUnnamed from 'named-placeholders';
-import {
-  createConnection as createConnection2,
-  createPool as createPool2
-} from 'mysql2/promise';
 import {
   DataIntegrityError,
   DuplicateEntryError,
   NotFoundError
 } from './errors';
 import type {
+  DatabaseConfigurationType,
   DatabasePoolConnectionType,
   DatabaseQueryValuesType,
   DatabaseSingleConnectionType,
@@ -36,6 +36,10 @@ export {
   NotFoundError
 };
 
+types.setTypeParser(20, (value) => {
+  return parseInt(value, 10);
+});
+
 const debug = createDebug('mightyql');
 
 const toUnnamed = createToUnnamed();
@@ -55,6 +59,8 @@ export const formatQuery = (sql: string, values?: DatabaseQueryValuesType): stri
 };
 
 export const query: InternalQueryType = async (connection, sql, values) => {
+  debug('query input', sql);
+
   try {
     const formattedSql = formatQuery(sql, values);
 
@@ -66,8 +72,8 @@ export const query: InternalQueryType = async (connection, sql, values) => {
 
     debug('query execution time', prettyHrtime(end));
 
-    if (Array.isArray(result[0])) {
-      debug('query returned %d row(s)', result[0].length);
+    if (result.rowCount) {
+      debug('query returned %d row(s)', result.rowCount);
     }
 
     return result;
@@ -83,8 +89,12 @@ export const query: InternalQueryType = async (connection, sql, values) => {
 export const insert: InternalQueryInsertType = async (connection, sql, values) => {
   const [result] = await query(connection, sql, values);
 
+  if (!result.id) {
+    throw new Error('Missing ID.');
+  }
+
   return {
-    insertId: result.insertId
+    insertId: result.id
   };
 };
 
@@ -95,7 +105,7 @@ export const insert: InternalQueryInsertType = async (connection, sql, values) =
  * @throws DataIntegrityError If query returns multiple rows.
  */
 export const one: InternalQueryOneType = async (connection, sql, values) => {
-  const [rows] = await query(connection, sql, values);
+  const {rows} = await query(connection, sql, values);
 
   if (rows.length === 0) {
     throw new NotFoundError();
@@ -114,7 +124,7 @@ export const one: InternalQueryOneType = async (connection, sql, values) => {
  * @throws NotFoundError If query returns no rows.
  */
 export const many: InternalQueryManyType = async (connection, sql, values) => {
-  const [rows] = await query(connection, sql, values);
+  const {rows} = await query(connection, sql, values);
 
   if (rows.length === 0) {
     throw new NotFoundError();
@@ -127,19 +137,22 @@ export const many: InternalQueryManyType = async (connection, sql, values) => {
  * Makes a query and expects any number of results.
  */
 export const any: InternalQueryAnyType = async (connection, sql, values) => {
-  const [rows] = await query(connection, sql, values);
+  const {rows} = await query(connection, sql, values);
 
   return rows;
 };
 
-// eslint-disable-next-line flowtype/no-weak-types
-const createConnection = async (configuration: Object): Promise<DatabaseSingleConnectionType> => {
-  const connection = await createConnection2(configuration);
+const createConnection = async (configuration: DatabaseConfigurationType): Promise<DatabaseSingleConnectionType> => {
+  const pool = new pg.Pool(configuration);
+
+  const connection = await pool.connect();
 
   return {
     any: any.bind(null, connection),
-    end: () => {
-      return connection.end();
+    end: async () => {
+      await connection.release();
+
+      return pool.end();
     },
     insert: insert.bind(null, connection),
     many: many.bind(null, connection),
@@ -148,16 +161,16 @@ const createConnection = async (configuration: Object): Promise<DatabaseSingleCo
   };
 };
 
-// eslint-disable-next-line flowtype/no-weak-types
-const createPool = (configuration: Object): DatabasePoolConnectionType => {
-  const pool = createPool2(configuration);
+const createPool = (configuration: DatabaseConfigurationType): DatabasePoolConnectionType => {
+  const pool = new pg.Pool(configuration);
 
   return {
     any: any.bind(null, pool),
     insert: insert.bind(null, pool),
     many: many.bind(null, pool),
     one: one.bind(null, pool),
-    query: query.bind(null, pool)
+    query: query.bind(null, pool),
+    release: pool.release.bind(pool)
   };
 };
 

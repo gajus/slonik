@@ -6,9 +6,8 @@
 [![Canonical Code Style](https://img.shields.io/badge/code%20style-canonical-blue.svg?style=flat-square)](https://github.com/gajus/canonical)
 [![Twitter Follow](https://img.shields.io/twitter/follow/kuizinas.svg?style=social&label=Follow)](https://twitter.com/kuizinas)
 
-A MySQL driver with [strict types](#types) and [convenience methods](#convenience-methods).
+A PostgreSQL client with strict types and assertions.
 
-* [Compatibility with mysql/ mysql2 drivers](#compatibility-with-mysql-mysql2-drivers)
 * [Usage](#usage)
 * [Convenience methods](#convenience-methods)
   * [`any`](#any)
@@ -21,13 +20,7 @@ A MySQL driver with [strict types](#types) and [convenience methods](#convenienc
 * [Types](#types)
 * [Debugging](#debugging)
 
-## Compatibility with mysql/ mysql2 drivers
-
-Mightyql is an abstraction on top of the [`node-mysql2`](https://github.com/sidorares/node-mysql2) driver. The goal is to be compatible with the [promise interface](https://github.com/sidorares/node-mysql2/blob/master/documentation/Promise-Wrapper.md) of the `node-mysql2` driver. Incompatibility issues should be reported.
-
 ## Usage
-
-The core API of Mightyql is equivalent to the [`node-mysql2`](https://github.com/sidorares/node-mysql2) [promise interface](https://github.com/sidorares/node-mysql2/blob/master/documentation/Promise-Wrapper.md), i.e. it is a drop-in replacement.
 
 ```js
 import {
@@ -43,8 +36,6 @@ await connection.query('SELECT 1');
 ```
 
 ## Convenience methods
-
-In addition to the standard (`node-mysql2`) methods, Mightyql exposes convenience methods for common operations.
 
 ### `any`
 

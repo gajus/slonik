@@ -11,13 +11,13 @@ import {
 } from '../../src';
 
 test('returns the first row', async (t) => {
-  const stub = sinon.stub().returns([
-    [
+  const stub = sinon.stub().returns({
+    rows: [
       {
         foo: 1
       }
     ]
-  ]);
+  });
 
   const connection: any = {
     query: stub
@@ -31,9 +31,9 @@ test('returns the first row', async (t) => {
 });
 
 test('throws an error if no rows are returned', async (t) => {
-  const stub = sinon.stub().returns([
-    []
-  ]);
+  const stub = sinon.stub().returns({
+    rows: []
+  });
 
   const connection: any = {
     query: stub
@@ -43,8 +43,8 @@ test('throws an error if no rows are returned', async (t) => {
 });
 
 test('throws an error if more than one row is returned', async (t) => {
-  const stub = sinon.stub().returns([
-    [
+  const stub = sinon.stub().returns({
+    rows: [
       {
         foo: 1
       },
@@ -52,7 +52,7 @@ test('throws an error if more than one row is returned', async (t) => {
         foo: 2
       }
     ]
-  ]);
+  });
 
   const connection: any = {
     query: stub

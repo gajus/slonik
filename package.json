@@ -14,12 +14,12 @@
     "ajv": "^4.11.5",
     "debug": "^2.6.3",
     "es6-error": "^4.0.2",
-    "mysql2": "^1.2.0",
     "named-placeholders": "^1.1.1",
+    "pg": "^6.1.5",
     "pretty-hrtime": "^1.0.3",
     "sqlstring": "^2.2.0"
   },
-  "description": "A higher-level abstraction of the node-mysql2 driver with Flowtype and convenience methods for common operations.",
+  "description": "A PostgreSQL client with strict types and assertions.",
   "devDependencies": {
     "ava": "^0.18.2",
     "babel-cli": "^6.24.0",
@@ -39,10 +39,10 @@
     "sinon": "^2.0.0"
   },
   "engines": {
-    "node": ">=7.7"
+    "node": ">=7.9"
   },
   "keywords": [
-    "mysql",
+    "postgresql",
     "promise",
     "types"
   ],
