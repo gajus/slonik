@@ -16,7 +16,6 @@ import {
 import type {
   DatabaseConfigurationType,
   DatabasePoolConnectionType,
-  DatabaseQueryValuesType,
   DatabaseSingleConnectionType,
   InternalQueryAnyType,
   InternalQueryInsertType,
