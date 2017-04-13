@@ -3,6 +3,9 @@
 import pg, {
   types
 } from 'pg';
+import {
+  parse as parseConnectionString
+} from 'pg-connection-string';
 import createDebug from 'debug';
 import prettyHrtime from 'pretty-hrtime';
 import {
@@ -144,15 +147,14 @@ const createConnection = async (configuration: DatabaseConfigurationType): Promi
 };
 
 const createPool = (configuration: DatabaseConfigurationType): DatabasePoolConnectionType => {
-  const pool = new pg.Pool(configuration);
+  const pool = new pg.Pool(typeof configuration === 'string' ? parseConnectionString(configuration) : configuration);
 
   return {
     any: any.bind(null, pool),
     insert: insert.bind(null, pool),
     many: many.bind(null, pool),
     one: one.bind(null, pool),
-    query: query.bind(null, pool),
-    release: pool.release.bind(pool)
+    query: query.bind(null, pool)
   };
 };
 

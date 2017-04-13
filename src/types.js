@@ -21,6 +21,7 @@ export type DatabaseConfigurationType = DatabaseConnectionUriType |
 export type DatabaseSingleConnectionType = {
   end: () => Promise<void>
 } & DatabaseConnectionType;
+
 export type DatabasePoolConnectionType = DatabaseConnectionType;
 
 export type DatabaseConnectionType = {
