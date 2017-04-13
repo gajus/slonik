@@ -5,15 +5,18 @@
 // eslint-disable-next-line flowtype/no-weak-types
 type InternalDatabaseConnectionType = any;
 
-export type DatabaseConfigurationType = {|
-  +database?: string,
-  +host?: string,
-  +idleTimeoutMillis?: number,
-  +max?: number,
-  +password?: string,
-  +port?: number,
-  +user?: string
-|};
+export type DatabaseConnectionUriType = string;
+
+export type DatabaseConfigurationType = DatabaseConnectionUriType |
+  {|
+    +database?: string,
+    +host?: string,
+    +idleTimeoutMillis?: number,
+    +max?: number,
+    +password?: string,
+    +port?: number,
+    +user?: string
+  |};
 
 export type DatabaseSingleConnectionType = {
   end: () => Promise<void>
