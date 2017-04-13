@@ -9,6 +9,7 @@
 A PostgreSQL client with strict types and assertions.
 
 * [Usage](#usage)
+* [Value placeholders](#value-placeholders)
 * [Convenience methods](#convenience-methods)
   * [`any`](#any)
   * [`insert`](#insert)
@@ -34,6 +35,25 @@ const connection = createPool({
 await connection.query('SELECT 1');
 
 ```
+
+## Value placeholders
+
+Mightyql enables use of question mark (`?`) value placeholders, e.g.
+
+```js
+await connection.query('SELECT ?', [
+  1
+]);
+
+```
+
+Question mark value placeholders are converted to positional value placeholders before they are passed to the `pg` driver, i.e. the above query becomes:
+
+```sql
+SELECT $1
+```
+
+Do not mix question mark and positional value placeholders in a single query.
 
 ## Convenience methods
 

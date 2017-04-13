@@ -3,15 +3,16 @@
 import pg, {
   types
 } from 'pg';
-import SqlString from 'sqlstring';
 import createDebug from 'debug';
 import prettyHrtime from 'pretty-hrtime';
-import createToUnnamed from 'named-placeholders';
 import {
   DataIntegrityError,
   DuplicateEntryError,
   NotFoundError
 } from './errors';
+import {
+  normalizeValuePlaceholders
+} from './utilities';
 import type {
   DatabaseConfigurationType,
   DatabasePoolConnectionType,
@@ -42,31 +43,13 @@ types.setTypeParser(20, (value) => {
 
 const debug = createDebug('mightyql');
 
-const toUnnamed = createToUnnamed();
-
-export const formatQuery = (sql: string, values?: DatabaseQueryValuesType): string => {
-  const [
-    unnamedSql,
-    indexedValues
-  ] = toUnnamed(sql, values);
-
-  const formattedSql = SqlString.format(unnamedSql, indexedValues);
-
-  debug('query', formattedSql);
-  debug('values', indexedValues);
-
-  return formattedSql;
-};
-
 export const query: InternalQueryType = async (connection, sql, values) => {
   debug('query input', sql);
 
   try {
-    const formattedSql = formatQuery(sql, values);
-
     const start = process.hrtime();
 
-    const result = await connection.query(formattedSql);
+    const result = await connection.query(normalizeValuePlaceholders(sql), values);
 
     const end = process.hrtime(start);
 
