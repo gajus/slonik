@@ -41,16 +41,11 @@ export type DatabaseQueryValuesType =
   // eslint-disable-next-line
   $ReadOnlyArray<
 
-    // IN (?) => IN (1, 2, 3); [[1, 2, 3]]
-    $ReadOnlyArray<QueryPrimitiveValueType> |
-
+    // INSERT ... VALUES ? => INSERT ... VALUES (1, 2, 3); [[1, 2, 3]]
     // INSERT ... VALUES ? => INSERT ... VALUES (1), (2), (3); [[[1], [2], [3]]]
-    $ReadOnlyArray<$ReadOnlyArray<QueryPrimitiveValueType>> |
+    $ReadOnlyArray<QueryPrimitiveValueType | $ReadOnlyArray<QueryPrimitiveValueType>> |
     QueryPrimitiveValueType
-    > |
-  {
-    [key: string]: string | number | null
-  };
+    >;
 
 // eslint-disable-next-line flowtype/no-weak-types
 export type InternalQueryType = (connection: InternalDatabaseConnectionType, sql: string, values?: DatabaseQueryValuesType) => Promise<any>;

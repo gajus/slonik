@@ -10,6 +10,8 @@ A PostgreSQL client with strict types and assertions.
 
 * [Usage](#usage)
 * [Value placeholders](#value-placeholders)
+  * [A value set](#a-value-set)
+  * [Multiple value sets](#multiple-value-sets)
 * [Convenience methods](#convenience-methods)
   * [`any`](#any)
   * [`insert`](#insert)
@@ -53,7 +55,58 @@ Question mark value placeholders are converted to positional value placeholders 
 SELECT $1
 ```
 
-Do not mix question mark and positional value placeholders in a single query.
+> Do not mix question mark and positional value placeholders in a single query.
+
+### A value set
+
+A question mark is interpolated into a value set when the associated value is an array, e.g.
+
+```js
+await connection.query('SELECT ?', [
+  [
+    1,
+    2,
+    3
+  ]
+]);
+
+```
+
+Produces:
+
+```sql
+SELECT ($1, $2, $3)
+
+```
+
+### Multiple value sets
+
+A question mark is interpolated into a list of value sets when the associated value is an array of arrays, e.g.
+
+```js
+await connection.query('SELECT ?', [
+  [
+    [
+      1,
+      2,
+      3
+    ],
+    [
+      1,
+      2,
+      3
+    ]
+  ]
+]);
+
+```
+
+Produces:
+
+```sql
+SELECT ($1, $2, $3), ($4, $5, $6)
+
+```
 
 ## Convenience methods
 

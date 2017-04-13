@@ -12,6 +12,7 @@
   },
   "dependencies": {
     "ajv": "^4.11.5",
+    "array-flatten": "^2.1.1",
     "debug": "^2.6.3",
     "es6-error": "^4.0.2",
     "pg": "^6.1.5",

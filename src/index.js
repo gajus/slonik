@@ -8,6 +8,7 @@ import {
 } from 'pg-connection-string';
 import createDebug from 'debug';
 import prettyHrtime from 'pretty-hrtime';
+import arrayFlatten from 'array-flatten';
 import {
   DataIntegrityError,
   DuplicateEntryError,
@@ -50,7 +51,7 @@ export const query: InternalQueryType = async (connection, sql, values) => {
   try {
     const start = process.hrtime();
 
-    const result = await connection.query(normalizeValuePlaceholders(sql), values);
+    const result = await connection.query(normalizeValuePlaceholders(sql), arrayFlatten(values));
 
     const end = process.hrtime(start);
 
