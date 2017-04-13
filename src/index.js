@@ -21,7 +21,6 @@ import type {
   DatabasePoolConnectionType,
   DatabaseSingleConnectionType,
   InternalQueryAnyType,
-  InternalQueryInsertType,
   InternalQueryManyType,
   InternalQueryOneType,
   InternalQueryType
@@ -69,18 +68,6 @@ export const query: InternalQueryType = async (connection, sql, values) => {
 
     throw error;
   }
-};
-
-export const insert: InternalQueryInsertType = async (connection, sql, values) => {
-  const [result] = await query(connection, sql, values);
-
-  if (!result.id) {
-    throw new Error('Missing ID.');
-  }
-
-  return {
-    insertId: result.id
-  };
 };
 
 /**
@@ -139,7 +126,6 @@ const createConnection = async (configuration: DatabaseConfigurationType): Promi
 
       return pool.end();
     },
-    insert: insert.bind(null, connection),
     many: many.bind(null, connection),
     one: one.bind(null, connection),
     query: query.bind(null, connection)
@@ -151,7 +137,6 @@ const createPool = (configuration: DatabaseConfigurationType): DatabasePoolConne
 
   return {
     any: any.bind(null, pool),
-    insert: insert.bind(null, pool),
     many: many.bind(null, pool),
     one: one.bind(null, pool),
     query: query.bind(null, pool)

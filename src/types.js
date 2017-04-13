@@ -26,7 +26,6 @@ export type DatabasePoolConnectionType = DatabaseConnectionType;
 
 export type DatabaseConnectionType = {
   +any: QueryAnyType<*>,
-  +insert: QueryInsertType,
   +many: QueryManyType<*>,
   +one: QueryOneType<*>,
   +query: QueryType<*>
@@ -53,19 +52,13 @@ export type DatabaseQueryValuesType =
     [key: string]: string | number | null
   };
 
-type InsertResultType = {|
-  +insertId: number
-|};
-
 // eslint-disable-next-line flowtype/no-weak-types
 export type InternalQueryType = (connection: InternalDatabaseConnectionType, sql: string, values?: DatabaseQueryValuesType) => Promise<any>;
-export type InternalQueryInsertType = (connection: InternalDatabaseConnectionType, sql: string, values?: DatabaseQueryValuesType) => Promise<InsertResultType>;
 export type InternalQueryOneType = (connection: InternalDatabaseConnectionType, sql: string, values?: DatabaseQueryValuesType) => Promise<QueryResultRowType>;
 export type InternalQueryManyType = (connection: InternalDatabaseConnectionType, sql: string, values?: DatabaseQueryValuesType) => Promise<$ReadOnlyArray<QueryResultRowType>>;
 export type InternalQueryAnyType = (connection: InternalDatabaseConnectionType, sql: string, values?: DatabaseQueryValuesType) => Promise<$ReadOnlyArray<QueryResultRowType>>;
 
 export type QueryType<T: QueryResultRowType> = (sql: string, values?: DatabaseQueryValuesType) => Promise<$ReadOnlyArray<T>>;
-export type QueryInsertType = (sql: string, values?: DatabaseQueryValuesType) => Promise<InsertResultType>;
 export type QueryOneType<T: QueryResultRowType> = (sql: string, values?: DatabaseQueryValuesType) => Promise<T>;
 export type QueryManyType<T: QueryResultRowType> = (sql: string, values?: DatabaseQueryValuesType) => Promise<$ReadOnlyArray<T>>;
 export type QueryAnyType<T: QueryResultRowType> = (sql: string, values?: DatabaseQueryValuesType) => Promise<$ReadOnlyArray<T>>;
