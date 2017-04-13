@@ -51,7 +51,11 @@ export const query: InternalQueryType = async (connection, sql, values = []) => 
   try {
     const start = process.hrtime();
 
-    const result = await connection.query(normalizeValuePlaceholders(sql), arrayFlatten(values));
+    const normalizedQuery = normalizeValuePlaceholders(sql, values);
+
+    debug('normlized query', normalizedQuery);
+
+    const result = await connection.query(normalizedQuery, arrayFlatten(values));
 
     const end = process.hrtime(start);
 
