@@ -45,7 +45,7 @@ types.setTypeParser(20, (value) => {
 const debug = createDebug('mightyql');
 
 export const query: InternalQueryType = async (connection, sql, values) => {
-  debug('query input', sql);
+  debug('query input', sql, values);
 
   try {
     const start = process.hrtime();
