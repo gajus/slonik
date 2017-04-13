@@ -25,11 +25,11 @@ export type DatabaseSingleConnectionType = {
 export type DatabasePoolConnectionType = DatabaseConnectionType;
 
 export type DatabaseConnectionType = {
-  +any: QueryAnyType,
+  +any: QueryAnyType<*>,
   +insert: QueryInsertType,
-  +many: QueryManyType,
-  +one: QueryOneType,
-  +query: QueryType
+  +many: QueryManyType<*>,
+  +one: QueryOneType<*>,
+  +query: QueryType<*>
 };
 
 export type QueryResultRowType = {
@@ -64,8 +64,8 @@ export type InternalQueryOneType = (connection: InternalDatabaseConnectionType, 
 export type InternalQueryManyType = (connection: InternalDatabaseConnectionType, sql: string, values?: DatabaseQueryValuesType) => Promise<$ReadOnlyArray<QueryResultRowType>>;
 export type InternalQueryAnyType = (connection: InternalDatabaseConnectionType, sql: string, values?: DatabaseQueryValuesType) => Promise<$ReadOnlyArray<QueryResultRowType>>;
 
-export type QueryType = (sql: string, values?: DatabaseQueryValuesType) => Promise<$ReadOnlyArray<QueryResultRowType>>;
+export type QueryType<T: QueryResultRowType> = (sql: string, values?: DatabaseQueryValuesType) => Promise<$ReadOnlyArray<T>>;
 export type QueryInsertType = (sql: string, values?: DatabaseQueryValuesType) => Promise<InsertResultType>;
-export type QueryOneType = (sql: string, values?: DatabaseQueryValuesType) => Promise<QueryResultRowType>;
-export type QueryManyType = (sql: string, values?: DatabaseQueryValuesType) => Promise<$ReadOnlyArray<QueryResultRowType>>;
-export type QueryAnyType = (sql: string, values?: DatabaseQueryValuesType) => Promise<$ReadOnlyArray<QueryResultRowType>>;
+export type QueryOneType<T: QueryResultRowType> = (sql: string, values?: DatabaseQueryValuesType) => Promise<T>;
+export type QueryManyType<T: QueryResultRowType> = (sql: string, values?: DatabaseQueryValuesType) => Promise<$ReadOnlyArray<T>>;
+export type QueryAnyType<T: QueryResultRowType> = (sql: string, values?: DatabaseQueryValuesType) => Promise<$ReadOnlyArray<T>>;
