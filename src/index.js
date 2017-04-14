@@ -23,6 +23,7 @@ import type {
   DatabaseSingleConnectionType,
   InternalQueryAnyType,
   InternalQueryManyType,
+  InternalQueryMaybeOneType,
   InternalQueryOneType,
   InternalQueryType
 } from './types';
@@ -114,6 +115,27 @@ export const one: InternalQueryOneType = async (connection, sql, values) => {
 };
 
 /**
+ * Makes a query and expects exactly one result.
+ *
+ * @throws DataIntegrityError If query returns multiple rows.
+ */
+export const maybeOne: InternalQueryMaybeOneType = async (connection, sql, values) => {
+  const {
+    rows
+  } = await query(connection, sql, values);
+
+  if (rows.length === 0) {
+    return null;
+  }
+
+  if (rows.length > 1) {
+    throw new DataIntegrityError();
+  }
+
+  return rows[0];
+};
+
+/**
  * Makes a query and expects at least 1 result.
  *
  * @throws NotFoundError If query returns no rows.
@@ -150,6 +172,7 @@ const createConnection = async (configuration: DatabaseConfigurationType): Promi
       return pool.end();
     },
     many: many.bind(null, connection),
+    maybeOne: maybeOne.bind(null, connection),
     one: one.bind(null, connection),
     query: query.bind(null, connection)
   };
@@ -161,6 +184,7 @@ const createPool = (configuration: DatabaseConfigurationType): DatabasePoolConne
   return {
     any: any.bind(null, pool),
     many: many.bind(null, pool),
+    maybeOne: maybeOne.bind(null, pool),
     one: one.bind(null, pool),
     query: query.bind(null, pool)
   };

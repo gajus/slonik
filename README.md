@@ -17,6 +17,7 @@ A PostgreSQL client with strict types and assertions.
   * [`any`](#any)
   * [`insert`](#insert)
   * [`many`](#many)
+  * [`maybeOne`](#maybeone)
   * [`one`](#one)
 * [Error handling](#error-handling)
   * [Handling `NotFoundError`](#handling-notfounderror)
@@ -168,6 +169,22 @@ Example:
 
 ```js
 const rows = await connection.many('SELECT foo');
+
+```
+
+### `maybeOne`
+
+Selects the first row from the result.
+
+* Returns `null` if row is not found.
+* Throws `DataIntegrityError` if query returns multiple rows.
+
+Example:
+
+```js
+const row = await connection.one('SELECT foo');
+
+// row.foo is the result of the `foo` column value of the first row.
 
 ```
 
