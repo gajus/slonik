@@ -168,7 +168,7 @@ const createConnection = async (
   connectionConfiguration: DatabaseConfigurationType,
   clientConfiguration: ClientConfigurationType = {}
 ): Promise<DatabaseSingleConnectionType> => {
-  const pool = new pg.Pool(connectionConfiguration);
+  const pool = new pg.Pool(typeof connectionConfiguration === 'string' ? parseConnectionString(connectionConfiguration) : connectionConfiguration);
 
   const connection = await pool.connect();
 
