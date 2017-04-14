@@ -59,3 +59,12 @@ test('interpolates multiple value placeholders (same value)', (t) => {
     'FOO'
   ]);
 });
+
+test('throws if values object contains properties not present in the query', (t) => {
+  t.throws(() => {
+    normalizeNamedValuePlaceholders('SELECT :foo', {
+      bar: 'BAR',
+      foo: 'FOO'
+    });
+  }, 'Named placeholder values contain value(s) not present in the query.');
+});

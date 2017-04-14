@@ -6,7 +6,7 @@ import type {
 } from '../types';
 
 /**
- * @see https://regex101.com/r/KrEe8i/1
+ * @see https://regex101.com/r/KrEe8i/2
  */
 const namedPlaceholderRegex = /[\s,(]:([a-zA-Z]+)/g;
 
@@ -23,6 +23,7 @@ export default (
   let placeholderIndex = 0;
 
   const normalizedValues = [];
+  const valueNames = Object.keys(values);
 
   // eslint-disable-next-line no-cond-assign
   while (match = namedPlaceholderRegex.exec(sql)) {
@@ -35,6 +36,10 @@ export default (
 
     const value = values[matchName];
 
+    if (valueNames.includes(matchName)) {
+      valueNames.splice(valueNames.indexOf(matchName));
+    }
+
     normalizedValues.push(value);
 
     result += sql.slice(chunkIndex, matchIndex);
@@ -44,6 +49,10 @@ export default (
     ++placeholderIndex;
 
     result += '$' + placeholderIndex;
+  }
+
+  if (valueNames.length) {
+    throw new Error('Named placeholder values contain value(s) not present in the query.');
   }
 
   if (chunkIndex === 0) {
