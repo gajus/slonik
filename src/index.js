@@ -61,7 +61,7 @@ export const query: InternalQueryType = async (connection, sql, values) => {
         values: normalizedValues
       } = normalizeAnonymousValuePlaceholders(sql, values);
 
-      debug('normlized SQL', normalizedSql);
+      debug('normalized SQL', normalizedSql);
 
       result = await connection.query(normalizedSql, normalizedValues);
     } else if (values) {
@@ -70,7 +70,7 @@ export const query: InternalQueryType = async (connection, sql, values) => {
         values: normalizedValues
       } = normalizeNamedValuePlaceholders(sql, values);
 
-      debug('normlized SQL', normalizedSql);
+      debug('normalized SQL', normalizedSql);
 
       result = await connection.query(normalizedSql, normalizedValues);
     } else {
