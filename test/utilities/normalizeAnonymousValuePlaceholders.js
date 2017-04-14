@@ -15,6 +15,20 @@ test('does not error when placeholders are absent', (t) => {
   t.deepEqual(values, []);
 });
 
+test('does not error when passed values without anonymous placeholders', (t) => {
+  const {
+    sql,
+    values
+  } = normalizeAnonymousValuePlaceholders('SELECT $1', [
+    'foo'
+  ]);
+
+  t.true(sql === 'SELECT $1');
+  t.deepEqual(values, [
+    'foo'
+  ]);
+});
+
 test('interpolates a value placeholder', (t) => {
   const {
     sql,

@@ -15,6 +15,15 @@ export default (
   sql: string,
   values: AnonymouseValuePlaceholderValuesType = []
 ): NormalizedQueryType => {
+  if (!anonymousePlaceholdersRegex.test(sql)) {
+    return {
+      sql,
+      values
+    };
+  }
+
+  anonymousePlaceholdersRegex.lastIndex = 0;
+
   let chunkIndex = 0;
   let result = '';
   let match;
