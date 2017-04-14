@@ -166,7 +166,7 @@ export const any: InternalQueryAnyType = async (connection, clientConfiguration,
 
 const createConnection = async (
   connectionConfiguration: DatabaseConfigurationType,
-  clientConfiguration: ClientConfigurationType
+  clientConfiguration: ClientConfigurationType = {}
 ): Promise<DatabaseSingleConnectionType> => {
   const pool = new pg.Pool(connectionConfiguration);
 
@@ -188,7 +188,7 @@ const createConnection = async (
 
 const createPool = (
   connectionConfiguration: DatabaseConfigurationType,
-  clientConfiguration: ClientConfigurationType
+  clientConfiguration: ClientConfigurationType = {}
 ): DatabasePoolConnectionType => {
   const pool = new pg.Pool(typeof connectionConfiguration === 'string' ? parseConnectionString(connectionConfiguration) : connectionConfiguration);
 

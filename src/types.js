@@ -11,9 +11,9 @@ export type ClientErrorsConfigurationType = {|
   +NotFoundError?: Class<Error>
 |};
 
-export type ClientConfigurationType = {|
+export type ClientConfigurationType = {
   +errors?: ClientErrorsConfigurationType
-|};
+};
 
 export type DatabaseConfigurationType = DatabaseConnectionUriType |
   {|
