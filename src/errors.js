@@ -17,12 +17,4 @@ export class NotFoundError extends ExtendableError {
 
 export class DataIntegrityError extends ExtendableError {}
 
-export class DuplicateEntryError extends ExtendableError {
-  code: string;
-
-  constructor (message: string) {
-    super(message);
-
-    this.code = 'ER_DUP_ENTRY';
-  }
-}
+export class UniqueViolationError extends ExtendableError {}

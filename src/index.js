@@ -10,7 +10,7 @@ import createDebug from 'debug';
 import prettyHrtime from 'pretty-hrtime';
 import {
   DataIntegrityError,
-  DuplicateEntryError,
+  UniqueViolationError,
   NotFoundError
 } from './errors';
 import {
@@ -36,7 +36,7 @@ export type {
 
 export {
   DataIntegrityError,
-  DuplicateEntryError,
+  UniqueViolationError,
   NotFoundError
 };
 
@@ -86,8 +86,8 @@ export const query: InternalQueryType = async (connection, sql, values) => {
 
     return result;
   } catch (error) {
-    if (error.code === 'ER_DUP_ENTRY') {
-      throw new DuplicateEntryError(error.message);
+    if (error.code === '23505') {
+      throw new UniqueViolationError(error.message);
     }
 
     throw error;

@@ -22,6 +22,7 @@ A PostgreSQL client with strict types and assertions.
 * [Error handling](#error-handling)
   * [Handling `NotFoundError`](#handling-notfounderror)
   * [Handling `DataIntegrityError`](#handling-dataintengrityerror)
+  * [Handling `UniqueViolationError`](#handling-uniqueviolationerror)
 * [Types](#types)
 * [Debugging](#debugging)
 
@@ -260,6 +261,10 @@ try {
 }
 
 ```
+
+### Handling `UniqueViolationError`
+
+`UniqueViolationError` is thrown when Postgres responds with [`unique_violation`](https://www.postgresql.org/docs/9.4/static/errcodes-appendix.html) (`23505`) error.
 
 ## Types
 
