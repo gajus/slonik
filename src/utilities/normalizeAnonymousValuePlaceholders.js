@@ -1,18 +1,20 @@
 // @flow
 
+import arrayFlatten from 'array-flatten';
 import type {
-  DatabaseQueryValuesType
+  AnonymouseValuePlaceholderValuesType,
+  NormalizedQueryType
 } from '../types';
 
-const placeholdersRegex = /\?/g;
+const anonymousePlaceholdersRegex = /\?/g;
 
 /**
  * @see https://github.com/mysqljs/sqlstring/blob/f946198800a8d7f198fcf98d8bb80620595d01ec/lib/SqlString.js#L73
  */
 export default (
   sql: string,
-  values: DatabaseQueryValuesType = []
-): string => {
+  values: AnonymouseValuePlaceholderValuesType = []
+): NormalizedQueryType => {
   let chunkIndex = 0;
   let result = '';
   let match;
@@ -20,7 +22,7 @@ export default (
   let placeholderIndex = 0;
 
   // eslint-disable-next-line no-cond-assign
-  while (match = placeholdersRegex.exec(sql)) {
+  while (match = anonymousePlaceholdersRegex.exec(sql)) {
     if (!values.hasOwnProperty(valueIndex)) {
       throw new Error('Value placeholder is missing a value.');
     }
@@ -30,7 +32,7 @@ export default (
     valueIndex++;
 
     result += sql.slice(chunkIndex, match.index);
-    chunkIndex = placeholdersRegex.lastIndex;
+    chunkIndex = anonymousePlaceholdersRegex.lastIndex;
 
     // SELECT ?, [[[1,1],[1,1]]]; SELECT ($1, $2), ($3, $4)
     if (Array.isArray(value) && Array.isArray(value[0])) {
@@ -75,12 +77,13 @@ export default (
   }
 
   if (chunkIndex === 0) {
-    return sql;
+    result = sql;
+  } else if (chunkIndex < sql.length) {
+    result += sql.slice(chunkIndex);
   }
 
-  if (chunkIndex < sql.length) {
-    return result + sql.slice(chunkIndex);
-  }
-
-  return result;
+  return {
+    sql: result,
+    values: arrayFlatten(values)
+  };
 };

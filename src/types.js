@@ -35,17 +35,29 @@ export type QueryResultRowType = {
   [key: string]: string | number
 };
 
+export type NormalizedQueryType = {|
+  +sql: string,
+  +values: $ReadOnlyArray<*>
+|};
+
 type QueryPrimitiveValueType = string | number | null;
 
-export type DatabaseQueryValuesType =
-  // eslint-disable-next-line
-  $ReadOnlyArray<
+// eslint-disable-next-line flowtype/generic-spacing
+export type AnonymouseValuePlaceholderValuesType = $ReadOnlyArray<
 
     // INSERT ... VALUES ? => INSERT ... VALUES (1, 2, 3); [[1, 2, 3]]
     // INSERT ... VALUES ? => INSERT ... VALUES (1), (2), (3); [[[1], [2], [3]]]
     $ReadOnlyArray<QueryPrimitiveValueType | $ReadOnlyArray<QueryPrimitiveValueType>> |
     QueryPrimitiveValueType
-    >;
+  >;
+
+export type NamedValuePlaceholderValuesType = {
+  +[key: string]: string | number | null
+};
+
+export type DatabaseQueryValuesType =
+  AnonymouseValuePlaceholderValuesType |
+  NamedValuePlaceholderValuesType;
 
 // eslint-disable-next-line flowtype/no-weak-types
 export type InternalQueryType = (connection: InternalDatabaseConnectionType, sql: string, values?: DatabaseQueryValuesType) => Promise<any>;

@@ -12,6 +12,7 @@ A PostgreSQL client with strict types and assertions.
 * [Value placeholders](#value-placeholders)
   * [A value set](#a-value-set)
   * [Multiple value sets](#multiple-value-sets)
+  * [Named placeholders](#named-placeholders)
 * [Convenience methods](#convenience-methods)
   * [`any`](#any)
   * [`insert`](#insert)
@@ -105,6 +106,24 @@ Produces:
 
 ```sql
 SELECT ($1, $2, $3), ($4, $5, $6)
+
+```
+
+### Named placeholders
+
+A `:[a-zA-Z]` regex is used to match named placeholders.
+
+```js
+await connection.query('SELECT :foo', {
+  foo: 'FOO'
+});
+
+```
+
+Produces:
+
+```sql
+SELECT $1
 
 ```
 

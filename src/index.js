@@ -8,14 +8,14 @@ import {
 } from 'pg-connection-string';
 import createDebug from 'debug';
 import prettyHrtime from 'pretty-hrtime';
-import arrayFlatten from 'array-flatten';
 import {
   DataIntegrityError,
   DuplicateEntryError,
   NotFoundError
 } from './errors';
 import {
-  normalizeValuePlaceholders
+  normalizeAnonymousValuePlaceholders,
+  normalizeNamedValuePlaceholders
 } from './utilities';
 import type {
   DatabaseConfigurationType,
@@ -45,17 +45,35 @@ types.setTypeParser(20, (value) => {
 
 const debug = createDebug('mightyql');
 
-export const query: InternalQueryType = async (connection, sql, values = []) => {
+export const query: InternalQueryType = async (connection, sql, values) => {
   debug('query input', sql, values);
 
   try {
     const start = process.hrtime();
 
-    const normalizedQuery = normalizeValuePlaceholders(sql, values);
+    let result;
 
-    debug('normlized query', normalizedQuery);
+    if (Array.isArray(values)) {
+      const {
+        sql: normalizedSql,
+        values: normalizedValues
+      } = normalizeAnonymousValuePlaceholders(sql, values);
 
-    const result = await connection.query(normalizedQuery, arrayFlatten(values));
+      debug('normlized SQL', normalizedSql);
+
+      result = await connection.query(normalizedSql, normalizedValues);
+    } else if (values) {
+      const {
+        sql: normalizedSql,
+        values: normalizedValues
+      } = normalizeNamedValuePlaceholders(sql, values);
+
+      debug('normlized SQL', normalizedSql);
+
+      result = await connection.query(normalizedSql, normalizedValues);
+    } else {
+      result = await connection.query(sql);
+    }
 
     const end = process.hrtime(start);
 
