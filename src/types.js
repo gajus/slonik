@@ -27,6 +27,7 @@ export type DatabasePoolConnectionType = DatabaseConnectionType;
 export type DatabaseConnectionType = {
   +any: QueryAnyType<*>,
   +many: QueryManyType<*>,
+  +maybeOne: QueryMaybeOneType<*>,
   +one: QueryOneType<*>,
   +query: QueryType<*>
 };
