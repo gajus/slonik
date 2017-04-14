@@ -7,6 +7,14 @@ type InternalDatabaseConnectionType = any;
 
 export type DatabaseConnectionUriType = string;
 
+export type ClientErrorsConfigurationType = {|
+  +NotFoundError?: Class<Error>
+|};
+
+export type ClientConfigurationType = {|
+  +errors?: ClientErrorsConfigurationType
+|};
+
 export type DatabaseConfigurationType = DatabaseConnectionUriType |
   {|
     +database?: string,
@@ -60,10 +68,33 @@ export type DatabaseQueryValuesType =
   AnonymouseValuePlaceholderValuesType |
   NamedValuePlaceholderValuesType;
 
-export type InternalQueryAnyType = (connection: InternalDatabaseConnectionType, sql: string, values?: DatabaseQueryValuesType) => Promise<$ReadOnlyArray<QueryResultRowType>>;
-export type InternalQueryManyType = (connection: InternalDatabaseConnectionType, sql: string, values?: DatabaseQueryValuesType) => Promise<$ReadOnlyArray<QueryResultRowType>>;
-export type InternalQueryMaybeOneType = (connection: InternalDatabaseConnectionType, sql: string, values?: DatabaseQueryValuesType) => Promise<QueryResultRowType | null>;
-export type InternalQueryOneType = (connection: InternalDatabaseConnectionType, sql: string, values?: DatabaseQueryValuesType) => Promise<QueryResultRowType>;
+export type InternalQueryAnyType = (
+  connection: InternalDatabaseConnectionType,
+  clientConfiguration: ClientConfigurationType,
+  sql: string,
+  values?: DatabaseQueryValuesType
+) => Promise<$ReadOnlyArray<QueryResultRowType>>;
+
+export type InternalQueryManyType = (
+  connection: InternalDatabaseConnectionType,
+  clientConfiguration: ClientConfigurationType,
+  sql: string,
+  values?: DatabaseQueryValuesType
+) => Promise<$ReadOnlyArray<QueryResultRowType>>;
+
+export type InternalQueryMaybeOneType = (
+  connection: InternalDatabaseConnectionType,
+  clientConfiguration: ClientConfigurationType,
+  sql: string,
+  values?: DatabaseQueryValuesType
+) => Promise<QueryResultRowType | null>;
+
+export type InternalQueryOneType = (
+  connection: InternalDatabaseConnectionType,
+  clientConfiguration: ClientConfigurationType,
+  sql: string,
+  values?: DatabaseQueryValuesType
+) => Promise<QueryResultRowType>;
 
 // eslint-disable-next-line flowtype/no-weak-types
 export type InternalQueryType = (connection: InternalDatabaseConnectionType, sql: string, values?: DatabaseQueryValuesType) => Promise<any>;

@@ -18,6 +18,7 @@ import {
   normalizeNamedValuePlaceholders
 } from './utilities';
 import type {
+  ClientConfigurationType,
   DatabaseConfigurationType,
   DatabasePoolConnectionType,
   DatabaseSingleConnectionType,
@@ -100,11 +101,13 @@ export const query: InternalQueryType = async (connection, sql, values) => {
  * @throws NotFoundError If query returns no rows.
  * @throws DataIntegrityError If query returns multiple rows.
  */
-export const one: InternalQueryOneType = async (connection, sql, values) => {
+export const one: InternalQueryOneType = async (connection, clientConfiguration, sql, values) => {
   const {rows} = await query(connection, sql, values);
 
   if (rows.length === 0) {
-    throw new NotFoundError();
+    const ConfigurableNotFoundError = clientConfiguration.errors && clientConfiguration.errors.NotFoundError ? clientConfiguration.errors.NotFoundError : NotFoundError;
+
+    throw new ConfigurableNotFoundError();
   }
 
   if (rows.length > 1) {
@@ -119,7 +122,7 @@ export const one: InternalQueryOneType = async (connection, sql, values) => {
  *
  * @throws DataIntegrityError If query returns multiple rows.
  */
-export const maybeOne: InternalQueryMaybeOneType = async (connection, sql, values) => {
+export const maybeOne: InternalQueryMaybeOneType = async (connection, clientConfiguration, sql, values) => {
   const {
     rows
   } = await query(connection, sql, values);
@@ -140,11 +143,13 @@ export const maybeOne: InternalQueryMaybeOneType = async (connection, sql, value
  *
  * @throws NotFoundError If query returns no rows.
  */
-export const many: InternalQueryManyType = async (connection, sql, values) => {
+export const many: InternalQueryManyType = async (connection, clientConfiguration, sql, values) => {
   const {rows} = await query(connection, sql, values);
 
   if (rows.length === 0) {
-    throw new NotFoundError();
+    const ConfigurableNotFoundError = clientConfiguration.errors && clientConfiguration.errors.NotFoundError ? clientConfiguration.errors.NotFoundError : NotFoundError;
+
+    throw new ConfigurableNotFoundError();
   }
 
   return rows;
@@ -153,39 +158,45 @@ export const many: InternalQueryManyType = async (connection, sql, values) => {
 /**
  * Makes a query and expects any number of results.
  */
-export const any: InternalQueryAnyType = async (connection, sql, values) => {
+export const any: InternalQueryAnyType = async (connection, clientConfiguration, sql, values) => {
   const {rows} = await query(connection, sql, values);
 
   return rows;
 };
 
-const createConnection = async (configuration: DatabaseConfigurationType): Promise<DatabaseSingleConnectionType> => {
-  const pool = new pg.Pool(configuration);
+const createConnection = async (
+  connectionConfiguration: DatabaseConfigurationType,
+  clientConfiguration: ClientConfigurationType
+): Promise<DatabaseSingleConnectionType> => {
+  const pool = new pg.Pool(connectionConfiguration);
 
   const connection = await pool.connect();
 
   return {
-    any: any.bind(null, connection),
+    any: any.bind(null, connection, clientConfiguration),
     end: async () => {
       await connection.release();
 
       return pool.end();
     },
-    many: many.bind(null, connection),
-    maybeOne: maybeOne.bind(null, connection),
-    one: one.bind(null, connection),
+    many: many.bind(null, connection, clientConfiguration),
+    maybeOne: maybeOne.bind(null, connection, clientConfiguration),
+    one: one.bind(null, connection, clientConfiguration),
     query: query.bind(null, connection)
   };
 };
 
-const createPool = (configuration: DatabaseConfigurationType): DatabasePoolConnectionType => {
-  const pool = new pg.Pool(typeof configuration === 'string' ? parseConnectionString(configuration) : configuration);
+const createPool = (
+  connectionConfiguration: DatabaseConfigurationType,
+  clientConfiguration: ClientConfigurationType
+): DatabasePoolConnectionType => {
+  const pool = new pg.Pool(typeof connectionConfiguration === 'string' ? parseConnectionString(connectionConfiguration) : connectionConfiguration);
 
   return {
-    any: any.bind(null, pool),
-    many: many.bind(null, pool),
-    maybeOne: maybeOne.bind(null, pool),
-    one: one.bind(null, pool),
+    any: any.bind(null, pool, clientConfiguration),
+    many: many.bind(null, pool, clientConfiguration),
+    maybeOne: maybeOne.bind(null, pool, clientConfiguration),
+    one: one.bind(null, pool, clientConfiguration),
     query: query.bind(null, pool)
   };
 };

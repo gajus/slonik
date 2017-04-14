@@ -4,11 +4,14 @@
 
 import test from 'ava';
 import sinon from 'sinon';
+import ExtendableError from 'es6-error';
 import {
   one,
   DataIntegrityError,
   NotFoundError
 } from '../../src';
+
+class TestError extends ExtendableError {}
 
 test('returns the first row', async (t) => {
   const stub = sinon.stub().returns({
@@ -23,7 +26,7 @@ test('returns the first row', async (t) => {
     query: stub
   };
 
-  const result = await one(connection, 'SELECT foo FROM bar');
+  const result = await one(connection, {}, 'SELECT foo FROM bar');
 
   t.deepEqual(result, {
     foo: 1
@@ -39,7 +42,25 @@ test('throws an error if no rows are returned', async (t) => {
     query: stub
   };
 
-  await t.throws(one(connection, 'SELECT foo FROM bar'), NotFoundError);
+  await t.throws(one(connection, {}, 'SELECT foo FROM bar'), NotFoundError);
+});
+
+test('throws an error if no rows are returned (user defined error constructor)', async (t) => {
+  const stub = sinon.stub().returns({
+    rows: []
+  });
+
+  const connection: any = {
+    query: stub
+  };
+
+  const clientConfiguration = {
+    errors: {
+      NotFoundError: TestError
+    }
+  };
+
+  await t.throws(one(connection, clientConfiguration, 'SELECT foo FROM bar'), TestError);
 });
 
 test('throws an error if more than one row is returned', async (t) => {
@@ -58,5 +79,5 @@ test('throws an error if more than one row is returned', async (t) => {
     query: stub
   };
 
-  await t.throws(one(connection, 'SELECT foo FROM bar'), DataIntegrityError);
+  await t.throws(one(connection, {}, 'SELECT foo FROM bar'), DataIntegrityError);
 });

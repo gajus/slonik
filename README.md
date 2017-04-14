@@ -19,6 +19,7 @@ A PostgreSQL client with strict types and assertions.
   * [`many`](#many)
   * [`maybeOne`](#maybeone)
   * [`one`](#one)
+* [Overriding Errors](#overriding-errors)
 * [Error handling](#error-handling)
   * [Handling `NotFoundError`](#handling-notfounderror)
   * [Handling `DataIntegrityError`](#handling-dataintengrityerror)
@@ -211,6 +212,28 @@ const row = await connection.one('SELECT foo');
 > `knex('foo').limit(1)` simply generates "SELECT * FROM foo LIMIT 1" query.
 > `knex` is a query builder; it does not assert the value of the result.
 > Mightyql `one` adds assertions about the result of the query.
+
+## Overriding Errors
+
+Overriding the error constructor used by Mightyql allows you to map database layer errors to your application errors.
+
+```js
+import {
+  createPool
+} from 'mightyql';
+
+class NotFoundError extends Error {};
+
+createPool('postgres://', {
+  errors: {
+    NotFoundError
+  }
+});
+```
+
+The following error types can be overridden:
+
+* `NotFoundError`
 
 ## Error handling
 
