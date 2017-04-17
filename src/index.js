@@ -172,12 +172,20 @@ const createConnection = async (
 
   const connection = await pool.connect();
 
+  let ended = false;
+
   return {
     any: any.bind(null, connection, clientConfiguration),
     end: async () => {
+      if (ended) {
+        return ended;
+      }
+
       await connection.release();
 
-      return pool.end();
+      ended = pool.end();
+
+      return ended;
     },
     many: many.bind(null, connection, clientConfiguration),
     maybeOne: maybeOne.bind(null, connection, clientConfiguration),
