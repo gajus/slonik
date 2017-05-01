@@ -13,7 +13,7 @@ A PostgreSQL client with strict types and assertions.
   * [A value set](#a-value-set)
   * [Multiple value sets](#multiple-value-sets)
   * [Named placeholders](#named-placeholders)
-  * [Template literals](#template-literals)
+  * [Tagged template literals](#tagged-template-literals)
 * [Query methods](#query-methods)
   * [`any`](#any)
   * [`insert`](#insert)
@@ -132,7 +132,7 @@ SELECT $1
 
 ```
 
-### Template literals
+### Tagged template literals
 
 Query methods can be executed using [tagged template literals](https://developer.mozilla.org/en/docs/Web/JavaScript/Reference/Template_literals#Tagged_template_literals) syntax, e.g.
 
