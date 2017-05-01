@@ -13,12 +13,13 @@ A PostgreSQL client with strict types and assertions.
   * [A value set](#a-value-set)
   * [Multiple value sets](#multiple-value-sets)
   * [Named placeholders](#named-placeholders)
-* [Convenience methods](#convenience-methods)
+* [Query methods](#query-methods)
   * [`any`](#any)
   * [`insert`](#insert)
   * [`many`](#many)
   * [`maybeOne`](#maybeone)
   * [`one`](#one)
+  * [`query`](#query)
 * [Overriding Errors](#overriding-errors)
 * [Error handling](#error-handling)
   * [Handling `NotFoundError`](#handling-notfounderror)
@@ -130,7 +131,8 @@ SELECT $1
 
 ```
 
-## Convenience methods
+
+## Query methods
 
 ### `any`
 
@@ -212,6 +214,10 @@ const row = await connection.one('SELECT foo');
 > `knex('foo').limit(1)` simply generates "SELECT * FROM foo LIMIT 1" query.
 > `knex` is a query builder; it does not assert the value of the result.
 > Mightyql `one` adds assertions about the result of the query.
+
+### `query`
+
+API and the result shape are equivalent to [`pg#query`](https://github.com/brianc/node-postgres).
 
 ## Overriding Errors
 
