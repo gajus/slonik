@@ -141,11 +141,14 @@ connection.query`INSERT INTO reservation_ticket (reservation_id, ticket_id) VALU
 
 ```
 
-> Is it safe? Absolutely!
-> ``foo`bar${baz}qux` `` is equivalent to `foo(['bar', 'qux'], baz)`.
->
-> Mightyql recognises tagged template literal invocation and uses it to construct a query with anonymous value placeholders.
-> Execution of the resulting query is delegated to the `pg` module.
+Arguments of a tagged template literal invocation are replaced with an anonymous value placeholder, i.e. the latter query is equivalent to:
+
+```js
+connection.query('INSERT INTO reservation_ticket (reservation_id, ticket_id) VALUES ?', [
+  values
+]);
+
+```
 
 ## Query methods
 
