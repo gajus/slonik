@@ -13,6 +13,7 @@ A PostgreSQL client with strict types and assertions.
   * [A value set](#a-value-set)
   * [Multiple value sets](#multiple-value-sets)
   * [Named placeholders](#named-placeholders)
+  * [Template literals](#template-literals)
 * [Query methods](#query-methods)
   * [`any`](#any)
   * [`insert`](#insert)
@@ -131,6 +132,20 @@ SELECT $1
 
 ```
 
+### Template literals
+
+Query methods can be executed using [tagged template literals](https://developer.mozilla.org/en/docs/Web/JavaScript/Reference/Template_literals#Tagged_template_literals) syntax, e.g.
+
+```js
+connection.query`INSERT INTO reservation_ticket (reservation_id, ticket_id) VALUES ${values}`;
+
+```
+
+> Is it safe? Absolutely!
+> `foo\`bar${baz}qux\`` is equivalent to `foo(['bar', 'qux'], baz)`.
+>
+> Mightyql recognises tagged template literal invocation and uses it to construct a query with anonymous value placeholders.
+> Execution of the resulting query is delegated to the `pg` module.
 
 ## Query methods
 

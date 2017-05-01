@@ -14,6 +14,7 @@ import {
   NotFoundError
 } from './errors';
 import {
+  mapTaggedTemplateLiteralInvocation,
   normalizeAnonymousValuePlaceholders,
   normalizeNamedValuePlaceholders
 } from './utilities';
@@ -187,10 +188,10 @@ const createConnection = async (
 
       return ended;
     },
-    many: many.bind(null, connection, clientConfiguration),
-    maybeOne: maybeOne.bind(null, connection, clientConfiguration),
-    one: one.bind(null, connection, clientConfiguration),
-    query: query.bind(null, connection)
+    many: mapTaggedTemplateLiteralInvocation(many).bind(null, connection, clientConfiguration),
+    maybeOne: mapTaggedTemplateLiteralInvocation(maybeOne).bind(null, connection, clientConfiguration),
+    one: mapTaggedTemplateLiteralInvocation(one).bind(null, connection, clientConfiguration),
+    query: mapTaggedTemplateLiteralInvocation(query).bind(null, connection)
   };
 };
 
@@ -201,11 +202,11 @@ const createPool = (
   const pool = new pg.Pool(typeof connectionConfiguration === 'string' ? parseConnectionString(connectionConfiguration) : connectionConfiguration);
 
   return {
-    any: any.bind(null, pool, clientConfiguration),
-    many: many.bind(null, pool, clientConfiguration),
-    maybeOne: maybeOne.bind(null, pool, clientConfiguration),
-    one: one.bind(null, pool, clientConfiguration),
-    query: query.bind(null, pool)
+    any: mapTaggedTemplateLiteralInvocation(any).bind(null, pool, clientConfiguration),
+    many: mapTaggedTemplateLiteralInvocation(many).bind(null, pool, clientConfiguration),
+    maybeOne: mapTaggedTemplateLiteralInvocation(maybeOne).bind(null, pool, clientConfiguration),
+    one: mapTaggedTemplateLiteralInvocation(one).bind(null, pool, clientConfiguration),
+    query: mapTaggedTemplateLiteralInvocation(query).bind(null, pool)
   };
 };
 

@@ -3,5 +3,14 @@
     "canonical",
     "canonical/flowtype"
   ],
-  "root": true
+  "root": true,
+  "rules": {
+    "no-restricted-syntax": 0,
+    "no-unused-expressions": [
+      2,
+      {
+        "allowTaggedTemplates": true
+      }
+    ]
+  }
 }
