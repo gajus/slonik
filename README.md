@@ -142,7 +142,7 @@ connection.query`INSERT INTO reservation_ticket (reservation_id, ticket_id) VALU
 ```
 
 > Is it safe? Absolutely!
-> <code>foo`bar${baz}qux`</code> is equivalent to `foo(['bar', 'qux'], baz)`.
+> ``foo`bar${baz}qux` `` is equivalent to `foo(['bar', 'qux'], baz)`.
 >
 > Mightyql recognises tagged template literal invocation and uses it to construct a query with anonymous value placeholders.
 > Execution of the resulting query is delegated to the `pg` module.
