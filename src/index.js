@@ -176,7 +176,7 @@ const createConnection = async (
   let ended = false;
 
   return {
-    any: any.bind(null, connection, clientConfiguration),
+    any: mapTaggedTemplateLiteralInvocation(any.bind(null, connection, clientConfiguration)),
     end: async () => {
       if (ended) {
         return ended;
@@ -188,10 +188,10 @@ const createConnection = async (
 
       return ended;
     },
-    many: mapTaggedTemplateLiteralInvocation(many).bind(null, connection, clientConfiguration),
-    maybeOne: mapTaggedTemplateLiteralInvocation(maybeOne).bind(null, connection, clientConfiguration),
-    one: mapTaggedTemplateLiteralInvocation(one).bind(null, connection, clientConfiguration),
-    query: mapTaggedTemplateLiteralInvocation(query).bind(null, connection)
+    many: mapTaggedTemplateLiteralInvocation(many.bind(null, connection, clientConfiguration)),
+    maybeOne: mapTaggedTemplateLiteralInvocation(maybeOne.bind(null, connection, clientConfiguration)),
+    one: mapTaggedTemplateLiteralInvocation(one.bind(null, connection, clientConfiguration)),
+    query: mapTaggedTemplateLiteralInvocation(query.bind(null, connection))
   };
 };
 
@@ -202,11 +202,11 @@ const createPool = (
   const pool = new pg.Pool(typeof connectionConfiguration === 'string' ? parseConnectionString(connectionConfiguration) : connectionConfiguration);
 
   return {
-    any: mapTaggedTemplateLiteralInvocation(any).bind(null, pool, clientConfiguration),
-    many: mapTaggedTemplateLiteralInvocation(many).bind(null, pool, clientConfiguration),
-    maybeOne: mapTaggedTemplateLiteralInvocation(maybeOne).bind(null, pool, clientConfiguration),
-    one: mapTaggedTemplateLiteralInvocation(one).bind(null, pool, clientConfiguration),
-    query: mapTaggedTemplateLiteralInvocation(query).bind(null, pool)
+    any: mapTaggedTemplateLiteralInvocation(any.bind(null, pool, clientConfiguration)),
+    many: mapTaggedTemplateLiteralInvocation(many.bind(null, pool, clientConfiguration)),
+    maybeOne: mapTaggedTemplateLiteralInvocation(maybeOne.bind(null, pool, clientConfiguration)),
+    one: mapTaggedTemplateLiteralInvocation(one.bind(null, pool, clientConfiguration)),
+    query: mapTaggedTemplateLiteralInvocation(query.bind(null, pool))
   };
 };
 
