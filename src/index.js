@@ -27,7 +27,8 @@ import type {
   InternalQueryManyType,
   InternalQueryMaybeOneType,
   InternalQueryOneType,
-  InternalQueryType
+  InternalQueryType,
+  QueryResultRowType
 } from './types';
 
 export type {
@@ -45,6 +46,18 @@ export {
 types.setTypeParser(20, (value) => {
   return parseInt(value, 10);
 });
+
+export const firstColumn = (rows: $ReadOnlyArray<QueryResultRowType>) => {
+  if (rows.length === 0) {
+    return [];
+  }
+
+  const columnName = Object.keys(rows[0])[0];
+
+  return rows.map((row) => {
+    return row[columnName];
+  });
+};
 
 const debug = createDebug('mightyql');
 

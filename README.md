@@ -26,6 +26,7 @@ A PostgreSQL client with strict types and assertions.
   * [Handling `NotFoundError`](#handling-notfounderror)
   * [Handling `DataIntegrityError`](#handling-dataintengrityerror)
   * [Handling `UniqueViolationError`](#handling-uniqueviolationerror)
+* [Utilities](#utilities)
 * [Types](#types)
 * [Debugging](#debugging)
 
@@ -312,6 +313,23 @@ try {
 ### Handling `UniqueViolationError`
 
 `UniqueViolationError` is thrown when Postgres responds with [`unique_violation`](https://www.postgresql.org/docs/9.4/static/errcodes-appendix.html) (`23505`) error.
+
+## Utilities
+
+### `firstColumn`
+
+`firstColumn` is used to extract value of the first column from a result set, e.g.
+
+```js
+import {
+  firstColumn
+} from 'mightyql';
+
+const rows = await connection.any('SELECT id, name FROM person');
+
+const personIds = firstColumn(rows);
+
+```
 
 ## Types
 
