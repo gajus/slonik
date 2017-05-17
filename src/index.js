@@ -62,7 +62,7 @@ export const firstColumn = (rows: $ReadOnlyArray<QueryResultRowType>) => {
 const debug = createDebug('mightyql');
 
 export const query: InternalQueryType = async (connection, sql, values) => {
-  debug('input query', values);
+  debug('input query', sql);
   debug('query values', values);
 
   try {
