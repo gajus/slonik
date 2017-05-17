@@ -103,7 +103,9 @@ export const query: InternalQueryType = async (connection, sql, values) => {
  * @throws DataIntegrityError If query returns multiple rows.
  */
 export const one: InternalQueryOneType = async (connection, clientConfiguration, sql, values) => {
-  const {rows} = await query(connection, sql, values);
+  const {
+    rows
+  } = await query(connection, sql, values);
 
   if (rows.length === 0) {
     const ConfigurableNotFoundError = clientConfiguration.errors && clientConfiguration.errors.NotFoundError ? clientConfiguration.errors.NotFoundError : NotFoundError;
@@ -145,7 +147,9 @@ export const maybeOne: InternalQueryMaybeOneType = async (connection, clientConf
  * @throws NotFoundError If query returns no rows.
  */
 export const many: InternalQueryManyType = async (connection, clientConfiguration, sql, values) => {
-  const {rows} = await query(connection, sql, values);
+  const {
+    rows
+  } = await query(connection, sql, values);
 
   if (rows.length === 0) {
     const ConfigurableNotFoundError = clientConfiguration.errors && clientConfiguration.errors.NotFoundError ? clientConfiguration.errors.NotFoundError : NotFoundError;
@@ -160,7 +164,9 @@ export const many: InternalQueryManyType = async (connection, clientConfiguratio
  * Makes a query and expects any number of results.
  */
 export const any: InternalQueryAnyType = async (connection, clientConfiguration, sql, values) => {
-  const {rows} = await query(connection, sql, values);
+  const {
+    rows
+  } = await query(connection, sql, values);
 
   return rows;
 };
