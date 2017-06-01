@@ -9,6 +9,8 @@
 A PostgreSQL client with strict types and assertions.
 
 * [Usage](#usage)
+* [Conventions](#conventions)
+  * [No multiline values](#no-multiline-values)
 * [Value placeholders](#value-placeholders)
   * [A value set](#a-value-set)
   * [Multiple value sets](#multiple-value-sets)
@@ -42,6 +44,31 @@ const connection = createPool({
 });
 
 await connection.query('SELECT 1');
+
+```
+
+## Conventions
+
+### No multiline values
+
+Mightyql will strip all comments and line-breaks from a query before processing it.
+
+This makes logging of the queries easier.
+
+The implication is that your query cannot contain values that include a newline character, e.g.
+
+```sql
+// Do not do this
+connection.query(`INSERT INTO foo (bar) VALUES ('\n')`);
+
+```
+
+If you want to communicate a value that includes a multiline character, use value placeholder interpolation, e.g.
+
+```sql
+connection.query(`INSERT INTO foo (bar) VALUES (?)`, [
+  '\n'
+]);
 
 ```
 

@@ -16,7 +16,8 @@ import {
 import {
   mapTaggedTemplateLiteralInvocation,
   normalizeAnonymousValuePlaceholders,
-  normalizeNamedValuePlaceholders
+  normalizeNamedValuePlaceholders,
+  stripComments
 } from './utilities';
 import type {
   ClientConfigurationType,
@@ -61,7 +62,9 @@ export const firstColumn = (rows: $ReadOnlyArray<QueryResultRowType>) => {
 
 const debug = createDebug('mightyql');
 
-export const query: InternalQueryType = async (connection, sql, values) => {
+export const query: InternalQueryType = async (connection, rawSql, values) => {
+  const sql = stripComments(rawSql);
+
   debug('input query', sql);
   debug('query values', values);
 
