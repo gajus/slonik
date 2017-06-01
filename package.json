@@ -39,7 +39,7 @@
     "sinon": "^2.3.2"
   },
   "engines": {
-    "node": ">=7.9"
+    "node": ">=8.0"
   },
   "keywords": [
     "postgresql",

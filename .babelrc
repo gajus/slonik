@@ -25,7 +25,7 @@
       "env",
       {
         "targets": {
-          "node": 7.7
+          "node": "8.0"
         },
         "useBuiltIns": true
       }
