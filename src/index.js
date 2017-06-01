@@ -22,7 +22,7 @@ import {
 import type {
   ClientConfigurationType,
   DatabaseConfigurationType,
-  DatabasePoolConnectionType,
+  DatabasePoolType,
   DatabaseSingleConnectionType,
   InternalQueryAnyType,
   InternalQueryManyType,
@@ -35,6 +35,7 @@ import type {
 export type {
   DatabaseConnectionType,
   DatabasePoolConnectionType,
+  DatabasePoolType,
   DatabaseSingleConnectionType
 } from './types';
 
@@ -221,11 +222,23 @@ const createConnection = async (
 const createPool = (
   connectionConfiguration: DatabaseConfigurationType,
   clientConfiguration: ClientConfigurationType = {}
-): DatabasePoolConnectionType => {
+): DatabasePoolType => {
   const pool = new pg.Pool(typeof connectionConfiguration === 'string' ? parseConnectionString(connectionConfiguration) : connectionConfiguration);
 
   return {
     any: mapTaggedTemplateLiteralInvocation(any.bind(null, pool, clientConfiguration)),
+    connect: async () => {
+      const connection = await pool.connect();
+
+      return {
+        any: mapTaggedTemplateLiteralInvocation(any.bind(null, connection, clientConfiguration)),
+        many: mapTaggedTemplateLiteralInvocation(many.bind(null, connection, clientConfiguration)),
+        maybeOne: mapTaggedTemplateLiteralInvocation(maybeOne.bind(null, connection, clientConfiguration)),
+        one: mapTaggedTemplateLiteralInvocation(one.bind(null, connection, clientConfiguration)),
+        query: mapTaggedTemplateLiteralInvocation(query.bind(null, connection)),
+        release: connection.release.bind(connection)
+      };
+    },
     many: mapTaggedTemplateLiteralInvocation(many.bind(null, pool, clientConfiguration)),
     maybeOne: mapTaggedTemplateLiteralInvocation(maybeOne.bind(null, pool, clientConfiguration)),
     one: mapTaggedTemplateLiteralInvocation(one.bind(null, pool, clientConfiguration)),

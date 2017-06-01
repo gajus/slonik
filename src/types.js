@@ -30,14 +30,20 @@ export type DatabaseSingleConnectionType = {
   end: () => Promise<void>
 } & DatabaseConnectionType;
 
-export type DatabasePoolConnectionType = DatabaseConnectionType;
-
 export type DatabaseConnectionType = {
   +any: QueryAnyType<*>,
   +many: QueryManyType<*>,
   +maybeOne: QueryMaybeOneType<*>,
   +one: QueryOneType<*>,
   +query: QueryType<*>
+};
+
+export type DatabasePoolConnectionType = DatabaseConnectionType & {
+  +release: () => Promise<void>
+};
+
+export type DatabasePoolType = DatabaseConnectionType & {
+  +connect: () => Promise<DatabasePoolConnectionType>
 };
 
 export type QueryResultRowType = {
