@@ -1,12 +1,17 @@
 // @flow
 
 import arrayFlatten from 'array-flatten';
+import {
+  createDebug
+} from '../factories';
 import type {
   AnonymouseValuePlaceholderValuesType,
   NormalizedQueryType
 } from '../types';
 
 const anonymousePlaceholdersRegex = /\?/g;
+
+const debug = createDebug('normalizeAnonymousValuePlaceholders');
 
 /**
  * @see https://github.com/mysqljs/sqlstring/blob/f946198800a8d7f198fcf98d8bb80620595d01ec/lib/SqlString.js#L73
@@ -90,6 +95,10 @@ export default (
   } else if (chunkIndex < sql.length) {
     result += sql.slice(chunkIndex);
   }
+
+  debug('normalized SQL', result, {
+    values
+  });
 
   return {
     sql: result,

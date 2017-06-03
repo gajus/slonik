@@ -66,8 +66,9 @@ const debug = createDebug('mightyql');
 export const query: InternalQueryType = async (connection, rawSql, values) => {
   const sql = stripComments(rawSql);
 
-  debug('input query', sql);
-  debug('query values', values);
+  debug('input query', sql, {
+    values
+  });
 
   try {
     const start = process.hrtime();
@@ -80,16 +81,12 @@ export const query: InternalQueryType = async (connection, rawSql, values) => {
         values: normalizedValues
       } = normalizeAnonymousValuePlaceholders(sql, values);
 
-      debug('normalized SQL', normalizedSql);
-
       result = await connection.query(normalizedSql, normalizedValues);
     } else if (values) {
       const {
         sql: normalizedSql,
         values: normalizedValues
       } = normalizeNamedValuePlaceholders(sql, values);
-
-      debug('normalized SQL', normalizedSql);
 
       result = await connection.query(normalizedSql, normalizedValues);
     } else {
