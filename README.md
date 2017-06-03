@@ -23,7 +23,7 @@ A PostgreSQL client with strict types and assertions.
   * [`maybeOne`](#maybeone)
   * [`one`](#one)
   * [`query`](#query)
-* [Overriding Errors](#overriding-errors)
+* [Overriding Error Constructor](#overriding-error-constructor)
 * [Error handling](#error-handling)
   * [Handling `NotFoundError`](#handling-notfounderror)
   * [Handling `DataIntegrityError`](#handling-dataintengrityerror)
@@ -265,7 +265,7 @@ const row = await connection.one('SELECT foo');
 
 API and the result shape are equivalent to [`pg#query`](https://github.com/brianc/node-postgres).
 
-## Overriding Errors
+## Overriding Error Constructor
 
 Overriding the error constructor used by Mightyql allows you to map database layer errors to your application errors.
 
