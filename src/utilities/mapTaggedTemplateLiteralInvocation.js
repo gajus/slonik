@@ -10,7 +10,10 @@ export default (targetMethod: *) => {
     if (typeof maybeQuery === 'string') {
       return targetMethod(maybeQuery, values);
     } else {
-      return targetMethod(maybeQuery.sql, maybeQuery.values);
+      return targetMethod(maybeQuery.sql, [
+        ...maybeQuery.values,
+        values
+      ]);
     }
   };
 };
