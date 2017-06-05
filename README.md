@@ -31,6 +31,8 @@ A PostgreSQL client with strict types and assertions.
 * [Utilities](#utilities)
 * [Types](#types)
 * [Debugging](#debugging)
+* [Syntax highlighting](#syntax-highlighting)
+  * [Atom](#atom)
 
 ## Usage
 
@@ -426,3 +428,17 @@ mightyql values [ 'movie', [ 1000220 ] ] +0ms
 mightyql query execution time 26 ms +27ms
 mightyql query returned 1 row(s) +0ms
 ```
+
+## Syntax highlighting
+
+### Atom
+
+Using [Atom](https://atom.io/) IDE you can leverage the [`language-babel`](https://github.com/gandm/language-babel) package in combination with the [`language-sql`](https://github.com/atom/language-sql) to enable highlighting of the SQL strings in the codebase.
+
+To enable highlighting, you need to:
+
+1. Install `language-babel` and `language-sql` packages.
+1. Configure `language-babel` "JavaScript Tagged Template Literal Grammar Extensions" setting to use `language-sql` to highlight template literals with `sql` tag (configuration value: `sql:source.sql`).
+1. Use [`sql` helper to construct the queries](https://github.com/gajus/mightyql#tagged-template-literals).
+
+For more information, refer to the [JavaScript Tagged Template Literal Grammar Extensions](https://github.com/gandm/language-babel#javascript-tagged-template-literal-grammar-extensions) documentation of `language-babel` package.
