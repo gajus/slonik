@@ -1,15 +1,16 @@
 // @flow
 
-// eslint-disable-next-line flowtype/no-weak-types
-export default (targetMethod: Function) => {
-  // eslint-disable-next-line flowtype/no-weak-types
-  return (maybeQuery: string | Array<string>, ...args: any) => {
-    if (typeof maybeQuery === 'string') {
-      return targetMethod(maybeQuery, args[0]);
-    } else {
-      const strings = maybeQuery;
+import type {
+  DatabaseQueryValuesType,
+  TaggledTemplateLiteralInvocationType
+} from '../types';
 
-      return targetMethod(strings.join('?'), args);
+export default (targetMethod: *) => {
+  return (maybeQuery: string | TaggledTemplateLiteralInvocationType, values?: DatabaseQueryValuesType) => {
+    if (typeof maybeQuery === 'string') {
+      return targetMethod(maybeQuery, values);
+    } else {
+      return targetMethod(maybeQuery.sql, maybeQuery.values);
     }
   };
 };

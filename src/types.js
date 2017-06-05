@@ -76,14 +76,14 @@ export type NormalizedQueryType = {|
 
 type QueryPrimitiveValueType = string | number | null;
 
-// eslint-disable-next-line flowtype/generic-spacing
-export type AnonymouseValuePlaceholderValuesType = $ReadOnlyArray<
+export type AnonymouseValuePlaceholderValueType =
 
-    // INSERT ... VALUES ? => INSERT ... VALUES (1, 2, 3); [[1, 2, 3]]
-    // INSERT ... VALUES ? => INSERT ... VALUES (1), (2), (3); [[[1], [2], [3]]]
-    $ReadOnlyArray<QueryPrimitiveValueType | $ReadOnlyArray<QueryPrimitiveValueType>> |
-    QueryPrimitiveValueType
-  >;
+  // INSERT ... VALUES ? => INSERT ... VALUES (1, 2, 3); [[1, 2, 3]]
+  // INSERT ... VALUES ? => INSERT ... VALUES (1), (2), (3); [[[1], [2], [3]]]
+  $ReadOnlyArray<QueryPrimitiveValueType | $ReadOnlyArray<QueryPrimitiveValueType>> |
+  QueryPrimitiveValueType;
+
+export type AnonymouseValuePlaceholderValuesType = $ReadOnlyArray<AnonymouseValuePlaceholderValueType>;
 
 export type NamedValuePlaceholderValuesType = {
   +[key: string]: string | number | null
@@ -92,6 +92,11 @@ export type NamedValuePlaceholderValuesType = {
 export type DatabaseQueryValuesType =
   AnonymouseValuePlaceholderValuesType |
   NamedValuePlaceholderValuesType;
+
+export type TaggledTemplateLiteralInvocationType = {
+  sql: string,
+  values: $ReadOnlyArray<AnonymouseValuePlaceholderValueType>
+};
 
 export type InternalQueryAnyType = (
   connection: InternalDatabaseConnectionType,

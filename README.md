@@ -162,10 +162,14 @@ SELECT $1
 
 ### Tagged template literals
 
-Query methods can be executed using [tagged template literals](https://developer.mozilla.org/en/docs/Web/JavaScript/Reference/Template_literals#Tagged_template_literals) syntax, e.g.
+Query methods can be executed using `sql` [tagged template literal](https://developer.mozilla.org/en/docs/Web/JavaScript/Reference/Template_literals#Tagged_template_literals), e.g.
 
 ```js
-connection.query`INSERT INTO reservation_ticket (reservation_id, ticket_id) VALUES ${values}`;
+import {
+  sql
+} from 'mightyql'
+
+connection.query(sql`INSERT INTO reservation_ticket (reservation_id, ticket_id) VALUES ${values}`);
 
 ```
 

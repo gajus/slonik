@@ -20,6 +20,7 @@ import {
   stripComments
 } from './utilities';
 import type {
+  AnonymouseValuePlaceholderValuesType,
   ClientConfigurationType,
   DatabaseConfigurationType,
   DatabasePoolType,
@@ -29,7 +30,8 @@ import type {
   InternalQueryMaybeOneType,
   InternalQueryOneType,
   InternalQueryType,
-  QueryResultRowType
+  QueryResultRowType,
+  TaggledTemplateLiteralInvocationType
 } from './types';
 
 export type {
@@ -64,9 +66,9 @@ export const firstColumn = (rows: $ReadOnlyArray<QueryResultRowType>) => {
 const debug = createDebug('mightyql');
 
 export const query: InternalQueryType<*> = async (connection, rawSql, values) => {
-  const sql = stripComments(rawSql);
+  const strippedSql = stripComments(rawSql);
 
-  debug('input query', sql, {
+  debug('input query', strippedSql, {
     values
   });
 
@@ -79,18 +81,18 @@ export const query: InternalQueryType<*> = async (connection, rawSql, values) =>
       const {
         sql: normalizedSql,
         values: normalizedValues
-      } = normalizeAnonymousValuePlaceholders(sql, values);
+      } = normalizeAnonymousValuePlaceholders(strippedSql, values);
 
       result = await connection.query(normalizedSql, normalizedValues);
     } else if (values) {
       const {
         sql: normalizedSql,
         values: normalizedValues
-      } = normalizeNamedValuePlaceholders(sql, values);
+      } = normalizeNamedValuePlaceholders(strippedSql, values);
 
       result = await connection.query(normalizedSql, normalizedValues);
     } else {
-      result = await connection.query(sql);
+      result = await connection.query(strippedSql);
     }
 
     const end = process.hrtime(start);
@@ -117,10 +119,10 @@ export const query: InternalQueryType<*> = async (connection, rawSql, values) =>
  * @throws NotFoundError If query returns no rows.
  * @throws DataIntegrityError If query returns multiple rows.
  */
-export const one: InternalQueryOneType = async (connection, clientConfiguration, sql, values) => {
+export const one: InternalQueryOneType = async (connection, clientConfiguration, raqSql, values) => {
   const {
     rows
-  } = await query(connection, sql, values);
+  } = await query(connection, raqSql, values);
 
   if (rows.length === 0) {
     const ConfigurableNotFoundError = clientConfiguration.errors && clientConfiguration.errors.NotFoundError ? clientConfiguration.errors.NotFoundError : NotFoundError;
@@ -140,10 +142,10 @@ export const one: InternalQueryOneType = async (connection, clientConfiguration,
  *
  * @throws DataIntegrityError If query returns multiple rows.
  */
-export const maybeOne: InternalQueryMaybeOneType = async (connection, clientConfiguration, sql, values) => {
+export const maybeOne: InternalQueryMaybeOneType = async (connection, clientConfiguration, raqSql, values) => {
   const {
     rows
-  } = await query(connection, sql, values);
+  } = await query(connection, raqSql, values);
 
   if (rows.length === 0) {
     return null;
@@ -161,10 +163,10 @@ export const maybeOne: InternalQueryMaybeOneType = async (connection, clientConf
  *
  * @throws NotFoundError If query returns no rows.
  */
-export const many: InternalQueryManyType = async (connection, clientConfiguration, sql, values) => {
+export const many: InternalQueryManyType = async (connection, clientConfiguration, raqSql, values) => {
   const {
     rows
-  } = await query(connection, sql, values);
+  } = await query(connection, raqSql, values);
 
   if (rows.length === 0) {
     const ConfigurableNotFoundError = clientConfiguration.errors && clientConfiguration.errors.NotFoundError ? clientConfiguration.errors.NotFoundError : NotFoundError;
@@ -178,12 +180,19 @@ export const many: InternalQueryManyType = async (connection, clientConfiguratio
 /**
  * Makes a query and expects any number of results.
  */
-export const any: InternalQueryAnyType = async (connection, clientConfiguration, sql, values) => {
+export const any: InternalQueryAnyType = async (connection, clientConfiguration, raqSql, values) => {
   const {
     rows
-  } = await query(connection, sql, values);
+  } = await query(connection, raqSql, values);
 
   return rows;
+};
+
+const sql = (parts: $ReadOnlyArray<string>, ...values: AnonymouseValuePlaceholderValuesType): TaggledTemplateLiteralInvocationType => {
+  return {
+    sql: parts.join('?'),
+    values
+  };
 };
 
 const createConnection = async (
@@ -245,5 +254,6 @@ const createPool = (
 
 export {
   createConnection,
-  createPool
+  createPool,
+  sql
 };
