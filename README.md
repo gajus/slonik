@@ -301,10 +301,14 @@ The following error types can be overridden:
 `transaction` method can be used together with `createPool` method. When used to create a transaction from an instance of a pool, a new connection is allocated for the duration of the transaction.
 
 ```js
-await connection.transaction(async (transactionConnection) => {
+const result = await connection.transaction(async (transactionConnection) => {
   transactionConnection.query(`INSERT INTO foo (bar) VALUES ('baz')`);
   transactionConnection.query(`INSERT INTO qux (quux) VALUES ('quuz')`);
+
+  return 'FOO';
 });
+
+result === 'FOO';
 
 ```
 

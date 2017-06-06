@@ -193,9 +193,11 @@ export const transaction: InternalTransactionType = async (connection, handler) 
   await query(connection, 'START TRANSACTION');
 
   try {
-    await handler(connection);
+    const result = await handler(connection);
 
     await connection.query('COMMIT');
+
+    return result;
   } catch (error) {
     await connection.query('ROLLBACK');
 

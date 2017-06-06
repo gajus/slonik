@@ -17,9 +17,13 @@ test('commits successful transaction', async (t) => {
     query
   };
 
-  await transaction(connection, async () => {
+  const result = await transaction(connection, async () => {
     await query('FOO');
+
+    return 'BAR';
   });
+
+  t.true(result === 'BAR');
 
   t.true(query.args[0].length === 1);
   t.true(query.args[0][0] === 'START TRANSACTION');
