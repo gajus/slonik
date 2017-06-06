@@ -30,6 +30,7 @@ import type {
   InternalQueryMaybeOneType,
   InternalQueryOneType,
   InternalQueryType,
+  InternalTransactionType,
   QueryResultRowType,
   TaggledTemplateLiteralInvocationType
 } from './types';
@@ -188,6 +189,20 @@ export const any: InternalQueryAnyType = async (connection, clientConfiguration,
   return rows;
 };
 
+export const transaction: InternalTransactionType = async (connection, handler) => {
+  await query(connection, 'START TRANSACTION');
+
+  try {
+    await handler(connection);
+
+    await connection.query('COMMIT');
+  } catch (error) {
+    await connection.query('ROLLBACK');
+
+    throw error;
+  }
+};
+
 const sql = (parts: $ReadOnlyArray<string>, ...values: AnonymouseValuePlaceholderValuesType): TaggledTemplateLiteralInvocationType => {
   return {
     sql: parts.join('?'),
@@ -221,7 +236,8 @@ const createConnection = async (
     many: mapTaggedTemplateLiteralInvocation(many.bind(null, connection, clientConfiguration)),
     maybeOne: mapTaggedTemplateLiteralInvocation(maybeOne.bind(null, connection, clientConfiguration)),
     one: mapTaggedTemplateLiteralInvocation(one.bind(null, connection, clientConfiguration)),
-    query: mapTaggedTemplateLiteralInvocation(query.bind(null, connection))
+    query: mapTaggedTemplateLiteralInvocation(query.bind(null, connection)),
+    transaction: transaction.bind(null, connection)
   };
 };
 
@@ -231,24 +247,39 @@ const createPool = (
 ): DatabasePoolType => {
   const pool = new pg.Pool(typeof connectionConfiguration === 'string' ? parseConnectionString(connectionConfiguration) : connectionConfiguration);
 
+  const connect = async () => {
+    const connection = await pool.connect();
+
+    return {
+      any: mapTaggedTemplateLiteralInvocation(any.bind(null, connection, clientConfiguration)),
+      many: mapTaggedTemplateLiteralInvocation(many.bind(null, connection, clientConfiguration)),
+      maybeOne: mapTaggedTemplateLiteralInvocation(maybeOne.bind(null, connection, clientConfiguration)),
+      one: mapTaggedTemplateLiteralInvocation(one.bind(null, connection, clientConfiguration)),
+      query: mapTaggedTemplateLiteralInvocation(query.bind(null, connection)),
+      release: connection.release.bind(connection),
+      transaction: transaction.bind(null, connection)
+    };
+  };
+
   return {
     any: mapTaggedTemplateLiteralInvocation(any.bind(null, pool, clientConfiguration)),
-    connect: async () => {
-      const connection = await pool.connect();
-
-      return {
-        any: mapTaggedTemplateLiteralInvocation(any.bind(null, connection, clientConfiguration)),
-        many: mapTaggedTemplateLiteralInvocation(many.bind(null, connection, clientConfiguration)),
-        maybeOne: mapTaggedTemplateLiteralInvocation(maybeOne.bind(null, connection, clientConfiguration)),
-        one: mapTaggedTemplateLiteralInvocation(one.bind(null, connection, clientConfiguration)),
-        query: mapTaggedTemplateLiteralInvocation(query.bind(null, connection)),
-        release: connection.release.bind(connection)
-      };
-    },
+    connect,
     many: mapTaggedTemplateLiteralInvocation(many.bind(null, pool, clientConfiguration)),
     maybeOne: mapTaggedTemplateLiteralInvocation(maybeOne.bind(null, pool, clientConfiguration)),
     one: mapTaggedTemplateLiteralInvocation(one.bind(null, pool, clientConfiguration)),
-    query: mapTaggedTemplateLiteralInvocation(query.bind(null, pool))
+    query: mapTaggedTemplateLiteralInvocation(query.bind(null, pool)),
+    transaction: async (handler) => {
+      debug('allocating a new connection to execute the transaction');
+
+      const connection = await connect();
+
+      try {
+        await connection.transaction(handler);
+      } finally {
+        debug('releasing the connection that was earlier secured to execute the transaction');
+        await connection.release();
+      }
+    }
   };
 };
 

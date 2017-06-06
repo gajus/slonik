@@ -54,7 +54,8 @@ export type DatabaseConnectionType = {
   +many: QueryManyType<*>,
   +maybeOne: QueryMaybeOneType<*>,
   +one: QueryOneType<*>,
-  +query: QueryType<*>
+  +query: QueryType<*>,
+  +transaction: TransactionType
 };
 
 export type DatabasePoolConnectionType = DatabaseConnectionType & {
@@ -126,6 +127,10 @@ export type InternalQueryOneType = (
   values?: DatabaseQueryValuesType
 ) => Promise<QueryResultRowType>;
 
+export type TransactionHandlerType = (connection: DatabaseConnectionType) => Promise<void>;
+
+export type InternalTransactionType = (connection: InternalDatabaseConnectionType, handler: TransactionHandlerType) => Promise<void>;
+
 export type InternalQueryType<T: QueryResultRowType> = (connection: InternalDatabaseConnectionType, sql: string, values?: DatabaseQueryValuesType) => Promise<QueryResultType<T>>;
 
 export type QueryAnyType<T: QueryResultRowType> = (sql: string | TaggledTemplateLiteralInvocationType, values?: DatabaseQueryValuesType) => Promise<$ReadOnlyArray<T>>;
@@ -133,3 +138,4 @@ export type QueryManyType<T: QueryResultRowType> = (sql: string | TaggledTemplat
 export type QueryMaybeOneType<T: QueryResultRowType | null> = (sql: string | TaggledTemplateLiteralInvocationType, values?: DatabaseQueryValuesType) => Promise<T>;
 export type QueryOneType<T: QueryResultRowType> = (sql: string | TaggledTemplateLiteralInvocationType, values?: DatabaseQueryValuesType) => Promise<T>;
 export type QueryType<T: QueryResultRowType> = (sql: string | TaggledTemplateLiteralInvocationType, values?: DatabaseQueryValuesType) => Promise<QueryResultType<T>>;
+export type TransactionType = (handler: TransactionHandlerType) => Promise<void>;

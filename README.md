@@ -23,6 +23,7 @@ A PostgreSQL client with strict types and assertions.
   * [`maybeOne`](#maybeone)
   * [`one`](#one)
   * [`query`](#query)
+  * [`transaction`](#transaction)
 * [Overriding Error Constructor](#overriding-error-constructor)
 * [Error handling](#error-handling)
   * [Handling `NotFoundError`](#handling-notfounderror)
@@ -292,6 +293,20 @@ createPool('postgres://', {
 The following error types can be overridden:
 
 * `NotFoundError`
+
+### `transaction`
+
+`transaction` method is used wrap execution of queries in `START TRANSACTION` and `COMMIT` or `ROLLBACK`. `COMMIT` is called if the transaction handler returns a promise that resolves; `ROLLBACK` is called otherwise.
+
+`transaction` method can be used together with `createPool` method. When used to create a transaction from an instance of a pool, a new connection is allocated for the duration of the transaction.
+
+```js
+await connection.transaction(async (transactionConnection) => {
+  transactionConnection.query(`INSERT INTO foo (bar) VALUES ('baz')`);
+  transactionConnection.query(`INSERT INTO qux (quux) VALUES ('quuz')`);
+});
+
+```
 
 ## Error handling
 
