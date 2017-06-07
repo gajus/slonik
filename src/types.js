@@ -34,7 +34,8 @@ export type ClientConfigurationType = {
   +errors?: ClientErrorsConfigurationType
 };
 
-export type DatabaseConfigurationType = DatabaseConnectionUriType |
+export type DatabaseConfigurationType =
+  DatabaseConnectionUriType |
   {|
     +database?: string,
     +host?: string,
@@ -45,10 +46,6 @@ export type DatabaseConfigurationType = DatabaseConnectionUriType |
     +user?: string
   |};
 
-export type DatabaseSingleConnectionType = {
-  end: () => Promise<void>
-} & DatabaseConnectionType;
-
 export type DatabaseConnectionType = {
   +any: QueryAnyType<*>,
   +many: QueryManyType<*>,
@@ -57,6 +54,10 @@ export type DatabaseConnectionType = {
   +query: QueryType<*>,
   +transaction: TransactionType
 };
+
+export type DatabaseSingleConnectionType = {
+  end: () => Promise<void>
+} & DatabaseConnectionType;
 
 export type DatabasePoolConnectionType = DatabaseConnectionType & {
   +release: () => Promise<void>
