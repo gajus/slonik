@@ -190,7 +190,7 @@ export const any: InternalQueryAnyType = async (connection, clientConfiguration,
 };
 
 export const transaction: InternalTransactionType = async (connection, handler) => {
-  await query(connection, 'START TRANSACTION');
+  await connection.query('START TRANSACTION');
 
   try {
     const result = await handler(connection);
@@ -222,7 +222,7 @@ const createConnection = async (
 
   let ended = false;
 
-  return {
+  const bindConnection = {
     any: mapTaggedTemplateLiteralInvocation(any.bind(null, connection, clientConfiguration)),
     end: async () => {
       if (ended) {
@@ -239,8 +239,12 @@ const createConnection = async (
     maybeOne: mapTaggedTemplateLiteralInvocation(maybeOne.bind(null, connection, clientConfiguration)),
     one: mapTaggedTemplateLiteralInvocation(one.bind(null, connection, clientConfiguration)),
     query: mapTaggedTemplateLiteralInvocation(query.bind(null, connection)),
-    transaction: transaction.bind(null, connection)
+    transaction: (handler) => {
+      return transaction(bindConnection, handler);
+    }
   };
+
+  return bindConnection;
 };
 
 const createPool = (
@@ -252,15 +256,19 @@ const createPool = (
   const connect = async () => {
     const connection = await pool.connect();
 
-    return {
+    const bindConnection = {
       any: mapTaggedTemplateLiteralInvocation(any.bind(null, connection, clientConfiguration)),
       many: mapTaggedTemplateLiteralInvocation(many.bind(null, connection, clientConfiguration)),
       maybeOne: mapTaggedTemplateLiteralInvocation(maybeOne.bind(null, connection, clientConfiguration)),
       one: mapTaggedTemplateLiteralInvocation(one.bind(null, connection, clientConfiguration)),
       query: mapTaggedTemplateLiteralInvocation(query.bind(null, connection)),
       release: connection.release.bind(connection),
-      transaction: transaction.bind(null, connection)
+      transaction: (handler) => {
+        return transaction(bindConnection, handler);
+      }
     };
+
+    return bindConnection;
   };
 
   return {
