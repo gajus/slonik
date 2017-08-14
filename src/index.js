@@ -283,12 +283,17 @@ const createPool = (
 
       const connection = await connect();
 
+      let result;
+
       try {
-        await connection.transaction(handler);
+        result = await connection.transaction(handler);
       } finally {
         debug('releasing the connection that was earlier secured to execute the transaction');
+
         await connection.release();
       }
+
+      return result;
     }
   };
 };
