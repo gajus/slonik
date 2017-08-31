@@ -16,6 +16,7 @@ A PostgreSQL client with strict types and assertions.
   * [Multiple value sets](#multiple-value-sets)
   * [Named placeholders](#named-placeholders)
   * [Tagged template literals](#tagged-template-literals)
+    * [Guarding against accidental unescaped input](#guarding-against-accidental-unescaped-input)
 * [Query methods](#query-methods)
   * [`any`](#any)
   * [`insert`](#insert)
@@ -184,6 +185,28 @@ connection.query('INSERT INTO reservation_ticket (reservation_id, ticket_id) VAL
 ]);
 
 ```
+
+#### Guarding against accidental unescaped input
+
+When using tagged template literals, it is easy to forget to add the `sql` tag, i.e.
+
+Instead of:
+
+```js
+connection.query(sql`INSERT INTO reservation_ticket (reservation_id, ticket_id) VALUES ${values}`);
+
+```
+
+Writing
+
+```js
+connection.query(`INSERT INTO reservation_ticket (reservation_id, ticket_id) VALUES ${values}`);
+
+```
+
+This would expose your application to [SQL injection](https://en.wikipedia.org/wiki/SQL_injection).
+
+Therefore, I recommend using [`eslint-plugin-sql`](https://github.com/gajus/eslint-plugin-sql) `no-unsafe-query` rule. `no-unsafe-query` warns about use of SQL inside of template literals without the `sql` tag.
 
 ## Query methods
 
