@@ -120,10 +120,10 @@ export const query: InternalQueryType<*> = async (connection, rawSql, values) =>
  * @throws NotFoundError If query returns no rows.
  * @throws DataIntegrityError If query returns multiple rows.
  */
-export const one: InternalQueryOneType = async (connection, clientConfiguration, raqSql, values) => {
+export const one: InternalQueryOneType = async (connection, clientConfiguration, rawSql, values) => {
   const {
     rows
-  } = await query(connection, raqSql, values);
+  } = await query(connection, rawSql, values);
 
   if (rows.length === 0) {
     const ConfigurableNotFoundError = clientConfiguration.errors && clientConfiguration.errors.NotFoundError ? clientConfiguration.errors.NotFoundError : NotFoundError;
@@ -143,10 +143,10 @@ export const one: InternalQueryOneType = async (connection, clientConfiguration,
  *
  * @throws DataIntegrityError If query returns multiple rows.
  */
-export const maybeOne: InternalQueryMaybeOneType = async (connection, clientConfiguration, raqSql, values) => {
+export const maybeOne: InternalQueryMaybeOneType = async (connection, clientConfiguration, rawSql, values) => {
   const {
     rows
-  } = await query(connection, raqSql, values);
+  } = await query(connection, rawSql, values);
 
   if (rows.length === 0) {
     return null;
@@ -164,10 +164,10 @@ export const maybeOne: InternalQueryMaybeOneType = async (connection, clientConf
  *
  * @throws NotFoundError If query returns no rows.
  */
-export const many: InternalQueryManyType = async (connection, clientConfiguration, raqSql, values) => {
+export const many: InternalQueryManyType = async (connection, clientConfiguration, rawSql, values) => {
   const {
     rows
-  } = await query(connection, raqSql, values);
+  } = await query(connection, rawSql, values);
 
   if (rows.length === 0) {
     const ConfigurableNotFoundError = clientConfiguration.errors && clientConfiguration.errors.NotFoundError ? clientConfiguration.errors.NotFoundError : NotFoundError;
@@ -181,10 +181,10 @@ export const many: InternalQueryManyType = async (connection, clientConfiguratio
 /**
  * Makes a query and expects any number of results.
  */
-export const any: InternalQueryAnyType = async (connection, clientConfiguration, raqSql, values) => {
+export const any: InternalQueryAnyType = async (connection, clientConfiguration, rawSql, values) => {
   const {
     rows
-  } = await query(connection, raqSql, values);
+  } = await query(connection, rawSql, values);
 
   return rows;
 };
