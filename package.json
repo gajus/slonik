@@ -23,20 +23,20 @@
   "devDependencies": {
     "ava": "^0.22.0",
     "babel-cli": "^6.26.0",
-    "babel-plugin-istanbul": "^4.1.4",
+    "babel-plugin-istanbul": "^4.1.5",
     "babel-plugin-transform-flow-strip-types": "^6.22.0",
     "babel-plugin-transform-object-rest-spread": "^6.26.0",
     "babel-preset-env": "^1.6.0",
     "babel-register": "^6.26.0",
     "coveralls": "^2.13.1",
-    "eslint": "^4.6.1",
+    "eslint": "^4.7.2",
     "eslint-config-canonical": "^9.3.1",
-    "flow-bin": "^0.54.1",
+    "flow-bin": "^0.55.0",
     "flow-copy-source": "^1.2.1",
     "husky": "^0.14.3",
     "nyc": "^11.2.1",
-    "semantic-release": "^7.0.2",
-    "sinon": "^3.2.1"
+    "semantic-release": "^8.0.3",
+    "sinon": "^3.3.0"
   },
   "engines": {
     "node": ">=8.0"
