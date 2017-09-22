@@ -27,11 +27,12 @@ import type {
   DatabaseSingleConnectionType,
   InternalQueryAnyType,
   InternalQueryManyType,
+  InternalQueryMaybeOneFirstType,
   InternalQueryMaybeOneType,
+  InternalQueryOneFirstType,
   InternalQueryOneType,
   InternalQueryType,
   InternalTransactionType,
-  QueryResultRowType,
   TaggledTemplateLiteralInvocationType
 } from './types';
 
@@ -51,18 +52,6 @@ export {
 types.setTypeParser(20, (value) => {
   return parseInt(value, 10);
 });
-
-export const firstColumn = (rows: $ReadOnlyArray<QueryResultRowType>) => {
-  if (rows.length === 0) {
-    return [];
-  }
-
-  const columnName = Object.keys(rows[0])[0];
-
-  return rows.map((row) => {
-    return row[columnName];
-  });
-};
 
 const debug = createDebug('mightyql');
 
@@ -162,6 +151,45 @@ export const maybeOne: InternalQueryMaybeOneType = async (connection, clientConf
 };
 
 /**
+ * Makes a query and expects exactly one result.
+ * Returns value of the first column.
+ *
+ * @throws NotFoundError If query returns no rows.
+ * @throws DataIntegrityError If query returns multiple rows.
+ */
+export const oneFirst: InternalQueryOneFirstType = async (connection, clientConfiguration, rawSql, values) => {
+  const row = await one(connection, clientConfiguration, rawSql, values);
+
+  // eslint-disable-next-line guard-for-in
+  for (const key in row) {
+    return row[key];
+  }
+
+  throw new Error('Unexpected state.');
+};
+
+/**
+ * Makes a query and expects exactly one result.
+ * Returns value of the first column.
+ *
+ * @throws DataIntegrityError If query returns multiple rows.
+ */
+export const maybeOneFirst: InternalQueryMaybeOneFirstType = async (connection, clientConfiguration, rawSql, values) => {
+  const row = await maybeOne(connection, clientConfiguration, rawSql, values);
+
+  if (!row) {
+    return null;
+  }
+
+  // eslint-disable-next-line guard-for-in
+  for (const key in row) {
+    return row[key];
+  }
+
+  throw new Error('Unexpected state.');
+};
+
+/**
  * Makes a query and expects at least 1 result.
  *
  * @throws NotFoundError If query returns no rows.
@@ -239,7 +267,9 @@ const createConnection = async (
     },
     many: mapTaggedTemplateLiteralInvocation(many.bind(null, connection, clientConfiguration)),
     maybeOne: mapTaggedTemplateLiteralInvocation(maybeOne.bind(null, connection, clientConfiguration)),
+    maybeOneFirst: mapTaggedTemplateLiteralInvocation(maybeOneFirst.bind(null, connection, clientConfiguration)),
     one: mapTaggedTemplateLiteralInvocation(one.bind(null, connection, clientConfiguration)),
+    oneFirst: mapTaggedTemplateLiteralInvocation(oneFirst.bind(null, connection, clientConfiguration)),
     query: mapTaggedTemplateLiteralInvocation(query.bind(null, connection)),
     transaction: (handler) => {
       return transaction(bindConnection, handler);
@@ -262,7 +292,9 @@ const createPool = (
       any: mapTaggedTemplateLiteralInvocation(any.bind(null, connection, clientConfiguration)),
       many: mapTaggedTemplateLiteralInvocation(many.bind(null, connection, clientConfiguration)),
       maybeOne: mapTaggedTemplateLiteralInvocation(maybeOne.bind(null, connection, clientConfiguration)),
+      maybeOneFirst: mapTaggedTemplateLiteralInvocation(maybeOneFirst.bind(null, connection, clientConfiguration)),
       one: mapTaggedTemplateLiteralInvocation(one.bind(null, connection, clientConfiguration)),
+      oneFirst: mapTaggedTemplateLiteralInvocation(oneFirst.bind(null, connection, clientConfiguration)),
       query: mapTaggedTemplateLiteralInvocation(query.bind(null, connection)),
       release: connection.release.bind(connection),
       transaction: (handler) => {
@@ -278,7 +310,9 @@ const createPool = (
     connect,
     many: mapTaggedTemplateLiteralInvocation(many.bind(null, pool, clientConfiguration)),
     maybeOne: mapTaggedTemplateLiteralInvocation(maybeOne.bind(null, pool, clientConfiguration)),
+    maybeOneFirst: mapTaggedTemplateLiteralInvocation(maybeOneFirst.bind(null, pool, clientConfiguration)),
     one: mapTaggedTemplateLiteralInvocation(one.bind(null, pool, clientConfiguration)),
+    oneFirst: mapTaggedTemplateLiteralInvocation(oneFirst.bind(null, pool, clientConfiguration)),
     query: mapTaggedTemplateLiteralInvocation(query.bind(null, pool)),
     transaction: async (handler) => {
       debug('allocating a new connection to execute the transaction');

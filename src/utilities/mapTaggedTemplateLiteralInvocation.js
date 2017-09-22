@@ -10,6 +10,10 @@ export default (targetMethod: *) => {
     if (typeof maybeQuery === 'string') {
       return targetMethod(maybeQuery, values);
     } else {
+      if (!Array.isArray(values)) {
+        throw new TypeError('Unexpected state.');
+      }
+
       return targetMethod(maybeQuery.sql, maybeQuery.values.concat(values));
     }
   };

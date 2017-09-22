@@ -22,7 +22,9 @@ A PostgreSQL client with strict types and assertions.
   * [`insert`](#insert)
   * [`many`](#many)
   * [`maybeOne`](#maybeone)
+  * [`maybeOneFirst`](#maybeonefirst)
   * [`one`](#one)
+  * [`oneFirst`](#onefirst)
   * [`query`](#query)
   * [`transaction`](#transaction)
 * [Overriding Error Constructor](#overriding-error-constructor)
@@ -262,9 +264,25 @@ Selects the first row from the result.
 Example:
 
 ```js
-const row = await connection.one('SELECT foo');
+const row = await connection.maybeOne('SELECT foo');
 
 // row.foo is the result of the `foo` column value of the first row.
+
+```
+
+### `maybeOneFirst`
+
+Returns value of the first column from the first row.
+
+* Returns `null` if row is not found.
+* Throws `DataIntegrityError` if query returns multiple rows.
+
+Example:
+
+```js
+const foo = await connection.maybeOneFirst('SELECT foo');
+
+// foo is the result of the `foo` column value of the first row.
 
 ```
 
@@ -290,6 +308,22 @@ const row = await connection.one('SELECT foo');
 > `knex('foo').limit(1)` simply generates "SELECT * FROM foo LIMIT 1" query.
 > `knex` is a query builder; it does not assert the value of the result.
 > Mightyql `one` adds assertions about the result of the query.
+
+### `oneFirst`
+
+Returns value of the first column from the first row.
+
+* Throws `NotFoundError` if query returns no rows.
+* Throws `DataIntegrityError` if query returns multiple rows.
+
+Example:
+
+```js
+const foo = await connection.oneFirst('SELECT foo');
+
+// foo is the result of the `foo` column value of the first row.
+
+```
 
 ### `query`
 
@@ -388,23 +422,6 @@ try {
 ### Handling `UniqueViolationError`
 
 `UniqueViolationError` is thrown when Postgres responds with [`unique_violation`](https://www.postgresql.org/docs/9.4/static/errcodes-appendix.html) (`23505`) error.
-
-## Utilities
-
-### `firstColumn`
-
-`firstColumn` is used to extract value of the first column from a result set, e.g.
-
-```js
-import {
-  firstColumn
-} from 'mightyql';
-
-const rows = await connection.any('SELECT id, name FROM person');
-
-const personIds = firstColumn(rows);
-
-```
 
 ## Types
 
