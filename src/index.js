@@ -102,6 +102,8 @@ export const query: InternalQueryType<*> = async (connection, rawSql, values) =>
 
     if (result.rowCount) {
       debug('query returned %d row(s)', result.rowCount);
+    } else if (Array.isArray(result)) {
+      debug('query returned %d row(s)', result.length);
     }
 
     return result;
