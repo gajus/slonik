@@ -1,19 +1,19 @@
 // @flow
 
-import {
-  createDebug
-} from '../factories';
 import type {
   NamedValuePlaceholderValuesType,
   NormalizedQueryType
 } from '../types';
+import Logger from '../Logger';
+
+const log = Logger.child({
+  namespace: 'normalizeNamedValuePlaceholders'
+});
 
 /**
  * @see https://regex101.com/r/KrEe8i/2
  */
 const namedPlaceholderRegex = /[\s,(]:([a-zA-Z]+)/g;
-
-const debug = createDebug('normalizeNamedValuePlaceholders');
 
 /**
  * @see https://github.com/mysqljs/sqlstring/blob/f946198800a8d7f198fcf98d8bb80620595d01ec/lib/SqlString.js#L73
@@ -66,9 +66,10 @@ export default (
     result += sql.slice(chunkIndex);
   }
 
-  debug('normalized SQL', result, {
+  log.debug({
+    sql: result,
     values
-  });
+  }, 'normalized SQL');
 
   return {
     sql: result,

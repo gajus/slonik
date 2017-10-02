@@ -13,11 +13,11 @@
   "dependencies": {
     "ajv": "^5.2.2",
     "array-flatten": "^2.1.1",
-    "debug": "^3.0.1",
     "es6-error": "^4.0.2",
     "pg": "^7.3.0",
     "pg-connection-string": "^2.0.0",
-    "pretty-hrtime": "^1.0.3"
+    "pretty-hrtime": "^1.0.3",
+    "roarr": "^1.7.1"
   },
   "description": "A PostgreSQL client with strict types and assertions.",
   "devDependencies": {

@@ -6,7 +6,6 @@ import pg, {
 import {
   parse as parseConnectionString
 } from 'pg-connection-string';
-import createDebug from 'debug';
 import prettyHrtime from 'pretty-hrtime';
 import {
   DataIntegrityError,
@@ -35,6 +34,7 @@ import type {
   InternalTransactionType,
   TaggledTemplateLiteralInvocationType
 } from './types';
+import Logger from './Logger';
 
 export type {
   DatabaseConnectionType,
@@ -53,14 +53,17 @@ types.setTypeParser(20, (value) => {
   return parseInt(value, 10);
 });
 
-const debug = createDebug('mightyql');
+const log = Logger.child({
+  namespace: 'mightyql'
+});
 
 export const query: InternalQueryType<*> = async (connection, rawSql, values) => {
   const strippedSql = stripComments(rawSql);
 
-  debug('input query', strippedSql, {
+  log.debug({
+    sql: strippedSql,
     values
-  });
+  }, 'input query');
 
   try {
     const start = process.hrtime();
@@ -87,12 +90,12 @@ export const query: InternalQueryType<*> = async (connection, rawSql, values) =>
 
     const end = process.hrtime(start);
 
-    debug('query execution time', prettyHrtime(end));
+    log.debug('query execution time %s', prettyHrtime(end));
 
     if (result.rowCount) {
-      debug('query returned %d row(s)', result.rowCount);
+      log.debug('query returned %d row(s)', result.rowCount);
     } else if (Array.isArray(result)) {
-      debug('query returned %d row(s)', result.length);
+      log.debug('query returned %d row(s)', result.length);
     }
 
     return result;
@@ -315,7 +318,7 @@ const createPool = (
     oneFirst: mapTaggedTemplateLiteralInvocation(oneFirst.bind(null, pool, clientConfiguration)),
     query: mapTaggedTemplateLiteralInvocation(query.bind(null, pool)),
     transaction: async (handler) => {
-      debug('allocating a new connection to execute the transaction');
+      log.debug('allocating a new connection to execute the transaction');
 
       const connection = await connect();
 
@@ -324,7 +327,7 @@ const createPool = (
       try {
         result = await connection.transaction(handler);
       } finally {
-        debug('releasing the connection that was earlier secured to execute the transaction');
+        log.debug('releasing the connection that was earlier secured to execute the transaction');
 
         await connection.release();
       }

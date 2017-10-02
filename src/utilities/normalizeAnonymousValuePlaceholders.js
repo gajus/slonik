@@ -1,21 +1,22 @@
 // @flow
 
 import arrayFlatten from 'array-flatten';
-import {
-  createDebug
-} from '../factories';
 import type {
   AnonymouseValuePlaceholderValuesType,
   NormalizedQueryType
 } from '../types';
+import Logger from '../Logger';
+
+const log = Logger.child({
+  namespace: 'normalizeAnonymousValuePlaceholders'
+});
 
 const anonymousePlaceholdersRegex = /\?/g;
-
-const debug = createDebug('normalizeAnonymousValuePlaceholders');
 
 /**
  * @see https://github.com/mysqljs/sqlstring/blob/f946198800a8d7f198fcf98d8bb80620595d01ec/lib/SqlString.js#L73
  */
+// eslint-disable-next-line complexity
 export default (
   sql: string,
   values: AnonymouseValuePlaceholderValuesType = []
@@ -96,9 +97,10 @@ export default (
     result += sql.slice(chunkIndex);
   }
 
-  debug('normalized SQL', result, {
+  log.debug({
+    sql: result,
     values
-  });
+  }, 'normalized SQL');
 
   return {
     sql: result,
