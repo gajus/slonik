@@ -66,7 +66,7 @@ export default (
     result += sql.slice(chunkIndex);
   }
 
-  log.debug({
+  log.trace({
     sql: result,
     values
   }, 'normalized SQL');
