@@ -276,6 +276,7 @@ Returns value of the first column from the first row.
 
 * Returns `null` if row is not found.
 * Throws `DataIntegrityError` if query returns multiple rows.
+* Throws `DataIntegrityError` if query returns multiple columns.
 
 Example:
 
@@ -315,6 +316,7 @@ Returns value of the first column from the first row.
 
 * Throws `NotFoundError` if query returns no rows.
 * Throws `DataIntegrityError` if query returns multiple rows.
+* Throws `DataIntegrityError` if query returns multiple columns.
 
 Example:
 

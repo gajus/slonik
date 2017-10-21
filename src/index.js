@@ -163,12 +163,13 @@ export const maybeOne: InternalQueryMaybeOneType = async (connection, clientConf
 export const oneFirst: InternalQueryOneFirstType = async (connection, clientConfiguration, rawSql, values) => {
   const row = await one(connection, clientConfiguration, rawSql, values);
 
-  // eslint-disable-next-line guard-for-in
-  for (const key in row) {
-    return row[key];
+  const keys = Object.keys(row);
+
+  if (keys.length !== 1) {
+    throw new DataIntegrityError();
   }
 
-  throw new Error('Unexpected state.');
+  return row[keys[0]];
 };
 
 /**
@@ -184,12 +185,13 @@ export const maybeOneFirst: InternalQueryMaybeOneFirstType = async (connection, 
     return null;
   }
 
-  // eslint-disable-next-line guard-for-in
-  for (const key in row) {
-    return row[key];
+  const keys = Object.keys(row);
+
+  if (keys.length !== 1) {
+    throw new DataIntegrityError();
   }
 
-  throw new Error('Unexpected state.');
+  return row[keys[0]];
 };
 
 /**

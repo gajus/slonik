@@ -59,3 +59,20 @@ test('throws an error if more than one row is returned', async (t) => {
 
   await t.throws(maybeOneFirst(connection, {}, ''), DataIntegrityError);
 });
+
+test('throws an error if more than one column is returned', async (t) => {
+  const stub = sinon.stub().returns({
+    rows: [
+      {
+        bar: 1,
+        foo: 1
+      }
+    ]
+  });
+
+  const connection: any = {
+    query: stub
+  };
+
+  await t.throws(maybeOneFirst(connection, {}, ''), DataIntegrityError);
+});
