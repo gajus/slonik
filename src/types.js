@@ -48,7 +48,9 @@ export type DatabaseConfigurationType =
 
 export type DatabaseConnectionType = {
   +any: QueryAnyType<*>,
+  +anyFirst: QueryAnyFirstType<*>,
   +many: QueryManyType<*>,
+  +manyFirst: QueryManyFirstType<*>,
   +maybeOne: QueryMaybeOneType<*>,
   +maybeOneFirst: QueryMaybeOneFirstType<*>,
   +one: QueryOneType<*>,
@@ -111,12 +113,26 @@ export type InternalQueryAnyType = (
   values?: DatabaseQueryValuesType
 ) => Promise<$ReadOnlyArray<QueryResultRowType>>;
 
+export type InternalQueryAnyFirstType = (
+  connection: InternalDatabaseConnectionType,
+  clientConfiguration: ClientConfigurationType,
+  sql: string,
+  values?: DatabaseQueryValuesType
+) => Promise<$ReadOnlyArray<QueryResultRowColumnType>>;
+
 export type InternalQueryManyType = (
   connection: InternalDatabaseConnectionType,
   clientConfiguration: ClientConfigurationType,
   sql: string,
   values?: DatabaseQueryValuesType
 ) => Promise<$ReadOnlyArray<QueryResultRowType>>;
+
+export type InternalQueryManyFirstType = (
+  connection: InternalDatabaseConnectionType,
+  clientConfiguration: ClientConfigurationType,
+  sql: string,
+  values?: DatabaseQueryValuesType
+) => Promise<$ReadOnlyArray<QueryResultRowColumnType>>;
 
 export type InternalQueryMaybeOneFirstType = (
   connection: InternalDatabaseConnectionType,
@@ -152,7 +168,9 @@ export type InternalTransactionType = (connection: InternalDatabaseConnectionTyp
 
 export type InternalQueryType<T: QueryResultRowType> = (connection: InternalDatabaseConnectionType, sql: string, values?: DatabaseQueryValuesType) => Promise<QueryResultType<T>>;
 
+export type QueryAnyFirstType<T: QueryResultRowColumnType> = (sql: string | TaggledTemplateLiteralInvocationType, values?: DatabaseQueryValuesType) => Promise<$ReadOnlyArray<T>>;
 export type QueryAnyType<T: QueryResultRowType> = (sql: string | TaggledTemplateLiteralInvocationType, values?: DatabaseQueryValuesType) => Promise<$ReadOnlyArray<T>>;
+export type QueryManyFirstType<T: QueryResultRowColumnType> = (sql: string | TaggledTemplateLiteralInvocationType, values?: DatabaseQueryValuesType) => Promise<$ReadOnlyArray<T>>;
 export type QueryManyType<T: QueryResultRowType> = (sql: string | TaggledTemplateLiteralInvocationType, values?: DatabaseQueryValuesType) => Promise<$ReadOnlyArray<T>>;
 export type QueryMaybeOneFirstType<T: QueryResultRowColumnType> = (sql: string | TaggledTemplateLiteralInvocationType, values?: DatabaseQueryValuesType) => Promise<T>;
 export type QueryMaybeOneType<T: QueryResultRowType | null> = (sql: string | TaggledTemplateLiteralInvocationType, values?: DatabaseQueryValuesType) => Promise<T>;

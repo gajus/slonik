@@ -19,8 +19,10 @@ A PostgreSQL client with strict types and assertions.
     * [Guarding against accidental unescaped input](#guarding-against-accidental-unescaped-input)
 * [Query methods](#query-methods)
   * [`any`](#any)
+  * [`anyFirst`](#anyfirst)
   * [`insert`](#insert)
   * [`many`](#many)
+  * [`manyFirst`](#manyfirst)
   * [`maybeOne`](#maybeone)
   * [`maybeOneFirst`](#maybeonefirst)
   * [`one`](#one)
@@ -225,6 +227,19 @@ const rows = await connection.any('SELECT foo');
 
 ```
 
+### `anyFirst`
+
+Returns value of the first column of every row in the result set.
+
+* Throws `DataIntegrityError` if query returns multiple rows.
+
+Example:
+
+```js
+const fooValues = await connection.any('SELECT foo');
+
+```
+
 ### `insert`
 
 Designed to use when inserting 1 row.
@@ -251,6 +266,20 @@ Example:
 
 ```js
 const rows = await connection.many('SELECT foo');
+
+```
+
+### `manyFirst`
+
+Returns value of the first column of every row in the result set.
+
+* Throws `NotFoundError` if query returns no rows.
+* Throws `DataIntegrityError` if query returns multiple rows.
+
+Example:
+
+```js
+const fooValues = await connection.many('SELECT foo');
 
 ```
 

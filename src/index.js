@@ -24,7 +24,9 @@ import type {
   DatabaseConfigurationType,
   DatabasePoolType,
   DatabaseSingleConnectionType,
+  InternalQueryAnyFirstType,
   InternalQueryAnyType,
+  InternalQueryManyFirstType,
   InternalQueryManyType,
   InternalQueryMaybeOneFirstType,
   InternalQueryMaybeOneType,
@@ -213,6 +215,30 @@ export const many: InternalQueryManyType = async (connection, clientConfiguratio
   return rows;
 };
 
+export const manyFirst: InternalQueryManyFirstType = async (connection, clientConfigurationType, rawSql, values) => {
+  const rows = await many(connection, clientConfigurationType, rawSql, values);
+
+  if (rows.length === 0) {
+    throw new DataIntegrityError();
+  }
+
+  const keys = Object.keys(rows[0]);
+
+  if (keys.length !== 1) {
+    throw new DataIntegrityError();
+  }
+
+  const firstColumnName = keys[0];
+
+  if (typeof firstColumnName !== 'string') {
+    throw new DataIntegrityError();
+  }
+
+  return rows.map((row) => {
+    return row[firstColumnName];
+  });
+};
+
 /**
  * Makes a query and expects any number of results.
  */
@@ -222,6 +248,30 @@ export const any: InternalQueryAnyType = async (connection, clientConfiguration,
   } = await query(connection, rawSql, values);
 
   return rows;
+};
+
+export const anyFirst: InternalQueryAnyFirstType = async (connection, clientConfigurationType, rawSql, values) => {
+  const rows = await any(connection, clientConfigurationType, rawSql, values);
+
+  if (rows.length === 0) {
+    return [];
+  }
+
+  const keys = Object.keys(rows[0]);
+
+  if (keys.length !== 1) {
+    throw new DataIntegrityError();
+  }
+
+  const firstColumnName = keys[0];
+
+  if (typeof firstColumnName !== 'string') {
+    throw new DataIntegrityError();
+  }
+
+  return rows.map((row) => {
+    return row[firstColumnName];
+  });
 };
 
 export const transaction: InternalTransactionType = async (connection, handler) => {
@@ -259,6 +309,7 @@ const createConnection = async (
 
   const bindConnection = {
     any: mapTaggedTemplateLiteralInvocation(any.bind(null, connection, clientConfiguration)),
+    anyFirst: mapTaggedTemplateLiteralInvocation(anyFirst.bind(null, connection, clientConfiguration)),
     end: async () => {
       if (ended) {
         return ended;
@@ -271,6 +322,7 @@ const createConnection = async (
       return ended;
     },
     many: mapTaggedTemplateLiteralInvocation(many.bind(null, connection, clientConfiguration)),
+    manyFirst: mapTaggedTemplateLiteralInvocation(manyFirst.bind(null, connection, clientConfiguration)),
     maybeOne: mapTaggedTemplateLiteralInvocation(maybeOne.bind(null, connection, clientConfiguration)),
     maybeOneFirst: mapTaggedTemplateLiteralInvocation(maybeOneFirst.bind(null, connection, clientConfiguration)),
     one: mapTaggedTemplateLiteralInvocation(one.bind(null, connection, clientConfiguration)),
@@ -295,7 +347,9 @@ const createPool = (
 
     const bindConnection = {
       any: mapTaggedTemplateLiteralInvocation(any.bind(null, connection, clientConfiguration)),
+      anyFirst: mapTaggedTemplateLiteralInvocation(anyFirst.bind(null, connection, clientConfiguration)),
       many: mapTaggedTemplateLiteralInvocation(many.bind(null, connection, clientConfiguration)),
+      manyFirst: mapTaggedTemplateLiteralInvocation(manyFirst.bind(null, connection, clientConfiguration)),
       maybeOne: mapTaggedTemplateLiteralInvocation(maybeOne.bind(null, connection, clientConfiguration)),
       maybeOneFirst: mapTaggedTemplateLiteralInvocation(maybeOneFirst.bind(null, connection, clientConfiguration)),
       one: mapTaggedTemplateLiteralInvocation(one.bind(null, connection, clientConfiguration)),
@@ -312,8 +366,10 @@ const createPool = (
 
   return {
     any: mapTaggedTemplateLiteralInvocation(any.bind(null, pool, clientConfiguration)),
+    anyFirst: mapTaggedTemplateLiteralInvocation(anyFirst.bind(null, pool, clientConfiguration)),
     connect,
     many: mapTaggedTemplateLiteralInvocation(many.bind(null, pool, clientConfiguration)),
+    manyFirst: mapTaggedTemplateLiteralInvocation(manyFirst.bind(null, pool, clientConfiguration)),
     maybeOne: mapTaggedTemplateLiteralInvocation(maybeOne.bind(null, pool, clientConfiguration)),
     maybeOneFirst: mapTaggedTemplateLiteralInvocation(maybeOneFirst.bind(null, pool, clientConfiguration)),
     one: mapTaggedTemplateLiteralInvocation(one.bind(null, pool, clientConfiguration)),
