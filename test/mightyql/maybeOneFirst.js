@@ -22,7 +22,7 @@ test('returns the first row', async (t) => {
     query: stub
   };
 
-  const result = await maybeOneFirst(connection, {}, 'SELECT foo FROM bar');
+  const result = await maybeOneFirst(connection, {}, '');
 
   t.deepEqual(result, 1);
 });
@@ -36,7 +36,7 @@ test('returns null if no results', async (t) => {
     query: stub
   };
 
-  const result = await maybeOneFirst(connection, {}, 'SELECT foo FROM bar');
+  const result = await maybeOneFirst(connection, {}, '');
 
   t.true(result === null);
 });
@@ -57,5 +57,5 @@ test('throws an error if more than one row is returned', async (t) => {
     query: stub
   };
 
-  await t.throws(maybeOneFirst(connection, {}, 'SELECT foo FROM bar'), DataIntegrityError);
+  await t.throws(maybeOneFirst(connection, {}, ''), DataIntegrityError);
 });

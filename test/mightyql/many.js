@@ -28,7 +28,7 @@ test('returns the query results rows', async (t) => {
     query: stub
   };
 
-  const result = await many(connection, {}, 'SELECT foo FROM bar');
+  const result = await many(connection, {}, '');
 
   t.deepEqual(result, [
     {
@@ -49,7 +49,7 @@ test('throws an error if no rows are returned', async (t) => {
     query: stub
   };
 
-  await t.throws(many(connection, {}, 'SELECT foo FROM bar'), NotFoundError);
+  await t.throws(many(connection, {}, ''), NotFoundError);
 });
 
 test('throws an error if no rows are returned (user defined error constructor)', async (t) => {
@@ -67,5 +67,5 @@ test('throws an error if no rows are returned (user defined error constructor)',
     }
   };
 
-  await t.throws(many(connection, clientConfiguration, 'SELECT foo FROM bar'), TestError);
+  await t.throws(many(connection, clientConfiguration, ''), TestError);
 });

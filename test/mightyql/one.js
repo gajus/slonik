@@ -26,7 +26,7 @@ test('returns the first row', async (t) => {
     query: stub
   };
 
-  const result = await one(connection, {}, 'SELECT foo FROM bar');
+  const result = await one(connection, {}, '');
 
   t.deepEqual(result, {
     foo: 1
@@ -42,7 +42,7 @@ test('throws an error if no rows are returned', async (t) => {
     query: stub
   };
 
-  await t.throws(one(connection, {}, 'SELECT foo FROM bar'), NotFoundError);
+  await t.throws(one(connection, {}, ''), NotFoundError);
 });
 
 test('throws an error if no rows are returned (user defined error constructor)', async (t) => {
@@ -60,7 +60,7 @@ test('throws an error if no rows are returned (user defined error constructor)',
     }
   };
 
-  await t.throws(one(connection, clientConfiguration, 'SELECT foo FROM bar'), TestError);
+  await t.throws(one(connection, clientConfiguration, ''), TestError);
 });
 
 test('throws an error if more than one row is returned', async (t) => {
@@ -79,5 +79,5 @@ test('throws an error if more than one row is returned', async (t) => {
     query: stub
   };
 
-  await t.throws(one(connection, {}, 'SELECT foo FROM bar'), DataIntegrityError);
+  await t.throws(one(connection, {}, ''), DataIntegrityError);
 });
