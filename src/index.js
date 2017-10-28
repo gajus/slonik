@@ -63,9 +63,14 @@ export const query: InternalQueryType<*> = async (connection, rawSql, values) =>
   const strippedSql = stripComments(rawSql);
 
   log.debug({
-    sql: strippedSql,
-    values
+    sql: strippedSql
   }, 'input query');
+
+  if (values) {
+    log.trace({
+      values
+    }, 'query variables');
+  }
 
   try {
     const start = process.hrtime();
@@ -92,12 +97,12 @@ export const query: InternalQueryType<*> = async (connection, rawSql, values) =>
 
     const end = process.hrtime(start);
 
-    log.debug('query execution time %s', prettyHrtime(end));
+    log.trace('query execution time %s', prettyHrtime(end));
 
     if (result.rowCount) {
-      log.debug('query returned %d row(s)', result.rowCount);
+      log.trace('query returned %d row(s)', result.rowCount);
     } else if (Array.isArray(result)) {
-      log.debug('query returned %d row(s)', result.length);
+      log.trace('query returned %d row(s)', result.length);
     }
 
     return result;
