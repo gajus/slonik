@@ -73,6 +73,7 @@ export const query: InternalQueryType<*> = async (connection, rawSql, values) =>
 
   if (values) {
     log.trace({
+      queryId,
       values
     }, 'query variables');
   }
