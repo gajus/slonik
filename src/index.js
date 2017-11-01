@@ -103,19 +103,19 @@ export const query: InternalQueryType<*> = async (connection, rawSql, values) =>
 
     const end = process.hrtime(start);
 
-    log.trace({
-      queryId
-    }, 'query execution time %s', prettyHrtime(end));
+    let rowCount: number | null = null;
 
     if (result.rowCount) {
-      log.trace({
-        queryId
-      }, 'query returned %d row(s)', result.rowCount);
+      rowCount = result.rowCount;
     } else if (Array.isArray(result)) {
-      log.trace({
-        queryId
-      }, 'query returned %d row(s)', result.length);
+      rowCount = result.length;
     }
+
+    log.trace({
+      executionTime: prettyHrtime(end),
+      queryId,
+      rowCount
+    }, 'query completed');
 
     return result;
   } catch (error) {
