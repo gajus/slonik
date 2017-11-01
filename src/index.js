@@ -59,12 +59,12 @@ const log = Logger.child({
   namespace: 'mightyql'
 });
 
-let queryId = 0;
+let globalQueryId = 0;
 
 export const query: InternalQueryType<*> = async (connection, rawSql, values) => {
   const strippedSql = stripComments(rawSql);
 
-  queryId++;
+  const queryId = globalQueryId++;
 
   log.debug({
     queryId,
