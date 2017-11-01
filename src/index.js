@@ -59,10 +59,15 @@ const log = Logger.child({
   namespace: 'mightyql'
 });
 
+let queryId = 0;
+
 export const query: InternalQueryType<*> = async (connection, rawSql, values) => {
   const strippedSql = stripComments(rawSql);
 
+  queryId++;
+
   log.debug({
+    queryId,
     sql: strippedSql
   }, 'input query');
 
@@ -97,12 +102,18 @@ export const query: InternalQueryType<*> = async (connection, rawSql, values) =>
 
     const end = process.hrtime(start);
 
-    log.trace('query execution time %s', prettyHrtime(end));
+    log.trace({
+      queryId
+    }, 'query execution time %s', prettyHrtime(end));
 
     if (result.rowCount) {
-      log.trace('query returned %d row(s)', result.rowCount);
+      log.trace({
+        queryId
+      }, 'query returned %d row(s)', result.rowCount);
     } else if (Array.isArray(result)) {
-      log.trace('query returned %d row(s)', result.length);
+      log.trace({
+        queryId
+      }, 'query returned %d row(s)', result.length);
     }
 
     return result;
