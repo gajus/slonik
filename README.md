@@ -59,7 +59,6 @@ await connection.query('SELECT 1');
 ## Non-standard behaviour
 
 * `timestamp` and `timestamp with time zone` returns UNIX timestamp in milliseconds.
-* `point` returns an object `{x,y}`.
 
 ## Conventions
 
