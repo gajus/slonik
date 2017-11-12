@@ -73,5 +73,5 @@
     "precommit": "npm run lint && npm run test",
     "test": "ava --verbose"
   },
-  "version": "3.0.0"
+  "version": "4.0.0"
 }
