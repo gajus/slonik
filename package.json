@@ -48,7 +48,7 @@
   ],
   "license": "BSD-3-Clause",
   "main": "./dist/index.js",
-  "name": "mightyql",
+  "name": "slonik",
   "nyc": {
     "include": [
       "src/**/*.js"
@@ -64,7 +64,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/gajus/mightyql"
+    "url": "https://github.com/gajus/slonik"
   },
   "scripts": {
     "build": "rm -fr ./dist && NODE_ENV=production babel ./src --out-dir ./dist --copy-files --source-maps && flow-copy-source src dist",

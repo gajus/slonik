@@ -56,7 +56,7 @@ types.setTypeParser(20, (value) => {
 });
 
 const log = Logger.child({
-  namespace: 'mightyql'
+  namespace: 'slonik'
 });
 
 let globalQueryId = 0;

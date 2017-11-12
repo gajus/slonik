@@ -1,12 +1,10 @@
-# Mightyql
+# Slonik
 
-[![Travis build status](http://img.shields.io/travis/gajus/mightyql/master.svg?style=flat-square)](https://travis-ci.org/gajus/mightyql)
-[![Coveralls](https://img.shields.io/coveralls/gajus/mightyql.svg?style=flat-square)](https://coveralls.io/github/gajus/mightyql)
-[![NPM version](http://img.shields.io/npm/v/mightyql.svg?style=flat-square)](https://www.npmjs.org/package/mightyql)
+[![Travis build status](http://img.shields.io/travis/gajus/slonik/master.svg?style=flat-square)](https://travis-ci.org/gajus/slonik)
+[![Coveralls](https://img.shields.io/coveralls/gajus/slonik.svg?style=flat-square)](https://coveralls.io/github/gajus/slonik)
+[![NPM version](http://img.shields.io/npm/v/slonik.svg?style=flat-square)](https://www.npmjs.org/package/slonik)
 [![Canonical Code Style](https://img.shields.io/badge/code%20style-canonical-blue.svg?style=flat-square)](https://github.com/gajus/canonical)
 [![Twitter Follow](https://img.shields.io/twitter/follow/kuizinas.svg?style=social&label=Follow)](https://twitter.com/kuizinas)
-
-Deprecated in favour https://www.npmjs.com/package/slonik.
 
 A PostgreSQL client with strict types and assertions.
 
@@ -47,7 +45,7 @@ A PostgreSQL client with strict types and assertions.
 ```js
 import {
   createPool
-} from 'mightyql';
+} from 'slonik';
 
 const connection = createPool({
   host: '127.0.0.1'
@@ -61,7 +59,7 @@ await connection.query('SELECT 1');
 
 ### No multiline values
 
-Mightyql will strip all comments and line-breaks from a query before processing it.
+Slonik will strip all comments and line-breaks from a query before processing it.
 
 This makes logging of the queries easier.
 
@@ -84,7 +82,7 @@ connection.query(`INSERT INTO foo (bar) VALUES (?)`, [
 
 ## Value placeholders
 
-Mightyql enables use of question mark (`?`) value placeholders, e.g.
+Slonik enables use of question mark (`?`) value placeholders, e.g.
 
 ```js
 await connection.query('SELECT ?', [
@@ -177,7 +175,7 @@ Query methods can be executed using `sql` [tagged template literal](https://deve
 ```js
 import {
   sql
-} from 'mightyql'
+} from 'slonik'
 
 connection.query(sql`INSERT INTO reservation_ticket (reservation_id, ticket_id) VALUES ${values}`);
 
@@ -339,7 +337,7 @@ const row = await connection.one('SELECT foo');
 > I've got asked "How is this different from [knex.js](http://knexjs.org/) `knex('foo').limit(1)`".
 > `knex('foo').limit(1)` simply generates "SELECT * FROM foo LIMIT 1" query.
 > `knex` is a query builder; it does not assert the value of the result.
-> Mightyql `one` adds assertions about the result of the query.
+> Slonik `one` adds assertions about the result of the query.
 
 ### `oneFirst`
 
@@ -364,12 +362,12 @@ API and the result shape are equivalent to [`pg#query`](https://github.com/brian
 
 ## Overriding Error Constructor
 
-Overriding the error constructor used by Mightyql allows you to map database layer errors to your application errors.
+Overriding the error constructor used by Slonik allows you to map database layer errors to your application errors.
 
 ```js
 import {
   createPool
-} from 'mightyql';
+} from 'slonik';
 
 class NotFoundError extends Error {};
 
@@ -411,7 +409,7 @@ To handle the case where query returns less than one row, catch `NotFoundError` 
 ```js
 import {
   NotFoundError
-} from 'mightyql';
+} from 'slonik';
 
 let row;
 
@@ -436,7 +434,7 @@ To handle the case where the data result does not match the expectations, catch 
 ```js
 import {
   NotFoundError
-} from 'mightyql';
+} from 'slonik';
 
 let row;
 
@@ -475,7 +473,7 @@ Use these types to annotate `connection` instance in your code base, e.g.
 
 import type {
   DatabaseConnectionType
-} from 'mightyql';
+} from 'slonik';
 
 export default async (
   connection: DatabaseConnectionType,
@@ -493,7 +491,7 @@ export default async (
 
 ## Debugging
 
-Define `DEBUG=mightyql*` environment variable to enable logging.
+Define `DEBUG=slonik*` environment variable to enable logging.
 
 Logging includes information about:
 
@@ -505,20 +503,20 @@ Logging includes information about:
 Here is the output example:
 
 ```
-mightyql query execution time 196 ms +199ms
-mightyql query returned 4 row(s) +0ms
-mightyql query SELECT * FROM `movie` WHERE id IN (1000223) +3ms
-mightyql values [ 'movie', [ 1000223 ] ] +0ms
-mightyql query execution time 28 ms +29ms
-mightyql query returned 1 row(s) +0ms
-mightyql query SELECT * FROM `movie` WHERE id IN (1000292) +3ms
-mightyql values [ 'movie', [ 1000292 ] ] +0ms
-mightyql query execution time 24 ms +25ms
-mightyql query returned 1 row(s) +0ms
-mightyql query SELECT * FROM `movie` WHERE id IN (1000220) +1ms
-mightyql values [ 'movie', [ 1000220 ] ] +0ms
-mightyql query execution time 26 ms +27ms
-mightyql query returned 1 row(s) +0ms
+slonik query execution time 196 ms +199ms
+slonik query returned 4 row(s) +0ms
+slonik query SELECT * FROM `movie` WHERE id IN (1000223) +3ms
+slonik values [ 'movie', [ 1000223 ] ] +0ms
+slonik query execution time 28 ms +29ms
+slonik query returned 1 row(s) +0ms
+slonik query SELECT * FROM `movie` WHERE id IN (1000292) +3ms
+slonik values [ 'movie', [ 1000292 ] ] +0ms
+slonik query execution time 24 ms +25ms
+slonik query returned 1 row(s) +0ms
+slonik query SELECT * FROM `movie` WHERE id IN (1000220) +1ms
+slonik values [ 'movie', [ 1000220 ] ] +0ms
+slonik query execution time 26 ms +27ms
+slonik query returned 1 row(s) +0ms
 ```
 
 ## Syntax highlighting
@@ -531,6 +529,6 @@ To enable highlighting, you need to:
 
 1. Install `language-babel` and `language-sql` packages.
 1. Configure `language-babel` "JavaScript Tagged Template Literal Grammar Extensions" setting to use `language-sql` to highlight template literals with `sql` tag (configuration value: `sql:source.sql`).
-1. Use [`sql` helper to construct the queries](https://github.com/gajus/mightyql#tagged-template-literals).
+1. Use [`sql` helper to construct the queries](https://github.com/gajus/slonik#tagged-template-literals).
 
 For more information, refer to the [JavaScript Tagged Template Literal Grammar Extensions](https://github.com/gandm/language-babel#javascript-tagged-template-literal-grammar-extensions) documentation of `language-babel` package.
