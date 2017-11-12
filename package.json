@@ -17,7 +17,8 @@
     "pg": "^7.4.0",
     "pg-connection-string": "^2.0.0",
     "pretty-hrtime": "^1.0.3",
-    "roarr": "^2.0.2"
+    "roarr": "^2.0.2",
+    "wkx": "^0.4.2"
   },
   "description": "A PostgreSQL client with strict types and assertions.",
   "devDependencies": {

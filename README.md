@@ -9,6 +9,7 @@
 A PostgreSQL client with strict types and assertions.
 
 * [Usage](#usage)
+* [Non-standard behaviour](#non-standard-behaviour)
 * [Conventions](#conventions)
   * [No multiline values](#no-multiline-values)
 * [Value placeholders](#value-placeholders)
@@ -54,6 +55,11 @@ const connection = createPool({
 await connection.query('SELECT 1');
 
 ```
+
+## Non-standard behaviour
+
+* `timestamp` and `timestamp with time zone` returns UNIX timestamp in milliseconds.
+* `point` returns an object `{x,y}`.
 
 ## Conventions
 

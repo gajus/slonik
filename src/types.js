@@ -82,7 +82,12 @@ export type NormalizedQueryType = {|
   +values: $ReadOnlyArray<*>
 |};
 
-type QueryPrimitiveValueType = string | number | null;
+export type PointType = {|
+  +x: number,
+  +y: number
+|};
+
+type QueryPrimitiveValueType = string | number | null | PointType;
 
 export type AnonymouseValuePlaceholderValueType =
 
