@@ -37,6 +37,10 @@ import type {
   TaggledTemplateLiteralInvocationType
 } from './types';
 import Logger from './Logger';
+import {
+  SLONIK_LOG_VALUES,
+  SLONIK_LOG_NORMALISED
+} from './config';
 
 export type {
   DatabaseConnectionType,
@@ -72,63 +76,34 @@ const log = Logger.child({
   namespace: 'slonik'
 });
 
-let globalQueryId = 0;
-
 export const query: InternalQueryType<*> = async (connection, rawSql, values) => {
   const strippedSql = stripComments(rawSql);
 
-  const queryId = globalQueryId++;
+  let rowCount: number | null = null;
+  let normalized;
 
-  log.debug({
-    queryId,
-    sql: strippedSql
-  }, 'input query');
-
-  if (values) {
-    log.trace({
-      queryId,
-      values
-    }, 'query variables');
-  }
+  const start = process.hrtime();
 
   try {
-    const start = process.hrtime();
-
     let result;
 
     if (Array.isArray(values)) {
-      const {
-        sql: normalizedSql,
-        values: normalizedValues
-      } = normalizeAnonymousValuePlaceholders(strippedSql, values);
-
-      result = await connection.query(normalizedSql, normalizedValues);
+      normalized = normalizeAnonymousValuePlaceholders(strippedSql, values);
     } else if (values) {
-      const {
-        sql: normalizedSql,
-        values: normalizedValues
-      } = normalizeNamedValuePlaceholders(strippedSql, values);
+      normalized = normalizeNamedValuePlaceholders(strippedSql, values);
+    }
 
-      result = await connection.query(normalizedSql, normalizedValues);
+    if (normalized) {
+      result = await connection.query(normalized.sql, normalized.values);
     } else {
       result = await connection.query(strippedSql);
     }
-
-    const end = process.hrtime(start);
-
-    let rowCount: number | null = null;
 
     if (result.rowCount) {
       rowCount = result.rowCount;
     } else if (Array.isArray(result)) {
       rowCount = result.length;
     }
-
-    log.trace({
-      executionTime: prettyHrtime(end),
-      queryId,
-      rowCount
-    }, 'query completed');
 
     return result;
   } catch (error) {
@@ -137,6 +112,25 @@ export const query: InternalQueryType<*> = async (connection, rawSql, values) =>
     }
 
     throw error;
+  } finally {
+    const end = process.hrtime(start);
+
+    // eslint-disable-next-line flowtype/no-weak-types
+    const payload: Object = {
+      executionTime: prettyHrtime(end),
+      rowCount,
+      sql: strippedSql
+    };
+
+    if (SLONIK_LOG_VALUES) {
+      payload.values = values;
+    }
+
+    if (SLONIK_LOG_NORMALISED) {
+      payload.normalized = normalized;
+    }
+
+    log.debug(payload, 'query');
   }
 };
 

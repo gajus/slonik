@@ -496,32 +496,21 @@ export default async (
 
 ## Debugging
 
-Define `DEBUG=slonik*` environment variable to enable logging.
+Slonik uses [roarr](https://github.com/gajus/roarr) to log queries.
 
-Logging includes information about:
+To enable logging, define `ROARR_LOG=true` environment variable.
 
-* the query thats about to be executed
-* placeholder values
-* the execution time
-* the number of result rows
+By default, Slonik logs the input query, query execution time and affected row count.
 
-Here is the output example:
+You can enable additional logging details by configuring the following environment variables.
 
-```
-slonik query execution time 196 ms +199ms
-slonik query returned 4 row(s) +0ms
-slonik query SELECT * FROM `movie` WHERE id IN (1000223) +3ms
-slonik values [ 'movie', [ 1000223 ] ] +0ms
-slonik query execution time 28 ms +29ms
-slonik query returned 1 row(s) +0ms
-slonik query SELECT * FROM `movie` WHERE id IN (1000292) +3ms
-slonik values [ 'movie', [ 1000292 ] ] +0ms
-slonik query execution time 24 ms +25ms
-slonik query returned 1 row(s) +0ms
-slonik query SELECT * FROM `movie` WHERE id IN (1000220) +1ms
-slonik values [ 'movie', [ 1000220 ] ] +0ms
-slonik query execution time 26 ms +27ms
-slonik query returned 1 row(s) +0ms
+```bash
+# Logs query parameter values
+export SLONIK_LOG_VALUES=true
+
+# Logs normalised query and input values
+export SLONIK_LOG_NORMALISED=true
+
 ```
 
 ## Syntax highlighting

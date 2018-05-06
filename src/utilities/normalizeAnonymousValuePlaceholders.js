@@ -5,11 +5,6 @@ import type {
   AnonymouseValuePlaceholderValuesType,
   NormalizedQueryType
 } from '../types';
-import Logger from '../Logger';
-
-const log = Logger.child({
-  namespace: 'normalizeAnonymousValuePlaceholders'
-});
 
 const anonymousePlaceholdersRegex = /\?/g;
 
@@ -96,11 +91,6 @@ export default (
   } else if (chunkIndex < sql.length) {
     result += sql.slice(chunkIndex);
   }
-
-  log.trace({
-    sql: result,
-    values
-  }, 'normalized SQL');
 
   return {
     sql: result,

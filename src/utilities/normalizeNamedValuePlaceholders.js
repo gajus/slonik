@@ -4,11 +4,6 @@ import type {
   NamedValuePlaceholderValuesType,
   NormalizedQueryType
 } from '../types';
-import Logger from '../Logger';
-
-const log = Logger.child({
-  namespace: 'normalizeNamedValuePlaceholders'
-});
 
 /**
  * @see https://regex101.com/r/KrEe8i/2
@@ -65,11 +60,6 @@ export default (
   } else if (chunkIndex < sql.length) {
     result += sql.slice(chunkIndex);
   }
-
-  log.trace({
-    sql: result,
-    values
-  }, 'normalized SQL');
 
   return {
     sql: result,
