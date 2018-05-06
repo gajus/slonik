@@ -241,7 +241,7 @@ Returns value of the first column of every row in the result set.
 Example:
 
 ```js
-const fooValues = await connection.any('SELECT foo');
+const fooValues = await connection.anyFirst('SELECT foo');
 
 ```
 
