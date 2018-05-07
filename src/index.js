@@ -6,6 +6,7 @@ import pg, {
 import {
   parse as parseConnectionString
 } from 'pg-connection-string';
+import serializeError from 'serialize-error';
 import prettyHrtime from 'pretty-hrtime';
 import {
   DataIntegrityError,
@@ -309,6 +310,10 @@ export const transaction: InternalTransactionType = async (connection, handler) 
     return result;
   } catch (error) {
     await connection.query('ROLLBACK');
+
+    log.error({
+      error: serializeError(error)
+    }, 'rolling back transaction due to an error');
 
     throw error;
   }
