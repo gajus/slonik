@@ -407,6 +407,23 @@ result === 'FOO';
 
 ## Error handling
 
+All Slonik errors extend from `SlonikError`, i.e. You can catch Slonik specific errors using the following logic.
+
+```js
+import {
+  SlonikError
+} from 'slonik';
+
+try {
+  await query();
+} catch (error) {
+  if (error instanceof SlonikError) {
+    // This error is thrown by Slonik.
+  }
+}
+
+```
+
 ### Handling `NotFoundError`
 
 To handle the case where query returns less than one row, catch `NotFoundError` error.

@@ -10,8 +10,9 @@ import serializeError from 'serialize-error';
 import prettyHrtime from 'pretty-hrtime';
 import {
   DataIntegrityError,
-  UniqueViolationError,
-  NotFoundError
+  NotFoundError,
+  SlonikError,
+  UniqueViolationError
 } from './errors';
 import {
   mapTaggedTemplateLiteralInvocation,
@@ -53,6 +54,7 @@ export type {
 export {
   DataIntegrityError,
   UniqueViolationError,
+  SlonikError,
   NotFoundError
 };
 
