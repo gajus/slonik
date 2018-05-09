@@ -5,3 +5,4 @@
 .*/node_modules/conventional-changelog-core/.*
 .*/node_modules/flow-runtime/.*
 .*/node_modules/npmconf/.*
+.*
