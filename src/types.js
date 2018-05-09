@@ -110,63 +110,71 @@ export type InternalQueryAnyType = (
   connection: InternalDatabaseConnectionType,
   clientConfiguration: ClientConfigurationType,
   sql: string,
-  values?: DatabaseQueryValuesType
+  values?: DatabaseQueryValuesType,
+  queryId?: string
 ) => Promise<$ReadOnlyArray<QueryResultRowType>>;
 
 export type InternalQueryAnyFirstType = (
   connection: InternalDatabaseConnectionType,
   clientConfiguration: ClientConfigurationType,
   sql: string,
-  values?: DatabaseQueryValuesType
+  values?: DatabaseQueryValuesType,
+  queryId?: string
 ) => Promise<$ReadOnlyArray<QueryResultRowColumnType>>;
 
 export type InternalQueryManyType = (
   connection: InternalDatabaseConnectionType,
   clientConfiguration: ClientConfigurationType,
   sql: string,
-  values?: DatabaseQueryValuesType
+  values?: DatabaseQueryValuesType,
+  queryId?: string
 ) => Promise<$ReadOnlyArray<QueryResultRowType>>;
 
 export type InternalQueryManyFirstType = (
   connection: InternalDatabaseConnectionType,
   clientConfiguration: ClientConfigurationType,
   sql: string,
-  values?: DatabaseQueryValuesType
+  values?: DatabaseQueryValuesType,
+  queryId?: string
 ) => Promise<$ReadOnlyArray<QueryResultRowColumnType>>;
 
 export type InternalQueryMaybeOneFirstType = (
   connection: InternalDatabaseConnectionType,
   clientConfiguration: ClientConfigurationType,
   sql: string,
-  values?: DatabaseQueryValuesType
+  values?: DatabaseQueryValuesType,
+  queryId?: string
 ) => Promise<QueryResultRowColumnType | null>;
 
 export type InternalQueryMaybeOneType = (
   connection: InternalDatabaseConnectionType,
   clientConfiguration: ClientConfigurationType,
   sql: string,
-  values?: DatabaseQueryValuesType
+  values?: DatabaseQueryValuesType,
+  queryId?: string
 ) => Promise<QueryResultRowType | null>;
 
 export type InternalQueryOneFirstType = (
   connection: InternalDatabaseConnectionType,
   clientConfiguration: ClientConfigurationType,
   sql: string,
-  values?: DatabaseQueryValuesType
+  values?: DatabaseQueryValuesType,
+  queryId?: string
 ) => Promise<QueryResultRowColumnType>;
 
 export type InternalQueryOneType = (
   connection: InternalDatabaseConnectionType,
   clientConfiguration: ClientConfigurationType,
   sql: string,
-  values?: DatabaseQueryValuesType
+  values?: DatabaseQueryValuesType,
+  queryId?: string
 ) => Promise<QueryResultRowType>;
 
 export type TransactionHandlerType = (connection: DatabaseConnectionType) => Promise<*>;
 
 export type InternalTransactionType = (connection: InternalDatabaseConnectionType, handler: TransactionHandlerType) => Promise<*>;
 
-export type InternalQueryType<T: QueryResultRowType> = (connection: InternalDatabaseConnectionType, sql: string, values?: DatabaseQueryValuesType) => Promise<QueryResultType<T>>;
+export type InternalQueryType<T: QueryResultRowType> = (connection: InternalDatabaseConnectionType, sql: string, values?: DatabaseQueryValuesType, queryId?: string) => Promise<QueryResultType<T>>;
 
 export type QueryAnyFirstType<T: QueryResultRowColumnType> = (sql: string | TaggledTemplateLiteralInvocationType, values?: DatabaseQueryValuesType) => Promise<$ReadOnlyArray<T>>;
 export type QueryAnyType<T: QueryResultRowType> = (sql: string | TaggledTemplateLiteralInvocationType, values?: DatabaseQueryValuesType) => Promise<$ReadOnlyArray<T>>;

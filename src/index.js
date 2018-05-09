@@ -9,6 +9,10 @@ import {
 import serializeError from 'serialize-error';
 import prettyHrtime from 'pretty-hrtime';
 import {
+  factory as ulidFactory,
+  detectPrng
+} from 'ulid';
+import {
   DataIntegrityError,
   NotFoundError,
   SlonikError,
@@ -79,7 +83,9 @@ const log = Logger.child({
   namespace: 'slonik'
 });
 
-export const query: InternalQueryType<*> = async (connection, rawSql, values) => {
+const ulid = ulidFactory(detectPrng(true));
+
+export const query: InternalQueryType<*> = async (connection, rawSql, values, queryId) => {
   const strippedSql = stripComments(rawSql);
 
   let rowCount: number | null = null;
@@ -110,8 +116,13 @@ export const query: InternalQueryType<*> = async (connection, rawSql, values) =>
 
     return result;
   } catch (error) {
+    log.error({
+      error: serializeError(error),
+      queryId
+    }, 'query produced an error');
+
     if (error.code === '23505') {
-      throw new UniqueViolationError(error.message);
+      throw new UniqueViolationError();
     }
 
     throw error;
@@ -121,6 +132,7 @@ export const query: InternalQueryType<*> = async (connection, rawSql, values) =>
     // eslint-disable-next-line flowtype/no-weak-types
     const payload: Object = {
       executionTime: prettyHrtime(end),
+      queryId,
       rowCount,
       sql: strippedSql
     };
@@ -143,18 +155,26 @@ export const query: InternalQueryType<*> = async (connection, rawSql, values) =>
  * @throws NotFoundError If query returns no rows.
  * @throws DataIntegrityError If query returns multiple rows.
  */
-export const one: InternalQueryOneType = async (connection, clientConfiguration, rawSql, values) => {
+export const one: InternalQueryOneType = async (connection, clientConfiguration, rawSql, values, queryId = ulid()) => {
   const {
     rows
-  } = await query(connection, rawSql, values);
+  } = await query(connection, rawSql, values, queryId);
 
   if (rows.length === 0) {
+    log.error({
+      queryId
+    }, 'NotFoundError');
+
     const ConfigurableNotFoundError = clientConfiguration.errors && clientConfiguration.errors.NotFoundError ? clientConfiguration.errors.NotFoundError : NotFoundError;
 
     throw new ConfigurableNotFoundError();
   }
 
   if (rows.length > 1) {
+    log.error({
+      queryId
+    }, 'DataIntegrityError');
+
     throw new DataIntegrityError();
   }
 
@@ -166,16 +186,20 @@ export const one: InternalQueryOneType = async (connection, clientConfiguration,
  *
  * @throws DataIntegrityError If query returns multiple rows.
  */
-export const maybeOne: InternalQueryMaybeOneType = async (connection, clientConfiguration, rawSql, values) => {
+export const maybeOne: InternalQueryMaybeOneType = async (connection, clientConfiguration, rawSql, values, queryId = ulid()) => {
   const {
     rows
-  } = await query(connection, rawSql, values);
+  } = await query(connection, rawSql, values, queryId);
 
   if (rows.length === 0) {
     return null;
   }
 
   if (rows.length > 1) {
+    log.error({
+      queryId
+    }, 'DataIntegrityError');
+
     throw new DataIntegrityError();
   }
 
@@ -189,12 +213,16 @@ export const maybeOne: InternalQueryMaybeOneType = async (connection, clientConf
  * @throws NotFoundError If query returns no rows.
  * @throws DataIntegrityError If query returns multiple rows.
  */
-export const oneFirst: InternalQueryOneFirstType = async (connection, clientConfiguration, rawSql, values) => {
-  const row = await one(connection, clientConfiguration, rawSql, values);
+export const oneFirst: InternalQueryOneFirstType = async (connection, clientConfiguration, rawSql, values, queryId = ulid()) => {
+  const row = await one(connection, clientConfiguration, rawSql, values, queryId);
 
   const keys = Object.keys(row);
 
   if (keys.length !== 1) {
+    log.error({
+      queryId
+    }, 'DataIntegrityError');
+
     throw new DataIntegrityError();
   }
 
@@ -207,8 +235,8 @@ export const oneFirst: InternalQueryOneFirstType = async (connection, clientConf
  *
  * @throws DataIntegrityError If query returns multiple rows.
  */
-export const maybeOneFirst: InternalQueryMaybeOneFirstType = async (connection, clientConfiguration, rawSql, values) => {
-  const row = await maybeOne(connection, clientConfiguration, rawSql, values);
+export const maybeOneFirst: InternalQueryMaybeOneFirstType = async (connection, clientConfiguration, rawSql, values, queryId = ulid()) => {
+  const row = await maybeOne(connection, clientConfiguration, rawSql, values, queryId);
 
   if (!row) {
     return null;
@@ -217,6 +245,10 @@ export const maybeOneFirst: InternalQueryMaybeOneFirstType = async (connection, 
   const keys = Object.keys(row);
 
   if (keys.length !== 1) {
+    log.error({
+      queryId
+    }, 'DataIntegrityError');
+
     throw new DataIntegrityError();
   }
 
@@ -228,12 +260,16 @@ export const maybeOneFirst: InternalQueryMaybeOneFirstType = async (connection, 
  *
  * @throws NotFoundError If query returns no rows.
  */
-export const many: InternalQueryManyType = async (connection, clientConfiguration, rawSql, values) => {
+export const many: InternalQueryManyType = async (connection, clientConfiguration, rawSql, values, queryId = ulid()) => {
   const {
     rows
-  } = await query(connection, rawSql, values);
+  } = await query(connection, rawSql, values, queryId);
 
   if (rows.length === 0) {
+    log.error({
+      queryId
+    }, 'NotFoundError');
+
     const ConfigurableNotFoundError = clientConfiguration.errors && clientConfiguration.errors.NotFoundError ? clientConfiguration.errors.NotFoundError : NotFoundError;
 
     throw new ConfigurableNotFoundError();
@@ -242,22 +278,34 @@ export const many: InternalQueryManyType = async (connection, clientConfiguratio
   return rows;
 };
 
-export const manyFirst: InternalQueryManyFirstType = async (connection, clientConfigurationType, rawSql, values) => {
-  const rows = await many(connection, clientConfigurationType, rawSql, values);
+export const manyFirst: InternalQueryManyFirstType = async (connection, clientConfigurationType, rawSql, values, queryId = ulid()) => {
+  const rows = await many(connection, clientConfigurationType, rawSql, values, queryId);
 
   if (rows.length === 0) {
+    log.error({
+      queryId
+    }, 'DataIntegrityError');
+
     throw new DataIntegrityError();
   }
 
   const keys = Object.keys(rows[0]);
 
   if (keys.length !== 1) {
+    log.error({
+      queryId
+    }, 'DataIntegrityError');
+
     throw new DataIntegrityError();
   }
 
   const firstColumnName = keys[0];
 
   if (typeof firstColumnName !== 'string') {
+    log.error({
+      queryId
+    }, 'DataIntegrityError');
+
     throw new DataIntegrityError();
   }
 
@@ -269,16 +317,16 @@ export const manyFirst: InternalQueryManyFirstType = async (connection, clientCo
 /**
  * Makes a query and expects any number of results.
  */
-export const any: InternalQueryAnyType = async (connection, clientConfiguration, rawSql, values) => {
+export const any: InternalQueryAnyType = async (connection, clientConfiguration, rawSql, values, queryId = ulid()) => {
   const {
     rows
-  } = await query(connection, rawSql, values);
+  } = await query(connection, rawSql, values, queryId);
 
   return rows;
 };
 
-export const anyFirst: InternalQueryAnyFirstType = async (connection, clientConfigurationType, rawSql, values) => {
-  const rows = await any(connection, clientConfigurationType, rawSql, values);
+export const anyFirst: InternalQueryAnyFirstType = async (connection, clientConfigurationType, rawSql, values, queryId = ulid()) => {
+  const rows = await any(connection, clientConfigurationType, rawSql, values, queryId);
 
   if (rows.length === 0) {
     return [];
@@ -287,12 +335,20 @@ export const anyFirst: InternalQueryAnyFirstType = async (connection, clientConf
   const keys = Object.keys(rows[0]);
 
   if (keys.length !== 1) {
+    log.error({
+      queryId
+    }, 'DataIntegrityError');
+
     throw new DataIntegrityError();
   }
 
   const firstColumnName = keys[0];
 
   if (typeof firstColumnName !== 'string') {
+    log.error({
+      queryId
+    }, 'DataIntegrityError');
+
     throw new DataIntegrityError();
   }
 

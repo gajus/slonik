@@ -19,7 +19,8 @@
     "pg-connection-string": "^2.0.0",
     "pretty-hrtime": "^1.0.3",
     "roarr": "^2.0.2",
-    "serialize-error": "^2.1.0"
+    "serialize-error": "^2.1.0",
+    "ulid": "^2.3.0"
   },
   "description": "A PostgreSQL client with strict types and assertions.",
   "devDependencies": {
