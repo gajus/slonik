@@ -29,12 +29,14 @@
     "@babel/preset-env": "^7.0.0-beta.46",
     "@babel/register": "^7.0.0-beta.46",
     "ava": "^1.0.0-beta.4",
+    "babel-plugin-istanbul": "^4.1.6",
     "coveralls": "^3.0.0",
     "eslint": "^4.10.0",
     "eslint-config-canonical": "^9.3.1",
     "flow-bin": "^0.71.0",
     "flow-copy-source": "^1.2.1",
     "husky": "^0.14.3",
+    "nyc": "^11.7.2",
     "semantic-release": "^8.2.0",
     "sinon": "^4.1.2"
   },
@@ -49,6 +51,26 @@
   "license": "BSD-3-Clause",
   "main": "./dist/index.js",
   "name": "slonik",
+  "nyc": {
+    "all": true,
+    "exclude": [
+      "src/bin",
+      "src/queries/*.js"
+    ],
+    "include": [
+      "src/**/*.js"
+    ],
+    "instrument": false,
+    "reporter": [
+      "html",
+      "text-summary"
+    ],
+    "require": [
+      "@babel/register"
+    ],
+    "silent": true,
+    "sourceMap": false
+  },
   "repository": {
     "type": "git",
     "url": "https://github.com/gajus/slonik"
@@ -57,7 +79,7 @@
     "build": "rm -fr ./dist && NODE_ENV=production babel ./src --out-dir ./dist --copy-files --source-maps && flow-copy-source src dist",
     "lint": "eslint ./src ./test && flow",
     "precommit": "npm run lint && npm run test",
-    "test": "ava --verbose"
+    "test": "NODE_ENV=test nyc ava --verbose --serial --concurrency 1 && nyc report"
   },
   "version": "5.0.0"
 }

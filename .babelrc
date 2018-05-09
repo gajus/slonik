@@ -1,5 +1,11 @@
 {
-
+  "env": {
+    "test": {
+      "plugins": [
+        "istanbul"
+      ]
+    }
+  },
   "plugins": [
     "@babel/transform-flow-strip-types"
   ],
