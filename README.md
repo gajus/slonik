@@ -6,7 +6,7 @@
 [![Canonical Code Style](https://img.shields.io/badge/code%20style-canonical-blue.svg?style=flat-square)](https://github.com/gajus/canonical)
 [![Twitter Follow](https://img.shields.io/twitter/follow/kuizinas.svg?style=social&label=Follow)](https://twitter.com/kuizinas)
 
-A PostgreSQL client with strict types and assertions.
+A PostgreSQL client with strict types, detail logging and assertions.
 
 * [Usage](#usage)
 * [Non-standard behaviour](#non-standard-behaviour)
