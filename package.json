@@ -5,9 +5,8 @@
     "url": "http://gajus.com"
   },
   "ava": {
-    "babel": "inherit",
     "require": [
-      "babel-register"
+      "@babel/register"
     ]
   },
   "dependencies": {
@@ -24,20 +23,17 @@
   },
   "description": "A PostgreSQL client with strict types, detail logging and assertions.",
   "devDependencies": {
-    "ava": "^0.23.0",
-    "babel-cli": "^6.26.0",
-    "babel-plugin-istanbul": "^4.1.5",
-    "babel-plugin-transform-flow-strip-types": "^6.22.0",
-    "babel-plugin-transform-object-rest-spread": "^6.26.0",
-    "babel-preset-env": "^1.6.1",
-    "babel-register": "^6.26.0",
+    "@babel/cli": "^7.0.0-beta.46",
+    "@babel/plugin-transform-flow-strip-types": "^7.0.0-beta.46",
+    "@babel/preset-env": "^7.0.0-beta.46",
+    "@babel/register": "^7.0.0-beta.46",
+    "ava": "^1.0.0-beta.4",
     "coveralls": "^3.0.0",
     "eslint": "^4.10.0",
     "eslint-config-canonical": "^9.3.1",
-    "flow-bin": "^0.58.0",
+    "flow-bin": "^0.71.0",
     "flow-copy-source": "^1.2.1",
     "husky": "^0.14.3",
-    "nyc": "^11.3.0",
     "semantic-release": "^8.2.0",
     "sinon": "^4.1.2"
   },
@@ -52,19 +48,6 @@
   "license": "BSD-3-Clause",
   "main": "./dist/index.js",
   "name": "slonik",
-  "nyc": {
-    "include": [
-      "src/**/*.js"
-    ],
-    "instrument": false,
-    "reporter": [
-      "text-lcov"
-    ],
-    "require": [
-      "babel-register"
-    ],
-    "sourceMap": false
-  },
   "repository": {
     "type": "git",
     "url": "https://github.com/gajus/slonik"
