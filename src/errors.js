@@ -5,11 +5,19 @@ import ExtendableError from 'es6-error';
 export class SlonikError extends ExtendableError {}
 
 export class NotFoundError extends SlonikError {
-  constructor (message: string = 'Resource not found.') {
-    super(message);
+  constructor () {
+    super('Resource not found.');
   }
 }
 
-export class DataIntegrityError extends SlonikError {}
+export class DataIntegrityError extends SlonikError {
+  constructor () {
+    super('Query returns an unexpected result.');
+  }
+}
 
-export class UniqueViolationError extends SlonikError {}
+export class UniqueViolationError extends SlonikError {
+  constructor () {
+    super('Query violates a unique constraint.');
+  }
+}
