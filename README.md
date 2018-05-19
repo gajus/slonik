@@ -546,10 +546,10 @@ queryId:       01CDX0D15XWEHJ0TWNQA97VC7G
 rowCount:      null
 sql:           INSERT INTO cinema_movie_name ( cinema_id, name, url, description_blob ) VALUES ( ?, ?, ?, ? ) RETURNING id
 stackTrace:
-  - /src/node_modules/slonik/dist/index.js:85:38
-  - /src/node_modules/slonik/dist/index.js:173:13
-  - /src/node_modules/slonik/dist/index.js:231:21
-  - /src/node_modules/slonik/dist/utilities/mapTaggedTemplateLiteralInvocation.js:17:14
+  - /node_modules/slonik/dist/index.js:85:38
+  - /node_modules/slonik/dist/index.js:173:13
+  - /node_modules/slonik/dist/index.js:231:21
+  - /node_modules/slonik/dist/utilities/mapTaggedTemplateLiteralInvocation.js:17:14
   - /src/queries/insertCinemaMovieName.js:11:31
   - /src/routines/uploadData.js:101:68
 values:
@@ -568,19 +568,19 @@ When Bluebird is run in a [debug mode](http://bluebirdjs.com/docs/api/promise.lo
 
 ```
 error: duplicate key value violates unique constraint "public_movie_name_cinema_id0_idx"
-    at Connection.parseE (/src/node_modules/slonik/node_modules/pg/lib/connection.js:553:11)
-    at Connection.parseMessage (/src/node_modules/slonik/node_modules/pg/lib/connection.js:378:19)
-    at Socket.<anonymous> (/src/node_modules/slonik/node_modules/pg/lib/connection.js:119:22)
+    at Connection.parseE (/node_modules/slonik/node_modules/pg/lib/connection.js:553:11)
+    at Connection.parseMessage (/node_modules/slonik/node_modules/pg/lib/connection.js:378:19)
+    at Socket.<anonymous> (/node_modules/slonik/node_modules/pg/lib/connection.js:119:22)
     at Socket.emit (events.js:182:13)
     at addChunk (_stream_readable.js:277:12)
     at readableAddChunk (_stream_readable.js:262:11)
     at Socket.Readable.push (_stream_readable.js:217:10)
     at TCP.onread (net.js:638:20)
 From previous event:
-    at query (/src/node_modules/slonik/src/index.js:107:30)
-    at one (/src/node_modules/slonik/src/index.js:162:13)
-    at oneFirst (/src/node_modules/slonik/src/index.js:218:21)
-    at Object.oneFirst (/src/node_modules/slonik/src/utilities/mapTaggedTemplateLiteralInvocation.js:17:14)
+    at query (/node_modules/slonik/src/index.js:107:30)
+    at one (/node_modules/slonik/src/index.js:162:13)
+    at oneFirst (/node_modules/slonik/src/index.js:218:21)
+    at Object.oneFirst (/node_modules/slonik/src/utilities/mapTaggedTemplateLiteralInvocation.js:17:14)
     at _default (/src/queries/insertCinemaMovieName.js:18:6)
     at upsertCinemaMovieName (/src/routines/uploadData.js:154:33)
 
