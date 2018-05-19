@@ -20,6 +20,7 @@
     "pretty-hrtime": "^1.0.3",
     "roarr": "^2.0.2",
     "serialize-error": "^2.1.0",
+    "stack-trace": "0.0.10",
     "ulid": "^2.3.0"
   },
   "description": "A PostgreSQL client with strict types, detail logging and assertions.",

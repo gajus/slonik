@@ -7,6 +7,9 @@ import {
   parse as parseConnectionString
 } from 'pg-connection-string';
 import Bluebird from 'bluebird';
+import {
+  get as getStackTrace
+} from 'stack-trace';
 import serializeError from 'serialize-error';
 import prettyHrtime from 'pretty-hrtime';
 import {
@@ -45,8 +48,9 @@ import type {
 } from './types';
 import Logger from './Logger';
 import {
-  SLONIK_LOG_VALUES,
-  SLONIK_LOG_NORMALISED
+  SLONIK_LOG_NORMALISED,
+  SLONIK_LOG_STACK_TRACE,
+  SLONIK_LOG_VALUES
 } from './config';
 
 export type {
@@ -88,6 +92,15 @@ const ulid = ulidFactory(detectPrng(true));
 
 // eslint-disable-next-line complexity
 export const query: InternalQueryType<*> = async (connection, rawSql, values, queryId) => {
+  let stackTrace;
+
+  if (SLONIK_LOG_STACK_TRACE) {
+    stackTrace = getStackTrace()
+      .map((callSite) => {
+        return callSite.getFileName() + ':' + callSite.getLineNumber() + ':' + callSite.getColumnNumber();
+      });
+  }
+
   const strippedSql = stripComments(rawSql);
 
   let rowCount: number | null = null;
@@ -145,6 +158,10 @@ export const query: InternalQueryType<*> = async (connection, rawSql, values, qu
       rowCount,
       sql: strippedSql
     };
+
+    if (SLONIK_LOG_STACK_TRACE) {
+      payload.stackTrace = stackTrace;
+    }
 
     if (SLONIK_LOG_VALUES) {
       payload.values = values;
