@@ -6,6 +6,7 @@ import pg, {
 import {
   parse as parseConnectionString
 } from 'pg-connection-string';
+import Bluebird from 'bluebird';
 import serializeError from 'serialize-error';
 import prettyHrtime from 'pretty-hrtime';
 import {
@@ -85,6 +86,7 @@ const log = Logger.child({
 
 const ulid = ulidFactory(detectPrng(true));
 
+// eslint-disable-next-line complexity
 export const query: InternalQueryType<*> = async (connection, rawSql, values, queryId) => {
   const strippedSql = stripComments(rawSql);
 
@@ -103,10 +105,17 @@ export const query: InternalQueryType<*> = async (connection, rawSql, values, qu
     }
 
     if (normalized) {
-      result = await connection.query(normalized.sql, normalized.values);
+      result = connection.query(normalized.sql, normalized.values);
     } else {
-      result = await connection.query(strippedSql);
+      result = connection.query(strippedSql);
     }
+
+    // eslint-disable-next-line no-process-env
+    if (process.env.BLUEBIRD_DEBUG) {
+      result = Bluebird.resolve(result);
+    }
+
+    result = await result;
 
     if (result.rowCount) {
       rowCount = result.rowCount;
