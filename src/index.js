@@ -53,20 +53,6 @@ import {
   SLONIK_LOG_VALUES
 } from './config';
 
-export type {
-  DatabaseConnectionType,
-  DatabasePoolConnectionType,
-  DatabasePoolType,
-  DatabaseSingleConnectionType
-} from './types';
-
-export {
-  DataIntegrityError,
-  UniqueViolationError,
-  SlonikError,
-  NotFoundError
-};
-
 // eslint-disable-next-line id-match
 const INT8_OID = 20;
 const TIMESTAMPTZ_OID = 1184;
@@ -89,6 +75,20 @@ const log = Logger.child({
 });
 
 const ulid = ulidFactory(detectPrng(true));
+
+export type {
+  DatabaseConnectionType,
+  DatabasePoolConnectionType,
+  DatabasePoolType,
+  DatabaseSingleConnectionType
+} from './types';
+
+export {
+  DataIntegrityError,
+  UniqueViolationError,
+  SlonikError,
+  NotFoundError
+};
 
 // eslint-disable-next-line complexity
 export const query: InternalQueryType<*> = async (connection, rawSql, values, queryId) => {
@@ -403,14 +403,14 @@ export const transaction: InternalTransactionType = async (connection, handler) 
   }
 };
 
-const sql = (parts: $ReadOnlyArray<string>, ...values: AnonymouseValuePlaceholderValuesType): TaggledTemplateLiteralInvocationType => {
+export const sql = (parts: $ReadOnlyArray<string>, ...values: AnonymouseValuePlaceholderValuesType): TaggledTemplateLiteralInvocationType => {
   return {
     sql: parts.join('?'),
     values
   };
 };
 
-const createConnection = async (
+export const createConnection = async (
   connectionConfiguration: DatabaseConfigurationType,
   clientConfiguration: ClientConfigurationType = {}
 ): Promise<DatabaseSingleConnectionType> => {
@@ -449,7 +449,7 @@ const createConnection = async (
   return bindConnection;
 };
 
-const createPool = (
+export const createPool = (
   connectionConfiguration: DatabaseConfigurationType,
   clientConfiguration: ClientConfigurationType = {}
 ): DatabasePoolType => {
@@ -506,10 +506,4 @@ const createPool = (
       return result;
     }
   };
-};
-
-export {
-  createConnection,
-  createPool,
-  sql
 };

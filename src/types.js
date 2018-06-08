@@ -1,6 +1,6 @@
 // @flow
 
-/* eslint-disable no-use-before-define */
+/* eslint-disable no-use-before-define, import/exports-last */
 
 type FieldType = {
   +columnID: number,

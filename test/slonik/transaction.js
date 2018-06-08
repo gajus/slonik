@@ -47,7 +47,7 @@ test('rollbacks unsuccessful transaction', async (t) => {
   const transactionExecution = transaction(connection, async () => {
     await query('FOO');
 
-    throw new Error();
+    throw new Error('Instigated error.');
   });
 
   await t.throws(transactionExecution);
