@@ -1,8 +1,3 @@
 [ignore]
 .*/node_modules/.*/test/.*
-.*/node_modules/babel-plugin-flow-runtime/.*
-.*/node_modules/config-chain/.*
-.*/node_modules/conventional-changelog-core/.*
-.*/node_modules/flow-runtime/.*
-.*/node_modules/npmconf/.*
-.*
+<PROJECT_ROOT>/dist/.*
