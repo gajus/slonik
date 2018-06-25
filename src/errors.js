@@ -17,7 +17,11 @@ export class DataIntegrityError extends SlonikError {
 }
 
 export class UniqueViolationError extends SlonikError {
-  constructor () {
+  constraint: string;
+
+  constructor (constraint: string) {
     super('Query violates a unique constraint.');
+
+    this.constraint = constraint;
   }
 }

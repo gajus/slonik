@@ -144,7 +144,7 @@ export const query: InternalQueryType<*> = async (connection, rawSql, values, qu
     }, 'query produced an error');
 
     if (error.code === '23505') {
-      throw new UniqueViolationError();
+      throw new UniqueViolationError(error.constraint);
     }
 
     throw error;
