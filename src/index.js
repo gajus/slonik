@@ -414,7 +414,7 @@ export const createConnection = async (
   connectionConfiguration: DatabaseConfigurationType,
   clientConfiguration: ClientConfigurationType = {}
 ): Promise<DatabaseSingleConnectionType> => {
-  const pool = new pg.Pool(typeof connectionConfiguration === 'string' ? parseConnectionString(connectionConfiguration) : connectionConfiguration);
+  const pool = new pg.native.Pool(typeof connectionConfiguration === 'string' ? parseConnectionString(connectionConfiguration) : connectionConfiguration);
 
   const connection = await pool.connect();
 
@@ -453,7 +453,7 @@ export const createPool = (
   connectionConfiguration: DatabaseConfigurationType,
   clientConfiguration: ClientConfigurationType = {}
 ): DatabasePoolType => {
-  const pool = new pg.Pool(typeof connectionConfiguration === 'string' ? parseConnectionString(connectionConfiguration) : connectionConfiguration);
+  const pool = new pg.native.Pool(typeof connectionConfiguration === 'string' ? parseConnectionString(connectionConfiguration) : connectionConfiguration);
 
   const connect = async () => {
     const connection = await pool.connect();
