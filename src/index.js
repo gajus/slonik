@@ -35,13 +35,13 @@ import type {
   DatabaseSingleConnectionType,
   InternalQueryAnyFirstFunctionType,
   InternalQueryAnyFunctionType,
+  InternalQueryFunctionType,
   InternalQueryManyFirstFunctionType,
   InternalQueryManyFunctionType,
   InternalQueryMaybeOneFirstFunctionType,
   InternalQueryMaybeOneFunctionType,
   InternalQueryOneFirstFunctionType,
   InternalQueryOneFunctionType,
-  InternalQueryFunctionType,
   InternalTransactionFunctionType,
   TaggledTemplateLiteralInvocationType
 } from './types';
@@ -82,7 +82,8 @@ export type {
   DatabaseConnectionType,
   DatabasePoolConnectionType,
   DatabasePoolType,
-  DatabaseSingleConnectionType
+  DatabaseSingleConnectionType,
+  InterceptorType
 } from './types';
 
 export {
