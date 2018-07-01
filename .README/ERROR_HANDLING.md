@@ -87,9 +87,21 @@ try {
 
 ```
 
-### Handling `UniqueViolationError`
+### Handling `NotNullIntegrityConstraintViolationError`
 
-`UniqueViolationError` is thrown when Postgres responds with [`unique_violation`](https://www.postgresql.org/docs/9.4/static/errcodes-appendix.html) (`23505`) error.
+`NotNullIntegrityConstraintViolationError` is thrown when Postgres responds with [`unique_violation`](https://www.postgresql.org/docs/9.4/static/errcodes-appendix.html) (`23502`) error.
+
+### Handling `ForeignKeyIntegrityConstraintViolationError`
+
+`ForeignKeyIntegrityConstraintViolationError` is thrown when Postgres responds with [`unique_violation`](https://www.postgresql.org/docs/9.4/static/errcodes-appendix.html) (`23503`) error.
+
+### Handling `UniqueIntegrityConstraintViolationError`
+
+`UniqueIntegrityConstraintViolationError` is thrown when Postgres responds with [`unique_violation`](https://www.postgresql.org/docs/9.4/static/errcodes-appendix.html) (`23505`) error.
+
+### Handling `CheckIntegrityConstraintViolationError`
+
+`CheckIntegrityConstraintViolationError` is thrown when Postgres responds with [`unique_violation`](https://www.postgresql.org/docs/9.4/static/errcodes-appendix.html) (`23514`) error.
 
 ## Types
 

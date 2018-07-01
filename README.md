@@ -39,7 +39,10 @@ A PostgreSQL client with strict types, detail logging and assertions.
         * [Overriding Error Constructor](#slonik-error-handling-overriding-error-constructor)
         * [Handling `NotFoundError`](#slonik-error-handling-handling-notfounderror)
         * [Handling `DataIntegrityError`](#slonik-error-handling-handling-dataintegrityerror)
-        * [Handling `UniqueViolationError`](#slonik-error-handling-handling-uniqueviolationerror)
+        * [Handling `NotNullIntegrityConstraintViolationError`](#slonik-error-handling-handling-notnullintegrityconstraintviolationerror)
+        * [Handling `ForeignKeyIntegrityConstraintViolationError`](#slonik-error-handling-handling-foreignkeyintegrityconstraintviolationerror)
+        * [Handling `UniqueIntegrityConstraintViolationError`](#slonik-error-handling-handling-uniqueintegrityconstraintviolationerror)
+        * [Handling `CheckIntegrityConstraintViolationError`](#slonik-error-handling-handling-checkintegrityconstraintviolationerror)
     * [Types](#slonik-types)
     * [Debugging](#slonik-debugging)
         * [Logging](#slonik-debugging-logging)
@@ -599,10 +602,25 @@ try {
 
 ```
 
-<a name="slonik-error-handling-handling-uniqueviolationerror"></a>
-### Handling <code>UniqueViolationError</code>
+<a name="slonik-error-handling-handling-notnullintegrityconstraintviolationerror"></a>
+### Handling <code>NotNullIntegrityConstraintViolationError</code>
 
-`UniqueViolationError` is thrown when Postgres responds with [`unique_violation`](https://www.postgresql.org/docs/9.4/static/errcodes-appendix.html) (`23505`) error.
+`NotNullIntegrityConstraintViolationError` is thrown when Postgres responds with [`unique_violation`](https://www.postgresql.org/docs/9.4/static/errcodes-appendix.html) (`23502`) error.
+
+<a name="slonik-error-handling-handling-foreignkeyintegrityconstraintviolationerror"></a>
+### Handling <code>ForeignKeyIntegrityConstraintViolationError</code>
+
+`ForeignKeyIntegrityConstraintViolationError` is thrown when Postgres responds with [`unique_violation`](https://www.postgresql.org/docs/9.4/static/errcodes-appendix.html) (`23503`) error.
+
+<a name="slonik-error-handling-handling-uniqueintegrityconstraintviolationerror"></a>
+### Handling <code>UniqueIntegrityConstraintViolationError</code>
+
+`UniqueIntegrityConstraintViolationError` is thrown when Postgres responds with [`unique_violation`](https://www.postgresql.org/docs/9.4/static/errcodes-appendix.html) (`23505`) error.
+
+<a name="slonik-error-handling-handling-checkintegrityconstraintviolationerror"></a>
+### Handling <code>CheckIntegrityConstraintViolationError</code>
+
+`CheckIntegrityConstraintViolationError` is thrown when Postgres responds with [`unique_violation`](https://www.postgresql.org/docs/9.4/static/errcodes-appendix.html) (`23514`) error.
 
 <a name="slonik-types"></a>
 ## Types

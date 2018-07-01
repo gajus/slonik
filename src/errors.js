@@ -16,12 +16,47 @@ export class DataIntegrityError extends SlonikError {
   }
 }
 
-export class UniqueViolationError extends SlonikError {
+export class IntegrityConstraintViolationError extends SlonikError {
   constraint: string;
 
   constructor (constraint: string) {
-    super('Query violates a unique constraint.');
+    super();
 
     this.constraint = constraint;
+  }
+}
+
+// @todo When does restrict_violation and exclusion_violation happen?
+// @see https://www.postgresql.org/docs/9.4/static/errcodes-appendix.html
+
+export class NotNullIntegrityConstraintViolationError extends IntegrityConstraintViolationError {
+  constructor (constraint: string) {
+    super(constraint);
+
+    this.message = 'Query violates a not NULL integrity constraint.';
+  }
+}
+
+export class ForeignKeyIntegrityConstraintViolationError extends IntegrityConstraintViolationError {
+  constructor (constraint: string) {
+    super(constraint);
+
+    this.message = 'Query violates a foreign key integrity constraint.';
+  }
+}
+
+export class UniqueIntegrityConstraintViolationError extends IntegrityConstraintViolationError {
+  constructor (constraint: string) {
+    super(constraint);
+
+    this.message = 'Query violates a unique integrity constraint.';
+  }
+}
+
+export class CheckIntegrityConstraintViolationError extends IntegrityConstraintViolationError {
+  constructor (constraint: string) {
+    super(constraint);
+
+    this.message = 'Query violates a check integrity constraint.';
   }
 }

@@ -16,10 +16,13 @@ import {
   detectPrng
 } from 'ulid';
 import {
+  CheckIntegrityConstraintViolationError,
   DataIntegrityError,
+  ForeignKeyIntegrityConstraintViolationError,
   NotFoundError,
+  NotNullIntegrityConstraintViolationError,
   SlonikError,
-  UniqueViolationError
+  UniqueIntegrityConstraintViolationError
 } from './errors';
 import {
   mapTaggedTemplateLiteralInvocation,
@@ -87,10 +90,13 @@ export type {
 } from './types';
 
 export {
+  CheckIntegrityConstraintViolationError,
   DataIntegrityError,
-  UniqueViolationError,
+  ForeignKeyIntegrityConstraintViolationError,
+  NotFoundError,
+  NotNullIntegrityConstraintViolationError,
   SlonikError,
-  NotFoundError
+  UniqueIntegrityConstraintViolationError
 };
 
 // eslint-disable-next-line complexity
@@ -166,8 +172,20 @@ export const query: InternalQueryFunctionType<*> = async (connection, clientConf
       queryId
     }, 'query produced an error');
 
+    if (error.code === '23502') {
+      throw new NotNullIntegrityConstraintViolationError(error.constraint);
+    }
+
+    if (error.code === '23503') {
+      throw new ForeignKeyIntegrityConstraintViolationError(error.constraint);
+    }
+
     if (error.code === '23505') {
-      throw new UniqueViolationError(error.constraint);
+      throw new UniqueIntegrityConstraintViolationError(error.constraint);
+    }
+
+    if (error.code === '23514') {
+      throw new CheckIntegrityConstraintViolationError(error.constraint);
     }
 
     throw error;
