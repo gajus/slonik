@@ -11,6 +11,10 @@ A PostgreSQL client with strict types, detail logging and assertions.
 
 * [Slonik](#slonik)
     * [Usage](#slonik-usage)
+        * [Configuration](#slonik-usage-configuration)
+    * [Interceptors](#slonik-interceptors)
+        * [`beforeQuery`](#slonik-interceptors-beforequery)
+        * [`afterQuery`](#slonik-interceptors-afterquery)
     * [Non-standard behaviour](#slonik-non-standard-behaviour)
     * [Conventions](#slonik-conventions)
         * [No multiline values](#slonik-conventions-no-multiline-values)
@@ -52,6 +56,28 @@ Slonik exports two factory functions:
 * `createPool`
 * `createConnection`
 
+Example:
+
+```js
+import {
+  createPool
+} from 'slonik';
+
+const connection = createPool({
+  host: '127.0.0.1'
+});
+
+await connection.query('SELECT 1');
+
+```
+
+The API of the query method is equivalent to that of [`pg`](https://travis-ci.org/brianc/node-postgres).
+
+Refer to [query methods](#slonik-query-methods) for documentation of Slonik-specific query methods.
+
+<a name="slonik-usage-configuration"></a>
+### Configuration
+
 Both functions accept the same parameters:
 
 * `connectionConfiguration`
@@ -79,24 +105,55 @@ type ClientConfigurationType = {|
 
 ```
 
-The API of the query method is equivalent to that of [`pg`](https://travis-ci.org/brianc/node-postgres).
 
-Refer to [query methods](#slonik-query-methods) for documentation of Slonik-specific query methods.
+<a name="slonik-interceptors"></a>
+## Interceptors
 
-Example:
+Functionality can be added to Slonik client by adding interceptors.
+
+Each interceptor can implement several functions which can be used to change the behaviour of the database client.
+
+```js
+type InterceptorType = {|
+  +beforeQuery?: (query: QueryType) => Promise<QueryResultType<QueryResultRowType>> | Promise<void> | QueryResultType<QueryResultRowType> | void,
+  +afterQuery?: (query: QueryType, result: QueryResultType<QueryResultRowType>) => Promise<void> | void
+|};
+
+```
+
+Interceptors are configured using [client configuration](#slonik-usage-configuration), e.g.
 
 ```js
 import {
   createPool
 } from 'slonik';
 
-const connection = createPool({
-  host: '127.0.0.1'
+const interceptors = [];
+
+const connection = createPool('postgres://', {
+  interceptors
 });
 
-await connection.query('SELECT 1');
-
 ```
+
+There are 2 functions that an interceptor can implement:
+
+* beforeQuery
+* afterQuery
+
+Interceptors are executed in the order they are added.
+
+<a name="slonik-interceptors-beforequery"></a>
+### <code>beforeQuery</code>
+
+`beforeQuery` is the first interceptor function executed.
+
+This function can optionally return a direct result of the query which will cause the actual query never to be executed.
+
+<a name="slonik-interceptors-afterquery"></a>
+### <code>afterQuery</code>
+
+`afterQuery` is the last interceptor function executed.
 
 
 <a name="slonik-non-standard-behaviour"></a>

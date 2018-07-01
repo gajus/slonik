@@ -5,6 +5,27 @@ Slonik exports two factory functions:
 * `createPool`
 * `createConnection`
 
+Example:
+
+```js
+import {
+  createPool
+} from 'slonik';
+
+const connection = createPool({
+  host: '127.0.0.1'
+});
+
+await connection.query('SELECT 1');
+
+```
+
+The API of the query method is equivalent to that of [`pg`](https://travis-ci.org/brianc/node-postgres).
+
+Refer to [query methods](#slonik-query-methods) for documentation of Slonik-specific query methods.
+
+### Configuration
+
 Both functions accept the same parameters:
 
 * `connectionConfiguration`
@@ -29,24 +50,5 @@ type ClientConfigurationType = {|
   +errors?: ClientErrorsConfigurationType,
   +interceptors?: $ReadOnlyArray<InterceptorType>
 |};
-
-```
-
-The API of the query method is equivalent to that of [`pg`](https://travis-ci.org/brianc/node-postgres).
-
-Refer to [query methods](#slonik-query-methods) for documentation of Slonik-specific query methods.
-
-Example:
-
-```js
-import {
-  createPool
-} from 'slonik';
-
-const connection = createPool({
-  host: '127.0.0.1'
-});
-
-await connection.query('SELECT 1');
 
 ```

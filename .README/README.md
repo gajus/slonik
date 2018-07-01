@@ -12,6 +12,8 @@ A PostgreSQL client with strict types, detail logging and assertions.
 
 {"gitdown": "include", "file": "./USAGE.md"}
 
+{"gitdown": "include", "file": "./INTERCEPTORS.md"}
+
 ## Non-standard behaviour
 
 * `timestamp` and `timestamp with time zone` returns UNIX timestamp in milliseconds.

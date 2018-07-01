@@ -1,6 +1,6 @@
 ## Interceptors
 
-Functionality can be added to the Slonik server by adding interceptors.
+Functionality can be added to Slonik client by adding interceptors.
 
 Each interceptor can implement several functions which can be used to change the behaviour of the database client.
 
@@ -12,7 +12,7 @@ type InterceptorType = {|
 
 ```
 
-
+Interceptors are configured using [client configuration](#slonik-usage-configuration), e.g.
 
 ```js
 import {
@@ -26,8 +26,6 @@ const connection = createPool('postgres://', {
 });
 
 ```
-
-
 
 There are 2 functions that an interceptor can implement:
 
