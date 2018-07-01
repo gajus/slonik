@@ -17,6 +17,28 @@ try {
 
 ```
 
+### Overriding Error Constructor
+
+Overriding the error constructor used by Slonik allows you to map database layer errors to your application errors.
+
+```js
+import {
+  createPool
+} from 'slonik';
+
+class NotFoundError extends Error {};
+
+createPool('postgres://', {
+  errors: {
+    NotFoundError
+  }
+});
+```
+
+The following error types can be overridden:
+
+* `NotFoundError`
+
 ### Handling `NotFoundError`
 
 To handle the case where query returns less than one row, catch `NotFoundError` error.

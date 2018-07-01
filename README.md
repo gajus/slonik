@@ -30,9 +30,9 @@ A PostgreSQL client with strict types, detail logging and assertions.
         * [`one`](#slonik-query-methods-one)
         * [`oneFirst`](#slonik-query-methods-onefirst)
         * [`query`](#slonik-query-methods-query)
-    * [Overriding Error Constructor](#slonik-overriding-error-constructor)
-        * [`transaction`](#slonik-overriding-error-constructor-transaction)
+        * [`transaction`](#slonik-query-methods-transaction)
     * [Error handling](#slonik-error-handling)
+        * [Overriding Error Constructor](#slonik-error-handling-overriding-error-constructor)
         * [Handling `NotFoundError`](#slonik-error-handling-handling-notfounderror)
         * [Handling `DataIntegrityError`](#slonik-error-handling-handling-dataintegrityerror)
         * [Handling `UniqueViolationError`](#slonik-error-handling-handling-uniqueviolationerror)
@@ -46,6 +46,44 @@ A PostgreSQL client with strict types, detail logging and assertions.
 
 <a name="slonik-usage"></a>
 ## Usage
+
+Slonik exports two factory functions:
+
+* `createPool`
+* `createConnection`
+
+Both functions accept the same parameters:
+
+* `connectionConfiguration`
+* `clientConfiguration`
+
+```js
+type DatabaseConnectionUriType = string;
+
+type DatabaseConfigurationType =
+  DatabaseConnectionUriType |
+  {|
+    +database?: string,
+    +host?: string,
+    +idleTimeoutMillis?: number,
+    +max?: number,
+    +password?: string,
+    +port?: number,
+    +user?: string
+  |};
+
+type ClientConfigurationType = {|
+  +errors?: ClientErrorsConfigurationType,
+  +interceptors?: $ReadOnlyArray<InterceptorType>
+|};
+
+```
+
+The API of the query method is equivalent to that of [`pg`](https://travis-ci.org/brianc/node-postgres).
+
+Refer to [query methods](#slonik-query-methods) for documentation of Slonik-specific query methods.
+
+Example:
 
 ```js
 import {
@@ -391,30 +429,7 @@ const foo = await connection.oneFirst('SELECT foo');
 
 API and the result shape are equivalent to [`pg#query`](https://github.com/brianc/node-postgres).
 
-<a name="slonik-overriding-error-constructor"></a>
-## Overriding Error Constructor
-
-Overriding the error constructor used by Slonik allows you to map database layer errors to your application errors.
-
-```js
-import {
-  createPool
-} from 'slonik';
-
-class NotFoundError extends Error {};
-
-createPool('postgres://', {
-  errors: {
-    NotFoundError
-  }
-});
-```
-
-The following error types can be overridden:
-
-* `NotFoundError`
-
-<a name="slonik-overriding-error-constructor-transaction"></a>
+<a name="slonik-query-methods-transaction"></a>
 ### <code>transaction</code>
 
 `transaction` method is used wrap execution of queries in `START TRANSACTION` and `COMMIT` or `ROLLBACK`. `COMMIT` is called if the transaction handler returns a promise that resolves; `ROLLBACK` is called otherwise.
@@ -453,6 +468,29 @@ try {
 }
 
 ```
+
+<a name="slonik-error-handling-overriding-error-constructor"></a>
+### Overriding Error Constructor
+
+Overriding the error constructor used by Slonik allows you to map database layer errors to your application errors.
+
+```js
+import {
+  createPool
+} from 'slonik';
+
+class NotFoundError extends Error {};
+
+createPool('postgres://', {
+  errors: {
+    NotFoundError
+  }
+});
+```
+
+The following error types can be overridden:
+
+* `NotFoundError`
 
 <a name="slonik-error-handling-handling-notfounderror"></a>
 ### Handling <code>NotFoundError</code>

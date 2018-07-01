@@ -146,28 +146,6 @@ const foo = await connection.oneFirst('SELECT foo');
 
 API and the result shape are equivalent to [`pg#query`](https://github.com/brianc/node-postgres).
 
-## Overriding Error Constructor
-
-Overriding the error constructor used by Slonik allows you to map database layer errors to your application errors.
-
-```js
-import {
-  createPool
-} from 'slonik';
-
-class NotFoundError extends Error {};
-
-createPool('postgres://', {
-  errors: {
-    NotFoundError
-  }
-});
-```
-
-The following error types can be overridden:
-
-* `NotFoundError`
-
 ### `transaction`
 
 `transaction` method is used wrap execution of queries in `START TRANSACTION` and `COMMIT` or `ROLLBACK`. `COMMIT` is called if the transaction handler returns a promise that resolves; `ROLLBACK` is called otherwise.

@@ -110,8 +110,23 @@ export const query: InternalQueryFunctionType<*> = async (connection, clientConf
 
   const start = process.hrtime();
 
+  const interceptors = clientConfiguration && clientConfiguration.interceptors || [];
+
   try {
     let result;
+
+    for (const interceptor of interceptors) {
+      if (interceptor.beforeQuery) {
+        const maybeResult = await interceptor.beforeQuery({
+          sql: rawSql,
+          values
+        });
+
+        if (maybeResult) {
+          return maybeResult;
+        }
+      }
+    }
 
     if (Array.isArray(values)) {
       normalized = normalizeAnonymousValuePlaceholders(strippedSql, values);
@@ -127,6 +142,16 @@ export const query: InternalQueryFunctionType<*> = async (connection, clientConf
 
     result = await result;
 
+    for (const interceptor of interceptors) {
+      if (interceptor.afterQuery) {
+        await interceptor.afterQuery({
+          sql: rawSql,
+          values
+        }, result);
+      }
+    }
+
+    // @todo Use rowCount only if the query is UPDATE/ INSERT.
     if (result.rowCount) {
       rowCount = result.rowCount;
     } else if (Array.isArray(result)) {

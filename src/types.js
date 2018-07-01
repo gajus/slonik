@@ -24,15 +24,16 @@ type QueryResultType<T> = {
 // eslint-disable-next-line flowtype/no-weak-types
 type InternalDatabaseConnectionType = any;
 
-export type DatabaseConnectionUriType = string;
-
 export type ClientErrorsConfigurationType = {|
   +NotFoundError?: Class<Error>
 |};
 
-  +errors?: ClientErrorsConfigurationType
 export type ClientConfigurationType = {|
+  +errors?: ClientErrorsConfigurationType,
+  +interceptors?: $ReadOnlyArray<InterceptorType>
 |};
+
+export type DatabaseConnectionUriType = string;
 
 export type DatabaseConfigurationType =
   DatabaseConnectionUriType |
@@ -76,6 +77,11 @@ type QueryResultRowColumnType = string | number;
 export type QueryResultRowType = {
   [key: string]: QueryResultRowColumnType
 };
+
+export type QueryType = {|
+  +sql: string,
+  +values?: DatabaseQueryValuesType
+|};
 
 export type NormalizedQueryType = {|
   +sql: string,
@@ -186,3 +192,8 @@ export type QueryOneFirstFunctionType<T: QueryResultRowColumnType> = (sql: strin
 export type QueryOneFunctionType<T: QueryResultRowType> = (sql: string | TaggledTemplateLiteralInvocationType, values?: DatabaseQueryValuesType) => Promise<T>;
 export type QueryFunctionType<T: QueryResultRowType> = (sql: string | TaggledTemplateLiteralInvocationType, values?: DatabaseQueryValuesType) => Promise<QueryResultType<T>>;
 export type TransactionFunctionType = (handler: TransactionHandlerType) => Promise<*>;
+
+export type InterceptorType = {|
+  +beforeQuery?: (query: QueryType) => Promise<QueryResultType<QueryResultRowType>> | Promise<void> | QueryResultType<QueryResultRowType> | void,
+  +afterQuery?: (query: QueryType, result: QueryResultType<QueryResultRowType>) => Promise<void> | void
+|};
