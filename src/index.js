@@ -90,7 +90,7 @@ export {
 };
 
 // eslint-disable-next-line complexity
-export const query: InternalQueryFunctionType<*> = async (connection, rawSql, values, queryId) => {
+export const query: InternalQueryFunctionType<*> = async (connection, clientConfiguration, rawSql, values, queryId) => {
   let stackTrace;
 
   if (SLONIK_LOG_STACK_TRACE) {
@@ -178,7 +178,7 @@ export const query: InternalQueryFunctionType<*> = async (connection, rawSql, va
 export const one: InternalQueryOneFunctionType = async (connection, clientConfiguration, rawSql, values, queryId = ulid()) => {
   const {
     rows
-  } = await query(connection, rawSql, values, queryId);
+  } = await query(connection, clientConfiguration, rawSql, values, queryId);
 
   if (rows.length === 0) {
     log.error({
@@ -209,7 +209,7 @@ export const one: InternalQueryOneFunctionType = async (connection, clientConfig
 export const maybeOne: InternalQueryMaybeOneFunctionType = async (connection, clientConfiguration, rawSql, values, queryId = ulid()) => {
   const {
     rows
-  } = await query(connection, rawSql, values, queryId);
+  } = await query(connection, clientConfiguration, rawSql, values, queryId);
 
   if (rows.length === 0) {
     return null;
@@ -283,7 +283,7 @@ export const maybeOneFirst: InternalQueryMaybeOneFirstFunctionType = async (conn
 export const many: InternalQueryManyFunctionType = async (connection, clientConfiguration, rawSql, values, queryId = ulid()) => {
   const {
     rows
-  } = await query(connection, rawSql, values, queryId);
+  } = await query(connection, clientConfiguration, rawSql, values, queryId);
 
   if (rows.length === 0) {
     log.error({
@@ -340,7 +340,7 @@ export const manyFirst: InternalQueryManyFirstFunctionType = async (connection, 
 export const any: InternalQueryAnyFunctionType = async (connection, clientConfiguration, rawSql, values, queryId = ulid()) => {
   const {
     rows
-  } = await query(connection, rawSql, values, queryId);
+  } = await query(connection, clientConfiguration, rawSql, values, queryId);
 
   return rows;
 };
@@ -434,7 +434,7 @@ export const createConnection = async (
     maybeOneFirst: mapTaggedTemplateLiteralInvocation(maybeOneFirst.bind(null, connection, clientConfiguration)),
     one: mapTaggedTemplateLiteralInvocation(one.bind(null, connection, clientConfiguration)),
     oneFirst: mapTaggedTemplateLiteralInvocation(oneFirst.bind(null, connection, clientConfiguration)),
-    query: mapTaggedTemplateLiteralInvocation(query.bind(null, connection)),
+    query: mapTaggedTemplateLiteralInvocation(query.bind(null, connection, clientConfiguration)),
     transaction: (handler) => {
       return transaction(bindConnection, handler);
     }
@@ -461,7 +461,7 @@ export const createPool = (
       maybeOneFirst: mapTaggedTemplateLiteralInvocation(maybeOneFirst.bind(null, connection, clientConfiguration)),
       one: mapTaggedTemplateLiteralInvocation(one.bind(null, connection, clientConfiguration)),
       oneFirst: mapTaggedTemplateLiteralInvocation(oneFirst.bind(null, connection, clientConfiguration)),
-      query: mapTaggedTemplateLiteralInvocation(query.bind(null, connection)),
+      query: mapTaggedTemplateLiteralInvocation(query.bind(null, connection, clientConfiguration)),
       release: connection.release.bind(connection),
       transaction: (handler) => {
         return transaction(bindConnection, handler);
@@ -481,7 +481,7 @@ export const createPool = (
     maybeOneFirst: mapTaggedTemplateLiteralInvocation(maybeOneFirst.bind(null, pool, clientConfiguration)),
     one: mapTaggedTemplateLiteralInvocation(one.bind(null, pool, clientConfiguration)),
     oneFirst: mapTaggedTemplateLiteralInvocation(oneFirst.bind(null, pool, clientConfiguration)),
-    query: mapTaggedTemplateLiteralInvocation(query.bind(null, pool)),
+    query: mapTaggedTemplateLiteralInvocation(query.bind(null, pool, clientConfiguration)),
     transaction: async (handler) => {
       log.debug('allocating a new connection to execute the transaction');
 
