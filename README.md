@@ -60,6 +60,7 @@ await connection.query('SELECT 1');
 
 ```
 
+
 <a name="slonik-non-standard-behaviour"></a>
 ## Non-standard behaviour
 
@@ -229,6 +230,7 @@ connection.query(`INSERT INTO reservation_ticket (reservation_id, ticket_id) VAL
 This would expose your application to [SQL injection](https://en.wikipedia.org/wiki/SQL_injection).
 
 Therefore, I recommend using [`eslint-plugin-sql`](https://github.com/gajus/eslint-plugin-sql) `no-unsafe-query` rule. `no-unsafe-query` warns about use of SQL inside of template literals without the `sql` tag.
+
 
 <a name="slonik-query-methods"></a>
 ## Query methods
@@ -431,6 +433,7 @@ result === 'FOO';
 
 ```
 
+
 <a name="slonik-error-handling"></a>
 ## Error handling
 
@@ -542,6 +545,7 @@ export default async (
 
 ```
 
+
 <a name="slonik-debugging"></a>
 ## Debugging
 
@@ -590,6 +594,7 @@ values:
   - null
 
 ```
+
 
 <a name="slonik-syntax-highlighting"></a>
 ## Syntax highlighting
