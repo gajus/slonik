@@ -94,7 +94,7 @@ export {
 };
 
 // eslint-disable-next-line complexity
-export const query: InternalQueryFunctionType<*> = async (connection, clientConfiguration, rawSql, values, queryId) => {
+export const query: InternalQueryFunctionType<*> = async (connection, clientConfiguration, rawSql, values, queryId = ulid()) => {
   let stackTrace;
 
   if (SLONIK_LOG_STACK_TRACE) {
