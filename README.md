@@ -40,7 +40,6 @@ A PostgreSQL client with strict types, detail logging and assertions.
     * [Debugging](#slonik-debugging)
         * [Logging](#slonik-debugging-logging)
         * [Log stack trace](#slonik-debugging-log-stack-trace)
-        * [Long stack trace](#slonik-debugging-long-stack-trace)
     * [Syntax highlighting](#slonik-syntax-highlighting)
         * [Atom](#slonik-syntax-highlighting-atom)
 
@@ -589,33 +588,6 @@ values:
   - Solo: A Star Wars Story
   - null
   - null
-
-```
-
-<a name="slonik-debugging-long-stack-trace"></a>
-### Long stack trace
-
-Slonik conditionally uses [Bluebird](http://bluebirdjs.com/docs/api/promise.longstacktraces.html) when `BLUEBIRD_DEBUG=1` is configured.
-
-When Bluebird is run in a [debug mode](http://bluebirdjs.com/docs/api/promise.longstacktraces.html), then the stack trace is appended information about the origin of the query invocation, e.g.
-
-```
-error: duplicate key value violates unique constraint "public_movie_name_cinema_id0_idx"
-    at Connection.parseE (/node_modules/slonik/node_modules/pg/lib/connection.js:553:11)
-    at Connection.parseMessage (/node_modules/slonik/node_modules/pg/lib/connection.js:378:19)
-    at Socket.<anonymous> (/node_modules/slonik/node_modules/pg/lib/connection.js:119:22)
-    at Socket.emit (events.js:182:13)
-    at addChunk (_stream_readable.js:277:12)
-    at readableAddChunk (_stream_readable.js:262:11)
-    at Socket.Readable.push (_stream_readable.js:217:10)
-    at TCP.onread (net.js:638:20)
-From previous event:
-    at query (/node_modules/slonik/src/index.js:107:30)
-    at one (/node_modules/slonik/src/index.js:162:13)
-    at oneFirst (/node_modules/slonik/src/index.js:218:21)
-    at Object.oneFirst (/node_modules/slonik/src/utilities/mapTaggedTemplateLiteralInvocation.js:17:14)
-    at _default (/src/queries/insertCinemaMovieName.js:18:6)
-    at upsertCinemaMovieName (/src/routines/uploadData.js:154:33)
 
 ```
 

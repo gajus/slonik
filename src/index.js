@@ -6,7 +6,6 @@ import pg, {
 import {
   parse as parseConnectionString
 } from 'pg-connection-string';
-import Bluebird from 'bluebird';
 import {
   get as getStackTrace
 } from 'stack-trace';
@@ -121,11 +120,6 @@ export const query: InternalQueryType<*> = async (connection, rawSql, values, qu
       result = connection.query(normalized.sql, normalized.values);
     } else {
       result = connection.query(strippedSql);
-    }
-
-    // eslint-disable-next-line no-process-env
-    if (process.env.BLUEBIRD_DEBUG) {
-      result = Bluebird.resolve(result);
     }
 
     result = await result;
