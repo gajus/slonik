@@ -33,16 +33,16 @@ import type {
   DatabaseConfigurationType,
   DatabasePoolType,
   DatabaseSingleConnectionType,
-  InternalQueryAnyFirstType,
-  InternalQueryAnyType,
-  InternalQueryManyFirstType,
-  InternalQueryManyType,
-  InternalQueryMaybeOneFirstType,
-  InternalQueryMaybeOneType,
-  InternalQueryOneFirstType,
-  InternalQueryOneType,
-  InternalQueryType,
-  InternalTransactionType,
+  InternalQueryAnyFirstFunctionType,
+  InternalQueryAnyFunctionType,
+  InternalQueryManyFirstFunctionType,
+  InternalQueryManyFunctionType,
+  InternalQueryMaybeOneFirstFunctionType,
+  InternalQueryMaybeOneFunctionType,
+  InternalQueryOneFirstFunctionType,
+  InternalQueryOneFunctionType,
+  InternalQueryFunctionType,
+  InternalTransactionFunctionType,
   TaggledTemplateLiteralInvocationType
 } from './types';
 import Logger from './Logger';
@@ -90,7 +90,7 @@ export {
 };
 
 // eslint-disable-next-line complexity
-export const query: InternalQueryType<*> = async (connection, rawSql, values, queryId) => {
+export const query: InternalQueryFunctionType<*> = async (connection, rawSql, values, queryId) => {
   let stackTrace;
 
   if (SLONIK_LOG_STACK_TRACE) {
@@ -175,7 +175,7 @@ export const query: InternalQueryType<*> = async (connection, rawSql, values, qu
  * @throws NotFoundError If query returns no rows.
  * @throws DataIntegrityError If query returns multiple rows.
  */
-export const one: InternalQueryOneType = async (connection, clientConfiguration, rawSql, values, queryId = ulid()) => {
+export const one: InternalQueryOneFunctionType = async (connection, clientConfiguration, rawSql, values, queryId = ulid()) => {
   const {
     rows
   } = await query(connection, rawSql, values, queryId);
@@ -206,7 +206,7 @@ export const one: InternalQueryOneType = async (connection, clientConfiguration,
  *
  * @throws DataIntegrityError If query returns multiple rows.
  */
-export const maybeOne: InternalQueryMaybeOneType = async (connection, clientConfiguration, rawSql, values, queryId = ulid()) => {
+export const maybeOne: InternalQueryMaybeOneFunctionType = async (connection, clientConfiguration, rawSql, values, queryId = ulid()) => {
   const {
     rows
   } = await query(connection, rawSql, values, queryId);
@@ -233,7 +233,7 @@ export const maybeOne: InternalQueryMaybeOneType = async (connection, clientConf
  * @throws NotFoundError If query returns no rows.
  * @throws DataIntegrityError If query returns multiple rows.
  */
-export const oneFirst: InternalQueryOneFirstType = async (connection, clientConfiguration, rawSql, values, queryId = ulid()) => {
+export const oneFirst: InternalQueryOneFirstFunctionType = async (connection, clientConfiguration, rawSql, values, queryId = ulid()) => {
   const row = await one(connection, clientConfiguration, rawSql, values, queryId);
 
   const keys = Object.keys(row);
@@ -255,7 +255,7 @@ export const oneFirst: InternalQueryOneFirstType = async (connection, clientConf
  *
  * @throws DataIntegrityError If query returns multiple rows.
  */
-export const maybeOneFirst: InternalQueryMaybeOneFirstType = async (connection, clientConfiguration, rawSql, values, queryId = ulid()) => {
+export const maybeOneFirst: InternalQueryMaybeOneFirstFunctionType = async (connection, clientConfiguration, rawSql, values, queryId = ulid()) => {
   const row = await maybeOne(connection, clientConfiguration, rawSql, values, queryId);
 
   if (!row) {
@@ -280,7 +280,7 @@ export const maybeOneFirst: InternalQueryMaybeOneFirstType = async (connection, 
  *
  * @throws NotFoundError If query returns no rows.
  */
-export const many: InternalQueryManyType = async (connection, clientConfiguration, rawSql, values, queryId = ulid()) => {
+export const many: InternalQueryManyFunctionType = async (connection, clientConfiguration, rawSql, values, queryId = ulid()) => {
   const {
     rows
   } = await query(connection, rawSql, values, queryId);
@@ -298,7 +298,7 @@ export const many: InternalQueryManyType = async (connection, clientConfiguratio
   return rows;
 };
 
-export const manyFirst: InternalQueryManyFirstType = async (connection, clientConfigurationType, rawSql, values, queryId = ulid()) => {
+export const manyFirst: InternalQueryManyFirstFunctionType = async (connection, clientConfigurationType, rawSql, values, queryId = ulid()) => {
   const rows = await many(connection, clientConfigurationType, rawSql, values, queryId);
 
   if (rows.length === 0) {
@@ -337,7 +337,7 @@ export const manyFirst: InternalQueryManyFirstType = async (connection, clientCo
 /**
  * Makes a query and expects any number of results.
  */
-export const any: InternalQueryAnyType = async (connection, clientConfiguration, rawSql, values, queryId = ulid()) => {
+export const any: InternalQueryAnyFunctionType = async (connection, clientConfiguration, rawSql, values, queryId = ulid()) => {
   const {
     rows
   } = await query(connection, rawSql, values, queryId);
@@ -345,7 +345,7 @@ export const any: InternalQueryAnyType = async (connection, clientConfiguration,
   return rows;
 };
 
-export const anyFirst: InternalQueryAnyFirstType = async (connection, clientConfigurationType, rawSql, values, queryId = ulid()) => {
+export const anyFirst: InternalQueryAnyFirstFunctionType = async (connection, clientConfigurationType, rawSql, values, queryId = ulid()) => {
   const rows = await any(connection, clientConfigurationType, rawSql, values, queryId);
 
   if (rows.length === 0) {
@@ -377,7 +377,7 @@ export const anyFirst: InternalQueryAnyFirstType = async (connection, clientConf
   });
 };
 
-export const transaction: InternalTransactionType = async (connection, handler) => {
+export const transaction: InternalTransactionFunctionType = async (connection, handler) => {
   await connection.query('START TRANSACTION');
 
   try {
