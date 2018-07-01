@@ -52,6 +52,9 @@ import {
   SLONIK_LOG_VALUES
 } from './config';
 
+// @see https://github.com/facebook/flow/issues/2977#issuecomment-390613203
+const defaultClientConfiguration = Object.freeze({});
+
 // eslint-disable-next-line id-match
 const INT8_OID = 20;
 const TIMESTAMPTZ_OID = 1184;
@@ -406,7 +409,7 @@ export const sql = (parts: $ReadOnlyArray<string>, ...values: AnonymouseValuePla
 
 export const createConnection = async (
   connectionConfiguration: DatabaseConfigurationType,
-  clientConfiguration: ClientConfigurationType = {}
+  clientConfiguration: ClientConfigurationType = defaultClientConfiguration
 ): Promise<DatabaseSingleConnectionType> => {
   const pool = new pg.Pool(typeof connectionConfiguration === 'string' ? parseConnectionString(connectionConfiguration) : connectionConfiguration);
 
@@ -445,7 +448,7 @@ export const createConnection = async (
 
 export const createPool = (
   connectionConfiguration: DatabaseConfigurationType,
-  clientConfiguration: ClientConfigurationType = {}
+  clientConfiguration: ClientConfigurationType = defaultClientConfiguration
 ): DatabasePoolType => {
   const pool = new pg.Pool(typeof connectionConfiguration === 'string' ? parseConnectionString(connectionConfiguration) : connectionConfiguration);
 
