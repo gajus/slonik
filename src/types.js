@@ -15,7 +15,7 @@ type FieldType = {
 type QueryResultType<T> = {
   +command: 'DELETE' | 'INSERT' | 'SELECT' | 'UPDATE',
   +fields: $ReadOnlyArray<FieldType>,
-  +oid: number,
+  +oid: number | null,
   +rowAsArray: boolean,
   +rowCount: number,
   +rows: $ReadOnlyArray<T>
