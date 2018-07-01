@@ -11,3 +11,4 @@ node_modules
 !.gitignore
 !.npmignore
 !.travis.yml
+!.README

@@ -1,3 +1,4 @@
+<a name="slonik"></a>
 # Slonik
 
 [![Travis build status](http://img.shields.io/travis/gajus/slonik/master.svg?style=flat-square)](https://travis-ci.org/gajus/slonik)
@@ -8,42 +9,43 @@
 
 A PostgreSQL client with strict types, detail logging and assertions.
 
-* [Usage](#usage)
-* [Non-standard behaviour](#non-standard-behaviour)
-* [Conventions](#conventions)
-  * [No multiline values](#no-multiline-values)
-* [Value placeholders](#value-placeholders)
-  * [A value set](#a-value-set)
-  * [Multiple value sets](#multiple-value-sets)
-  * [Named placeholders](#named-placeholders)
-  * [Tagged template literals](#tagged-template-literals)
-    * [Guarding against accidental unescaped input](#guarding-against-accidental-unescaped-input)
-* [Query methods](#query-methods)
-  * [`any`](#any)
-  * [`anyFirst`](#anyfirst)
-  * [`insert`](#insert)
-  * [`many`](#many)
-  * [`manyFirst`](#manyfirst)
-  * [`maybeOne`](#maybeone)
-  * [`maybeOneFirst`](#maybeonefirst)
-  * [`one`](#one)
-  * [`oneFirst`](#onefirst)
-  * [`query`](#query)
-  * [`transaction`](#transaction)
-* [Overriding Error Constructor](#overriding-error-constructor)
-* [Error handling](#error-handling)
-  * [Handling `NotFoundError`](#handling-notfounderror)
-  * [Handling `DataIntegrityError`](#handling-dataintengrityerror)
-  * [Handling `UniqueViolationError`](#handling-uniqueviolationerror)
-* [Utilities](#utilities)
-* [Types](#types)
-* [Debugging](#debugging)
-  * [Logging](#logging)
-  * [Log stack trace](#log-stack-trace)
-  * [Long stack trace](#long-stack-trace)
-* [Syntax highlighting](#syntax-highlighting)
-  * [Atom](#atom)
+* [Slonik](#slonik)
+    * [Usage](#slonik-usage)
+    * [Non-standard behaviour](#slonik-non-standard-behaviour)
+    * [Conventions](#slonik-conventions)
+        * [No multiline values](#slonik-conventions-no-multiline-values)
+    * [Value placeholders](#slonik-value-placeholders)
+        * [A value set](#slonik-value-placeholders-a-value-set)
+        * [Multiple value sets](#slonik-value-placeholders-multiple-value-sets)
+        * [Named placeholders](#slonik-value-placeholders-named-placeholders)
+        * [Tagged template literals](#slonik-value-placeholders-tagged-template-literals)
+    * [Query methods](#slonik-query-methods)
+        * [`any`](#slonik-query-methods-any)
+        * [`anyFirst`](#slonik-query-methods-anyfirst)
+        * [`insert`](#slonik-query-methods-insert)
+        * [`many`](#slonik-query-methods-many)
+        * [`manyFirst`](#slonik-query-methods-manyfirst)
+        * [`maybeOne`](#slonik-query-methods-maybeone)
+        * [`maybeOneFirst`](#slonik-query-methods-maybeonefirst)
+        * [`one`](#slonik-query-methods-one)
+        * [`oneFirst`](#slonik-query-methods-onefirst)
+        * [`query`](#slonik-query-methods-query)
+    * [Overriding Error Constructor](#slonik-overriding-error-constructor)
+        * [`transaction`](#slonik-overriding-error-constructor-transaction)
+    * [Error handling](#slonik-error-handling)
+        * [Handling `NotFoundError`](#slonik-error-handling-handling-notfounderror)
+        * [Handling `DataIntegrityError`](#slonik-error-handling-handling-dataintegrityerror)
+        * [Handling `UniqueViolationError`](#slonik-error-handling-handling-uniqueviolationerror)
+    * [Types](#slonik-types)
+    * [Debugging](#slonik-debugging)
+        * [Logging](#slonik-debugging-logging)
+        * [Log stack trace](#slonik-debugging-log-stack-trace)
+        * [Long stack trace](#slonik-debugging-long-stack-trace)
+    * [Syntax highlighting](#slonik-syntax-highlighting)
+        * [Atom](#slonik-syntax-highlighting-atom)
 
+
+<a name="slonik-usage"></a>
 ## Usage
 
 ```js
@@ -59,12 +61,15 @@ await connection.query('SELECT 1');
 
 ```
 
+<a name="slonik-non-standard-behaviour"></a>
 ## Non-standard behaviour
 
 * `timestamp` and `timestamp with time zone` returns UNIX timestamp in milliseconds.
 
+<a name="slonik-conventions"></a>
 ## Conventions
 
+<a name="slonik-conventions-no-multiline-values"></a>
 ### No multiline values
 
 Slonik will strip all comments and line-breaks from a query before processing it.
@@ -88,6 +93,7 @@ connection.query(`INSERT INTO foo (bar) VALUES (?)`, [
 
 ```
 
+<a name="slonik-value-placeholders"></a>
 ## Value placeholders
 
 Slonik enables use of question mark (`?`) value placeholders, e.g.
@@ -107,6 +113,7 @@ SELECT $1
 
 > Do not mix question mark and positional value placeholders in a single query.
 
+<a name="slonik-value-placeholders-a-value-set"></a>
 ### A value set
 
 A question mark is interpolated into a value set when the associated value is an array, e.g.
@@ -129,6 +136,7 @@ SELECT ($1, $2, $3)
 
 ```
 
+<a name="slonik-value-placeholders-multiple-value-sets"></a>
 ### Multiple value sets
 
 A question mark is interpolated into a list of value sets when the associated value is an array of arrays, e.g.
@@ -158,6 +166,7 @@ SELECT ($1, $2, $3), ($4, $5, $6)
 
 ```
 
+<a name="slonik-value-placeholders-named-placeholders"></a>
 ### Named placeholders
 
 A `:[a-zA-Z]` regex is used to match named placeholders.
@@ -176,6 +185,7 @@ SELECT $1
 
 ```
 
+<a name="slonik-value-placeholders-tagged-template-literals"></a>
 ### Tagged template literals
 
 Query methods can be executed using `sql` [tagged template literal](https://developer.mozilla.org/en/docs/Web/JavaScript/Reference/Template_literals#Tagged_template_literals), e.g.
@@ -198,6 +208,7 @@ connection.query('INSERT INTO reservation_ticket (reservation_id, ticket_id) VAL
 
 ```
 
+<a name="slonik-value-placeholders-tagged-template-literals-guarding-against-accidental-unescaped-input"></a>
 #### Guarding against accidental unescaped input
 
 When using tagged template literals, it is easy to forget to add the `sql` tag, i.e.
@@ -220,9 +231,11 @@ This would expose your application to [SQL injection](https://en.wikipedia.org/w
 
 Therefore, I recommend using [`eslint-plugin-sql`](https://github.com/gajus/eslint-plugin-sql) `no-unsafe-query` rule. `no-unsafe-query` warns about use of SQL inside of template literals without the `sql` tag.
 
+<a name="slonik-query-methods"></a>
 ## Query methods
 
-### `any`
+<a name="slonik-query-methods-any"></a>
+### <code>any</code>
 
 Returns result rows.
 
@@ -235,7 +248,8 @@ const rows = await connection.any('SELECT foo');
 
 ```
 
-### `anyFirst`
+<a name="slonik-query-methods-anyfirst"></a>
+### <code>anyFirst</code>
 
 Returns value of the first column of every row in the result set.
 
@@ -248,7 +262,8 @@ const fooValues = await connection.anyFirst('SELECT foo');
 
 ```
 
-### `insert`
+<a name="slonik-query-methods-insert"></a>
+### <code>insert</code>
 
 Designed to use when inserting 1 row.
 
@@ -264,7 +279,8 @@ const {
 
 ```
 
-### `many`
+<a name="slonik-query-methods-many"></a>
+### <code>many</code>
 
 Returns result rows.
 
@@ -277,7 +293,8 @@ const rows = await connection.many('SELECT foo');
 
 ```
 
-### `manyFirst`
+<a name="slonik-query-methods-manyfirst"></a>
+### <code>manyFirst</code>
 
 Returns value of the first column of every row in the result set.
 
@@ -291,7 +308,8 @@ const fooValues = await connection.many('SELECT foo');
 
 ```
 
-### `maybeOne`
+<a name="slonik-query-methods-maybeone"></a>
+### <code>maybeOne</code>
 
 Selects the first row from the result.
 
@@ -307,7 +325,8 @@ const row = await connection.maybeOne('SELECT foo');
 
 ```
 
-### `maybeOneFirst`
+<a name="slonik-query-methods-maybeonefirst"></a>
+### <code>maybeOneFirst</code>
 
 Returns value of the first column from the first row.
 
@@ -324,7 +343,8 @@ const foo = await connection.maybeOneFirst('SELECT foo');
 
 ```
 
-### `one`
+<a name="slonik-query-methods-one"></a>
+### <code>one</code>
 
 Selects the first row from the result.
 
@@ -347,7 +367,8 @@ const row = await connection.one('SELECT foo');
 > `knex` is a query builder; it does not assert the value of the result.
 > Slonik `one` adds assertions about the result of the query.
 
-### `oneFirst`
+<a name="slonik-query-methods-onefirst"></a>
+### <code>oneFirst</code>
 
 Returns value of the first column from the first row.
 
@@ -364,10 +385,12 @@ const foo = await connection.oneFirst('SELECT foo');
 
 ```
 
-### `query`
+<a name="slonik-query-methods-query"></a>
+### <code>query</code>
 
 API and the result shape are equivalent to [`pg#query`](https://github.com/brianc/node-postgres).
 
+<a name="slonik-overriding-error-constructor"></a>
 ## Overriding Error Constructor
 
 Overriding the error constructor used by Slonik allows you to map database layer errors to your application errors.
@@ -390,7 +413,8 @@ The following error types can be overridden:
 
 * `NotFoundError`
 
-### `transaction`
+<a name="slonik-overriding-error-constructor-transaction"></a>
+### <code>transaction</code>
 
 `transaction` method is used wrap execution of queries in `START TRANSACTION` and `COMMIT` or `ROLLBACK`. `COMMIT` is called if the transaction handler returns a promise that resolves; `ROLLBACK` is called otherwise.
 
@@ -408,6 +432,7 @@ result === 'FOO';
 
 ```
 
+<a name="slonik-error-handling"></a>
 ## Error handling
 
 All Slonik errors extend from `SlonikError`, i.e. You can catch Slonik specific errors using the following logic.
@@ -427,7 +452,8 @@ try {
 
 ```
 
-### Handling `NotFoundError`
+<a name="slonik-error-handling-handling-notfounderror"></a>
+### Handling <code>NotFoundError</code>
 
 To handle the case where query returns less than one row, catch `NotFoundError` error.
 
@@ -452,7 +478,8 @@ if (row) {
 
 ```
 
-### Handling `DataIntegrityError`
+<a name="slonik-error-handling-handling-dataintegrityerror"></a>
+### Handling <code>DataIntegrityError</code>
 
 To handle the case where the data result does not match the expectations, catch `DataIntegrityError` error.
 
@@ -475,10 +502,12 @@ try {
 
 ```
 
-### Handling `UniqueViolationError`
+<a name="slonik-error-handling-handling-uniqueviolationerror"></a>
+### Handling <code>UniqueViolationError</code>
 
 `UniqueViolationError` is thrown when Postgres responds with [`unique_violation`](https://www.postgresql.org/docs/9.4/static/errcodes-appendix.html) (`23505`) error.
 
+<a name="slonik-types"></a>
 ## Types
 
 This package is using [Flow](https://flow.org/) types.
@@ -514,8 +543,10 @@ export default async (
 
 ```
 
+<a name="slonik-debugging"></a>
 ## Debugging
 
+<a name="slonik-debugging-logging"></a>
 ### Logging
 
 Slonik uses [roarr](https://github.com/gajus/roarr) to log queries.
@@ -535,6 +566,7 @@ export SLONIK_LOG_NORMALISED=true
 
 ```
 
+<a name="slonik-debugging-log-stack-trace"></a>
 ### Log stack trace
 
 `SLONIK_LOG_STACK_TRACE=1` will create a stack trace before invoking the query and include the stack trace in the logs, e.g.
@@ -560,6 +592,7 @@ values:
 
 ```
 
+<a name="slonik-debugging-long-stack-trace"></a>
 ### Long stack trace
 
 Slonik conditionally uses [Bluebird](http://bluebirdjs.com/docs/api/promise.longstacktraces.html) when `BLUEBIRD_DEBUG=1` is configured.
@@ -586,8 +619,10 @@ From previous event:
 
 ```
 
+<a name="slonik-syntax-highlighting"></a>
 ## Syntax highlighting
 
+<a name="slonik-syntax-highlighting-atom"></a>
 ### Atom
 
 Using [Atom](https://atom.io/) IDE you can leverage the [`language-babel`](https://github.com/gandm/language-babel) package in combination with the [`language-sql`](https://github.com/atom/language-sql) to enable highlighting of the SQL strings in the codebase.
