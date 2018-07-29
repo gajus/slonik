@@ -31,7 +31,7 @@ import {
   stripComments
 } from './utilities';
 import type {
-  AnonymouseValuePlaceholderValuesType,
+  AnonymouseValuePlaceholderValueType,
   ClientConfigurationType,
   DatabaseConfigurationType,
   DatabasePoolType,
@@ -444,7 +444,7 @@ export const transaction: InternalTransactionFunctionType = async (connection, h
   }
 };
 
-export const sql = (parts: $ReadOnlyArray<string>, ...values: AnonymouseValuePlaceholderValuesType): TaggledTemplateLiteralInvocationType => {
+export const sql = (parts: $ReadOnlyArray<string>, ...values: $ReadOnlyArray<AnonymouseValuePlaceholderValueType>): TaggledTemplateLiteralInvocationType => {
   return {
     sql: parts.join('?'),
     values

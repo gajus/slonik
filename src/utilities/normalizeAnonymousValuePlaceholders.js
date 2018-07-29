@@ -2,7 +2,7 @@
 
 import arrayFlatten from 'array-flatten';
 import type {
-  AnonymouseValuePlaceholderValuesType,
+  AnonymouseValuePlaceholderValueType,
   NormalizedQueryType
 } from '../types';
 
@@ -14,7 +14,7 @@ const anonymousePlaceholdersRegex = /\?/g;
 // eslint-disable-next-line complexity
 export default (
   sql: string,
-  values: AnonymouseValuePlaceholderValuesType = []
+  values: $ReadOnlyArray<AnonymouseValuePlaceholderValueType> = []
 ): NormalizedQueryType => {
   if (!anonymousePlaceholdersRegex.test(sql)) {
     return {

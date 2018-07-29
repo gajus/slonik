@@ -97,14 +97,12 @@ export type AnonymouseValuePlaceholderValueType =
   $ReadOnlyArray<QueryPrimitiveValueType | $ReadOnlyArray<QueryPrimitiveValueType>> |
   QueryPrimitiveValueType;
 
-export type AnonymouseValuePlaceholderValuesType = $ReadOnlyArray<AnonymouseValuePlaceholderValueType>;
-
 export type NamedValuePlaceholderValuesType = {
   +[key: string]: string | number | null
 };
 
 export type DatabaseQueryValuesType =
-  AnonymouseValuePlaceholderValuesType |
+  $ReadOnlyArray<AnonymouseValuePlaceholderValueType> |
   NamedValuePlaceholderValuesType;
 
 export type TaggledTemplateLiteralInvocationType = {
