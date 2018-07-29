@@ -505,6 +505,12 @@ export const createConnection = async (
 ): Promise<DatabaseSingleConnectionType> => {
   const pool = new pg.Pool(typeof connectionConfiguration === 'string' ? parseConnectionString(connectionConfiguration) : connectionConfiguration);
 
+  pool.on('error', (error) => {
+    log.error({
+      error: serializeError(error)
+    }, 'client connection error');
+  });
+
   pool.on('connect', (client) => {
     log.info({
       processId: client.processID,
@@ -576,6 +582,12 @@ export const createPool = (
   clientConfiguration: ClientConfigurationType = defaultClientConfiguration
 ): DatabasePoolType => {
   const pool = new pg.Pool(typeof connectionConfiguration === 'string' ? parseConnectionString(connectionConfiguration) : connectionConfiguration);
+
+  pool.on('error', (error) => {
+    log.error({
+      error: serializeError(error)
+    }, 'client connection error');
+  });
 
   pool.on('connect', (client) => {
     log.info({
