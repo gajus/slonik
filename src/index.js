@@ -505,6 +505,39 @@ export const createConnection = async (
 ): Promise<DatabaseSingleConnectionType> => {
   const pool = new pg.Pool(typeof connectionConfiguration === 'string' ? parseConnectionString(connectionConfiguration) : connectionConfiguration);
 
+  pool.on('connect', (client) => {
+    log.info({
+      processId: client.processID,
+      stats: {
+        idleConnectionCount: pool.idleCount,
+        totalConnectionCount: pool.totalCount,
+        waitingRequestCount: pool.waitingCount
+      }
+    }, 'created a new client connection');
+  });
+
+  pool.on('acquire', (client) => {
+    log.info({
+      processId: client.processID,
+      stats: {
+        idleConnectionCount: pool.idleCount,
+        totalConnectionCount: pool.totalCount,
+        waitingRequestCount: pool.waitingCount
+      }
+    }, 'client is checked out from the pool');
+  });
+
+  pool.on('remove', (client) => {
+    log.info({
+      processId: client.processID,
+      stats: {
+        idleConnectionCount: pool.idleCount,
+        totalConnectionCount: pool.totalCount,
+        waitingRequestCount: pool.waitingCount
+      }
+    }, 'client connection is closed and removed from the client pool');
+  });
+
   const connection = await pool.connect();
 
   let ended = false;
@@ -543,6 +576,39 @@ export const createPool = (
   clientConfiguration: ClientConfigurationType = defaultClientConfiguration
 ): DatabasePoolType => {
   const pool = new pg.Pool(typeof connectionConfiguration === 'string' ? parseConnectionString(connectionConfiguration) : connectionConfiguration);
+
+  pool.on('connect', (client) => {
+    log.info({
+      processId: client.processID,
+      stats: {
+        idleConnectionCount: pool.idleCount,
+        totalConnectionCount: pool.totalCount,
+        waitingRequestCount: pool.waitingCount
+      }
+    }, 'created a new client connection');
+  });
+
+  pool.on('acquire', (client) => {
+    log.info({
+      processId: client.processID,
+      stats: {
+        idleConnectionCount: pool.idleCount,
+        totalConnectionCount: pool.totalCount,
+        waitingRequestCount: pool.waitingCount
+      }
+    }, 'client is checked out from the pool');
+  });
+
+  pool.on('remove', (client) => {
+    log.info({
+      processId: client.processID,
+      stats: {
+        idleConnectionCount: pool.idleCount,
+        totalConnectionCount: pool.totalCount,
+        waitingRequestCount: pool.waitingCount
+      }
+    }, 'client connection is closed and removed from the client pool');
+  });
 
   const connect = async () => {
     const connection = await pool.connect();
@@ -587,7 +653,7 @@ export const createPool = (
       try {
         result = await connection.transaction(handler);
       } finally {
-        log.debug('releasing the connection that was earlier secured to execute the transaction');
+        log.debug('releasing the connection that was earlier secured to execute a transaction');
 
         await connection.release();
       }
