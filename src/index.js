@@ -25,6 +25,7 @@ import {
   UniqueIntegrityConstraintViolationError
 } from './errors';
 import {
+  escapeIdentifier,
   mapTaggedTemplateLiteralInvocation,
   normalizeAnonymousValuePlaceholders,
   normalizeNamedValuePlaceholders,
@@ -46,6 +47,7 @@ import type {
   InternalQueryOneFirstFunctionType,
   InternalQueryOneFunctionType,
   InternalTransactionFunctionType,
+  QueryIdentifierType,
   TaggledTemplateLiteralInvocationType
 } from './types';
 import Logger from './Logger';
@@ -81,6 +83,50 @@ const log = Logger.child({
 
 const ulid = ulidFactory(detectPrng(true));
 
+const sql = (parts: $ReadOnlyArray<string>, ...values: $ReadOnlyArray<AnonymouseValuePlaceholderValueType>): TaggledTemplateLiteralInvocationType => {
+  let raw = '';
+
+  const bindings = [];
+
+  let index = 0;
+
+  for (const part of parts) {
+    const value = values[index++];
+
+    raw += part;
+
+    if (index >= parts.length) {
+      // eslint-disable-next-line no-continue
+      continue;
+    }
+
+    if (value && Array.isArray(value.names) && value.type === 'IDENTIFIER') {
+      raw += value.names.map(escapeIdentifier).join('.');
+
+      // eslint-disable-next-line no-continue
+      continue;
+    } else {
+      raw += '?';
+
+      bindings.push(value);
+    }
+  }
+
+  return {
+    sql: raw,
+    values: bindings
+  };
+};
+
+sql.identifier = (names: $ReadOnlyArray<string>): QueryIdentifierType => {
+  // @todo Replace `type` with a symbol once Flow adds symbol support
+  // @see https://github.com/facebook/flow/issues/810
+  return {
+    names,
+    type: 'IDENTIFIER'
+  };
+};
+
 export type {
   DatabaseConnectionType,
   DatabasePoolConnectionType,
@@ -96,6 +142,7 @@ export {
   NotFoundError,
   NotNullIntegrityConstraintViolationError,
   SlonikError,
+  sql,
   UniqueIntegrityConstraintViolationError
 };
 
@@ -442,13 +489,6 @@ export const transaction: InternalTransactionFunctionType = async (connection, h
 
     throw error;
   }
-};
-
-export const sql = (parts: $ReadOnlyArray<string>, ...values: $ReadOnlyArray<AnonymouseValuePlaceholderValueType>): TaggledTemplateLiteralInvocationType => {
-  return {
-    sql: parts.join('?'),
-    values
-  };
 };
 
 export const createConnection = async (

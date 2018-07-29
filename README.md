@@ -306,6 +306,23 @@ connection.query('INSERT INTO reservation_ticket (reservation_id, ticket_id) VAL
 
 ```
 
+<a name="slonik-value-placeholders-tagged-template-literals-creating-dynamic-delimited-identifiers"></a>
+#### Creating dynamic delimited identifiers
+
+[Delimited identifiers](https://www.postgresql.org/docs/current/static/sql-syntax-lexical.html#SQL-SYNTAX-IDENTIFIERS) are created by enclosing an arbitrary sequence of characters in double-quotes ("). To create create a delimited identifier, create an `sql` tag function placeholder value using `sql.identifier`, e.g.
+
+```js
+sql`SELECT ${'foo'} FROM ${sql.identifier(['bar', 'baz'])}`;
+
+// {
+//   sql: 'SELECT ? FROM "bar"."baz"',
+//   values: [
+//     'foo'
+//   ]
+// }
+
+```
+
 <a name="slonik-value-placeholders-tagged-template-literals-guarding-against-accidental-unescaped-input"></a>
 #### Guarding against accidental unescaped input
 

@@ -88,6 +88,11 @@ export type NormalizedQueryType = {|
   +values: $ReadOnlyArray<*>
 |};
 
+export type QueryIdentifierType = {|
+  names: $ReadOnlyArray<string>,
+  type: 'IDENTIFIER'
+|};
+
 type QueryPrimitiveValueType = string | number | null;
 
 export type AnonymouseValuePlaceholderValueType =
@@ -95,7 +100,8 @@ export type AnonymouseValuePlaceholderValueType =
   // INSERT ... VALUES ? => INSERT ... VALUES (1, 2, 3); [[1, 2, 3]]
   // INSERT ... VALUES ? => INSERT ... VALUES (1), (2), (3); [[[1], [2], [3]]]
   $ReadOnlyArray<QueryPrimitiveValueType | $ReadOnlyArray<QueryPrimitiveValueType>> |
-  QueryPrimitiveValueType;
+  QueryPrimitiveValueType |
+  QueryIdentifierType;
 
 export type NamedValuePlaceholderValuesType = {
   +[key: string]: string | number | null
