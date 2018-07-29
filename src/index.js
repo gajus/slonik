@@ -101,7 +101,15 @@ const sql = (parts: $ReadOnlyArray<string>, ...values: $ReadOnlyArray<Anonymouse
     }
 
     if (value && Array.isArray(value.names) && value.type === 'IDENTIFIER') {
-      raw += value.names.map(escapeIdentifier).join('.');
+      raw += value.names
+        .map((identifierName) => {
+          if (typeof identifierName !== 'string') {
+            throw new TypeError('Identifier name must be a string.');
+          }
+
+          return escapeIdentifier(identifierName);
+        })
+        .join('.');
 
       // eslint-disable-next-line no-continue
       continue;
