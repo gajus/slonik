@@ -546,6 +546,12 @@ export const createConnection = async (
 
   const connection = await pool.connect();
 
+  connection.on('notice', (notice) => {
+    log.info({
+      notice
+    }, 'notice message');
+  });
+
   let ended = false;
 
   const bindConnection = {
@@ -624,6 +630,12 @@ export const createPool = (
 
   const connect = async () => {
     const connection = await pool.connect();
+
+    connection.on('notice', (notice) => {
+      log.info({
+        notice
+      }, 'notice message');
+    });
 
     const bindConnection = {
       any: mapTaggedTemplateLiteralInvocation(any.bind(null, connection, clientConfiguration)),
