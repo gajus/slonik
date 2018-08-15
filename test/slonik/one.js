@@ -42,7 +42,7 @@ test('throws an error if no rows are returned', async (t) => {
     query: stub
   };
 
-  await t.throws(one(connection, {}, ''), NotFoundError);
+  await t.throwsAsync(one(connection, {}, ''), NotFoundError);
 });
 
 test('throws an error if no rows are returned (user defined error constructor)', async (t) => {
@@ -60,7 +60,7 @@ test('throws an error if no rows are returned (user defined error constructor)',
     }
   };
 
-  await t.throws(one(connection, clientConfiguration, ''), TestError);
+  await t.throwsAsync(one(connection, clientConfiguration, ''), TestError);
 });
 
 test('throws an error if more than one row is returned', async (t) => {
@@ -79,5 +79,5 @@ test('throws an error if more than one row is returned', async (t) => {
     query: stub
   };
 
-  await t.throws(one(connection, {}, ''), DataIntegrityError);
+  await t.throwsAsync(one(connection, {}, ''), DataIntegrityError);
 });

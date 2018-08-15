@@ -50,7 +50,7 @@ test('rollbacks unsuccessful transaction', async (t) => {
     throw new Error('Instigated error.');
   });
 
-  await t.throws(transactionExecution);
+  await t.throwsAsync(transactionExecution);
 
   t.true(query.args[0].length === 1);
   t.true(query.args[0][0] === 'START TRANSACTION');

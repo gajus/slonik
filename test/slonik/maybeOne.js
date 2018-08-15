@@ -59,5 +59,5 @@ test('throws an error if more than one row is returned', async (t) => {
     query: stub
   };
 
-  await t.throws(maybeOne(connection, {}, ''), DataIntegrityError);
+  await t.throwsAsync(maybeOne(connection, {}, ''), DataIntegrityError);
 });

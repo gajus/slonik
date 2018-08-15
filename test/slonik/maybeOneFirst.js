@@ -57,7 +57,7 @@ test('throws an error if more than one row is returned', async (t) => {
     query: stub
   };
 
-  await t.throws(maybeOneFirst(connection, {}, ''), DataIntegrityError);
+  await t.throwsAsync(maybeOneFirst(connection, {}, ''), DataIntegrityError);
 });
 
 test('throws an error if more than one column is returned', async (t) => {
@@ -74,5 +74,5 @@ test('throws an error if more than one column is returned', async (t) => {
     query: stub
   };
 
-  await t.throws(maybeOneFirst(connection, {}, ''), DataIntegrityError);
+  await t.throwsAsync(maybeOneFirst(connection, {}, ''), DataIntegrityError);
 });
