@@ -7,8 +7,9 @@ import {
   parse as parseConnectionString
 } from 'pg-connection-string';
 import {
-  get as getStackTrace
-} from 'stack-trace';
+  getOriginalStackTrace,
+  getStackTrace
+} from 'get-stack-trace';
 import serializeError from 'serialize-error';
 import prettyHrtime from 'pretty-hrtime';
 import {
@@ -159,9 +160,18 @@ export const query: InternalQueryFunctionType<*> = async (connection, clientConf
   let stackTrace;
 
   if (SLONIK_LOG_STACK_TRACE) {
-    stackTrace = getStackTrace()
+    const callSites = await getOriginalStackTrace(getStackTrace());
+
+    stackTrace = callSites
       .map((callSite) => {
-        return callSite.getFileName() + ':' + callSite.getLineNumber() + ':' + callSite.getColumnNumber();
+        const oncs = callSite.originalNormalisedCallSite;
+        const rncs = callSite.reportedNormalisedCallSite;
+
+        if (oncs) {
+          return oncs.fileName + ':' + oncs.lineNumber + ':' + oncs.columnNumber;
+        }
+
+        return rncs.fileName + ':' + rncs.lineNumber + ':' + rncs.columnNumber;
       });
   }
 
