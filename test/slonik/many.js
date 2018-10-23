@@ -4,13 +4,10 @@
 
 import test from 'ava';
 import sinon from 'sinon';
-import ExtendableError from 'es6-error';
 import {
   many,
   NotFoundError
 } from '../../src';
-
-class TestError extends ExtendableError {}
 
 test('returns the query results rows', async (t) => {
   const stub = sinon.stub().returns({
@@ -50,22 +47,4 @@ test('throws an error if no rows are returned', async (t) => {
   };
 
   await t.throwsAsync(many(connection, {}, ''), NotFoundError);
-});
-
-test('throws an error if no rows are returned (user defined error constructor)', async (t) => {
-  const stub = sinon.stub().returns({
-    rows: []
-  });
-
-  const connection: any = {
-    query: stub
-  };
-
-  const clientConfiguration = {
-    errors: {
-      NotFoundError: TestError
-    }
-  };
-
-  await t.throwsAsync(many(connection, clientConfiguration, ''), TestError);
 });

@@ -47,7 +47,6 @@ type DatabaseConfigurationType =
   |};
 
 type ClientConfigurationType = {|
-  +errors?: ClientErrorsConfigurationType,
   +interceptors?: $ReadOnlyArray<InterceptorType>
 |};
 

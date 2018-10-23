@@ -24,12 +24,7 @@ type QueryResultType<T> = {
 // eslint-disable-next-line flowtype/no-weak-types
 type InternalDatabaseConnectionType = any;
 
-export type ClientErrorsConfigurationType = {|
-  +NotFoundError?: Class<Error>
-|};
-
 export type ClientConfigurationType = {|
-  +errors?: ClientErrorsConfigurationType,
   +interceptors?: $ReadOnlyArray<InterceptorType>
 |};
 
@@ -48,15 +43,6 @@ export type DatabaseConfigurationType =
   |};
 
 export type DatabaseConnectionType = {
-  +errors: {|
-    +CheckIntegrityConstraintViolationError: Class<Error>,
-    +DataIntegrityError: Class<Error>,
-    +ForeignKeyIntegrityConstraintViolationError: Class<Error>,
-    +NotFoundError: Class<Error>,
-    +NotNullIntegrityConstraintViolationError: Class<Error>,
-    +SlonikError: Class<Error>,
-    +UniqueIntegrityConstraintViolationError: Class<Error>
-  |},
   +any: QueryAnyFunctionType<*>,
   +anyFirst: QueryAnyFirstFunctionType<*>,
   +many: QueryManyFunctionType<*>,

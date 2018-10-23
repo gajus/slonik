@@ -297,9 +297,7 @@ export const one: InternalQueryOneFunctionType = async (connection, clientConfig
       queryId
     }, 'NotFoundError');
 
-    const ConfigurableNotFoundError = clientConfiguration.errors && clientConfiguration.errors.NotFoundError ? clientConfiguration.errors.NotFoundError : NotFoundError;
-
-    throw new ConfigurableNotFoundError();
+    throw new NotFoundError();
   }
 
   if (rows.length > 1) {
@@ -402,9 +400,7 @@ export const many: InternalQueryManyFunctionType = async (connection, clientConf
       queryId
     }, 'NotFoundError');
 
-    const ConfigurableNotFoundError = clientConfiguration.errors && clientConfiguration.errors.NotFoundError ? clientConfiguration.errors.NotFoundError : NotFoundError;
-
-    throw new ConfigurableNotFoundError();
+    throw new NotFoundError();
   }
 
   return rows;
@@ -578,15 +574,6 @@ export const createConnection = async (
 
       return ended;
     },
-    errors: {
-      CheckIntegrityConstraintViolationError,
-      DataIntegrityError,
-      ForeignKeyIntegrityConstraintViolationError,
-      NotFoundError: clientConfiguration.errors && clientConfiguration.errors.NotFoundError || NotFoundError,
-      NotNullIntegrityConstraintViolationError,
-      SlonikError,
-      UniqueIntegrityConstraintViolationError
-    },
     many: mapTaggedTemplateLiteralInvocation(many.bind(null, connection, clientConfiguration)),
     manyFirst: mapTaggedTemplateLiteralInvocation(manyFirst.bind(null, connection, clientConfiguration)),
     maybeOne: mapTaggedTemplateLiteralInvocation(maybeOne.bind(null, connection, clientConfiguration)),
@@ -659,15 +646,6 @@ export const createPool = (
     const bindConnection = {
       any: mapTaggedTemplateLiteralInvocation(any.bind(null, connection, clientConfiguration)),
       anyFirst: mapTaggedTemplateLiteralInvocation(anyFirst.bind(null, connection, clientConfiguration)),
-      errors: {
-        CheckIntegrityConstraintViolationError,
-        DataIntegrityError,
-        ForeignKeyIntegrityConstraintViolationError,
-        NotFoundError: clientConfiguration.errors && clientConfiguration.errors.NotFoundError || NotFoundError,
-        NotNullIntegrityConstraintViolationError,
-        SlonikError,
-        UniqueIntegrityConstraintViolationError
-      },
       many: mapTaggedTemplateLiteralInvocation(many.bind(null, connection, clientConfiguration)),
       manyFirst: mapTaggedTemplateLiteralInvocation(manyFirst.bind(null, connection, clientConfiguration)),
       maybeOne: mapTaggedTemplateLiteralInvocation(maybeOne.bind(null, connection, clientConfiguration)),
@@ -688,15 +666,6 @@ export const createPool = (
     any: mapTaggedTemplateLiteralInvocation(any.bind(null, pool, clientConfiguration)),
     anyFirst: mapTaggedTemplateLiteralInvocation(anyFirst.bind(null, pool, clientConfiguration)),
     connect,
-    errors: {
-      CheckIntegrityConstraintViolationError,
-      DataIntegrityError,
-      ForeignKeyIntegrityConstraintViolationError,
-      NotFoundError: clientConfiguration.errors && clientConfiguration.errors.NotFoundError || NotFoundError,
-      NotNullIntegrityConstraintViolationError,
-      SlonikError,
-      UniqueIntegrityConstraintViolationError
-    },
     many: mapTaggedTemplateLiteralInvocation(many.bind(null, pool, clientConfiguration)),
     manyFirst: mapTaggedTemplateLiteralInvocation(manyFirst.bind(null, pool, clientConfiguration)),
     maybeOne: mapTaggedTemplateLiteralInvocation(maybeOne.bind(null, pool, clientConfiguration)),

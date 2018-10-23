@@ -4,14 +4,11 @@
 
 import test from 'ava';
 import sinon from 'sinon';
-import ExtendableError from 'es6-error';
 import {
   one,
   DataIntegrityError,
   NotFoundError
 } from '../../src';
-
-class TestError extends ExtendableError {}
 
 test('returns the first row', async (t) => {
   const stub = sinon.stub().returns({
@@ -43,24 +40,6 @@ test('throws an error if no rows are returned', async (t) => {
   };
 
   await t.throwsAsync(one(connection, {}, ''), NotFoundError);
-});
-
-test('throws an error if no rows are returned (user defined error constructor)', async (t) => {
-  const stub = sinon.stub().returns({
-    rows: []
-  });
-
-  const connection: any = {
-    query: stub
-  };
-
-  const clientConfiguration = {
-    errors: {
-      NotFoundError: TestError
-    }
-  };
-
-  await t.throwsAsync(one(connection, clientConfiguration, ''), TestError);
 });
 
 test('throws an error if more than one row is returned', async (t) => {
