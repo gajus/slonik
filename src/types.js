@@ -48,6 +48,15 @@ export type DatabaseConfigurationType =
   |};
 
 export type DatabaseConnectionType = {
+  +errors: {|
+    +CheckIntegrityConstraintViolationError: Class<Error>,
+    +DataIntegrityError: Class<Error>,
+    +ForeignKeyIntegrityConstraintViolationError: Class<Error>,
+    +NotFoundError: Class<Error>,
+    +NotNullIntegrityConstraintViolationError: Class<Error>,
+    +SlonikError: Class<Error>,
+    +UniqueIntegrityConstraintViolationError: Class<Error>
+  |},
   +any: QueryAnyFunctionType<*>,
   +anyFirst: QueryAnyFirstFunctionType<*>,
   +many: QueryManyFunctionType<*>,

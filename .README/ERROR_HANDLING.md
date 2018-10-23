@@ -17,6 +17,38 @@ try {
 
 ```
 
+### Instance specific errors
+
+You can import instance specific errors from the connection object, e.g.
+
+```js
+import {
+  createPool
+} from 'slonik';
+
+class NotFoundError extends Error {};
+
+const pool = createPool('postgres://', {
+  errors: {
+    NotFoundError
+  }
+});
+
+// +errors: {|
+//   +CheckIntegrityConstraintViolationError: Class<Error>,
+//   +DataIntegrityError: Class<Error>,
+//   +ForeignKeyIntegrityConstraintViolationError: Class<Error>,
+//   +NotFoundError: Class<Error>,
+//   +NotNullIntegrityConstraintViolationError: Class<Error>,
+//   +SlonikError: Class<Error>,
+//   +UniqueIntegrityConstraintViolationError: Class<Error>
+// |},
+pool.errors.NotFoundError === NotFoundError;
+
+```
+
+This is useful when the client configuration overrides the default error constructors.
+
 ### Overriding Error Constructor
 
 Overriding the error constructor used by Slonik allows you to map database layer errors to your application errors.
