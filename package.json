@@ -34,13 +34,13 @@
     "coveralls": "^3.0.2",
     "eslint": "^5.7.0",
     "eslint-config-canonical": "^13.0.0",
-    "flow-bin": "^0.83.0",
+    "flow-bin": "^0.84.0",
     "flow-copy-source": "^2.0.2",
-    "gitdown": "^2.5.4",
+    "gitdown": "^2.5.5",
     "husky": "^1.1.2",
     "nyc": "^13.1.0",
     "semantic-release": "^15.10.5",
-    "sinon": "^7.0.0"
+    "sinon": "^7.1.0"
   },
   "engines": {
     "node": ">=8.0"
