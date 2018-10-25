@@ -159,11 +159,11 @@ export const query: InternalQueryFunctionType<*> = async (connection, clientConf
   let stackTrace;
 
   if (SLONIK_LOG_STACK_TRACE) {
-    const callSites = getStackTrace();
+    const callSites = await getStackTrace();
 
     stackTrace = callSites
       .map((callSite) => {
-        return callSite.fileName + ':' + callSite.lineNumber + ':' + callSite.columnNumber;
+        return (callSite.fileName || '') + ':' + callSite.lineNumber + ':' + callSite.columnNumber;
       });
   }
 
