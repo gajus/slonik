@@ -7,7 +7,6 @@ import {
   parse as parseConnectionString
 } from 'pg-connection-string';
 import {
-  getOriginalStackTrace,
   getStackTrace
 } from 'get-stack-trace';
 import serializeError from 'serialize-error';
@@ -160,18 +159,11 @@ export const query: InternalQueryFunctionType<*> = async (connection, clientConf
   let stackTrace;
 
   if (SLONIK_LOG_STACK_TRACE) {
-    const callSites = await getOriginalStackTrace(getStackTrace());
+    const callSites = getStackTrace();
 
     stackTrace = callSites
       .map((callSite) => {
-        const oncs = callSite.originalNormalisedCallSite;
-        const rncs = callSite.reportedNormalisedCallSite;
-
-        if (oncs) {
-          return oncs.fileName + ':' + oncs.lineNumber + ':' + oncs.columnNumber;
-        }
-
-        return rncs.fileName + ':' + rncs.lineNumber + ':' + rncs.columnNumber;
+        return callSite.fileName + ':' + callSite.lineNumber + ':' + callSite.columnNumber;
       });
   }
 
