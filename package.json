@@ -87,7 +87,7 @@
     "build": "rm -fr ./dist && NODE_ENV=production babel ./src --out-dir ./dist --copy-files --source-maps && flow-copy-source src dist",
     "create-readme": "gitdown ./.README/README.md --output-file ./README.md",
     "lint": "eslint ./src ./test && flow",
-    "test": "NODE_ENV=test nyc ava --verbose --serial --concurrency 1"
+    "test": "NODE_ENV=test nyc ava --verbose --serial"
   },
   "version": "5.0.0"
 }
