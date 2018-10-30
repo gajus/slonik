@@ -17,38 +17,6 @@ try {
 
 ```
 
-### Instance specific errors
-
-You can import instance specific errors from the connection object, e.g.
-
-```js
-import {
-  createPool
-} from 'slonik';
-
-class NotFoundError extends Error {};
-
-const pool = createPool('postgres://', {
-  errors: {
-    NotFoundError
-  }
-});
-
-// +errors: {|
-//   +CheckIntegrityConstraintViolationError: Class<Error>,
-//   +DataIntegrityError: Class<Error>,
-//   +ForeignKeyIntegrityConstraintViolationError: Class<Error>,
-//   +NotFoundError: Class<Error>,
-//   +NotNullIntegrityConstraintViolationError: Class<Error>,
-//   +SlonikError: Class<Error>,
-//   +UniqueIntegrityConstraintViolationError: Class<Error>
-// |},
-pool.errors.NotFoundError === NotFoundError;
-
-```
-
-This is useful when the client configuration overrides the default error constructors.
-
 ### Handling `NotFoundError`
 
 To handle the case where query returns less than one row, catch `NotFoundError` error.

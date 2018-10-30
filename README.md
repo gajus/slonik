@@ -36,7 +36,6 @@ A PostgreSQL client with strict types, detail logging and assertions.
         * [`query`](#slonik-query-methods-query)
         * [`transaction`](#slonik-query-methods-transaction)
     * [Error handling](#slonik-error-handling)
-        * [Overriding Error Constructor](#slonik-error-handling-overriding-error-constructor)
         * [Handling `NotFoundError`](#slonik-error-handling-handling-notfounderror)
         * [Handling `DataIntegrityError`](#slonik-error-handling-handling-dataintegrityerror)
         * [Handling `NotNullIntegrityConstraintViolationError`](#slonik-error-handling-handling-notnullintegrityconstraintviolationerror)
@@ -102,7 +101,6 @@ type DatabaseConfigurationType =
   |};
 
 type ClientConfigurationType = {|
-  +errors?: ClientErrorsConfigurationType,
   +interceptors?: $ReadOnlyArray<InterceptorType>
 |};
 
@@ -545,29 +543,6 @@ try {
 }
 
 ```
-
-<a name="slonik-error-handling-overriding-error-constructor"></a>
-### Overriding Error Constructor
-
-Overriding the error constructor used by Slonik allows you to map database layer errors to your application errors.
-
-```js
-import {
-  createPool
-} from 'slonik';
-
-class NotFoundError extends Error {};
-
-createPool('postgres://', {
-  errors: {
-    NotFoundError
-  }
-});
-```
-
-The following error types can be overridden:
-
-* `NotFoundError`
 
 <a name="slonik-error-handling-handling-notfounderror"></a>
 ### Handling <code>NotFoundError</code>
