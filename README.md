@@ -39,6 +39,7 @@ A PostgreSQL client with strict types, detail logging and assertions.
     * [Conventions](#slonik-conventions)
         * [No multiline values](#slonik-conventions-no-multiline-values)
     * [Value placeholders](#slonik-value-placeholders)
+        * [Anonymous placeholders](#slonik-value-placeholders-anonymous-placeholders)
         * [A value set](#slonik-value-placeholders-a-value-set)
         * [Multiple value sets](#slonik-value-placeholders-multiple-value-sets)
         * [Named placeholders](#slonik-value-placeholders-named-placeholders)
@@ -120,7 +121,7 @@ import {
 
 const connection = createPool('postgres://localhost');
 
-await connection.query('SELECT 1');
+await connection.query(sql`SELECT 1`);
 
 ```
 
@@ -194,21 +195,22 @@ The implication is that your query cannot contain values that include a newline 
 
 ```sql
 // Do not do this
-connection.query(`INSERT INTO foo (bar) VALUES ('\n')`);
+connection.query(sql`INSERT INTO foo (bar) VALUES ('\n')`);
 
 ```
 
 If you want to communicate a value that includes a multiline character, use value placeholder interpolation, e.g.
 
 ```sql
-connection.query(`INSERT INTO foo (bar) VALUES (?)`, [
-  '\n'
-]);
+connection.query(sql`INSERT INTO foo (bar) VALUES (${'\n'})`);
 
 ```
 
 <a name="slonik-value-placeholders"></a>
 ## Value placeholders
+
+<a name="slonik-value-placeholders-anonymous-placeholders"></a>
+### Anonymous placeholders
 
 Slonik enables use of question mark (`?`) value placeholders, e.g.
 
@@ -319,7 +321,7 @@ connection.query(sql`
 Arguments of a tagged template literal invocation are replaced with an anonymous value placeholder, i.e. the latter query is equivalent to:
 
 ```js
-connection.query(`
+connection.query(sql`
   INSERT INTO reservation_ticket (reservation_id, ticket_id)
   VALUES ?
 `, [
@@ -389,7 +391,7 @@ Returns result rows.
 Example:
 
 ```js
-const rows = await connection.any('SELECT foo');
+const rows = await connection.any(sql`SELECT foo`);
 
 ```
 
@@ -405,7 +407,7 @@ Returns value of the first column of every row in the result set.
 Example:
 
 ```js
-const fooValues = await connection.anyFirst('SELECT foo');
+const fooValues = await connection.anyFirst(sql`SELECT foo`);
 
 ```
 
@@ -419,7 +421,7 @@ Example:
 ```js
 const {
   insertId
-} = await connection.insert('INSERT INTO foo SET bar="baz"');
+} = await connection.insert(sql`INSERT INTO foo SET bar='baz'`);
 
 ```
 
@@ -435,7 +437,7 @@ Returns result rows.
 Example:
 
 ```js
-const rows = await connection.many('SELECT foo');
+const rows = await connection.many(sql`SELECT foo`);
 
 ```
 
@@ -545,8 +547,8 @@ API and the result shape are equivalent to [`pg#query`](https://github.com/brian
 
 ```js
 const result = await connection.transaction(async (transactionConnection) => {
-  await transactionConnection.query(`INSERT INTO foo (bar) VALUES ('baz')`);
-  await transactionConnection.query(`INSERT INTO qux (quux) VALUES ('quuz')`);
+  await transactionConnection.query(sql`INSERT INTO foo (bar) VALUES ('baz')`);
+  await transactionConnection.query(sql`INSERT INTO qux (quux) VALUES ('quuz')`);
 
   return 'FOO';
 });
@@ -589,7 +591,7 @@ import {
 let row;
 
 try {
-  row = await connection.one('SELECT foo');
+  row = await connection.one(sql`SELECT foo`);
 } catch (error) {
   if (!(error instanceof NotFoundError)) {
     throw error;
@@ -615,7 +617,7 @@ import {
 let row;
 
 try {
-  row = await connection.one('SELECT foo');
+  row = await connection.one(sql`SELECT foo`);
 } catch (error) {
   if (error instanceof DataIntegrityError) {
     console.error('There is more than one row matching the select criteria.');
@@ -672,12 +674,13 @@ export default async (
   connection: DatabaseConnectionType,
   code: string
 ): Promise<number> => {
-  const row = await connection
-    .one('SELECT id FROM country WHERE code = ? LIMIT 2', [
-      code
-    ]);
+  const countryId = await connection.oneFirst(sql`
+    SELECT id
+    FROM country
+    WHERE code = ${code}
+  `);
 
-  return Number(row.id);
+  return countryId;
 };
 
 ```
