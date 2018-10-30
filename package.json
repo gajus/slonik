@@ -31,6 +31,7 @@
     "@babel/register": "^7.0.0",
     "ava": "^1.0.0-rc.1",
     "babel-plugin-istanbul": "^5.1.0",
+    "babel-plugin-transform-export-default-name": "^2.0.4",
     "coveralls": "^3.0.2",
     "eslint": "^5.8.0",
     "eslint-config-canonical": "^13.0.0",
