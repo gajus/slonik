@@ -709,6 +709,8 @@ values:
 
 Using [Atom](https://atom.io/) IDE you can leverage the [`language-babel`](https://github.com/gandm/language-babel) package in combination with the [`language-sql`](https://github.com/atom/language-sql) to enable highlighting of the SQL strings in the codebase.
 
+![Syntax highlighting in Atom](./.README/atom-syntax-highlighting.png)
+
 To enable highlighting, you need to:
 
 1. Install `language-babel` and `language-sql` packages.
