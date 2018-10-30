@@ -47,6 +47,7 @@
   },
   "husky": {
     "hooks": {
+      "post-commit": "npm run create-readme && git add README.md && git commit -m 'docs: generate docs' --no-verify",
       "pre-commit": "npm run lint && npm run test && npm run build"
     }
   },
@@ -84,7 +85,7 @@
   },
   "scripts": {
     "build": "rm -fr ./dist && NODE_ENV=production babel ./src --out-dir ./dist --copy-files --source-maps && flow-copy-source src dist",
-    "generate-readme": "gitdown ./.README/README.md --output-file ./README.md",
+    "create-readme": "gitdown ./.README/README.md --output-file ./README.md",
     "lint": "eslint ./src ./test && flow",
     "test": "NODE_ENV=test nyc ava --verbose --serial --concurrency 1"
   },
