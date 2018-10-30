@@ -15,7 +15,7 @@ Question mark value placeholders are converted to positional value placeholders 
 SELECT $1
 ```
 
-> Do not mix question mark and positional value placeholders in a single query.
+Note: Mixing anonymous and position placeholders in a single query will result in an error.
 
 ### A value set
 
