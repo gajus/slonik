@@ -7,7 +7,7 @@ Returns result rows.
 Example:
 
 ```js
-const rows = await connection.any('SELECT foo');
+const rows = await connection.any(sql`SELECT foo`);
 
 ```
 
@@ -22,7 +22,7 @@ Returns value of the first column of every row in the result set.
 Example:
 
 ```js
-const fooValues = await connection.anyFirst('SELECT foo');
+const fooValues = await connection.anyFirst(sql`SELECT foo`);
 
 ```
 
@@ -35,7 +35,7 @@ Example:
 ```js
 const {
   insertId
-} = await connection.insert('INSERT INTO foo SET bar="baz"');
+} = await connection.insert(sql`INSERT INTO foo SET bar='baz'`);
 
 ```
 
@@ -50,7 +50,7 @@ Returns result rows.
 Example:
 
 ```js
-const rows = await connection.many('SELECT foo');
+const rows = await connection.many(sql`SELECT foo`);
 
 ```
 
@@ -64,7 +64,7 @@ Returns value of the first column of every row in the result set.
 Example:
 
 ```js
-const fooValues = await connection.many('SELECT foo');
+const fooValues = await connection.many(sql`SELECT foo`);
 
 ```
 
@@ -78,7 +78,7 @@ Selects the first row from the result.
 Example:
 
 ```js
-const row = await connection.maybeOne('SELECT foo');
+const row = await connection.maybeOne(sql`SELECT foo`);
 
 // row.foo is the result of the `foo` column value of the first row.
 
@@ -95,7 +95,7 @@ Returns value of the first column from the first row.
 Example:
 
 ```js
-const foo = await connection.maybeOneFirst('SELECT foo');
+const foo = await connection.maybeOneFirst(sql`SELECT foo`);
 
 // foo is the result of the `foo` column value of the first row.
 
@@ -111,7 +111,7 @@ Selects the first row from the result.
 Example:
 
 ```js
-const row = await connection.one('SELECT foo');
+const row = await connection.one(sql`SELECT foo`);
 
 // row.foo is the result of the `foo` column value of the first row.
 
@@ -135,7 +135,7 @@ Returns value of the first column from the first row.
 Example:
 
 ```js
-const foo = await connection.oneFirst('SELECT foo');
+const foo = await connection.oneFirst(sql`SELECT foo`);
 
 // foo is the result of the `foo` column value of the first row.
 
@@ -153,8 +153,8 @@ API and the result shape are equivalent to [`pg#query`](https://github.com/brian
 
 ```js
 const result = await connection.transaction(async (transactionConnection) => {
-  await transactionConnection.query(`INSERT INTO foo (bar) VALUES ('baz')`);
-  await transactionConnection.query(`INSERT INTO qux (quux) VALUES ('quuz')`);
+  await transactionConnection.query(sql`INSERT INTO foo (bar) VALUES ('baz')`);
+  await transactionConnection.query(sql`INSERT INTO qux (quux) VALUES ('quuz')`);
 
   return 'FOO';
 });

@@ -1,5 +1,7 @@
 ## Value placeholders
 
+### Anonymous placeholders
+
 Slonik enables use of question mark (`?`) value placeholders, e.g.
 
 ```js
@@ -105,7 +107,7 @@ connection.query(sql`
 Arguments of a tagged template literal invocation are replaced with an anonymous value placeholder, i.e. the latter query is equivalent to:
 
 ```js
-connection.query(`
+connection.query(sql`
   INSERT INTO reservation_ticket (reservation_id, ticket_id)
   VALUES ?
 `, [

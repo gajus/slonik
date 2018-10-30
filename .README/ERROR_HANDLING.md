@@ -29,7 +29,7 @@ import {
 let row;
 
 try {
-  row = await connection.one('SELECT foo');
+  row = await connection.one(sql`SELECT foo`);
 } catch (error) {
   if (!(error instanceof NotFoundError)) {
     throw error;
@@ -54,7 +54,7 @@ import {
 let row;
 
 try {
-  row = await connection.one('SELECT foo');
+  row = await connection.one(sql`SELECT foo`);
 } catch (error) {
   if (error instanceof DataIntegrityError) {
     console.error('There is more than one row matching the select criteria.');
@@ -106,12 +106,13 @@ export default async (
   connection: DatabaseConnectionType,
   code: string
 ): Promise<number> => {
-  const row = await connection
-    .one('SELECT id FROM country WHERE code = ? LIMIT 2', [
-      code
-    ]);
+  const countryId = await connection.oneFirst(sql`
+    SELECT id
+    FROM country
+    WHERE code = ${code}
+  `);
 
-  return Number(row.id);
+  return countryId;
 };
 
 ```

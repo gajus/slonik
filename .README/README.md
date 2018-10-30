@@ -46,16 +46,14 @@ The implication is that your query cannot contain values that include a newline 
 
 ```sql
 // Do not do this
-connection.query(`INSERT INTO foo (bar) VALUES ('\n')`);
+connection.query(sql`INSERT INTO foo (bar) VALUES ('\n')`);
 
 ```
 
 If you want to communicate a value that includes a multiline character, use value placeholder interpolation, e.g.
 
 ```sql
-connection.query(`INSERT INTO foo (bar) VALUES (?)`, [
-  '\n'
-]);
+connection.query(sql`INSERT INTO foo (bar) VALUES (${'\n'})`);
 
 ```
 

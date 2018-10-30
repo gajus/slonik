@@ -46,6 +46,6 @@ import {
 
 const connection = createPool('postgres://localhost');
 
-await connection.query('SELECT 1');
+await connection.query(sql`SELECT 1`);
 
 ```
