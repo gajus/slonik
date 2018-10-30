@@ -8,6 +8,22 @@
 
 A PostgreSQL client with strict types, detail logging and assertions.
 
+## Features
+
+* [Convenience methods](#slonik-query-methods) with built-in assertions
+* Anonymous, named and tagged template literal [value placeholders](#slonik-value-placeholders)
+* [Middleware](#slonik-interceptors) support
+* [Syntax highlighting](#slonik-syntax-highlighting) (Atom plugin compatible with Slonik)
+* [SQL injection guarding](https://github.com/gajus/eslint-plugin-sql) (ESLint plugin compatible with Slonik)
+* Detail [logging](#slonik-debugging)
+* Built-in [asynchronous stack trace resolution](#log-stack-trace)
+* [Flow types](#types)
+* [Mapped errors](#error-handling)
+
+---
+
+## Documentation
+
 {"gitdown": "contents"}
 
 {"gitdown": "include", "file": "./USAGE.md"}
