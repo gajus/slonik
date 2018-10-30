@@ -95,14 +95,20 @@ import {
   sql
 } from 'slonik'
 
-connection.query(sql`INSERT INTO reservation_ticket (reservation_id, ticket_id) VALUES ${values}`);
+connection.query(sql`
+  INSERT INTO reservation_ticket (reservation_id, ticket_id)
+  VALUES ${values}
+`);
 
 ```
 
 Arguments of a tagged template literal invocation are replaced with an anonymous value placeholder, i.e. the latter query is equivalent to:
 
 ```js
-connection.query('INSERT INTO reservation_ticket (reservation_id, ticket_id) VALUES ?', [
+connection.query(`
+  INSERT INTO reservation_ticket (reservation_id, ticket_id)
+  VALUES ?
+`, [
   values
 ]);
 
@@ -113,7 +119,10 @@ connection.query('INSERT INTO reservation_ticket (reservation_id, ticket_id) VAL
 [Delimited identifiers](https://www.postgresql.org/docs/current/static/sql-syntax-lexical.html#SQL-SYNTAX-IDENTIFIERS) are created by enclosing an arbitrary sequence of characters in double-quotes ("). To create create a delimited identifier, create an `sql` tag function placeholder value using `sql.identifier`, e.g.
 
 ```js
-sql`SELECT ${'foo'} FROM ${sql.identifier(['bar', 'baz'])}`;
+sql`
+  SELECT ${'foo'}
+  FROM ${sql.identifier(['bar', 'baz'])
+}`;
 
 // {
 //   sql: 'SELECT ? FROM "bar"."baz"',
@@ -131,14 +140,20 @@ When using tagged template literals, it is easy to forget to add the `sql` tag, 
 Instead of:
 
 ```js
-connection.query(sql`INSERT INTO reservation_ticket (reservation_id, ticket_id) VALUES ${values}`);
+connection.query(sql`
+  INSERT INTO reservation_ticket (reservation_id, ticket_id)
+  VALUES ${values}
+`);
 
 ```
 
 Writing
 
 ```js
-connection.query(`INSERT INTO reservation_ticket (reservation_id, ticket_id) VALUES ${values}`);
+connection.query(`
+  INSERT INTO reservation_ticket (reservation_id, ticket_id)
+  VALUES ${values}
+`);
 
 ```
 

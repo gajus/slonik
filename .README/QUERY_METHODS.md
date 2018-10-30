@@ -4,14 +4,14 @@
 
 Returns result rows.
 
-> Similar to `#query` except that it returns rows without fields information.
-
 Example:
 
 ```js
 const rows = await connection.any('SELECT foo');
 
 ```
+
+`#any` is similar to `#query` except that it returns rows without fields information.
 
 ### `anyFirst`
 
@@ -28,10 +28,7 @@ const fooValues = await connection.anyFirst('SELECT foo');
 
 ### `insert`
 
-Designed to use when inserting 1 row.
-
-> The reason for using this method over `#query` is to leverage the strict types.
-> `#insert` method result type is `InsertResultType`.
+Used when inserting 1 row.
 
 Example:
 
@@ -41,6 +38,8 @@ const {
 } = await connection.insert('INSERT INTO foo SET bar="baz"');
 
 ```
+
+The reason for using this method over `#query` is to leverage the strict types. `#insert` method result type is `InsertResultType`.
 
 ### `many`
 
@@ -120,10 +119,10 @@ const row = await connection.one('SELECT foo');
 
 > Note:
 >
-> I've got asked "How is this different from [knex.js](http://knexjs.org/) `knex('foo').limit(1)`".
+> I've been asked "What makes this different from [knex.js](http://knexjs.org/) `knex('foo').limit(1)`?".
 > `knex('foo').limit(1)` simply generates "SELECT * FROM foo LIMIT 1" query.
 > `knex` is a query builder; it does not assert the value of the result.
-> Slonik `one` adds assertions about the result of the query.
+> Slonik `#one` adds assertions about the result of the query.
 
 ### `oneFirst`
 

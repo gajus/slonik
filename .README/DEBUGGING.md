@@ -23,23 +23,12 @@ export SLONIK_LOG_NORMALISED=true
 
 `SLONIK_LOG_STACK_TRACE=1` will create a stack trace before invoking the query and include the stack trace in the logs, e.g.
 
-```
-[2018-05-19T20:10:37.681Z] DEBUG (20) (@slonik) (#slonik): query
-executionTime: 52 ms
-queryId:       01CDX0D15XWEHJ0TWNQA97VC7G
-rowCount:      null
-sql:           INSERT INTO cinema_movie_name ( cinema_id, name, url, description_blob ) VALUES ( ?, ?, ?, ? ) RETURNING id
-stackTrace:
-  - /node_modules/slonik/dist/index.js:85:38
-  - /node_modules/slonik/dist/index.js:173:13
-  - /node_modules/slonik/dist/index.js:231:21
-  - /node_modules/slonik/dist/utilities/mapTaggedTemplateLiteralInvocation.js:17:14
-  - /src/queries/insertCinemaMovieName.js:11:31
-  - /src/routines/uploadData.js:101:68
-values:
-  - 1000104
-  - Solo: A Star Wars Story
-  - null
-  - null
+```json
+{"context":{"package":"slonik","namespace":"slonik","logLevel":20,"executionTime":"357 ms","queryId":"01CV2V5S4H57KCYFFBS0BJ8K7E","rowCount":1,"sql":"SELECT schedule_cinema_data_task();","stackTrace":["/Users/gajus/Documents/dev/applaudience/data-management-program/node_modules/slonik/dist:162:28","/Users/gajus/Documents/dev/applaudience/data-management-program/node_modules/slonik/dist:314:12","/Users/gajus/Documents/dev/applaudience/data-management-program/node_modules/slonik/dist:361:20","/Users/gajus/Documents/dev/applaudience/data-management-program/node_modules/slonik/dist/utilities:17:13","/Users/gajus/Documents/dev/applaudience/data-management-program/src/bin/commands/do-cinema-data-tasks.js:59:21","/Users/gajus/Documents/dev/applaudience/data-management-program/src/bin/commands/do-cinema-data-tasks.js:590:45","internal/process/next_tick.js:68:7"],"values":[]},"message":"query","sequence":4,"time":1540915127833,"version":"1.0.0"}
+{"context":{"package":"slonik","namespace":"slonik","logLevel":20,"executionTime":"66 ms","queryId":"01CV2V5SGS0WHJX4GJN09Z3MTB","rowCount":1,"sql":"SELECT cinema_id \"cinemaId\", target_data \"targetData\" FROM cinema_data_task WHERE id = ?","stackTrace":["/Users/gajus/Documents/dev/applaudience/data-management-program/node_modules/slonik/dist:162:28","/Users/gajus/Documents/dev/applaudience/data-management-program/node_modules/slonik/dist:285:12","/Users/gajus/Documents/dev/applaudience/data-management-program/node_modules/slonik/dist/utilities:17:13","/Users/gajus/Documents/dev/applaudience/data-management-program/src/bin/commands/do-cinema-data-tasks.js:603:26","internal/process/next_tick.js:68:7"],"values":[17953947]},"message":"query","sequence":5,"time":1540915127902,"version":"1.0.0"}
 
 ```
+
+Use [`@roarr/cli`](https://github.com/gajus/roarr-cli) to pretty-print the output.
+
+![Log Roarr pretty-print output.](./.README/log-roarr-pretty-print-output.png)
