@@ -58,21 +58,6 @@ Slonik exports two factory functions:
 * `createPool`
 * `createConnection`
 
-Example:
-
-```js
-import {
-  createPool
-} from 'slonik';
-
-const connection = createPool({
-  host: '127.0.0.1'
-});
-
-await connection.query('SELECT 1');
-
-```
-
 The API of the query method is equivalent to that of [`pg`](https://travis-ci.org/brianc/node-postgres).
 
 Refer to [query methods](#slonik-query-methods) for documentation of Slonik-specific query methods.
@@ -103,6 +88,19 @@ type DatabaseConfigurationType =
 type ClientConfigurationType = {|
   +interceptors?: $ReadOnlyArray<InterceptorType>
 |};
+
+```
+
+Example:
+
+```js
+import {
+  createPool
+} from 'slonik';
+
+const connection = createPool('postgres://localhost');
+
+await connection.query('SELECT 1');
 
 ```
 
@@ -291,14 +289,20 @@ import {
   sql
 } from 'slonik'
 
-connection.query(sql`INSERT INTO reservation_ticket (reservation_id, ticket_id) VALUES ${values}`);
+connection.query(sql`
+  INSERT INTO reservation_ticket (reservation_id, ticket_id)
+  VALUES ${values}
+`);
 
 ```
 
 Arguments of a tagged template literal invocation are replaced with an anonymous value placeholder, i.e. the latter query is equivalent to:
 
 ```js
-connection.query('INSERT INTO reservation_ticket (reservation_id, ticket_id) VALUES ?', [
+connection.query(`
+  INSERT INTO reservation_ticket (reservation_id, ticket_id)
+  VALUES ?
+`, [
   values
 ]);
 
@@ -310,7 +314,10 @@ connection.query('INSERT INTO reservation_ticket (reservation_id, ticket_id) VAL
 [Delimited identifiers](https://www.postgresql.org/docs/current/static/sql-syntax-lexical.html#SQL-SYNTAX-IDENTIFIERS) are created by enclosing an arbitrary sequence of characters in double-quotes ("). To create create a delimited identifier, create an `sql` tag function placeholder value using `sql.identifier`, e.g.
 
 ```js
-sql`SELECT ${'foo'} FROM ${sql.identifier(['bar', 'baz'])}`;
+sql`
+  SELECT ${'foo'}
+  FROM ${sql.identifier(['bar', 'baz'])
+}`;
 
 // {
 //   sql: 'SELECT ? FROM "bar"."baz"',
@@ -329,14 +336,20 @@ When using tagged template literals, it is easy to forget to add the `sql` tag, 
 Instead of:
 
 ```js
-connection.query(sql`INSERT INTO reservation_ticket (reservation_id, ticket_id) VALUES ${values}`);
+connection.query(sql`
+  INSERT INTO reservation_ticket (reservation_id, ticket_id)
+  VALUES ${values}
+`);
 
 ```
 
 Writing
 
 ```js
-connection.query(`INSERT INTO reservation_ticket (reservation_id, ticket_id) VALUES ${values}`);
+connection.query(`
+  INSERT INTO reservation_ticket (reservation_id, ticket_id)
+  VALUES ${values}
+`);
 
 ```
 
@@ -353,14 +366,14 @@ Therefore, I recommend using [`eslint-plugin-sql`](https://github.com/gajus/esli
 
 Returns result rows.
 
-> Similar to `#query` except that it returns rows without fields information.
-
 Example:
 
 ```js
 const rows = await connection.any('SELECT foo');
 
 ```
+
+`#any` is similar to `#query` except that it returns rows without fields information.
 
 <a name="slonik-query-methods-anyfirst"></a>
 ### <code>anyFirst</code>
@@ -379,10 +392,7 @@ const fooValues = await connection.anyFirst('SELECT foo');
 <a name="slonik-query-methods-insert"></a>
 ### <code>insert</code>
 
-Designed to use when inserting 1 row.
-
-> The reason for using this method over `#query` is to leverage the strict types.
-> `#insert` method result type is `InsertResultType`.
+Used when inserting 1 row.
 
 Example:
 
@@ -392,6 +402,8 @@ const {
 } = await connection.insert('INSERT INTO foo SET bar="baz"');
 
 ```
+
+The reason for using this method over `#query` is to leverage the strict types. `#insert` method result type is `InsertResultType`.
 
 <a name="slonik-query-methods-many"></a>
 ### <code>many</code>
@@ -476,10 +488,10 @@ const row = await connection.one('SELECT foo');
 
 > Note:
 >
-> I've got asked "How is this different from [knex.js](http://knexjs.org/) `knex('foo').limit(1)`".
+> I've been asked "What makes this different from [knex.js](http://knexjs.org/) `knex('foo').limit(1)`?".
 > `knex('foo').limit(1)` simply generates "SELECT * FROM foo LIMIT 1" query.
 > `knex` is a query builder; it does not assert the value of the result.
-> Slonik `one` adds assertions about the result of the query.
+> Slonik `#one` adds assertions about the result of the query.
 
 <a name="slonik-query-methods-onefirst"></a>
 ### <code>oneFirst</code>
@@ -679,26 +691,15 @@ export SLONIK_LOG_NORMALISED=true
 
 `SLONIK_LOG_STACK_TRACE=1` will create a stack trace before invoking the query and include the stack trace in the logs, e.g.
 
-```
-[2018-05-19T20:10:37.681Z] DEBUG (20) (@slonik) (#slonik): query
-executionTime: 52 ms
-queryId:       01CDX0D15XWEHJ0TWNQA97VC7G
-rowCount:      null
-sql:           INSERT INTO cinema_movie_name ( cinema_id, name, url, description_blob ) VALUES ( ?, ?, ?, ? ) RETURNING id
-stackTrace:
-  - /node_modules/slonik/dist/index.js:85:38
-  - /node_modules/slonik/dist/index.js:173:13
-  - /node_modules/slonik/dist/index.js:231:21
-  - /node_modules/slonik/dist/utilities/mapTaggedTemplateLiteralInvocation.js:17:14
-  - /src/queries/insertCinemaMovieName.js:11:31
-  - /src/routines/uploadData.js:101:68
-values:
-  - 1000104
-  - Solo: A Star Wars Story
-  - null
-  - null
+```json
+{"context":{"package":"slonik","namespace":"slonik","logLevel":20,"executionTime":"357 ms","queryId":"01CV2V5S4H57KCYFFBS0BJ8K7E","rowCount":1,"sql":"SELECT schedule_cinema_data_task();","stackTrace":["/Users/gajus/Documents/dev/applaudience/data-management-program/node_modules/slonik/dist:162:28","/Users/gajus/Documents/dev/applaudience/data-management-program/node_modules/slonik/dist:314:12","/Users/gajus/Documents/dev/applaudience/data-management-program/node_modules/slonik/dist:361:20","/Users/gajus/Documents/dev/applaudience/data-management-program/node_modules/slonik/dist/utilities:17:13","/Users/gajus/Documents/dev/applaudience/data-management-program/src/bin/commands/do-cinema-data-tasks.js:59:21","/Users/gajus/Documents/dev/applaudience/data-management-program/src/bin/commands/do-cinema-data-tasks.js:590:45","internal/process/next_tick.js:68:7"],"values":[]},"message":"query","sequence":4,"time":1540915127833,"version":"1.0.0"}
+{"context":{"package":"slonik","namespace":"slonik","logLevel":20,"executionTime":"66 ms","queryId":"01CV2V5SGS0WHJX4GJN09Z3MTB","rowCount":1,"sql":"SELECT cinema_id \"cinemaId\", target_data \"targetData\" FROM cinema_data_task WHERE id = ?","stackTrace":["/Users/gajus/Documents/dev/applaudience/data-management-program/node_modules/slonik/dist:162:28","/Users/gajus/Documents/dev/applaudience/data-management-program/node_modules/slonik/dist:285:12","/Users/gajus/Documents/dev/applaudience/data-management-program/node_modules/slonik/dist/utilities:17:13","/Users/gajus/Documents/dev/applaudience/data-management-program/src/bin/commands/do-cinema-data-tasks.js:603:26","internal/process/next_tick.js:68:7"],"values":[17953947]},"message":"query","sequence":5,"time":1540915127902,"version":"1.0.0"}
 
 ```
+
+Use [`@roarr/cli`](https://github.com/gajus/roarr-cli) to pretty-print the output.
+
+![Log Roarr pretty-print output.](./.README/log-roarr-pretty-print-output.png)
 
 
 <a name="slonik-syntax-highlighting"></a>
