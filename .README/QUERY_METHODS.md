@@ -153,8 +153,8 @@ API and the result shape are equivalent to [`pg#query`](https://github.com/brian
 
 ```js
 const result = await connection.transaction(async (transactionConnection) => {
-  transactionConnection.query(`INSERT INTO foo (bar) VALUES ('baz')`);
-  transactionConnection.query(`INSERT INTO qux (quux) VALUES ('quuz')`);
+  await transactionConnection.query(`INSERT INTO foo (bar) VALUES ('baz')`);
+  await transactionConnection.query(`INSERT INTO qux (quux) VALUES ('quuz')`);
 
   return 'FOO';
 });
