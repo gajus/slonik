@@ -19,6 +19,7 @@ A PostgreSQL client with strict types, detail logging and assertions.
 * Built-in [asynchronous stack trace resolution](#log-stack-trace)
 * [Flow types](#types)
 * [Mapped errors](#error-handling)
+* [Transactions](#transactions)
 
 ---
 

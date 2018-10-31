@@ -477,6 +477,8 @@ export const anyFirst: InternalQueryAnyFirstFunctionType = async (connection, cl
   });
 };
 
+// @todo Throw an error if there is an attempt to create a transaction within an active transaction.
+// @todo Throw an error if there is an attempt to pool#connect within an active transaction.
 export const transaction: InternalTransactionFunctionType = async (connection, handler) => {
   await connection.query('START TRANSACTION');
 
