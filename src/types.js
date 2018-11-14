@@ -124,81 +124,30 @@ export type TaggledTemplateLiteralInvocationType = {|
   values: $ReadOnlyArray<AnonymouseValuePlaceholderValueType>
 |};
 
-export type InternalQueryAnyFunctionType = (
+export type InternalQueryMethodType<R> = (
   log: LoggerType,
   connection: InternalDatabaseConnectionType,
   clientConfiguration: ClientConfigurationType,
   sql: string,
   values?: DatabaseQueryValuesType,
   queryId?: QueryIdType
-) => Promise<$ReadOnlyArray<QueryResultRowType>>;
+) => Promise<R>;
 
-export type InternalQueryAnyFirstFunctionType = (
+export type InternalQueryAnyFunctionType = InternalQueryMethodType<$ReadOnlyArray<QueryResultRowType>>;
+export type InternalQueryAnyFirstFunctionType = InternalQueryMethodType<$ReadOnlyArray<QueryResultRowColumnType>>;
+export type InternalQueryManyFunctionType = InternalQueryMethodType<$ReadOnlyArray<QueryResultRowType>>;
+export type InternalQueryManyFirstFunctionType = InternalQueryMethodType<$ReadOnlyArray<QueryResultRowColumnType>>;
+export type InternalQueryMaybeOneFirstFunctionType = InternalQueryMethodType<QueryResultRowColumnType | null>;
+export type InternalQueryMaybeOneFunctionType = InternalQueryMethodType<QueryResultRowType | null>;
+export type InternalQueryOneFirstFunctionType = InternalQueryMethodType<QueryResultRowColumnType>;
+export type InternalQueryOneFunctionType = InternalQueryMethodType<QueryResultRowType>;
+
+export type InternalTransactionFunctionType = (
   log: LoggerType,
   connection: InternalDatabaseConnectionType,
   clientConfiguration: ClientConfigurationType,
-  sql: string,
-  values?: DatabaseQueryValuesType,
-  queryId?: QueryIdType
-) => Promise<$ReadOnlyArray<QueryResultRowColumnType>>;
-
-export type InternalQueryManyFunctionType = (
-  log: LoggerType,
-  connection: InternalDatabaseConnectionType,
-  clientConfiguration: ClientConfigurationType,
-  sql: string,
-  values?: DatabaseQueryValuesType,
-  queryId?: QueryIdType
-) => Promise<$ReadOnlyArray<QueryResultRowType>>;
-
-export type InternalQueryManyFirstFunctionType = (
-  log: LoggerType,
-  connection: InternalDatabaseConnectionType,
-  clientConfiguration: ClientConfigurationType,
-  sql: string,
-  values?: DatabaseQueryValuesType,
-  queryId?: QueryIdType
-) => Promise<$ReadOnlyArray<QueryResultRowColumnType>>;
-
-export type InternalQueryMaybeOneFirstFunctionType = (
-  log: LoggerType,
-  connection: InternalDatabaseConnectionType,
-  clientConfiguration: ClientConfigurationType,
-  sql: string,
-  values?: DatabaseQueryValuesType,
-  queryId?: QueryIdType
-) => Promise<QueryResultRowColumnType | null>;
-
-export type InternalQueryMaybeOneFunctionType = (
-  log: LoggerType,
-  connection: InternalDatabaseConnectionType,
-  clientConfiguration: ClientConfigurationType,
-  sql: string,
-  values?: DatabaseQueryValuesType,
-  queryId?: QueryIdType
-) => Promise<QueryResultRowType | null>;
-
-export type InternalQueryOneFirstFunctionType = (
-  log: LoggerType,
-  connection: InternalDatabaseConnectionType,
-  clientConfiguration: ClientConfigurationType,
-  sql: string,
-  values?: DatabaseQueryValuesType,
-  queryId?: QueryIdType
-) => Promise<QueryResultRowColumnType>;
-
-export type InternalQueryOneFunctionType = (
-  log: LoggerType,
-  connection: InternalDatabaseConnectionType,
-  clientConfiguration: ClientConfigurationType,
-  sql: string,
-  values?: DatabaseQueryValuesType,
-  queryId?: QueryIdType
-) => Promise<QueryResultRowType>;
-
-export type TransactionHandlerType = (connection: DatabaseConnectionType) => Promise<*>;
-
-export type InternalTransactionFunctionType = (log: LoggerType, connection: InternalDatabaseConnectionType, handler: TransactionHandlerType) => Promise<*>;
+  handler: TransactionFunctionType
+) => Promise<*>;
 
 export type InternalQueryFunctionType<T: QueryResultRowType> = (
   log: LoggerType,
@@ -223,8 +172,6 @@ export type QueryMaybeOneFunctionType<T: QueryResultRowType | null> = QueryMetho
 export type QueryOneFirstFunctionType<T: QueryResultRowColumnType> = QueryMethodType<T>;
 export type QueryOneFunctionType<T: QueryResultRowType> = QueryMethodType<T>;
 export type QueryFunctionType<T: QueryResultRowType> = QueryMethodType<T>;
-
-export type TransactionFunctionType = (handler: TransactionHandlerType) => Promise<*>;
 
 export type InterceptorType = {|
   +beforeQuery?: (query: QueryType) => Promise<QueryResultType<QueryResultRowType>> | Promise<void> | QueryResultType<QueryResultRowType> | void,
