@@ -1,17 +1,18 @@
 // @flow
 
 import serializeError from 'serialize-error';
+import {
+  bindTransactionConnection
+} from '../binders';
 import type {
   InternalTransactionFunctionType
 } from '../types';
 
-// @todo Throw an error if there is an attempt to create a transaction within an active transaction.
-// @todo Throw an error if there is an attempt to pool#connect within an active transaction.
-const transaction: InternalTransactionFunctionType = async (log, connection, handler) => {
+const transaction: InternalTransactionFunctionType = async (log, connection, clientConfiguration, handler) => {
   await connection.query('START TRANSACTION');
 
   try {
-    const result = await handler(connection);
+    const result = await handler(bindTransactionConnection(log, connection, clientConfiguration));
 
     await connection.query('COMMIT');
 

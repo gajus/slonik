@@ -16,7 +16,7 @@ test('commits successful transaction', async (t) => {
     query
   };
 
-  const result = await transaction(log, connection, async () => {
+  const result = await transaction(log, connection, {}, async () => {
     await query('FOO');
 
     return 'BAR';
@@ -43,7 +43,7 @@ test('rollbacks unsuccessful transaction', async (t) => {
     query
   };
 
-  const transactionExecution = transaction(log, connection, async () => {
+  const transactionExecution = transaction(log, connection, {}, async () => {
     await query('FOO');
 
     throw new Error('Instigated error.');

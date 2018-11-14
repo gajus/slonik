@@ -32,6 +32,9 @@ type QueryResultType<T> = {|
 |};
 
 // eslint-disable-next-line flowtype/no-weak-types
+export type InternalDatabasePoolType = any;
+
+// eslint-disable-next-line flowtype/no-weak-types
 export type InternalDatabaseConnectionType = any;
 
 export type ClientConfigurationType = {|
@@ -61,23 +64,31 @@ export type DatabaseConnectionType = {|
   +maybeOneFirst: QueryMaybeOneFirstFunctionType<*>,
   +one: QueryOneFunctionType<*>,
   +oneFirst: QueryOneFirstFunctionType<*>,
-  +query: QueryFunctionType<*>,
-  +transaction: TransactionFunctionType
+  +query: QueryFunctionType<*>
 |};
+
+export type DatabaseTransactionConnectionType = {|
+  ...DatabaseConnectionType
+|};
+
+export type TransactionFunctionType = (connection: DatabaseTransactionConnectionType) => Promise<*>;
 
 export type DatabaseSingleConnectionType = {|
   ...DatabaseConnectionType,
-  end: () => Promise<void>
+  +end: () => Promise<void>,
+  +transaction: (handler: TransactionFunctionType) => Promise<*>
 |};
 
 export type DatabasePoolConnectionType = {|
   ...DatabaseConnectionType,
-  +release: () => Promise<void>
+  +release: () => Promise<void>,
+  +transaction: (handler: TransactionFunctionType) => Promise<*>
 |};
 
 export type DatabasePoolType = {|
   ...DatabaseConnectionType,
-  +connect: () => Promise<DatabasePoolConnectionType>
+  +connect: () => Promise<DatabasePoolConnectionType>,
+  +transaction: (handler: TransactionFunctionType) => Promise<*>
 |};
 
 type QueryResultRowColumnType = string | number;
@@ -133,10 +144,11 @@ export type InternalQueryMethodType<R> = (
   queryId?: QueryIdType
 ) => Promise<R>;
 
-export type InternalQueryAnyFunctionType = InternalQueryMethodType<$ReadOnlyArray<QueryResultRowType>>;
 export type InternalQueryAnyFirstFunctionType = InternalQueryMethodType<$ReadOnlyArray<QueryResultRowColumnType>>;
-export type InternalQueryManyFunctionType = InternalQueryMethodType<$ReadOnlyArray<QueryResultRowType>>;
+export type InternalQueryAnyFunctionType = InternalQueryMethodType<$ReadOnlyArray<QueryResultRowType>>;
+export type InternalQueryFunctionType<T: QueryResultRowType> = InternalQueryMethodType<QueryResultType<T>>;
 export type InternalQueryManyFirstFunctionType = InternalQueryMethodType<$ReadOnlyArray<QueryResultRowColumnType>>;
+export type InternalQueryManyFunctionType = InternalQueryMethodType<$ReadOnlyArray<QueryResultRowType>>;
 export type InternalQueryMaybeOneFirstFunctionType = InternalQueryMethodType<QueryResultRowColumnType | null>;
 export type InternalQueryMaybeOneFunctionType = InternalQueryMethodType<QueryResultRowType | null>;
 export type InternalQueryOneFirstFunctionType = InternalQueryMethodType<QueryResultRowColumnType>;
@@ -149,15 +161,6 @@ export type InternalTransactionFunctionType = (
   handler: TransactionFunctionType
 ) => Promise<*>;
 
-export type InternalQueryFunctionType<T: QueryResultRowType> = (
-  log: LoggerType,
-  connection: InternalDatabaseConnectionType,
-  clientConfiguration: ClientConfigurationType,
-  sql: string,
-  values?: DatabaseQueryValuesType,
-  queryId?: QueryIdType
-) => Promise<QueryResultType<T>>;
-
 type QueryMethodType<R> = (
   sql: string | TaggledTemplateLiteralInvocationType,
   values?: DatabaseQueryValuesType
@@ -165,13 +168,13 @@ type QueryMethodType<R> = (
 
 export type QueryAnyFirstFunctionType<T: QueryResultRowColumnType> = QueryMethodType<$ReadOnlyArray<T>>;
 export type QueryAnyFunctionType<T: QueryResultRowType> = QueryMethodType<$ReadOnlyArray<T>>;
+export type QueryFunctionType<T: QueryResultRowType> = QueryMethodType<T>;
 export type QueryManyFirstFunctionType<T: QueryResultRowColumnType> = QueryMethodType<$ReadOnlyArray<T>>;
 export type QueryManyFunctionType<T: QueryResultRowType> = QueryMethodType<$ReadOnlyArray<T>>;
 export type QueryMaybeOneFirstFunctionType<T: QueryResultRowColumnType> = QueryMethodType<T>;
 export type QueryMaybeOneFunctionType<T: QueryResultRowType | null> = QueryMethodType<T>;
 export type QueryOneFirstFunctionType<T: QueryResultRowColumnType> = QueryMethodType<T>;
 export type QueryOneFunctionType<T: QueryResultRowType> = QueryMethodType<T>;
-export type QueryFunctionType<T: QueryResultRowType> = QueryMethodType<T>;
 
 export type InterceptorType = {|
   +beforeQuery?: (query: QueryType) => Promise<QueryResultType<QueryResultRowType>> | Promise<void> | QueryResultType<QueryResultRowType> | void,
