@@ -4,7 +4,7 @@
 
 export opaque type QueryIdType = string;
 
-type FieldType = {
+type FieldType = {|
   +columnID: number,
   +dataTypeID: number,
   +dataTypeModifier: number,
@@ -12,16 +12,16 @@ type FieldType = {
   +format: string,
   +name: string,
   +tableID: number
-};
+|};
 
-type QueryResultType<T> = {
+type QueryResultType<T> = {|
   +command: 'DELETE' | 'INSERT' | 'SELECT' | 'UPDATE',
   +fields: $ReadOnlyArray<FieldType>,
   +oid: number | null,
   +rowAsArray: boolean,
   +rowCount: number,
   +rows: $ReadOnlyArray<T>
-};
+|};
 
 // eslint-disable-next-line flowtype/no-weak-types
 type InternalDatabaseConnectionType = any;
@@ -44,7 +44,7 @@ export type DatabaseConfigurationType =
     +user?: string
   |};
 
-export type DatabaseConnectionType = {
+export type DatabaseConnectionType = {|
   +any: QueryAnyFunctionType<*>,
   +anyFirst: QueryAnyFirstFunctionType<*>,
   +many: QueryManyFunctionType<*>,
@@ -55,19 +55,22 @@ export type DatabaseConnectionType = {
   +oneFirst: QueryOneFirstFunctionType<*>,
   +query: QueryFunctionType<*>,
   +transaction: TransactionFunctionType
-};
+|};
 
-export type DatabaseSingleConnectionType = {
+export type DatabaseSingleConnectionType = {|
+  ...DatabaseConnectionType,
   end: () => Promise<void>
-} & DatabaseConnectionType;
+|};
 
-export type DatabasePoolConnectionType = DatabaseConnectionType & {
+export type DatabasePoolConnectionType = {|
+  ...DatabaseConnectionType,
   +release: () => Promise<void>
-};
+|};
 
-export type DatabasePoolType = DatabaseConnectionType & {
+export type DatabasePoolType = {|
+  ...DatabaseConnectionType,
   +connect: () => Promise<DatabasePoolConnectionType>
-};
+|};
 
 type QueryResultRowColumnType = string | number;
 
@@ -108,10 +111,10 @@ export type DatabaseQueryValuesType =
   $ReadOnlyArray<AnonymouseValuePlaceholderValueType> |
   NamedValuePlaceholderValuesType;
 
-export type TaggledTemplateLiteralInvocationType = {
+export type TaggledTemplateLiteralInvocationType = {|
   sql: string,
   values: $ReadOnlyArray<AnonymouseValuePlaceholderValueType>
-};
+|};
 
 export type InternalQueryAnyFunctionType = (
   connection: InternalDatabaseConnectionType,
