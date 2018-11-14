@@ -5,7 +5,8 @@ import {
 } from '../utilities';
 import type {
   ClientConfigurationType,
-  DatabasePoolType,
+  TransactionFunctionType,
+  DatabaseIsolatedPoolConnectionType,
   InternalDatabaseConnectionType,
   InternalDatabasePoolType,
   LoggerType
@@ -22,33 +23,16 @@ import {
   query
 } from '../connectionMethods';
 import createPoolTransaction from '../factories/createPoolTransaction';
-import bindIsolatedPoolConnection from './bindIsolatedPoolConnection';
-import bindPoolConnection from './bindPoolConnection';
 
 export default (
   parentLog: LoggerType,
   pool: InternalDatabasePoolType,
+  connection: InternalDatabaseConnectionType,
   clientConfiguration: ClientConfigurationType
-): DatabasePoolType => {
+): DatabaseIsolatedPoolConnectionType => {
   return {
     any: mapTaggedTemplateLiteralInvocation(any.bind(null, parentLog, pool, clientConfiguration)),
     anyFirst: mapTaggedTemplateLiteralInvocation(anyFirst.bind(null, parentLog, pool, clientConfiguration)),
-
-    // @see https://stackoverflow.com/questions/42539202/flowtype-how-can-i-overload-function-return-types-by-argument-count-types
-    // eslint-disable-next-line consistent-return, flowtype/no-weak-types
-    connect: async (handler): any => {
-      if (handler) {
-        const connection: InternalDatabaseConnectionType = await pool.connect();
-
-        await handler(bindIsolatedPoolConnection(parentLog, pool, connection, clientConfiguration));
-
-        connection.release();
-      } else {
-        const connection: InternalDatabaseConnectionType = await pool.connect();
-
-        return bindPoolConnection(parentLog, pool, connection, clientConfiguration);
-      }
-    },
     many: mapTaggedTemplateLiteralInvocation(many.bind(null, parentLog, pool, clientConfiguration)),
     manyFirst: mapTaggedTemplateLiteralInvocation(manyFirst.bind(null, parentLog, pool, clientConfiguration)),
     maybeOne: mapTaggedTemplateLiteralInvocation(maybeOne.bind(null, parentLog, pool, clientConfiguration)),
@@ -56,7 +40,7 @@ export default (
     one: mapTaggedTemplateLiteralInvocation(one.bind(null, parentLog, pool, clientConfiguration)),
     oneFirst: mapTaggedTemplateLiteralInvocation(oneFirst.bind(null, parentLog, pool, clientConfiguration)),
     query: mapTaggedTemplateLiteralInvocation(query.bind(null, parentLog, pool, clientConfiguration)),
-    transaction: async (handler) => {
+    transaction: async (handler: TransactionFunctionType) => {
       return createPoolTransaction(parentLog, pool, clientConfiguration, handler);
     }
   };

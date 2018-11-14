@@ -1,6 +1,6 @@
 // @flow
 
-/* eslint-disable no-use-before-define, import/exports-last */
+/* eslint-disable no-use-before-define, import/exports-last, flowtype/require-types-at-top */
 
 import type {
   LoggerType
@@ -85,9 +85,19 @@ export type DatabasePoolConnectionType = {|
   +transaction: (handler: TransactionFunctionType) => Promise<*>
 |};
 
+export type DatabaseIsolatedPoolConnectionType = {|
+  ...DatabaseConnectionType,
+  +transaction: (handler: TransactionFunctionType) => Promise<*>
+|};
+
+// @todo Document `((connection: DatabaseIsolatedPoolConnectionType) => Promise<void>) => Promise<void>` API.
+type DataPoolConnectMethodType =
+  () => Promise<DatabasePoolConnectionType> &
+  ((connection: DatabaseIsolatedPoolConnectionType) => Promise<void>) => Promise<void>;
+
 export type DatabasePoolType = {|
   ...DatabaseConnectionType,
-  +connect: () => Promise<DatabasePoolConnectionType>,
+  +connect: DataPoolConnectMethodType,
   +transaction: (handler: TransactionFunctionType) => Promise<*>
 |};
 
