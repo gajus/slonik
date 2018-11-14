@@ -10,7 +10,6 @@ import {
 import {
   createQueryId
 } from '../utilities';
-import log from '../Logger';
 import query from './query';
 
 /**
@@ -19,12 +18,12 @@ import query from './query';
  * @throws NotFoundError If query returns no rows.
  * @throws DataIntegrityError If query returns multiple rows.
  */
-const one: InternalQueryOneFunctionType = async (connection, clientConfiguration, rawSql, values, inheritedQueryId) => {
+const one: InternalQueryOneFunctionType = async (log, connection, clientConfiguration, rawSql, values, inheritedQueryId) => {
   const queryId = inheritedQueryId || createQueryId();
 
   const {
     rows
-  } = await query(connection, clientConfiguration, rawSql, values, queryId);
+  } = await query(log, connection, clientConfiguration, rawSql, values, queryId);
 
   if (rows.length === 0) {
     log.error({

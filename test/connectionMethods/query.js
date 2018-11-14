@@ -4,6 +4,7 @@
 
 import test from 'ava';
 import sinon from 'sinon';
+import log from '../helpers/Logger';
 import query from '../../src/connectionMethods/query';
 
 test('executes the query and returns the result', async (t) => {
@@ -19,7 +20,7 @@ test('executes the query and returns the result', async (t) => {
     query: stub
   };
 
-  const result = await query(connection, {}, '');
+  const result = await query(log, connection, {}, '');
 
   t.deepEqual(result, {
     rows: [
@@ -63,6 +64,7 @@ test('does not execute the query if "beforeQuery" returns result', async (t) => 
   };
 
   const result = await query(
+    log,
     connection,
     {
       interceptors
@@ -108,6 +110,7 @@ test('executes query if "beforeQuery" does not return results', async (t) => {
   };
 
   const result = await query(
+    log,
     connection,
     {
       interceptors

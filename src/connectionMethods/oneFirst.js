@@ -9,7 +9,6 @@ import {
 import type {
   InternalQueryOneFirstFunctionType
 } from '../types';
-import log from '../Logger';
 import one from './one';
 
 /**
@@ -19,10 +18,10 @@ import one from './one';
  * @throws NotFoundError If query returns no rows.
  * @throws DataIntegrityError If query returns multiple rows.
  */
-const oneFirst: InternalQueryOneFirstFunctionType = async (connection, clientConfiguration, rawSql, values, inheritedQueryId) => {
+const oneFirst: InternalQueryOneFirstFunctionType = async (log, connection, clientConfiguration, rawSql, values, inheritedQueryId) => {
   const queryId = inheritedQueryId || createQueryId();
 
-  const row = await one(connection, clientConfiguration, rawSql, values, queryId);
+  const row = await one(log, connection, clientConfiguration, rawSql, values, queryId);
 
   const keys = Object.keys(row);
 

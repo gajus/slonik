@@ -83,18 +83,18 @@ export default (
     });
 
     const bindConnection = {
-      any: mapTaggedTemplateLiteralInvocation(any.bind(null, connection, clientConfiguration)),
-      anyFirst: mapTaggedTemplateLiteralInvocation(anyFirst.bind(null, connection, clientConfiguration)),
-      many: mapTaggedTemplateLiteralInvocation(many.bind(null, connection, clientConfiguration)),
-      manyFirst: mapTaggedTemplateLiteralInvocation(manyFirst.bind(null, connection, clientConfiguration)),
-      maybeOne: mapTaggedTemplateLiteralInvocation(maybeOne.bind(null, connection, clientConfiguration)),
-      maybeOneFirst: mapTaggedTemplateLiteralInvocation(maybeOneFirst.bind(null, connection, clientConfiguration)),
-      one: mapTaggedTemplateLiteralInvocation(one.bind(null, connection, clientConfiguration)),
-      oneFirst: mapTaggedTemplateLiteralInvocation(oneFirst.bind(null, connection, clientConfiguration)),
-      query: mapTaggedTemplateLiteralInvocation(query.bind(null, connection, clientConfiguration)),
+      any: mapTaggedTemplateLiteralInvocation(any.bind(null, log, connection, clientConfiguration)),
+      anyFirst: mapTaggedTemplateLiteralInvocation(anyFirst.bind(null, log, connection, clientConfiguration)),
+      many: mapTaggedTemplateLiteralInvocation(many.bind(null, log, connection, clientConfiguration)),
+      manyFirst: mapTaggedTemplateLiteralInvocation(manyFirst.bind(null, log, connection, clientConfiguration)),
+      maybeOne: mapTaggedTemplateLiteralInvocation(maybeOne.bind(null, log, connection, clientConfiguration)),
+      maybeOneFirst: mapTaggedTemplateLiteralInvocation(maybeOneFirst.bind(null, log, connection, clientConfiguration)),
+      one: mapTaggedTemplateLiteralInvocation(one.bind(null, log, connection, clientConfiguration)),
+      oneFirst: mapTaggedTemplateLiteralInvocation(oneFirst.bind(null, log, connection, clientConfiguration)),
+      query: mapTaggedTemplateLiteralInvocation(query.bind(null, log, connection, clientConfiguration)),
       release: connection.release.bind(connection),
       transaction: (handler) => {
-        return transaction(bindConnection, handler);
+        return transaction(log, bindConnection, handler);
       }
     };
 
@@ -102,16 +102,16 @@ export default (
   };
 
   return {
-    any: mapTaggedTemplateLiteralInvocation(any.bind(null, pool, clientConfiguration)),
-    anyFirst: mapTaggedTemplateLiteralInvocation(anyFirst.bind(null, pool, clientConfiguration)),
+    any: mapTaggedTemplateLiteralInvocation(any.bind(null, log, pool, clientConfiguration)),
+    anyFirst: mapTaggedTemplateLiteralInvocation(anyFirst.bind(null, log, pool, clientConfiguration)),
     connect,
-    many: mapTaggedTemplateLiteralInvocation(many.bind(null, pool, clientConfiguration)),
-    manyFirst: mapTaggedTemplateLiteralInvocation(manyFirst.bind(null, pool, clientConfiguration)),
-    maybeOne: mapTaggedTemplateLiteralInvocation(maybeOne.bind(null, pool, clientConfiguration)),
-    maybeOneFirst: mapTaggedTemplateLiteralInvocation(maybeOneFirst.bind(null, pool, clientConfiguration)),
-    one: mapTaggedTemplateLiteralInvocation(one.bind(null, pool, clientConfiguration)),
-    oneFirst: mapTaggedTemplateLiteralInvocation(oneFirst.bind(null, pool, clientConfiguration)),
-    query: mapTaggedTemplateLiteralInvocation(query.bind(null, pool, clientConfiguration)),
+    many: mapTaggedTemplateLiteralInvocation(many.bind(null, log, pool, clientConfiguration)),
+    manyFirst: mapTaggedTemplateLiteralInvocation(manyFirst.bind(null, log, pool, clientConfiguration)),
+    maybeOne: mapTaggedTemplateLiteralInvocation(maybeOne.bind(null, log, pool, clientConfiguration)),
+    maybeOneFirst: mapTaggedTemplateLiteralInvocation(maybeOneFirst.bind(null, log, pool, clientConfiguration)),
+    one: mapTaggedTemplateLiteralInvocation(one.bind(null, log, pool, clientConfiguration)),
+    oneFirst: mapTaggedTemplateLiteralInvocation(oneFirst.bind(null, log, pool, clientConfiguration)),
+    query: mapTaggedTemplateLiteralInvocation(query.bind(null, log, pool, clientConfiguration)),
     transaction: async (handler) => {
       log.debug('allocating a new connection to execute the transaction');
 

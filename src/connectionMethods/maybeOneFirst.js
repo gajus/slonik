@@ -9,7 +9,6 @@ import {
 import type {
   InternalQueryMaybeOneFirstFunctionType
 } from '../types';
-import log from '../Logger';
 import maybeOne from './maybeOne';
 
 /**
@@ -18,10 +17,10 @@ import maybeOne from './maybeOne';
  *
  * @throws DataIntegrityError If query returns multiple rows.
  */
-const maybeOneFirst: InternalQueryMaybeOneFirstFunctionType = async (connection, clientConfiguration, rawSql, values, inheritedQueryId) => {
+const maybeOneFirst: InternalQueryMaybeOneFirstFunctionType = async (log, connection, clientConfiguration, rawSql, values, inheritedQueryId) => {
   const queryId = inheritedQueryId || createQueryId();
 
-  const row = await maybeOne(connection, clientConfiguration, rawSql, values, queryId);
+  const row = await maybeOne(log, connection, clientConfiguration, rawSql, values, queryId);
 
   if (!row) {
     return null;

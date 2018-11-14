@@ -4,6 +4,7 @@
 
 import test from 'ava';
 import sinon from 'sinon';
+import log from '../helpers/Logger';
 import many from '../../src/connectionMethods/many';
 import {
   NotFoundError
@@ -25,7 +26,7 @@ test('returns the query results rows', async (t) => {
     query: stub
   };
 
-  const result = await many(connection, {}, '');
+  const result = await many(log, connection, {}, '');
 
   t.deepEqual(result, [
     {
@@ -46,5 +47,5 @@ test('throws an error if no rows are returned', async (t) => {
     query: stub
   };
 
-  await t.throwsAsync(many(connection, {}, ''), NotFoundError);
+  await t.throwsAsync(many(log, connection, {}, ''), NotFoundError);
 });

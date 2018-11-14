@@ -4,6 +4,7 @@
 
 import test from 'ava';
 import sinon from 'sinon';
+import log from '../helpers/Logger';
 import transaction from '../../src/connectionMethods/transaction';
 
 test('commits successful transaction', async (t) => {
@@ -15,7 +16,7 @@ test('commits successful transaction', async (t) => {
     query
   };
 
-  const result = await transaction(connection, async () => {
+  const result = await transaction(log, connection, async () => {
     await query('FOO');
 
     return 'BAR';
@@ -42,7 +43,7 @@ test('rollbacks unsuccessful transaction', async (t) => {
     query
   };
 
-  const transactionExecution = transaction(connection, async () => {
+  const transactionExecution = transaction(log, connection, async () => {
     await query('FOO');
 
     throw new Error('Instigated error.');

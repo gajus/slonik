@@ -9,13 +9,12 @@ import {
 import type {
   InternalQueryManyFirstFunctionType
 } from '../types';
-import log from '../Logger';
 import many from './many';
 
-const manyFirst: InternalQueryManyFirstFunctionType = async (connection, clientConfigurationType, rawSql, values, inheritedQueryId) => {
+const manyFirst: InternalQueryManyFirstFunctionType = async (log, connection, clientConfigurationType, rawSql, values, inheritedQueryId) => {
   const queryId = inheritedQueryId || createQueryId();
 
-  const rows = await many(connection, clientConfigurationType, rawSql, values, queryId);
+  const rows = await many(log, connection, clientConfigurationType, rawSql, values, queryId);
 
   if (rows.length === 0) {
     log.error({

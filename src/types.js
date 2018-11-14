@@ -2,6 +2,14 @@
 
 /* eslint-disable no-use-before-define, import/exports-last */
 
+import type {
+  LoggerType
+} from 'roarr';
+
+export type {
+  LoggerType
+};
+
 export opaque type QueryIdType = string;
 
 type FieldType = {|
@@ -117,6 +125,7 @@ export type TaggledTemplateLiteralInvocationType = {|
 |};
 
 export type InternalQueryAnyFunctionType = (
+  log: LoggerType,
   connection: InternalDatabaseConnectionType,
   clientConfiguration: ClientConfigurationType,
   sql: string,
@@ -125,6 +134,7 @@ export type InternalQueryAnyFunctionType = (
 ) => Promise<$ReadOnlyArray<QueryResultRowType>>;
 
 export type InternalQueryAnyFirstFunctionType = (
+  log: LoggerType,
   connection: InternalDatabaseConnectionType,
   clientConfiguration: ClientConfigurationType,
   sql: string,
@@ -133,6 +143,7 @@ export type InternalQueryAnyFirstFunctionType = (
 ) => Promise<$ReadOnlyArray<QueryResultRowColumnType>>;
 
 export type InternalQueryManyFunctionType = (
+  log: LoggerType,
   connection: InternalDatabaseConnectionType,
   clientConfiguration: ClientConfigurationType,
   sql: string,
@@ -141,6 +152,7 @@ export type InternalQueryManyFunctionType = (
 ) => Promise<$ReadOnlyArray<QueryResultRowType>>;
 
 export type InternalQueryManyFirstFunctionType = (
+  log: LoggerType,
   connection: InternalDatabaseConnectionType,
   clientConfiguration: ClientConfigurationType,
   sql: string,
@@ -149,6 +161,7 @@ export type InternalQueryManyFirstFunctionType = (
 ) => Promise<$ReadOnlyArray<QueryResultRowColumnType>>;
 
 export type InternalQueryMaybeOneFirstFunctionType = (
+  log: LoggerType,
   connection: InternalDatabaseConnectionType,
   clientConfiguration: ClientConfigurationType,
   sql: string,
@@ -157,6 +170,7 @@ export type InternalQueryMaybeOneFirstFunctionType = (
 ) => Promise<QueryResultRowColumnType | null>;
 
 export type InternalQueryMaybeOneFunctionType = (
+  log: LoggerType,
   connection: InternalDatabaseConnectionType,
   clientConfiguration: ClientConfigurationType,
   sql: string,
@@ -165,6 +179,7 @@ export type InternalQueryMaybeOneFunctionType = (
 ) => Promise<QueryResultRowType | null>;
 
 export type InternalQueryOneFirstFunctionType = (
+  log: LoggerType,
   connection: InternalDatabaseConnectionType,
   clientConfiguration: ClientConfigurationType,
   sql: string,
@@ -173,6 +188,7 @@ export type InternalQueryOneFirstFunctionType = (
 ) => Promise<QueryResultRowColumnType>;
 
 export type InternalQueryOneFunctionType = (
+  log: LoggerType,
   connection: InternalDatabaseConnectionType,
   clientConfiguration: ClientConfigurationType,
   sql: string,
@@ -182,9 +198,9 @@ export type InternalQueryOneFunctionType = (
 
 export type TransactionHandlerType = (connection: DatabaseConnectionType) => Promise<*>;
 
-export type InternalTransactionFunctionType = (connection: InternalDatabaseConnectionType, handler: TransactionHandlerType) => Promise<*>;
+export type InternalTransactionFunctionType = (log: LoggerType, connection: InternalDatabaseConnectionType, handler: TransactionHandlerType) => Promise<*>;
 
-export type InternalQueryFunctionType<T: QueryResultRowType> = (connection: InternalDatabaseConnectionType, clientConfiguration: ClientConfigurationType, sql: string, values?: DatabaseQueryValuesType, queryId?: QueryIdType) => Promise<QueryResultType<T>>;
+export type InternalQueryFunctionType<T: QueryResultRowType> = (log: LoggerType, connection: InternalDatabaseConnectionType, clientConfiguration: ClientConfigurationType, sql: string, values?: DatabaseQueryValuesType, queryId?: QueryIdType) => Promise<QueryResultType<T>>;
 
 export type QueryAnyFirstFunctionType<T: QueryResultRowColumnType> = (sql: string | TaggledTemplateLiteralInvocationType, values?: DatabaseQueryValuesType) => Promise<$ReadOnlyArray<T>>;
 export type QueryAnyFunctionType<T: QueryResultRowType> = (sql: string | TaggledTemplateLiteralInvocationType, values?: DatabaseQueryValuesType) => Promise<$ReadOnlyArray<T>>;

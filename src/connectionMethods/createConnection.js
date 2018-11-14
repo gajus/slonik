@@ -84,8 +84,8 @@ export default async (
   let ended = false;
 
   const bindConnection = {
-    any: mapTaggedTemplateLiteralInvocation(any.bind(null, connection, clientConfiguration)),
-    anyFirst: mapTaggedTemplateLiteralInvocation(anyFirst.bind(null, connection, clientConfiguration)),
+    any: mapTaggedTemplateLiteralInvocation(any.bind(null, log, connection, clientConfiguration)),
+    anyFirst: mapTaggedTemplateLiteralInvocation(anyFirst.bind(null, log, connection, clientConfiguration)),
     end: async () => {
       if (ended) {
         return ended;
@@ -97,15 +97,15 @@ export default async (
 
       return ended;
     },
-    many: mapTaggedTemplateLiteralInvocation(many.bind(null, connection, clientConfiguration)),
-    manyFirst: mapTaggedTemplateLiteralInvocation(manyFirst.bind(null, connection, clientConfiguration)),
-    maybeOne: mapTaggedTemplateLiteralInvocation(maybeOne.bind(null, connection, clientConfiguration)),
-    maybeOneFirst: mapTaggedTemplateLiteralInvocation(maybeOneFirst.bind(null, connection, clientConfiguration)),
-    one: mapTaggedTemplateLiteralInvocation(one.bind(null, connection, clientConfiguration)),
-    oneFirst: mapTaggedTemplateLiteralInvocation(oneFirst.bind(null, connection, clientConfiguration)),
-    query: mapTaggedTemplateLiteralInvocation(query.bind(null, connection, clientConfiguration)),
+    many: mapTaggedTemplateLiteralInvocation(many.bind(null, log, connection, clientConfiguration)),
+    manyFirst: mapTaggedTemplateLiteralInvocation(manyFirst.bind(null, log, connection, clientConfiguration)),
+    maybeOne: mapTaggedTemplateLiteralInvocation(maybeOne.bind(null, log, connection, clientConfiguration)),
+    maybeOneFirst: mapTaggedTemplateLiteralInvocation(maybeOneFirst.bind(null, log, connection, clientConfiguration)),
+    one: mapTaggedTemplateLiteralInvocation(one.bind(null, log, connection, clientConfiguration)),
+    oneFirst: mapTaggedTemplateLiteralInvocation(oneFirst.bind(null, log, connection, clientConfiguration)),
+    query: mapTaggedTemplateLiteralInvocation(query.bind(null, log, connection, clientConfiguration)),
     transaction: (handler) => {
-      return transaction(bindConnection, handler);
+      return transaction(log, bindConnection, handler);
     }
   };
 

@@ -4,6 +4,7 @@
 
 import test from 'ava';
 import sinon from 'sinon';
+import log from '../helpers/Logger';
 import maybeOne from '../../src/connectionMethods/maybeOne';
 import {
   DataIntegrityError
@@ -22,7 +23,7 @@ test('returns the first row', async (t) => {
     query: stub
   };
 
-  const result = await maybeOne(connection, {}, '');
+  const result = await maybeOne(log, connection, {}, '');
 
   t.deepEqual(result, {
     foo: 1
@@ -38,7 +39,7 @@ test('returns null if no results', async (t) => {
     query: stub
   };
 
-  const result = await maybeOne(connection, {}, '');
+  const result = await maybeOne(log, connection, {}, '');
 
   t.true(result === null);
 });
@@ -59,5 +60,5 @@ test('throws an error if more than one row is returned', async (t) => {
     query: stub
   };
 
-  await t.throwsAsync(maybeOne(connection, {}, ''), DataIntegrityError);
+  await t.throwsAsync(maybeOne(log, connection, {}, ''), DataIntegrityError);
 });
