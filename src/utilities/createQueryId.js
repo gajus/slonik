@@ -1,13 +1,11 @@
 // @flow
 
-import {
-  factory as ulidFactory,
-  detectPrng
-} from 'ulid';
 import type {
   QueryIdType
 } from '../types';
+import createUlid from './createUlid';
 
 export default (): QueryIdType => {
-  return ulidFactory(detectPrng(true));
+  // eslint-disable-next-line no-extra-parens, flowtype/no-weak-types
+  return (createUlid(): any);
 };

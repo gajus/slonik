@@ -1,6 +1,7 @@
 // @flow
 
 export {default as createQueryId} from './createQueryId';
+export {default as createUlid} from './createUlid';
 export {default as escapeIdentifier} from './escapeIdentifier';
 export {default as mapTaggedTemplateLiteralInvocation} from './mapTaggedTemplateLiteralInvocation';
 export {default as normalizeAnonymousValuePlaceholders} from './normalizeAnonymousValuePlaceholders';

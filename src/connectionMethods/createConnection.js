@@ -6,6 +6,7 @@ import {
   parse as parseConnectionString
 } from 'pg-connection-string';
 import {
+  createUlid,
   mapTaggedTemplateLiteralInvocation
 } from '../utilities';
 import type {
@@ -13,7 +14,7 @@ import type {
   DatabaseConfigurationType,
   DatabaseSingleConnectionType
 } from '../types';
-import log from '../Logger';
+import Logger from '../Logger';
 import any from './any';
 import anyFirst from './anyFirst';
 import many from './many';
@@ -33,6 +34,10 @@ export default async (
   clientConfiguration: ClientConfigurationType = defaultClientConfiguration
 ): Promise<DatabaseSingleConnectionType> => {
   const pool = new pg.Pool(typeof connectionConfiguration === 'string' ? parseConnectionString(connectionConfiguration) : connectionConfiguration);
+
+  const log = Logger.child({
+    connectionId: createUlid()
+  });
 
   pool.on('error', (error) => {
     log.error({
@@ -105,7 +110,11 @@ export default async (
     oneFirst: mapTaggedTemplateLiteralInvocation(oneFirst.bind(null, log, connection, clientConfiguration)),
     query: mapTaggedTemplateLiteralInvocation(query.bind(null, log, connection, clientConfiguration)),
     transaction: (handler) => {
-      return transaction(log, bindConnection, handler);
+      const transactionLog = log.child({
+        transactionId: createUlid()
+      });
+
+      return transaction(transactionLog, bindConnection, handler);
     }
   };
 
