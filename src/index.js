@@ -36,3 +36,13 @@ export {
 export {
   sql
 } from './templateTags';
+export {
+  CheckIntegrityConstraintViolationError,
+  DataIntegrityError,
+  ForeignKeyIntegrityConstraintViolationError,
+  IntegrityConstraintViolationError,
+  NotFoundError,
+  NotNullIntegrityConstraintViolationError,
+  SlonikError,
+  UniqueIntegrityConstraintViolationError
+} from './errors';
