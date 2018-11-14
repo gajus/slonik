@@ -4,11 +4,10 @@
 
 import test from 'ava';
 import sinon from 'sinon';
+import maybeOne from '../../src/connectionMethods/maybeOne';
 import {
-  one,
-  DataIntegrityError,
-  NotFoundError
-} from '../../src';
+  DataIntegrityError
+} from '../../src/errors';
 
 test('returns the first row', async (t) => {
   const stub = sinon.stub().returns({
@@ -23,14 +22,14 @@ test('returns the first row', async (t) => {
     query: stub
   };
 
-  const result = await one(connection, {}, '');
+  const result = await maybeOne(connection, {}, '');
 
   t.deepEqual(result, {
     foo: 1
   });
 });
 
-test('throws an error if no rows are returned', async (t) => {
+test('returns null if no results', async (t) => {
   const stub = sinon.stub().returns({
     rows: []
   });
@@ -39,7 +38,9 @@ test('throws an error if no rows are returned', async (t) => {
     query: stub
   };
 
-  await t.throwsAsync(one(connection, {}, ''), NotFoundError);
+  const result = await maybeOne(connection, {}, '');
+
+  t.true(result === null);
 });
 
 test('throws an error if more than one row is returned', async (t) => {
@@ -58,5 +59,5 @@ test('throws an error if more than one row is returned', async (t) => {
     query: stub
   };
 
-  await t.throwsAsync(one(connection, {}, ''), DataIntegrityError);
+  await t.throwsAsync(maybeOne(connection, {}, ''), DataIntegrityError);
 });

@@ -4,11 +4,11 @@
 
 import test from 'ava';
 import sinon from 'sinon';
+import oneFirst from '../../src/connectionMethods/oneFirst';
 import {
-  oneFirst,
   DataIntegrityError,
   NotFoundError
-} from '../../src';
+} from '../../src/errors';
 
 test('returns value of the first column from the first row', async (t) => {
   const stub = sinon.stub().returns({

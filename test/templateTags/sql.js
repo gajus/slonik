@@ -1,9 +1,7 @@
 // @flow
 
 import test from 'ava';
-import {
-  sql
-} from '../../src';
+import sql from '../../src/templateTags/sql';
 
 test('creates an object describing a query', (t) => {
   const query = sql`SELECT 1`;

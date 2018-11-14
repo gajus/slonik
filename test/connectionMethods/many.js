@@ -4,10 +4,10 @@
 
 import test from 'ava';
 import sinon from 'sinon';
+import many from '../../src/connectionMethods/many';
 import {
-  many,
   NotFoundError
-} from '../../src';
+} from '../../src/errors';
 
 test('returns the query results rows', async (t) => {
   const stub = sinon.stub().returns({

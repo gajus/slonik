@@ -2,9 +2,7 @@
 
 import test from 'ava';
 import sinon from 'sinon';
-import {
-  sql
-} from '../../src';
+import sql from '../../src/templateTags/sql';
 import {
   mapTaggedTemplateLiteralInvocation
 } from '../../src/utilities';

@@ -4,10 +4,10 @@
 
 import test from 'ava';
 import sinon from 'sinon';
+import maybeOneFirst from '../../src/connectionMethods/maybeOneFirst';
 import {
-  maybeOneFirst,
   DataIntegrityError
-} from '../../src';
+} from '../../src/errors';
 
 test('returns the first row', async (t) => {
   const stub = sinon.stub().returns({

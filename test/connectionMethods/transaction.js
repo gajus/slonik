@@ -4,9 +4,7 @@
 
 import test from 'ava';
 import sinon from 'sinon';
-import {
-  transaction
-} from '../../src';
+import transaction from '../../src/connectionMethods/transaction';
 
 test('commits successful transaction', async (t) => {
   const query = sinon.stub();

@@ -4,9 +4,7 @@
 
 import test from 'ava';
 import sinon from 'sinon';
-import {
-  query
-} from '../../src';
+import query from '../../src/connectionMethods/query';
 
 test('executes the query and returns the result', async (t) => {
   const stub = sinon.stub().returns({
