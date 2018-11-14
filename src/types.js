@@ -32,7 +32,7 @@ type QueryResultType<T> = {|
 |};
 
 // eslint-disable-next-line flowtype/no-weak-types
-type InternalDatabaseConnectionType = any;
+export type InternalDatabaseConnectionType = any;
 
 export type ClientConfigurationType = {|
   +interceptors?: $ReadOnlyArray<InterceptorType>

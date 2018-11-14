@@ -15,16 +15,18 @@ import type {
   DatabaseConfigurationType
 } from '../types';
 import Logger from '../Logger';
-import any from './any';
-import anyFirst from './anyFirst';
-import many from './many';
-import manyFirst from './manyFirst';
-import maybeOne from './maybeOne';
-import maybeOneFirst from './maybeOneFirst';
-import one from './one';
-import oneFirst from './oneFirst';
-import query from './query';
-import transaction from './transaction';
+import {
+  any,
+  anyFirst,
+  many,
+  manyFirst,
+  maybeOne,
+  maybeOneFirst,
+  one,
+  oneFirst,
+  query
+} from '../connectionMethods';
+import createPoolConnection from './createPoolConnection';
 
 // @see https://github.com/facebook/flow/issues/2977#issuecomment-390613203
 const defaultClientConfiguration = Object.freeze({});
@@ -79,39 +81,9 @@ export default (
   });
 
   const connect = async () => {
-    const connectionLog = poolLog.child({
-      connectionId: createUlid()
-    });
-
     const connection = await pool.connect();
 
-    connection.on('notice', (notice) => {
-      connectionLog.info({
-        notice
-      }, 'notice message');
-    });
-
-    const bindConnection = {
-      any: mapTaggedTemplateLiteralInvocation(any.bind(null, connectionLog, connection, clientConfiguration)),
-      anyFirst: mapTaggedTemplateLiteralInvocation(anyFirst.bind(null, connectionLog, connection, clientConfiguration)),
-      many: mapTaggedTemplateLiteralInvocation(many.bind(null, connectionLog, connection, clientConfiguration)),
-      manyFirst: mapTaggedTemplateLiteralInvocation(manyFirst.bind(null, connectionLog, connection, clientConfiguration)),
-      maybeOne: mapTaggedTemplateLiteralInvocation(maybeOne.bind(null, connectionLog, connection, clientConfiguration)),
-      maybeOneFirst: mapTaggedTemplateLiteralInvocation(maybeOneFirst.bind(null, connectionLog, connection, clientConfiguration)),
-      one: mapTaggedTemplateLiteralInvocation(one.bind(null, connectionLog, connection, clientConfiguration)),
-      oneFirst: mapTaggedTemplateLiteralInvocation(oneFirst.bind(null, connectionLog, connection, clientConfiguration)),
-      query: mapTaggedTemplateLiteralInvocation(query.bind(null, connectionLog, connection, clientConfiguration)),
-      release: connection.release.bind(connection),
-      transaction: (handler) => {
-        const transactionLog = poolLog.child({
-          connectionId: createUlid()
-        });
-
-        return transaction(transactionLog, bindConnection, handler);
-      }
-    };
-
-    return bindConnection;
+    return createPoolConnection(poolLog, connection, clientConfiguration);
   };
 
   return {

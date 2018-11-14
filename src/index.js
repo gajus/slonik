@@ -32,4 +32,4 @@ export type {
 export {
   createConnection,
   createPool
-} from './connectionMethods';
+} from './factories';

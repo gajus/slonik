@@ -15,16 +15,18 @@ import type {
   DatabaseSingleConnectionType
 } from '../types';
 import Logger from '../Logger';
-import any from './any';
-import anyFirst from './anyFirst';
-import many from './many';
-import manyFirst from './manyFirst';
-import maybeOne from './maybeOne';
-import maybeOneFirst from './maybeOneFirst';
-import one from './one';
-import oneFirst from './oneFirst';
-import query from './query';
-import transaction from './transaction';
+import {
+  any,
+  anyFirst,
+  many,
+  manyFirst,
+  maybeOne,
+  maybeOneFirst,
+  one,
+  oneFirst,
+  query,
+  transaction
+} from '../connectionMethods';
 
 // @see https://github.com/facebook/flow/issues/2977#issuecomment-390613203
 const defaultClientConfiguration = Object.freeze({});
