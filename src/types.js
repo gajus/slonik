@@ -200,17 +200,51 @@ export type TransactionHandlerType = (connection: DatabaseConnectionType) => Pro
 
 export type InternalTransactionFunctionType = (log: LoggerType, connection: InternalDatabaseConnectionType, handler: TransactionHandlerType) => Promise<*>;
 
-export type InternalQueryFunctionType<T: QueryResultRowType> = (log: LoggerType, connection: InternalDatabaseConnectionType, clientConfiguration: ClientConfigurationType, sql: string, values?: DatabaseQueryValuesType, queryId?: QueryIdType) => Promise<QueryResultType<T>>;
+export type InternalQueryFunctionType<T: QueryResultRowType> = (
+  log: LoggerType,
+  connection: InternalDatabaseConnectionType,
+  clientConfiguration: ClientConfigurationType,
+  sql: string,
+  values?: DatabaseQueryValuesType,
+  queryId?: QueryIdType
+) => Promise<QueryResultType<T>>;
 
-export type QueryAnyFirstFunctionType<T: QueryResultRowColumnType> = (sql: string | TaggledTemplateLiteralInvocationType, values?: DatabaseQueryValuesType) => Promise<$ReadOnlyArray<T>>;
-export type QueryAnyFunctionType<T: QueryResultRowType> = (sql: string | TaggledTemplateLiteralInvocationType, values?: DatabaseQueryValuesType) => Promise<$ReadOnlyArray<T>>;
-export type QueryManyFirstFunctionType<T: QueryResultRowColumnType> = (sql: string | TaggledTemplateLiteralInvocationType, values?: DatabaseQueryValuesType) => Promise<$ReadOnlyArray<T>>;
-export type QueryManyFunctionType<T: QueryResultRowType> = (sql: string | TaggledTemplateLiteralInvocationType, values?: DatabaseQueryValuesType) => Promise<$ReadOnlyArray<T>>;
-export type QueryMaybeOneFirstFunctionType<T: QueryResultRowColumnType> = (sql: string | TaggledTemplateLiteralInvocationType, values?: DatabaseQueryValuesType) => Promise<T>;
-export type QueryMaybeOneFunctionType<T: QueryResultRowType | null> = (sql: string | TaggledTemplateLiteralInvocationType, values?: DatabaseQueryValuesType) => Promise<T>;
-export type QueryOneFirstFunctionType<T: QueryResultRowColumnType> = (sql: string | TaggledTemplateLiteralInvocationType, values?: DatabaseQueryValuesType) => Promise<T>;
-export type QueryOneFunctionType<T: QueryResultRowType> = (sql: string | TaggledTemplateLiteralInvocationType, values?: DatabaseQueryValuesType) => Promise<T>;
-export type QueryFunctionType<T: QueryResultRowType> = (sql: string | TaggledTemplateLiteralInvocationType, values?: DatabaseQueryValuesType) => Promise<QueryResultType<T>>;
+export type QueryAnyFirstFunctionType<T: QueryResultRowColumnType> = (
+  sql: string | TaggledTemplateLiteralInvocationType,
+  values?: DatabaseQueryValuesType
+) => Promise<$ReadOnlyArray<T>>;
+export type QueryAnyFunctionType<T: QueryResultRowType> = (
+  sql: string | TaggledTemplateLiteralInvocationType,
+  values?: DatabaseQueryValuesType
+) => Promise<$ReadOnlyArray<T>>;
+export type QueryManyFirstFunctionType<T: QueryResultRowColumnType> = (
+  sql: string | TaggledTemplateLiteralInvocationType,
+  values?: DatabaseQueryValuesType
+) => Promise<$ReadOnlyArray<T>>;
+export type QueryManyFunctionType<T: QueryResultRowType> = (
+  sql: string | TaggledTemplateLiteralInvocationType,
+  values?: DatabaseQueryValuesType
+) => Promise<$ReadOnlyArray<T>>;
+export type QueryMaybeOneFirstFunctionType<T: QueryResultRowColumnType> = (
+  sql: string | TaggledTemplateLiteralInvocationType,
+  values?: DatabaseQueryValuesType
+) => Promise<T>;
+export type QueryMaybeOneFunctionType<T: QueryResultRowType | null> = (
+  sql: string | TaggledTemplateLiteralInvocationType,
+  values?: DatabaseQueryValuesType
+) => Promise<T>;
+export type QueryOneFirstFunctionType<T: QueryResultRowColumnType> = (
+  sql: string | TaggledTemplateLiteralInvocationType,
+  values?: DatabaseQueryValuesType
+) => Promise<T>;
+export type QueryOneFunctionType<T: QueryResultRowType> = (
+  sql: string | TaggledTemplateLiteralInvocationType,
+  values?: DatabaseQueryValuesType
+) => Promise<T>;
+export type QueryFunctionType<T: QueryResultRowType> = (
+  sql: string | TaggledTemplateLiteralInvocationType,
+  values?: DatabaseQueryValuesType
+) => Promise<QueryResultType<T>>;
 export type TransactionFunctionType = (handler: TransactionHandlerType) => Promise<*>;
 
 export type InterceptorType = {|
