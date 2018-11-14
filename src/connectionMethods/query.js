@@ -27,6 +27,11 @@ import type {
 } from '../types';
 import log from '../Logger';
 
+const stringifyCallSite = (callSite) => {
+  return (callSite.fileName || '') + ':' + callSite.lineNumber + ':' + callSite.columnNumber;
+};
+
+// eslint-disable-next-line complexity
 const query: InternalQueryFunctionType<*> = async (connection, clientConfiguration, rawSql, values, inheritedQueryId) => {
   const queryId = inheritedQueryId || createQueryId();
 
@@ -37,7 +42,7 @@ const query: InternalQueryFunctionType<*> = async (connection, clientConfigurati
 
     stackTrace = callSites
       .map((callSite) => {
-        return (callSite.fileName || '') + ':' + callSite.lineNumber + ':' + callSite.columnNumber;
+        return stringifyCallSite(callSite);
       });
   }
 
