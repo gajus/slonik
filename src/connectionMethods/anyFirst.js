@@ -20,12 +20,14 @@ const anyFirst: InternalQueryAnyFirstFunctionType = async (log, connection, clie
     return [];
   }
 
-  const keys = Object.keys(rows[0]);
+  const firstRow = rows[0];
+
+  const keys = Object.keys(firstRow);
 
   if (keys.length !== 1) {
     log.error({
       queryId
-    }, 'DataIntegrityError');
+    }, 'result row has no columns');
 
     throw new DataIntegrityError();
   }
@@ -33,10 +35,6 @@ const anyFirst: InternalQueryAnyFirstFunctionType = async (log, connection, clie
   const firstColumnName = keys[0];
 
   if (typeof firstColumnName !== 'string') {
-    log.error({
-      queryId
-    }, 'DataIntegrityError');
-
     throw new DataIntegrityError();
   }
 
