@@ -33,3 +33,6 @@ export {
   createConnection,
   createPool
 } from './factories';
+export {
+  sql
+} from './templateTags';
