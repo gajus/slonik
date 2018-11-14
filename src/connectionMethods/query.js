@@ -6,7 +6,7 @@ import {
   getStackTrace
 } from 'get-stack-trace';
 import {
-  createUlid,
+  createQueryId,
   normalizeAnonymousValuePlaceholders,
   normalizeNamedValuePlaceholders,
   stripComments
@@ -27,7 +27,9 @@ import type {
 } from '../types';
 import log from '../Logger';
 
-const query: InternalQueryFunctionType<*> = async (connection, clientConfiguration, rawSql, values, queryId = createUlid()) => {
+const query: InternalQueryFunctionType<*> = async (connection, clientConfiguration, rawSql, values, inheritedQueryId) => {
+  const queryId = inheritedQueryId || createQueryId();
+
   let stackTrace;
 
   if (SLONIK_LOG_STACK_TRACE) {

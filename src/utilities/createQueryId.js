@@ -4,7 +4,10 @@ import {
   factory as ulidFactory,
   detectPrng
 } from 'ulid';
+import type {
+  QueryIdType
+} from '../types';
 
-export default (): string => {
+export default (): QueryIdType => {
   return ulidFactory(detectPrng(true));
 };

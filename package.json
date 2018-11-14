@@ -18,7 +18,7 @@
     "pg": "^7.6.1",
     "pg-connection-string": "^2.0.0",
     "pretty-hrtime": "^1.0.3",
-    "roarr": "^2.11.7",
+    "roarr": "^2.11.8",
     "serialize-error": "^3.0.0",
     "ulid": "^2.3.0"
   },

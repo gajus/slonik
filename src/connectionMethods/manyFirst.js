@@ -1,7 +1,7 @@
 // @flow
 
 import {
-  createUlid
+  createQueryId
 } from '../utilities';
 import {
   DataIntegrityError
@@ -12,7 +12,9 @@ import type {
 import log from '../Logger';
 import many from './many';
 
-const manyFirst: InternalQueryManyFirstFunctionType = async (connection, clientConfigurationType, rawSql, values, queryId = createUlid()) => {
+const manyFirst: InternalQueryManyFirstFunctionType = async (connection, clientConfigurationType, rawSql, values, inheritedQueryId) => {
+  const queryId = inheritedQueryId || createQueryId();
+
   const rows = await many(connection, clientConfigurationType, rawSql, values, queryId);
 
   if (rows.length === 0) {

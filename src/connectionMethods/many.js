@@ -1,7 +1,7 @@
 // @flow
 
 import {
-  createUlid
+  createQueryId
 } from '../utilities';
 import {
   NotFoundError
@@ -17,7 +17,9 @@ import query from './query';
  *
  * @throws NotFoundError If query returns no rows.
  */
-const many: InternalQueryManyFunctionType = async (connection, clientConfiguration, rawSql, values, queryId = createUlid()) => {
+const many: InternalQueryManyFunctionType = async (connection, clientConfiguration, rawSql, values, inheritedQueryId) => {
+  const queryId = inheritedQueryId || createQueryId();
+
   const {
     rows
   } = await query(connection, clientConfiguration, rawSql, values, queryId);

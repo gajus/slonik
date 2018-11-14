@@ -1,7 +1,7 @@
 // @flow
 
 import {
-  createUlid
+  createQueryId
 } from '../utilities';
 import {
   DataIntegrityError
@@ -19,7 +19,9 @@ import one from './one';
  * @throws NotFoundError If query returns no rows.
  * @throws DataIntegrityError If query returns multiple rows.
  */
-const oneFirst: InternalQueryOneFirstFunctionType = async (connection, clientConfiguration, rawSql, values, queryId = createUlid()) => {
+const oneFirst: InternalQueryOneFirstFunctionType = async (connection, clientConfiguration, rawSql, values, inheritedQueryId) => {
+  const queryId = inheritedQueryId || createQueryId();
+
   const row = await one(connection, clientConfiguration, rawSql, values, queryId);
 
   const keys = Object.keys(row);

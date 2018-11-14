@@ -1,7 +1,7 @@
 // @flow
 
 import {
-  createUlid
+  createQueryId
 } from '../utilities';
 import {
   DataIntegrityError
@@ -17,7 +17,9 @@ import query from './query';
  *
  * @throws DataIntegrityError If query returns multiple rows.
  */
-const maybeOne: InternalQueryMaybeOneFunctionType = async (connection, clientConfiguration, rawSql, values, queryId = createUlid()) => {
+const maybeOne: InternalQueryMaybeOneFunctionType = async (connection, clientConfiguration, rawSql, values, inheritedQueryId) => {
+  const queryId = inheritedQueryId || createQueryId();
+
   const {
     rows
   } = await query(connection, clientConfiguration, rawSql, values, queryId);
