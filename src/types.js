@@ -55,7 +55,7 @@ export type DatabaseConfigurationType =
     +user?: string
   |};
 
-export type DatabaseConnectionType = {|
+type CommonQueryMethodsType = {|
   +any: QueryAnyFunctionType<*>,
   +anyFirst: QueryAnyFirstFunctionType<*>,
   +many: QueryManyFunctionType<*>,
@@ -68,38 +68,39 @@ export type DatabaseConnectionType = {|
 |};
 
 export type DatabaseTransactionConnectionType = {|
-  ...DatabaseConnectionType
+  ...CommonQueryMethodsType
 |};
 
 export type TransactionFunctionType = (connection: DatabaseTransactionConnectionType) => Promise<*>;
 
 export type DatabaseSingleConnectionType = {|
-  ...DatabaseConnectionType,
+  ...CommonQueryMethodsType,
   +end: () => Promise<void>,
   +transaction: (handler: TransactionFunctionType) => Promise<*>
 |};
 
 export type DatabasePoolConnectionType = {|
-  ...DatabaseConnectionType,
+  ...CommonQueryMethodsType,
   +release: () => Promise<void>,
   +transaction: (handler: TransactionFunctionType) => Promise<*>
 |};
 
-export type DatabaseIsolatedPoolConnectionType = {|
-  ...DatabaseConnectionType,
-  +transaction: (handler: TransactionFunctionType) => Promise<*>
-|};
-
-// @todo Document `((connection: DatabaseIsolatedPoolConnectionType) => Promise<void>) => Promise<void>` API.
-type DataPoolConnectMethodType =
-  () => Promise<DatabasePoolConnectionType> &
-  ((connection: DatabaseIsolatedPoolConnectionType) => Promise<void>) => Promise<void>;
-
 export type DatabasePoolType = {|
-  ...DatabaseConnectionType,
-  +connect: DataPoolConnectMethodType,
+  ...CommonQueryMethodsType,
+  +connect: () => Promise<DatabasePoolConnectionType>,
   +transaction: (handler: TransactionFunctionType) => Promise<*>
 |};
+
+/**
+ * This appears to be the only sane way to have a generic database connection type
+ * that can be refined, i.e. DatabaseConnectionType => DatabasePoolType.
+ */
+export type DatabaseConnectionType =
+  $Shape<{
+    ...DatabasePoolConnectionType,
+    ...DatabasePoolType,
+    ...DatabaseSingleConnectionType
+  }>;
 
 type QueryResultRowColumnType = string | number;
 

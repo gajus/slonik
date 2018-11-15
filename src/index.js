@@ -23,7 +23,6 @@ types.setTypeParser(TIMESTAMP_OID, (value) => {
 
 export type {
   DatabaseConnectionType,
-  DatabaseIsolatedPoolConnectionType,
   DatabasePoolConnectionType,
   DatabasePoolType,
   DatabaseSingleConnectionType,
