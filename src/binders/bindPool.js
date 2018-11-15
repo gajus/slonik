@@ -40,9 +40,13 @@ export default (
       if (handler) {
         const connection: InternalDatabaseConnectionType = await pool.connect();
 
-        await handler(bindIsolatedPoolConnection(parentLog, pool, connection, clientConfiguration));
+        try {
+          await handler(bindIsolatedPoolConnection(parentLog, pool, connection, clientConfiguration));
+        } catch (error) {
+          connection.release();
 
-        connection.release();
+          throw error;
+        }
       } else {
         const connection: InternalDatabaseConnectionType = await pool.connect();
 
