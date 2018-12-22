@@ -4,7 +4,7 @@ import {
   createQueryId
 } from '../utilities';
 import {
-  DataIntegrityError
+  UnexpectedStateError
 } from '../errors';
 import type {
   InternalQueryOneFirstFunctionType
@@ -25,12 +25,12 @@ const oneFirst: InternalQueryOneFirstFunctionType = async (log, connection, clie
 
   const keys = Object.keys(row);
 
-  if (keys.length !== 1) {
+  if (keys.length > 1) {
     log.error({
       queryId
     }, 'DataIntegrityError');
 
-    throw new DataIntegrityError();
+    throw new UnexpectedStateError();
   }
 
   return row[keys[0]];

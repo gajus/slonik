@@ -4,6 +4,8 @@ import ExtendableError from 'es6-error';
 
 export class SlonikError extends ExtendableError {}
 
+export class UnexpectedStateError extends ExtendableError {}
+
 export class NotFoundError extends SlonikError {
   constructor () {
     super('Resource not found.');
