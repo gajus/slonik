@@ -8,7 +8,8 @@ import log from '../helpers/Logger';
 import oneFirst from '../../src/connectionMethods/oneFirst';
 import {
   DataIntegrityError,
-  NotFoundError
+  NotFoundError,
+  UnexpectedStateError
 } from '../../src/errors';
 
 test('returns value of the first column from the first row', async (t) => {
@@ -74,5 +75,5 @@ test('throws an error if more than one column is returned', async (t) => {
     query: stub
   };
 
-  await t.throwsAsync(oneFirst(log, connection, {}, ''), DataIntegrityError);
+  await t.throwsAsync(oneFirst(log, connection, {}, ''), UnexpectedStateError);
 });

@@ -33,7 +33,7 @@
     "babel-plugin-istanbul": "^5.1.0",
     "babel-plugin-transform-export-default-name": "^2.0.4",
     "coveralls": "^3.0.2",
-    "eslint": "^5.10.0",
+    "eslint": "^5.11.0",
     "eslint-config-canonical": "^15.0.1",
     "flow-bin": "^0.89.0",
     "flow-copy-source": "^2.0.2",
