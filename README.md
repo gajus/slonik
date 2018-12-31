@@ -18,7 +18,7 @@ A PostgreSQL client with strict types, detail logging and assertions.
 * [Syntax highlighting](#slonik-syntax-highlighting) (Atom plugin compatible with Slonik)
 * [SQL injection guarding](https://github.com/gajus/eslint-plugin-sql) (ESLint plugin compatible with Slonik)
 * Detail [logging](#slonik-debugging)
-* [Parsing and logging of the auto_explain logs.](#logging-auto-explain)
+* [Parsing and logging of the auto_explain logs.](#logging-auto_explain)
 * Built-in [asynchronous stack trace resolution](#log-stack-trace)
 * [Flow types](#types)
 * [Mapped errors](#error-handling)
