@@ -29,7 +29,6 @@ export type {
   DatabaseTransactionConnectionType,
   InterceptorType
 } from './types';
-
 export {
   createConnection,
   createPool

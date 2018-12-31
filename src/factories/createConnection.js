@@ -78,9 +78,11 @@ export default async (
     }, 'notice message');
   });
 
+  const bindedConnection = bindSingleConnection(connectionLog, pool, connection, clientConfiguration);
+
   if (clientConfiguration.onConnect) {
-    await clientConfiguration.onConnect(connection);
+    await clientConfiguration.onConnect(bindedConnection);
   }
 
-  return bindSingleConnection(connectionLog, pool, connection, clientConfiguration);
+  return bindedConnection;
 };

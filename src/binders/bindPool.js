@@ -35,11 +35,13 @@ export default (
     connect: async () => {
       const connection: InternalDatabaseConnectionType = await pool.connect();
 
+      const bindedConnection = bindPoolConnection(parentLog, pool, connection, clientConfiguration);
+
       if (clientConfiguration.onConnect) {
-        await clientConfiguration.onConnect(connection);
+        await clientConfiguration.onConnect(bindedConnection);
       }
 
-      return bindPoolConnection(parentLog, pool, connection, clientConfiguration);
+      return bindedConnection;
     },
     many: mapTaggedTemplateLiteralInvocation(many.bind(null, parentLog, pool, clientConfiguration)),
     manyFirst: mapTaggedTemplateLiteralInvocation(manyFirst.bind(null, parentLog, pool, clientConfiguration)),
