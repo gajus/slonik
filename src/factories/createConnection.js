@@ -6,7 +6,8 @@ import {
   parse as parseConnectionString
 } from 'pg-connection-string';
 import {
-  createUlid
+  createUlid,
+  formatNotice
 } from '../utilities';
 import type {
   ClientConfigurationType,
@@ -38,6 +39,12 @@ export default async (
   });
 
   pool.on('connect', (client) => {
+    client.on('notice', (notice) => {
+      connectionLog.info({
+        notice: formatNotice(notice)
+      }, 'notice message');
+    });
+
     connectionLog.info({
       processId: client.processID,
       stats: {
@@ -71,12 +78,6 @@ export default async (
   });
 
   const connection: InternalDatabaseConnectionType = await pool.connect();
-
-  connection.on('notice', (notice) => {
-    connectionLog.info({
-      notice
-    }, 'notice message');
-  });
 
   const bindedConnection = bindSingleConnection(connectionLog, pool, connection, clientConfiguration);
 
