@@ -12,6 +12,8 @@ export type {
 
 export opaque type QueryIdType = string;
 
+type MaybePromiseType<T> = T | Promise<T>;
+
 type FieldType = {|
   +columnID: number,
   +dataTypeID: number,
@@ -37,8 +39,13 @@ export type InternalDatabasePoolType = any;
 // eslint-disable-next-line flowtype/no-weak-types
 export type InternalDatabaseConnectionType = any;
 
+/**
+ * @property interceptors An array of [Slonik interceptors](https://github.com/gajus/slonik#slonik-interceptors).
+ * @property onConnect A new connection handler. Executed after a connection is established, but before allowing the connection to be used by any clients.
+ */
 export type ClientConfigurationType = {|
-  +interceptors?: $ReadOnlyArray<InterceptorType>
+  +interceptors?: $ReadOnlyArray<InterceptorType>,
+  +onConnect?: (connection: DatabaseConnectionType) => MaybePromiseType<void>
 |};
 
 export type DatabaseConnectionUriType = string;

@@ -31,8 +31,13 @@ type DatabaseConfigurationType =
     +user?: string
   |};
 
+/**
+ * @property interceptors An array of [Slonik interceptors](https://github.com/gajus/slonik#slonik-interceptors).
+ * @property onConnect A new connection handler. Executed after a connection is established, but before allowing the connection to be used by any clients.
+ */
 type ClientConfigurationType = {|
-  +interceptors?: $ReadOnlyArray<InterceptorType>
+  +interceptors?: $ReadOnlyArray<InterceptorType>,
+  +onConnect?: (connection: DatabaseConnectionType) => MaybePromiseType<void>
 |};
 
 ```

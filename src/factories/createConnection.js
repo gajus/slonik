@@ -78,5 +78,9 @@ export default async (
     }, 'notice message');
   });
 
+  if (clientConfiguration.onConnect) {
+    await clientConfiguration.onConnect(connection);
+  }
+
   return bindSingleConnection(connectionLog, pool, connection, clientConfiguration);
 };
