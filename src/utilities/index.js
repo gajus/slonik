@@ -4,6 +4,7 @@ export {default as createQueryId} from './createQueryId';
 export {default as createUlid} from './createUlid';
 export {default as escapeIdentifier} from './escapeIdentifier';
 export {default as formatNotice} from './formatNotice';
+export {default as isAutoExplainJsonMessage} from './isAutoExplainJsonMessage';
 export {default as mapTaggedTemplateLiteralInvocation} from './mapTaggedTemplateLiteralInvocation';
 export {default as normalizeAnonymousValuePlaceholders} from './normalizeAnonymousValuePlaceholders';
 export {default as normalizeNamedValuePlaceholders} from './normalizeNamedValuePlaceholders';
