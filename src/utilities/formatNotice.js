@@ -2,7 +2,7 @@
 
 export default (notice: Error) => {
   return {
-    ...JSON.parse(JSON.stringify(notice)),
+    level: notice.name,
     message: notice.message
   };
 };
