@@ -49,8 +49,75 @@ import {
   createPool
 } from 'slonik';
 
-const connection = createPool('postgres://localhost');
+const pool = createPool('postgres://localhost');
 
-await connection.query(sql`SELECT 1`);
+await pool.query(sql`SELECT 1`);
 
 ```
+
+### Checking out a client from the connection pool
+
+Slonik only allows to check out a connection for a duration of promise routine supplied to the `connect()` method.
+
+```js
+import {
+  createPool
+} from 'slonik';
+
+const pool = createPool('postgres://localhost');
+
+const result = await pool.connect(async (connection) => {
+  await connection.query(sql`SELECT 1`);
+  await connection.query(sql`SELECT 2`);
+
+  return 'foo';
+});
+
+result;
+// 'foo'
+
+```
+
+Connection is released back to the pool after the promise produced by the function supplied to `connect()` method is either resolved or rejected.
+
+The primary reason for implementing _only_ this connection pooling method is because the alternative is inherently unsafe, e.g.
+
+```js
+// Note: This example is using unsupported API.
+
+const main = async () => {
+  const connection = await pool.connect();
+
+  await connection.query(sql`SELECT produce_error()`);
+
+  await connection.release();
+};
+
+```
+
+In this example, the error causes early rejection of the promise and a hanging connection. A fix to the above is to ensure that `connection#release()` is always called, i.e.
+
+```js
+// Note: This example is using unsupported API.
+
+const main = async () => {
+  const connection = await pool.connect();
+
+  let lastExecutionResult;
+
+  try {
+    lastExecutionResult = await connection.query(sql`SELECT produce_error()`);
+  } catch (error) {
+    await connection.release();
+
+    throw error;
+  }
+
+  await connection.release();
+
+  return lastExecutionResult;
+};
+
+```
+
+Slonik abstracts the latter pattern into `pool#connect()` method.

@@ -40,9 +40,6 @@ export default (
     one: mapTaggedTemplateLiteralInvocation(one.bind(null, parentLog, pool, clientConfiguration)),
     oneFirst: mapTaggedTemplateLiteralInvocation(oneFirst.bind(null, parentLog, pool, clientConfiguration)),
     query: mapTaggedTemplateLiteralInvocation(query.bind(null, parentLog, pool, clientConfiguration)),
-    release: async () => {
-      connection.release();
-    },
     transaction: async (handler: TransactionFunctionType) => {
       return createPoolTransaction(parentLog, pool, clientConfiguration, handler);
     }

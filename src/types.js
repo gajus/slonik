@@ -88,13 +88,14 @@ export type DatabaseSingleConnectionType = {|
 
 export type DatabasePoolConnectionType = {|
   ...CommonQueryMethodsType,
-  +release: () => Promise<void>,
   +transaction: (handler: TransactionFunctionType) => Promise<*>
 |};
 
+export type ConnectionRoutineType = (connection: DatabasePoolConnectionType) => Promise<*>;
+
 export type DatabasePoolType = {|
   ...CommonQueryMethodsType,
-  +connect: () => Promise<DatabasePoolConnectionType>,
+  +connect: (connectionRoutine: ConnectionRoutineType) => Promise<*>,
   +transaction: (handler: TransactionFunctionType) => Promise<*>
 |};
 

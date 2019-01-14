@@ -10,17 +10,19 @@ A PostgreSQL client with strict types, detail logging and assertions.
 
 ## Features
 
-* [Convenience methods](#slonik-query-methods) with built-in assertions
-* Anonymous, named and tagged template literal [value placeholders](#slonik-value-placeholders)
-* [Middleware](#slonik-interceptors) support
-* [Syntax highlighting](#slonik-syntax-highlighting) (Atom plugin compatible with Slonik)
-* [SQL injection guarding](https://github.com/gajus/eslint-plugin-sql) (ESLint plugin compatible with Slonik)
-* Detail [logging](#slonik-debugging)
-* [Parsing and logging of the auto_explain logs.](#logging-auto_explain)
-* Built-in [asynchronous stack trace resolution](#log-stack-trace)
-* [Flow types](#types)
-* [Mapped errors](#error-handling)
-* [Transactions](#transactions)
+* Predominantly compatible with [node-postgres](https://github.com/brianc/node-postgres) (see [Incompatibilities with `node-postgres`](#incompatibilities-with-node-postgres)).
+* [Convenience methods](#slonik-query-methods) with built-in assertions.
+* Anonymous, named and tagged template literal [value placeholders](#slonik-value-placeholders).
+* [Middleware](#slonik-interceptors) support.
+* [Syntax highlighting](#slonik-syntax-highlighting) (Atom plugin compatible with Slonik).
+* [SQL injection guarding](https://github.com/gajus/eslint-plugin-sql) (ESLint plugin compatible with Slonik).
+* Detail [logging](#slonik-debugging).
+* [Parsing and logging of the auto_explain logs.](#logging-auto_explain).
+* Built-in [asynchronous stack trace resolution](#log-stack-trace).
+* [Safe connection pooling](#checking-out-a-client-from-the-connection-pool).
+* [Flow types](#types).
+* [Mapped errors](#error-handling).
+* [Transactions](#transactions).
 
 ---
 
@@ -34,9 +36,10 @@ A PostgreSQL client with strict types, detail logging and assertions.
 
 {"gitdown": "include", "file": "./RECIPES.md"}
 
-## Non-standard behaviour
+## Incompatibilities with `node-postgres`
 
 * `timestamp` and `timestamp with time zone` returns UNIX timestamp in milliseconds.
+* Connection pool `connect()` method requires that connection is restricted to a single promise routine (see [Checking out a client from the connection pool](#checking-out-a-client-from-the-connection-pool)).
 
 ## Conventions
 

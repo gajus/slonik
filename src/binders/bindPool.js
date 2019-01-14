@@ -32,7 +32,7 @@ export default (
   return {
     any: mapTaggedTemplateLiteralInvocation(any.bind(null, parentLog, pool, clientConfiguration)),
     anyFirst: mapTaggedTemplateLiteralInvocation(anyFirst.bind(null, parentLog, pool, clientConfiguration)),
-    connect: async () => {
+    connect: async (connectionRoutine) => {
       const connection: InternalDatabaseConnectionType = await pool.connect();
 
       const bindedConnection = bindPoolConnection(parentLog, pool, connection, clientConfiguration);
@@ -41,7 +41,17 @@ export default (
         await clientConfiguration.onConnect(bindedConnection);
       }
 
-      return bindedConnection;
+      let result;
+
+      try {
+        result = await connectionRoutine(bindedConnection);
+      } catch (error) {
+        await connection.release();
+
+        throw error;
+      }
+
+      return result;
     },
     many: mapTaggedTemplateLiteralInvocation(many.bind(null, parentLog, pool, clientConfiguration)),
     manyFirst: mapTaggedTemplateLiteralInvocation(manyFirst.bind(null, parentLog, pool, clientConfiguration)),
