@@ -12,17 +12,19 @@ A PostgreSQL client with strict types, detail logging and assertions.
 <a name="slonik-features"></a>
 ## Features
 
-* [Convenience methods](#slonik-query-methods) with built-in assertions
-* Anonymous, named and tagged template literal [value placeholders](#slonik-value-placeholders)
-* [Middleware](#slonik-interceptors) support
-* [Syntax highlighting](#slonik-syntax-highlighting) (Atom plugin compatible with Slonik)
-* [SQL injection guarding](https://github.com/gajus/eslint-plugin-sql) (ESLint plugin compatible with Slonik)
-* Detail [logging](#slonik-debugging)
-* [Parsing and logging of the auto_explain logs.](#logging-auto_explain)
-* Built-in [asynchronous stack trace resolution](#log-stack-trace)
-* [Flow types](#types)
-* [Mapped errors](#error-handling)
-* [Transactions](#transactions)
+* Predominantly compatible with [node-postgres](https://github.com/brianc/node-postgres) (see [Incompatibilities with `node-postgres`](#incompatibilities-with-node-postgres)).
+* [Convenience methods](#slonik-query-methods) with built-in assertions.
+* Anonymous, named and tagged template literal [value placeholders](#slonik-value-placeholders).
+* [Middleware](#slonik-interceptors) support.
+* [Syntax highlighting](#slonik-syntax-highlighting) (Atom plugin compatible with Slonik).
+* [SQL injection guarding](https://github.com/gajus/eslint-plugin-sql) (ESLint plugin compatible with Slonik).
+* Detail [logging](#slonik-debugging).
+* [Parsing and logging of the auto_explain logs.](#logging-auto_explain).
+* Built-in [asynchronous stack trace resolution](#log-stack-trace).
+* [Safe connection pooling](#checking-out-a-client-from-the-connection-pool).
+* [Flow types](#types).
+* [Mapped errors](#error-handling).
+* [Transactions](#transactions).
 
 ---
 
@@ -34,12 +36,13 @@ A PostgreSQL client with strict types, detail logging and assertions.
     * [Documentation](#slonik-documentation)
     * [Usage](#slonik-usage)
         * [Configuration](#slonik-usage-configuration)
+        * [Checking out a client from the connection pool](#slonik-usage-checking-out-a-client-from-the-connection-pool)
     * [Interceptors](#slonik-interceptors)
         * [`beforeQuery`](#slonik-interceptors-beforequery)
         * [`afterQuery`](#slonik-interceptors-afterquery)
     * [Recipes](#slonik-recipes)
         * [Logging `auto_explain`](#slonik-recipes-logging-auto_explain)
-    * [Non-standard behaviour](#slonik-non-standard-behaviour)
+    * [Incompatibilities with `node-postgres`](#slonik-incompatibilities-with-node-postgres)
     * [Conventions](#slonik-conventions)
         * [No multiline values](#slonik-conventions-no-multiline-values)
     * [Value placeholders](#slonik-value-placeholders)
@@ -128,11 +131,79 @@ import {
   createPool
 } from 'slonik';
 
-const connection = createPool('postgres://localhost');
+const pool = createPool('postgres://localhost');
 
-await connection.query(sql`SELECT 1`);
+await pool.query(sql`SELECT 1`);
 
 ```
+
+<a name="slonik-usage-checking-out-a-client-from-the-connection-pool"></a>
+### Checking out a client from the connection pool
+
+Slonik only allows to check out a connection for a duration of promise routine supplied to the `connect()` method.
+
+```js
+import {
+  createPool
+} from 'slonik';
+
+const pool = createPool('postgres://localhost');
+
+const result = await pool.connect(async (connection) => {
+  await connection.query(sql`SELECT 1`);
+  await connection.query(sql`SELECT 2`);
+
+  return 'foo';
+});
+
+result;
+// 'foo'
+
+```
+
+Connection is released back to the pool after the promise produced by the function supplied to `connect()` method is either resolved or rejected.
+
+The primary reason for implementing _only_ this connection pooling method is because the alternative is inherently unsafe, e.g.
+
+```js
+// Note: This example is using unsupported API.
+
+const main = async () => {
+  const connection = await pool.connect();
+
+  await connection.query(sql`SELECT produce_error()`);
+
+  await connection.release();
+};
+
+```
+
+In this example, the error causes early rejection of the promise and a hanging connection. A fix to the above is to ensure that `connection#release()` is always called, i.e.
+
+```js
+// Note: This example is using unsupported API.
+
+const main = async () => {
+  const connection = await pool.connect();
+
+  let lastExecutionResult;
+
+  try {
+    lastExecutionResult = await connection.query(sql`SELECT produce_error()`);
+  } catch (error) {
+    await connection.release();
+
+    throw error;
+  }
+
+  await connection.release();
+
+  return lastExecutionResult;
+};
+
+```
+
+Slonik abstracts the latter pattern into `pool#connect()` method.
 
 
 <a name="slonik-interceptors"></a>
@@ -268,10 +339,11 @@ notice:
 ```
 
 
-<a name="slonik-non-standard-behaviour"></a>
-## Non-standard behaviour
+<a name="slonik-incompatibilities-with-node-postgres"></a>
+## Incompatibilities with <code>node-postgres</code>
 
 * `timestamp` and `timestamp with time zone` returns UNIX timestamp in milliseconds.
+* Connection pool `connect()` method requires that connection is restricted to a single promise routine (see [Checking out a client from the connection pool](#checking-out-a-client-from-the-connection-pool)).
 
 <a name="slonik-conventions"></a>
 ## Conventions
