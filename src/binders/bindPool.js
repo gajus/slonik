@@ -51,6 +51,8 @@ export default (
         throw error;
       }
 
+      await connection.release();
+
       return result;
     },
     many: mapTaggedTemplateLiteralInvocation(many.bind(null, parentLog, pool, clientConfiguration)),
