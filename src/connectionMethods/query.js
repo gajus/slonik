@@ -76,6 +76,27 @@ const query: InternalQueryFunctionType<*> = async (log, connection, clientConfig
       normalized = normalizeNamedValuePlaceholders(strippedSql, values);
     }
 
+    // eslint-disable-next-line flowtype/no-weak-types
+    const payload: Object = {
+      queryId,
+      rowCount,
+      sql: strippedSql
+    };
+
+    if (SLONIK_LOG_STACK_TRACE) {
+      payload.stackTrace = stackTrace;
+    }
+
+    if (SLONIK_LOG_VALUES) {
+      payload.values = values;
+    }
+
+    if (SLONIK_LOG_NORMALISED) {
+      payload.normalized = normalized;
+    }
+
+    log.debug(payload, 'executing query');
+
     if (normalized) {
       result = connection.query(normalized.sql, normalized.values);
     } else {
@@ -131,23 +152,10 @@ const query: InternalQueryFunctionType<*> = async (log, connection, clientConfig
     const payload: Object = {
       executionTime: prettyHrtime(end),
       queryId,
-      rowCount,
-      sql: strippedSql
+      rowCount
     };
 
-    if (SLONIK_LOG_STACK_TRACE) {
-      payload.stackTrace = stackTrace;
-    }
-
-    if (SLONIK_LOG_VALUES) {
-      payload.values = values;
-    }
-
-    if (SLONIK_LOG_NORMALISED) {
-      payload.normalized = normalized;
-    }
-
-    log.debug(payload, 'query');
+    log.debug(payload, 'query execution result');
   }
 };
 
