@@ -190,15 +190,10 @@ const main = async () => {
 
   try {
     lastExecutionResult = await connection.query(sql`SELECT produce_error()`);
-  } catch (error) {
+    return lastExecutionResult;
+  } finally {
     await connection.release();
-
-    throw error;
   }
-
-  await connection.release();
-
-  return lastExecutionResult;
 };
 
 ```
