@@ -6,8 +6,8 @@ Each interceptor can implement several functions which can be used to change the
 
 ```js
 type InterceptorType = {|
-  +beforeQuery?: (query: QueryType) => Promise<QueryResultType<QueryResultRowType>> | Promise<void> | QueryResultType<QueryResultRowType> | void,
-  +afterQuery?: (query: QueryType, result: QueryResultType<QueryResultRowType>) => Promise<void> | void
+  +beforeQuery?: (query: QueryType) => Promise<QueryResultType<QueryResultRowType>> | QueryResultType<QueryResultRowType> | MaybePromiseType<void>,
+  +afterQuery?: (query: QueryType, result: QueryResultType<QueryResultRowType>) => MaybePromiseType<QueryResultType<QueryResultRowType>>
 |};
 
 ```
@@ -43,3 +43,7 @@ This function can optionally return a direct result of the query which will caus
 ### `afterQuery`
 
 `afterQuery` is the last interceptor function executed.
+
+This function must return the result of the query, which will be passed down to the client.
+
+Use `afterQuery` to modify the query result.

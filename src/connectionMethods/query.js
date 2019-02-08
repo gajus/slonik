@@ -108,7 +108,7 @@ const query: InternalQueryFunctionType<*> = async (log, connection, clientConfig
 
     for (const interceptor of interceptors) {
       if (interceptor.afterQuery) {
-        await interceptor.afterQuery({
+        result = await interceptor.afterQuery({
           sql: rawSql,
           values
         }, result);

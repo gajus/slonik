@@ -202,6 +202,6 @@ export type QueryOneFirstFunctionType<T: QueryResultRowColumnType> = QueryMethod
 export type QueryOneFunctionType<T: QueryResultRowType> = QueryMethodType<T>;
 
 export type InterceptorType = {|
-  +beforeQuery?: (query: QueryType) => Promise<QueryResultType<QueryResultRowType>> | Promise<void> | QueryResultType<QueryResultRowType> | void,
-  +afterQuery?: (query: QueryType, result: QueryResultType<QueryResultRowType>) => Promise<void> | void
+  +beforeQuery?: (query: QueryType) => Promise<QueryResultType<QueryResultRowType>> | QueryResultType<QueryResultRowType> | MaybePromiseType<void>,
+  +afterQuery?: (query: QueryType, result: QueryResultType<QueryResultRowType>) => MaybePromiseType<QueryResultType<QueryResultRowType>>
 |};
