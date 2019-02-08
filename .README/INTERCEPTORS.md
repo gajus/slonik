@@ -6,8 +6,10 @@ Each interceptor can implement several functions which can be used to change the
 
 ```js
 type InterceptorType = {|
-  +beforeQuery?: (query: QueryType) => Promise<QueryResultType<QueryResultRowType>> | QueryResultType<QueryResultRowType> | MaybePromiseType<void>,
-  +afterQuery?: (query: QueryType, result: QueryResultType<QueryResultRowType>) => MaybePromiseType<QueryResultType<QueryResultRowType>>
+  +afterQuery?: (query: QueryType, result: QueryResultType<QueryResultRowType>) => MaybePromiseType<QueryResultType<QueryResultRowType>>,
+  +beforeConnectionEnd?: (connection: DatabaseSingleConnectionType) => MaybePromiseType<void>,
+  +beforePoolConnectionRelease?: (connection: DatabasePoolConnectionType) => MaybePromiseType<void>,
+  +beforeQuery?: (query: QueryType) => Promise<QueryResultType<QueryResultRowType>> | QueryResultType<QueryResultRowType> | MaybePromiseType<void>
 |};
 
 ```
@@ -29,20 +31,49 @@ const connection = createPool('postgres://', {
 
 There are 2 functions that an interceptor can implement:
 
-* beforeQuery
-* afterQuery
+* `beforeQuery`
+* `beforeConnectionEnd`
+* `beforePoolConnectionRelease`
+* `afterQuery`
 
 Interceptors are executed in the order they are added.
 
 ### `beforeQuery`
 
-`beforeQuery` is the first interceptor function executed.
+`beforeQuery` is the first interceptor function executed in the query execution cycle.
 
 This function can optionally return a direct result of the query which will cause the actual query never to be executed.
 
+### `beforeConnectionEnd`
+
+`beforeConnectionEnd` is executed before a connection is explicitly ended, e.g.
+
+```js
+const connection = await createConnection('postgres://');
+
+// Interceptor is executed here. ↓
+connection.end();
+
+```
+
+### `beforePoolConnectionRelease`
+
+`beforePoolConnectionRelease` is executed before connection is released back to the connection pool, e.g.
+
+```js
+const pool = await createPool('postgres://');
+
+pool.connect(async () => {
+  await 1;
+
+  // Interceptor is executed here. ↓
+});
+
+```
+
 ### `afterQuery`
 
-`afterQuery` is the last interceptor function executed.
+`afterQuery` is the last interceptor function executed in the query execution cycle.
 
 This function must return the result of the query, which will be passed down to the client.
 

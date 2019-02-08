@@ -35,23 +35,27 @@ export default (
     connect: async (connectionRoutine) => {
       const connection: InternalDatabaseConnectionType = await pool.connect();
 
-      const bindedConnection = bindPoolConnection(parentLog, pool, connection, clientConfiguration);
+      const boundConnection = bindPoolConnection(parentLog, pool, connection, clientConfiguration);
 
       if (clientConfiguration.onConnect) {
-        await clientConfiguration.onConnect(bindedConnection);
+        await clientConfiguration.onConnect(boundConnection);
       }
 
       let result;
 
       try {
-        result = await connectionRoutine(bindedConnection);
-      } catch (error) {
+        result = await connectionRoutine(boundConnection);
+      } finally {
+        const interceptors = clientConfiguration && clientConfiguration.interceptors || [];
+
+        for (const interceptor of interceptors) {
+          if (interceptor.beforePoolConnectionRelease) {
+            await interceptor.beforePoolConnectionRelease(boundConnection);
+          }
+        }
+
         await connection.release();
-
-        throw error;
       }
-
-      await connection.release();
 
       return result;
     },

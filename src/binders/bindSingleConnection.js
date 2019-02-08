@@ -31,12 +31,20 @@ export default (
 ): DatabaseSingleConnectionType => {
   let ended = false;
 
-  const bindConnection = {
+  const boundConnection = {
     any: mapTaggedTemplateLiteralInvocation(any.bind(null, parentLog, connection, clientConfiguration)),
     anyFirst: mapTaggedTemplateLiteralInvocation(anyFirst.bind(null, parentLog, connection, clientConfiguration)),
     end: async () => {
       if (ended) {
         return ended;
+      }
+
+      const interceptors = clientConfiguration && clientConfiguration.interceptors || [];
+
+      for (const interceptor of interceptors) {
+        if (interceptor.beforeConnectionEnd) {
+          await interceptor.beforeConnectionEnd(boundConnection);
+        }
       }
 
       await connection.release();
@@ -57,5 +65,5 @@ export default (
     }
   };
 
-  return bindConnection;
+  return boundConnection;
 };
