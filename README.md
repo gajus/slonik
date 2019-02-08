@@ -17,7 +17,7 @@ A PostgreSQL client with strict types, detail logging and assertions.
 * Anonymous, named and tagged template literal [value placeholders](#slonik-value-placeholders).
 * [Middleware](#slonik-interceptors) support.
 * [Syntax highlighting](#slonik-syntax-highlighting) (Atom plugin compatible with Slonik).
-* [SQL injection guarding](https://github.com/gajus/eslint-plugin-sql) (ESLint plugin compatible with Slonik).
+* [SQL injection guarding](#slonik-value-placeholders-tagged-template-literals).
 * Detail [logging](#slonik-debugging).
 * [Parsing and logging of the auto_explain logs.](#logging-auto_explain).
 * Built-in [asynchronous stack trace resolution](#log-stack-trace).
@@ -25,6 +25,7 @@ A PostgreSQL client with strict types, detail logging and assertions.
 * [Flow types](#types).
 * [Mapped errors](#error-handling).
 * [Transactions](#transactions).
+* [ESLint plugin](https://github.com/gajus/eslint-plugin-sql).
 
 ---
 
@@ -375,7 +376,7 @@ connection.query(sql`INSERT INTO foo (bar) VALUES (${'\n'})`);
 Slonik enables use of question mark (`?`) value placeholders, e.g.
 
 ```js
-await connection.query('SELECT ?', [
+await connection.query(sql`SELECT ?`, [
   1
 ]);
 
@@ -385,6 +386,7 @@ Question mark value placeholders are converted to positional value placeholders 
 
 ```sql
 SELECT $1
+
 ```
 
 Note: Mixing anonymous and position placeholders in a single query will result in an error.
@@ -395,7 +397,7 @@ Note: Mixing anonymous and position placeholders in a single query will result i
 A question mark is interpolated into a value set when the associated value is an array, e.g.
 
 ```js
-await connection.query('SELECT ?', [
+await connection.query(sql`SELECT ?`, [
   [
     1,
     2,
@@ -418,7 +420,7 @@ SELECT ($1, $2, $3)
 A question mark is interpolated into a list of value sets when the associated value is an array of arrays, e.g.
 
 ```js
-await connection.query('SELECT ?', [
+await connection.query(sql`SELECT ?`, [
   [
     [
       1,
@@ -448,7 +450,7 @@ SELECT ($1, $2, $3), ($4, $5, $6)
 A `:[a-zA-Z]` regex is used to match named placeholders.
 
 ```js
-await connection.query('SELECT :foo', {
+await connection.query(sql`SELECT :foo`, {
   foo: 'FOO'
 });
 
@@ -464,7 +466,7 @@ SELECT $1
 <a name="slonik-value-placeholders-tagged-template-literals"></a>
 ### Tagged template literals
 
-Query methods can be executed using `sql` [tagged template literal](https://developer.mozilla.org/en/docs/Web/JavaScript/Reference/Template_literals#Tagged_template_literals), e.g.
+Slonik query methods can only be executed using `sql` [tagged template literal](https://developer.mozilla.org/en/docs/Web/JavaScript/Reference/Template_literals#Tagged_template_literals), e.g.
 
 ```js
 import {
@@ -529,35 +531,6 @@ sql`
 // }
 
 ```
-
-<a name="slonik-value-placeholders-tagged-template-literals-guarding-against-accidental-unescaped-input"></a>
-#### Guarding against accidental unescaped input
-
-When using tagged template literals, it is easy to forget to add the `sql` tag, i.e.
-
-Instead of:
-
-```js
-connection.query(sql`
-  INSERT INTO reservation_ticket (reservation_id, ticket_id)
-  VALUES ${values}
-`);
-
-```
-
-Writing
-
-```js
-connection.query(`
-  INSERT INTO reservation_ticket (reservation_id, ticket_id)
-  VALUES ${values}
-`);
-
-```
-
-This would expose your application to [SQL injection](https://en.wikipedia.org/wiki/SQL_injection).
-
-Therefore, I recommend using [`eslint-plugin-sql`](https://github.com/gajus/eslint-plugin-sql) `no-unsafe-query` rule. `no-unsafe-query` warns about use of SQL inside of template literals without the `sql` tag.
 
 
 <a name="slonik-query-methods"></a>
