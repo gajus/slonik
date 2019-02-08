@@ -14,7 +14,7 @@ export opaque type QueryIdType = string;
 
 type MaybePromiseType<T> = T | Promise<T>;
 
-type FieldType = {|
+export type FieldType = {|
   +columnID: number,
   +dataTypeID: number,
   +dataTypeModifier: number,

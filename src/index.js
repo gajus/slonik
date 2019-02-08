@@ -34,6 +34,9 @@ export {
   createPool
 } from './factories';
 export {
+  createFormatFieldNameInterceptor
+} from './interceptors';
+export {
   sql
 } from './templateTags';
 export {
