@@ -40,6 +40,8 @@ A PostgreSQL client with strict types, detail logging and assertions.
         * [Checking out a client from the connection pool](#slonik-usage-checking-out-a-client-from-the-connection-pool)
     * [Interceptors](#slonik-interceptors)
         * [`beforeQuery`](#slonik-interceptors-beforequery)
+        * [`beforeConnectionEnd`](#slonik-interceptors-beforeconnectionend)
+        * [`beforePoolConnectionRelease`](#slonik-interceptors-beforepoolconnectionrelease)
         * [`afterQuery`](#slonik-interceptors-afterquery)
     * [Built-in interceptors](#slonik-built-in-interceptors)
         * [Field name formatter](#slonik-built-in-interceptors-field-name-formatter)
@@ -214,8 +216,10 @@ Each interceptor can implement several functions which can be used to change the
 
 ```js
 type InterceptorType = {|
-  +beforeQuery?: (query: QueryType) => Promise<QueryResultType<QueryResultRowType>> | QueryResultType<QueryResultRowType> | MaybePromiseType<void>,
-  +afterQuery?: (query: QueryType, result: QueryResultType<QueryResultRowType>) => MaybePromiseType<QueryResultType<QueryResultRowType>>
+  +afterQuery?: (query: QueryType, result: QueryResultType<QueryResultRowType>) => MaybePromiseType<QueryResultType<QueryResultRowType>>,
+  +beforeConnectionEnd?: (connection: DatabaseSingleConnectionType) => MaybePromiseType<void>,
+  +beforePoolConnectionRelease?: (connection: DatabasePoolConnectionType) => MaybePromiseType<void>,
+  +beforeQuery?: (query: QueryType) => Promise<QueryResultType<QueryResultRowType>> | QueryResultType<QueryResultRowType> | MaybePromiseType<void>
 |};
 
 ```
@@ -237,22 +241,53 @@ const connection = createPool('postgres://', {
 
 There are 2 functions that an interceptor can implement:
 
-* beforeQuery
-* afterQuery
+* `beforeQuery`
+* `beforeConnectionEnd`
+* `beforePoolConnectionRelease`
+* `afterQuery`
 
 Interceptors are executed in the order they are added.
 
 <a name="slonik-interceptors-beforequery"></a>
 ### <code>beforeQuery</code>
 
-`beforeQuery` is the first interceptor function executed.
+`beforeQuery` is the first interceptor function executed in the query execution cycle.
 
 This function can optionally return a direct result of the query which will cause the actual query never to be executed.
+
+<a name="slonik-interceptors-beforeconnectionend"></a>
+### <code>beforeConnectionEnd</code>
+
+`beforeConnectionEnd` is executed before a connection is explicitly ended, e.g.
+
+```js
+const connection = await createConnection('postgres://');
+
+// Interceptor is executed here. ↓
+connection.end();
+
+```
+
+<a name="slonik-interceptors-beforepoolconnectionrelease"></a>
+### <code>beforePoolConnectionRelease</code>
+
+`beforePoolConnectionRelease` is executed before connection is released back to the connection pool, e.g.
+
+```js
+const pool = await createPool('postgres://');
+
+pool.connect(async () => {
+  await 1;
+
+  // Interceptor is executed here. ↓
+});
+
+```
 
 <a name="slonik-interceptors-afterquery"></a>
 ### <code>afterQuery</code>
 
-`afterQuery` is the last interceptor function executed.
+`afterQuery` is the last interceptor function executed in the query execution cycle.
 
 This function must return the result of the query, which will be passed down to the client.
 
