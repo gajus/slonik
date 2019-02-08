@@ -131,6 +131,11 @@ export type QueryIdentifierType = {|
   type: 'IDENTIFIER'
 |};
 
+export type RawQueryType = {|
+  raw: string,
+  type: 'RAW'
+|};
+
 type QueryPrimitiveValueType = string | number | null;
 
 export type AnonymouseValuePlaceholderValueType =
@@ -139,7 +144,8 @@ export type AnonymouseValuePlaceholderValueType =
   // INSERT ... VALUES ? => INSERT ... VALUES (1), (2), (3); [[[1], [2], [3]]]
   $ReadOnlyArray<QueryPrimitiveValueType | $ReadOnlyArray<QueryPrimitiveValueType>> |
   QueryPrimitiveValueType |
-  QueryIdentifierType;
+  QueryIdentifierType |
+  RawQueryType;
 
 export type NamedValuePlaceholderValuesType = {
   +[key: string]: string | number | null

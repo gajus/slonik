@@ -3,6 +3,7 @@
 import type {
   AnonymouseValuePlaceholderValueType,
   QueryIdentifierType,
+  RawQueryType,
   TaggledTemplateLiteralInvocationType
 } from '../types';
 import {
@@ -25,7 +26,9 @@ const sql = (parts: $ReadOnlyArray<string>, ...values: $ReadOnlyArray<Anonymouse
       continue;
     }
 
-    if (value && Array.isArray(value.names) && value.type === 'IDENTIFIER') {
+    if (value && value.type === 'RAW' && typeof value.raw === 'string') {
+      raw += value.raw;
+    } else if (value && value.type === 'IDENTIFIER' && Array.isArray(value.names)) {
       raw += value.names
         .map((identifierName) => {
           if (typeof identifierName !== 'string') {
@@ -56,6 +59,13 @@ sql.identifier = (names: $ReadOnlyArray<string>): QueryIdentifierType => {
   return {
     names,
     type: 'IDENTIFIER'
+  };
+};
+
+sql.raw = (raw: string): RawQueryType => {
+  return {
+    raw,
+    type: 'RAW'
   };
 };
 

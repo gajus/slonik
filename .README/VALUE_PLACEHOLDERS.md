@@ -123,11 +123,30 @@ connection.query(sql`
 ```js
 sql`
   SELECT ${'foo'}
-  FROM ${sql.identifier(['bar', 'baz'])
-}`;
+  FROM ${sql.identifier(['bar', 'baz'])}
+`;
 
 // {
 //   sql: 'SELECT ? FROM "bar"."baz"',
+//   values: [
+//     'foo'
+//   ]
+// }
+
+```
+
+#### Inlining dynamic/ raw SQL
+
+Raw SQL can be inlined using `sql.raw`, e.g.
+
+```js
+sql`
+  SELECT ${'foo'}
+  FROM ${sql.raw('"bar"')}
+`;
+
+// {
+//   sql: 'SELECT ? FROM "bar"',
 //   values: [
 //     'foo'
 //   ]
