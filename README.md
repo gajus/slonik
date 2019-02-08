@@ -14,7 +14,6 @@ A PostgreSQL client with strict types, detail logging and assertions.
 
 * Predominantly compatible with [node-postgres](https://github.com/brianc/node-postgres) (see [Incompatibilities with `node-postgres`](#incompatibilities-with-node-postgres)).
 * [Convenience methods](#slonik-query-methods) with built-in assertions.
-* Anonymous, named and tagged template literal [value placeholders](#slonik-value-placeholders).
 * [Middleware](#slonik-interceptors) support.
 * [Syntax highlighting](#slonik-syntax-highlighting) (Atom plugin compatible with Slonik).
 * [SQL injection guarding](#slonik-value-placeholders-tagged-template-literals).
@@ -39,23 +38,18 @@ A PostgreSQL client with strict types, detail logging and assertions.
         * [Configuration](#slonik-usage-configuration)
         * [Checking out a client from the connection pool](#slonik-usage-checking-out-a-client-from-the-connection-pool)
     * [Interceptors](#slonik-interceptors)
-        * [`beforeQuery`](#slonik-interceptors-beforequery)
-        * [`beforeConnectionEnd`](#slonik-interceptors-beforeconnectionend)
-        * [`beforePoolConnectionRelease`](#slonik-interceptors-beforepoolconnectionrelease)
-        * [`afterQuery`](#slonik-interceptors-afterquery)
+        * [Interceptor methods](#slonik-interceptors-interceptor-methods)
     * [Built-in interceptors](#slonik-built-in-interceptors)
-        * [Field name formatter](#slonik-built-in-interceptors-field-name-formatter)
+        * [Field name transformation interceptor](#slonik-built-in-interceptors-field-name-transformation-interceptor)
+        * [Query normalization interceptor](#slonik-built-in-interceptors-query-normalization-interceptor)
     * [Recipes](#slonik-recipes)
-        * [Logging `auto_explain`](#slonik-recipes-logging-auto_explain)
     * [Incompatibilities with `node-postgres`](#slonik-incompatibilities-with-node-postgres)
     * [Conventions](#slonik-conventions)
         * [No multiline values](#slonik-conventions-no-multiline-values)
     * [Value placeholders](#slonik-value-placeholders)
-        * [Anonymous placeholders](#slonik-value-placeholders-anonymous-placeholders)
-        * [A value set](#slonik-value-placeholders-a-value-set)
-        * [Multiple value sets](#slonik-value-placeholders-multiple-value-sets)
-        * [Named placeholders](#slonik-value-placeholders-named-placeholders)
         * [Tagged template literals](#slonik-value-placeholders-tagged-template-literals)
+        * [Sets](#slonik-value-placeholders-sets)
+        * [Multiple value sets](#slonik-value-placeholders-multiple-value-sets)
     * [Query methods](#slonik-query-methods)
         * [`any`](#slonik-query-methods-any)
         * [`anyFirst`](#slonik-query-methods-anyfirst)
@@ -120,11 +114,9 @@ type DatabaseConfigurationType =
 
 /**
  * @property interceptors An array of [Slonik interceptors](https://github.com/gajus/slonik#slonik-interceptors).
- * @property onConnect A new connection handler. Executed after a connection is established, but before allowing the connection to be used by any clients.
  */
 type ClientConfigurationType = {|
-  +interceptors?: $ReadOnlyArray<InterceptorType>,
-  +onConnect?: (connection: DatabaseConnectionType) => MaybePromiseType<void>
+  +interceptors?: $ReadOnlyArray<InterceptorType>
 |};
 
 ```
@@ -216,10 +208,23 @@ Each interceptor can implement several functions which can be used to change the
 
 ```js
 type InterceptorType = {|
-  +afterQuery?: (query: QueryType, result: QueryResultType<QueryResultRowType>) => MaybePromiseType<QueryResultType<QueryResultRowType>>,
+  +afterConnection?: (connection: DatabaseSingleConnectionType) => MaybePromiseType<void>,
+  +afterPoolConnection?: (connection: DatabasePoolConnectionType) => MaybePromiseType<void>,
+  +afterQueryExecution?: (
+    queryExecutionContext: QueryExecutionContextType,
+    query: QueryType,
+    result: QueryResultType<QueryResultRowType>
+  ) => MaybePromiseType<QueryResultType<QueryResultRowType>>,
   +beforeConnectionEnd?: (connection: DatabaseSingleConnectionType) => MaybePromiseType<void>,
   +beforePoolConnectionRelease?: (connection: DatabasePoolConnectionType) => MaybePromiseType<void>,
-  +beforeQuery?: (query: QueryType) => Promise<QueryResultType<QueryResultRowType>> | QueryResultType<QueryResultRowType> | MaybePromiseType<void>
+  +beforeQueryExecution?: (
+    queryExecutionContext: QueryExecutionContextType,
+    query: QueryType
+  ) => MaybePromiseType<QueryResultType<QueryResultRowType>> | MaybePromiseType<void>,
+  +transformQuery?: (
+    queryExecutionContext: QueryExecutionContextType,
+    query: QueryType
+  ) => MaybePromiseType<QueryType>
 |};
 
 ```
@@ -239,24 +244,49 @@ const connection = createPool('postgres://', {
 
 ```
 
-There are 2 functions that an interceptor can implement:
-
-* `beforeQuery`
-* `beforeConnectionEnd`
-* `beforePoolConnectionRelease`
-* `afterQuery`
-
 Interceptors are executed in the order they are added.
 
-<a name="slonik-interceptors-beforequery"></a>
-### <code>beforeQuery</code>
+<a name="slonik-interceptors-interceptor-methods"></a>
+### Interceptor methods
 
-`beforeQuery` is the first interceptor function executed in the query execution cycle.
+<a name="slonik-interceptors-interceptor-methods-afterconnection"></a>
+#### <code>afterConnection</code>
+
+Executed after a connection is established, e.g.
+
+```js
+// Interceptor is executed here. ↓
+await createConnection('postgres://');
+
+```
+
+<a name="slonik-interceptors-interceptor-methods-afterpoolconnection"></a>
+#### <code>afterPoolConnection</code>
+
+Executed after a connection is , e.g.
+
+```js
+const pool = createPool('postgres://');
+
+// Interceptor is executed here. ↓
+pool.connect();
+
+```
+
+<a name="slonik-interceptors-interceptor-methods-afterqueryexecution"></a>
+#### <code>afterQueryExecution</code>
+
+`afterQueryExecution` must return the result of the query, which will be passed down to the client.
+
+Use `afterQuery` to modify the query result.
+
+<a name="slonik-interceptors-interceptor-methods-beforequeryexecution"></a>
+#### <code>beforeQueryExecution</code>
 
 This function can optionally return a direct result of the query which will cause the actual query never to be executed.
 
-<a name="slonik-interceptors-beforeconnectionend"></a>
-### <code>beforeConnectionEnd</code>
+<a name="slonik-interceptors-interceptor-methods-beforeconnectionend"></a>
+#### <code>beforeConnectionEnd</code>
 
 `beforeConnectionEnd` is executed before a connection is explicitly ended, e.g.
 
@@ -268,10 +298,10 @@ connection.end();
 
 ```
 
-<a name="slonik-interceptors-beforepoolconnectionrelease"></a>
-### <code>beforePoolConnectionRelease</code>
+<a name="slonik-interceptors-interceptor-methods-beforepoolconnectionrelease"></a>
+#### <code>beforePoolConnectionRelease</code>
 
-`beforePoolConnectionRelease` is executed before connection is released back to the connection pool, e.g.
+Executed before connection is released back to the connection pool, e.g.
 
 ```js
 const pool = await createPool('postgres://');
@@ -284,20 +314,18 @@ pool.connect(async () => {
 
 ```
 
-<a name="slonik-interceptors-afterquery"></a>
-### <code>afterQuery</code>
+<a name="slonik-interceptors-interceptor-methods-transformquery"></a>
+#### <code>transformQuery</code>
 
-`afterQuery` is the last interceptor function executed in the query execution cycle.
+Executed before `beforeQueryExecution`.
 
-This function must return the result of the query, which will be passed down to the client.
-
-Use `afterQuery` to modify the query result.
+Transforms query.
 
 <a name="slonik-built-in-interceptors"></a>
 ## Built-in interceptors
 
-<a name="slonik-built-in-interceptors-field-name-formatter"></a>
-### Field name formatter
+<a name="slonik-built-in-interceptors-field-name-transformation-interceptor"></a>
+### Field name transformation interceptor
 
 `createFormatFieldNameInterceptor` creates an interceptor that formats query result field names.
 
@@ -315,7 +343,7 @@ connection.any(sql`
 
 Field name formatter uses `afterQuery` interceptor to format field names.
 
-<a name="slonik-built-in-interceptors-field-name-formatter-api"></a>
+<a name="slonik-built-in-interceptors-field-name-transformation-interceptor-api"></a>
 #### API
 
 ```js
@@ -332,7 +360,7 @@ type ConfigurationType = {|
 
 ```
 
-<a name="slonik-built-in-interceptors-field-name-formatter-example-usage"></a>
+<a name="slonik-built-in-interceptors-field-name-transformation-interceptor-example-usage"></a>
 #### Example usage
 
 ```js
@@ -367,88 +395,31 @@ connection.any(sql`
 
 ```
 
+<a name="slonik-built-in-interceptors-query-normalization-interceptor"></a>
+### Query normalization interceptor
+
+Normalizes the query.
+
+<a name="slonik-built-in-interceptors-query-normalization-interceptor-api-1"></a>
+#### API
+
+```js
+/**
+ * @property stripComments Strips comments from the query (default: true).
+ */
+type ConfigurationType = {|
+  +stripComments?: boolean
+|};
+
+(configuration?: ConfigurationType) => InterceptorType;
+
+```
+
 
 <a name="slonik-recipes"></a>
 ## Recipes
 
-<a name="slonik-recipes-logging-auto_explain"></a>
-### Logging <code>auto_explain</code>
-
-`executionTime` log property describes how long it took for the client to execute the query, i.e. it includes the overhead of waiting for a connection and the network latency, among other things. However, it is possible to get the real query execution time by using [`auto_explain` module](https://www.postgresql.org/docs/current/auto-explain.html).
-
-There are several pre-requisites:
-
-```sql
--- Load the extension.
-LOAD 'auto_explain';
--- or (if you are using AWS RDS):
-LOAD '$libdir/plugins/auto_explain';
-
--- Enable logging of all queries.
-SET auto_explain.log_analyze=true;
-SET auto_explain.log_format=json;
-SET auto_explain.log_min_duration=0;
-SET auto_explain.log_timing=true;
-
--- Enables Slonik to capture auto_explain logs.
-SET client_min_messages=log;
-
-```
-
-This can be configured using `onConnect` connection handler.
-
-```js
-const pool = await createPool('postgres://localhost', {
-  onConnect: async (connection) => {
-    await connection.query(sql`LOAD 'auto_explain'`);
-    await connection.query(sql`SET auto_explain.log_analyze=true`);
-    await connection.query(sql`SET auto_explain.log_format=json`);
-    await connection.query(sql`SET auto_explain.log_min_duration=0`);
-    await connection.query(sql`SET auto_explain.log_timing=true`);
-    await connection.query(sql`SET client_min_messages=log`);
-  }
-});
-
-```
-
-Slonik recognises and parses the `auto_explain` JSON message; Roarr logger will produce a pretty-print of the explain output, e.g.
-
-```yaml
-[2018-12-31T21:15:21.010Z] INFO (30) (@slonik): notice message
-notice:
-  level:   notice
-  message:
-    Query Text: SELECT count(*) FROM actor
-    Plan:
-      Node Type:           Aggregate
-      Strategy:            Plain
-      Partial Mode:        Simple
-      Parallel Aware:      false
-      Startup Cost:        4051.33
-      Total Cost:          4051.34
-      Plan Rows:           1
-      Plan Width:          8
-      Actual Startup Time: 26.791
-      Actual Total Time:   26.791
-      Actual Rows:         1
-      Actual Loops:        1
-      Plans:
-        -
-          Node Type:           Seq Scan
-          Parent Relationship: Outer
-          Parallel Aware:      false
-          Relation Name:       actor
-          Alias:               actor
-          Startup Cost:        0
-          Total Cost:          3561.86
-          Plan Rows:           195786
-          Plan Width:          0
-          Actual Startup Time: 0.132
-          Actual Total Time:   15.29
-          Actual Rows:         195786
-          Actual Loops:        1
-
-```
+N/A
 
 
 <a name="slonik-incompatibilities-with-node-postgres"></a>
@@ -485,99 +456,6 @@ connection.query(sql`INSERT INTO foo (bar) VALUES (${'\n'})`);
 <a name="slonik-value-placeholders"></a>
 ## Value placeholders
 
-<a name="slonik-value-placeholders-anonymous-placeholders"></a>
-### Anonymous placeholders
-
-Slonik enables use of question mark (`?`) value placeholders, e.g.
-
-```js
-await connection.query(sql`SELECT ?`, [
-  1
-]);
-
-```
-
-Question mark value placeholders are converted to positional value placeholders before they are passed to the `pg` driver, i.e. the above query becomes:
-
-```sql
-SELECT $1
-
-```
-
-Note: Mixing anonymous and position placeholders in a single query will result in an error.
-
-<a name="slonik-value-placeholders-a-value-set"></a>
-### A value set
-
-A question mark is interpolated into a value set when the associated value is an array, e.g.
-
-```js
-await connection.query(sql`SELECT ?`, [
-  [
-    1,
-    2,
-    3
-  ]
-]);
-
-```
-
-Produces:
-
-```sql
-SELECT ($1, $2, $3)
-
-```
-
-<a name="slonik-value-placeholders-multiple-value-sets"></a>
-### Multiple value sets
-
-A question mark is interpolated into a list of value sets when the associated value is an array of arrays, e.g.
-
-```js
-await connection.query(sql`SELECT ?`, [
-  [
-    [
-      1,
-      2,
-      3
-    ],
-    [
-      1,
-      2,
-      3
-    ]
-  ]
-]);
-
-```
-
-Produces:
-
-```sql
-SELECT ($1, $2, $3), ($4, $5, $6)
-
-```
-
-<a name="slonik-value-placeholders-named-placeholders"></a>
-### Named placeholders
-
-A `:[a-zA-Z]` regex is used to match named placeholders.
-
-```js
-await connection.query(sql`SELECT :foo`, {
-  foo: 'FOO'
-});
-
-```
-
-Produces:
-
-```sql
-SELECT $1
-
-```
-
 <a name="slonik-value-placeholders-tagged-template-literals"></a>
 ### Tagged template literals
 
@@ -595,19 +473,48 @@ connection.query(sql`
 
 ```
 
-Arguments of a tagged template literal invocation are replaced with an anonymous value placeholder, i.e. the latter query is equivalent to:
+<a name="slonik-value-placeholders-sets"></a>
+### Sets
+
+Array expressions produce sets, e.g.
 
 ```js
-connection.query(sql`
-  INSERT INTO reservation_ticket (reservation_id, ticket_id)
-  VALUES ?
-`, [
-  values
-]);
+await connection.query(sql`
+  SELECT ${[1, 2, 3]}
+`);
 
 ```
 
-<a name="slonik-value-placeholders-tagged-template-literals-creating-dynamic-delimited-identifiers"></a>
+Produces:
+
+```sql
+SELECT ($1, $2, $3)
+
+```
+
+<a name="slonik-value-placeholders-multiple-value-sets"></a>
+### Multiple value sets
+
+An array containing array expressions produce a collection of sets, e.g.
+
+```js
+await connection.query(sql`
+  SELECT ${[
+    [1, 2, 3],
+    [1, 2, 3]
+  ]}
+`);
+
+```
+
+Produces:
+
+```sql
+SELECT ($1, $2, $3), ($4, $5, $6)
+
+```
+
+<a name="slonik-value-placeholders-multiple-value-sets-creating-dynamic-delimited-identifiers"></a>
 #### Creating dynamic delimited identifiers
 
 [Delimited identifiers](https://www.postgresql.org/docs/current/static/sql-syntax-lexical.html#SQL-SYNTAX-IDENTIFIERS) are created by enclosing an arbitrary sequence of characters in double-quotes ("). To create create a delimited identifier, create an `sql` tag function placeholder value using `sql.identifier`, e.g.
@@ -627,7 +534,7 @@ sql`
 
 ```
 
-<a name="slonik-value-placeholders-tagged-template-literals-inlining-dynamic-raw-sql"></a>
+<a name="slonik-value-placeholders-multiple-value-sets-inlining-dynamic-raw-sql"></a>
 #### Inlining dynamic/ raw SQL
 
 Raw SQL can be inlined using `sql.raw`, e.g.
@@ -983,8 +890,8 @@ export SLONIK_LOG_NORMALISED=true
 `SLONIK_LOG_STACK_TRACE=1` will create a stack trace before invoking the query and include the stack trace in the logs, e.g.
 
 ```json
-{"context":{"package":"slonik","namespace":"slonik","logLevel":20,"executionTime":"357 ms","queryId":"01CV2V5S4H57KCYFFBS0BJ8K7E","rowCount":1,"sql":"SELECT schedule_cinema_data_task();","stackTrace":["/Users/gajus/Documents/dev/applaudience/data-management-program/node_modules/slonik/dist:162:28","/Users/gajus/Documents/dev/applaudience/data-management-program/node_modules/slonik/dist:314:12","/Users/gajus/Documents/dev/applaudience/data-management-program/node_modules/slonik/dist:361:20","/Users/gajus/Documents/dev/applaudience/data-management-program/node_modules/slonik/dist/utilities:17:13","/Users/gajus/Documents/dev/applaudience/data-management-program/src/bin/commands/do-cinema-data-tasks.js:59:21","/Users/gajus/Documents/dev/applaudience/data-management-program/src/bin/commands/do-cinema-data-tasks.js:590:45","internal/process/next_tick.js:68:7"],"values":[]},"message":"query","sequence":4,"time":1540915127833,"version":"1.0.0"}
-{"context":{"package":"slonik","namespace":"slonik","logLevel":20,"executionTime":"66 ms","queryId":"01CV2V5SGS0WHJX4GJN09Z3MTB","rowCount":1,"sql":"SELECT cinema_id \"cinemaId\", target_data \"targetData\" FROM cinema_data_task WHERE id = ?","stackTrace":["/Users/gajus/Documents/dev/applaudience/data-management-program/node_modules/slonik/dist:162:28","/Users/gajus/Documents/dev/applaudience/data-management-program/node_modules/slonik/dist:285:12","/Users/gajus/Documents/dev/applaudience/data-management-program/node_modules/slonik/dist/utilities:17:13","/Users/gajus/Documents/dev/applaudience/data-management-program/src/bin/commands/do-cinema-data-tasks.js:603:26","internal/process/next_tick.js:68:7"],"values":[17953947]},"message":"query","sequence":5,"time":1540915127902,"version":"1.0.0"}
+{"context":{"package":"slonik","namespace":"slonik","logLevel":20,"executionTime":"357 ms","queryUid":"01CV2V5S4H57KCYFFBS0BJ8K7E","rowCount":1,"sql":"SELECT schedule_cinema_data_task();","stackTrace":["/Users/gajus/Documents/dev/applaudience/data-management-program/node_modules/slonik/dist:162:28","/Users/gajus/Documents/dev/applaudience/data-management-program/node_modules/slonik/dist:314:12","/Users/gajus/Documents/dev/applaudience/data-management-program/node_modules/slonik/dist:361:20","/Users/gajus/Documents/dev/applaudience/data-management-program/node_modules/slonik/dist/utilities:17:13","/Users/gajus/Documents/dev/applaudience/data-management-program/src/bin/commands/do-cinema-data-tasks.js:59:21","/Users/gajus/Documents/dev/applaudience/data-management-program/src/bin/commands/do-cinema-data-tasks.js:590:45","internal/process/next_tick.js:68:7"],"values":[]},"message":"query","sequence":4,"time":1540915127833,"version":"1.0.0"}
+{"context":{"package":"slonik","namespace":"slonik","logLevel":20,"executionTime":"66 ms","queryUid":"01CV2V5SGS0WHJX4GJN09Z3MTB","rowCount":1,"sql":"SELECT cinema_id \"cinemaId\", target_data \"targetData\" FROM cinema_data_task WHERE id = ?","stackTrace":["/Users/gajus/Documents/dev/applaudience/data-management-program/node_modules/slonik/dist:162:28","/Users/gajus/Documents/dev/applaudience/data-management-program/node_modules/slonik/dist:285:12","/Users/gajus/Documents/dev/applaudience/data-management-program/node_modules/slonik/dist/utilities:17:13","/Users/gajus/Documents/dev/applaudience/data-management-program/src/bin/commands/do-cinema-data-tasks.js:603:26","internal/process/next_tick.js:68:7"],"values":[17953947]},"message":"query","sequence":5,"time":1540915127902,"version":"1.0.0"}
 
 ```
 
