@@ -2,6 +2,7 @@
   "extends": "canonical/ava",
   "rules": {
     "filenames/match-regex": 0,
+    "flowtype/no-weak-types": 0,
     "id-length": 0
   }
 }

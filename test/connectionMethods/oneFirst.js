@@ -1,7 +1,5 @@
 // @flow
 
-/* eslint-disable flowtype/no-weak-types */
-
 import test from 'ava';
 import sinon from 'sinon';
 import log from '../helpers/Logger';
