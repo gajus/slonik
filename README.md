@@ -498,11 +498,31 @@ connection.query(sql`
 ```js
 sql`
   SELECT ${'foo'}
-  FROM ${sql.identifier(['bar', 'baz'])
-}`;
+  FROM ${sql.identifier(['bar', 'baz'])}
+`;
 
 // {
 //   sql: 'SELECT ? FROM "bar"."baz"',
+//   values: [
+//     'foo'
+//   ]
+// }
+
+```
+
+<a name="slonik-value-placeholders-tagged-template-literals-inlining-dynamic-raw-sql"></a>
+#### Inlining dynamic/ raw SQL
+
+Raw SQL can be inlined using `sql.raw`, e.g.
+
+```js
+sql`
+  SELECT ${'foo'}
+  FROM ${sql.raw('"bar"')}
+`;
+
+// {
+//   sql: 'SELECT ? FROM "bar"',
 //   values: [
 //     'foo'
 //   ]
