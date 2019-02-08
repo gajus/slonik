@@ -187,7 +187,7 @@ export type InternalTransactionFunctionType = (
 ) => Promise<*>;
 
 type QueryMethodType<R> = (
-  sql: string | TaggledTemplateLiteralInvocationType,
+  sql: TaggledTemplateLiteralInvocationType,
   values?: DatabaseQueryValuesType
 ) => Promise<R>;
 

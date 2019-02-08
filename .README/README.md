@@ -15,7 +15,7 @@ A PostgreSQL client with strict types, detail logging and assertions.
 * Anonymous, named and tagged template literal [value placeholders](#slonik-value-placeholders).
 * [Middleware](#slonik-interceptors) support.
 * [Syntax highlighting](#slonik-syntax-highlighting) (Atom plugin compatible with Slonik).
-* [SQL injection guarding](https://github.com/gajus/eslint-plugin-sql) (ESLint plugin compatible with Slonik).
+* [SQL injection guarding](#slonik-value-placeholders-tagged-template-literals).
 * Detail [logging](#slonik-debugging).
 * [Parsing and logging of the auto_explain logs.](#logging-auto_explain).
 * Built-in [asynchronous stack trace resolution](#log-stack-trace).
@@ -23,6 +23,7 @@ A PostgreSQL client with strict types, detail logging and assertions.
 * [Flow types](#types).
 * [Mapped errors](#error-handling).
 * [Transactions](#transactions).
+* [ESLint plugin](https://github.com/gajus/eslint-plugin-sql).
 
 ---
 
