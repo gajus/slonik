@@ -48,6 +48,7 @@ const query: InternalQueryFunctionType<*> = async (log, connection, clientConfig
   const strippedSql = stripComments(rawSql);
 
   let rowCount: number | null = null;
+
   let normalized;
 
   const start = process.hrtime();

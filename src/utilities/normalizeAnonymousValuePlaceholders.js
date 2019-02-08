@@ -26,9 +26,13 @@ export default (
   anonymousePlaceholdersRegex.lastIndex = 0;
 
   let chunkIndex = 0;
+
   let result = '';
+
   let match;
+
   let valueIndex = 0;
+
   let placeholderIndex = 0;
 
   // eslint-disable-next-line no-cond-assign

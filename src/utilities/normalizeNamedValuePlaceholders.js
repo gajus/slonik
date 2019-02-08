@@ -18,8 +18,11 @@ export default (
   values: NamedValuePlaceholderValuesType = {}
 ): NormalizedQueryType => {
   let chunkIndex = 0;
+
   let result = '';
+
   let match;
+
   let placeholderIndex = 0;
 
   const normalizedValues = [];
