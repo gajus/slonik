@@ -8,6 +8,7 @@ import type {
   TaggledTemplateLiteralInvocationType,
   TupleListSqlTokenType,
   TupleSqlTokenType,
+  UnnestListSqlTokenType,
   ValueExpressionType,
   ValueListSqlTokenType
 } from '../types';
@@ -20,6 +21,20 @@ import Logger from '../Logger';
 const log = Logger.child({
   namespace: 'sql'
 });
+
+const createIncrementalNames = (columnCount: number): $ReadOnlyArray<string> => {
+  const columnNames = [];
+
+  let index = 0;
+
+  while (index < columnCount) {
+    columnNames.push(String.fromCharCode('a'.charCodeAt(0) + index));
+
+    index++;
+  }
+
+  return columnNames;
+};
 
 // eslint-disable-next-line complexity
 const sql = (parts: $ReadOnlyArray<string>, ...values: $ReadOnlyArray<ValueExpressionType>): TaggledTemplateLiteralInvocationType => {
@@ -124,6 +139,64 @@ const sql = (parts: $ReadOnlyArray<string>, ...values: $ReadOnlyArray<ValueExpre
       }
 
       raw += tupleListMemberSql.join(', ');
+    } else if (value && value.type === 'UNNEST_LIST' && Array.isArray(value.tuples)) {
+      invariant(Array.isArray(value.columnTypes), 'Unexpected column types shape.');
+
+      const columnTypes = value.columnTypes;
+
+      const aliasNames = Array.isArray(value.aliasNames) ? value.aliasNames : createIncrementalNames(value.columnTypes.length);
+
+      if (columnTypes.length !== aliasNames.length) {
+        throw new Error('Column types length must match alias names length.');
+      }
+
+      const unnestBindings = [];
+      const unnsetSqlTokens = [];
+
+      let columnIndex = 0;
+
+      let placeholderIndex = bindings.length;
+
+      while (columnIndex < columnTypes.length) {
+        const columnType = columnTypes[columnIndex];
+        const aliasName = aliasNames[columnIndex];
+
+        invariant(typeof columnType === 'string', 'Column type unavailable');
+        invariant(typeof aliasName === 'string', 'Alias name unavailable');
+
+        unnsetSqlTokens.push('UNNEST($' + ++placeholderIndex + '::' + columnType + '[]) ' + aliasName);
+
+        unnestBindings[columnIndex] = [];
+
+        columnIndex++;
+      }
+
+      let lastTupleSize;
+
+      for (const tupleValues of value.tuples) {
+        invariant(Array.isArray(tupleValues), 'Values must be an array.');
+
+        if (typeof lastTupleSize === 'number' && lastTupleSize !== tupleValues.length) {
+          throw new Error('Each tuple in a list of tuples must have an equal number of members.');
+        }
+
+        if (tupleValues.length !== columnTypes.length) {
+          throw new Error('Column types length must match tuple member length.');
+        }
+
+        lastTupleSize = tupleValues.length;
+
+        let tupleColumnIndex = 0;
+
+        for (const tupleValue of tupleValues) {
+          invariant(isPrimitiveValueExpression(tupleValue), 'Unexpected tuple member type.');
+
+          unnestBindings[tupleColumnIndex++].push(tupleValue);
+        }
+      }
+
+      bindings.push(...unnestBindings);
+      raw += unnsetSqlTokens.join(', ');
     } else if (isPrimitiveValueExpression(value)) {
       raw += '$' + (bindings.length + 1);
 
@@ -179,6 +252,19 @@ sql.tupleList = (tuples: $ReadOnlyArray<$ReadOnlyArray<PrimitiveValueExpressionT
   return {
     tuples,
     type: 'TUPLE_LIST'
+  };
+};
+
+sql.unnestList = (
+  tuples: $ReadOnlyArray<$ReadOnlyArray<PrimitiveValueExpressionType>>,
+  columnTypes: $ReadOnlyArray<string>,
+  aliasNames?: $ReadOnlyArray<string>
+): UnnestListSqlTokenType => {
+  return {
+    aliasNames: aliasNames || null,
+    columnTypes,
+    tuples,
+    type: 'UNNEST_LIST'
   };
 };
 

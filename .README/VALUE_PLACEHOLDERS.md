@@ -126,6 +126,57 @@ Produces:
 
 ```
 
+### `sql.unnestList`
+
+```js
+/**
+ * @param aliasNames When alias names for the unnset members are not provided, then incremental names are used (a, b, c...).
+ */
+(
+  tuples: $ReadOnlyArray<$ReadOnlyArray<PrimitiveValueExpressionType>>,
+  columnTypes: $ReadOnlyArray<string>,
+  aliasNames?: $ReadOnlyArray<string>
+): UnnestListSqlTokenType;
+
+```
+
+Creates a list of `unnset` expressions, e.g.
+
+```js
+await connection.query(sql`
+  SELECT ${sql.unnestList(
+    [
+      [1, 'foo'],
+      [2, 'bar']
+    ],
+    [
+      'integer',
+      'text'
+    ]
+  )}
+`);
+
+```
+
+Produces:
+
+```js
+{
+  sql: 'SELECT UNNEST($1::integer[]), UNNEST($2::text[])',
+  values: [
+    [
+      1,
+      2
+    ],
+    [
+      'foo',
+      'bar'
+    ]
+  ]
+}
+
+```
+
 ### `sql.identifier`
 
 ```js

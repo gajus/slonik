@@ -131,29 +131,36 @@ export type QueryExecutionContextType = {|
 |};
 
 export type IdentifierTokenType = {|
-  names: $ReadOnlyArray<string>,
-  type: 'IDENTIFIER'
+  +names: $ReadOnlyArray<string>,
+  +type: 'IDENTIFIER'
 |};
 
 export type RawSqlTokenType = {|
-  sql: string,
-  type: 'RAW_SQL',
-  values: $ReadOnlyArray<PrimitiveValueExpressionType>
+  +sql: string,
+  +type: 'RAW_SQL',
+  +values: $ReadOnlyArray<PrimitiveValueExpressionType>
 |};
 
 export type ValueListSqlTokenType = {|
-  values: $ReadOnlyArray<PrimitiveValueExpressionType>,
-  type: 'VALUE_LIST'
+  +values: $ReadOnlyArray<PrimitiveValueExpressionType>,
+  +type: 'VALUE_LIST'
 |};
 
 export type TupleSqlTokenType = {|
-  values: $ReadOnlyArray<PrimitiveValueExpressionType>,
-  type: 'TUPLE'
+  +values: $ReadOnlyArray<PrimitiveValueExpressionType>,
+  +type: 'TUPLE'
 |};
 
 export type TupleListSqlTokenType = {|
-  tuples: $ReadOnlyArray<$ReadOnlyArray<PrimitiveValueExpressionType>>,
-  type: 'TUPLE_LIST'
+  +tuples: $ReadOnlyArray<$ReadOnlyArray<PrimitiveValueExpressionType>>,
+  +type: 'TUPLE_LIST'
+|};
+
+export type UnnestListSqlTokenType = {|
+  +aliasNames: $ReadOnlyArray<string> | null,
+  +columnTypes: $ReadOnlyArray<string>,
+  +tuples: $ReadOnlyArray<$ReadOnlyArray<PrimitiveValueExpressionType>>,
+  +type: 'UNNEST_LIST'
 |};
 
 export type PrimitiveValueExpressionType = string | number | boolean | null;
@@ -164,7 +171,8 @@ export type ValueExpressionType =
   RawSqlTokenType |
   ValueListSqlTokenType |
   TupleSqlTokenType |
-  TupleListSqlTokenType;
+  TupleListSqlTokenType |
+  UnnestListSqlTokenType;
 
 export type TaggledTemplateLiteralInvocationType = {|
   +sql: string,
