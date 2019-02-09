@@ -1,7 +1,8 @@
 // @flow
 
+import invariant from 'invariant';
 import type {
-  AnonymouseValuePlaceholderValueType,
+  ValueExpressionType,
   IdentifierTokenType,
   RawSqlTokenType,
   TaggledTemplateLiteralInvocationType
@@ -9,8 +10,9 @@ import type {
 import {
   escapeIdentifier
 } from '../utilities';
+import isPrimitiveValueExpression from '../utilities/isPrimitiveValueExpression';
 
-const sql = (parts: $ReadOnlyArray<string>, ...values: $ReadOnlyArray<AnonymouseValuePlaceholderValueType>): TaggledTemplateLiteralInvocationType => {
+const sql = (parts: $ReadOnlyArray<string>, ...values: $ReadOnlyArray<ValueExpressionType>): TaggledTemplateLiteralInvocationType => {
   let raw = '';
 
   const bindings = [];
@@ -40,54 +42,50 @@ const sql = (parts: $ReadOnlyArray<string>, ...values: $ReadOnlyArray<Anonymouse
         .join('.');
 
       continue;
-    } else if (Array.isArray(value) && Array.isArray(value[0])) {
-      const valueSets = [];
-
-      let placeholderIndex = bindings.length;
-
-      let valueSetListSize = value.length;
-
-      while (valueSetListSize--) {
-        const placeholders = [];
-
-        let setSize = value[0].length;
-
-        while (setSize--) {
-          placeholders.push('$' + ++placeholderIndex);
-        }
-
-        valueSets.push('(' + placeholders.join(', ') + ')');
-      }
-
-      raw += valueSets.join(', ');
-
-      for (const set of value) {
-        if (!Array.isArray(set)) {
-          throw new TypeError('Unexpected state.');
-        }
-
-        bindings.push(...set);
-      }
-
-    // SELECT ?, [[1,1]]; SELECT ($1, $2)
-    } else if (Array.isArray(value)) {
+    } else if (value && value.type === 'SET' && Array.isArray(value.members)) {
       const placeholders = [];
 
       let placeholderIndex = bindings.length;
 
-      let setSize = value.length;
-
-      while (setSize--) {
+      for (const member of value.members) {
         placeholders.push('$' + ++placeholderIndex);
+
+        invariant(isPrimitiveValueExpression(member), 'Unexpected set member type.');
+
+        bindings.push(member);
       }
 
       raw += '(' + placeholders.join(', ') + ')';
+    } else if (value && value.type === 'MULTISET' && Array.isArray(value.sets)) {
+      let placeholderIndex = bindings.length;
 
-      bindings.push(...value);
-    } else {
+      const multisetMemberSql = [];
+
+      for (const set of value.sets) {
+        const placeholders = [];
+
+        if (!Array.isArray(set)) {
+          throw new TypeError('Unexpected state.');
+        }
+
+        for (const member of set) {
+          placeholders.push('$' + ++placeholderIndex);
+
+          invariant(isPrimitiveValueExpression(member), 'Unexpected set member type.');
+
+          bindings.push(member);
+        }
+
+        multisetMemberSql.push('(' + placeholders.join(', ') + ')');
+      }
+
+      raw += multisetMemberSql.join(', ');
+    } else if (isPrimitiveValueExpression(value)) {
       raw += '$' + (bindings.length + 1);
 
       bindings.push(value);
+    } else {
+      throw new TypeError('Unexpected value expression.');
     }
   }
 
@@ -110,6 +108,20 @@ sql.raw = (rawSql: string): RawSqlTokenType => {
   return {
     sql: rawSql,
     type: 'RAW_SQL'
+  };
+};
+
+sql.set = (members) => {
+  return {
+    members,
+    type: 'SET'
+  };
+};
+
+sql.multiset = (sets) => {
+  return {
+    sets,
+    type: 'MULTISET'
   };
 };
 

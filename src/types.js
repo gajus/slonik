@@ -113,7 +113,7 @@ export type QueryResultRowType = {
 
 export type QueryType = {|
   +sql: string,
-  +values?: DatabaseQueryValuesType
+  +values?: $ReadOnlyArray<PrimitiveValueExpressionType>
 |};
 
 /**
@@ -140,28 +140,28 @@ export type RawSqlTokenType = {|
   type: 'RAW_SQL'
 |};
 
-type QueryPrimitiveValueType = string | number | null;
+export type SetSqlTokenType = {|
+  members: $ReadOnlyArray<PrimitiveValueExpressionType>,
+  type: 'SET'
+|};
 
-export type AnonymouseValuePlaceholderValueType =
+export type MultisetSqlTokenType = {|
+  sets: $ReadOnlyArray<$ReadOnlyArray<PrimitiveValueExpressionType>>,
+  type: 'MULTISET'
+|};
 
-  // INSERT ... VALUES ? => INSERT ... VALUES (1, 2, 3); [[1, 2, 3]]
-  // INSERT ... VALUES ? => INSERT ... VALUES (1), (2), (3); [[[1], [2], [3]]]
-  $ReadOnlyArray<QueryPrimitiveValueType | $ReadOnlyArray<QueryPrimitiveValueType>> |
-  QueryPrimitiveValueType |
+type PrimitiveValueExpressionType = string | number | null;
+
+export type ValueExpressionType =
+  PrimitiveValueExpressionType |
   IdentifierTokenType |
-  RawSqlTokenType;
-
-export type NamedValuePlaceholderValuesType = {
-  +[key: string]: string | number | null
-};
-
-export type DatabaseQueryValuesType =
-  $ReadOnlyArray<AnonymouseValuePlaceholderValueType> |
-  NamedValuePlaceholderValuesType;
+  RawSqlTokenType |
+  SetSqlTokenType |
+  MultisetSqlTokenType;
 
 export type TaggledTemplateLiteralInvocationType = {|
   +sql: string,
-  +values: $ReadOnlyArray<AnonymouseValuePlaceholderValueType>
+  +values: $ReadOnlyArray<ValueExpressionType>
 |};
 
 export type InternalQueryMethodType<R> = (
@@ -169,7 +169,7 @@ export type InternalQueryMethodType<R> = (
   connection: InternalDatabaseConnectionType,
   clientConfiguration: ClientConfigurationType,
   sql: string,
-  values?: DatabaseQueryValuesType,
+  values?: $ReadOnlyArray<PrimitiveValueExpressionType>,
   uid?: QueryIdType
 ) => Promise<R>;
 
@@ -192,7 +192,7 @@ export type InternalTransactionFunctionType = (
 
 type QueryMethodType<R> = (
   sql: TaggledTemplateLiteralInvocationType,
-  values?: DatabaseQueryValuesType
+  values?: $ReadOnlyArray<PrimitiveValueExpressionType>
 ) => Promise<R>;
 
 export type QueryAnyFirstFunctionType<T: QueryResultRowColumnType> = QueryMethodType<$ReadOnlyArray<T>>;

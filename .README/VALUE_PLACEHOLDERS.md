@@ -10,19 +10,31 @@ import {
 } from 'slonik'
 
 connection.query(sql`
-  INSERT INTO reservation_ticket (reservation_id, ticket_id)
-  VALUES ${values}
+  SELECT 1
+  FROM foo
+  WHERE bar = ${'baz'}
 `);
 
 ```
 
-### Set interpolation
+Produces:
 
-Array expressions produce sets, e.g.
+```sql
+SELECT 1
+FROM foo
+WHERE bar = $1
+
+```
+
+and is evaluated with 'baz' value binding.
+
+### `sql.set`
+
+`sql.set` is used to create a typed row construct (or a set, depending on the context), e.g.
 
 ```js
 await connection.query(sql`
-  SELECT ${[1, 2, 3]}
+  SELECT ${sql.set([1, 2, 3])}
 `);
 
 ```
@@ -34,14 +46,16 @@ SELECT ($1, $2, $3)
 
 ```
 
-An array containing array expressions produce a collection of sets, e.g.
+### `sql.multiset`
+
+`sql.multiset` is used to create a comma-separated list of typed row constructs, e.g.
 
 ```js
 await connection.query(sql`
-  SELECT ${[
+  SELECT ${sql.multiset([
     [1, 2, 3],
     [1, 2, 3]
-  ]}
+  ])}
 `);
 
 ```
@@ -53,40 +67,42 @@ SELECT ($1, $2, $3), ($4, $5, $6)
 
 ```
 
-#### Creating dynamic delimited identifiers
+### `sql.identifier`
 
 [Delimited identifiers](https://www.postgresql.org/docs/current/static/sql-syntax-lexical.html#SQL-SYNTAX-IDENTIFIERS) are created by enclosing an arbitrary sequence of characters in double-quotes ("). To create create a delimited identifier, create an `sql` tag function placeholder value using `sql.identifier`, e.g.
 
 ```js
 sql`
-  SELECT ${'foo'}
+  SELECT 1
   FROM ${sql.identifier(['bar', 'baz'])}
 `;
 
-// {
-//   sql: 'SELECT $1 FROM "bar"."baz"',
-//   values: [
-//     'foo'
-//   ]
-// }
+```
+
+Produces:
+
+```sql
+SELECT 1
+FROM "bar"."bar"
 
 ```
 
-#### Inlining dynamic/ raw SQL
+### `sql.raw`
 
-Raw SQL can be inlined using `sql.raw`, e.g.
+Raw/ dynamic SQL can be inlined using `sql.raw`, e.g.
 
 ```js
 sql`
-  SELECT ${'foo'}
+  SELECT 1
   FROM ${sql.raw('"bar"')}
 `;
 
-// {
-//   sql: 'SELECT $1 FROM "bar"',
-//   values: [
-//     'foo'
-//   ]
-// }
+```
+
+Produces:
+
+```sql
+SELECT 1
+FROM "bar"
 
 ```
