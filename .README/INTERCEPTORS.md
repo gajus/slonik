@@ -1,8 +1,27 @@
 ## Interceptors
 
-Functionality can be added to Slonik client by adding interceptors.
+Functionality can be added to Slonik client by adding interceptors (middleware).
 
-Each interceptor can implement several functions which can be used to change the behaviour of the database client.
+Interceptors are configured using [client configuration](#slonik-usage-configuration), e.g.
+
+```js
+import {
+  createPool
+} from 'slonik';
+
+const interceptors = [];
+
+const connection = createPool('postgres://', {
+  interceptors
+});
+
+```
+
+Interceptors are executed in the order they are added.
+
+### Interceptor methods
+
+Interceptors implement methods that are used to change the behaviour of the database client at different stages of the connection life-cycle:
 
 ```js
 type InterceptorType = {|
@@ -25,28 +44,9 @@ type InterceptorType = {|
 
 ```
 
-Interceptors are configured using [client configuration](#slonik-usage-configuration), e.g.
-
-```js
-import {
-  createPool
-} from 'slonik';
-
-const interceptors = [];
-
-const connection = createPool('postgres://', {
-  interceptors
-});
-
-```
-
-Interceptors are executed in the order they are added.
-
-### Interceptor methods
-
 #### `afterPoolConnection`
 
-Executed after a connection is , e.g.
+Executed after a connection is acquired from the connection pool (or a new connection is created), e.g.
 
 ```js
 const pool = createPool('postgres://');

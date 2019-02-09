@@ -36,7 +36,10 @@ Beware that in the latter example, the connection picked to execute the query is
 ### API
 
 ```js
-createPool(connectionConfiguration: DatabaseConfigurationType, clientConfiguration: ClientConfigurationType): DatabasePoolType;
+createPool(
+  connectionConfiguration: DatabaseConfigurationType,
+  clientConfiguration: ClientConfigurationType
+): DatabasePoolType;
 
 type DatabaseConnectionUriType = string;
 
@@ -76,7 +79,7 @@ await pool.query(sql`SELECT 1`);
 
 ### Checking out a client from the connection pool
 
-Slonik only allows to check out a connection for the duration of the promise routine supplied to the `connect()` method.
+Slonik only allows to check out a connection for the duration of the promise routine supplied to the `pool#connect()` method.
 
 ```js
 import {

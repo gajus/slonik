@@ -100,7 +100,7 @@ const whereConditionSql = uniquePairs
   .map(() => {
     return needleColumns
       .map((column) => {
-        return column + ' = $' + placeholderIndex++;
+        return column + ' = \$' + placeholderIndex++;
       })
       .join(' AND ');
   })
