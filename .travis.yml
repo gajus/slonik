@@ -8,7 +8,7 @@ script:
   - npm run lint
   - NODE_ENV=test nyc --silent ava
   - nyc report --reporter=text-lcov | coveralls
-  - nyc check-coverage --lines 60
+  - nyc check-coverage --lines 50
 after_success:
   - npm run build
   - semantic-release
