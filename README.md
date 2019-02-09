@@ -15,7 +15,7 @@ A [battle-tested](#battled-tested) PostgreSQL client with strict types, detail l
 * [Convenience methods](#slonik-query-methods) with built-in assertions.
 * [Middleware](#slonik-interceptors) support.
 * [SQL injection guarding](#slonik-value-placeholders-tagged-template-literals).
-* [Set interpolation](#slonik-value-placeholders-sql-set).
+* [Value and tuple interpolation](#slonik-value-placeholders-sql-valuelist).
 * Detail [logging](#slonik-debugging).
 * [Parsing and logging of the auto_explain logs](#logging-auto_explain).
 * Built-in [asynchronous stack trace resolution](#log-stack-trace).
@@ -65,8 +65,9 @@ Read: [The History of Slonik, the PostgreSQL Elephant Logo](https://www.vertabel
         * [No multiline values](#slonik-conventions-no-multiline-values)
     * [Value placeholders](#slonik-value-placeholders)
         * [Tagged template literals](#slonik-value-placeholders-tagged-template-literals)
-        * [`sql.set`](#slonik-value-placeholders-sql-set)
-        * [`sql.multiset`](#slonik-value-placeholders-sql-multiset)
+        * [`sql.valueList`](#slonik-value-placeholders-sql-valuelist)
+        * [`sql.tuple`](#slonik-value-placeholders-sql-tuple)
+        * [`sql.tupleList`](#slonik-value-placeholders-sql-tuplelist)
         * [`sql.identifier`](#slonik-value-placeholders-sql-identifier)
         * [`sql.raw`](#slonik-value-placeholders-sql-raw)
     * [Query methods](#slonik-query-methods)
@@ -637,19 +638,19 @@ WHERE bar = $1
 
 query with 'baz' value binding.
 
-<a name="slonik-value-placeholders-sql-set"></a>
-### <code>sql.set</code>
+<a name="slonik-value-placeholders-sql-valuelist"></a>
+### <code>sql.valueList</code>
 
 ```js
-(members: $ReadOnlyArray<PrimitiveValueExpressionType>) => SetSqlTokenType;
+(values: $ReadOnlyArray<PrimitiveValueExpressionType>) => ValueListSqlTokenType;
 
 ```
 
-`sql.set` is used to create a typed row construct (or a set, depending on the context), e.g.
+Creates a list of values, e.g.
 
 ```js
 await connection.query(sql`
-  SELECT ${sql.set([1, 2, 3])}
+  SELECT (${sql.valueList([1, 2, 3])})
 `);
 
 ```
@@ -668,19 +669,52 @@ Produces:
 
 ```
 
-<a name="slonik-value-placeholders-sql-multiset"></a>
-### <code>sql.multiset</code>
+<a name="slonik-value-placeholders-sql-tuple"></a>
+### <code>sql.tuple</code>
 
 ```js
-(sets: $ReadOnlyArray<$ReadOnlyArray<PrimitiveValueExpressionType>>) => MultisetSqlTokenType;
+(values: $ReadOnlyArray<PrimitiveValueExpressionType>) => TupleSqlTokenType;
 
 ```
 
-`sql.multiset` is used to create a comma-separated list of typed row constructs, e.g.
+Creates a tuple (typed row construct), e.g.
 
 ```js
 await connection.query(sql`
-  SELECT ${sql.multiset([
+  INSERT INTO (foo, bar, baz)
+  VALUES ${sql.tuple([1, 2, 3])}
+`);
+
+```
+
+Produces:
+
+```js
+{
+  sql: 'INSERT INTO (foo, bar, baz) VALUES ($1, $2, $3)',
+  values: [
+    1,
+    2,
+    3
+  ]
+}
+
+```
+
+<a name="slonik-value-placeholders-sql-tuplelist"></a>
+### <code>sql.tupleList</code>
+
+```js
+(tuples: $ReadOnlyArray<$ReadOnlyArray<PrimitiveValueExpressionType>>) => TupleListSqlTokenType;
+
+```
+
+Creates a list of tuples (typed row constructs), e.g.
+
+```js
+await connection.query(sql`
+  INSERT INTO (foo, bar, baz)
+  VALUES ${sql.tupleList([
     [1, 2, 3],
     [4, 5, 6]
   ])}
@@ -692,7 +726,7 @@ Produces:
 
 ```js
 {
-  sql: 'SELECT ($1, $2, $3), ($4, $5, $6)',
+  sql: 'INSERT INTO (foo, bar, baz) VALUES ($1, $2, $3), ($4, $5, $6)',
   values: [
     1,
     2,
