@@ -137,7 +137,8 @@ export type IdentifierTokenType = {|
 
 export type RawSqlTokenType = {|
   sql: string,
-  type: 'RAW_SQL'
+  type: 'RAW_SQL',
+  values: $ReadOnlyArray<PrimitiveValueExpressionType>
 |};
 
 export type SetSqlTokenType = {|
@@ -150,7 +151,7 @@ export type MultisetSqlTokenType = {|
   type: 'MULTISET'
 |};
 
-type PrimitiveValueExpressionType = string | number | boolean | null;
+export type PrimitiveValueExpressionType = string | number | boolean | null;
 
 export type ValueExpressionType =
   PrimitiveValueExpressionType |

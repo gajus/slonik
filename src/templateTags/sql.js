@@ -2,10 +2,13 @@
 
 import invariant from 'invariant';
 import type {
-  ValueExpressionType,
   IdentifierTokenType,
+  MultisetSqlTokenType,
+  PrimitiveValueExpressionType,
   RawSqlTokenType,
-  TaggledTemplateLiteralInvocationType
+  SetSqlTokenType,
+  TaggledTemplateLiteralInvocationType,
+  ValueExpressionType
 } from '../types';
 import {
   escapeIdentifier
@@ -35,7 +38,21 @@ const sql = (parts: $ReadOnlyArray<string>, ...values: $ReadOnlyArray<ValueExpre
     }
 
     if (value && value.type === 'RAW_SQL' && typeof value.sql === 'string') {
-      raw += value.sql;
+      if (Array.isArray(value.values) && value.values.length) {
+        const fragmentValues = value.values;
+
+        raw += value.sql.replace(/\$(\d+)/, (match, g1) => {
+          return '$' + (parseInt(g1, 10) + bindings.length);
+        });
+
+        for (const fragmentValue of fragmentValues) {
+          invariant(isPrimitiveValueExpression(fragmentValue), 'Unexpected set member type.');
+
+          bindings.push(fragmentValue);
+        }
+      } else {
+        raw += value.sql;
+      }
     } else if (value && value.type === 'IDENTIFIER' && Array.isArray(value.names)) {
       raw += value.names
         .map((identifierName) => {
@@ -121,21 +138,22 @@ sql.identifier = (names: $ReadOnlyArray<string>): IdentifierTokenType => {
   };
 };
 
-sql.raw = (rawSql: string): RawSqlTokenType => {
+sql.raw = (rawSql: string, values?: $ReadOnlyArray<PrimitiveValueExpressionType>): RawSqlTokenType => {
   return {
     sql: rawSql,
-    type: 'RAW_SQL'
+    type: 'RAW_SQL',
+    values: values || []
   };
 };
 
-sql.set = (members) => {
+sql.set = (members: $ReadOnlyArray<PrimitiveValueExpressionType>): SetSqlTokenType => {
   return {
     members,
     type: 'SET'
   };
 };
 
-sql.multiset = (sets) => {
+sql.multiset = (sets: $ReadOnlyArray<$ReadOnlyArray<PrimitiveValueExpressionType>>): MultisetSqlTokenType => {
   return {
     sets,
     type: 'MULTISET'

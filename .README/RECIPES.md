@@ -83,3 +83,60 @@ notice:
           Actual Loops:        1
 
 ```
+
+### Using `sql.raw` to generate dynamic queries
+
+[`sql.raw`](#sqlraw) can be used to generate fragments of an arbitrary SQL that are interpolated into the main query, e.g.
+
+```js
+const uniquePairs = [
+  ['a', 1],
+  ['b', 2]
+];
+
+let placeholderIndex = 1;
+
+const whereConditionSql = uniquePairs
+  .map(() => {
+    return needleColumns
+      .map((column) => {
+        return column + ' = $' + placeholderIndex++;
+      })
+      .join(' AND ');
+  })
+  .join(' OR ');
+
+const values = [];
+
+for (const pairValues of uniquePairs) {
+  values.push(...pairValues);
+}
+
+const query = sql`
+  SELECT
+    id
+  FROM foo
+  WHERE
+    ${sql.raw(whereConditionSql, values)}
+`;
+
+await connection.any(query);
+
+```
+
+In the above example, `query` is:
+
+```js
+{
+  sql: 'SELECT id FROM foo WHERE (a = $1 AND b = $2) OR (a = $3 AND b = $4)',
+  values: [
+    'a',
+    1,
+    'b',
+    2
+  ]
+}
+
+```
+
+Multiple `sql.raw` fragments can be used to create a query.
