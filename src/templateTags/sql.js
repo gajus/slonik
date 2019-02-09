@@ -17,6 +17,7 @@ const log = Logger.child({
   namespace: 'sql'
 });
 
+// eslint-disable-next-line complexity
 const sql = (parts: $ReadOnlyArray<string>, ...values: $ReadOnlyArray<ValueExpressionType>): TaggledTemplateLiteralInvocationType => {
   let raw = '';
 
@@ -66,12 +67,18 @@ const sql = (parts: $ReadOnlyArray<string>, ...values: $ReadOnlyArray<ValueExpre
 
       const multisetMemberSql = [];
 
+      let lastSetSize;
+
       for (const set of value.sets) {
         const placeholders = [];
 
-        if (!Array.isArray(set)) {
-          throw new TypeError('Unexpected state.');
+        invariant(Array.isArray(set), 'Unexpected set shape.');
+
+        if (typeof lastSetSize === 'number' && lastSetSize !== set.length) {
+          throw new Error('Each set in a collection of sets must have an equal number of members.');
         }
+
+        lastSetSize = set.length;
 
         for (const member of set) {
           placeholders.push('$' + ++placeholderIndex);
