@@ -64,7 +64,7 @@ sql`
 `;
 
 // {
-//   sql: 'SELECT ? FROM "bar"."baz"',
+//   sql: 'SELECT $1 FROM "bar"."baz"',
 //   values: [
 //     'foo'
 //   ]
@@ -83,7 +83,7 @@ sql`
 `;
 
 // {
-//   sql: 'SELECT ? FROM "bar"',
+//   sql: 'SELECT $1 FROM "bar"',
 //   values: [
 //     'foo'
 //   ]

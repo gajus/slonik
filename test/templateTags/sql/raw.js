@@ -7,7 +7,7 @@ test('inlines raw SQL', (t) => {
   const query = sql`SELECT ${'foo'} FROM ${sql.raw('"bar"')}`;
 
   t.deepEqual(query, {
-    sql: 'SELECT ? FROM "bar"',
+    sql: 'SELECT $1 FROM "bar"',
     values: [
       'foo'
     ]
