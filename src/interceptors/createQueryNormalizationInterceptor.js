@@ -19,7 +19,7 @@ export default (configuration?: ConfigurationType): InterceptorType => {
     transformQuery: async (context, query) => {
       let sql = query.sql;
 
-      if (configuration && configuration.stripComments !== false) {
+      if (!configuration || configuration.stripComments !== false) {
         sql = stripComments(query.sql);
       }
 
