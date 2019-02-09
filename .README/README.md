@@ -13,7 +13,7 @@ A [battle-tested](#battled-tested) PostgreSQL client with strict types, detail l
 * [Convenience methods](#slonik-query-methods) with built-in assertions.
 * [Middleware](#slonik-interceptors) support.
 * [SQL injection guarding](#slonik-value-placeholders-tagged-template-literals).
-* [Set interpolation](#slonik-value-placeholders-sql-set).
+* [Value and tuple interpolation](#slonik-value-placeholders-sql-valuelist).
 * Detail [logging](#slonik-debugging).
 * [Parsing and logging of the auto_explain logs](#logging-auto_explain).
 * Built-in [asynchronous stack trace resolution](#log-stack-trace).

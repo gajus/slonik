@@ -28,18 +28,18 @@ WHERE bar = $1
 
 query with 'baz' value binding.
 
-### `sql.set`
+### `sql.valueList`
 
 ```js
-(members: $ReadOnlyArray<PrimitiveValueExpressionType>) => SetSqlTokenType;
+(values: $ReadOnlyArray<PrimitiveValueExpressionType>) => ValueListSqlTokenType;
 
 ```
 
-`sql.set` is used to create a typed row construct (or a set, depending on the context), e.g.
+Creates a list of values, e.g.
 
 ```js
 await connection.query(sql`
-  SELECT ${sql.set([1, 2, 3])}
+  SELECT (${sql.valueList([1, 2, 3])})
 `);
 
 ```
@@ -58,18 +58,50 @@ Produces:
 
 ```
 
-### `sql.multiset`
+### `sql.tuple`
 
 ```js
-(sets: $ReadOnlyArray<$ReadOnlyArray<PrimitiveValueExpressionType>>) => MultisetSqlTokenType;
+(values: $ReadOnlyArray<PrimitiveValueExpressionType>) => TupleSqlTokenType;
 
 ```
 
-`sql.multiset` is used to create a comma-separated list of typed row constructs, e.g.
+Creates a tuple (typed row construct), e.g.
 
 ```js
 await connection.query(sql`
-  SELECT ${sql.multiset([
+  INSERT INTO (foo, bar, baz)
+  VALUES ${sql.tuple([1, 2, 3])}
+`);
+
+```
+
+Produces:
+
+```js
+{
+  sql: 'INSERT INTO (foo, bar, baz) VALUES ($1, $2, $3)',
+  values: [
+    1,
+    2,
+    3
+  ]
+}
+
+```
+
+### `sql.tupleList`
+
+```js
+(tuples: $ReadOnlyArray<$ReadOnlyArray<PrimitiveValueExpressionType>>) => TupleListSqlTokenType;
+
+```
+
+Creates a list of tuples (typed row constructs), e.g.
+
+```js
+await connection.query(sql`
+  INSERT INTO (foo, bar, baz)
+  VALUES ${sql.tupleList([
     [1, 2, 3],
     [4, 5, 6]
   ])}
@@ -81,7 +113,7 @@ Produces:
 
 ```js
 {
-  sql: 'SELECT ($1, $2, $3), ($4, $5, $6)',
+  sql: 'INSERT INTO (foo, bar, baz) VALUES ($1, $2, $3), ($4, $5, $6)',
   values: [
     1,
     2,

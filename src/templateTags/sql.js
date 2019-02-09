@@ -3,12 +3,13 @@
 import invariant from 'invariant';
 import type {
   IdentifierTokenType,
-  MultisetSqlTokenType,
   PrimitiveValueExpressionType,
   RawSqlTokenType,
-  SetSqlTokenType,
   TaggledTemplateLiteralInvocationType,
-  ValueExpressionType
+  TupleListSqlTokenType,
+  TupleSqlTokenType,
+  ValueExpressionType,
+  ValueListSqlTokenType
 } from '../types';
 import {
   escapeIdentifier
@@ -46,7 +47,7 @@ const sql = (parts: $ReadOnlyArray<string>, ...values: $ReadOnlyArray<ValueExpre
         });
 
         for (const fragmentValue of fragmentValues) {
-          invariant(isPrimitiveValueExpression(fragmentValue), 'Unexpected set member type.');
+          invariant(isPrimitiveValueExpression(fragmentValue), 'Unexpected value binding type.');
 
           bindings.push(fragmentValue);
         }
@@ -65,50 +66,64 @@ const sql = (parts: $ReadOnlyArray<string>, ...values: $ReadOnlyArray<ValueExpre
         .join('.');
 
       continue;
-    } else if (value && value.type === 'SET' && Array.isArray(value.members)) {
+    } else if (value && value.type === 'VALUE_LIST' && Array.isArray(value.values)) {
       const placeholders = [];
 
       let placeholderIndex = bindings.length;
 
-      for (const member of value.members) {
+      for (const listValue of value.values) {
         placeholders.push('$' + ++placeholderIndex);
 
-        invariant(isPrimitiveValueExpression(member), 'Unexpected set member type.');
+        invariant(isPrimitiveValueExpression(listValue), 'Unexpected value list member type.');
 
-        bindings.push(member);
+        bindings.push(listValue);
+      }
+
+      raw += placeholders.join(', ');
+    } else if (value && value.type === 'TUPLE' && Array.isArray(value.values)) {
+      const placeholders = [];
+
+      let placeholderIndex = bindings.length;
+
+      for (const tupleValue of value.values) {
+        placeholders.push('$' + ++placeholderIndex);
+
+        invariant(isPrimitiveValueExpression(tupleValue), 'Unexpected tuple member type.');
+
+        bindings.push(tupleValue);
       }
 
       raw += '(' + placeholders.join(', ') + ')';
-    } else if (value && value.type === 'MULTISET' && Array.isArray(value.sets)) {
+    } else if (value && value.type === 'TUPLE_LIST' && Array.isArray(value.tuples)) {
       let placeholderIndex = bindings.length;
 
-      const multisetMemberSql = [];
+      const tupleListMemberSql = [];
 
-      let lastSetSize;
+      let lastTupleSize;
 
-      for (const set of value.sets) {
+      for (const tuple of value.tuples) {
         const placeholders = [];
 
-        invariant(Array.isArray(set), 'Unexpected set shape.');
+        invariant(Array.isArray(tuple), 'Unexpected tuple shape.');
 
-        if (typeof lastSetSize === 'number' && lastSetSize !== set.length) {
-          throw new Error('Each set in a collection of sets must have an equal number of members.');
+        if (typeof lastTupleSize === 'number' && lastTupleSize !== tuple.length) {
+          throw new Error('Each tuple in a list of tuples must have an equal number of members.');
         }
 
-        lastSetSize = set.length;
+        lastTupleSize = tuple.length;
 
-        for (const member of set) {
+        for (const member of tuple) {
           placeholders.push('$' + ++placeholderIndex);
 
-          invariant(isPrimitiveValueExpression(member), 'Unexpected set member type.');
+          invariant(isPrimitiveValueExpression(member), 'Unexpected tuple member type.');
 
           bindings.push(member);
         }
 
-        multisetMemberSql.push('(' + placeholders.join(', ') + ')');
+        tupleListMemberSql.push('(' + placeholders.join(', ') + ')');
       }
 
-      raw += multisetMemberSql.join(', ');
+      raw += tupleListMemberSql.join(', ');
     } else if (isPrimitiveValueExpression(value)) {
       raw += '$' + (bindings.length + 1);
 
@@ -146,17 +161,24 @@ sql.raw = (rawSql: string, values?: $ReadOnlyArray<PrimitiveValueExpressionType>
   };
 };
 
-sql.set = (members: $ReadOnlyArray<PrimitiveValueExpressionType>): SetSqlTokenType => {
+sql.valueList = (values: $ReadOnlyArray<PrimitiveValueExpressionType>): ValueListSqlTokenType => {
   return {
-    members,
-    type: 'SET'
+    type: 'VALUE_LIST',
+    values
   };
 };
 
-sql.multiset = (sets: $ReadOnlyArray<$ReadOnlyArray<PrimitiveValueExpressionType>>): MultisetSqlTokenType => {
+sql.tuple = (values: $ReadOnlyArray<PrimitiveValueExpressionType>): TupleSqlTokenType => {
   return {
-    sets,
-    type: 'MULTISET'
+    type: 'TUPLE',
+    values
+  };
+};
+
+sql.tupleList = (tuples: $ReadOnlyArray<$ReadOnlyArray<PrimitiveValueExpressionType>>): TupleListSqlTokenType => {
+  return {
+    tuples,
+    type: 'TUPLE_LIST'
   };
 };
 

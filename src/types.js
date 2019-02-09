@@ -141,14 +141,19 @@ export type RawSqlTokenType = {|
   values: $ReadOnlyArray<PrimitiveValueExpressionType>
 |};
 
-export type SetSqlTokenType = {|
-  members: $ReadOnlyArray<PrimitiveValueExpressionType>,
-  type: 'SET'
+export type ValueListSqlTokenType = {|
+  values: $ReadOnlyArray<PrimitiveValueExpressionType>,
+  type: 'VALUE_LIST'
 |};
 
-export type MultisetSqlTokenType = {|
-  sets: $ReadOnlyArray<$ReadOnlyArray<PrimitiveValueExpressionType>>,
-  type: 'MULTISET'
+export type TupleSqlTokenType = {|
+  values: $ReadOnlyArray<PrimitiveValueExpressionType>,
+  type: 'TUPLE'
+|};
+
+export type TupleListSqlTokenType = {|
+  tuples: $ReadOnlyArray<$ReadOnlyArray<PrimitiveValueExpressionType>>,
+  type: 'TUPLE_LIST'
 |};
 
 export type PrimitiveValueExpressionType = string | number | boolean | null;
@@ -157,8 +162,9 @@ export type ValueExpressionType =
   PrimitiveValueExpressionType |
   IdentifierTokenType |
   RawSqlTokenType |
-  SetSqlTokenType |
-  MultisetSqlTokenType;
+  ValueListSqlTokenType |
+  TupleSqlTokenType |
+  TupleListSqlTokenType;
 
 export type TaggledTemplateLiteralInvocationType = {|
   +sql: string,
