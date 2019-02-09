@@ -25,7 +25,7 @@ test('sql tag invocation with expressions', (t) => {
 
   t.true(spy.calledOnce);
 
-  t.true(spy.firstCall.args[0] === 'foo ?');
+  t.true(spy.firstCall.args[0] === 'foo $1');
   t.deepEqual(spy.firstCall.args[1], ['bar']);
 });
 
@@ -47,7 +47,7 @@ test('sql tag invocation with expressions and values', (t) => {
 
   t.true(spy.calledOnce);
 
-  t.true(spy.firstCall.args[0] === 'foo ?');
+  t.true(spy.firstCall.args[0] === 'foo $1');
   t.deepEqual(spy.firstCall.args[1], ['bar1', 'bar2']);
 });
 

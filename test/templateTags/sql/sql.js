@@ -7,7 +7,7 @@ test('creates an object describing a query', (t) => {
   const query = sql`SELECT 1`;
 
   t.deepEqual(query, {
-    sql: 'SELECT $1',
+    sql: 'SELECT 1',
     values: []
   });
 });
@@ -27,7 +27,7 @@ test('creates an object describing query value bindings (multiple)', (t) => {
   const query = sql`SELECT ${'foo'} FROM ${'bar'}`;
 
   t.deepEqual(query, {
-    sql: 'SELECT $1 FROM $1',
+    sql: 'SELECT $1 FROM $2',
     values: [
       'foo',
       'bar'
