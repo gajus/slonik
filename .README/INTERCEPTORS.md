@@ -6,14 +6,12 @@ Each interceptor can implement several functions which can be used to change the
 
 ```js
 type InterceptorType = {|
-  +afterConnection?: (connection: DatabaseSingleConnectionType) => MaybePromiseType<void>,
   +afterPoolConnection?: (connection: DatabasePoolConnectionType) => MaybePromiseType<void>,
   +afterQueryExecution?: (
     queryExecutionContext: QueryExecutionContextType,
     query: QueryType,
     result: QueryResultType<QueryResultRowType>
   ) => MaybePromiseType<QueryResultType<QueryResultRowType>>,
-  +beforeConnectionEnd?: (connection: DatabaseSingleConnectionType) => MaybePromiseType<void>,
   +beforePoolConnectionRelease?: (connection: DatabasePoolConnectionType) => MaybePromiseType<void>,
   +beforeQueryExecution?: (
     queryExecutionContext: QueryExecutionContextType,

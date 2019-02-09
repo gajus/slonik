@@ -23,7 +23,7 @@ SET client_min_messages=log;
 
 ```
 
-This can be configured using `afterConnection` interceptor, e.g.
+This can be configured using `afterPoolConnection` interceptor, e.g.
 
 
 
@@ -31,7 +31,7 @@ This can be configured using `afterConnection` interceptor, e.g.
 const pool = await createPool('postgres://localhost', {
   interceptors: [
     {
-      afterConnection: async (connection) => {
+      afterPoolConnection: async (connection) => {
         await connection.query(sql`LOAD 'auto_explain'`);
         await connection.query(sql`SET auto_explain.log_analyze=true`);
         await connection.query(sql`SET auto_explain.log_format=json`);
