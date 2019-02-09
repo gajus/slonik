@@ -40,8 +40,52 @@ const sql = (parts: $ReadOnlyArray<string>, ...values: $ReadOnlyArray<Anonymouse
         .join('.');
 
       continue;
+    } else if (Array.isArray(value) && Array.isArray(value[0])) {
+      const valueSets = [];
+
+      let placeholderIndex = bindings.length;
+
+      let valueSetListSize = value.length;
+
+      while (valueSetListSize--) {
+        const placeholders = [];
+
+        let setSize = value[0].length;
+
+        while (setSize--) {
+          placeholders.push('$' + ++placeholderIndex);
+        }
+
+        valueSets.push('(' + placeholders.join(', ') + ')');
+      }
+
+      raw += valueSets.join(', ');
+
+      for (const set of value) {
+        if (!Array.isArray(set)) {
+          throw new TypeError('Unexpected state.');
+        }
+
+        bindings.push(...set);
+      }
+
+    // SELECT ?, [[1,1]]; SELECT ($1, $2)
+    } else if (Array.isArray(value)) {
+      const placeholders = [];
+
+      let placeholderIndex = bindings.length;
+
+      let setSize = value.length;
+
+      while (setSize--) {
+        placeholders.push('$' + ++placeholderIndex);
+      }
+
+      raw += '(' + placeholders.join(', ') + ')';
+
+      bindings.push(...value);
     } else {
-      raw += '?';
+      raw += '$' + (bindings.length + 1);
 
       bindings.push(value);
     }
