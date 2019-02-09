@@ -2,8 +2,8 @@
 
 import type {
   AnonymouseValuePlaceholderValueType,
-  QueryIdentifierType,
-  RawQueryType,
+  IdentifierTokenType,
+  RawSqlTokenType,
   TaggledTemplateLiteralInvocationType
 } from '../types';
 import {
@@ -26,8 +26,8 @@ const sql = (parts: $ReadOnlyArray<string>, ...values: $ReadOnlyArray<Anonymouse
       continue;
     }
 
-    if (value && value.type === 'RAW' && typeof value.raw === 'string') {
-      raw += value.raw;
+    if (value && value.type === 'RAW_SQL' && typeof value.sql === 'string') {
+      raw += value.sql;
     } else if (value && value.type === 'IDENTIFIER' && Array.isArray(value.names)) {
       raw += value.names
         .map((identifierName) => {
@@ -53,7 +53,7 @@ const sql = (parts: $ReadOnlyArray<string>, ...values: $ReadOnlyArray<Anonymouse
   };
 };
 
-sql.identifier = (names: $ReadOnlyArray<string>): QueryIdentifierType => {
+sql.identifier = (names: $ReadOnlyArray<string>): IdentifierTokenType => {
   // @todo Replace `type` with a symbol once Flow adds symbol support
   // @see https://github.com/facebook/flow/issues/810
   return {
@@ -62,10 +62,10 @@ sql.identifier = (names: $ReadOnlyArray<string>): QueryIdentifierType => {
   };
 };
 
-sql.raw = (raw: string): RawQueryType => {
+sql.raw = (rawSql: string): RawSqlTokenType => {
   return {
-    raw,
-    type: 'RAW'
+    sql: rawSql,
+    type: 'RAW_SQL'
   };
 };
 

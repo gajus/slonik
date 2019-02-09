@@ -37,8 +37,10 @@ export default (
 
       const boundConnection = bindPoolConnection(parentLog, pool, connection, clientConfiguration);
 
-      if (clientConfiguration.onConnect) {
-        await clientConfiguration.onConnect(boundConnection);
+      for (const interceptor of clientConfiguration.interceptors) {
+        if (interceptor.afterPoolConnection) {
+          await interceptor.afterPoolConnection(boundConnection);
+        }
       }
 
       let result;
@@ -46,9 +48,7 @@ export default (
       try {
         result = await connectionRoutine(boundConnection);
       } finally {
-        const interceptors = clientConfiguration && clientConfiguration.interceptors || [];
-
-        for (const interceptor of interceptors) {
+        for (const interceptor of clientConfiguration.interceptors) {
           if (interceptor.beforePoolConnectionRelease) {
             await interceptor.beforePoolConnectionRelease(boundConnection);
           }

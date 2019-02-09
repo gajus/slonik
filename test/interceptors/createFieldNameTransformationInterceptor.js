@@ -1,18 +1,22 @@
 // @flow
 
 import test from 'ava';
-import createFormatFieldNameInterceptor from '../../src/interceptors/createFormatFieldNameInterceptor';
+import createQueryExecutionContext from '../helpers/createQueryExecutionContext';
+import createFieldNameTransformationInterceptor from '../../src/interceptors/createFieldNameTransformationInterceptor';
 
 test('changes field names to camelcase', (t) => {
-  const interceptor = createFormatFieldNameInterceptor({
+  const interceptor = createFieldNameTransformationInterceptor({
     format: 'CAMEL_CASE'
   });
 
-  if (!interceptor.afterQuery) {
+  const afterQueryExecution = interceptor.afterQueryExecution;
+
+  if (!afterQueryExecution) {
     throw new Error('Unexpected state.');
   }
 
-  const result = interceptor.afterQuery(
+  const result = afterQueryExecution(
+    createQueryExecutionContext(),
     {
       sql: 'SELECT 1'
     },

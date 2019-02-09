@@ -5,10 +5,10 @@ import sinon from 'sinon';
 import log from '../../../helpers/Logger';
 import query from '../../../../src/connectionMethods/query';
 
-test('"afterQuery" overrides results', async (t) => {
+test('overrides results', async (t) => {
   const interceptors = [
     {
-      afterQuery: () => {
+      afterQueryExecution: () => {
         return {
           command: 'SELECT',
           fields: [],

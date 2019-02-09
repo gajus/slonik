@@ -6,5 +6,5 @@ import {
 } from 'ulid';
 
 export default (): string => {
-  return ulidFactory(detectPrng(true));
+  return ulidFactory(detectPrng(true))();
 };

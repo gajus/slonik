@@ -29,7 +29,7 @@ export default (configuration: ConfigurationType): InterceptorType => {
   const fieldTest = configuration.test || underscoreFieldTest;
 
   return {
-    afterQuery: (query, result) => {
+    afterQueryExecution: (context, query, result) => {
       const fieldNames = result.fields.map((field) => {
         return {
           formatted: fieldTest(field) ? camelcase(field.name) : field.name,

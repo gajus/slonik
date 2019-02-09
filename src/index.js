@@ -34,7 +34,8 @@ export {
   createPool
 } from './factories';
 export {
-  createFormatFieldNameInterceptor
+  createFieldNameTransformationInterceptor,
+  createQueryNormalizationInterceptor
 } from './interceptors';
 export {
   sql

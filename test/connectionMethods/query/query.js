@@ -3,6 +3,7 @@
 import test from 'ava';
 import sinon from 'sinon';
 import log from '../../helpers/Logger';
+import createClientConfiguration from '../../helpers/createClientConfiguration';
 import query from '../../../src/connectionMethods/query';
 
 test('executes the query and returns the result', async (t) => {
@@ -18,7 +19,7 @@ test('executes the query and returns the result', async (t) => {
     query: stub
   };
 
-  const result = await query(log, connection, {}, '');
+  const result = await query(log, connection, createClientConfiguration(), '');
 
   t.deepEqual(result, {
     rows: [

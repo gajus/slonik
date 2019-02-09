@@ -5,6 +5,7 @@
 import test from 'ava';
 import sinon from 'sinon';
 import log from '../helpers/Logger';
+import createClientConfiguration from '../helpers/createClientConfiguration';
 import manyFirst from '../../src/connectionMethods/manyFirst';
 import {
   DataIntegrityError
@@ -26,7 +27,7 @@ test('returns values of the query result rows', async (t) => {
     query: stub
   };
 
-  const result = await manyFirst(log, connection, {}, '');
+  const result = await manyFirst(log, connection, createClientConfiguration(), '');
 
   t.deepEqual(result, [
     1,
@@ -48,5 +49,5 @@ test('throws an error if more than one column is returned', async (t) => {
     query: stub
   };
 
-  await t.throwsAsync(manyFirst(log, connection, {}, ''), DataIntegrityError);
+  await t.throwsAsync(manyFirst(log, connection, createClientConfiguration(), ''), DataIntegrityError);
 });

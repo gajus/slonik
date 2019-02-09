@@ -5,10 +5,10 @@ import sinon from 'sinon';
 import log from '../../../helpers/Logger';
 import query from '../../../../src/connectionMethods/query';
 
-test('does not execute the query if "beforeQuery" returns result', async (t) => {
+test('short-circuits the query execution', async (t) => {
   const interceptors = [
     {
-      beforeQuery: () => {
+      beforeQueryExecution: () => {
         return {
           command: 'SELECT',
           fields: [],
@@ -65,7 +65,7 @@ test('does not execute the query if "beforeQuery" returns result', async (t) => 
 test('executes query if "beforeQuery" does not return results', async (t) => {
   const interceptors = [
     {
-      beforeQuery: () => {
+      beforeQueryExecution: () => {
 
       }
     }

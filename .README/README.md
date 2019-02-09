@@ -12,7 +12,6 @@ A PostgreSQL client with strict types, detail logging and assertions.
 
 * Predominantly compatible with [node-postgres](https://github.com/brianc/node-postgres) (see [Incompatibilities with `node-postgres`](#incompatibilities-with-node-postgres)).
 * [Convenience methods](#slonik-query-methods) with built-in assertions.
-* Anonymous, named and tagged template literal [value placeholders](#slonik-value-placeholders).
 * [Middleware](#slonik-interceptors) support.
 * [Syntax highlighting](#slonik-syntax-highlighting) (Atom plugin compatible with Slonik).
 * [SQL injection guarding](#slonik-value-placeholders-tagged-template-literals).

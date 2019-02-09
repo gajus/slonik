@@ -10,7 +10,7 @@ import {
   formatNotice
 } from '../utilities';
 import type {
-  ClientConfigurationType,
+  ClientUserConfigurationType,
   DatabaseConfigurationType,
   DatabaseSingleConnectionType,
   InternalDatabaseConnectionType,
@@ -18,14 +18,14 @@ import type {
 } from '../types';
 import Logger from '../Logger';
 import bindSingleConnection from '../binders/bindSingleConnection';
-
-// @see https://github.com/facebook/flow/issues/2977#issuecomment-390613203
-const defaultClientConfiguration = Object.freeze({});
+import createClientConfiguration from './createClientConfiguration';
 
 export default async (
   connectionConfiguration: DatabaseConfigurationType,
-  clientConfiguration: ClientConfigurationType = defaultClientConfiguration
+  clientUserConfiguration?: ClientUserConfigurationType
 ): Promise<DatabaseSingleConnectionType> => {
+  const clientConfiguration = createClientConfiguration(clientUserConfiguration);
+
   const pool: InternalDatabasePoolType = new pg.Pool(typeof connectionConfiguration === 'string' ? parseConnectionString(connectionConfiguration) : connectionConfiguration);
 
   const connectionLog = Logger.child({
@@ -79,11 +79,13 @@ export default async (
 
   const connection: InternalDatabaseConnectionType = await pool.connect();
 
-  const bindedConnection = bindSingleConnection(connectionLog, pool, connection, clientConfiguration);
+  const boundConnection = bindSingleConnection(connectionLog, pool, connection, clientConfiguration);
 
-  if (clientConfiguration.onConnect) {
-    await clientConfiguration.onConnect(bindedConnection);
+  for (const interceptor of clientConfiguration.interceptors) {
+    if (interceptor.afterConnection) {
+      await interceptor.afterConnection(boundConnection);
+    }
   }
 
-  return bindedConnection;
+  return boundConnection;
 };

@@ -6,10 +6,23 @@ Each interceptor can implement several functions which can be used to change the
 
 ```js
 type InterceptorType = {|
-  +afterQuery?: (query: QueryType, result: QueryResultType<QueryResultRowType>) => MaybePromiseType<QueryResultType<QueryResultRowType>>,
+  +afterConnection?: (connection: DatabaseSingleConnectionType) => MaybePromiseType<void>,
+  +afterPoolConnection?: (connection: DatabasePoolConnectionType) => MaybePromiseType<void>,
+  +afterQueryExecution?: (
+    queryExecutionContext: QueryExecutionContextType,
+    query: QueryType,
+    result: QueryResultType<QueryResultRowType>
+  ) => MaybePromiseType<QueryResultType<QueryResultRowType>>,
   +beforeConnectionEnd?: (connection: DatabaseSingleConnectionType) => MaybePromiseType<void>,
   +beforePoolConnectionRelease?: (connection: DatabasePoolConnectionType) => MaybePromiseType<void>,
-  +beforeQuery?: (query: QueryType) => Promise<QueryResultType<QueryResultRowType>> | QueryResultType<QueryResultRowType> | MaybePromiseType<void>
+  +beforeQueryExecution?: (
+    queryExecutionContext: QueryExecutionContextType,
+    query: QueryType
+  ) => MaybePromiseType<QueryResultType<QueryResultRowType>> | MaybePromiseType<void>,
+  +transformQuery?: (
+    queryExecutionContext: QueryExecutionContextType,
+    query: QueryType
+  ) => MaybePromiseType<QueryType>
 |};
 
 ```
@@ -29,22 +42,43 @@ const connection = createPool('postgres://', {
 
 ```
 
-There are 2 functions that an interceptor can implement:
-
-* `beforeQuery`
-* `beforeConnectionEnd`
-* `beforePoolConnectionRelease`
-* `afterQuery`
-
 Interceptors are executed in the order they are added.
 
-### `beforeQuery`
+### Interceptor methods
 
-`beforeQuery` is the first interceptor function executed in the query execution cycle.
+#### `afterConnection`
+
+Executed after a connection is established, e.g.
+
+```js
+// Interceptor is executed here. ↓
+await createConnection('postgres://');
+
+```
+
+#### `afterPoolConnection`
+
+Executed after a connection is , e.g.
+
+```js
+const pool = createPool('postgres://');
+
+// Interceptor is executed here. ↓
+pool.connect();
+
+```
+
+#### `afterQueryExecution`
+
+`afterQueryExecution` must return the result of the query, which will be passed down to the client.
+
+Use `afterQuery` to modify the query result.
+
+#### `beforeQueryExecution`
 
 This function can optionally return a direct result of the query which will cause the actual query never to be executed.
 
-### `beforeConnectionEnd`
+#### `beforeConnectionEnd`
 
 `beforeConnectionEnd` is executed before a connection is explicitly ended, e.g.
 
@@ -56,9 +90,9 @@ connection.end();
 
 ```
 
-### `beforePoolConnectionRelease`
+#### `beforePoolConnectionRelease`
 
-`beforePoolConnectionRelease` is executed before connection is released back to the connection pool, e.g.
+Executed before connection is released back to the connection pool, e.g.
 
 ```js
 const pool = await createPool('postgres://');
@@ -71,17 +105,15 @@ pool.connect(async () => {
 
 ```
 
-### `afterQuery`
+#### `transformQuery`
 
-`afterQuery` is the last interceptor function executed in the query execution cycle.
+Executed before `beforeQueryExecution`.
 
-This function must return the result of the query, which will be passed down to the client.
-
-Use `afterQuery` to modify the query result.
+Transforms query.
 
 ## Built-in interceptors
 
-### Field name formatter
+### Field name transformation interceptor
 
 `createFormatFieldNameInterceptor` creates an interceptor that formats query result field names.
 
@@ -119,12 +151,12 @@ type ConfigurationType = {|
 
 ```js
 import {
-  createFormatFieldNameInterceptor,
+  createFieldNameTransformationInterceptor,
   createPool
 } from 'slonik';
 
 const interceptors = [
-  createFormatFieldNameInterceptor({
+  createFieldNameTransformationInterceptor({
     format: 'CAMEL_CASE'
   })
 ];
@@ -146,5 +178,23 @@ connection.any(sql`
 //     fullName: 1
 //   }
 // ]
+
+```
+
+### Query normalization interceptor
+
+Normalizes the query.
+
+#### API
+
+```js
+/**
+ * @property stripComments Strips comments from the query (default: true).
+ */
+type ConfigurationType = {|
+  +stripComments?: boolean
+|};
+
+(configuration?: ConfigurationType) => InterceptorType;
 
 ```

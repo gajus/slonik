@@ -23,18 +23,24 @@ SET client_min_messages=log;
 
 ```
 
-This can be configured using `onConnect` connection handler.
+This can be configured using `afterConnection` interceptor, e.g.
+
+
 
 ```js
 const pool = await createPool('postgres://localhost', {
-  onConnect: async (connection) => {
-    await connection.query(sql`LOAD 'auto_explain'`);
-    await connection.query(sql`SET auto_explain.log_analyze=true`);
-    await connection.query(sql`SET auto_explain.log_format=json`);
-    await connection.query(sql`SET auto_explain.log_min_duration=0`);
-    await connection.query(sql`SET auto_explain.log_timing=true`);
-    await connection.query(sql`SET client_min_messages=log`);
-  }
+  interceptors: [
+    {
+      afterConnection: async (connection) => {
+        await connection.query(sql`LOAD 'auto_explain'`);
+        await connection.query(sql`SET auto_explain.log_analyze=true`);
+        await connection.query(sql`SET auto_explain.log_format=json`);
+        await connection.query(sql`SET auto_explain.log_min_duration=0`);
+        await connection.query(sql`SET auto_explain.log_timing=true`);
+        await connection.query(sql`SET client_min_messages=log`);
+      }
+    }
+  ]
 });
 
 ```

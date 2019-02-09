@@ -3,6 +3,7 @@
 import test from 'ava';
 import sinon from 'sinon';
 import log from '../helpers/Logger';
+import createClientConfiguration from '../helpers/createClientConfiguration';
 import one from '../../src/connectionMethods/one';
 import {
   DataIntegrityError,
@@ -22,7 +23,7 @@ test('returns the first row', async (t) => {
     query: stub
   };
 
-  const result = await one(log, connection, {}, '');
+  const result = await one(log, connection, createClientConfiguration(), '');
 
   t.deepEqual(result, {
     foo: 1
@@ -38,7 +39,7 @@ test('throws an error if no rows are returned', async (t) => {
     query: stub
   };
 
-  await t.throwsAsync(one(log, connection, {}, ''), NotFoundError);
+  await t.throwsAsync(one(log, connection, createClientConfiguration(), ''), NotFoundError);
 });
 
 test('throws an error if more than one row is returned', async (t) => {
@@ -57,5 +58,5 @@ test('throws an error if more than one row is returned', async (t) => {
     query: stub
   };
 
-  await t.throwsAsync(one(log, connection, {}, ''), DataIntegrityError);
+  await t.throwsAsync(one(log, connection, createClientConfiguration(), ''), DataIntegrityError);
 });

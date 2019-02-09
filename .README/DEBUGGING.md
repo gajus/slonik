@@ -14,9 +14,6 @@ You can enable additional logging details by configuring the following environme
 # Logs query parameter values
 export SLONIK_LOG_VALUES=true
 
-# Logs normalised query and input values
-export SLONIK_LOG_NORMALISED=true
-
 ```
 
 ### Log stack trace

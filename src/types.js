@@ -41,11 +41,13 @@ export type InternalDatabaseConnectionType = any;
 
 /**
  * @property interceptors An array of [Slonik interceptors](https://github.com/gajus/slonik#slonik-interceptors).
- * @property onConnect A new connection handler. Executed after a connection is established, but before allowing the connection to be used by any clients.
  */
+export type ClientUserConfigurationType = {|
+  +interceptors?: $ReadOnlyArray<InterceptorType>
+|};
+
 export type ClientConfigurationType = {|
-  +interceptors?: $ReadOnlyArray<InterceptorType>,
-  +onConnect?: (connection: DatabaseConnectionType) => MaybePromiseType<void>
+  +interceptors: $ReadOnlyArray<InterceptorType>
 |};
 
 export type DatabaseConnectionUriType = string;
@@ -121,19 +123,28 @@ export type QueryType = {|
   +values?: DatabaseQueryValuesType
 |};
 
-export type NormalizedQueryType = {|
-  +sql: string,
-  +values: $ReadOnlyArray<*>
+/**
+ * @property log Instance of Roarr logger with query execution context parameters.
+ * @property originalQuery A copy of the query before `transformQuery` middleware.
+ * @property queryId Unique query identifier.
+ * @property sharedContext A context shared between all interceptors. Use this to share information between interceptors.
+ */
+export type QueryExecutionContextType = {|
+  +log: LoggerType,
+  +originalQuery: QueryType,
+  +queryId: QueryIdType,
+  // eslint-disable-next-line flowtype/no-weak-types
+  +sharedContext: Object
 |};
 
-export type QueryIdentifierType = {|
+export type IdentifierTokenType = {|
   names: $ReadOnlyArray<string>,
   type: 'IDENTIFIER'
 |};
 
-export type RawQueryType = {|
-  raw: string,
-  type: 'RAW'
+export type RawSqlTokenType = {|
+  sql: string,
+  type: 'RAW_SQL'
 |};
 
 type QueryPrimitiveValueType = string | number | null;
@@ -144,8 +155,8 @@ export type AnonymouseValuePlaceholderValueType =
   // INSERT ... VALUES ? => INSERT ... VALUES (1), (2), (3); [[[1], [2], [3]]]
   $ReadOnlyArray<QueryPrimitiveValueType | $ReadOnlyArray<QueryPrimitiveValueType>> |
   QueryPrimitiveValueType |
-  QueryIdentifierType |
-  RawQueryType;
+  IdentifierTokenType |
+  RawSqlTokenType;
 
 export type NamedValuePlaceholderValuesType = {
   +[key: string]: string | number | null
@@ -156,8 +167,8 @@ export type DatabaseQueryValuesType =
   NamedValuePlaceholderValuesType;
 
 export type TaggledTemplateLiteralInvocationType = {|
-  sql: string,
-  values: $ReadOnlyArray<AnonymouseValuePlaceholderValueType>
+  +sql: string,
+  +values: $ReadOnlyArray<AnonymouseValuePlaceholderValueType>
 |};
 
 export type InternalQueryMethodType<R> = (
@@ -166,7 +177,7 @@ export type InternalQueryMethodType<R> = (
   clientConfiguration: ClientConfigurationType,
   sql: string,
   values?: DatabaseQueryValuesType,
-  queryId?: QueryIdType
+  uid?: QueryIdType
 ) => Promise<R>;
 
 export type InternalQueryAnyFirstFunctionType = InternalQueryMethodType<$ReadOnlyArray<QueryResultRowColumnType>>;
@@ -202,8 +213,21 @@ export type QueryOneFirstFunctionType<T: QueryResultRowColumnType> = QueryMethod
 export type QueryOneFunctionType<T: QueryResultRowType> = QueryMethodType<T>;
 
 export type InterceptorType = {|
-  +afterQuery?: (query: QueryType, result: QueryResultType<QueryResultRowType>) => MaybePromiseType<QueryResultType<QueryResultRowType>>,
+  +afterConnection?: (connection: DatabaseSingleConnectionType) => MaybePromiseType<void>,
+  +afterPoolConnection?: (connection: DatabasePoolConnectionType) => MaybePromiseType<void>,
+  +afterQueryExecution?: (
+    queryExecutionContext: QueryExecutionContextType,
+    query: QueryType,
+    result: QueryResultType<QueryResultRowType>
+  ) => MaybePromiseType<QueryResultType<QueryResultRowType>>,
   +beforeConnectionEnd?: (connection: DatabaseSingleConnectionType) => MaybePromiseType<void>,
   +beforePoolConnectionRelease?: (connection: DatabasePoolConnectionType) => MaybePromiseType<void>,
-  +beforeQuery?: (query: QueryType) => Promise<QueryResultType<QueryResultRowType>> | QueryResultType<QueryResultRowType> | MaybePromiseType<void>
+  +beforeQueryExecution?: (
+    queryExecutionContext: QueryExecutionContextType,
+    query: QueryType
+  ) => MaybePromiseType<QueryResultType<QueryResultRowType>> | MaybePromiseType<void>,
+  +transformQuery?: (
+    queryExecutionContext: QueryExecutionContextType,
+    query: QueryType
+  ) => MaybePromiseType<QueryType>
 |};

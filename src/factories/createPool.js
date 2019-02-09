@@ -10,20 +10,20 @@ import {
   formatNotice
 } from '../utilities';
 import type {
-  ClientConfigurationType,
+  ClientUserConfigurationType,
   DatabasePoolType,
   DatabaseConfigurationType
 } from '../types';
 import Logger from '../Logger';
 import bindPool from '../binders/bindPool';
-
-// @see https://github.com/facebook/flow/issues/2977#issuecomment-390613203
-const defaultClientConfiguration = Object.freeze({});
+import createClientConfiguration from './createClientConfiguration';
 
 export default (
   connectionConfiguration: DatabaseConfigurationType,
-  clientConfiguration: ClientConfigurationType = defaultClientConfiguration
+  clientUserConfiguration?: ClientUserConfigurationType
 ): DatabasePoolType => {
+  const clientConfiguration = createClientConfiguration(clientUserConfiguration);
+
   const poolLog = Logger.child({
     poolId: createUlid()
   });

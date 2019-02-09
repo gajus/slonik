@@ -9,14 +9,12 @@ The API of the query method is equivalent to that of [`pg`](https://travis-ci.or
 
 Refer to [query methods](#slonik-query-methods) for documentation of Slonik-specific query methods.
 
-### Configuration
-
-Both functions accept the same parameters:
-
-* `connectionConfiguration`
-* `clientConfiguration`
+### API
 
 ```js
+createPool(connectionConfiguration: DatabaseConfigurationType, clientConfiguration: ClientConfigurationType): DatabasePoolType;
+createConnection(connectionConfiguration: DatabaseConfigurationType, clientConfiguration: ClientConfigurationType): DatabaseSingleConnectionType;
+
 type DatabaseConnectionUriType = string;
 
 type DatabaseConfigurationType =
@@ -33,11 +31,9 @@ type DatabaseConfigurationType =
 
 /**
  * @property interceptors An array of [Slonik interceptors](https://github.com/gajus/slonik#slonik-interceptors).
- * @property onConnect A new connection handler. Executed after a connection is established, but before allowing the connection to be used by any clients.
  */
 type ClientConfigurationType = {|
-  +interceptors?: $ReadOnlyArray<InterceptorType>,
-  +onConnect?: (connection: DatabaseConnectionType) => MaybePromiseType<void>
+  +interceptors?: $ReadOnlyArray<InterceptorType>
 |};
 
 ```

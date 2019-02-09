@@ -39,9 +39,7 @@ export default (
         return ended;
       }
 
-      const interceptors = clientConfiguration && clientConfiguration.interceptors || [];
-
-      for (const interceptor of interceptors) {
+      for (const interceptor of clientConfiguration.interceptors) {
         if (interceptor.beforeConnectionEnd) {
           await interceptor.beforeConnectionEnd(boundConnection);
         }

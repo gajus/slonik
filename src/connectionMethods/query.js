@@ -1,15 +1,8 @@
 // @flow
 
-import prettyHrtime from 'pretty-hrtime';
 import serializeError from 'serialize-error';
 import {
-  getStackTrace
-} from 'get-stack-trace';
-import {
-  createQueryId,
-  normalizeAnonymousValuePlaceholders,
-  normalizeNamedValuePlaceholders,
-  stripComments
+  createQueryId
 } from '../utilities';
 import {
   CheckIntegrityConstraintViolationError,
@@ -17,112 +10,56 @@ import {
   NotNullIntegrityConstraintViolationError,
   UniqueIntegrityConstraintViolationError
 } from '../errors';
-import {
-  SLONIK_LOG_NORMALISED,
-  SLONIK_LOG_STACK_TRACE,
-  SLONIK_LOG_VALUES
-} from '../config';
 import type {
-  InternalQueryFunctionType
+  InternalQueryFunctionType,
+  QueryExecutionContextType
 } from '../types';
 
-const stringifyCallSite = (callSite) => {
-  return (callSite.fileName || '') + ':' + callSite.lineNumber + ':' + callSite.columnNumber;
-};
-
-// eslint-disable-next-line complexity
-const query: InternalQueryFunctionType<*> = async (log, connection, clientConfiguration, rawSql, values, inheritedQueryId) => {
+const query: InternalQueryFunctionType<*> = async (connectionLogger, connection, clientConfiguration, rawSql, values, inheritedQueryId) => {
   const queryId = inheritedQueryId || createQueryId();
 
-  let stackTrace;
+  const log = connectionLogger.child({
+    queryId
+  });
 
-  if (SLONIK_LOG_STACK_TRACE) {
-    const callSites = await getStackTrace();
+  const originalQuery = {
+    sql: rawSql,
+    values
+  };
 
-    stackTrace = callSites
-      .map((callSite) => {
-        return stringifyCallSite(callSite);
-      });
+  let actualQuery = {
+    ...originalQuery
+  };
+
+  log.info('test');
+
+  const executionContext: QueryExecutionContextType = {
+    log,
+    originalQuery,
+    queryId,
+    sharedContext: {}
+  };
+
+  for (const interceptor of clientConfiguration.interceptors) {
+    if (interceptor.transformQuery) {
+      actualQuery = await interceptor.transformQuery(executionContext, actualQuery);
+    }
   }
 
-  const strippedSql = stripComments(rawSql);
+  let result;
 
-  let rowCount: number | null = null;
+  for (const interceptor of clientConfiguration.interceptors) {
+    if (interceptor.beforeQueryExecution) {
+      result = await interceptor.beforeQueryExecution(executionContext, actualQuery);
 
-  let normalized;
-
-  const start = process.hrtime();
-
-  const interceptors = clientConfiguration && clientConfiguration.interceptors || [];
+      if (result) {
+        return result;
+      }
+    }
+  }
 
   try {
-    let result;
-
-    for (const interceptor of interceptors) {
-      if (interceptor.beforeQuery) {
-        const maybeResult = await interceptor.beforeQuery({
-          sql: rawSql,
-          values
-        });
-
-        if (maybeResult) {
-          return maybeResult;
-        }
-      }
-    }
-
-    if (Array.isArray(values)) {
-      normalized = normalizeAnonymousValuePlaceholders(strippedSql, values);
-    } else if (values) {
-      normalized = normalizeNamedValuePlaceholders(strippedSql, values);
-    }
-
-    // eslint-disable-next-line flowtype/no-weak-types
-    const payload: Object = {
-      queryId,
-      rowCount,
-      sql: strippedSql
-    };
-
-    if (SLONIK_LOG_STACK_TRACE) {
-      payload.stackTrace = stackTrace;
-    }
-
-    if (SLONIK_LOG_VALUES) {
-      payload.values = values;
-    }
-
-    if (SLONIK_LOG_NORMALISED) {
-      payload.normalized = normalized;
-    }
-
-    log.debug(payload, 'executing query');
-
-    if (normalized) {
-      result = connection.query(normalized.sql, normalized.values);
-    } else {
-      result = connection.query(strippedSql);
-    }
-
-    result = await result;
-
-    for (const interceptor of interceptors) {
-      if (interceptor.afterQuery) {
-        result = await interceptor.afterQuery({
-          sql: rawSql,
-          values
-        }, result);
-      }
-    }
-
-    // @todo Use rowCount only if the query is UPDATE/ INSERT.
-    if (result.rowCount) {
-      rowCount = result.rowCount;
-    } else if (Array.isArray(result)) {
-      rowCount = result.length;
-    }
-
-    return result;
+    result = await connection.query(actualQuery.sql, actualQuery.values);
   } catch (error) {
     log.error({
       error: serializeError(error),
@@ -146,18 +83,15 @@ const query: InternalQueryFunctionType<*> = async (log, connection, clientConfig
     }
 
     throw error;
-  } finally {
-    const end = process.hrtime(start);
-
-    // eslint-disable-next-line flowtype/no-weak-types
-    const payload: Object = {
-      executionTime: prettyHrtime(end),
-      queryId,
-      rowCount
-    };
-
-    log.debug(payload, 'query execution result');
   }
+
+  for (const interceptor of clientConfiguration.interceptors) {
+    if (interceptor.afterQueryExecution) {
+      result = await interceptor.afterQueryExecution(executionContext, actualQuery, result);
+    }
+  }
+
+  return result;
 };
 
 export default query;
