@@ -150,7 +150,7 @@ export type MultisetSqlTokenType = {|
   type: 'MULTISET'
 |};
 
-type PrimitiveValueExpressionType = string | number | null;
+type PrimitiveValueExpressionType = string | number | boolean | null;
 
 export type ValueExpressionType =
   PrimitiveValueExpressionType |
