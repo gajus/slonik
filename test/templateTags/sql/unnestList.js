@@ -7,7 +7,7 @@ test('creates a list of unnest expressions', (t) => {
   const query = sql`SELECT ${sql.unnestList([[1, 2, 3], [4, 5, 6]], ['integer', 'integer', 'integer'], ['foo', 'bar', 'baz'])}`;
 
   t.deepEqual(query, {
-    sql: 'SELECT UNNEST($1::integer[]) foo, UNNEST($2::integer[]) bar, UNNEST($3::integer[]) baz',
+    sql: 'SELECT UNNEST($1::"integer"[]) "foo", UNNEST($2::"integer"[]) "bar", UNNEST($3::"integer"[]) "baz"',
     values: [
       [
         1,
@@ -29,7 +29,7 @@ test('creates incremental alias names if no alias names are provided', (t) => {
   const query = sql`SELECT ${sql.unnestList([[1, 2, 3], [4, 5, 6]], ['integer', 'integer', 'integer'])}`;
 
   t.deepEqual(query, {
-    sql: 'SELECT UNNEST($1::integer[]) a, UNNEST($2::integer[]) b, UNNEST($3::integer[]) c',
+    sql: 'SELECT UNNEST($1::"integer"[]) "f1", UNNEST($2::"integer"[]) "f2", UNNEST($3::"integer"[]) "f3"',
     values: [
       [
         1,

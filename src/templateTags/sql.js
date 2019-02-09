@@ -28,7 +28,7 @@ const createIncrementalNames = (columnCount: number): $ReadOnlyArray<string> => 
   let index = 0;
 
   while (index < columnCount) {
-    columnNames.push(String.fromCharCode('a'.charCodeAt(0) + index));
+    columnNames.push('f' + (index + 1));
 
     index++;
   }
@@ -164,7 +164,7 @@ const sql = (parts: $ReadOnlyArray<string>, ...values: $ReadOnlyArray<ValueExpre
         invariant(typeof columnType === 'string', 'Column type unavailable');
         invariant(typeof aliasName === 'string', 'Alias name unavailable');
 
-        unnsetSqlTokens.push('UNNEST($' + ++placeholderIndex + '::' + columnType + '[]) ' + aliasName);
+        unnsetSqlTokens.push('UNNEST($' + ++placeholderIndex + '::' + escapeIdentifier(columnType) + '[]) ' + escapeIdentifier(aliasName));
 
         unnestBindings[columnIndex] = [];
 
