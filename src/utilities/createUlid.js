@@ -5,6 +5,8 @@ import {
   detectPrng
 } from 'ulid';
 
+const ulid = ulidFactory(detectPrng(true));
+
 export default (): string => {
-  return ulidFactory(detectPrng(true))();
+  return ulid();
 };
