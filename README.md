@@ -7,7 +7,7 @@
 [![Canonical Code Style](https://img.shields.io/badge/code%20style-canonical-blue.svg?style=flat-square)](https://github.com/gajus/canonical)
 [![Twitter Follow](https://img.shields.io/twitter/follow/kuizinas.svg?style=social&label=Follow)](https://twitter.com/kuizinas)
 
-A PostgreSQL client with strict types, detail logging and assertions.
+A [battle-tested](#battled-tested) PostgreSQL client with strict types, detail logging and assertions.
 
 <a name="slonik-features"></a>
 ## Features
@@ -45,6 +45,7 @@ A PostgreSQL client with strict types, detail logging and assertions.
     * [Recipes](#slonik-recipes)
         * [Logging `auto_explain`](#slonik-recipes-logging-auto_explain)
         * [Using `sql.raw` to generate dynamic queries](#slonik-recipes-using-sql-raw-to-generate-dynamic-queries)
+    * [Battle-Tested](#slonik-battle-tested)
     * [Conventions](#slonik-conventions)
         * [No multiline values](#slonik-conventions-no-multiline-values)
     * [Value placeholders](#slonik-value-placeholders)
@@ -563,6 +564,13 @@ In the above example, `query` is:
 
 Multiple `sql.raw` fragments can be used to create a query.
 
+
+<a name="slonik-battle-tested"></a>
+## Battle-Tested
+
+Slonik began as a collection of utilities designed for working with [`node-postgres`](https://github.com/brianc/node-postgres). We continue to use `node-postgres` as it provides a robust foundation for interacting with PostgreSQL. However, what once was a collection of utilities has since grown into a framework that abstracts repeating code patterns, protects against unsafe connection handling and value interpolation, and provides rich debugging experience.
+
+Slonik has been [battle-tested](https://medium.com/@gajus/lessons-learned-scaling-postgresql-database-to-1-2bn-records-month-edc5449b3067) with large data volumes and queries ranging from simple CRUD operations to data-warehousing needs.
 
 <a name="slonik-conventions"></a>
 ## Conventions
