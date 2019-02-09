@@ -11,6 +11,11 @@ import {
   escapeIdentifier
 } from '../utilities';
 import isPrimitiveValueExpression from '../utilities/isPrimitiveValueExpression';
+import Logger from '../Logger';
+
+const log = Logger.child({
+  namespace: 'sql'
+});
 
 const sql = (parts: $ReadOnlyArray<string>, ...values: $ReadOnlyArray<ValueExpressionType>): TaggledTemplateLiteralInvocationType => {
   let raw = '';
@@ -85,6 +90,11 @@ const sql = (parts: $ReadOnlyArray<string>, ...values: $ReadOnlyArray<ValueExpre
 
       bindings.push(value);
     } else {
+      log.error({
+        constructedSql: raw,
+        offendingValue: value
+      }, 'unexpected value expression');
+
       throw new TypeError('Unexpected value expression.');
     }
   }
