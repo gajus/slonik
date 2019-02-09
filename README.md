@@ -122,6 +122,7 @@ await connection.query(sql`
 
 The above example will throw an error as the `fooId` is guaranteed to be an array and last query binding is expecting a primitive value.
 
+
 <a name="slonik-documentation"></a>
 ## Documentation
 
