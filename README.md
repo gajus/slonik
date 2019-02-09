@@ -494,7 +494,7 @@ const whereConditionSql = uniquePairs
   .map(() => {
     return needleColumns
       .map((column) => {
-        return column + ' = \
+        return column + ' = 
 
 ## Conventions
 
