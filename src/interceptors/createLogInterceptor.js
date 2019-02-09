@@ -16,7 +16,7 @@ const stringifyCallSite = (callSite) => {
   return (callSite.fileName || '') + ':' + callSite.lineNumber + ':' + callSite.columnNumber;
 };
 
-const logContext = Symbol('LOG_CONTEXT');
+const logContext = Symbol('LOG_INTERCEPTOR_CONTEXT');
 
 export default (): InterceptorType => {
   return {
