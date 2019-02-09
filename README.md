@@ -17,6 +17,7 @@ A PostgreSQL client with strict types, detail logging and assertions.
 * [Middleware](#slonik-interceptors) support.
 * [Syntax highlighting](#slonik-syntax-highlighting) (Atom plugin compatible with Slonik).
 * [SQL injection guarding](#slonik-value-placeholders-tagged-template-literals).
+* [Set interpolation](#set-interpolation).
 * Detail [logging](#slonik-debugging).
 * [Parsing and logging of the auto_explain logs.](#logging-auto_explain).
 * Built-in [asynchronous stack trace resolution](#log-stack-trace).
@@ -49,8 +50,7 @@ A PostgreSQL client with strict types, detail logging and assertions.
         * [No multiline values](#slonik-conventions-no-multiline-values)
     * [Value placeholders](#slonik-value-placeholders)
         * [Tagged template literals](#slonik-value-placeholders-tagged-template-literals)
-        * [Sets](#slonik-value-placeholders-sets)
-        * [Multiple value sets](#slonik-value-placeholders-multiple-value-sets)
+        * [Set interpolation](#slonik-value-placeholders-set-interpolation)
     * [Query methods](#slonik-query-methods)
         * [`any`](#slonik-query-methods-any)
         * [`anyFirst`](#slonik-query-methods-anyfirst)
@@ -552,8 +552,8 @@ connection.query(sql`
 
 ```
 
-<a name="slonik-value-placeholders-sets"></a>
-### Sets
+<a name="slonik-value-placeholders-set-interpolation"></a>
+### Set interpolation
 
 Array expressions produce sets, e.g.
 
@@ -570,9 +570,6 @@ Produces:
 SELECT ($1, $2, $3)
 
 ```
-
-<a name="slonik-value-placeholders-multiple-value-sets"></a>
-### Multiple value sets
 
 An array containing array expressions produce a collection of sets, e.g.
 
@@ -593,7 +590,7 @@ SELECT ($1, $2, $3), ($4, $5, $6)
 
 ```
 
-<a name="slonik-value-placeholders-multiple-value-sets-creating-dynamic-delimited-identifiers"></a>
+<a name="slonik-value-placeholders-set-interpolation-creating-dynamic-delimited-identifiers"></a>
 #### Creating dynamic delimited identifiers
 
 [Delimited identifiers](https://www.postgresql.org/docs/current/static/sql-syntax-lexical.html#SQL-SYNTAX-IDENTIFIERS) are created by enclosing an arbitrary sequence of characters in double-quotes ("). To create create a delimited identifier, create an `sql` tag function placeholder value using `sql.identifier`, e.g.
@@ -613,7 +610,7 @@ sql`
 
 ```
 
-<a name="slonik-value-placeholders-multiple-value-sets-inlining-dynamic-raw-sql"></a>
+<a name="slonik-value-placeholders-set-interpolation-inlining-dynamic-raw-sql"></a>
 #### Inlining dynamic/ raw SQL
 
 Raw SQL can be inlined using `sql.raw`, e.g.
