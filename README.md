@@ -14,16 +14,16 @@ A PostgreSQL client with strict types, detail logging and assertions.
 
 * [Convenience methods](#slonik-query-methods) with built-in assertions.
 * [Middleware](#slonik-interceptors) support.
-* [Syntax highlighting](#slonik-syntax-highlighting) (Atom plugin compatible with Slonik).
 * [SQL injection guarding](#slonik-value-placeholders-tagged-template-literals).
-* [Set interpolation](#set-interpolation).
+* [Set interpolation](#slonik-value-placeholders-sql-set).
 * Detail [logging](#slonik-debugging).
-* [Parsing and logging of the auto_explain logs.](#logging-auto_explain).
+* [Parsing and logging of the auto_explain logs](#logging-auto_explain).
 * Built-in [asynchronous stack trace resolution](#log-stack-trace).
 * [Safe connection pooling](#checking-out-a-client-from-the-connection-pool).
 * [Flow types](#types).
 * [Mapped errors](#error-handling).
-* [Transactions](#transactions).
+* [Transactions](#slonik-query-methods-transaction).
+* [Atom plugin](#slonik-syntax-highlighting).
 * [ESLint plugin](https://github.com/gajus/eslint-plugin-sql).
 
 ---
