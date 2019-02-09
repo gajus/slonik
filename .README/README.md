@@ -46,7 +46,7 @@ This makes logging of the queries easier.
 
 The implication is that your query cannot contain values that include a newline character, e.g.
 
-```sql
+```js
 // Do not do this
 connection.query(sql`INSERT INTO foo (bar) VALUES ('\n')`);
 
@@ -54,7 +54,7 @@ connection.query(sql`INSERT INTO foo (bar) VALUES ('\n')`);
 
 If you want to communicate a value that includes a multiline character, use value placeholder interpolation, e.g.
 
-```sql
+```js
 connection.query(sql`INSERT INTO foo (bar) VALUES (${'\n'})`);
 
 ```
