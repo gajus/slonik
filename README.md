@@ -150,6 +150,7 @@ The above example will throw an error as the `fooId` is guaranteed to be an arra
         * [`sql.valueList`](#slonik-value-placeholders-sql-valuelist)
         * [`sql.tuple`](#slonik-value-placeholders-sql-tuple)
         * [`sql.tupleList`](#slonik-value-placeholders-sql-tuplelist)
+        * [`sql.unnestList`](#slonik-value-placeholders-sql-unnestlist)
         * [`sql.identifier`](#slonik-value-placeholders-sql-identifier)
         * [`sql.raw`](#slonik-value-placeholders-sql-raw)
     * [Query methods](#slonik-query-methods)
@@ -816,6 +817,58 @@ Produces:
     4,
     5,
     6
+  ]
+}
+
+```
+
+<a name="slonik-value-placeholders-sql-unnestlist"></a>
+### <code>sql.unnestList</code>
+
+```js
+/**
+ * @param aliasNames When alias names for the unnset members are not provided, then incremental names are used (a, b, c...).
+ */
+(
+  tuples: $ReadOnlyArray<$ReadOnlyArray<PrimitiveValueExpressionType>>,
+  columnTypes: $ReadOnlyArray<string>,
+  aliasNames?: $ReadOnlyArray<string>
+): UnnestListSqlTokenType;
+
+```
+
+Creates a list of `unnset` expressions, e.g.
+
+```js
+await connection.query(sql`
+  SELECT ${sql.unnestList(
+    [
+      [1, 'foo'],
+      [2, 'bar']
+    ],
+    [
+      'integer',
+      'text'
+    ]
+  )}
+`);
+
+```
+
+Produces:
+
+```js
+{
+  sql: 'SELECT UNNEST($1::integer[]), UNNEST($2::text[])',
+  values: [
+    [
+      1,
+      2
+    ],
+    [
+      'foo',
+      'bar'
+    ]
   ]
 }
 
