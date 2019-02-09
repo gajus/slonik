@@ -10,7 +10,6 @@ A PostgreSQL client with strict types, detail logging and assertions.
 
 ## Features
 
-* Predominantly compatible with [node-postgres](https://github.com/brianc/node-postgres) (see [Incompatibilities with `node-postgres`](#incompatibilities-with-node-postgres)).
 * [Convenience methods](#slonik-query-methods) with built-in assertions.
 * [Middleware](#slonik-interceptors) support.
 * [Syntax highlighting](#slonik-syntax-highlighting) (Atom plugin compatible with Slonik).
@@ -36,11 +35,6 @@ A PostgreSQL client with strict types, detail logging and assertions.
 {"gitdown": "include", "file": "./INTERCEPTORS.md"}
 
 {"gitdown": "include", "file": "./RECIPES.md"}
-
-## Incompatibilities with `node-postgres`
-
-* `timestamp` and `timestamp with time zone` returns UNIX timestamp in milliseconds.
-* Connection pool `connect()` method requires that connection is restricted to a single promise routine (see [Checking out a client from the connection pool](#checking-out-a-client-from-the-connection-pool)).
 
 ## Conventions
 
