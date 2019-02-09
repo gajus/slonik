@@ -12,7 +12,6 @@ A PostgreSQL client with strict types, detail logging and assertions.
 <a name="slonik-features"></a>
 ## Features
 
-* Predominantly compatible with [node-postgres](https://github.com/brianc/node-postgres) (see [Incompatibilities with `node-postgres`](#incompatibilities-with-node-postgres)).
 * [Convenience methods](#slonik-query-methods) with built-in assertions.
 * [Middleware](#slonik-interceptors) support.
 * [Syntax highlighting](#slonik-syntax-highlighting) (Atom plugin compatible with Slonik).
@@ -45,7 +44,6 @@ A PostgreSQL client with strict types, detail logging and assertions.
         * [Query normalization interceptor](#slonik-built-in-interceptors-query-normalization-interceptor)
     * [Recipes](#slonik-recipes)
         * [Logging `auto_explain`](#slonik-recipes-logging-auto_explain)
-    * [Incompatibilities with `node-postgres`](#slonik-incompatibilities-with-node-postgres)
     * [Conventions](#slonik-conventions)
         * [No multiline values](#slonik-conventions-no-multiline-values)
     * [Value placeholders](#slonik-value-placeholders)
@@ -504,12 +502,6 @@ notice:
 ```
 
 
-<a name="slonik-incompatibilities-with-node-postgres"></a>
-## Incompatibilities with <code>node-postgres</code>
-
-* `timestamp` and `timestamp with time zone` returns UNIX timestamp in milliseconds.
-* Connection pool `connect()` method requires that connection is restricted to a single promise routine (see [Checking out a client from the connection pool](#checking-out-a-client-from-the-connection-pool)).
-
 <a name="slonik-conventions"></a>
 ## Conventions
 
@@ -522,7 +514,7 @@ This makes logging of the queries easier.
 
 The implication is that your query cannot contain values that include a newline character, e.g.
 
-```sql
+```js
 // Do not do this
 connection.query(sql`INSERT INTO foo (bar) VALUES ('\n')`);
 
@@ -530,7 +522,7 @@ connection.query(sql`INSERT INTO foo (bar) VALUES ('\n')`);
 
 If you want to communicate a value that includes a multiline character, use value placeholder interpolation, e.g.
 
-```sql
+```js
 connection.query(sql`INSERT INTO foo (bar) VALUES (${'\n'})`);
 
 ```
