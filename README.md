@@ -45,11 +45,39 @@ A PostgreSQL client with strict types, detail logging and assertions.
     * [Recipes](#slonik-recipes)
         * [Logging `auto_explain`](#slonik-recipes-logging-auto_explain)
         * [Using `sql.raw` to generate dynamic queries](#slonik-recipes-using-sql-raw-to-generate-dynamic-queries)
-* [Logs query parameter values](#logs-query-parameter-values)
-    * [Conventions](#logs-query-parameter-values-conventions)
-        * [No multiline values](#logs-query-parameter-values-conventions-no-multiline-values)
-    * [Syntax highlighting](#logs-query-parameter-values-syntax-highlighting)
-        * [Atom](#logs-query-parameter-values-syntax-highlighting-atom)
+    * [Conventions](#slonik-conventions)
+        * [No multiline values](#slonik-conventions-no-multiline-values)
+    * [Value placeholders](#slonik-value-placeholders)
+        * [Tagged template literals](#slonik-value-placeholders-tagged-template-literals)
+        * [`sql.set`](#slonik-value-placeholders-sql-set)
+        * [`sql.multiset`](#slonik-value-placeholders-sql-multiset)
+        * [`sql.identifier`](#slonik-value-placeholders-sql-identifier)
+        * [`sql.raw`](#slonik-value-placeholders-sql-raw)
+    * [Query methods](#slonik-query-methods)
+        * [`any`](#slonik-query-methods-any)
+        * [`anyFirst`](#slonik-query-methods-anyfirst)
+        * [`insert`](#slonik-query-methods-insert)
+        * [`many`](#slonik-query-methods-many)
+        * [`manyFirst`](#slonik-query-methods-manyfirst)
+        * [`maybeOne`](#slonik-query-methods-maybeone)
+        * [`maybeOneFirst`](#slonik-query-methods-maybeonefirst)
+        * [`one`](#slonik-query-methods-one)
+        * [`oneFirst`](#slonik-query-methods-onefirst)
+        * [`query`](#slonik-query-methods-query)
+        * [`transaction`](#slonik-query-methods-transaction)
+    * [Error handling](#slonik-error-handling)
+        * [Handling `NotFoundError`](#slonik-error-handling-handling-notfounderror)
+        * [Handling `DataIntegrityError`](#slonik-error-handling-handling-dataintegrityerror)
+        * [Handling `NotNullIntegrityConstraintViolationError`](#slonik-error-handling-handling-notnullintegrityconstraintviolationerror)
+        * [Handling `ForeignKeyIntegrityConstraintViolationError`](#slonik-error-handling-handling-foreignkeyintegrityconstraintviolationerror)
+        * [Handling `UniqueIntegrityConstraintViolationError`](#slonik-error-handling-handling-uniqueintegrityconstraintviolationerror)
+        * [Handling `CheckIntegrityConstraintViolationError`](#slonik-error-handling-handling-checkintegrityconstraintviolationerror)
+    * [Types](#slonik-types)
+    * [Debugging](#slonik-debugging)
+        * [Logging](#slonik-debugging-logging)
+        * [Log stack trace](#slonik-debugging-log-stack-trace)
+    * [Syntax highlighting](#slonik-syntax-highlighting)
+        * [Atom](#slonik-syntax-highlighting-atom)
 
 
 <a name="slonik-usage"></a>
@@ -494,10 +522,52 @@ const whereConditionSql = uniquePairs
   .map(() => {
     return needleColumns
       .map((column) => {
-        return column + ' = 
+        return column + ' = $' + placeholderIndex++;
+      })
+      .join(' AND ');
+  })
+  .join(' OR ');
 
+const values = [];
+
+for (const pairValues of uniquePairs) {
+  values.push(...pairValues);
+}
+
+const query = sql`
+  SELECT
+    id
+  FROM foo
+  WHERE
+    ${sql.raw(whereConditionSql, values)}
+`;
+
+await connection.any(query);
+
+```
+
+In the above example, `query` is:
+
+```js
+{
+  sql: 'SELECT id FROM foo WHERE (a = $1 AND b = $2) OR (a = $3 AND b = $4)',
+  values: [
+    'a',
+    1,
+    'b',
+    2
+  ]
+}
+
+```
+
+Multiple `sql.raw` fragments can be used to create a query.
+
+
+<a name="slonik-conventions"></a>
 ## Conventions
 
+<a name="slonik-conventions-no-multiline-values"></a>
 ### No multiline values
 
 Slonik will strip all comments and line-breaks from a query before processing it.
@@ -519,8 +589,10 @@ connection.query(sql`INSERT INTO foo (bar) VALUES (${'\n'})`);
 
 ```
 
+<a name="slonik-value-placeholders"></a>
 ## Value placeholders
 
+<a name="slonik-value-placeholders-tagged-template-literals"></a>
 ### Tagged template literals
 
 Slonik query methods can only be executed using `sql` [tagged template literal](https://developer.mozilla.org/en/docs/Web/JavaScript/Reference/Template_literals#Tagged_template_literals), e.g.
@@ -549,7 +621,8 @@ WHERE bar = $1
 
 query with 'baz' value binding.
 
-### `sql.set`
+<a name="slonik-value-placeholders-sql-set"></a>
+### <code>sql.set</code>
 
 ```js
 (members: $ReadOnlyArray<PrimitiveValueExpressionType>) => SetSqlTokenType;
@@ -579,7 +652,8 @@ Produces:
 
 ```
 
-### `sql.multiset`
+<a name="slonik-value-placeholders-sql-multiset"></a>
+### <code>sql.multiset</code>
 
 ```js
 (sets: $ReadOnlyArray<$ReadOnlyArray<PrimitiveValueExpressionType>>) => MultisetSqlTokenType;
@@ -615,7 +689,8 @@ Produces:
 
 ```
 
-### `sql.identifier`
+<a name="slonik-value-placeholders-sql-identifier"></a>
+### <code>sql.identifier</code>
 
 ```js
 (names: $ReadOnlyArray<string>) => IdentifierTokenType;
@@ -642,7 +717,8 @@ Produces:
 
 ```
 
-### `sql.raw`
+<a name="slonik-value-placeholders-sql-raw"></a>
+### <code>sql.raw</code>
 
 ```js
 (rawSql: string, values?: $ReadOnlyArray<PrimitiveValueExpressionType>) => RawSqlTokenType;
@@ -691,9 +767,11 @@ Produces:
 ```
 
 
+<a name="slonik-query-methods"></a>
 ## Query methods
 
-### `any`
+<a name="slonik-query-methods-any"></a>
+### <code>any</code>
 
 Returns result rows.
 
@@ -706,7 +784,8 @@ const rows = await connection.any(sql`SELECT foo`);
 
 `#any` is similar to `#query` except that it returns rows without fields information.
 
-### `anyFirst`
+<a name="slonik-query-methods-anyfirst"></a>
+### <code>anyFirst</code>
 
 Returns value of the first column of every row in the result set.
 
@@ -719,7 +798,8 @@ const fooValues = await connection.anyFirst(sql`SELECT foo`);
 
 ```
 
-### `insert`
+<a name="slonik-query-methods-insert"></a>
+### <code>insert</code>
 
 Used when inserting 1 row.
 
@@ -734,7 +814,8 @@ const {
 
 The reason for using this method over `#query` is to leverage the strict types. `#insert` method result type is `InsertResultType`.
 
-### `many`
+<a name="slonik-query-methods-many"></a>
+### <code>many</code>
 
 Returns result rows.
 
@@ -747,7 +828,8 @@ const rows = await connection.many(sql`SELECT foo`);
 
 ```
 
-### `manyFirst`
+<a name="slonik-query-methods-manyfirst"></a>
+### <code>manyFirst</code>
 
 Returns value of the first column of every row in the result set.
 
@@ -761,7 +843,8 @@ const fooValues = await connection.many(sql`SELECT foo`);
 
 ```
 
-### `maybeOne`
+<a name="slonik-query-methods-maybeone"></a>
+### <code>maybeOne</code>
 
 Selects the first row from the result.
 
@@ -777,7 +860,8 @@ const row = await connection.maybeOne(sql`SELECT foo`);
 
 ```
 
-### `maybeOneFirst`
+<a name="slonik-query-methods-maybeonefirst"></a>
+### <code>maybeOneFirst</code>
 
 Returns value of the first column from the first row.
 
@@ -794,7 +878,8 @@ const foo = await connection.maybeOneFirst(sql`SELECT foo`);
 
 ```
 
-### `one`
+<a name="slonik-query-methods-one"></a>
+### <code>one</code>
 
 Selects the first row from the result.
 
@@ -817,7 +902,8 @@ const row = await connection.one(sql`SELECT foo`);
 > `knex` is a query builder; it does not assert the value of the result.
 > Slonik `#one` adds assertions about the result of the query.
 
-### `oneFirst`
+<a name="slonik-query-methods-onefirst"></a>
+### <code>oneFirst</code>
 
 Returns value of the first column from the first row.
 
@@ -834,11 +920,13 @@ const foo = await connection.oneFirst(sql`SELECT foo`);
 
 ```
 
-### `query`
+<a name="slonik-query-methods-query"></a>
+### <code>query</code>
 
 API and the result shape are equivalent to [`pg#query`](https://github.com/brianc/node-postgres).
 
-### `transaction`
+<a name="slonik-query-methods-transaction"></a>
+### <code>transaction</code>
 
 `transaction` method is used wrap execution of queries in `START TRANSACTION` and `COMMIT` or `ROLLBACK`. `COMMIT` is called if the transaction handler returns a promise that resolves; `ROLLBACK` is called otherwise.
 
@@ -857,6 +945,7 @@ result === 'FOO';
 ```
 
 
+<a name="slonik-error-handling"></a>
 ## Error handling
 
 All Slonik errors extend from `SlonikError`, i.e. You can catch Slonik specific errors using the following logic.
@@ -876,7 +965,8 @@ try {
 
 ```
 
-### Handling `NotFoundError`
+<a name="slonik-error-handling-handling-notfounderror"></a>
+### Handling <code>NotFoundError</code>
 
 To handle the case where query returns less than one row, catch `NotFoundError` error.
 
@@ -901,7 +991,8 @@ if (row) {
 
 ```
 
-### Handling `DataIntegrityError`
+<a name="slonik-error-handling-handling-dataintegrityerror"></a>
+### Handling <code>DataIntegrityError</code>
 
 To handle the case where the data result does not match the expectations, catch `DataIntegrityError` error.
 
@@ -924,22 +1015,27 @@ try {
 
 ```
 
-### Handling `NotNullIntegrityConstraintViolationError`
+<a name="slonik-error-handling-handling-notnullintegrityconstraintviolationerror"></a>
+### Handling <code>NotNullIntegrityConstraintViolationError</code>
 
 `NotNullIntegrityConstraintViolationError` is thrown when Postgres responds with [`unique_violation`](https://www.postgresql.org/docs/9.4/static/errcodes-appendix.html) (`23502`) error.
 
-### Handling `ForeignKeyIntegrityConstraintViolationError`
+<a name="slonik-error-handling-handling-foreignkeyintegrityconstraintviolationerror"></a>
+### Handling <code>ForeignKeyIntegrityConstraintViolationError</code>
 
 `ForeignKeyIntegrityConstraintViolationError` is thrown when Postgres responds with [`unique_violation`](https://www.postgresql.org/docs/9.4/static/errcodes-appendix.html) (`23503`) error.
 
-### Handling `UniqueIntegrityConstraintViolationError`
+<a name="slonik-error-handling-handling-uniqueintegrityconstraintviolationerror"></a>
+### Handling <code>UniqueIntegrityConstraintViolationError</code>
 
 `UniqueIntegrityConstraintViolationError` is thrown when Postgres responds with [`unique_violation`](https://www.postgresql.org/docs/9.4/static/errcodes-appendix.html) (`23505`) error.
 
-### Handling `CheckIntegrityConstraintViolationError`
+<a name="slonik-error-handling-handling-checkintegrityconstraintviolationerror"></a>
+### Handling <code>CheckIntegrityConstraintViolationError</code>
 
 `CheckIntegrityConstraintViolationError` is thrown when Postgres responds with [`unique_violation`](https://www.postgresql.org/docs/9.4/static/errcodes-appendix.html) (`23514`) error.
 
+<a name="slonik-types"></a>
 ## Types
 
 This package is using [Flow](https://flow.org/) types.
@@ -977,8 +1073,10 @@ export default async (
 ```
 
 
+<a name="slonik-debugging"></a>
 ## Debugging
 
+<a name="slonik-debugging-logging"></a>
 ### Logging
 
 Slonik uses [roarr](https://github.com/gajus/roarr) to log queries.
@@ -990,12 +1088,12 @@ By default, Slonik logs the input query, query execution time and affected row c
 You can enable additional logging details by configuring the following environment variables.
 
 ```bash
-<a name="logs-query-parameter-values"></a>
 # Logs query parameter values
 export SLONIK_LOG_VALUES=true
 
 ```
 
+<a name="slonik-debugging-log-stack-trace"></a>
 ### Log stack trace
 
 `SLONIK_LOG_STACK_TRACE=1` will create a stack trace before invoking the query and include the stack trace in the logs, e.g.
@@ -1011,100 +1109,10 @@ Use [`@roarr/cli`](https://github.com/gajus/roarr-cli) to pretty-print the outpu
 ![Log Roarr pretty-print output.](./.README/log-roarr-pretty-print-output.png)
 
 
+<a name="slonik-syntax-highlighting"></a>
 ## Syntax highlighting
 
-### Atom
-
-Using [Atom](https://atom.io/) IDE you can leverage the [`language-babel`](https://github.com/gandm/language-babel) package in combination with the [`language-sql`](https://github.com/atom/language-sql) to enable highlighting of the SQL strings in the codebase.
-
-![Syntax highlighting in Atom](./.README/atom-syntax-highlighting.png)
-
-To enable highlighting, you need to:
-
-1. Install `language-babel` and `language-sql` packages.
-1. Configure `language-babel` "JavaScript Tagged Template Literal Grammar Extensions" setting to use `language-sql` to highlight template literals with `sql` tag (configuration value: `sql:source.sql`).
-1. Use [`sql` helper to construct the queries](https://github.com/gajus/slonik#tagged-template-literals).
-
-For more information, refer to the [JavaScript Tagged Template Literal Grammar Extensions](https://github.com/gandm/language-babel#javascript-tagged-template-literal-grammar-extensions) documentation of `language-babel` package.
- + placeholderIndex++;
-      })
-      .join(' AND ');
-  })
-  .join(' OR ');
-
-const values = [];
-
-for (const pairValues of uniquePairs) {
-  values.push(...pairValues);
-}
-
-const query = sql`
-  SELECT
-    id
-  FROM foo
-  WHERE
-    ${sql.raw(whereConditionSql, values)}
-`;
-
-await connection.any(query);
-
-```
-
-In the above example, `query` is:
-
-```js
-{
-  sql: 'SELECT id FROM foo WHERE (a = $1 AND b = $2) OR (a = $3 AND b = $4)',
-  values: [
-    'a',
-    1,
-    'b',
-    2
-  ]
-}
-
-```
-
-Multiple `sql.raw` fragments can be used to create a query.
-
-
-<a name="logs-query-parameter-values-conventions"></a>
-## Conventions
-
-<a name="logs-query-parameter-values-conventions-no-multiline-values"></a>
-### No multiline values
-
-Slonik will strip all comments and line-breaks from a query before processing it.
-
-This makes logging of the queries easier.
-
-The implication is that your query cannot contain values that include a newline character, e.g.
-
-```js
-// Do not do this
-connection.query(sql`INSERT INTO foo (bar) VALUES ('\n')`);
-
-```
-
-If you want to communicate a value that includes a multiline character, use value placeholder interpolation, e.g.
-
-```js
-connection.query(sql`INSERT INTO foo (bar) VALUES (${'\n'})`);
-
-```
-
-⊂⊂C:5⊃⊃
-
-⊂⊂C:6⊃⊃
-
-⊂⊂C:7⊃⊃
-
-⊂⊂C:8⊃⊃
-
-<a name="logs-query-parameter-values-syntax-highlighting"></a>
-## Syntax highlighting
-
-<a name="logs-query-parameter-values-syntax-highlighting-atom"></a>
+<a name="slonik-syntax-highlighting-atom"></a>
 ### Atom
 
 Using [Atom](https://atom.io/) IDE you can leverage the [`language-babel`](https://github.com/gandm/language-babel) package in combination with the [`language-sql`](https://github.com/atom/language-sql) to enable highlighting of the SQL strings in the codebase.
