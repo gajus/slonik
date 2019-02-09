@@ -15,6 +15,7 @@ A PostgreSQL client with strict types, detail logging and assertions.
 * [Middleware](#slonik-interceptors) support.
 * [Syntax highlighting](#slonik-syntax-highlighting) (Atom plugin compatible with Slonik).
 * [SQL injection guarding](#slonik-value-placeholders-tagged-template-literals).
+* [Set interpolation](#set-interpolation).
 * Detail [logging](#slonik-debugging).
 * [Parsing and logging of the auto_explain logs.](#logging-auto_explain).
 * Built-in [asynchronous stack trace resolution](#log-stack-trace).

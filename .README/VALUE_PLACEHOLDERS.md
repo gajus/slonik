@@ -16,7 +16,7 @@ connection.query(sql`
 
 ```
 
-### Sets
+### Set interpolation
 
 Array expressions produce sets, e.g.
 
@@ -33,8 +33,6 @@ Produces:
 SELECT ($1, $2, $3)
 
 ```
-
-### Multiple value sets
 
 An array containing array expressions produce a collection of sets, e.g.
 
