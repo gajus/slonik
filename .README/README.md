@@ -24,18 +24,6 @@ A [battle-tested](#battled-tested) PostgreSQL client with strict types, detail l
 * [Atom plugin](#slonik-syntax-highlighting).
 * [ESLint plugin](https://github.com/gajus/eslint-plugin-sql).
 
----
-
-## Documentation
-
-{"gitdown": "contents"}
-
-{"gitdown": "include", "file": "./USAGE.md"}
-
-{"gitdown": "include", "file": "./INTERCEPTORS.md"}
-
-{"gitdown": "include", "file": "./RECIPES.md"}
-
 ## Battle-Tested
 
 Slonik began as a collection of utilities designed for working with [`node-postgres`](https://github.com/brianc/node-postgres). We continue to use `node-postgres` as it provides a robust foundation for interacting with PostgreSQL. However, what once was a collection of utilities has since grown into a framework that abstracts repeating code patterns, protects against unsafe connection handling and value interpolation, and provides rich debugging experience.
@@ -49,6 +37,16 @@ Slonik has been [battle-tested](https://medium.com/@gajus/lessons-learned-scalin
 The name of the elephant depicted in the official PostgreSQL logo is Slonik. The name itself is derived from the Russian word for "little elephant".
 
 Read: [The History of Slonik, the PostgreSQL Elephant Logo](https://www.vertabelo.com/blog/notes-from-the-lab/the-history-of-slonik-the-postgresql-elephant-logo)
+
+## Documentation
+
+{"gitdown": "contents"}
+
+{"gitdown": "include", "file": "./USAGE.md"}
+
+{"gitdown": "include", "file": "./INTERCEPTORS.md"}
+
+{"gitdown": "include", "file": "./RECIPES.md"}
 
 ## Conventions
 
