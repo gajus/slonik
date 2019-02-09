@@ -42,6 +42,14 @@ Slonik began as a collection of utilities designed for working with [`node-postg
 
 Slonik has been [battle-tested](https://medium.com/@gajus/lessons-learned-scaling-postgresql-database-to-1-2bn-records-month-edc5449b3067) with large data volumes and queries ranging from simple CRUD operations to data-warehousing needs.
 
+## Origin of the name
+
+![Slonik](./.README/postgresql-elephant.png)
+
+The name of the elephant depicted in the official PostgreSQL logo is Slonik. The name itself is derived from the Russian word for "little elephant".
+
+Read: [The History of Slonik, the PostgreSQL Elephant Logo](https://www.vertabelo.com/blog/notes-from-the-lab/the-history-of-slonik-the-postgresql-elephant-logo)
+
 ## Conventions
 
 ### No multiline values
