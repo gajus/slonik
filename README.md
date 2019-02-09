@@ -92,7 +92,10 @@ Beware that in the latter example, the connection picked to execute the query is
 ### API
 
 ```js
-createPool(connectionConfiguration: DatabaseConfigurationType, clientConfiguration: ClientConfigurationType): DatabasePoolType;
+createPool(
+  connectionConfiguration: DatabaseConfigurationType,
+  clientConfiguration: ClientConfigurationType
+): DatabasePoolType;
 
 type DatabaseConnectionUriType = string;
 
@@ -133,7 +136,7 @@ await pool.query(sql`SELECT 1`);
 <a name="slonik-usage-checking-out-a-client-from-the-connection-pool"></a>
 ### Checking out a client from the connection pool
 
-Slonik only allows to check out a connection for the duration of the promise routine supplied to the `connect()` method.
+Slonik only allows to check out a connection for the duration of the promise routine supplied to the `pool#connect()` method.
 
 ```js
 import {
@@ -198,9 +201,29 @@ Slonik abstracts the latter pattern into `pool#connect()` method.
 <a name="slonik-interceptors"></a>
 ## Interceptors
 
-Functionality can be added to Slonik client by adding interceptors.
+Functionality can be added to Slonik client by adding interceptors (middleware).
 
-Each interceptor can implement several functions which can be used to change the behaviour of the database client.
+Interceptors are configured using [client configuration](#slonik-usage-configuration), e.g.
+
+```js
+import {
+  createPool
+} from 'slonik';
+
+const interceptors = [];
+
+const connection = createPool('postgres://', {
+  interceptors
+});
+
+```
+
+Interceptors are executed in the order they are added.
+
+<a name="slonik-interceptors-interceptor-methods"></a>
+### Interceptor methods
+
+Interceptors implement methods that are used to change the behaviour of the database client at different stages of the connection life-cycle:
 
 ```js
 type InterceptorType = {|
@@ -223,30 +246,10 @@ type InterceptorType = {|
 
 ```
 
-Interceptors are configured using [client configuration](#slonik-usage-configuration), e.g.
-
-```js
-import {
-  createPool
-} from 'slonik';
-
-const interceptors = [];
-
-const connection = createPool('postgres://', {
-  interceptors
-});
-
-```
-
-Interceptors are executed in the order they are added.
-
-<a name="slonik-interceptors-interceptor-methods"></a>
-### Interceptor methods
-
 <a name="slonik-interceptors-interceptor-methods-afterpoolconnection"></a>
 #### <code>afterPoolConnection</code>
 
-Executed after a connection is , e.g.
+Executed after a connection is acquired from the connection pool (or a new connection is created), e.g.
 
 ```js
 const pool = createPool('postgres://');
@@ -491,7 +494,7 @@ const whereConditionSql = uniquePairs
   .map(() => {
     return needleColumns
       .map((column) => {
-        return column + ' = 
+        return column + ' = \
 
 ## Conventions
 
