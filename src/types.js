@@ -82,12 +82,6 @@ export type DatabaseTransactionConnectionType = {|
 
 export type TransactionFunctionType = (connection: DatabaseTransactionConnectionType) => Promise<*>;
 
-export type DatabaseSingleConnectionType = {|
-  ...CommonQueryMethodsType,
-  +end: () => Promise<void>,
-  +transaction: (handler: TransactionFunctionType) => Promise<*>
-|};
-
 export type DatabasePoolConnectionType = {|
   ...CommonQueryMethodsType,
   +transaction: (handler: TransactionFunctionType) => Promise<*>
@@ -108,8 +102,7 @@ export type DatabasePoolType = {|
 export type DatabaseConnectionType =
   $Shape<{
     ...DatabasePoolConnectionType,
-    ...DatabasePoolType,
-    ...DatabaseSingleConnectionType
+    ...DatabasePoolType
   }>;
 
 type QueryResultRowColumnType = string | number;
@@ -213,14 +206,12 @@ export type QueryOneFirstFunctionType<T: QueryResultRowColumnType> = QueryMethod
 export type QueryOneFunctionType<T: QueryResultRowType> = QueryMethodType<T>;
 
 export type InterceptorType = {|
-  +afterConnection?: (connection: DatabaseSingleConnectionType) => MaybePromiseType<void>,
   +afterPoolConnection?: (connection: DatabasePoolConnectionType) => MaybePromiseType<void>,
   +afterQueryExecution?: (
     queryExecutionContext: QueryExecutionContextType,
     query: QueryType,
     result: QueryResultType<QueryResultRowType>
   ) => MaybePromiseType<QueryResultType<QueryResultRowType>>,
-  +beforeConnectionEnd?: (connection: DatabaseSingleConnectionType) => MaybePromiseType<void>,
   +beforePoolConnectionRelease?: (connection: DatabasePoolConnectionType) => MaybePromiseType<void>,
   +beforeQueryExecution?: (
     queryExecutionContext: QueryExecutionContextType,

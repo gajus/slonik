@@ -1,19 +1,42 @@
 ## Usage
 
-Slonik exports two factory functions:
+Use `createPool` to create a connection pool, e.g.
 
-* `createPool`
-* `createConnection`
+```js
+import {
+  createPool
+} from 'slonik';
 
-The API of the query method is equivalent to that of [`pg`](https://travis-ci.org/brianc/node-postgres).
+const pool = createPool('postgres://');
 
-Refer to [query methods](#slonik-query-methods) for documentation of Slonik-specific query methods.
+```
+
+Instance of Slonik connection pool can be then used to create a new connection, e.g.
+
+```js
+pool.connect(async (connection) => {
+  await connection.query(sql`SELECT 1`);
+});
+
+```
+
+The connection will be kept alive until the promise resolves (the result of the method supplied to `connect()`).
+
+Refer to [query method](#slonik-query-methods) documentation to learn about the connection methods.
+
+If you do not require having a persistent connection to the same backend, then you can directly use `pool` to run queries, e.g.
+
+```js
+pool.query(sql`SELECT 1`);
+
+```
+
+Beware that in the latter example, the connection picked to execute the query is a random connection from the connection pool, i.e. using the latter method (without explicit `connect()`) does not guarantee that multiple queries will refer to the same backend.
 
 ### API
 
 ```js
 createPool(connectionConfiguration: DatabaseConfigurationType, clientConfiguration: ClientConfigurationType): DatabasePoolType;
-createConnection(connectionConfiguration: DatabaseConfigurationType, clientConfiguration: ClientConfigurationType): DatabaseSingleConnectionType;
 
 type DatabaseConnectionUriType = string;
 
@@ -53,7 +76,7 @@ await pool.query(sql`SELECT 1`);
 
 ### Checking out a client from the connection pool
 
-Slonik only allows to check out a connection for a duration of promise routine supplied to the `connect()` method.
+Slonik only allows to check out a connection for the duration of the promise routine supplied to the `connect()` method.
 
 ```js
 import {

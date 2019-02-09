@@ -46,16 +46,6 @@ Interceptors are executed in the order they are added.
 
 ### Interceptor methods
 
-#### `afterConnection`
-
-Executed after a connection is established, e.g.
-
-```js
-// Interceptor is executed here. ↓
-await createConnection('postgres://');
-
-```
-
 #### `afterPoolConnection`
 
 Executed after a connection is , e.g.
@@ -77,18 +67,6 @@ Use `afterQuery` to modify the query result.
 #### `beforeQueryExecution`
 
 This function can optionally return a direct result of the query which will cause the actual query never to be executed.
-
-#### `beforeConnectionEnd`
-
-`beforeConnectionEnd` is executed before a connection is explicitly ended, e.g.
-
-```js
-const connection = await createConnection('postgres://');
-
-// Interceptor is executed here. ↓
-connection.end();
-
-```
 
 #### `beforePoolConnectionRelease`
 

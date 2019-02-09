@@ -25,12 +25,10 @@ export type {
   DatabaseConnectionType,
   DatabasePoolConnectionType,
   DatabasePoolType,
-  DatabaseSingleConnectionType,
   DatabaseTransactionConnectionType,
   InterceptorType
 } from './types';
 export {
-  createConnection,
   createPool
 } from './factories';
 export {
