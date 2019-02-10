@@ -12,7 +12,7 @@ import {
 } from '../errors';
 import type {
   InternalQueryFunctionType,
-  QueryExecutionContextType
+  QueryContextType
 } from '../types';
 
 const query: InternalQueryFunctionType<*> = async (connectionLogger, connection, clientConfiguration, rawSql, values, inheritedQueryId) => {
@@ -31,9 +31,7 @@ const query: InternalQueryFunctionType<*> = async (connectionLogger, connection,
     ...originalQuery
   };
 
-  log.info('test');
-
-  const executionContext: QueryExecutionContextType = {
+  const executionContext: QueryContextType = {
     log,
     originalQuery,
     queryId,

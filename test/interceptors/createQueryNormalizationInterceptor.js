@@ -1,7 +1,7 @@
 // @flow
 
 import test from 'ava';
-import createQueryExecutionContext from '../helpers/createQueryExecutionContext';
+import createQueryContext from '../helpers/createQueryContext';
 import createQueryNormalizationInterceptor from '../../src/interceptors/createQueryNormalizationInterceptor';
 
 test('strips comments from the query', async (t) => {
@@ -15,7 +15,7 @@ test('strips comments from the query', async (t) => {
     throw new Error('Unexpected state.');
   }
 
-  const query = await transformQuery(createQueryExecutionContext(), {
+  const query = await transformQuery(createQueryContext(), {
     sql: 'SELECT 1; --',
     values: []
   });

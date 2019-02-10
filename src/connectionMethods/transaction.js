@@ -4,12 +4,19 @@ import serializeError from 'serialize-error';
 import {
   bindTransactionConnection
 } from '../binders';
+import {
+  createUlid
+} from '../utilities';
 import type {
   InternalTransactionFunctionType
 } from '../types';
 
-const transaction: InternalTransactionFunctionType = async (log, connection, clientConfiguration, handler) => {
+const transaction: InternalTransactionFunctionType = async (parentLog, connection, clientConfiguration, handler) => {
   await connection.query('START TRANSACTION');
+
+  const log = parentLog.child({
+    transactionId: createUlid()
+  });
 
   try {
     const result = await handler(bindTransactionConnection(log, connection, clientConfiguration));

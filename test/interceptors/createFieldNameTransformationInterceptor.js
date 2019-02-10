@@ -1,7 +1,7 @@
 // @flow
 
 import test from 'ava';
-import createQueryExecutionContext from '../helpers/createQueryExecutionContext';
+import createQueryContext from '../helpers/createQueryContext';
 import createFieldNameTransformationInterceptor from '../../src/interceptors/createFieldNameTransformationInterceptor';
 
 test('changes field names to camelcase', (t) => {
@@ -16,7 +16,7 @@ test('changes field names to camelcase', (t) => {
   }
 
   const result = afterQueryExecution(
-    createQueryExecutionContext(),
+    createQueryContext(),
     {
       sql: 'SELECT 1'
     },

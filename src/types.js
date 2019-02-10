@@ -116,6 +116,10 @@ export type QueryType = {|
   +values?: $ReadOnlyArray<PrimitiveValueExpressionType>
 |};
 
+export type ConnectionContextType = {|
+  +log: LoggerType
+|};
+
 /**
  * @property log Instance of Roarr logger with query execution context parameters.
  * @property originalQuery A copy of the query before `transformQuery` middleware.
@@ -220,13 +224,19 @@ export type QueryOneFirstFunctionType<T: QueryResultRowColumnType> = QueryMethod
 export type QueryOneFunctionType<T: QueryResultRowType> = QueryMethodType<T>;
 
 export type InterceptorType = {|
-  +afterPoolConnection?: (connection: DatabasePoolConnectionType) => MaybePromiseType<void>,
+  +afterPoolConnection?: (
+    connectionContext: ConnectionContextType,
+    connection: DatabasePoolConnectionType
+  ) => MaybePromiseType<void>,
   +afterQueryExecution?: (
     queryExecutionContext: QueryExecutionContextType,
     query: QueryType,
     result: QueryResultType<QueryResultRowType>
   ) => MaybePromiseType<QueryResultType<QueryResultRowType>>,
-  +beforePoolConnectionRelease?: (connection: DatabasePoolConnectionType) => MaybePromiseType<void>,
+  +beforePoolConnectionRelease?: (
+    connectionContext: ConnectionContextType,
+    connection: DatabasePoolConnectionType
+  ) => MaybePromiseType<void>,
   +beforeQueryExecution?: (
     queryExecutionContext: QueryExecutionContextType,
     query: QueryType

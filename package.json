@@ -10,7 +10,7 @@
     ]
   },
   "dependencies": {
-    "ajv": "^6.8.1",
+    "ajv": "^6.9.1",
     "array-flatten": "^2.1.2",
     "boolean": "^0.2.0",
     "camelcase": "^5.0.0",
@@ -22,7 +22,7 @@
     "pg-connection-string": "^2.0.0",
     "pretty-hrtime": "^1.0.3",
     "pretty-ms": "^4.0.0",
-    "roarr": "^2.12.1",
+    "roarr": "^2.13.0",
     "serialize-error": "^3.0.0",
     "table": "^5.2.2",
     "ulid": "^2.3.0"

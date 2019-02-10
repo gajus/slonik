@@ -1,10 +1,10 @@
 // @flow
 
 import type {
-  QueryExecutionContextType
+  ConnectionContextType
 } from '../../src/types';
 
-export default (): QueryExecutionContextType => {
+export default (): ConnectionContextType => {
   // $FlowFixMe
   return {};
 };

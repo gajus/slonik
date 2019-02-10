@@ -1,8 +1,5 @@
 // @flow
 
-import {
-  mapTaggedTemplateLiteralInvocation
-} from '../utilities';
 import type {
   ClientConfigurationType,
   DatabasePoolType,
@@ -21,7 +18,13 @@ import {
   oneFirst,
   query
 } from '../connectionMethods';
-import createPoolTransaction from '../factories/createPoolTransaction';
+import {
+  createUlid,
+  mapTaggedTemplateLiteralInvocation
+} from '../utilities';
+import {
+  createPoolTransaction
+} from '../factories';
 import bindPoolConnection from './bindPoolConnection';
 
 export default (
@@ -35,11 +38,19 @@ export default (
     connect: async (connectionRoutine) => {
       const connection: InternalDatabaseConnectionType = await pool.connect();
 
-      const boundConnection = bindPoolConnection(parentLog, pool, connection, clientConfiguration);
+      const connectionLog = parentLog.child({
+        connectionId: createUlid()
+      });
+
+      const connectionContext = {
+        log: connectionLog
+      };
+
+      const boundConnection = bindPoolConnection(connectionLog, pool, connection, clientConfiguration);
 
       for (const interceptor of clientConfiguration.interceptors) {
         if (interceptor.afterPoolConnection) {
-          await interceptor.afterPoolConnection(boundConnection);
+          await interceptor.afterPoolConnection(connectionContext, boundConnection);
         }
       }
 
@@ -50,7 +61,7 @@ export default (
       } finally {
         for (const interceptor of clientConfiguration.interceptors) {
           if (interceptor.beforePoolConnectionRelease) {
-            await interceptor.beforePoolConnectionRelease(boundConnection);
+            await interceptor.beforePoolConnectionRelease(connectionContext, boundConnection);
           }
         }
 
