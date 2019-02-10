@@ -8,6 +8,8 @@
 
 A [battle-tested](#battle-tested) PostgreSQL client with strict types, detail logging and assertions.
 
+![Tailing Slonik logs](./.README/slonik-log-tailing.gif)
+
 ## Features
 
 * [Convenience methods](#slonik-query-methods) with built-in assertions.

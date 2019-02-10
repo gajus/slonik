@@ -2,6 +2,12 @@
 
 import serializeError from 'serialize-error';
 import {
+  getStackTrace
+} from 'get-stack-trace';
+import {
+  SLONIK_LOG_STACK_TRACE
+} from '../config';
+import {
   createQueryId
 } from '../utilities';
 import {
@@ -47,6 +53,23 @@ const getTransactionId = (log: LoggerType): string | void => {
 };
 
 const query: InternalQueryFunctionType<*> = async (connectionLogger, connection, clientConfiguration, rawSql, values, inheritedQueryId) => {
+  const queryInputTime = process.hrtime.bigint();
+
+  let stackTrace = null;
+
+  if (SLONIK_LOG_STACK_TRACE) {
+    const callSites = await getStackTrace();
+
+    stackTrace = callSites
+      .map((callSite) => {
+        return {
+          columnNumber: callSite.columnNumber,
+          fileName: callSite.fileName,
+          lineNumber: callSite.lineNumber
+        };
+      });
+  }
+
   const queryId = inheritedQueryId || createQueryId();
 
   const log = connectionLogger.child({
@@ -68,6 +91,8 @@ const query: InternalQueryFunctionType<*> = async (connectionLogger, connection,
     originalQuery,
     poolId: getPoolId(log),
     queryId,
+    queryInputTime,
+    stackTrace,
     transactionId: getTransactionId(log)
   };
 

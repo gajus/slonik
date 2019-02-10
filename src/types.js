@@ -127,7 +127,14 @@ export type ConnectionContextType = {|
   +poolId: string
 |};
 
+type CallSiteType = {|
+  +columnNumber: number,
+  +fileName: string | null,
+  +lineNumber: number
+|};
+
 /**
+ * @property queryInputTime `process.hrtime.bigint()` for when query was received.
  * @property connectionId Unique connection ID.
  * @property log Instance of Roarr logger with bound query context parameters.
  * @property originalQuery A copy of the query before `transformQuery` middleware.
@@ -141,6 +148,8 @@ export type QueryContextType = {|
   +originalQuery: QueryType,
   +poolId: string,
   +queryId: QueryIdType,
+  +stackTrace: $ReadOnlyArray<CallSiteType> | null,
+  +queryInputTime: number,
   +transactionId?: string
 |};
 

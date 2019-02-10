@@ -2,10 +2,6 @@
 
 import prettyMs from 'pretty-ms';
 import {
-  getStackTrace
-} from 'get-stack-trace';
-import {
-  SLONIK_LOG_STACK_TRACE,
   SLONIK_LOG_VALUES
 } from '../config';
 import type {
@@ -17,14 +13,7 @@ const stringifyCallSite = (callSite) => {
 };
 
 export default (): InterceptorType => {
-  const connections = {};
-
   return {
-    afterPoolConnection: (context) => {
-      connections[context.connectionId] = {
-        queryStartTimes: {}
-      };
-    },
     afterQueryExecution: (context, query, result) => {
       let rowCount: number | null = null;
 
@@ -35,21 +24,21 @@ export default (): InterceptorType => {
       }
 
       context.log.debug({
-        executionTime: prettyMs(Number(process.hrtime.bigint() - connections[context.connectionId].queryStartTimes[context.queryId]) / 1000000),
+        executionTime: prettyMs(Number(process.hrtime.bigint() - context.queryInputTime) / 1000000),
         rowCount
       }, 'query execution result');
 
       return result;
     },
     beforeQueryExecution: async (context, query) => {
-      connections[context.connectionId].queryStartTimes[context.queryId] = process.hrtime.bigint();
-
       let stackTrace;
 
-      if (SLONIK_LOG_STACK_TRACE) {
-        const callSites = await getStackTrace();
-
-        stackTrace = callSites
+      if (context.stackTrace) {
+        stackTrace = context.stackTrace
+          .filter((callSite) => {
+            // Hide internal call sites.
+            return callSite.fileName !== null && !callSite.fileName.includes('slonik') && !callSite.fileName.includes('next_tick');
+          })
           .map((callSite) => {
             return stringifyCallSite(callSite);
           });
