@@ -2,7 +2,7 @@
 
 import test from 'ava';
 import sinon from 'sinon';
-import log from '../helpers/../Logger';
+import log from '../../helpers/Logger';
 import createClientConfiguration from '../../helpers/createClientConfiguration';
 import oneFirst from '../../../src/connectionMethods/oneFirst';
 import {

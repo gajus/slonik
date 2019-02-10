@@ -4,7 +4,7 @@ import test from 'ava';
 import sinon from 'sinon';
 import log from '../../helpers/Logger';
 import createClientConfiguration from '../../helpers/createClientConfiguration';
-import one from '../../src/../connectionMethods/one';
+import one from '../../../src/connectionMethods/one';
 import {
   DataIntegrityError,
   NotFoundError
