@@ -101,7 +101,7 @@ const getFooIdByBar = (connection: DatabaseConnectionType, bar: string): Promise
 * `DataIntegrityError` if query returns multiple rows
 * `DataIntegrityError` if query returns multiple columns
 
-This becomes particularly important when writing routines where multiple queries depend on the previous result. Using methods with inbuilt assertions ensure that in case of an error, the error points to the original source of the problem. In contrast, unless assertions for all possible outcomes are typed out as in the previous example, the unexpected result of the query will be fed to the next operation. If you are lucky, the next operation will simply break; if you are unlucky, you are risking data corruption and hard to locate bugs.
+This becomes particularly important when writing routines where multiple queries depend on the previous result. Using methods with inbuilt assertions ensures that in case of an error, the error points to the original source of the problem. In contrast, unless assertions for all possible outcomes are typed out as in the previous example, the unexpected result of the query will be fed to the next operation. If you are lucky, the next operation will simply break; if you are unlucky, you are risking data corruption and hard to locate bugs.
 
 Furthermore, using methods that guarantee the shape of the results, allows us to leverage static type checking and catch some of the errors even before they executing the code, e.g.
 
@@ -119,7 +119,7 @@ await connection.query(sql`
 
 ```
 
-The above example will throw an error as the `fooId` is guaranteed to be an array and last query binding is expecting a primitive value.
+Static type check of the above example will produce a warning as the `fooId` is guaranteed to be an array and binding of the last query is expecting a primitive value.
 
 <a name="slonik-about-slonik-protecting-against-unsafe-connection-handling"></a>
 ### Protecting against unsafe connection handling
@@ -206,7 +206,7 @@ connection.query('SELECT $1', [
 
 ```
 
-In this example, the query text (`SELECT $1`) and parameters (value of the `userInput`) are passed to the PostgreSQL server where the parameters are safely substituted into the query. This is the safe way to execute a query with user-input.
+In this example, the query text (`SELECT $1`) and parameters (value of the `userInput`) are passed to the PostgreSQL server where the parameters are safely substituted into the query. This is a safe way to execute a query using user-input.
 
 The vulnerabilities appear when developers cut corners or when they do not know about parameterization, i.e. there is a risk that someone will instead write:
 
@@ -217,7 +217,7 @@ connection.query('SELECT \'' + userInput + '\'');
 
 ```
 
-As evident by the history of the data leaks, this happens more often than anyone would like to admit. This is especially a big risk in Node.js community, where predominant number of developers are coming from frontend and have not had training working with RDBMSes. Therefore, one the key selling points of Slonik is that it adds multiple layers of protection to prevent unsafe handling of user-input.
+As evident by the history of the data leaks, this happens more often than anyone would like to admit. This is especially a big risk in Node.js community, where predominant number of developers are coming from frontend and have not had training working with RDBMSes. Therefore, one of the key selling points of Slonik is that it adds multiple layers of protection to prevent unsafe handling of user-input.
 
 To begin with, Slonik does not allow to run plain-text queries.
 
@@ -244,7 +244,7 @@ connection.query(sql`SELECT ${userInput}`);
 
 ```
 
-Slonik takes over from here and constructs a query with value bindings, and sends the resulting query text and parameters to the PostgreSQL. As user `sql` tagged template literal is the only way to execute the query, it adds a strong layer of protection against accidental unsafe user-input handling due to limited knowledge of the SQL client API.
+Slonik takes over from here and constructs a query with value bindings, and sends the resulting query text and parameters to the PostgreSQL. As `sql` tagged template literal is the only way to execute the query, it adds a strong layer of protection against accidental unsafe user-input handling due to limited knowledge of the SQL client API.
 
 As Slonik restricts user's ability to generate and execute dynamic SQL, it provides helper functions used to generate fragments of the query and the corresponding value bindings, e.g. [`sql.identifier`](#sqlidentifier), [`sql.tuple`](#sqltuple), [`sql.tupleList`](#sqltuplelist), [`sql.unnest`](#sqlunnest) and [`sql.valueList`](#sqlvaluelist). These methods generate tokens that the query executor interprets to construct a safe query, e.g.
 
@@ -274,7 +274,7 @@ WHERE foo.b IN ($7, $8)
 
 That is executed with the parameters provided by the user.
 
-Finally, if there comes a day that you _must_ generate the whole or a fragment of a query using string concatenation, then Slonik provides [`sql.raw`](#sqlraw) method. However, even when using `sql.raw`, we further derisk the dangers of generating SQL by allowing developer to bind values only to the scope of the fragment that is being generated, e.g.
+Finally, if there comes a day that you _must_ generate the whole or a fragment of a query using string concatenation, then Slonik provides [`sql.raw`](#sqlraw) method. However, even when using `sql.raw`, we derisk the dangers of generating SQL by allowing developer to bind values only to the scope of the fragment that is being generated, e.g.
 
 ```js
 sql`
@@ -283,7 +283,7 @@ sql`
 
 ```
 
-Allowing to bind values only to the scope of the SQL that is being generated reduces the amount of code that the developer needs to scan in order to be aware of the impact the generated code can have. Continue reading [Using `sql.raw` to generate dynamic queries](#using-sqlraw-to-generate-dynamic-queries) to learn further about `sql.raw`.
+Allowing to bind values only to the scope of the SQL that is being generated reduces the amount of code that the developer needs to scan in order to be aware of the impact that the generated code can have. Continue reading [Using `sql.raw` to generate dynamic queries](#using-sqlraw-to-generate-dynamic-queries) to learn further about `sql.raw`.
 
 To sum up, Slonik is designed to prevent accidental creation of queries vulnerable to SQL injections.
 
@@ -517,7 +517,7 @@ Interceptors are executed in the order they are added.
 <a name="slonik-interceptors-interceptor-methods"></a>
 ### Interceptor methods
 
-Interceptors implement methods that are used to change the behaviour of the database client at different stages of the connection life-cycle:
+Interceptor is an object that implements methods that can change the behaviour of the database client at different stages of the connection life-cycle
 
 ```js
 type InterceptorType = {|
@@ -810,7 +810,7 @@ There are 2 downsides to this approach:
   * Query parsing time increases with the query size.
 2. There is a maximum number of parameters that can be bound to the statement (65535).
 
-As an alternative, we can use [`sql.unnest`](#sqlunnest) to create a set of rows using `unnset`. In contrast to `sql.tupleList`, using the `unnset` approach requires only 1 variable per every column; values for each column are passed as an array, e.g.
+As an alternative, we can use [`sql.unnest`](#sqlunnest) to create a set of rows using `unnset`. Using the `unnset` approach requires only 1 variable per every column; values for each column are passed as an array, e.g.
 
 ```js
 await connection.query(sql`
@@ -853,6 +853,8 @@ Produces:
 }
 
 ```
+
+Inserting data this way ensures that the query is stable and reduces the amount of time it takes to parse the query.
 
 <a name="slonik-recipes-logging-auto_explain"></a>
 ### Logging <code>auto_explain</code>
