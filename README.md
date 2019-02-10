@@ -303,6 +303,8 @@ To sum up, Slonik is designed to prevent accidental creation of queries vulnerab
         * [Protecting against unsafe value interpolation](#slonik-about-slonik-protecting-against-unsafe-value-interpolation)
     * [Documentation](#slonik-documentation)
     * [Usage](#slonik-usage)
+        * [Install](#slonik-usage-install)
+        * [Create connection](#slonik-usage-create-connection)
         * [API](#slonik-usage-api)
         * [Default configuration](#slonik-usage-default-configuration)
         * [Checking out a client from the connection pool](#slonik-usage-checking-out-a-client-from-the-connection-pool)
@@ -354,6 +356,20 @@ To sum up, Slonik is designed to prevent accidental creation of queries vulnerab
 
 <a name="slonik-usage"></a>
 ## Usage
+
+<a name="slonik-usage-install"></a>
+### Install
+
+```bash
+npm install slonik
+
+```
+
+[![Buy Me A Coffee](https://www.buymeacoffee.com/assets/img/custom_images/orange_img.png)](https://www.buymeacoffee.com/gajus)
+[![Become a Patron](https://c5.patreon.com/external/logo/become_a_patron_button.png)](https://www.patreon.com/gajus)
+
+<a name="slonik-usage-create-connection"></a>
+### Create connection
 
 Use `createPool` to create a connection pool, e.g.
 
