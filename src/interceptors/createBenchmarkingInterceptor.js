@@ -66,9 +66,9 @@ export default (): InterceptorType => {
 
       queries.unshift([
         'Query',
-        'Execution count',
-        'Average time',
-        'Total time'
+        'Execution\ncount',
+        'Average\ntime',
+        'Total\ntime'
       ]);
 
       // eslint-disable-next-line no-console
