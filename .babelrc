@@ -15,7 +15,7 @@
       "@babel/env",
       {
         "targets": {
-          "node": "8.0"
+          "node": "10"
         },
         "useBuiltIns": "usage"
       }
