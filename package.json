@@ -20,7 +20,6 @@
     "invariant": "^2.2.4",
     "pg": "^7.8.0",
     "pg-connection-string": "^2.0.0",
-    "pg-formatter": "^1.1.1",
     "pretty-hrtime": "^1.0.3",
     "pretty-ms": "^4.0.0",
     "roarr": "^2.12.1",

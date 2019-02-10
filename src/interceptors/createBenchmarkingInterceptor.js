@@ -5,9 +5,6 @@ import {
   table
 } from 'table';
 import {
-  format
-} from 'pg-formatter';
-import {
   stripComments
 } from '../utilities';
 import type {
@@ -53,7 +50,7 @@ export default (): InterceptorType => {
 
       summaries = summaries.map((summary) => {
         return [
-          summary.sql.slice(0, 100),
+          stripComments(summary.sql).slice(0, 100),
           summary.executionCount,
           prettyMs(summary.average),
           prettyMs(summary.total)
