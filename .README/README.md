@@ -12,17 +12,14 @@ A [battle-tested](#battle-tested) PostgreSQL client with strict types, detail lo
 
 ## Features
 
-* [Convenience methods](#slonik-query-methods) with built-in assertions.
-* [Middleware](#slonik-interceptors) support.
-* [SQL injection guarding](#slonik-value-placeholders-tagged-template-literals).
-* [Value and tuple interpolation](#slonik-value-placeholders-sql-valuelist).
+* [Assertions and type safety](#repeating-code-patterns-and-type-safety)
+* [Safe connection handling](#protecting-against-unsafe-connection-handling).
+* [Safe transaction handling](#protecting-against-unsafe-transaction-handling).
+* [Safe value interpolation](#protecting-against-unsafe-value-interpolation).
 * Detail [logging](#slonik-debugging).
-* [Parsing and logging of the auto_explain logs](#logging-auto_explain).
-* Built-in [asynchronous stack trace resolution](#log-stack-trace).
-* [Safe connection pooling](#checking-out-a-client-from-the-connection-pool).
-* [Flow types](#types).
+* [Asynchronous stack trace resolution](#log-stack-trace).
+* [Middlewares](#slonik-interceptors).
 * [Mapped errors](#error-handling).
-* [Transactions](#slonik-query-methods-transaction).
 * [Atom plugin](#slonik-syntax-highlighting).
 * [ESLint plugin](https://github.com/gajus/eslint-plugin-sql).
 
