@@ -122,6 +122,172 @@ await connection.query(sql`
 
 The above example will throw an error as the `fooId` is guaranteed to be an array and last query binding is expecting a primitive value.
 
+<a name="slonik-about-slonik-protecting-against-unsafe-connection-handling"></a>
+### Protecting against unsafe connection handling
+
+Slonik only allows to check out a connection for the duration of the promise routine supplied to the `pool#connect()` method.
+
+The primary reason for implementing _only_ this connection pooling method is because the alternative is inherently unsafe, e.g.
+
+```js
+// Note: This example is using unsupported API.
+
+const main = async () => {
+  const connection = await pool.connect();
+
+  await connection.query(sql`SELECT foo()`);
+
+  await connection.release();
+};
+
+```
+
+In this example, if `SELECT foo()` produces an error, then connection is never released, i.e. the connection remains to hang.
+
+A fix to the above is to ensure that `connection#release()` is always called, i.e.
+
+```js
+// Note: This example is using unsupported API.
+
+const main = async () => {
+  const connection = await pool.connect();
+
+  let lastExecutionResult;
+
+  try {
+    lastExecutionResult = await connection.query(sql`SELECT foo()`);
+  } finally {
+    await connection.release();
+  }
+
+  return lastExecutionResult;
+};
+
+```
+
+Slonik abstracts the latter pattern into `pool#connect()` method.
+
+```js
+const main = () => {
+  return pool.connect((connection) => {
+    return connection.query(sql`SELECT foo()`);
+  });
+};
+
+```
+
+Connection is always released back to the pool after the promise produced by the function supplied to `connect()` method is either resolved or rejected.
+
+<a name="slonik-about-slonik-protecting-against-unsafe-transaction-handling"></a>
+### Protecting against unsafe transaction handling
+
+Just like in the [unsafe connection handling](#protecting-against-unsafe-connection-handling) described above, Slonik only allows to create a transaction for the duration of the promise routine supplied to the `connection#transaction()` method.
+
+```js
+connection.transaction(async (transactionConnection) => {
+  await transactionConnection.query(sql`INSERT INTO foo (bar) VALUES ('baz')`);
+  await transactionConnection.query(sql`INSERT INTO qux (quux) VALUES ('quuz')`);
+});
+
+```
+
+This pattern ensures that the transaction is either committed or aborted the moment the promise is either resolved or rejected.
+
+<a name="slonik-about-slonik-protecting-against-unsafe-value-interpolation"></a>
+### Protecting against unsafe value interpolation
+
+[SQL injections](https://en.wikipedia.org/wiki/SQL_injection) are one of the most well known attack vectors. Some of the [biggest data leaks](https://en.wikipedia.org/wiki/SQL_injection#Examples) were the consequence of improper user-input handling. In general, SQL injections are easily preventable by using parameterization and by restricting database permissions, e.g.
+
+```js
+// Note: This example is using unsupported API.
+
+connection.query('SELECT $1', [
+  userInput
+]);
+
+```
+
+In this example, the query text (`SELECT $1`) and parameters (value of the `userInput`) are passed to the PostgreSQL server where the parameters are safely substituted into the query. This is the safe way to execute a query with user-input.
+
+The vulnerabilities appear when developers cut corners or when they do not know about parameterization, i.e. there is a risk that someone will instead write:
+
+```js
+// Note: This example is using unsupported API.
+
+connection.query('SELECT \'' + userInput + '\'');
+
+```
+
+As evident by the history of the data leaks, this happens more often than anyone would like to admit. This is especially a big risk in Node.js community, where predominant number of developers are coming from frontend and have not had training working with RDBMSes. Therefore, one the key selling points of Slonik is that it adds multiple layers of protection to prevent unsafe handling of user-input.
+
+To begin with, Slonik does not allow to run plain-text queries.
+
+```js
+connection.query('SELECT 1');
+
+```
+
+The above invocation would produce an error:
+
+> TypeError: Query must be constructed using `sql` tagged template literal.
+
+This means that the only way to run a query is by constructing it using [`sql` tagged template literal](https://github.com/gajus/slonik#slonik-value-placeholders-tagged-template-literals), e.g.
+
+```js
+connection.query(sql`SELECT 1`);
+
+```
+
+To add a parameter to the query, user must use [template literal placeholders](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Template_literals#Description), e.g.
+
+```js
+connection.query(sql`SELECT ${userInput}`);
+
+```
+
+Slonik takes over from here and constructs a query with value bindings, and sends the resulting query text and parameters to the PostgreSQL. As user `sql` tagged template literal is the only way to execute the query, it adds a strong layer of protection against accidental unsafe user-input handling due to limited knowledge of the SQL client API.
+
+As Slonik restricts user's ability to generate and execute dynamic SQL, it provides helper functions used to generate fragments of the query and the corresponding value bindings, e.g. [`sql.identifier`](#sqlidentifier), [`sql.tuple`](#sqltuple), [`sql.tupleList`](#sqltuplelist), [`sql.unnestList`](sqlunnestlist) and [`sql.valueList`](#sqlvaluelist). These methods generate tokens that the query executor interprets to construct a safe query, e.g.
+
+```js
+connection.query(sql`
+  SELECT ${sql.identifier(['foo', 'a'])}
+  FROM (
+    VALUES ${sql.tupleList([['a1', 'b1', 'c1'], ['a2', 'b2', 'c2']])}
+  ) foo(a, b, c)
+  WHERE foo.b IN (${sql.tuple(['c1', 'a2'])})
+`);
+
+```
+
+This (contrived) example generates a query equivalent to:
+
+```sql
+SELECT "foo"."a"
+FROM (
+  VALUES
+    ($1, $2, $3),
+    ($4, $5, $6)
+) foo(a, b, c)
+WHERE foo.b IN ($7, $8)
+
+```
+
+That is executed with the parameters provided by the user.
+
+Finally, if there comes a day that you _must_ generate the whole or a fragment of a query using string concatenation, then Slonik provides [`sql.raw`](#sqlraw) method. However, even when using `sql.raw`, we further derisk the dangers of generating SQL by allowing developer to bind values only to the scope of the fragment that is being generated, e.g.
+
+```js
+sql`
+  SELECT ${sql.raw('$1', ['foo'])}
+`;
+
+```
+
+Allowing to bind values only to the scope of the SQL that is being generated reduces the amount of code that the developer needs to scan in order to be aware of the impact the generated code can have. Continue reading [Using `sql.raw` to generate dynamic queries](#using-sqlraw-to-generate-dynamic-queries) to learn further about `sql.raw`.
+
+To sum up, Slonik is designed to prevent accidental creation of queries vulnerable to SQL injections.
+
 
 <a name="slonik-documentation"></a>
 ## Documentation
@@ -132,6 +298,9 @@ The above example will throw an error as the `fooId` is guaranteed to be an arra
         * [Battle-Tested](#slonik-about-slonik-battle-tested)
         * [Origin of the name](#slonik-about-slonik-origin-of-the-name)
         * [Repeating code patterns and type safety](#slonik-about-slonik-repeating-code-patterns-and-type-safety)
+        * [Protecting against unsafe connection handling](#slonik-about-slonik-protecting-against-unsafe-connection-handling)
+        * [Protecting against unsafe transaction handling](#slonik-about-slonik-protecting-against-unsafe-transaction-handling)
+        * [Protecting against unsafe value interpolation](#slonik-about-slonik-protecting-against-unsafe-value-interpolation)
     * [Documentation](#slonik-documentation)
     * [Usage](#slonik-usage)
         * [API](#slonik-usage-api)
@@ -288,43 +457,7 @@ result;
 
 Connection is released back to the pool after the promise produced by the function supplied to `connect()` method is either resolved or rejected.
 
-The primary reason for implementing _only_ this connection pooling method is because the alternative is inherently unsafe, e.g.
-
-```js
-// Note: This example is using unsupported API.
-
-const main = async () => {
-  const connection = await pool.connect();
-
-  await connection.query(sql`SELECT produce_error()`);
-
-  await connection.release();
-};
-
-```
-
-In this example, the error causes early rejection of the promise and a hanging connection. A fix to the above is to ensure that `connection#release()` is always called, i.e.
-
-```js
-// Note: This example is using unsupported API.
-
-const main = async () => {
-  const connection = await pool.connect();
-
-  let lastExecutionResult;
-
-  try {
-    lastExecutionResult = await connection.query(sql`SELECT produce_error()`);
-  } finally {
-    await connection.release();
-  }
-
-  return lastExecutionResult;
-};
-
-```
-
-Slonik abstracts the latter pattern into `pool#connect()` method.
+Read: [Protecting against unsafe connection handling](#protecting-against-unsafe-connection-handling)
 
 
 <a name="slonik-interceptors"></a>
