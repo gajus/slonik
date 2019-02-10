@@ -1,5 +1,88 @@
 ## Recipes
 
+### Inserting large number of rows
+
+Slonik provides [`sql.tupleList`](#sqltuplelist) helper function to generate a list of tuples that can be used in the `INSERT` values expression, e.g.
+
+```js
+await connection.query(sql`
+  INSERT INTO (foo, bar, baz)
+  VALUES ${sql.tupleList([
+    [1, 2, 3],
+    [4, 5, 6]
+  ])}
+`);
+
+```
+
+Produces:
+
+```js
+{
+  sql: 'INSERT INTO (foo, bar, baz) VALUES ($1, $2, $3), ($4, $5, $6)',
+  values: [
+    1,
+    2,
+    3,
+    4,
+    5,
+    6
+  ]
+}
+
+```
+
+There are 2 downsides to this approach:
+
+1. The generated SQL is dynamic and will vary depending on the input.
+  * You will not be able to track query stats.
+  * Query parsing time increases with the query size.
+2. There is a maximum number of parameters that can be bound to the statement (65535).
+
+As an alternative, we can use [`sql.unnest`](#sqlunnest) to create a set of rows using `unnset`. In contrast to `sql.tupleList`, using the `unnset` approach requires only 1 variable per every column; values for each column are passed as an array, e.g.
+
+```js
+await connection.query(sql`
+  INSERT INTO (foo, bar, baz)
+  SELECT *
+  FROM ${sql.unnest(
+    [
+      [1, 2, 3],
+      [4, 5, 6]
+    ],
+    [
+      'integer',
+      'integer',
+      'integer'
+    ]
+  )}
+`);
+
+```
+
+Produces:
+
+```js
+{
+  sql: 'INSERT INTO (foo, bar, baz) SELECT * FROM unnest($1::integer[], $2::integer[], $2::integer[])',
+  values: [
+    [
+      1,
+      4
+    ],
+    [
+      2,
+      5
+    ],
+    [
+      3,
+      6
+    ]
+  ]
+}
+
+```
+
 ### Logging `auto_explain`
 
 `executionTime` log property describes how long it took for the client to execute the query, i.e. it includes the overhead of waiting for a connection and the network latency, among other things. However, it is possible to get the real query execution time by using [`auto_explain` module](https://www.postgresql.org/docs/current/auto-explain.html).

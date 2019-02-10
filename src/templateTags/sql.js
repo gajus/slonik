@@ -8,7 +8,7 @@ import type {
   TaggledTemplateLiteralInvocationType,
   TupleListSqlTokenType,
   TupleSqlTokenType,
-  UnnestListSqlTokenType,
+  UnnestSqlTokenType,
   ValueExpressionType,
   ValueListSqlTokenType
 } from '../types';
@@ -21,20 +21,6 @@ import Logger from '../Logger';
 const log = Logger.child({
   namespace: 'sql'
 });
-
-const createIncrementalNames = (columnCount: number): $ReadOnlyArray<string> => {
-  const columnNames = [];
-
-  let index = 0;
-
-  while (index < columnCount) {
-    columnNames.push('f' + (index + 1));
-
-    index++;
-  }
-
-  return columnNames;
-};
 
 // eslint-disable-next-line complexity
 const sql = (parts: $ReadOnlyArray<string>, ...values: $ReadOnlyArray<ValueExpressionType>): TaggledTemplateLiteralInvocationType => {
@@ -139,16 +125,10 @@ const sql = (parts: $ReadOnlyArray<string>, ...values: $ReadOnlyArray<ValueExpre
       }
 
       raw += tupleListMemberSql.join(', ');
-    } else if (value && value.type === 'UNNEST_LIST' && Array.isArray(value.tuples)) {
+    } else if (value && value.type === 'UNNEST' && Array.isArray(value.tuples)) {
       invariant(Array.isArray(value.columnTypes), 'Unexpected column types shape.');
 
       const columnTypes = value.columnTypes;
-
-      const aliasNames = Array.isArray(value.aliasNames) ? value.aliasNames : createIncrementalNames(value.columnTypes.length);
-
-      if (columnTypes.length !== aliasNames.length) {
-        throw new Error('Column types length must match alias names length.');
-      }
 
       const unnestBindings = [];
       const unnsetSqlTokens = [];
@@ -159,12 +139,10 @@ const sql = (parts: $ReadOnlyArray<string>, ...values: $ReadOnlyArray<ValueExpre
 
       while (columnIndex < columnTypes.length) {
         const columnType = columnTypes[columnIndex];
-        const aliasName = aliasNames[columnIndex];
 
         invariant(typeof columnType === 'string', 'Column type unavailable');
-        invariant(typeof aliasName === 'string', 'Alias name unavailable');
 
-        unnsetSqlTokens.push('UNNEST($' + ++placeholderIndex + '::' + escapeIdentifier(columnType) + '[]) ' + escapeIdentifier(aliasName));
+        unnsetSqlTokens.push('$' + ++placeholderIndex + '::' + escapeIdentifier(columnType) + '[]');
 
         unnestBindings[columnIndex] = [];
 
@@ -196,7 +174,7 @@ const sql = (parts: $ReadOnlyArray<string>, ...values: $ReadOnlyArray<ValueExpre
       }
 
       bindings.push(...unnestBindings);
-      raw += unnsetSqlTokens.join(', ');
+      raw += 'unnest(' + unnsetSqlTokens.join(', ') + ')';
     } else if (isPrimitiveValueExpression(value)) {
       raw += '$' + (bindings.length + 1);
 
@@ -255,16 +233,14 @@ sql.tupleList = (tuples: $ReadOnlyArray<$ReadOnlyArray<PrimitiveValueExpressionT
   };
 };
 
-sql.unnestList = (
+sql.unnest = (
   tuples: $ReadOnlyArray<$ReadOnlyArray<PrimitiveValueExpressionType>>,
-  columnTypes: $ReadOnlyArray<string>,
-  aliasNames?: $ReadOnlyArray<string>
-): UnnestListSqlTokenType => {
+  columnTypes: $ReadOnlyArray<string>
+): UnnestSqlTokenType => {
   return {
-    aliasNames: aliasNames || null,
     columnTypes,
     tuples,
-    type: 'UNNEST_LIST'
+    type: 'UNNEST'
   };
 };
 
