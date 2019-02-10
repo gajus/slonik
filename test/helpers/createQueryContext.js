@@ -6,5 +6,16 @@ import type {
 
 export default (): QueryContextType => {
   // $FlowFixMe
-  return {};
+  return {
+    connectionId: '1',
+    log: {
+      getContext: () => {
+        return {
+          connectionId: '1',
+          poolId: '1'
+        };
+      }
+    },
+    poolId: '1'
+  };
 };

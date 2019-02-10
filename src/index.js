@@ -35,6 +35,7 @@ export {
   createPool
 } from './factories';
 export {
+  createBenchmarkingInterceptor,
   createFieldNameTransformationInterceptor,
   createQueryNormalizationInterceptor
 } from './interceptors';

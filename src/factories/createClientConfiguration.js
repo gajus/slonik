@@ -1,9 +1,11 @@
 // @flow
 
-import createFieldNameTransformationInterceptor from '../interceptors/createFieldNameTransformationInterceptor';
-import createLogInterceptor from '../interceptors/createLogInterceptor';
-import createQueryNormalizationInterceptor from '../interceptors/createQueryNormalizationInterceptor';
-import createBenchmarkingInterceptor from '../interceptors/createBenchmarkingInterceptor';
+import {
+  createBenchmarkingInterceptor,
+  createFieldNameTransformationInterceptor,
+  createLogInterceptor,
+  createQueryNormalizationInterceptor
+} from '../interceptors';
 import type {
   ClientConfigurationType,
   ClientUserConfigurationType

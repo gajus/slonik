@@ -116,22 +116,32 @@ export type QueryType = {|
   +values?: $ReadOnlyArray<PrimitiveValueExpressionType>
 |};
 
+/**
+ * @property connectionId Unique connection ID.
+ * @property log Instance of Roarr logger with bound connection context parameters.
+ * @property poolId Unique connection pool ID.
+ */
 export type ConnectionContextType = {|
-  +log: LoggerType
+  +connectionId: string,
+  +log: LoggerType,
+  +poolId: string
 |};
 
 /**
- * @property log Instance of Roarr logger with query execution context parameters.
+ * @property connectionId Unique connection ID.
+ * @property log Instance of Roarr logger with bound query context parameters.
  * @property originalQuery A copy of the query before `transformQuery` middleware.
- * @property queryId Unique query identifier.
- * @property sharedContext A context shared between all interceptors. Use this to share information between interceptors.
+ * @property poolId Unique connection pool ID.
+ * @property queryId Unique query ID.
+ * @property transactionId Unique transaction ID.
  */
 export type QueryContextType = {|
+  +connectionId: string,
   +log: LoggerType,
   +originalQuery: QueryType,
+  +poolId: string,
   +queryId: QueryIdType,
-  // eslint-disable-next-line flowtype/no-weak-types
-  +sharedContext: Object
+  +transactionId?: string
 |};
 
 export type IdentifierTokenType = {|

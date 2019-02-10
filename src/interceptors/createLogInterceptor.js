@@ -1,6 +1,6 @@
 // @flow
 
-import prettyHrtime from 'pretty-hrtime';
+import prettyMs from 'pretty-ms';
 import {
   getStackTrace
 } from 'get-stack-trace';
@@ -16,10 +16,15 @@ const stringifyCallSite = (callSite) => {
   return (callSite.fileName || '') + ':' + callSite.lineNumber + ':' + callSite.columnNumber;
 };
 
-const logContext = Symbol('LOG_INTERCEPTOR_CONTEXT');
-
 export default (): InterceptorType => {
+  const connections = {};
+
   return {
+    afterPoolConnection: (context) => {
+      connections[context.connectionId] = {
+        queryStartTimes: {}
+      };
+    },
     afterQueryExecution: (context, query, result) => {
       let rowCount: number | null = null;
 
@@ -30,14 +35,14 @@ export default (): InterceptorType => {
       }
 
       context.log.debug({
-        executionTime: prettyHrtime(process.hrtime(context.sharedContext[logContext])),
+        executionTime: prettyMs(Number(process.hrtime.bigint() - connections[context.connectionId].queryStartTimes[context.queryId]) / 1000000),
         rowCount
       }, 'query execution result');
 
       return result;
     },
     beforeQueryExecution: async (context, query) => {
-      context.sharedContext[logContext] = process.hrtime();
+      connections[context.connectionId].queryStartTimes[context.queryId] = process.hrtime.bigint();
 
       let stackTrace;
 

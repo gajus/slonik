@@ -27,6 +27,16 @@ import {
 } from '../factories';
 import bindPoolConnection from './bindPoolConnection';
 
+const getPoolId = (log: LoggerType): string => {
+  const poolId = log.getContext().poolId;
+
+  if (typeof poolId !== 'string') {
+    throw new TypeError('Unexpected state.');
+  }
+
+  return poolId;
+};
+
 export default (
   parentLog: LoggerType,
   pool: InternalDatabasePoolType,
@@ -38,12 +48,18 @@ export default (
     connect: async (connectionRoutine) => {
       const connection: InternalDatabaseConnectionType = await pool.connect();
 
+      const poolId = getPoolId(parentLog);
+
+      const connectionId = createUlid();
+
       const connectionLog = parentLog.child({
-        connectionId: createUlid()
+        connectionId
       });
 
       const connectionContext = {
-        log: connectionLog
+        connectionId,
+        log: connectionLog,
+        poolId
       };
 
       const boundConnection = bindPoolConnection(connectionLog, pool, connection, clientConfiguration);

@@ -1,6 +1,7 @@
 // @flow
 
 import prettyMs from 'pretty-ms';
+import wordWrap from 'word-wrap';
 import {
   table
 } from 'table';
@@ -11,53 +12,59 @@ import type {
   InterceptorType
 } from '../types';
 
-const benchmarkingContext = Symbol('BENCHMARKING_INTERCEPTOR_CONTEXT');
-
-const queries = {};
-
 export default (): InterceptorType => {
-  return {
-    afterQueryExecution: async (context, query, result) => {
-      queries[query.sql] = queries[query.sql] || [];
+  const connections = {};
 
-      queries[query.sql].push(Number(process.hrtime.bigint() - context.sharedContext[benchmarkingContext]) / 1000000);
+  return {
+    afterPoolConnection: (context) => {
+      connections[context.connectionId] = {
+        queries: {}
+      };
+    },
+    afterQueryExecution: async (context, query, result) => {
+      const startTime = connections[context.connectionId].queries[context.originalQuery.sql].queryStartTimes[context.queryId];
+
+      connections[context.connectionId].queries[context.originalQuery.sql].durations.push(Number(process.hrtime.bigint() - startTime) / 1000000);
 
       return result;
     },
-    beforePoolConnectionRelease: () => {
-      const queryNames = Object.keys(queries);
+    beforePoolConnectionRelease: (context) => {
+      let queries = Object
+        .values(connections[context.connectionId].queries)
 
-      let summaries = [];
+        // eslint-disable-next-line flowtype/no-weak-types
+        .map((query: Object) => {
+          const total = query.durations.reduce((accumulator, currentValue) => {
+            return accumulator + currentValue;
+          }, 0);
 
-      for (const queryName of queryNames) {
-        const total = queries[queryName].reduce((accumulator, currentValue) => {
-          return accumulator + currentValue;
-        }, 0);
+          const average = total / query.durations.length;
 
-        const average = total / queries[queryName].length;
-
-        summaries.push({
-          average,
-          executionCount: queries[queryName].length,
-          sql: queryName,
-          total
+          return {
+            ...query,
+            average,
+            executionCount: query.durations.length,
+            total
+          };
         });
-      }
 
-      summaries.sort((a, b) => {
+      queries.sort((a, b) => {
         return a.total - b.total;
       });
 
-      summaries = summaries.map((summary) => {
+      queries = queries.map((summary) => {
         return [
-          stripComments(summary.sql).slice(0, 100),
+          wordWrap(stripComments(summary.sql), {
+            indent: '',
+            width: 60
+          }),
           summary.executionCount,
           prettyMs(summary.average),
           prettyMs(summary.total)
         ];
       });
 
-      summaries.unshift([
+      queries.unshift([
         'Query',
         'Execution count',
         'Average time',
@@ -65,10 +72,21 @@ export default (): InterceptorType => {
       ]);
 
       // eslint-disable-next-line no-console
-      console.log(table(summaries));
+      console.log(table(queries));
+
+      // eslint-disable-next-line fp/no-delete
+      delete connections[context.connectionId];
     },
     beforeQueryExecution: async (context) => {
-      context.sharedContext[benchmarkingContext] = process.hrtime.bigint();
+      if (!connections[context.connectionId].queries[context.originalQuery.sql]) {
+        connections[context.connectionId].queries[context.originalQuery.sql] = {
+          durations: [],
+          queryStartTimes: {},
+          sql: context.originalQuery.sql
+        };
+      }
+
+      connections[context.connectionId].queries[context.originalQuery.sql].queryStartTimes[context.queryId] = process.hrtime.bigint();
     }
   };
 };

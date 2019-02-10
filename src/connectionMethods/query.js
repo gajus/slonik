@@ -12,8 +12,39 @@ import {
 } from '../errors';
 import type {
   InternalQueryFunctionType,
+  LoggerType,
   QueryContextType
 } from '../types';
+
+const getPoolId = (log: LoggerType): string => {
+  const poolId = log.getContext().poolId;
+
+  if (typeof poolId !== 'string') {
+    throw new TypeError('Unexpected state.');
+  }
+
+  return poolId;
+};
+
+const getConnectionId = (log: LoggerType): string => {
+  const connectionId = log.getContext().connectionId;
+
+  if (typeof connectionId !== 'string') {
+    throw new TypeError('Unexpected state.');
+  }
+
+  return connectionId;
+};
+
+const getTransactionId = (log: LoggerType): string | void => {
+  const poolId = log.getContext().transactionId;
+
+  if (typeof poolId !== 'string' && typeof poolId !== 'undefined') {
+    throw new TypeError('Unexpected state.');
+  }
+
+  return poolId;
+};
 
 const query: InternalQueryFunctionType<*> = async (connectionLogger, connection, clientConfiguration, rawSql, values, inheritedQueryId) => {
   const queryId = inheritedQueryId || createQueryId();
@@ -32,10 +63,12 @@ const query: InternalQueryFunctionType<*> = async (connectionLogger, connection,
   };
 
   const executionContext: QueryContextType = {
+    connectionId: getConnectionId(log),
     log,
     originalQuery,
+    poolId: getPoolId(log),
     queryId,
-    sharedContext: {}
+    transactionId: getTransactionId(log)
   };
 
   for (const interceptor of clientConfiguration.interceptors) {
