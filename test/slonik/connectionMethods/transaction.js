@@ -2,9 +2,9 @@
 
 import test from 'ava';
 import sinon from 'sinon';
-import log from '../helpers/Logger';
-import createClientConfiguration from '../helpers/createClientConfiguration';
-import transaction from '../../src/connectionMethods/transaction';
+import log from '../../helpers/Logger';
+import createClientConfiguration from '../../helpers/createClientConfiguration';
+import transaction from '../../../src/connectionMethods/transaction';
 
 test('commits successful transaction', async (t) => {
   const query = sinon.stub();

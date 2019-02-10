@@ -2,12 +2,12 @@
 
 import test from 'ava';
 import sinon from 'sinon';
-import log from '../helpers/Logger';
-import createClientConfiguration from '../helpers/createClientConfiguration';
-import anyFirst from '../../src/connectionMethods/anyFirst';
+import log from '../../helpers/Logger';
+import createClientConfiguration from '../../helpers/createClientConfiguration';
+import anyFirst from '../../../src/connectionMethods/anyFirst';
 import {
   DataIntegrityError
-} from '../../src/errors';
+} from '../../../src/errors';
 
 test('returns values of the query result rows', async (t) => {
   const stub = sinon.stub().returns({

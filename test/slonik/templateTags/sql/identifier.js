@@ -1,7 +1,7 @@
 // @flow
 
 import test from 'ava';
-import sql from '../../../src/templateTags/sql';
+import sql from '../../../../src/templateTags/sql';
 
 test('creates an object describing a query with inlined identifiers', (t) => {
   const query = sql`SELECT ${'foo'} FROM ${sql.identifier(['bar'])}`;

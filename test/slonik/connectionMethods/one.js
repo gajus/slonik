@@ -2,13 +2,13 @@
 
 import test from 'ava';
 import sinon from 'sinon';
-import log from '../helpers/Logger';
-import createClientConfiguration from '../helpers/createClientConfiguration';
-import one from '../../src/connectionMethods/one';
+import log from '../../helpers/Logger';
+import createClientConfiguration from '../../helpers/createClientConfiguration';
+import one from '../../src/../connectionMethods/one';
 import {
   DataIntegrityError,
   NotFoundError
-} from '../../src/errors';
+} from '../../../src/errors';
 
 test('returns the first row', async (t) => {
   const stub = sinon.stub().returns({

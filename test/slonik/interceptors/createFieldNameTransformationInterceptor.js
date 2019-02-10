@@ -1,8 +1,8 @@
 // @flow
 
 import test from 'ava';
-import createQueryContext from '../helpers/createQueryContext';
-import createFieldNameTransformationInterceptor from '../../src/interceptors/createFieldNameTransformationInterceptor';
+import createQueryContext from '../../helpers/createQueryContext';
+import createFieldNameTransformationInterceptor from '../../../src/interceptors/createFieldNameTransformationInterceptor';
 
 test('changes field names to camelcase', (t) => {
   const interceptor = createFieldNameTransformationInterceptor({

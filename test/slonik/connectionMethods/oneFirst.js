@@ -2,14 +2,14 @@
 
 import test from 'ava';
 import sinon from 'sinon';
-import log from '../helpers/Logger';
-import createClientConfiguration from '../helpers/createClientConfiguration';
-import oneFirst from '../../src/connectionMethods/oneFirst';
+import log from '../helpers/../Logger';
+import createClientConfiguration from '../../helpers/createClientConfiguration';
+import oneFirst from '../../../src/connectionMethods/oneFirst';
 import {
   DataIntegrityError,
   NotFoundError,
   UnexpectedStateError
-} from '../../src/errors';
+} from '../../../src/errors';
 
 test('returns value of the first column from the first row', async (t) => {
   const stub = sinon.stub().returns({

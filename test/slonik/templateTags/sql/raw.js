@@ -1,7 +1,7 @@
 // @flow
 
 import test from 'ava';
-import sql from '../../../src/templateTags/sql';
+import sql from '../../../../src/templateTags/sql';
 
 test('inlines raw SQL', (t) => {
   const query = sql`SELECT 1 FROM ${sql.raw('"bar"')}`;

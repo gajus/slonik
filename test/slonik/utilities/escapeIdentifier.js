@@ -3,7 +3,7 @@
 import test from 'ava';
 import {
   escapeIdentifier
-} from '../../src/utilities';
+} from '../../../src/utilities';
 
 test('escapes SQL identifiers', (t) => {
   t.true(escapeIdentifier('foo') === '"foo"');

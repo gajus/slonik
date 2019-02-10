@@ -1,7 +1,7 @@
 // @flow
 
 import test from 'ava';
-import sql from '../../../src/templateTags/sql';
+import sql from '../../../../src/templateTags/sql';
 
 test('creates a value list', (t) => {
   const query = sql`SELECT (${sql.valueList([1, 2, 3])})`;

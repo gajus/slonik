@@ -1,7 +1,7 @@
 // @flow
 
 import test from 'ava';
-import sql from '../../../src/templateTags/sql';
+import sql from '../../../../src/templateTags/sql';
 
 test('creates a tuple', (t) => {
   const query = sql`INSERT INTO (foo, bar, baz) VALUES ${sql.tuple([1, 2, 3])}`;

@@ -1,7 +1,7 @@
 // @flow
 
 import test from 'ava';
-import sql from '../../../src/templateTags/sql';
+import sql from '../../../../src/templateTags/sql';
 
 test('creates an unnest expression', (t) => {
   const query = sql`SELECT * FROM ${sql.unnest([[1, 2, 3], [4, 5, 6]], ['integer', 'integer', 'integer'])}`;

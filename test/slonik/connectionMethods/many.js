@@ -2,12 +2,12 @@
 
 import test from 'ava';
 import sinon from 'sinon';
-import log from '../helpers/Logger';
-import createClientConfiguration from '../helpers/createClientConfiguration';
-import many from '../../src/connectionMethods/many';
+import log from '../../helpers/Logger';
+import createClientConfiguration from '../../helpers/createClientConfiguration';
+import many from '../../../src/connectionMethods/many';
 import {
   NotFoundError
-} from '../../src/errors';
+} from '../../../src/errors';
 
 test('returns the query results rows', async (t) => {
   const stub = sinon.stub().returns({

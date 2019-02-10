@@ -2,10 +2,10 @@
 
 import test from 'ava';
 import sinon from 'sinon';
-import sql from '../../src/templateTags/sql';
+import sql from '../../../src/templateTags/sql';
 import {
   mapTaggedTemplateLiteralInvocation
-} from '../../src/utilities';
+} from '../../../src/utilities';
 
 test('sql tag invocation', (t) => {
   const spy = sinon.spy();

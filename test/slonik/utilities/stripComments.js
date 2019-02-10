@@ -3,7 +3,7 @@
 import test from 'ava';
 import {
   stripComments
-} from '../../src/utilities';
+} from '../../../src/utilities';
 
 test('removes content begining with -- from every line in the input', (t) => {
   const subject1 = stripComments(`
