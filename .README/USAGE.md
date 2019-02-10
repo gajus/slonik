@@ -102,40 +102,4 @@ result;
 
 Connection is released back to the pool after the promise produced by the function supplied to `connect()` method is either resolved or rejected.
 
-The primary reason for implementing _only_ this connection pooling method is because the alternative is inherently unsafe, e.g.
-
-```js
-// Note: This example is using unsupported API.
-
-const main = async () => {
-  const connection = await pool.connect();
-
-  await connection.query(sql`SELECT produce_error()`);
-
-  await connection.release();
-};
-
-```
-
-In this example, the error causes early rejection of the promise and a hanging connection. A fix to the above is to ensure that `connection#release()` is always called, i.e.
-
-```js
-// Note: This example is using unsupported API.
-
-const main = async () => {
-  const connection = await pool.connect();
-
-  let lastExecutionResult;
-
-  try {
-    lastExecutionResult = await connection.query(sql`SELECT produce_error()`);
-  } finally {
-    await connection.release();
-  }
-
-  return lastExecutionResult;
-};
-
-```
-
-Slonik abstracts the latter pattern into `pool#connect()` method.
+Read: [Protecting against unsafe connection handling](#protecting-against-unsafe-connection-handling)
