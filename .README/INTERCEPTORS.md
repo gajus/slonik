@@ -21,7 +21,7 @@ Interceptors are executed in the order they are added.
 
 ### Interceptor methods
 
-Interceptors implement methods that are used to change the behaviour of the database client at different stages of the connection life-cycle:
+Interceptor is an object that implements methods that can change the behaviour of the database client at different stages of the connection life-cycle
 
 ```js
 type InterceptorType = {|
