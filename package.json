@@ -20,9 +20,12 @@
     "invariant": "^2.2.4",
     "pg": "^7.8.0",
     "pg-connection-string": "^2.0.0",
+    "pg-formatter": "^1.1.1",
     "pretty-hrtime": "^1.0.3",
+    "pretty-ms": "^4.0.0",
     "roarr": "^2.12.1",
     "serialize-error": "^3.0.0",
+    "table": "^5.2.2",
     "ulid": "^2.3.0"
   },
   "description": "A PostgreSQL client with strict types, detail logging and assertions.",
