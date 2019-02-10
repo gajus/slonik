@@ -706,7 +706,7 @@ type ConfigurationType = {|
 <a name="slonik-built-in-interceptors-benchmarking-interceptor"></a>
 ### Benchmarking interceptor
 
-Summarizes all queries that were run during the life-time of the connection.
+Summarizes all queries that were run during the life-time of a connection.
 
 Example output:
 
