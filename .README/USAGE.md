@@ -71,9 +71,22 @@ import {
   createPool
 } from 'slonik';
 
-const pool = createPool('postgres://localhost');
+const pool = createPool('postgres://');
 
 await pool.query(sql`SELECT 1`);
+
+```
+
+### Default configuration
+
+[Field name transformation interceptor](#field-name-transformation-interceptor) and [Query normalization interceptor](#query-normalization-interceptor) are enabled by default.
+
+To disable the default interceptors, pass an empty array, e.g.
+
+```js
+createPool('postgres://', {
+  interceptos: []
+});
 
 ```
 
