@@ -1075,7 +1075,7 @@ Produces:
 
 ```js
 {
-  sql: 'SELECT bar, baz FROM UNNEST($1::integer[], $2::text[]) AS foo(bar, baz)',
+  sql: 'SELECT bar, baz FROM unnest($1::integer[], $2::text[]) AS foo(bar, baz)',
   values: [
     [
       1,
