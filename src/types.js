@@ -126,7 +126,7 @@ export type ConnectionContextType = {|
  * @property queryId Unique query identifier.
  * @property sharedContext A context shared between all interceptors. Use this to share information between interceptors.
  */
-export type QueryExecutionContextType = {|
+export type QueryContextType = {|
   +log: LoggerType,
   +originalQuery: QueryType,
   +queryId: QueryIdType,
@@ -229,7 +229,7 @@ export type InterceptorType = {|
     connection: DatabasePoolConnectionType
   ) => MaybePromiseType<void>,
   +afterQueryExecution?: (
-    queryExecutionContext: QueryExecutionContextType,
+    queryContext: QueryContextType,
     query: QueryType,
     result: QueryResultType<QueryResultRowType>
   ) => MaybePromiseType<QueryResultType<QueryResultRowType>>,
@@ -238,11 +238,11 @@ export type InterceptorType = {|
     connection: DatabasePoolConnectionType
   ) => MaybePromiseType<void>,
   +beforeQueryExecution?: (
-    queryExecutionContext: QueryExecutionContextType,
+    queryContext: QueryContextType,
     query: QueryType
   ) => MaybePromiseType<QueryResultType<QueryResultRowType>> | MaybePromiseType<void>,
   +transformQuery?: (
-    queryExecutionContext: QueryExecutionContextType,
+    queryContext: QueryContextType,
     query: QueryType
   ) => MaybePromiseType<QueryType>
 |};

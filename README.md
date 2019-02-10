@@ -521,13 +521,19 @@ Interceptors implement methods that are used to change the behaviour of the data
 
 ```js
 type InterceptorType = {|
-  +afterPoolConnection?: (connection: DatabasePoolConnectionType) => MaybePromiseType<void>,
+  +afterPoolConnection?: (
+    connectionContext: ConnectionContextType,
+    connection: DatabasePoolConnectionType
+  ) => MaybePromiseType<void>,
   +afterQueryExecution?: (
     queryContext: QueryContextType,
     query: QueryType,
     result: QueryResultType<QueryResultRowType>
   ) => MaybePromiseType<QueryResultType<QueryResultRowType>>,
-  +beforePoolConnectionRelease?: (connection: DatabasePoolConnectionType) => MaybePromiseType<void>,
+  +beforePoolConnectionRelease?: (
+    connectionContext: ConnectionContextType,
+    connection: DatabasePoolConnectionType
+  ) => MaybePromiseType<void>,
   +beforeQueryExecution?: (
     queryContext: QueryContextType,
     query: QueryType
