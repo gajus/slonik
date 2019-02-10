@@ -247,7 +247,7 @@ connection.query(sql`SELECT ${userInput}`);
 
 Slonik takes over from here and constructs a query with value bindings, and sends the resulting query text and parameters to the PostgreSQL. As user `sql` tagged template literal is the only way to execute the query, it adds a strong layer of protection against accidental unsafe user-input handling due to limited knowledge of the SQL client API.
 
-As Slonik restricts user's ability to generate and execute dynamic SQL, it provides helper functions used to generate fragments of the query and the corresponding value bindings, e.g. [`sql.identifier`](#sqlidentifier), [`sql.tuple`](#sqltuple), [`sql.tupleList`](#sqltuplelist), [`sql.unnestList`](sqlunnestlist) and [`sql.valueList`](#sqlvaluelist). These methods generate tokens that the query executor interprets to construct a safe query, e.g.
+As Slonik restricts user's ability to generate and execute dynamic SQL, it provides helper functions used to generate fragments of the query and the corresponding value bindings, e.g. [`sql.identifier`](#sqlidentifier), [`sql.tuple`](#sqltuple), [`sql.tupleList`](#sqltuplelist), [`sql.unnest`](sqlunnest) and [`sql.valueList`](#sqlvaluelist). These methods generate tokens that the query executor interprets to construct a safe query, e.g.
 
 ```js
 connection.query(sql`
@@ -311,6 +311,7 @@ To sum up, Slonik is designed to prevent accidental creation of queries vulnerab
         * [Field name transformation interceptor](#slonik-built-in-interceptors-field-name-transformation-interceptor)
         * [Query normalization interceptor](#slonik-built-in-interceptors-query-normalization-interceptor)
     * [Recipes](#slonik-recipes)
+        * [Inserting large number of rows](#slonik-recipes-inserting-large-number-of-rows)
         * [Logging `auto_explain`](#slonik-recipes-logging-auto_explain)
         * [Using `sql.raw` to generate dynamic queries](#slonik-recipes-using-sql-raw-to-generate-dynamic-queries)
     * [Conventions](#slonik-conventions)
@@ -320,7 +321,7 @@ To sum up, Slonik is designed to prevent accidental creation of queries vulnerab
         * [`sql.valueList`](#slonik-value-placeholders-sql-valuelist)
         * [`sql.tuple`](#slonik-value-placeholders-sql-tuple)
         * [`sql.tupleList`](#slonik-value-placeholders-sql-tuplelist)
-        * [`sql.unnestList`](#slonik-value-placeholders-sql-unnestlist)
+        * [`sql.unnset`](#slonik-value-placeholders-sql-unnset)
         * [`sql.identifier`](#slonik-value-placeholders-sql-identifier)
         * [`sql.raw`](#slonik-value-placeholders-sql-raw)
     * [Query methods](#slonik-query-methods)
@@ -654,6 +655,90 @@ type ConfigurationType = {|
 <a name="slonik-recipes"></a>
 ## Recipes
 
+<a name="slonik-recipes-inserting-large-number-of-rows"></a>
+### Inserting large number of rows
+
+Slonik provides [`sql.tupleList`](#sqltuplelist) helper function to generate a list of tuples that can be used in the `INSERT` values expression, e.g.
+
+```js
+await connection.query(sql`
+  INSERT INTO (foo, bar, baz)
+  VALUES ${sql.tupleList([
+    [1, 2, 3],
+    [4, 5, 6]
+  ])}
+`);
+
+```
+
+Produces:
+
+```js
+{
+  sql: 'INSERT INTO (foo, bar, baz) VALUES ($1, $2, $3), ($4, $5, $6)',
+  values: [
+    1,
+    2,
+    3,
+    4,
+    5,
+    6
+  ]
+}
+
+```
+
+There are 2 downsides to this approach:
+
+1. The generated SQL is dynamic and will vary depending on the input.
+  * You will not be able to track query stats.
+  * Query parsing time increases with the query size.
+2. There is a maximum number of parameters that can be bound to the statement (65535).
+
+As an alternative, we can use [`sql.unnest`](#sqlunnest) to create a set of rows using `unnset`. In contrast to `sql.tupleList`, using the `unnset` approach requires only 1 variable per every column; values for each column are passed as an array, e.g.
+
+```js
+await connection.query(sql`
+  INSERT INTO (foo, bar, baz)
+  SELECT *
+  FROM ${sql.unnest(
+    [
+      [1, 2, 3],
+      [4, 5, 6]
+    ],
+    [
+      'integer',
+      'integer',
+      'integer'
+    ]
+  )}
+`);
+
+```
+
+Produces:
+
+```js
+{
+  sql: 'INSERT INTO (foo, bar, baz) SELECT * FROM unnest($1::integer[], $2::integer[], $2::integer[])',
+  values: [
+    [
+      1,
+      4
+    ],
+    [
+      2,
+      5
+    ],
+    [
+      3,
+      6
+    ]
+  ]
+}
+
+```
+
 <a name="slonik-recipes-logging-auto_explain"></a>
 ### Logging <code>auto_explain</code>
 
@@ -956,26 +1041,23 @@ Produces:
 
 ```
 
-<a name="slonik-value-placeholders-sql-unnestlist"></a>
-### <code>sql.unnestList</code>
+<a name="slonik-value-placeholders-sql-unnset"></a>
+### <code>sql.unnset</code>
 
 ```js
-/**
- * @param aliasNames When alias names for the unnset members are not provided, then incremental names are used (a, b, c...).
- */
 (
   tuples: $ReadOnlyArray<$ReadOnlyArray<PrimitiveValueExpressionType>>,
-  columnTypes: $ReadOnlyArray<string>,
-  aliasNames?: $ReadOnlyArray<string>
-): UnnestListSqlTokenType;
+  columnTypes: $ReadOnlyArray<string>
+): UnnestSqlTokenType;
 
 ```
 
-Creates a list of `unnset` expressions, e.g.
+Creates an `unnset` expressions, e.g.
 
 ```js
 await connection.query(sql`
-  SELECT ${sql.unnestList(
+  SELECT bar, baz
+  FROM ${sql.unnest(
     [
       [1, 'foo'],
       [2, 'bar']
@@ -984,7 +1066,7 @@ await connection.query(sql`
       'integer',
       'text'
     ]
-  )}
+  )} AS foo(bar, baz)
 `);
 
 ```
@@ -993,7 +1075,7 @@ Produces:
 
 ```js
 {
-  sql: 'SELECT UNNEST($1::integer[]), UNNEST($2::text[])',
+  sql: 'SELECT bar, baz FROM UNNEST($1::integer[], $2::text[]) AS foo(bar, baz)',
   values: [
     [
       1,
