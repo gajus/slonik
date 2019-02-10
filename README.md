@@ -313,6 +313,7 @@ To sum up, Slonik is designed to prevent accidental creation of queries vulnerab
     * [Built-in interceptors](#slonik-built-in-interceptors)
         * [Field name transformation interceptor](#slonik-built-in-interceptors-field-name-transformation-interceptor)
         * [Query normalization interceptor](#slonik-built-in-interceptors-query-normalization-interceptor)
+        * [Benchmarking interceptor](#slonik-built-in-interceptors-benchmarking-interceptor)
     * [Recipes](#slonik-recipes)
         * [Inserting large number of rows](#slonik-recipes-inserting-large-number-of-rows)
         * [Logging `auto_explain`](#slonik-recipes-logging-auto_explain)
@@ -620,6 +621,13 @@ Field name formatter uses `afterQuery` interceptor to format field names.
 #### API
 
 ```js
+import {
+  createFieldNameTransformationInterceptor
+} from 'slonik';
+
+```
+
+```js
 /**
  * @property format The only supported format is CAMEL_CASE.
  * @property test Tests whether the field should be formatted. The default behaviour is to include all fields that match ^[a-z0-9_]+$ regex.
@@ -677,6 +685,13 @@ Normalizes the query.
 #### API
 
 ```js
+import {
+  createQueryNormalizationInterceptor
+} from 'slonik';
+
+```
+
+```js
 /**
  * @property stripComments Strips comments from the query (default: true).
  */
@@ -685,6 +700,57 @@ type ConfigurationType = {|
 |};
 
 (configuration?: ConfigurationType) => InterceptorType;
+
+```
+
+<a name="slonik-built-in-interceptors-benchmarking-interceptor"></a>
+### Benchmarking interceptor
+
+Summarizes all queries that were run during the life-time of the connection.
+
+Example output:
+
+```
+╔═══════════════════════════════════════════════════════════════╤═════════════════╤══════════════╤════════════╗
+║ Query                                                         │ Execution count │ Average time │ Total time ║
+╟───────────────────────────────────────────────────────────────┼─────────────────┼──────────────┼────────────╢
+║ SELECT e1.auditorium_id "auditoriumId", v1.cinema_id          │ 1               │ 152ms        │ 152ms      ║
+║ "cinemaId" FROM event e1 INNER JOIN venue v1 ON v1.id =       │                 │              │            ║
+║ e1.venue_id WHERE e1.id = $1 AND e1.auditorium_id IS NOT      │                 │              │            ║
+║ NULL                                                          │                 │              │            ║
+╟───────────────────────────────────────────────────────────────┼─────────────────┼──────────────┼────────────╢
+║ UPDATE event SET scrape_event_seating_session = $1,           │ 1               │ 155ms        │ 155ms      ║
+║ scrape_event_seating_session_created_at = now() WHERE id =    │                 │              │            ║
+║ $2                                                            │                 │              │            ║
+╟───────────────────────────────────────────────────────────────┼─────────────────┼──────────────┼────────────╢
+║ SELECT s1.id, s1.location_column "locationColumn",            │ 1               │ 182ms        │ 182ms      ║
+║ s1.location_row "locationRow", sa1.fuid "seatingAreaFuid"     │                 │              │            ║
+║ FROM seat s1 INNER JOIN seating_area sa1 ON sa1.id =          │                 │              │            ║
+║ s1.seating_area_id WHERE s1.seating_plan_id = $1              │                 │              │            ║
+╟───────────────────────────────────────────────────────────────┼─────────────────┼──────────────┼────────────╢
+║ SELECT extract(epoch from                                     │ 1               │ 541ms        │ 541ms      ║
+║ (c1.maximum_event_seating_lookup_duration)) FROM event e1     │                 │              │            ║
+║ INNER JOIN venue v1 ON v1.id = e1.venue_id INNER JOIN cinema  │                 │              │            ║
+║ c1 ON c1.id = v1.cinema_id WHERE e1.id = $1                   │                 │              │            ║
+╟───────────────────────────────────────────────────────────────┼─────────────────┼──────────────┼────────────╢
+║ SELECT id FROM cinema_foreign_seat_type WHERE cinema_id = $1  │ 133             │ 127ms        │ 16.8s      ║
+║ AND fuid = $2                                                 │                 │              │            ║
+╚═══════════════════════════════════════════════════════════════╧═════════════════╧══════════════╧════════════╝
+
+```
+
+<a name="slonik-built-in-interceptors-benchmarking-interceptor-api-3"></a>
+#### API
+
+```js
+import {
+  createBenchmarkingInterceptor
+} from 'slonik';
+
+```
+
+```js
+() => InterceptorType;
 
 ```
 
