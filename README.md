@@ -304,6 +304,7 @@ To sum up, Slonik is designed to prevent accidental creation of queries vulnerab
     * [Documentation](#slonik-documentation)
     * [Usage](#slonik-usage)
         * [API](#slonik-usage-api)
+        * [Default configuration](#slonik-usage-default-configuration)
         * [Checking out a client from the connection pool](#slonik-usage-checking-out-a-client-from-the-connection-pool)
     * [Interceptors](#slonik-interceptors)
         * [Interceptor methods](#slonik-interceptors-interceptor-methods)
@@ -426,9 +427,23 @@ import {
   createPool
 } from 'slonik';
 
-const pool = createPool('postgres://localhost');
+const pool = createPool('postgres://');
 
 await pool.query(sql`SELECT 1`);
+
+```
+
+<a name="slonik-usage-default-configuration"></a>
+### Default configuration
+
+[Field name transformation interceptor](#field-name-transformation-interceptor) and [Query normalization interceptor](#query-normalization-interceptor) are enabled by default.
+
+To disable the default interceptors, pass an empty array, e.g.
+
+```js
+createPool('postgres://', {
+  interceptos: []
+});
 
 ```
 
