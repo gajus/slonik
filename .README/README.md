@@ -10,7 +10,7 @@ A [battle-tested](#battle-tested) PostgreSQL client with strict types, detail lo
 
 ![Tailing Slonik logs](./.README/slonik-log-tailing.gif)
 
-## Priciples
+## Principles
 
 * Promotes writing of raw SQL.
 * Discourages ad-hoc dynamic generation of SQL.
