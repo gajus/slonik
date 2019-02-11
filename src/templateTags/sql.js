@@ -15,11 +15,11 @@ import type {
 import isPrimitiveValueExpression from '../utilities/isPrimitiveValueExpression';
 import Logger from '../Logger';
 import createRawSqlSqlFragment from './createRawSqlSqlFragment';
-import careateIdentifierSqlFragment from './careateIdentifierSqlFragment';
-import careateValueListSqlFragment from './careateValueListSqlFragment';
-import careateTupleSqlFragment from './careateTupleSqlFragment';
-import careateTupleListSqlFragment from './careateTupleListSqlFragment';
-import careateUnnestSqlFragment from './careateUnnestSqlFragment';
+import createIdentifierSqlFragment from './createIdentifierSqlFragment';
+import createValueListSqlFragment from './createValueListSqlFragment';
+import createTupleSqlFragment from './createTupleSqlFragment';
+import createTupleListSqlFragment from './createTupleListSqlFragment';
+import createUnnestSqlFragment from './createUnnestSqlFragment';
 
 const log = Logger.child({
   namespace: 'sql'
@@ -56,15 +56,15 @@ const sql = (
     } else if (token && token.type === 'RAW_SQL') {
       appendSqlFragment(createRawSqlSqlFragment(token, parameters.length));
     } else if (token && token.type === 'IDENTIFIER') {
-      appendSqlFragment(careateIdentifierSqlFragment(token));
+      appendSqlFragment(createIdentifierSqlFragment(token));
     } else if (token && token.type === 'VALUE_LIST') {
-      appendSqlFragment(careateValueListSqlFragment(token, parameters.length));
+      appendSqlFragment(createValueListSqlFragment(token, parameters.length));
     } else if (token && token.type === 'TUPLE') {
-      appendSqlFragment(careateTupleSqlFragment(token, parameters.length));
+      appendSqlFragment(createTupleSqlFragment(token, parameters.length));
     } else if (token && token.type === 'TUPLE_LIST') {
-      appendSqlFragment(careateTupleListSqlFragment(token, parameters.length));
+      appendSqlFragment(createTupleListSqlFragment(token, parameters.length));
     } else if (token && token.type === 'UNNEST') {
-      appendSqlFragment(careateUnnestSqlFragment(token, parameters.length));
+      appendSqlFragment(createUnnestSqlFragment(token, parameters.length));
     } else {
       log.error({
         constructedSql: rawSql,
