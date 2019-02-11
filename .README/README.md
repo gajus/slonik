@@ -10,6 +10,13 @@ A [battle-tested](#battle-tested) PostgreSQL client with strict types, detail lo
 
 ![Tailing Slonik logs](./.README/slonik-log-tailing.gif)
 
+## Priciples
+
+* Promotes writing of raw SQL.
+* Discourages ad-hoc dynamic generation of SQL.
+
+Note: Using this project does not require TypeScript or Flow. It is a regular ES6 module. Ignore the type definitions used in the documentation if you do not use a type system.
+
 ## Features
 
 * [Assertions and type safety](#repeating-code-patterns-and-type-safety)
