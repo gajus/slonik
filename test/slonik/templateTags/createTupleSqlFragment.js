@@ -39,5 +39,5 @@ test('throws an error if tuple is empty', (t) => {
       type: 'TUPLE',
       values: []
     }, 1);
-  }, 'Tuple must have values.');
+  }, 'Tuple must have at least 1 member.');
 });

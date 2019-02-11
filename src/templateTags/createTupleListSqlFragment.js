@@ -4,6 +4,9 @@ import type {
   SqlFragmentType,
   TupleListSqlTokenType
 } from '../types';
+import {
+  UnexpectedStateError
+} from '../errors';
 
 export default (token: TupleListSqlTokenType, greatestParameterPosition: number): SqlFragmentType => {
   const parameters = [];
@@ -17,8 +20,12 @@ export default (token: TupleListSqlTokenType, greatestParameterPosition: number)
   for (const tuple of token.tuples) {
     const placeholders = [];
 
+    if (tuple.length === 0) {
+      throw new UnexpectedStateError('Tuple must have at least 1 member.');
+    }
+
     if (typeof lastTupleSize === 'number' && lastTupleSize !== tuple.length) {
-      throw new Error('Each tuple in a list of tuples must have an equal number of members.');
+      throw new UnexpectedStateError('Each tuple in a list of tuples must have an equal number of members.');
     }
 
     lastTupleSize = tuple.length;

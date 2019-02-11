@@ -15,7 +15,7 @@ export default (token: TupleSqlTokenType, greatestParameterPosition: number): Sq
   let placeholderIndex = greatestParameterPosition;
 
   if (token.values.length === 0) {
-    throw new UnexpectedStateError('Tuple must have values.');
+    throw new UnexpectedStateError('Tuple must have at least 1 member.');
   }
 
   for (const tupleValue of token.values) {
