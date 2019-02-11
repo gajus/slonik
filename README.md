@@ -11,8 +11,8 @@ A [battle-tested](#battle-tested) PostgreSQL client with strict types, detail lo
 
 ![Tailing Slonik logs](./.README/slonik-log-tailing.gif)
 
-<a name="slonik-priciples"></a>
-## Priciples
+<a name="slonik-principles"></a>
+## Principles
 
 * Promotes writing of raw SQL.
 * Discourages ad-hoc dynamic generation of SQL.
@@ -300,7 +300,7 @@ To sum up, Slonik is designed to prevent accidental creation of queries vulnerab
 ## Documentation
 
 * [Slonik](#slonik)
-    * [Priciples](#slonik-priciples)
+    * [Principles](#slonik-principles)
     * [Features](#slonik-features)
     * [About Slonik](#slonik-about-slonik)
         * [Battle-Tested](#slonik-about-slonik-battle-tested)
