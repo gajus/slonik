@@ -116,6 +116,11 @@ export type QueryType = {|
   +values?: $ReadOnlyArray<PrimitiveValueExpressionType>
 |};
 
+export type SqlFragmentType = {|
+  +parameters: $ReadOnlyArray<PrimitiveValueExpressionType>,
+  +sql: string
+|};
+
 /**
  * @property connectionId Unique connection ID.
  * @property log Instance of Roarr logger with bound connection context parameters.

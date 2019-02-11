@@ -1,10 +1,10 @@
 // @flow
 
-import invariant from 'invariant';
 import type {
   IdentifierTokenType,
   PrimitiveValueExpressionType,
   RawSqlTokenType,
+  SqlFragmentType,
   TaggledTemplateLiteralInvocationType,
   TupleListSqlTokenType,
   TupleSqlTokenType,
@@ -12,177 +12,63 @@ import type {
   ValueExpressionType,
   ValueListSqlTokenType
 } from '../types';
-import {
-  escapeIdentifier
-} from '../utilities';
 import isPrimitiveValueExpression from '../utilities/isPrimitiveValueExpression';
 import Logger from '../Logger';
+import createRawSqlSqlFragment from './createRawSqlSqlFragment';
+import careateIdentifierSqlFragment from './careateIdentifierSqlFragment';
+import careateValueListSqlFragment from './careateValueListSqlFragment';
+import careateTupleSqlFragment from './careateTupleSqlFragment';
+import careateTupleListSqlFragment from './careateTupleListSqlFragment';
+import careateUnnestSqlFragment from './careateUnnestSqlFragment';
 
 const log = Logger.child({
   namespace: 'sql'
 });
 
-// eslint-disable-next-line complexity
-const sql = (parts: $ReadOnlyArray<string>, ...values: $ReadOnlyArray<ValueExpressionType>): TaggledTemplateLiteralInvocationType => {
-  let raw = '';
+const sql = (
+  parts: $ReadOnlyArray<string>,
+  ...values: $ReadOnlyArray<ValueExpressionType>
+): TaggledTemplateLiteralInvocationType => {
+  let rawSql = '';
 
-  const bindings = [];
+  const parameters = [];
 
   let index = 0;
 
-  for (const part of parts) {
-    const value = values[index++];
+  const appendSqlFragment = (sqlFragment: SqlFragmentType) => {
+    rawSql += sqlFragment.sql;
+    parameters.push(...sqlFragment.parameters);
+  };
 
-    raw += part;
+  for (const part of parts) {
+    const token = values[index++];
+
+    rawSql += part;
 
     if (index >= parts.length) {
       continue;
     }
 
-    if (value && value.type === 'RAW_SQL' && typeof value.sql === 'string') {
-      if (Array.isArray(value.values) && value.values.length) {
-        const fragmentValues = value.values;
+    if (isPrimitiveValueExpression(token)) {
+      rawSql += '$' + (parameters.length + 1);
 
-        raw += value.sql.replace(/\$(\d+)/, (match, g1) => {
-          return '$' + (parseInt(g1, 10) + bindings.length);
-        });
-
-        for (const fragmentValue of fragmentValues) {
-          invariant(isPrimitiveValueExpression(fragmentValue), 'Unexpected value binding type.');
-
-          bindings.push(fragmentValue);
-        }
-      } else {
-        raw += value.sql;
-      }
-    } else if (value && value.type === 'IDENTIFIER' && Array.isArray(value.names)) {
-      raw += value.names
-        .map((identifierName) => {
-          if (typeof identifierName !== 'string') {
-            throw new TypeError('Identifier name must be a string.');
-          }
-
-          return escapeIdentifier(identifierName);
-        })
-        .join('.');
-
-      continue;
-    } else if (value && value.type === 'VALUE_LIST' && Array.isArray(value.values)) {
-      const placeholders = [];
-
-      let placeholderIndex = bindings.length;
-
-      for (const listValue of value.values) {
-        placeholders.push('$' + ++placeholderIndex);
-
-        invariant(isPrimitiveValueExpression(listValue), 'Unexpected value list member type.');
-
-        bindings.push(listValue);
-      }
-
-      raw += placeholders.join(', ');
-    } else if (value && value.type === 'TUPLE' && Array.isArray(value.values)) {
-      const placeholders = [];
-
-      let placeholderIndex = bindings.length;
-
-      for (const tupleValue of value.values) {
-        placeholders.push('$' + ++placeholderIndex);
-
-        invariant(isPrimitiveValueExpression(tupleValue), 'Unexpected tuple member type.');
-
-        bindings.push(tupleValue);
-      }
-
-      raw += '(' + placeholders.join(', ') + ')';
-    } else if (value && value.type === 'TUPLE_LIST' && Array.isArray(value.tuples)) {
-      let placeholderIndex = bindings.length;
-
-      const tupleListMemberSql = [];
-
-      let lastTupleSize;
-
-      for (const tuple of value.tuples) {
-        const placeholders = [];
-
-        invariant(Array.isArray(tuple), 'Unexpected tuple shape.');
-
-        if (typeof lastTupleSize === 'number' && lastTupleSize !== tuple.length) {
-          throw new Error('Each tuple in a list of tuples must have an equal number of members.');
-        }
-
-        lastTupleSize = tuple.length;
-
-        for (const member of tuple) {
-          placeholders.push('$' + ++placeholderIndex);
-
-          invariant(isPrimitiveValueExpression(member), 'Unexpected tuple member type.');
-
-          bindings.push(member);
-        }
-
-        tupleListMemberSql.push('(' + placeholders.join(', ') + ')');
-      }
-
-      raw += tupleListMemberSql.join(', ');
-    } else if (value && value.type === 'UNNEST' && Array.isArray(value.tuples)) {
-      invariant(Array.isArray(value.columnTypes), 'Unexpected column types shape.');
-
-      const columnTypes = value.columnTypes;
-
-      const unnestBindings = [];
-      const unnsetSqlTokens = [];
-
-      let columnIndex = 0;
-
-      let placeholderIndex = bindings.length;
-
-      while (columnIndex < columnTypes.length) {
-        const columnType = columnTypes[columnIndex];
-
-        invariant(typeof columnType === 'string', 'Column type unavailable');
-
-        unnsetSqlTokens.push('$' + ++placeholderIndex + '::' + escapeIdentifier(columnType) + '[]');
-
-        unnestBindings[columnIndex] = [];
-
-        columnIndex++;
-      }
-
-      let lastTupleSize;
-
-      for (const tupleValues of value.tuples) {
-        invariant(Array.isArray(tupleValues), 'Values must be an array.');
-
-        if (typeof lastTupleSize === 'number' && lastTupleSize !== tupleValues.length) {
-          throw new Error('Each tuple in a list of tuples must have an equal number of members.');
-        }
-
-        if (tupleValues.length !== columnTypes.length) {
-          throw new Error('Column types length must match tuple member length.');
-        }
-
-        lastTupleSize = tupleValues.length;
-
-        let tupleColumnIndex = 0;
-
-        for (const tupleValue of tupleValues) {
-          invariant(isPrimitiveValueExpression(tupleValue), 'Unexpected tuple member type.');
-
-          unnestBindings[tupleColumnIndex++].push(tupleValue);
-        }
-      }
-
-      bindings.push(...unnestBindings);
-      raw += 'unnest(' + unnsetSqlTokens.join(', ') + ')';
-    } else if (isPrimitiveValueExpression(value)) {
-      raw += '$' + (bindings.length + 1);
-
-      bindings.push(value);
+      parameters.push(token);
+    } else if (token && token.type === 'RAW_SQL') {
+      appendSqlFragment(createRawSqlSqlFragment(token, parameters.length));
+    } else if (token && token.type === 'IDENTIFIER') {
+      appendSqlFragment(careateIdentifierSqlFragment(token));
+    } else if (token && token.type === 'VALUE_LIST') {
+      appendSqlFragment(careateValueListSqlFragment(token, parameters.length));
+    } else if (token && token.type === 'TUPLE') {
+      appendSqlFragment(careateTupleSqlFragment(token, parameters.length));
+    } else if (token && token.type === 'TUPLE_LIST') {
+      appendSqlFragment(careateTupleListSqlFragment(token, parameters.length));
+    } else if (token && token.type === 'UNNEST') {
+      appendSqlFragment(careateUnnestSqlFragment(token, parameters.length));
     } else {
       log.error({
-        constructedSql: raw,
-        offendingValue: value
+        constructedSql: rawSql,
+        offendingToken: token
       }, 'unexpected value expression');
 
       throw new TypeError('Unexpected value expression.');
@@ -190,12 +76,14 @@ const sql = (parts: $ReadOnlyArray<string>, ...values: $ReadOnlyArray<ValueExpre
   }
 
   return {
-    sql: raw,
-    values: bindings
+    sql: rawSql,
+    values: parameters
   };
 };
 
-sql.identifier = (names: $ReadOnlyArray<string>): IdentifierTokenType => {
+sql.identifier = (
+  names: $ReadOnlyArray<string>
+): IdentifierTokenType => {
   // @todo Replace `type` with a symbol once Flow adds symbol support
   // @see https://github.com/facebook/flow/issues/810
   return {
@@ -204,7 +92,9 @@ sql.identifier = (names: $ReadOnlyArray<string>): IdentifierTokenType => {
   };
 };
 
-sql.raw = (rawSql: string, values?: $ReadOnlyArray<PrimitiveValueExpressionType>): RawSqlTokenType => {
+sql.raw = (
+  rawSql: string, values?: $ReadOnlyArray<PrimitiveValueExpressionType>
+): RawSqlTokenType => {
   return {
     sql: rawSql,
     type: 'RAW_SQL',
@@ -212,21 +102,27 @@ sql.raw = (rawSql: string, values?: $ReadOnlyArray<PrimitiveValueExpressionType>
   };
 };
 
-sql.valueList = (values: $ReadOnlyArray<PrimitiveValueExpressionType>): ValueListSqlTokenType => {
+sql.valueList = (
+  values: $ReadOnlyArray<PrimitiveValueExpressionType>
+): ValueListSqlTokenType => {
   return {
     type: 'VALUE_LIST',
     values
   };
 };
 
-sql.tuple = (values: $ReadOnlyArray<PrimitiveValueExpressionType>): TupleSqlTokenType => {
+sql.tuple = (
+  values: $ReadOnlyArray<PrimitiveValueExpressionType>
+): TupleSqlTokenType => {
   return {
     type: 'TUPLE',
     values
   };
 };
 
-sql.tupleList = (tuples: $ReadOnlyArray<$ReadOnlyArray<PrimitiveValueExpressionType>>): TupleListSqlTokenType => {
+sql.tupleList = (
+  tuples: $ReadOnlyArray<$ReadOnlyArray<PrimitiveValueExpressionType>>
+): TupleListSqlTokenType => {
   return {
     tuples,
     type: 'TUPLE_LIST'

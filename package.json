@@ -17,7 +17,6 @@
     "crack-json": "^1.1.0",
     "es6-error": "^4.1.1",
     "get-stack-trace": "^2.0.1",
-    "invariant": "^2.2.4",
     "pg": "^7.8.0",
     "pg-connection-string": "^2.0.0",
     "pretty-ms": "^4.0.0",
