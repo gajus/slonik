@@ -1,7 +1,7 @@
 // @flow
 
 import test from 'ava';
-import createValueListSqlFragment from '../../../src/templateTags/createValueListSqlFragment';
+import createValueListSqlFragment from '../../../src/sqlFragmentFactories/createValueListSqlFragment';
 
 test('creates a single parameter', (t) => {
   const sqlFragment = createValueListSqlFragment({

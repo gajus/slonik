@@ -1,7 +1,7 @@
 // @flow
 
 import test from 'ava';
-import createRawSqlSqlFragment from '../../../src/templateTags/createRawSqlSqlFragment';
+import createRawSqlSqlFragment from '../../../src/sqlFragmentFactories/createRawSqlSqlFragment';
 
 test('creates a tuple with a single parameter', (t) => {
   const sqlFragment = createRawSqlSqlFragment({

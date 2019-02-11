@@ -14,12 +14,14 @@ import type {
 } from '../types';
 import isPrimitiveValueExpression from '../utilities/isPrimitiveValueExpression';
 import Logger from '../Logger';
-import createRawSqlSqlFragment from './createRawSqlSqlFragment';
-import createIdentifierSqlFragment from './createIdentifierSqlFragment';
-import createValueListSqlFragment from './createValueListSqlFragment';
-import createTupleSqlFragment from './createTupleSqlFragment';
-import createTupleListSqlFragment from './createTupleListSqlFragment';
-import createUnnestSqlFragment from './createUnnestSqlFragment';
+import {
+  createRawSqlSqlFragment,
+  createIdentifierSqlFragment,
+  createValueListSqlFragment,
+  createTupleSqlFragment,
+  createTupleListSqlFragment,
+  createUnnestSqlFragment
+} from '../sqlFragmentFactories';
 
 const log = Logger.child({
   namespace: 'sql'

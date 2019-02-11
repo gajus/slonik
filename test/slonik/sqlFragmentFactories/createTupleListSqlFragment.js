@@ -1,7 +1,7 @@
 // @flow
 
 import test from 'ava';
-import createTupleListSqlFragment from '../../../src/templateTags/createTupleListSqlFragment';
+import createTupleListSqlFragment from '../../../src/sqlFragmentFactories/createTupleListSqlFragment';
 
 test('creates a single tuple with a single parameter', (t) => {
   const sqlFragment = createTupleListSqlFragment({
