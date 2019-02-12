@@ -17,7 +17,7 @@ A [battle-tested](#battle-tested) PostgreSQL client with strict types, detail lo
 * Promotes writing raw SQL.
 * Discourages ad-hoc dynamic generation of SQL.
 
-Read: [Stop using Knex.js (and get $30)](https://medium.com/@gajus/stop-using-knex-js-and-earn-30-bf410349856c)
+Read: [Stop using Knex.js](https://medium.com/@gajus/bf410349856c)
 
 Note: Using this project does not require TypeScript or Flow. It is a regular ES6 module. Ignore the type definitions used in the documentation if you do not use a type system.
 
