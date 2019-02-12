@@ -8,6 +8,7 @@ test('creates a value list', (t) => {
 
   t.deepEqual(query, {
     sql: 'SELECT ($1, $2, $3)',
+    type: 'SQL',
     values: [
       1,
       2,

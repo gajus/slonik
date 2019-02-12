@@ -1,11 +1,11 @@
 // @flow
 
 import type {
-  TaggledTemplateLiteralInvocationType
+  TaggedTemplateLiteralInvocationType
 } from '../types';
 
 export default (targetMethod: *) => {
-  return (query: TaggledTemplateLiteralInvocationType) => {
+  return (query: TaggedTemplateLiteralInvocationType) => {
     if (typeof query === 'string') {
       throw new TypeError('Query must be constructed using `sql` tagged template literal.');
     }

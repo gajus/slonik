@@ -8,6 +8,7 @@ test('creates an object describing a query with inlined identifiers', (t) => {
 
   t.deepEqual(query, {
     sql: 'SELECT $1 FROM "bar"',
+    type: 'SQL',
     values: [
       'foo'
     ]
@@ -19,6 +20,7 @@ test('creates an object describing a query with inlined identifiers (specifier)'
 
   t.deepEqual(query, {
     sql: 'SELECT $1 FROM "bar"."baz"',
+    type: 'SQL',
     values: [
       'foo'
     ]

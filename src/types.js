@@ -163,6 +163,12 @@ export type IdentifierTokenType = {|
   +type: 'IDENTIFIER'
 |};
 
+export type SqlSqlTokenType = {|
+  +sql: string,
+  +type: 'SQL',
+  +values: $ReadOnlyArray<PrimitiveValueExpressionType>
+|};
+
 export type RawSqlTokenType = {|
   +sql: string,
   +type: 'RAW_SQL',
@@ -195,14 +201,16 @@ export type PrimitiveValueExpressionType = string | number | boolean | null;
 export type ValueExpressionType =
   PrimitiveValueExpressionType |
   IdentifierTokenType |
+  SqlSqlTokenType |
   RawSqlTokenType |
   ValueListSqlTokenType |
   TupleSqlTokenType |
   TupleListSqlTokenType |
   UnnestSqlTokenType;
 
-export type TaggledTemplateLiteralInvocationType = {|
+export type TaggedTemplateLiteralInvocationType = {|
   +sql: string,
+  +type: 'SQL',
   +values: $ReadOnlyArray<ValueExpressionType>
 |};
 
@@ -233,7 +241,7 @@ export type InternalTransactionFunctionType = (
 ) => Promise<*>;
 
 type QueryMethodType<R> = (
-  sql: TaggledTemplateLiteralInvocationType,
+  sql: TaggedTemplateLiteralInvocationType,
   values?: $ReadOnlyArray<PrimitiveValueExpressionType>
 ) => Promise<R>;
 

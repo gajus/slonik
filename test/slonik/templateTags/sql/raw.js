@@ -8,6 +8,7 @@ test('inlines raw SQL', (t) => {
 
   t.deepEqual(query, {
     sql: 'SELECT 1 FROM "bar"',
+    type: 'SQL',
     values: []
   });
 });
@@ -17,6 +18,7 @@ test('inlines raw SQL with values', (t) => {
 
   t.deepEqual(query, {
     sql: 'SELECT $1',
+    type: 'SQL',
     values: [
       'foo'
     ]
@@ -28,6 +30,7 @@ test('offsets bindings to match existing bindings', (t) => {
 
   t.deepEqual(query, {
     sql: 'SELECT $1, $2',
+    type: 'SQL',
     values: [
       'foo',
       'bar'

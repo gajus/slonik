@@ -8,6 +8,7 @@ test('creates a list of tuples', (t) => {
 
   t.deepEqual(query, {
     sql: 'INSERT INTO (foo, bar, baz) VALUES ($1, $2, $3), ($4, $5, $6)',
+    type: 'SQL',
     values: [
       1,
       2,

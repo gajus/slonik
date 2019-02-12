@@ -8,6 +8,7 @@ test('creates an object describing a query', (t) => {
 
   t.deepEqual(query, {
     sql: 'SELECT 1',
+    type: 'SQL',
     values: []
   });
 });
@@ -17,6 +18,7 @@ test('creates an object describing query value bindings', (t) => {
 
   t.deepEqual(query, {
     sql: 'SELECT $1',
+    type: 'SQL',
     values: [
       'foo'
     ]
@@ -24,13 +26,28 @@ test('creates an object describing query value bindings', (t) => {
 });
 
 test('creates an object describing query value bindings (multiple)', (t) => {
-  const query = sql`SELECT ${'foo'} FROM ${'bar'}`;
+  const query = sql`SELECT ${'foo'}, ${'bar'}`;
 
   t.deepEqual(query, {
-    sql: 'SELECT $1 FROM $2',
+    sql: 'SELECT $1, $2',
+    type: 'SQL',
     values: [
       'foo',
       'bar'
+    ]
+  });
+});
+
+test('nests sql templates', (t) => {
+  const query0 = sql`SELECT ${'foo'} FROM bar`;
+  const query1 = sql`SELECT ${'baz'} FROM (${query0})`;
+
+  t.deepEqual(query1, {
+    sql: 'SELECT $1 FROM (SELECT $2 FROM bar)',
+    type: 'SQL',
+    values: [
+      'baz',
+      'foo'
     ]
   });
 });

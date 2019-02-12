@@ -8,6 +8,7 @@ test('creates an unnest expression', (t) => {
 
   t.deepEqual(query, {
     sql: 'SELECT * FROM unnest($1::"integer"[], $2::"integer"[], $3::"integer"[])',
+    type: 'SQL',
     values: [
       [
         1,
@@ -30,6 +31,7 @@ test('creates incremental alias names if no alias names are provided', (t) => {
 
   t.deepEqual(query, {
     sql: 'SELECT * FROM unnest($1::"integer"[], $2::"integer"[], $3::"integer"[])',
+    type: 'SQL',
     values: [
       [
         1,

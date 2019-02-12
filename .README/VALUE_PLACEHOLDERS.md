@@ -28,6 +28,29 @@ WHERE bar = $1
 
 query with 'baz' value binding.
 
+### Nesting `sql`
+
+`sql` tagged template literals can be nested, e.g.
+
+```js
+const query0 = sql`SELECT ${'foo'} FROM bar`;
+const query1 = sql`SELECT ${'baz'} FROM (${query0})`;
+
+```
+
+Produces:
+
+```js
+{
+  sql: 'SELECT $1 FROM (SELECT $2 FROM bar)',
+  values: [
+    'baz',
+    'foo'
+  ]
+}
+
+```
+
 ### `sql.valueList`
 
 ```js

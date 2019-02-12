@@ -5,7 +5,7 @@ import type {
   PrimitiveValueExpressionType,
   RawSqlTokenType,
   SqlFragmentType,
-  TaggledTemplateLiteralInvocationType,
+  SqlSqlTokenType,
   TupleListSqlTokenType,
   TupleSqlTokenType,
   UnnestSqlTokenType,
@@ -15,12 +15,13 @@ import type {
 import isPrimitiveValueExpression from '../utilities/isPrimitiveValueExpression';
 import Logger from '../Logger';
 import {
-  createRawSqlSqlFragment,
   createIdentifierSqlFragment,
-  createValueListSqlFragment,
-  createTupleSqlFragment,
+  createRawSqlSqlFragment,
+  createSqlSqlFragment,
   createTupleListSqlFragment,
-  createUnnestSqlFragment
+  createTupleSqlFragment,
+  createUnnestSqlFragment,
+  createValueListSqlFragment
 } from '../sqlFragmentFactories';
 
 const log = Logger.child({
@@ -30,7 +31,7 @@ const log = Logger.child({
 const sql = (
   parts: $ReadOnlyArray<string>,
   ...values: $ReadOnlyArray<ValueExpressionType>
-): TaggledTemplateLiteralInvocationType => {
+): SqlSqlTokenType => {
   let rawSql = '';
 
   const parameters = [];
@@ -55,6 +56,8 @@ const sql = (
       rawSql += '$' + (parameters.length + 1);
 
       parameters.push(token);
+    } else if (token && token.type === 'SQL') {
+      appendSqlFragment(createSqlSqlFragment(token, parameters.length));
     } else if (token && token.type === 'RAW_SQL') {
       appendSqlFragment(createRawSqlSqlFragment(token, parameters.length));
     } else if (token && token.type === 'IDENTIFIER') {
@@ -79,6 +82,7 @@ const sql = (
 
   return {
     sql: rawSql,
+    type: 'SQL',
     values: parameters
   };
 };
