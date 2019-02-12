@@ -330,6 +330,7 @@ To sum up, Slonik is designed to prevent accidental creation of queries vulnerab
         * [No multiline values](#slonik-conventions-no-multiline-values)
     * [Value placeholders](#slonik-value-placeholders)
         * [Tagged template literals](#slonik-value-placeholders-tagged-template-literals)
+        * [Nesting `sql`](#slonik-value-placeholders-nesting-sql)
         * [`sql.valueList`](#slonik-value-placeholders-sql-valuelist)
         * [`sql.tuple`](#slonik-value-placeholders-sql-tuple)
         * [`sql.tupleList`](#slonik-value-placeholders-sql-tuplelist)
@@ -1065,6 +1066,30 @@ WHERE bar = $1
 ```
 
 query with 'baz' value binding.
+
+<a name="slonik-value-placeholders-nesting-sql"></a>
+### Nesting <code>sql</code>
+
+`sql` tagged template literals can be nested, e.g.
+
+```js
+const query0 = sql`SELECT ${'foo'} FROM bar`;
+const query1 = sql`SELECT ${'baz'} FROM (${query0})`;
+
+```
+
+Produces:
+
+```js
+{
+  sql: 'SELECT $1 FROM (SELECT $2 FROM bar)',
+  values: [
+    'baz',
+    'foo'
+  ]
+}
+
+```
 
 <a name="slonik-value-placeholders-sql-valuelist"></a>
 ### <code>sql.valueList</code>
