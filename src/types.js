@@ -201,17 +201,48 @@ export type PrimitiveValueExpressionType = string | number | boolean | null;
 export type ValueExpressionType =
   PrimitiveValueExpressionType |
   IdentifierTokenType |
-  SqlSqlTokenType |
   RawSqlTokenType |
-  ValueListSqlTokenType |
-  TupleSqlTokenType |
+  SqlSqlTokenType |
   TupleListSqlTokenType |
-  UnnestSqlTokenType;
+  TupleSqlTokenType |
+  UnnestSqlTokenType |
+  ValueListSqlTokenType;
 
 export type TaggedTemplateLiteralInvocationType = {|
   +sql: string,
   +type: 'SQL',
   +values: $ReadOnlyArray<ValueExpressionType>
+|};
+
+/**
+ * see https://twitter.com/kuizinas/status/914139352908943360
+ */
+export type SqlTaggedTemplateType = {|
+  // eslint-disable-next-line no-undef
+  [[call]]: (
+    parts: $ReadOnlyArray<string>,
+    ...values: $ReadOnlyArray<ValueExpressionType>
+  ) => SqlSqlTokenType,
+  identifier: (
+    names: $ReadOnlyArray<string>
+  ) => IdentifierTokenType,
+  raw: (
+    rawSql: string,
+    values?: $ReadOnlyArray<PrimitiveValueExpressionType>
+  ) => RawSqlTokenType,
+  tuple: (
+    values: $ReadOnlyArray<PrimitiveValueExpressionType>
+  ) => TupleSqlTokenType,
+  tupleList: (
+    tuples: $ReadOnlyArray<$ReadOnlyArray<PrimitiveValueExpressionType>>
+  ) => TupleListSqlTokenType,
+  unnest: (
+    tuples: $ReadOnlyArray<$ReadOnlyArray<PrimitiveValueExpressionType>>,
+    columnTypes: $ReadOnlyArray<string>
+  ) => UnnestSqlTokenType,
+  valueList: (
+    values: $ReadOnlyArray<PrimitiveValueExpressionType>
+  ) => ValueListSqlTokenType
 |};
 
 export type InternalQueryMethodType<R> = (

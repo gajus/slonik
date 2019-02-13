@@ -6,6 +6,7 @@ import type {
   RawSqlTokenType,
   SqlFragmentType,
   SqlSqlTokenType,
+  SqlTaggedTemplateType,
   TupleListSqlTokenType,
   TupleSqlTokenType,
   UnnestSqlTokenType,
@@ -28,7 +29,8 @@ const log = Logger.child({
   namespace: 'sql'
 });
 
-const sql = (
+// $FlowFixMe
+const sql: SqlTaggedTemplateType = (
   parts: $ReadOnlyArray<string>,
   ...values: $ReadOnlyArray<ValueExpressionType>
 ): SqlSqlTokenType => {
@@ -99,7 +101,8 @@ sql.identifier = (
 };
 
 sql.raw = (
-  rawSql: string, values?: $ReadOnlyArray<PrimitiveValueExpressionType>
+  rawSql: string,
+  values?: $ReadOnlyArray<PrimitiveValueExpressionType>
 ): RawSqlTokenType => {
   return {
     sql: rawSql,
