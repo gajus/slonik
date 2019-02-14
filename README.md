@@ -328,6 +328,7 @@ To sum up, Slonik is designed to prevent accidental creation of queries vulnerab
         * [Inserting large number of rows](#slonik-recipes-inserting-large-number-of-rows)
         * [Logging `auto_explain`](#slonik-recipes-logging-auto_explain)
         * [Using `sql.raw` to generate dynamic queries](#slonik-recipes-using-sql-raw-to-generate-dynamic-queries)
+        * [Routing queries to different connections](#slonik-recipes-routing-queries-to-different-connections)
     * [Conventions](#slonik-conventions)
         * [No multiline values](#slonik-conventions-no-multiline-values)
     * [Value placeholders](#slonik-value-placeholders)
@@ -543,6 +544,9 @@ type InterceptorType = {|
     query: QueryType,
     result: QueryResultType<QueryResultRowType>
   ) => MaybePromiseType<QueryResultType<QueryResultRowType>>,
+  +beforePoolConnection?: (
+    connectionContext: ConnectionContextType
+  ) => MaybePromiseType<?DatabasePoolType>,
   +beforePoolConnectionRelease?: (
     connectionContext: ConnectionContextType,
     connection: DatabasePoolConnectionType
@@ -898,7 +902,7 @@ This can be configured using `afterPoolConnection` interceptor, e.g.
 
 
 ```js
-const pool = await createPool('postgres://localhost', {
+const pool = createPool('postgres://localhost', {
   interceptors: [
     {
       afterPoolConnection: async (connection) => {
@@ -1011,6 +1015,35 @@ In the above example, `query` is:
 ```
 
 Multiple `sql.raw` fragments can be used to create a query.
+
+<a name="slonik-recipes-routing-queries-to-different-connections"></a>
+### Routing queries to different connections
+
+If connection is initiated by a query (as opposed to a obtained explicitly using `pool#connect()`), then `beforePoolConnection` interceptor can be used to change the pool that will be used to execute the query, e.g.
+
+```js
+const slavePool = createPool('postgres://slave');
+const masterPool = createPool('postgres://master', {
+  interceptors: [
+    {
+      beforePoolConnection: (connectionContext, pool) => {
+        if (connectionContext.query && connectionContext.query.sql.includes('SELECT')) {
+          return slavePool;
+        }
+
+        return pool;
+      }
+    }
+  ]
+});
+
+// This query will use `postgres://slave` connection..
+masterPool.query(sql`SELECT 1`);
+
+// This query will use `postgres://master` connection.
+masterPool.query(sql`UPDATE 1`);
+
+```
 
 
 <a name="slonik-conventions"></a>
