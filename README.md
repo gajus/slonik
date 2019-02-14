@@ -264,7 +264,7 @@ connection.query(sql`
   FROM (
     VALUES ${sql.tupleList([['a1', 'b1', 'c1'], ['a2', 'b2', 'c2']])}
   ) foo(a, b, c)
-  WHERE foo.b IN (${sql.tuple(['c1', 'a2'])})
+  WHERE foo.b IN (${sql.valueList(['c1', 'a2'])})
 `);
 
 ```
@@ -839,9 +839,9 @@ await connection.query(sql`
       [4, 5, 6]
     ],
     [
-      'integer',
-      'integer',
-      'integer'
+      'int4',
+      'int4',
+      'int4'
     ]
   )}
 `);
@@ -852,7 +852,7 @@ Produces:
 
 ```js
 {
-  sql: 'INSERT INTO (foo, bar, baz) SELECT * FROM unnest($1::integer[], $2::integer[], $2::integer[])',
+  sql: 'INSERT INTO (foo, bar, baz) SELECT * FROM unnest($1::int4[], $2::int4[], $2::int4[])',
   values: [
     [
       1,
@@ -1037,7 +1037,7 @@ const masterPool = createPool('postgres://master', {
   ]
 });
 
-// This query will use `postgres://slave` connection..
+// This query will use `postgres://slave` connection.
 masterPool.query(sql`SELECT 1`);
 
 // This query will use `postgres://master` connection.
@@ -1278,7 +1278,7 @@ await connection.query(sql`
       [2, 'bar']
     ],
     [
-      'integer',
+      'int4',
       'text'
     ]
   )} AS foo(bar, baz)
@@ -1290,7 +1290,7 @@ Produces:
 
 ```js
 {
-  sql: 'SELECT bar, baz FROM unnest($1::integer[], $2::text[]) AS foo(bar, baz)',
+  sql: 'SELECT bar, baz FROM unnest($1::int4[], $2::text[]) AS foo(bar, baz)',
   values: [
     [
       1,
