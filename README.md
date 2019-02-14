@@ -332,6 +332,7 @@ To sum up, Slonik is designed to prevent accidental creation of queries vulnerab
         * [No multiline values](#slonik-conventions-no-multiline-values)
     * [Value placeholders](#slonik-value-placeholders)
         * [Tagged template literals](#slonik-value-placeholders-tagged-template-literals)
+        * [Manually constructing the query](#slonik-value-placeholders-manually-constructing-the-query)
         * [Nesting `sql`](#slonik-value-placeholders-nesting-sql)
         * [`sql.valueList`](#slonik-value-placeholders-sql-valuelist)
         * [`sql.tuple`](#slonik-value-placeholders-sql-tuple)
@@ -1068,6 +1069,34 @@ WHERE bar = $1
 ```
 
 query with 'baz' value binding.
+
+<a name="slonik-value-placeholders-manually-constructing-the-query"></a>
+### Manually constructing the query
+
+Manually constructing queries is not allowed.
+
+There is an internal mechanism that checks to see if query was created using `sql` tagged template literal, i.e.
+
+```js
+const query = {
+  sql: 'SELECT 1 FROM foo WHERE bar = $1',
+  type: 'SQL',
+  values: [
+    'baz'
+  ]
+};
+
+connection.query(query);
+
+```
+
+Will result in an error:
+
+> Query must be constructed using `sql` tagged template literal.
+
+This is a security measure designed to prevent unsafe query execution.
+
+Furthermore, a query object constructed using `sql` tagged template literal is [frozen](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/freeze) to prevent further manipulation.
 
 <a name="slonik-value-placeholders-nesting-sql"></a>
 ### Nesting <code>sql</code>
