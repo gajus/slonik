@@ -43,13 +43,13 @@ const getConnectionId = (log: LoggerType): string => {
 };
 
 const getTransactionId = (log: LoggerType): string | void => {
-  const poolId = log.getContext().transactionId;
+  const transactionId = log.getContext().transactionId;
 
-  if (typeof poolId !== 'string' && typeof poolId !== 'undefined') {
+  if (typeof transactionId !== 'string' && typeof transactionId !== 'undefined') {
     throw new TypeError('Unexpected state.');
   }
 
-  return poolId;
+  return transactionId;
 };
 
 const query: InternalQueryFunctionType<*> = async (connectionLogger, connection, clientConfiguration, rawSql, values, inheritedQueryId) => {
