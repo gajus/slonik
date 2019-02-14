@@ -5,23 +5,9 @@ import type {
   DatabasePoolType,
   InternalDatabaseConnectionType,
   InternalDatabasePoolType,
-  LoggerType
+  LoggerType,
+  TaggedTemplateLiteralInvocationType
 } from '../types';
-import {
-  any,
-  anyFirst,
-  many,
-  manyFirst,
-  maybeOne,
-  maybeOneFirst,
-  one,
-  oneFirst,
-  query
-} from '../connectionMethods';
-import {
-  createUlid,
-  mapTaggedTemplateLiteralInvocation
-} from '../utilities';
 import {
   createPoolTransaction
 } from '../factories';
@@ -42,57 +28,71 @@ export default (
   pool: InternalDatabasePoolType,
   clientConfiguration: ClientConfigurationType
 ): DatabasePoolType => {
-  return {
-    any: mapTaggedTemplateLiteralInvocation(any.bind(null, parentLog, pool, clientConfiguration)),
-    anyFirst: mapTaggedTemplateLiteralInvocation(anyFirst.bind(null, parentLog, pool, clientConfiguration)),
-    connect: async (connectionRoutine) => {
-      const connection: InternalDatabaseConnectionType = await pool.connect();
+  const connect = async (connectionRoutine) => {
+    const connection: InternalDatabaseConnectionType = await pool.connect();
 
-      const poolId = getPoolId(parentLog);
+    const poolId = getPoolId(parentLog);
 
-      const connectionId = createUlid();
+    const connectionId = connection.connection.slonik.connectionId;
 
-      const connectionLog = parentLog.child({
-        connectionId
-      });
+    const connectionLog = parentLog.child({
+      connectionId
+    });
 
-      const connectionContext = {
-        connectionId,
-        log: connectionLog,
-        poolId
-      };
+    const connectionContext = {
+      connectionId,
+      log: connectionLog,
+      poolId
+    };
 
-      const boundConnection = bindPoolConnection(connectionLog, pool, connection, clientConfiguration);
+    const boundConnection = bindPoolConnection(connectionLog, pool, connection, clientConfiguration);
 
+    for (const interceptor of clientConfiguration.interceptors) {
+      if (interceptor.afterPoolConnection) {
+        await interceptor.afterPoolConnection(connectionContext, boundConnection);
+      }
+    }
+
+    let result;
+
+    try {
+      result = await connectionRoutine(boundConnection);
+    } finally {
       for (const interceptor of clientConfiguration.interceptors) {
-        if (interceptor.afterPoolConnection) {
-          await interceptor.afterPoolConnection(connectionContext, boundConnection);
+        if (interceptor.beforePoolConnectionRelease) {
+          await interceptor.beforePoolConnectionRelease(connectionContext, boundConnection);
         }
       }
 
-      let result;
+      await connection.release();
+    }
 
-      try {
-        result = await connectionRoutine(boundConnection);
-      } finally {
-        for (const interceptor of clientConfiguration.interceptors) {
-          if (interceptor.beforePoolConnectionRelease) {
-            await interceptor.beforePoolConnectionRelease(connectionContext, boundConnection);
-          }
-        }
+    return result;
+  };
 
-        await connection.release();
+  const mapConnection = (targetMethodName: string) => {
+    return (query: TaggedTemplateLiteralInvocationType) => {
+      if (typeof query === 'string') {
+        throw new TypeError('Query must be constructed using `sql` tagged template literal.');
       }
 
-      return result;
-    },
-    many: mapTaggedTemplateLiteralInvocation(many.bind(null, parentLog, pool, clientConfiguration)),
-    manyFirst: mapTaggedTemplateLiteralInvocation(manyFirst.bind(null, parentLog, pool, clientConfiguration)),
-    maybeOne: mapTaggedTemplateLiteralInvocation(maybeOne.bind(null, parentLog, pool, clientConfiguration)),
-    maybeOneFirst: mapTaggedTemplateLiteralInvocation(maybeOneFirst.bind(null, parentLog, pool, clientConfiguration)),
-    one: mapTaggedTemplateLiteralInvocation(one.bind(null, parentLog, pool, clientConfiguration)),
-    oneFirst: mapTaggedTemplateLiteralInvocation(oneFirst.bind(null, parentLog, pool, clientConfiguration)),
-    query: mapTaggedTemplateLiteralInvocation(query.bind(null, parentLog, pool, clientConfiguration)),
+      return connect((connection) => {
+        return connection[targetMethodName](query);
+      });
+    };
+  };
+
+  return {
+    any: mapConnection('any'),
+    anyFirst: mapConnection('anyFirst'),
+    connect,
+    many: mapConnection('many'),
+    manyFirst: mapConnection('manyFirst'),
+    maybeOne: mapConnection('maybeOne'),
+    maybeOneFirst: mapConnection('maybeOneFirst'),
+    one: mapConnection('one'),
+    oneFirst: mapConnection('oneFirst'),
+    query: mapConnection('query'),
     transaction: async (handler) => {
       return createPoolTransaction(parentLog, pool, clientConfiguration, handler);
     }
