@@ -39,7 +39,7 @@
     "coveralls": "^3.0.2",
     "eslint": "^5.13.0",
     "eslint-config-canonical": "^16.1.0",
-    "flow-bin": "^0.92.1",
+    "flow-bin": "^0.93.0",
     "flow-copy-source": "^2.0.3",
     "gitdown": "^2.5.7",
     "husky": "^1.3.1",
