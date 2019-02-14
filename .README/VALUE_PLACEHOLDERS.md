@@ -28,6 +28,33 @@ WHERE bar = $1
 
 query with 'baz' value binding.
 
+### Manually constructing the query
+
+Manually constructing queries is not allowed.
+
+There is an internal mechanism that checks to see if query was created using `sql` tagged template literal, i.e.
+
+```js
+const query = {
+  sql: 'SELECT 1 FROM foo WHERE bar = $1',
+  type: 'SQL',
+  values: [
+    'baz'
+  ]
+};
+
+connection.query(query);
+
+```
+
+Will result in an error:
+
+> Query must be constructed using `sql` tagged template literal.
+
+This is a security measure designed to prevent unsafe query execution.
+
+Furthermore, a query object constructed using `sql` tagged template literal is [frozen](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/freeze) to prevent further manipulation.
+
 ### Nesting `sql`
 
 `sql` tagged template literals can be nested, e.g.

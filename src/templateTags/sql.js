@@ -13,7 +13,10 @@ import type {
   ValueExpressionType,
   ValueListSqlTokenType
 } from '../types';
-import isPrimitiveValueExpression from '../utilities/isPrimitiveValueExpression';
+import {
+  deepFreeze,
+  isPrimitiveValueExpression
+} from '../utilities';
 import Logger from '../Logger';
 import {
   createIdentifierSqlFragment,
@@ -24,6 +27,7 @@ import {
   createUnnestSqlFragment,
   createValueListSqlFragment
 } from '../sqlFragmentFactories';
+import QueryStore from '../QueryStore';
 
 const log = Logger.child({
   namespace: 'sql'
@@ -82,11 +86,15 @@ const sql: SqlTaggedTemplateType = (
     }
   }
 
-  return {
+  const query = deepFreeze({
     sql: rawSql,
     type: 'SQL',
     values: parameters
-  };
+  });
+
+  QueryStore.set(query, true);
+
+  return query;
 };
 
 sql.identifier = (

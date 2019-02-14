@@ -3,10 +3,11 @@
 import type {
   TaggedTemplateLiteralInvocationType
 } from '../types';
+import QueryStore from '../QueryStore';
 
 export default (targetMethod: *) => {
   return (query: TaggedTemplateLiteralInvocationType) => {
-    if (typeof query === 'string') {
+    if (QueryStore.get(query) !== true) {
       throw new TypeError('Query must be constructed using `sql` tagged template literal.');
     }
 

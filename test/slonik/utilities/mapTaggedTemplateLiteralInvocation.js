@@ -35,3 +35,13 @@ test('throws an error if invoked with a string', (t) => {
     mapTaggedTemplateLiteralInvocation()('foo');
   }, 'Query must be constructed using `sql` tagged template literal.');
 });
+
+test('throws an error if invoked with a manually constructed query', (t) => {
+  t.throws(() => {
+    mapTaggedTemplateLiteralInvocation()({
+      sql: 'SELECT 1',
+      type: 'SQL',
+      values: []
+    });
+  }, 'Query must be constructed using `sql` tagged template literal.');
+});

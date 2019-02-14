@@ -51,3 +51,12 @@ test('nests sql templates', (t) => {
     ]
   });
 });
+
+test('resulting object is immutable', (t) => {
+  const query = sql`SELECT 1`;
+
+  t.throws(() => {
+    // $FlowFixMe
+    query.sql = 'SELECT 2';
+  });
+});
