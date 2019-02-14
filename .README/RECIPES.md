@@ -51,9 +51,9 @@ await connection.query(sql`
       [4, 5, 6]
     ],
     [
-      'integer',
-      'integer',
-      'integer'
+      'int4',
+      'int4',
+      'int4'
     ]
   )}
 `);
@@ -64,7 +64,7 @@ Produces:
 
 ```js
 {
-  sql: 'INSERT INTO (foo, bar, baz) SELECT * FROM unnest($1::integer[], $2::integer[], $2::integer[])',
+  sql: 'INSERT INTO (foo, bar, baz) SELECT * FROM unnest($1::int4[], $2::int4[], $2::int4[])',
   values: [
     [
       1,
@@ -246,7 +246,7 @@ const masterPool = createPool('postgres://master', {
   ]
 });
 
-// This query will use `postgres://slave` connection..
+// This query will use `postgres://slave` connection.
 masterPool.query(sql`SELECT 1`);
 
 // This query will use `postgres://master` connection.

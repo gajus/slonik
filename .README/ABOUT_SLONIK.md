@@ -218,7 +218,7 @@ connection.query(sql`
   FROM (
     VALUES ${sql.tupleList([['a1', 'b1', 'c1'], ['a2', 'b2', 'c2']])}
   ) foo(a, b, c)
-  WHERE foo.b IN (${sql.tuple(['c1', 'a2'])})
+  WHERE foo.b IN (${sql.valueList(['c1', 'a2'])})
 `);
 
 ```
