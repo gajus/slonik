@@ -34,6 +34,9 @@ type InterceptorType = {|
     query: QueryType,
     result: QueryResultType<QueryResultRowType>
   ) => MaybePromiseType<QueryResultType<QueryResultRowType>>,
+  +beforePoolConnection?: (
+    connectionContext: ConnectionContextType
+  ) => MaybePromiseType<?DatabasePoolType>,
   +beforePoolConnectionRelease?: (
     connectionContext: ConnectionContextType,
     connection: DatabasePoolConnectionType

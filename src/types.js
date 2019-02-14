@@ -122,6 +122,17 @@ export type SqlFragmentType = {|
 |};
 
 /**
+ * @property log Instance of Roarr logger with bound connection context parameters.
+ * @property poolId Unique connection pool ID.
+ * @property query The query that is initiating the connection.
+ */
+export type PoolContextType = {|
+  +log: LoggerType,
+  +poolId: string,
+  +query: TaggedTemplateLiteralInvocationType | null
+|};
+
+/**
  * @property connectionId Unique connection ID.
  * @property log Instance of Roarr logger with bound connection context parameters.
  * @property poolId Unique connection pool ID.
@@ -296,6 +307,9 @@ export type InterceptorType = {|
     query: QueryType,
     result: QueryResultType<QueryResultRowType>
   ) => MaybePromiseType<QueryResultType<QueryResultRowType>>,
+  +beforePoolConnection?: (
+    connectionContext: PoolContextType
+  ) => MaybePromiseType<?DatabasePoolType>,
   +beforePoolConnectionRelease?: (
     connectionContext: ConnectionContextType,
     connection: DatabasePoolConnectionType

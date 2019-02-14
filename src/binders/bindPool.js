@@ -28,10 +28,24 @@ export default (
   pool: InternalDatabasePoolType,
   clientConfiguration: ClientConfigurationType
 ): DatabasePoolType => {
-  const connect = async (connectionRoutine) => {
-    const connection: InternalDatabaseConnectionType = await pool.connect();
+  const poolId = getPoolId(parentLog);
 
-    const poolId = getPoolId(parentLog);
+  const internalConnect = async (connectionRoutine, query = null) => {
+    for (const interceptor of clientConfiguration.interceptors) {
+      if (interceptor.beforePoolConnection) {
+        const maybeNewPool = await interceptor.beforePoolConnection({
+          log: parentLog,
+          poolId,
+          query
+        });
+
+        if (maybeNewPool) {
+          return maybeNewPool.connect(connectionRoutine);
+        }
+      }
+    }
+
+    const connection: InternalDatabaseConnectionType = await pool.connect();
 
     const connectionId = connection.connection.slonik.connectionId;
 
@@ -76,16 +90,18 @@ export default (
         throw new TypeError('Query must be constructed using `sql` tagged template literal.');
       }
 
-      return connect((connection) => {
+      return internalConnect((connection) => {
         return connection[targetMethodName](query);
-      });
+      }, query);
     };
   };
 
   return {
     any: mapConnection('any'),
     anyFirst: mapConnection('anyFirst'),
-    connect,
+    connect: (connectionRoutine) => {
+      return internalConnect(connectionRoutine);
+    },
     many: mapConnection('many'),
     manyFirst: mapConnection('manyFirst'),
     maybeOne: mapConnection('maybeOne'),
