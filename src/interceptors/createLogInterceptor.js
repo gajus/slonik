@@ -36,7 +36,7 @@ export default (): InterceptorType => {
       if (context.stackTrace) {
         stackTrace = context.stackTrace
           .filter((callSite) => {
-            // Hide internal call sites.
+            // Hide the internal call sites.
             return callSite.fileName !== null && !callSite.fileName.includes('slonik') && !callSite.fileName.includes('next_tick');
           })
           .map((callSite) => {

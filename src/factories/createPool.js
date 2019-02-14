@@ -37,6 +37,10 @@ export default (
   });
 
   pool.on('connect', (client) => {
+    client.connection.slonik = {
+      connectionId: createUlid()
+    };
+
     client.on('notice', (notice) => {
       poolLog.info({
         notice: formatNotice(notice)
