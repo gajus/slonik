@@ -61,23 +61,35 @@ export default (
 
     const boundConnection = bindPoolConnection(connectionLog, pool, connection, clientConfiguration);
 
-    for (const interceptor of clientConfiguration.interceptors) {
-      if (interceptor.afterPoolConnection) {
-        await interceptor.afterPoolConnection(connectionContext, boundConnection);
+    try {
+      for (const interceptor of clientConfiguration.interceptors) {
+        if (interceptor.afterPoolConnection) {
+          await interceptor.afterPoolConnection(connectionContext, boundConnection);
+        }
       }
+    } catch (error) {
+      await connection.release();
+
+      throw error;
     }
 
     let result;
 
     try {
       result = await connectionRoutine(boundConnection);
-    } finally {
+    } catch (error) {
+      await connection.release();
+
+      throw error;
+    }
+
+    try {
       for (const interceptor of clientConfiguration.interceptors) {
         if (interceptor.beforePoolConnectionRelease) {
           await interceptor.beforePoolConnectionRelease(connectionContext, boundConnection);
         }
       }
-
+    } finally {
       await connection.release();
     }
 
