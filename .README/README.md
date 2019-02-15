@@ -32,13 +32,15 @@ Note: Using this project does not require TypeScript or Flow. It is a regular ES
 * [Atom plugin](#slonik-syntax-highlighting).
 * [ESLint plugin](https://github.com/gajus/eslint-plugin-sql).
 
+## Contents
+
+{"gitdown": "contents"}
+
 ## About Slonik
 
 {"gitdown": "include", "file": "./ABOUT_SLONIK.md"}
 
 ## Documentation
-
-{"gitdown": "contents"}
 
 {"gitdown": "include", "file": "./USAGE.md"}
 
