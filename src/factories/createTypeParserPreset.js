@@ -9,6 +9,7 @@ export default (): $ReadOnlyArray<TypeParserType> => {
     {
       name: 'int8',
       parse: (value) => {
+        // @todo Use bigint when value is greater than Number.MAX_SAFE_INTEGER.
         return parseInt(value, 10);
       }
     },
