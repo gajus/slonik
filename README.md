@@ -28,6 +28,7 @@ Note: Using this project does not require TypeScript or Flow. It is a regular ES
 * [Safe connection handling](#protecting-against-unsafe-connection-handling).
 * [Safe transaction handling](#protecting-against-unsafe-transaction-handling).
 * [Safe value interpolation](#protecting-against-unsafe-value-interpolation).
+* [Transaction nesting](#transaction-nesting).
 * Detail [logging](#slonik-debugging).
 * [Asynchronous stack trace resolution](#log-stack-trace).
 * [Middlewares](#slonik-interceptors).
@@ -533,6 +534,7 @@ The primary difference between Slonik and `pg-promise`:
 
 * Slonik does not allow to execute raw text queries. Slonik queries can only be constructed using [`sql` tagged template literals](#slonik-value-placeholders-tagged-template-literals). This design [protects against unsafe value interpolation](#protecting-against-unsafe-value-interpolation).
 * Slonik implements [interceptor API](#slonik-interceptors) (middleware). Middlewares allow to modify connection handling, override queries and modify the query results. Slonik comes with a set of built-in middlewares that provide [field name transformation](#field-name-transformation-interceptor), [query normalization](#query-normalization-interceptor) and [benchmarking](#benchmarking-interceptor).
+* Slonik implements [transaction nesting](#transaction-nesting).
 
 Other differences are primarily in how the equivalent features are imlemented, e.g.
 
@@ -1596,12 +1598,104 @@ API and the result shape are equivalent to [`pg#query`](https://github.com/brian
 ```js
 const result = await connection.transaction(async (transactionConnection) => {
   await transactionConnection.query(sql`INSERT INTO foo (bar) VALUES ('baz')`);
-  await transactionConnection.query(sql`INSERT INTO qux (quux) VALUES ('quuz')`);
+  await transactionConnection.query(sql`INSERT INTO qux (quux) VALUES ('corge')`);
 
   return 'FOO';
 });
 
 result === 'FOO';
+
+```
+
+<a name="slonik-query-methods-transaction-transaction-nesting"></a>
+#### Transaction nesting
+
+Slonik uses [`SAVEPOINT`](https://www.postgresql.org/docs/current/sql-savepoint.html) to automatically nest transactions, e.g.
+
+```js
+await connection.transaction(async (t1) => {
+  await t1.query(sql`INSERT INTO foo (bar) VALUES ('baz')`);
+
+  return t1.transaction((t2) => {
+    return t2.query(sql`INSERT INTO qux (quux) VALUES ('corge')`);
+  });
+});
+
+```
+
+is equivalent to:
+
+```sql
+START TRANSACTION;
+INSERT INTO foo (bar) VALUES ('baz');
+SAVEPOINT slonik_savepoint_1;
+INSERT INTO qux (quux) VALUES ('corge');
+COMMIT;
+
+```
+
+Slonik automatically rollsback to the last savepoint if a query belonging to a transaction results in an error, e.g.
+
+```js
+await connection.transaction(async (t1) => {
+  await t1.query(sql`INSERT INTO foo (bar) VALUES ('baz')`);
+
+  try {
+    await t1.transaction(async (t2) => {
+      await t2.query(sql`INSERT INTO qux (quux) VALUES ('corge')`);
+
+      return Promise.reject(new Error('foo'));
+    });
+  } catch (error) {
+
+  }
+});
+
+```
+
+is equivalent to:
+
+```sql
+START TRANSACTION;
+INSERT INTO foo (bar) VALUES ('baz');
+SAVEPOINT slonik_savepoint_1;
+INSERT INTO qux (quux) VALUES ('corge');
+ROLLBACK TO SAVEPOINT slonik_savepoint_1;
+COMMIT;
+
+```
+
+If error is unhandled, then the entire transaction is rolledback, e.g.
+
+```js
+await connection.transaction(async (t1) => {
+  await t1.query(sql`INSERT INTO foo (bar) VALUES ('baz')`);
+
+  await t1.transaction(async (t2) => {
+    await t2.query(sql`INSERT INTO qux (quux) VALUES ('corge')`);
+
+    await t1.transaction(async (t3) => {
+      await t3.query(sql`INSERT INTO uier (grault) VALUES ('garply')`);
+
+      return Promise.reject(new Error('foo'));
+    });
+  });
+});
+
+```
+
+is equivalent to:
+
+```sql
+START TRANSACTION;
+INSERT INTO foo (bar) VALUES ('baz');
+SAVEPOINT slonik_savepoint_1;
+INSERT INTO qux (quux) VALUES ('corge');
+SAVEPOINT slonik_savepoint_2;
+INSERT INTO uier (grault) VALUES ('garply');
+ROLLBACK TO SAVEPOINT slonik_savepoint_2;
+ROLLBACK TO SAVEPOINT slonik_savepoint_1;
+ROLLBACK;
 
 ```
 
