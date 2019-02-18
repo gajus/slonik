@@ -60,6 +60,7 @@ Note: Using this project does not require TypeScript or Flow. It is a regular ES
     * [How are they different?](#slonik-how-are-they-different)
         * [`pg` vs `slonik`](#slonik-how-are-they-different-pg-vs-slonik)
         * [`pg-promise` vs `slonik`](#slonik-how-are-they-different-pg-promise-vs-slonik)
+    * [Type parsers](#slonik-type-parsers)
     * [Interceptors](#slonik-interceptors)
         * [Interceptor methods](#slonik-interceptors-interceptor-methods)
     * [Built-in interceptors](#slonik-built-in-interceptors)
@@ -451,9 +452,11 @@ type DatabaseConfigurationType =
 
 /**
  * @property interceptors An array of [Slonik interceptors](https://github.com/gajus/slonik#slonik-interceptors).
+ * @property interceptors An array of [Slonik type parsers](https://github.com/gajus/slonik#slonik-type-parsers).
  */
 type ClientConfigurationType = {|
-  +interceptors?: $ReadOnlyArray<InterceptorType>
+  +interceptors?: $ReadOnlyArray<InterceptorType>,
+  +typeParsers?: $ReadOnlyArray<TypeParserType>
 |};
 
 ```
@@ -501,6 +504,41 @@ import {
 createPool('postgres://', {
   interceptors: [
     ...createInterceptorPreset()
+  ]
+});
+
+```
+
+<a name="slonik-usage-default-configuration-default-type-parsers"></a>
+#### Default type parsers
+
+These interceptors are enabled by default:
+
+|Type name|Implemnetation|
+|---|---|
+|`int8`|Produces an integer.|
+|`timestamp`|Produces a unix timestamp (in milliseconds).|
+|`timestamptz`|Produces a unix timestamp (in milliseconds).|
+
+To disable the default type parsers, pass an empty array, e.g.
+
+```js
+createPool('postgres://', {
+  typeParsers: []
+});
+
+```
+
+You can create default interceptor collection using `createTypeParserPreset`, e.g.
+
+```js
+import {
+  createTypeParserPreset
+} from 'slonik';
+
+createPool('postgres://', {
+  typeParsers: [
+    ...createTypeParserPreset()
   ]
 });
 
@@ -572,6 +610,38 @@ Other differences are primarily in how the equivalent features are imlemented, e
 When weighting which abstraction to use, it would be unfair not to consider that `pg-promise` is a mature project with dozens of contributors. Meanwhile, Slonik is a young project (started in March 2017) that until recently was developed without active community input. However, if you do support the unique features that Slonik adds, the opinionated API design, and are not afraid of adopting a technology in its young days, then I warmly invite you to addopt Slonik and become a contributor to what I intend to make the standard PostgreSQL client in the Node.js community.
 
 Work on `pg-promise` began [Wed Mar 4 02:00:34 2015](https://github.com/vitaly-t/pg-promise/commit/78fb80f638e7f28b301f75576701536d6b638f31). It is authored by [Vitaly Tomilov](https://github.com/vitaly-t).
+
+
+<a name="slonik-type-parsers"></a>
+## Type parsers
+
+Type parsers describe how to parse PostgreSQL types.
+
+```js
+type TypeParserType = {|
+  +name: string,
+  +parse: (value: string) => *
+|};
+
+```
+
+Example:
+
+```js
+{
+  name: 'int8',
+  parse: (value) => {
+    return parseInt(value, 10);
+  }
+}
+
+```
+
+Note: Unlike [`pg-types`](https://github.com/brianc/node-pg-types) that uses OIDs to identify types, Slonik identifies types using their names.
+
+Type parsers are configured using [`typeParsers` client configuration](#slonik-usage-api).
+
+Read: [Default type parsers](#default-type-parsers).
 
 
 <a name="slonik-interceptors"></a>
