@@ -91,13 +91,33 @@ await pool.query(sql`SELECT 1`);
 
 ### Default configuration
 
-[Field name transformation interceptor](#field-name-transformation-interceptor) and [Query normalization interceptor](#query-normalization-interceptor) are enabled by default.
+#### Default interceptors
+
+These interceptors are enabled by default:
+
+* [Field name transformation interceptor](#field-name-transformation-interceptor)
+* [Query normalization interceptor](#query-normalization-interceptor)
 
 To disable the default interceptors, pass an empty array, e.g.
 
 ```js
 createPool('postgres://', {
   interceptors: []
+});
+
+```
+
+You can create default interceptor collection using `createInterceptorPreset`, e.g.
+
+```js
+import {
+  createInterceptorPreset
+} from 'slonik';
+
+createPool('postgres://', {
+  interceptors: [
+    ...createInterceptorPreset()
+  ]
 });
 
 ```

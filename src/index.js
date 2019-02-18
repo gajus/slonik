@@ -32,6 +32,7 @@ export type {
   InterceptorType
 } from './types';
 export {
+  createInterceptorPreset,
   createPool
 } from './factories';
 export {

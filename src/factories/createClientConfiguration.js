@@ -1,27 +1,22 @@
 // @flow
 
 import {
-  createBenchmarkingInterceptor,
-  createFieldNameTransformationInterceptor,
-  createLogInterceptor,
-  createQueryNormalizationInterceptor
+  createLogInterceptor
 } from '../interceptors';
 import type {
   ClientConfigurationType,
   ClientUserConfigurationType
 } from '../types';
+import createInterceptorPreset from './createInterceptorPreset';
 
 export default (clientUserConfiguration?: ClientUserConfigurationType): ClientConfigurationType => {
   let configuration = {
-    interceptors: [
-      createQueryNormalizationInterceptor(),
-      createFieldNameTransformationInterceptor({
-        format: 'CAMEL_CASE'
-      }),
-      createBenchmarkingInterceptor()
-    ],
     ...clientUserConfiguration
   };
+
+  if (!configuration.interceptors) {
+    configuration.interceptors = createInterceptorPreset();
+  }
 
   configuration = {
     ...configuration,

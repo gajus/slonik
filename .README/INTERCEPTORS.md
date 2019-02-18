@@ -2,7 +2,7 @@
 
 Functionality can be added to Slonik client by adding interceptors (middleware).
 
-Interceptors are configured using [client configuration](#slonik-usage-configuration), e.g.
+Interceptors are configured using [client configuration](#api), e.g.
 
 ```js
 import {
@@ -18,6 +18,8 @@ const connection = createPool('postgres://', {
 ```
 
 Interceptors are executed in the order they are added.
+
+Read: [Default interceptors](#default-interceptors).
 
 ### Interceptor methods
 
