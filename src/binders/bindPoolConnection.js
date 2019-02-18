@@ -20,9 +20,9 @@ import {
   maybeOneFirst,
   one,
   oneFirst,
-  query
+  query,
+  transaction
 } from '../connectionMethods';
-import createPoolTransaction from '../factories/createPoolTransaction';
 
 export default (
   parentLog: LoggerType,
@@ -41,7 +41,7 @@ export default (
     oneFirst: mapTaggedTemplateLiteralInvocation(oneFirst.bind(null, parentLog, pool, clientConfiguration)),
     query: mapTaggedTemplateLiteralInvocation(query.bind(null, parentLog, pool, clientConfiguration)),
     transaction: async (handler: TransactionFunctionType) => {
-      return createPoolTransaction(parentLog, pool, clientConfiguration, handler);
+      return transaction(parentLog, pool, clientConfiguration, handler);
     }
   };
 };
