@@ -33,7 +33,8 @@ test('releases connection after promise is resolved', async (t) => {
     log,
     internalPool,
     {
-      interceptors: []
+      interceptors: [],
+      typeParsers: []
     }
   );
 
@@ -61,7 +62,8 @@ test('releases connection after promise is rejected', async (t) => {
     log,
     internalPool,
     {
-      interceptors: []
+      interceptors: [],
+      typeParsers: []
     }
   );
 
@@ -95,7 +97,8 @@ test('does not connect if beforePoolConnection throws an error', async (t) => {
             return Promise.reject(new Error('foo'));
           }
         }
-      ]
+      ],
+      typeParsers: []
     }
   );
 
@@ -129,7 +132,8 @@ test('releases connection if afterPoolConnection throws an error', async (t) => 
             return Promise.reject(new Error('foo'));
           }
         }
-      ]
+      ],
+      typeParsers: []
     }
   );
 
@@ -163,7 +167,8 @@ test('releases connection if beforePoolConnectionRelease throws an error', async
             return Promise.reject(new Error('foo'));
           }
         }
-      ]
+      ],
+      typeParsers: []
     }
   );
 
@@ -202,7 +207,8 @@ test('if beforePoolConnection returns pool object, then the returned pool object
     log,
     internalPool0,
     {
-      interceptors: []
+      interceptors: [],
+      typeParsers: []
     }
   );
 
@@ -216,7 +222,8 @@ test('if beforePoolConnection returns pool object, then the returned pool object
             return pool0;
           }
         }
-      ]
+      ],
+      typeParsers: []
     }
   );
 
@@ -252,7 +259,8 @@ test('if beforePoolConnection returns null, then the current pool object is used
             return null;
           }
         }
-      ]
+      ],
+      typeParsers: []
     }
   );
 

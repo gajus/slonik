@@ -69,9 +69,11 @@ type DatabaseConfigurationType =
 
 /**
  * @property interceptors An array of [Slonik interceptors](https://github.com/gajus/slonik#slonik-interceptors).
+ * @property interceptors An array of [Slonik type parsers](https://github.com/gajus/slonik#slonik-type-parsers).
  */
 type ClientConfigurationType = {|
-  +interceptors?: $ReadOnlyArray<InterceptorType>
+  +interceptors?: $ReadOnlyArray<InterceptorType>,
+  +typeParsers?: $ReadOnlyArray<TypeParserType>
 |};
 
 ```
@@ -117,6 +119,40 @@ import {
 createPool('postgres://', {
   interceptors: [
     ...createInterceptorPreset()
+  ]
+});
+
+```
+
+#### Default type parsers
+
+These interceptors are enabled by default:
+
+|Type name|Implemnetation|
+|---|---|
+|`int8`|Produces an integer.|
+|`timestamp`|Produces a unix timestamp (in milliseconds).|
+|`timestamptz`|Produces a unix timestamp (in milliseconds).|
+
+To disable the default type parsers, pass an empty array, e.g.
+
+```js
+createPool('postgres://', {
+  typeParsers: []
+});
+
+```
+
+You can create default interceptor collection using `createTypeParserPreset`, e.g.
+
+```js
+import {
+  createTypeParserPreset
+} from 'slonik';
+
+createPool('postgres://', {
+  typeParsers: [
+    ...createTypeParserPreset()
   ]
 });
 

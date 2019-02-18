@@ -45,6 +45,8 @@ Note: Using this project does not require TypeScript or Flow. It is a regular ES
 
 {"gitdown": "include", "file": "./USAGE.md"}
 
+{"gitdown": "include", "file": "./TYPE_PARSERS.md"}
+
 {"gitdown": "include", "file": "./INTERCEPTORS.md"}
 
 {"gitdown": "include", "file": "./RECIPES.md"}

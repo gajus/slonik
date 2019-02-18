@@ -41,13 +41,16 @@ export type InternalDatabaseConnectionType = any;
 
 /**
  * @property interceptors An array of [Slonik interceptors](https://github.com/gajus/slonik#slonik-interceptors).
+ * @property interceptors An array of [Slonik type parsers](https://github.com/gajus/slonik#slonik-type-parsers).
  */
 export type ClientUserConfigurationType = {|
-  +interceptors?: $ReadOnlyArray<InterceptorType>
+  +interceptors?: $ReadOnlyArray<InterceptorType>,
+  +typeParsers?: $ReadOnlyArray<TypeParserType>
 |};
 
 export type ClientConfigurationType = {|
-  +interceptors: $ReadOnlyArray<InterceptorType>
+  +interceptors: $ReadOnlyArray<InterceptorType>,
+  +typeParsers: $ReadOnlyArray<TypeParserType>
 |};
 
 export type DatabaseConnectionUriType = string;
@@ -120,6 +123,14 @@ export type QueryType = {|
 export type SqlFragmentType = {|
   +parameters: $ReadOnlyArray<PrimitiveValueExpressionType>,
   +sql: string
+|};
+
+/**
+ * @property name Value of "pg_type"."typname" (e.g. "int8", "timestamp", "timestamptz").
+ */
+export type TypeParserType = {|
+  +name: string,
+  +parse: (value: string) => *
 |};
 
 /**

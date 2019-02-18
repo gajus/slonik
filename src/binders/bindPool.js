@@ -11,6 +11,9 @@ import type {
 import {
   createPoolTransaction
 } from '../factories';
+import {
+  setupTypeParsers
+} from '../routines';
 import bindPoolConnection from './bindPoolConnection';
 
 const getPoolId = (log: LoggerType): string => {
@@ -31,6 +34,12 @@ export default (
   const poolId = getPoolId(parentLog);
 
   const internalConnect = async (connectionRoutine, query = null) => {
+    if (!pool.typeParserSetupPromise) {
+      pool.typeParserSetupPromise = setupTypeParsers(pool, clientConfiguration.typeParsers);
+    }
+
+    await pool.typeParserSetupPromise;
+
     for (const interceptor of clientConfiguration.interceptors) {
       if (interceptor.beforePoolConnection) {
         const maybeNewPool = await interceptor.beforePoolConnection({

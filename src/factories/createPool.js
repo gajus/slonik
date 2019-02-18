@@ -30,6 +30,10 @@ export default (
 
   const pool = new pg.Pool(typeof connectionConfiguration === 'string' ? parseConnectionString(connectionConfiguration) : connectionConfiguration);
 
+  pool.slonik = {
+    typeParserSetupPromise: null
+  };
+
   pool.on('error', (error) => {
     poolLog.error({
       error: serializeError(error)

@@ -6,6 +6,7 @@ import type {
 
 export default (): ClientConfigurationType => {
   return {
-    interceptors: []
+    interceptors: [],
+    typeParsers: []
   };
 };

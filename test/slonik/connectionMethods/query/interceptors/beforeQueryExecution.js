@@ -41,7 +41,8 @@ test('short-circuits the query execution', async (t) => {
     log,
     connection,
     {
-      interceptors
+      interceptors,
+      typeParsers: []
     },
     ''
   );
@@ -87,7 +88,8 @@ test('executes query if "beforeQuery" does not return results', async (t) => {
     log,
     connection,
     {
-      interceptors
+      interceptors,
+      typeParsers: []
     },
     ''
   );

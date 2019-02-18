@@ -41,7 +41,8 @@ test('overrides results', async (t) => {
     log,
     connection,
     {
-      interceptors
+      interceptors,
+      typeParsers: []
     },
     ''
   );

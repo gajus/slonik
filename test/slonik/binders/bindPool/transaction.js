@@ -44,7 +44,8 @@ const createPool = () => {
       log,
       internalPool,
       {
-        interceptors: []
+        interceptors: [],
+        typeParsers: []
       }
     ),
     querySpy
