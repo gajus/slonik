@@ -480,7 +480,7 @@ To disable the default interceptors, pass an empty array, e.g.
 
 ```js
 createPool('postgres://', {
-  interceptos: []
+  interceptors: []
 });
 
 ```
