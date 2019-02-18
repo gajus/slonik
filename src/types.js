@@ -77,7 +77,8 @@ type CommonQueryMethodsType = {|
 |};
 
 export type DatabaseTransactionConnectionType = {|
-  ...CommonQueryMethodsType
+  ...CommonQueryMethodsType,
+  +transaction: (handler: TransactionFunctionType) => Promise<*>
 |};
 
 export type TransactionFunctionType = (connection: DatabaseTransactionConnectionType) => Promise<*>;
@@ -280,6 +281,14 @@ export type InternalTransactionFunctionType = (
   connection: InternalDatabaseConnectionType,
   clientConfiguration: ClientConfigurationType,
   handler: TransactionFunctionType
+) => Promise<*>;
+
+export type InternalNestedTransactionFunctionType = (
+  log: LoggerType,
+  connection: InternalDatabaseConnectionType,
+  clientConfiguration: ClientConfigurationType,
+  handler: TransactionFunctionType,
+  transactionDepth: number
 ) => Promise<*>;
 
 type QueryMethodType<R> = (

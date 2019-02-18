@@ -10,6 +10,7 @@ import {
   manyFirst,
   maybeOne,
   maybeOneFirst,
+  nestedTransaction,
   one,
   oneFirst,
   query
@@ -18,13 +19,15 @@ import type {
   ClientConfigurationType,
   DatabaseTransactionConnectionType,
   InternalDatabaseConnectionType,
-  LoggerType
+  LoggerType,
+  TransactionFunctionType
 } from '../types';
 
 export default (
   parentLog: LoggerType,
   connection: InternalDatabaseConnectionType,
-  clientConfiguration: ClientConfigurationType
+  clientConfiguration: ClientConfigurationType,
+  transactionDepth: number
 ): DatabaseTransactionConnectionType => {
   return {
     any: mapTaggedTemplateLiteralInvocation(any.bind(null, parentLog, connection, clientConfiguration)),
@@ -35,6 +38,9 @@ export default (
     maybeOneFirst: mapTaggedTemplateLiteralInvocation(maybeOneFirst.bind(null, parentLog, connection, clientConfiguration)),
     one: mapTaggedTemplateLiteralInvocation(one.bind(null, parentLog, connection, clientConfiguration)),
     oneFirst: mapTaggedTemplateLiteralInvocation(oneFirst.bind(null, parentLog, connection, clientConfiguration)),
-    query: mapTaggedTemplateLiteralInvocation(query.bind(null, parentLog, connection, clientConfiguration))
+    query: mapTaggedTemplateLiteralInvocation(query.bind(null, parentLog, connection, clientConfiguration)),
+    transaction: (handler: TransactionFunctionType) => {
+      return nestedTransaction(parentLog, connection, clientConfiguration, handler, transactionDepth);
+    }
   };
 };

@@ -147,6 +147,7 @@ The primary difference between Slonik and `pg-promise`:
 
 * Slonik does not allow to execute raw text queries. Slonik queries can only be constructed using [`sql` tagged template literals](#slonik-value-placeholders-tagged-template-literals). This design [protects against unsafe value interpolation](#protecting-against-unsafe-value-interpolation).
 * Slonik implements [interceptor API](#slonik-interceptors) (middleware). Middlewares allow to modify connection handling, override queries and modify the query results. Slonik comes with a set of built-in middlewares that provide [field name transformation](#field-name-transformation-interceptor), [query normalization](#query-normalization-interceptor) and [benchmarking](#benchmarking-interceptor).
+* Slonik implements [transaction nesting](#transaction-nesting).
 
 Other differences are primarily in how the equivalent features are imlemented, e.g.
 

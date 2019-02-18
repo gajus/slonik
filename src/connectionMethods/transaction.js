@@ -19,7 +19,7 @@ const transaction: InternalTransactionFunctionType = async (parentLog, connectio
   });
 
   try {
-    const result = await handler(bindTransactionConnection(log, connection, clientConfiguration));
+    const result = await handler(bindTransactionConnection(log, connection, clientConfiguration, 0));
 
     await connection.query('COMMIT');
 

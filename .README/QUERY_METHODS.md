@@ -154,11 +154,102 @@ API and the result shape are equivalent to [`pg#query`](https://github.com/brian
 ```js
 const result = await connection.transaction(async (transactionConnection) => {
   await transactionConnection.query(sql`INSERT INTO foo (bar) VALUES ('baz')`);
-  await transactionConnection.query(sql`INSERT INTO qux (quux) VALUES ('quuz')`);
+  await transactionConnection.query(sql`INSERT INTO qux (quux) VALUES ('corge')`);
 
   return 'FOO';
 });
 
 result === 'FOO';
+
+```
+
+#### Transaction nesting
+
+Slonik uses [`SAVEPOINT`](https://www.postgresql.org/docs/current/sql-savepoint.html) to automatically nest transactions, e.g.
+
+```js
+await connection.transaction(async (t1) => {
+  await t1.query(sql`INSERT INTO foo (bar) VALUES ('baz')`);
+
+  return t1.transaction((t2) => {
+    return t2.query(sql`INSERT INTO qux (quux) VALUES ('corge')`);
+  });
+});
+
+```
+
+is equivalent to:
+
+```sql
+START TRANSACTION;
+INSERT INTO foo (bar) VALUES ('baz');
+SAVEPOINT slonik_savepoint_1;
+INSERT INTO qux (quux) VALUES ('corge');
+COMMIT;
+
+```
+
+Slonik automatically rollsback to the last savepoint if a query belonging to a transaction results in an error, e.g.
+
+```js
+await connection.transaction(async (t1) => {
+  await t1.query(sql`INSERT INTO foo (bar) VALUES ('baz')`);
+
+  try {
+    await t1.transaction(async (t2) => {
+      await t2.query(sql`INSERT INTO qux (quux) VALUES ('corge')`);
+
+      return Promise.reject(new Error('foo'));
+    });
+  } catch (error) {
+
+  }
+});
+
+```
+
+is equivalent to:
+
+```sql
+START TRANSACTION;
+INSERT INTO foo (bar) VALUES ('baz');
+SAVEPOINT slonik_savepoint_1;
+INSERT INTO qux (quux) VALUES ('corge');
+ROLLBACK TO SAVEPOINT slonik_savepoint_1;
+COMMIT;
+
+```
+
+If error is unhandled, then the entire transaction is rolledback, e.g.
+
+```js
+await connection.transaction(async (t1) => {
+  await t1.query(sql`INSERT INTO foo (bar) VALUES ('baz')`);
+
+  await t1.transaction(async (t2) => {
+    await t2.query(sql`INSERT INTO qux (quux) VALUES ('corge')`);
+
+    await t1.transaction(async (t3) => {
+      await t3.query(sql`INSERT INTO uier (grault) VALUES ('garply')`);
+
+      return Promise.reject(new Error('foo'));
+    });
+  });
+});
+
+```
+
+is equivalent to:
+
+```sql
+START TRANSACTION;
+INSERT INTO foo (bar) VALUES ('baz');
+SAVEPOINT slonik_savepoint_1;
+INSERT INTO qux (quux) VALUES ('corge');
+SAVEPOINT slonik_savepoint_2;
+INSERT INTO uier (grault) VALUES ('garply');
+ROLLBACK TO SAVEPOINT slonik_savepoint_2;
+ROLLBACK TO SAVEPOINT slonik_savepoint_1;
+ROLLBACK;
 
 ```

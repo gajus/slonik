@@ -25,6 +25,7 @@ Note: Using this project does not require TypeScript or Flow. It is a regular ES
 * [Safe connection handling](#protecting-against-unsafe-connection-handling).
 * [Safe transaction handling](#protecting-against-unsafe-transaction-handling).
 * [Safe value interpolation](#protecting-against-unsafe-value-interpolation).
+* [Transaction nesting](#transaction-nesting).
 * Detail [logging](#slonik-debugging).
 * [Asynchronous stack trace resolution](#log-stack-trace).
 * [Middlewares](#slonik-interceptors).
