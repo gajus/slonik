@@ -21,6 +21,8 @@ const nestedTransaction: InternalNestedTransactionFunctionType = async (parentLo
   });
 
   try {
+    connection.slonik.transactionDepth = newTransactionDepth;
+
     const result = await handler(bindTransactionConnection(log, connection, clientConfiguration, newTransactionDepth));
 
     return result;
@@ -32,6 +34,8 @@ const nestedTransaction: InternalNestedTransactionFunctionType = async (parentLo
     }, 'rolling back transaction due to an error');
 
     throw error;
+  } finally {
+    connection.slonik.transactionDepth = newTransactionDepth - 1;
   }
 };
 

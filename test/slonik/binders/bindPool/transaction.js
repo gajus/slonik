@@ -2,6 +2,7 @@
 
 import test from 'ava';
 import sinon from 'sinon';
+import delay from 'delay';
 import sql from '../../../../src/templateTags/sql';
 import bindPool from '../../../../src/binders/bindPool';
 import log from '../../../helpers/Logger';
@@ -30,7 +31,10 @@ const createPool = () => {
     connect: () => {
       return connection;
     },
-    query: () => {}
+    query: () => {},
+    slonik: {
+      transactionDepth: null
+    }
   };
 
   const querySpy = sinon.spy(internalPool, 'query');
@@ -182,4 +186,35 @@ test('rollsback the entire transaction with multiple savepoints (multiple depth 
     'ROLLBACK TO SAVEPOINT slonik_savepoint_1',
     'ROLLBACK'
   ]);
+});
+
+test('throws an error if an attempt is made to create a new transaction before the last transaction is completed', async (t) => {
+  const pool = createPool();
+
+  const connection = pool.connect((c1) => {
+    return Promise.race([
+      c1.transaction(() => {
+        return delay(1000);
+      }),
+      c1.transaction(() => {
+        return delay(1000);
+      })
+    ]);
+  });
+
+  await t.throwsAsync(connection, 'Cannot use the same connection to start a new transaction before completing the last transaction.');
+});
+
+test('throws an error if an attempt is made to execute a query using the parent transaction before the current transaction is completed', async (t) => {
+  const pool = createPool();
+
+  const connection = pool.connect((c1) => {
+    return c1.transaction((t1) => {
+      return t1.transaction(() => {
+        return t1.query(sql`SELECT 1`);
+      });
+    });
+  });
+
+  await t.throwsAsync(connection, 'Cannot run a query using parent transaction.');
 });

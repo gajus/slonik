@@ -12,7 +12,10 @@ test('commits successful transaction', async (t) => {
   query.returns({});
 
   const connection = {
-    query
+    query,
+    slonik: {
+      transactionDepth: null
+    }
   };
 
   const result = await transaction(log, connection, createClientConfiguration(), async () => {
@@ -39,7 +42,10 @@ test('rollbacks unsuccessful transaction', async (t) => {
   query.returns({});
 
   const connection = {
-    query
+    query,
+    slonik: {
+      transactionDepth: null
+    }
   };
 
   const transactionExecution = transaction(log, connection, createClientConfiguration(), async () => {

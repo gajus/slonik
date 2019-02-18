@@ -20,6 +20,7 @@ import type {
   DatabaseTransactionConnectionType,
   InternalDatabaseConnectionType,
   LoggerType,
+  TaggedTemplateLiteralInvocationType,
   TransactionFunctionType
 } from '../types';
 
@@ -29,16 +30,28 @@ export default (
   clientConfiguration: ClientConfigurationType,
   transactionDepth: number
 ): DatabaseTransactionConnectionType => {
+  const mapInvocation = (fn) => {
+    const bound = mapTaggedTemplateLiteralInvocation(fn);
+
+    return (taggedQuery: TaggedTemplateLiteralInvocationType) => {
+      if (transactionDepth !== connection.slonik.transactionDepth) {
+        return Promise.reject(new Error('Cannot run a query using parent transaction.'));
+      }
+
+      return bound(taggedQuery);
+    };
+  };
+
   return {
-    any: mapTaggedTemplateLiteralInvocation(any.bind(null, parentLog, connection, clientConfiguration)),
-    anyFirst: mapTaggedTemplateLiteralInvocation(anyFirst.bind(null, parentLog, connection, clientConfiguration)),
-    many: mapTaggedTemplateLiteralInvocation(many.bind(null, parentLog, connection, clientConfiguration)),
-    manyFirst: mapTaggedTemplateLiteralInvocation(manyFirst.bind(null, parentLog, connection, clientConfiguration)),
-    maybeOne: mapTaggedTemplateLiteralInvocation(maybeOne.bind(null, parentLog, connection, clientConfiguration)),
-    maybeOneFirst: mapTaggedTemplateLiteralInvocation(maybeOneFirst.bind(null, parentLog, connection, clientConfiguration)),
-    one: mapTaggedTemplateLiteralInvocation(one.bind(null, parentLog, connection, clientConfiguration)),
-    oneFirst: mapTaggedTemplateLiteralInvocation(oneFirst.bind(null, parentLog, connection, clientConfiguration)),
-    query: mapTaggedTemplateLiteralInvocation(query.bind(null, parentLog, connection, clientConfiguration)),
+    any: mapInvocation(any.bind(null, parentLog, connection, clientConfiguration)),
+    anyFirst: mapInvocation(anyFirst.bind(null, parentLog, connection, clientConfiguration)),
+    many: mapInvocation(many.bind(null, parentLog, connection, clientConfiguration)),
+    manyFirst: mapInvocation(manyFirst.bind(null, parentLog, connection, clientConfiguration)),
+    maybeOne: mapInvocation(maybeOne.bind(null, parentLog, connection, clientConfiguration)),
+    maybeOneFirst: mapInvocation(maybeOneFirst.bind(null, parentLog, connection, clientConfiguration)),
+    one: mapInvocation(one.bind(null, parentLog, connection, clientConfiguration)),
+    oneFirst: mapInvocation(oneFirst.bind(null, parentLog, connection, clientConfiguration)),
+    query: mapInvocation(query.bind(null, parentLog, connection, clientConfiguration)),
     transaction: (handler: TransactionFunctionType) => {
       return nestedTransaction(parentLog, connection, clientConfiguration, handler, transactionDepth);
     }
