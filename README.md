@@ -474,13 +474,34 @@ await pool.query(sql`SELECT 1`);
 <a name="slonik-usage-default-configuration"></a>
 ### Default configuration
 
-[Field name transformation interceptor](#field-name-transformation-interceptor) and [Query normalization interceptor](#query-normalization-interceptor) are enabled by default.
+<a name="slonik-usage-default-configuration-default-interceptors"></a>
+#### Default interceptors
+
+These interceptors are enabled by default:
+
+* [Field name transformation interceptor](#field-name-transformation-interceptor)
+* [Query normalization interceptor](#query-normalization-interceptor)
 
 To disable the default interceptors, pass an empty array, e.g.
 
 ```js
 createPool('postgres://', {
   interceptors: []
+});
+
+```
+
+You can create default interceptor collection using `createInterceptorPreset`, e.g.
+
+```js
+import {
+  createInterceptorPreset
+} from 'slonik';
+
+createPool('postgres://', {
+  interceptors: [
+    ...createInterceptorPreset()
+  ]
 });
 
 ```
@@ -558,7 +579,7 @@ Work on `pg-promise` began [Wed Mar 4 02:00:34 2015](https://github.com/vitaly-t
 
 Functionality can be added to Slonik client by adding interceptors (middleware).
 
-Interceptors are configured using [client configuration](#slonik-usage-configuration), e.g.
+Interceptors are configured using [client configuration](#api), e.g.
 
 ```js
 import {
@@ -574,6 +595,8 @@ const connection = createPool('postgres://', {
 ```
 
 Interceptors are executed in the order they are added.
+
+Read: [Default interceptors](#default-interceptors).
 
 <a name="slonik-interceptors-interceptor-methods"></a>
 ### Interceptor methods
