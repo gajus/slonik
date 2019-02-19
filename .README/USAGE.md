@@ -210,7 +210,7 @@ Other differences are primarily in how the equivalent features are imlemented, e
 |`pg-promise`|Slonik|
 |---|---|
 |[Custom type formatting](https://github.com/vitaly-t/pg-promise#custom-type-formatting).|Not available in Slonik. The current proposal is to create an interceptor that would have access to the [query fragment constructor](https://github.com/gajus/slonik/issues/21).|
-|[formatting filters](https://github.com/vitaly-t/pg-promise#nested-named-parameters)|Slonik tagged template [value expressions](https://github.com/gajus/slonik#slonik-value-placeholders) to construct queyr fragments and bind parameter values.|
+|[formatting filters](https://github.com/vitaly-t/pg-promise#nested-named-parameters)|Slonik tagged template [value expressions](https://github.com/gajus/slonik#slonik-value-placeholders) to construct query fragments and bind parameter values.|
 |[Query files](https://github.com/vitaly-t/pg-promise#query-files).|Use `sql.raw` to [load query files](https://github.com/gajus/slonik/issues/28).|
 |[SQL names](https://github.com/vitaly-t/pg-promise#sql-names)|SQL names were [removed](https://github.com/gajus/slonik/commit/f155b5c477b8145129be400dc3f69b7b7ee6af8c) from Slonik to encourage use of `sql` tagged template literals as a safer alternative. If you have a use case for named literals, contribute a description of your use case to [this issue](https://github.com/gajus/slonik/issues/29).|
 |[Tasks](https://github.com/vitaly-t/pg-promise#tasks).|Use [`pool.connect`](https://github.com/gajus/slonik#slonik-usage-create-connection).|
