@@ -1,14 +1,15 @@
 // @flow
 
 import {
-  types
-} from 'pg';
+  arrayParser
+} from 'pg-types';
+import TypeOverrides from 'pg/lib/type-overrides';
 import type {
-  InternalDatabasePoolType,
+  InternalDatabaseConnectionType,
   TypeParserType
 } from '../types';
 
-export default async (pool: InternalDatabasePoolType, typeParsers: $ReadOnlyArray<TypeParserType>) => {
+export default async (connection: InternalDatabaseConnectionType, typeParsers: $ReadOnlyArray<TypeParserType>) => {
   if (typeParsers.length === 0) {
     return null;
   }
@@ -18,10 +19,12 @@ export default async (pool: InternalDatabasePoolType, typeParsers: $ReadOnlyArra
   });
 
   const postgresTypes = (
-    await pool.query('SELECT oid, typarray, typname FROM pg_type WHERE typname = ANY($1::text[])', [
+    await connection.query('SELECT oid, typarray, typname FROM pg_type WHERE typname = ANY($1::text[])', [
       typeNames
     ])
   ).rows;
+
+  const types = new TypeOverrides();
 
   for (const typeParser of typeParsers) {
     const postgresType = postgresTypes.find((maybeTargetPostgresType) => {
@@ -38,7 +41,7 @@ export default async (pool: InternalDatabasePoolType, typeParsers: $ReadOnlyArra
 
     if (postgresType.typarray) {
       types.setTypeParser(postgresType.typarray, (value) => {
-        return types.arrayParser
+        return arrayParser
           .create(
             value,
             typeParser.parse
@@ -47,6 +50,9 @@ export default async (pool: InternalDatabasePoolType, typeParsers: $ReadOnlyArra
       });
     }
   }
+
+  // $FlowFixMe
+  connection._types = types;
 
   return null;
 };

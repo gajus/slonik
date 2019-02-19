@@ -214,7 +214,7 @@ Other differences are primarily in how the equivalent features are imlemented, e
 |[Query files](https://github.com/vitaly-t/pg-promise#query-files).|Use `sql.raw` to [load query files](https://github.com/gajus/slonik/issues/28).|
 |[SQL names](https://github.com/vitaly-t/pg-promise#sql-names)|SQL names were [removed](https://github.com/gajus/slonik/commit/f155b5c477b8145129be400dc3f69b7b7ee6af8c) from Slonik to encourage use of `sql` tagged template literals as a safer alternative. If you have a use case for named literals, contribute a description of your use case to [this issue](https://github.com/gajus/slonik/issues/29).|
 |[Tasks](https://github.com/vitaly-t/pg-promise#tasks).|Use [`pool.connect`](https://github.com/gajus/slonik#slonik-usage-create-connection).|
-|Configurable transactions|Not available in Slonik. Track [this issue](https://github.com/gajus/slonik/issues/30).|
+|Configurable transactions.|Not available in Slonik. Track [this issue](https://github.com/gajus/slonik/issues/30).|
 |Events.|Use [interceptors](https://github.com/gajus/slonik#slonik-interceptors).|
 
 When weighting which abstraction to use, it would be unfair not to consider that `pg-promise` is a mature project with dozens of contributors. Meanwhile, Slonik is a young project (started in March 2017) that until recently was developed without active community input. However, if you do support the unique features that Slonik adds, the opinionated API design, and are not afraid of adopting a technology in its young days, then I warmly invite you to addopt Slonik and become a contributor to what I intend to make the standard PostgreSQL client in the Node.js community.
