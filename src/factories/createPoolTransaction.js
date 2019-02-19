@@ -8,8 +8,14 @@ import type {
   TransactionFunctionType
 } from '../types';
 import {
+  setupTypeParsers
+} from '../routines';
+import {
   transaction
 } from '../connectionMethods';
+import {
+  bindPoolConnection
+} from '../binders';
 
 export default async (
   parentLog: LoggerType,
@@ -17,18 +23,72 @@ export default async (
   clientConfiguration: ClientConfigurationType,
   handler: TransactionFunctionType
 ): Promise<*> => {
-  parentLog.debug('allocating a new connection to execute the transaction');
+  for (const interceptor of clientConfiguration.interceptors) {
+    if (interceptor.beforePoolConnection) {
+      const maybeNewPool = await interceptor.beforePoolConnection({
+        log: parentLog,
+        poolId: pool.slonik.poolId,
+        query: null
+      });
 
-  const transactionConnection: InternalDatabaseConnectionType = await pool.connect();
+      if (maybeNewPool) {
+        return maybeNewPool.transaction(handler);
+      }
+    }
+  }
+
+  const connection: InternalDatabaseConnectionType = await pool.connect();
+
+  if (!connection.connection.slonik.typeParserSetupPromise) {
+    connection.connection.slonik.typeParserSetupPromise = setupTypeParsers(connection, clientConfiguration.typeParsers);
+  }
+
+  await connection.connection.slonik.typeParserSetupPromise;
+
+  const connectionId = connection.connection.slonik.connectionId;
+
+  const connectionLog = parentLog.child({
+    connectionId
+  });
+
+  const connectionContext = {
+    connectionId,
+    log: connectionLog,
+    poolId: pool.slonik.poolId
+  };
+
+  const boundConnection = bindPoolConnection(connectionLog, connection, clientConfiguration);
+
+  try {
+    for (const interceptor of clientConfiguration.interceptors) {
+      if (interceptor.afterPoolConnection) {
+        await interceptor.afterPoolConnection(connectionContext, boundConnection);
+      }
+    }
+  } catch (error) {
+    await connection.release();
+
+    throw error;
+  }
 
   let result;
 
   try {
-    result = await transaction(parentLog, transactionConnection, clientConfiguration, handler);
-  } finally {
-    parentLog.debug('releasing the connection that was earlier secured to execute a transaction');
+    result = await transaction(connectionLog, connection, clientConfiguration, handler);
+  } catch (error) {
+    await connection.release();
 
-    await transactionConnection.release();
+    throw error;
+  }
+
+  try {
+    for (const interceptor of clientConfiguration.interceptors) {
+      if (interceptor.beforePoolConnectionRelease) {
+        await interceptor.beforePoolConnectionRelease(connectionContext, boundConnection);
+      }
+    }
+  } finally {
+    await connection.release();
   }
 
   return result;

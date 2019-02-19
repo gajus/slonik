@@ -16,35 +16,17 @@ import {
 } from '../routines';
 import bindPoolConnection from './bindPoolConnection';
 
-const getPoolId = (log: LoggerType): string => {
-  const poolId = log.getContext().poolId;
-
-  if (typeof poolId !== 'string') {
-    throw new TypeError('Unexpected state.');
-  }
-
-  return poolId;
-};
-
 export default (
   parentLog: LoggerType,
   pool: InternalDatabasePoolType,
   clientConfiguration: ClientConfigurationType
 ): DatabasePoolType => {
-  const poolId = getPoolId(parentLog);
-
   const internalConnect = async (connectionRoutine, query = null) => {
-    if (!pool.typeParserSetupPromise) {
-      pool.typeParserSetupPromise = setupTypeParsers(pool, clientConfiguration.typeParsers);
-    }
-
-    await pool.typeParserSetupPromise;
-
     for (const interceptor of clientConfiguration.interceptors) {
       if (interceptor.beforePoolConnection) {
         const maybeNewPool = await interceptor.beforePoolConnection({
           log: parentLog,
-          poolId,
+          poolId: pool.slonik.poolId,
           query
         });
 
@@ -56,6 +38,12 @@ export default (
 
     const connection: InternalDatabaseConnectionType = await pool.connect();
 
+    if (!connection.connection.slonik.typeParserSetupPromise) {
+      connection.connection.slonik.typeParserSetupPromise = setupTypeParsers(connection, clientConfiguration.typeParsers);
+    }
+
+    await connection.connection.slonik.typeParserSetupPromise;
+
     const connectionId = connection.connection.slonik.connectionId;
 
     const connectionLog = parentLog.child({
@@ -65,10 +53,10 @@ export default (
     const connectionContext = {
       connectionId,
       log: connectionLog,
-      poolId
+      poolId: pool.slonik.poolId
     };
 
-    const boundConnection = bindPoolConnection(connectionLog, pool, connection, clientConfiguration);
+    const boundConnection = bindPoolConnection(connectionLog, connection, clientConfiguration);
 
     try {
       for (const interceptor of clientConfiguration.interceptors) {

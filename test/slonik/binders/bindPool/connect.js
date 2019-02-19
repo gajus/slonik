@@ -13,6 +13,7 @@ const createConnection = () => {
         connectionId: '1'
       }
     },
+    query: () => {},
     release: () => {}
   };
 };
@@ -23,6 +24,9 @@ test('releases connection after promise is resolved', async (t) => {
   const internalPool = {
     connect: () => {
       return connection;
+    },
+    slonik: {
+      poolId: '1'
     }
   };
 
@@ -52,6 +56,9 @@ test('releases connection after promise is rejected', async (t) => {
   const internalPool = {
     connect: () => {
       return connection;
+    },
+    slonik: {
+      poolId: '1'
     }
   };
 
@@ -81,6 +88,9 @@ test('does not connect if beforePoolConnection throws an error', async (t) => {
   const internalPool = {
     connect: () => {
       return connection;
+    },
+    slonik: {
+      poolId: '1'
     }
   };
 
@@ -116,6 +126,9 @@ test('releases connection if afterPoolConnection throws an error', async (t) => 
   const internalPool = {
     connect: () => {
       return connection;
+    },
+    slonik: {
+      poolId: '1'
     }
   };
 
@@ -151,6 +164,9 @@ test('releases connection if beforePoolConnectionRelease throws an error', async
   const internalPool = {
     connect: () => {
       return connection;
+    },
+    slonik: {
+      poolId: '1'
     }
   };
 
@@ -188,12 +204,17 @@ test('if beforePoolConnection returns pool object, then the returned pool object
     connect: () => {
       return connection0;
     },
-    query: () => {}
+    slonik: {
+      poolId: '1'
+    }
   };
 
   const internalPool1 = {
     connect: () => {
       return connection0;
+    },
+    slonik: {
+      poolId: '1'
     }
   };
 
@@ -243,7 +264,9 @@ test('if beforePoolConnection returns null, then the current pool object is used
     connect: () => {
       return connection;
     },
-    query: () => {}
+    slonik: {
+      poolId: '1'
+    }
   };
 
   const connectSpy = sinon.spy(internalPool, 'connect');

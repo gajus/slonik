@@ -12,11 +12,11 @@ import type {
 } from '../types';
 
 const transaction: InternalTransactionFunctionType = async (parentLog, connection, clientConfiguration, handler) => {
-  if (connection.slonik.transactionDepth !== null) {
+  if (connection.connection.slonik.transactionDepth !== null) {
     throw new Error('Cannot use the same connection to start a new transaction before completing the last transaction.');
   }
 
-  connection.slonik.transactionDepth = 0;
+  connection.connection.slonik.transactionDepth = 0;
 
   await connection.query('START TRANSACTION');
 
@@ -25,7 +25,7 @@ const transaction: InternalTransactionFunctionType = async (parentLog, connectio
   });
 
   try {
-    const result = await handler(bindTransactionConnection(log, connection, clientConfiguration, connection.slonik.transactionDepth));
+    const result = await handler(bindTransactionConnection(log, connection, clientConfiguration, connection.connection.slonik.transactionDepth));
 
     await connection.query('COMMIT');
 
@@ -39,7 +39,7 @@ const transaction: InternalTransactionFunctionType = async (parentLog, connectio
 
     throw error;
   } finally {
-    connection.slonik.transactionDepth = null;
+    connection.connection.slonik.transactionDepth = null;
   }
 };
 

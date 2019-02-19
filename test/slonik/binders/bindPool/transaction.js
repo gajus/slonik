@@ -11,9 +11,11 @@ const createConnection = () => {
   return {
     connection: {
       slonik: {
-        connectionId: '1'
+        connectionId: '1',
+        transactionDepth: null
       }
     },
+    query: () => {},
     release: () => {}
   };
 };
@@ -31,13 +33,12 @@ const createPool = () => {
     connect: () => {
       return connection;
     },
-    query: () => {},
     slonik: {
-      transactionDepth: null
+      poolId: '1'
     }
   };
 
-  const querySpy = sinon.spy(internalPool, 'query');
+  const querySpy = sinon.spy(connection, 'query');
 
   return {
     ...bindPool(

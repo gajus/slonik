@@ -24,14 +24,16 @@ export default (
 ): DatabasePoolType => {
   const clientConfiguration = createClientConfiguration(clientUserConfiguration);
 
+  const poolId = createUlid();
+
   const poolLog = Logger.child({
-    poolId: createUlid()
+    poolId
   });
 
   const pool = new pg.Pool(typeof connectionConfiguration === 'string' ? parseConnectionString(connectionConfiguration) : connectionConfiguration);
 
   pool.slonik = {
-    typeParserSetupPromise: null
+    poolId
   };
 
   pool.on('error', (error) => {
@@ -42,7 +44,9 @@ export default (
 
   pool.on('connect', (client) => {
     client.connection.slonik = {
-      connectionId: createUlid()
+      connectionId: createUlid(),
+      transactionDepth: null,
+      typeParserSetupPromise: null
     };
 
     client.on('notice', (notice) => {
