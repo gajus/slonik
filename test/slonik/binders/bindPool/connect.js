@@ -136,6 +136,7 @@ test('if beforePoolConnection returns pool object, then the returned pool object
     interceptors: [
       {
         beforePoolConnection: () => {
+          // $FlowFixMe
           return pool0;
         }
       }
