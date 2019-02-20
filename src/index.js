@@ -12,6 +12,11 @@ export {
   createPool
 } from './factories';
 export {
+  createBigintTypeParser,
+  createTimestampTypeParser,
+  createTimestampWithTimeZoneTypeParser
+} from './factories/typeParsers';
+export {
   createBenchmarkingInterceptor,
   createFieldNameTransformationInterceptor,
   createQueryNormalizationInterceptor

@@ -51,7 +51,7 @@ export default async (connection: InternalDatabaseConnectionType, typeParsers: $
     }
   }
 
-  // $FlowFixMe
+  // eslint-disable-next-line id-match
   connection._types = types;
 
   return null;
