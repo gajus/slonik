@@ -61,6 +61,7 @@ Note: Using this project does not require TypeScript or Flow. It is a regular ES
         * [`pg` vs `slonik`](#slonik-how-are-they-different-pg-vs-slonik)
         * [`pg-promise` vs `slonik`](#slonik-how-are-they-different-pg-promise-vs-slonik)
     * [Type parsers](#slonik-type-parsers)
+        * [Built-in type parsers](#slonik-type-parsers-built-in-type-parsers)
     * [Interceptors](#slonik-interceptors)
         * [Interceptor methods](#slonik-interceptors-interceptor-methods)
     * [Built-in interceptors](#slonik-built-in-interceptors)
@@ -642,6 +643,33 @@ Note: Unlike [`pg-types`](https://github.com/brianc/node-pg-types) that uses OID
 Type parsers are configured using [`typeParsers` client configuration](#slonik-usage-api).
 
 Read: [Default type parsers](#default-type-parsers).
+
+<a name="slonik-type-parsers-built-in-type-parsers"></a>
+### Built-in type parsers
+
+||Type name|Implemnetation|Factory function name|
+|---|---|---|
+|`int8`|Produces an integer.|`createBigintTypeParser`|
+|`timestamp`|Produces a unix timestamp (in milliseconds).|`createTimestampTypeParser`|
+|`timestamptz`|Produces a unix timestamp (in milliseconds).|`createTimestampWithTimeZoneParser`|
+
+Built-in type parsers can be created using the exported factory functions, e.g.
+
+```js
+import {
+  createTimestampTypeParser
+} from 'slonik';
+
+createTimestampTypeParser();
+
+// {
+//   name: 'timestamp',
+//   parse: (value) => {
+//     return value === null ? value : Date.parse(value);
+//   }
+// }
+
+```
 
 
 <a name="slonik-interceptors"></a>
