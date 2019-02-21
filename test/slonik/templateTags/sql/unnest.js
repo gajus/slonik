@@ -63,3 +63,12 @@ test('throws an array if tuple member length does not match column types length'
     sql`SELECT * FROM ${sql.unnest([[1, 2, 3], [4, 5, 6]], ['int4', 'int4'])}`;
   }, 'Column types length must match tuple member length.');
 });
+
+test('the resulting object is immutable', (t) => {
+  const token = sql.unnest([[1, 2, 3], [4, 5, 6]], ['int4', 'int4', 'int4']);
+
+  t.throws(() => {
+    // $FlowFixMe
+    token.foo = 'bar';
+  });
+});

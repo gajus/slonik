@@ -40,3 +40,12 @@ test('offsets bindings to match existing bindings', (t) => {
     ]
   });
 });
+
+test('the resulting object is immutable', (t) => {
+  const token = sql.raw('foo');
+
+  t.throws(() => {
+    // $FlowFixMe
+    token.foo = 'bar';
+  });
+});

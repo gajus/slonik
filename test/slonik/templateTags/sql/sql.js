@@ -55,7 +55,7 @@ test('nests sql templates', (t) => {
   });
 });
 
-test('resulting object is immutable', (t) => {
+test('the resulting object is immutable', (t) => {
   const query = sql`SELECT 1`;
 
   t.throws(() => {

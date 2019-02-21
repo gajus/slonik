@@ -29,3 +29,12 @@ test('creates an object describing a query with inlined identifiers (specifier)'
     ]
   });
 });
+
+test('the resulting object is immutable', (t) => {
+  const token = sql.identifier(['bar', 'baz']);
+
+  t.throws(() => {
+    // $FlowFixMe
+    token.foo = 'bar';
+  });
+});

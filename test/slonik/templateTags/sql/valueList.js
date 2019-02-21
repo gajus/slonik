@@ -19,3 +19,12 @@ test('creates a value list', (t) => {
     ]
   });
 });
+
+test('the resulting object is immutable', (t) => {
+  const token = sql.valueList([1, 2, 3]);
+
+  t.throws(() => {
+    // $FlowFixMe
+    token.foo = 'bar';
+  });
+});

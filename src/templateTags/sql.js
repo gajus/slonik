@@ -116,59 +116,59 @@ sql.identifier = (
 ): IdentifierTokenType => {
   // @todo Replace `type` with a symbol once Flow adds symbol support
   // @see https://github.com/facebook/flow/issues/810
-  return {
+  return deepFreeze({
     names,
     type: IdentifierTokenSymbol
-  };
+  });
 };
 
 sql.raw = (
   rawSql: string,
   values?: $ReadOnlyArray<PrimitiveValueExpressionType>
 ): RawSqlTokenType => {
-  return {
+  return deepFreeze({
     sql: rawSql,
     type: RawSqlTokenSymbol,
     values: values || []
-  };
+  });
 };
 
 sql.valueList = (
   values: $ReadOnlyArray<PrimitiveValueExpressionType>
 ): ValueListSqlTokenType => {
-  return {
+  return deepFreeze({
     type: ValueListTokenSymbol,
     values
-  };
+  });
 };
 
 sql.tuple = (
   values: $ReadOnlyArray<PrimitiveValueExpressionType>
 ): TupleSqlTokenType => {
-  return {
+  return deepFreeze({
     type: TupleTokenSymbol,
     values
-  };
+  });
 };
 
 sql.tupleList = (
   tuples: $ReadOnlyArray<$ReadOnlyArray<PrimitiveValueExpressionType>>
 ): TupleListSqlTokenType => {
-  return {
+  return deepFreeze({
     tuples,
     type: TupleListTokenSymbol
-  };
+  });
 };
 
 sql.unnest = (
   tuples: $ReadOnlyArray<$ReadOnlyArray<PrimitiveValueExpressionType>>,
   columnTypes: $ReadOnlyArray<string>
 ): UnnestSqlTokenType => {
-  return {
+  return deepFreeze({
     columnTypes,
     tuples,
     type: UnnestTokenSymbol
-  };
+  });
 };
 
 export default sql;

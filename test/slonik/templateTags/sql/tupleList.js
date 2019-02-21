@@ -28,3 +28,12 @@ test('throws an array if tuple member number varies in a list of tuples', (t) =>
     sql`INSERT INTO (foo, bar, baz) VALUES ${sql.tupleList([[1, 2, 3], [4, 5]])}`;
   }, 'Each tuple in a list of tuples must have an equal number of members.');
 });
+
+test('the resulting object is immutable', (t) => {
+  const token = sql.tupleList([[1, 2, 3]]);
+
+  t.throws(() => {
+    // $FlowFixMe
+    token.foo = 'bar';
+  });
+});

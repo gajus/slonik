@@ -19,3 +19,12 @@ test('creates a tuple', (t) => {
     ]
   });
 });
+
+test('the resulting object is immutable', (t) => {
+  const token = sql.tuple([1, 2, 3]);
+
+  t.throws(() => {
+    // $FlowFixMe
+    token.foo = 'bar';
+  });
+});
