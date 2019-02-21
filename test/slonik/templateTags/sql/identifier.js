@@ -2,13 +2,16 @@
 
 import test from 'ava';
 import sql from '../../../../src/templateTags/sql';
+import {
+  SqlTokenSymbol
+} from '../../../../src/symbols';
 
 test('creates an object describing a query with inlined identifiers', (t) => {
   const query = sql`SELECT ${'foo'} FROM ${sql.identifier(['bar'])}`;
 
   t.deepEqual(query, {
     sql: 'SELECT $1 FROM "bar"',
-    type: 'SQL',
+    type: SqlTokenSymbol,
     values: [
       'foo'
     ]
@@ -20,7 +23,7 @@ test('creates an object describing a query with inlined identifiers (specifier)'
 
   t.deepEqual(query, {
     sql: 'SELECT $1 FROM "bar"."baz"',
-    type: 'SQL',
+    type: SqlTokenSymbol,
     values: [
       'foo'
     ]

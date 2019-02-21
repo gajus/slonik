@@ -2,6 +2,9 @@
 
 import test from 'ava';
 import createTupleListSqlFragment from '../../../src/sqlFragmentFactories/createTupleListSqlFragment';
+import {
+  TupleListTokenSymbol
+} from '../../../src/symbols';
 
 test('creates a single tuple with a single parameter', (t) => {
   const sqlFragment = createTupleListSqlFragment({
@@ -10,7 +13,7 @@ test('creates a single tuple with a single parameter', (t) => {
         'foo'
       ]
     ],
-    type: 'TUPLE_LIST'
+    type: TupleListTokenSymbol
   }, 0);
 
   t.true(sqlFragment.sql === '($1)');
@@ -30,7 +33,7 @@ test('creates a comma separated list of tuples with a single parameter', (t) => 
         'baz'
       ]
     ],
-    type: 'TUPLE_LIST'
+    type: TupleListTokenSymbol
   }, 0);
 
   t.true(sqlFragment.sql === '($1), ($2), ($3)');
@@ -50,7 +53,7 @@ test('offsets parameter position', (t) => {
         'baz'
       ]
     ],
-    type: 'TUPLE_LIST'
+    type: TupleListTokenSymbol
   }, 3);
 
   t.true(sqlFragment.sql === '($4), ($5), ($6)');
@@ -63,7 +66,7 @@ test('throws an error if tuple has no members', (t) => {
       tuples: [
         []
       ],
-      type: 'TUPLE_LIST'
+      type: TupleListTokenSymbol
     }, 0);
   }, 'Tuple must have at least 1 member.');
 });
@@ -80,7 +83,7 @@ test('throws an error if tuple member number is inconsistent', (t) => {
           'bar'
         ]
       ],
-      type: 'TUPLE_LIST'
+      type: TupleListTokenSymbol
     }, 0);
   }, 'Each tuple in a list of tuples must have an equal number of members.');
 });

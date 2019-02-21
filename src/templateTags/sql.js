@@ -27,7 +27,15 @@ import {
   createUnnestSqlFragment,
   createValueListSqlFragment
 } from '../sqlFragmentFactories';
-import QueryStore from '../QueryStore';
+import {
+  SqlTokenSymbol,
+  RawSqlTokenSymbol,
+  IdentifierTokenSymbol,
+  ValueListTokenSymbol,
+  TupleTokenSymbol,
+  TupleListTokenSymbol,
+  UnnestTokenSymbol
+} from '../symbols';
 
 const log = Logger.child({
   namespace: 'sql'
@@ -62,19 +70,27 @@ const sql: SqlTaggedTemplateType = (
       rawSql += '$' + (parameters.length + 1);
 
       parameters.push(token);
-    } else if (token && token.type === 'SQL') {
+    } else if (token && token.type === SqlTokenSymbol) {
+      // @see https://github.com/gajus/slonik/issues/36 regarding FlowFixMe use.
+      // $FlowFixMe
       appendSqlFragment(createSqlSqlFragment(token, parameters.length));
-    } else if (token && token.type === 'RAW_SQL') {
+    } else if (token && token.type === RawSqlTokenSymbol) {
+      // $FlowFixMe
       appendSqlFragment(createRawSqlSqlFragment(token, parameters.length));
-    } else if (token && token.type === 'IDENTIFIER') {
+    } else if (token && token.type === IdentifierTokenSymbol) {
+      // $FlowFixMe
       appendSqlFragment(createIdentifierSqlFragment(token));
-    } else if (token && token.type === 'VALUE_LIST') {
+    } else if (token && token.type === ValueListTokenSymbol) {
+      // $FlowFixMe
       appendSqlFragment(createValueListSqlFragment(token, parameters.length));
-    } else if (token && token.type === 'TUPLE') {
+    } else if (token && token.type === TupleTokenSymbol) {
+      // $FlowFixMe
       appendSqlFragment(createTupleSqlFragment(token, parameters.length));
-    } else if (token && token.type === 'TUPLE_LIST') {
+    } else if (token && token.type === TupleListTokenSymbol) {
+      // $FlowFixMe
       appendSqlFragment(createTupleListSqlFragment(token, parameters.length));
-    } else if (token && token.type === 'UNNEST') {
+    } else if (token && token.type === UnnestTokenSymbol) {
+      // $FlowFixMe
       appendSqlFragment(createUnnestSqlFragment(token, parameters.length));
     } else {
       log.error({
@@ -88,11 +104,9 @@ const sql: SqlTaggedTemplateType = (
 
   const query = deepFreeze({
     sql: rawSql,
-    type: 'SQL',
+    type: SqlTokenSymbol,
     values: parameters
   });
-
-  QueryStore.set(query, true);
 
   return query;
 };
@@ -104,7 +118,7 @@ sql.identifier = (
   // @see https://github.com/facebook/flow/issues/810
   return {
     names,
-    type: 'IDENTIFIER'
+    type: IdentifierTokenSymbol
   };
 };
 
@@ -114,7 +128,7 @@ sql.raw = (
 ): RawSqlTokenType => {
   return {
     sql: rawSql,
-    type: 'RAW_SQL',
+    type: RawSqlTokenSymbol,
     values: values || []
   };
 };
@@ -123,7 +137,7 @@ sql.valueList = (
   values: $ReadOnlyArray<PrimitiveValueExpressionType>
 ): ValueListSqlTokenType => {
   return {
-    type: 'VALUE_LIST',
+    type: ValueListTokenSymbol,
     values
   };
 };
@@ -132,7 +146,7 @@ sql.tuple = (
   values: $ReadOnlyArray<PrimitiveValueExpressionType>
 ): TupleSqlTokenType => {
   return {
-    type: 'TUPLE',
+    type: TupleTokenSymbol,
     values
   };
 };
@@ -142,7 +156,7 @@ sql.tupleList = (
 ): TupleListSqlTokenType => {
   return {
     tuples,
-    type: 'TUPLE_LIST'
+    type: TupleListTokenSymbol
   };
 };
 
@@ -153,7 +167,7 @@ sql.unnest = (
   return {
     columnTypes,
     tuples,
-    type: 'UNNEST'
+    type: UnnestTokenSymbol
   };
 };
 

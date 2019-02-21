@@ -2,13 +2,16 @@
 
 import test from 'ava';
 import sql from '../../../../src/templateTags/sql';
+import {
+  SqlTokenSymbol
+} from '../../../../src/symbols';
 
 test('inlines raw SQL', (t) => {
   const query = sql`SELECT 1 FROM ${sql.raw('"bar"')}`;
 
   t.deepEqual(query, {
     sql: 'SELECT 1 FROM "bar"',
-    type: 'SQL',
+    type: SqlTokenSymbol,
     values: []
   });
 });
@@ -18,7 +21,7 @@ test('inlines raw SQL with values', (t) => {
 
   t.deepEqual(query, {
     sql: 'SELECT $1',
-    type: 'SQL',
+    type: SqlTokenSymbol,
     values: [
       'foo'
     ]
@@ -30,7 +33,7 @@ test('offsets bindings to match existing bindings', (t) => {
 
   t.deepEqual(query, {
     sql: 'SELECT $1, $2',
-    type: 'SQL',
+    type: SqlTokenSymbol,
     values: [
       'foo',
       'bar'

@@ -2,13 +2,16 @@
 
 import test from 'ava';
 import sql from '../../../../src/templateTags/sql';
+import {
+  SqlTokenSymbol
+} from '../../../../src/symbols';
 
 test('creates an object describing a query', (t) => {
   const query = sql`SELECT 1`;
 
   t.deepEqual(query, {
     sql: 'SELECT 1',
-    type: 'SQL',
+    type: SqlTokenSymbol,
     values: []
   });
 });
@@ -18,7 +21,7 @@ test('creates an object describing query value bindings', (t) => {
 
   t.deepEqual(query, {
     sql: 'SELECT $1',
-    type: 'SQL',
+    type: SqlTokenSymbol,
     values: [
       'foo'
     ]
@@ -30,7 +33,7 @@ test('creates an object describing query value bindings (multiple)', (t) => {
 
   t.deepEqual(query, {
     sql: 'SELECT $1, $2',
-    type: 'SQL',
+    type: SqlTokenSymbol,
     values: [
       'foo',
       'bar'
@@ -44,7 +47,7 @@ test('nests sql templates', (t) => {
 
   t.deepEqual(query1, {
     sql: 'SELECT $1 FROM (SELECT $2 FROM bar)',
-    type: 'SQL',
+    type: SqlTokenSymbol,
     values: [
       'baz',
       'foo'

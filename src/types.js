@@ -5,6 +5,15 @@
 import type {
   LoggerType
 } from 'roarr';
+import {
+  SqlTokenSymbol,
+  RawSqlTokenSymbol,
+  IdentifierTokenSymbol,
+  ValueListTokenSymbol,
+  TupleTokenSymbol,
+  TupleListTokenSymbol,
+  UnnestTokenSymbol
+} from './symbols';
 
 export type {
   LoggerType
@@ -183,40 +192,40 @@ export type QueryContextType = {|
 
 export type IdentifierTokenType = {|
   +names: $ReadOnlyArray<string>,
-  +type: 'IDENTIFIER'
+  +type: typeof IdentifierTokenSymbol
 |};
 
 export type SqlSqlTokenType = {|
   +sql: string,
-  +type: 'SQL',
+  +type: typeof SqlTokenSymbol,
   +values: $ReadOnlyArray<PrimitiveValueExpressionType>
 |};
 
 export type RawSqlTokenType = {|
   +sql: string,
-  +type: 'RAW_SQL',
+  +type: typeof RawSqlTokenSymbol,
   +values: $ReadOnlyArray<PrimitiveValueExpressionType>
 |};
 
 export type ValueListSqlTokenType = {|
   +values: $ReadOnlyArray<PrimitiveValueExpressionType>,
-  +type: 'VALUE_LIST'
+  +type: typeof ValueListTokenSymbol
 |};
 
 export type TupleSqlTokenType = {|
   +values: $ReadOnlyArray<PrimitiveValueExpressionType>,
-  +type: 'TUPLE'
+  +type: typeof TupleTokenSymbol
 |};
 
 export type TupleListSqlTokenType = {|
   +tuples: $ReadOnlyArray<$ReadOnlyArray<PrimitiveValueExpressionType>>,
-  +type: 'TUPLE_LIST'
+  +type: typeof TupleListTokenSymbol
 |};
 
 export type UnnestSqlTokenType = {|
   +columnTypes: $ReadOnlyArray<string>,
   +tuples: $ReadOnlyArray<$ReadOnlyArray<PrimitiveValueExpressionType>>,
-  +type: 'UNNEST'
+  +type: typeof UnnestTokenSymbol
 |};
 
 export type PrimitiveValueExpressionType = string | number | boolean | null;
@@ -233,7 +242,7 @@ export type ValueExpressionType =
 
 export type TaggedTemplateLiteralInvocationType = {|
   +sql: string,
-  +type: 'SQL',
+  +type: typeof SqlTokenSymbol,
   +values: $ReadOnlyArray<ValueExpressionType>
 |};
 

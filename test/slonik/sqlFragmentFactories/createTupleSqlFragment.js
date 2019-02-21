@@ -2,10 +2,13 @@
 
 import test from 'ava';
 import createTupleSqlFragment from '../../../src/sqlFragmentFactories/createTupleSqlFragment';
+import {
+  TupleTokenSymbol
+} from '../../../src/symbols';
 
 test('creates a tuple with a single parameter', (t) => {
   const sqlFragment = createTupleSqlFragment({
-    type: 'TUPLE',
+    type: TupleTokenSymbol,
     values: ['foo']
   }, 0);
 
@@ -15,7 +18,7 @@ test('creates a tuple with a single parameter', (t) => {
 
 test('creates a tuple multiple parameters', (t) => {
   const sqlFragment = createTupleSqlFragment({
-    type: 'TUPLE',
+    type: TupleTokenSymbol,
     values: ['foo', 'bar', 'baz']
   }, 0);
 
@@ -25,7 +28,7 @@ test('creates a tuple multiple parameters', (t) => {
 
 test('offsets parameter', (t) => {
   const sqlFragment = createTupleSqlFragment({
-    type: 'TUPLE',
+    type: TupleTokenSymbol,
     values: ['foo']
   }, 1);
 
@@ -36,7 +39,7 @@ test('offsets parameter', (t) => {
 test('throws an error if tuple is empty', (t) => {
   t.throws(() => {
     createTupleSqlFragment({
-      type: 'TUPLE',
+      type: TupleTokenSymbol,
       values: []
     }, 1);
   }, 'Tuple must have at least 1 member.');

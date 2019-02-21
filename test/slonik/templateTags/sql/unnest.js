@@ -2,13 +2,16 @@
 
 import test from 'ava';
 import sql from '../../../../src/templateTags/sql';
+import {
+  SqlTokenSymbol
+} from '../../../../src/symbols';
 
 test('creates an unnest expression', (t) => {
   const query = sql`SELECT * FROM ${sql.unnest([[1, 2, 3], [4, 5, 6]], ['int4', 'int4', 'int4'])}`;
 
   t.deepEqual(query, {
     sql: 'SELECT * FROM unnest($1::"int4"[], $2::"int4"[], $3::"int4"[])',
-    type: 'SQL',
+    type: SqlTokenSymbol,
     values: [
       [
         1,
@@ -31,7 +34,7 @@ test('creates incremental alias names if no alias names are provided', (t) => {
 
   t.deepEqual(query, {
     sql: 'SELECT * FROM unnest($1::"int4"[], $2::"int4"[], $3::"int4"[])',
-    type: 'SQL',
+    type: SqlTokenSymbol,
     values: [
       [
         1,

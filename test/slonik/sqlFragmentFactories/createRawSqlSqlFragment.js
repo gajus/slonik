@@ -2,11 +2,14 @@
 
 import test from 'ava';
 import createRawSqlSqlFragment from '../../../src/sqlFragmentFactories/createRawSqlSqlFragment';
+import {
+  RawSqlTokenSymbol
+} from '../../../src/symbols';
 
 test('creates a tuple with a single parameter', (t) => {
   const sqlFragment = createRawSqlSqlFragment({
     sql: 'foo',
-    type: 'RAW_SQL',
+    type: RawSqlTokenSymbol,
     values: []
   }, 0);
 
@@ -17,7 +20,7 @@ test('creates a tuple with a single parameter', (t) => {
 test('offsets parameter position', (t) => {
   const sqlFragment = createRawSqlSqlFragment({
     sql: '($1)',
-    type: 'RAW_SQL',
+    type: RawSqlTokenSymbol,
     values: [
       'foo'
     ]
@@ -31,7 +34,7 @@ test('throws an erorr if the greatest parameter position is greater than the num
   t.throws(() => {
     createRawSqlSqlFragment({
       sql: '($1, $2)',
-      type: 'RAW_SQL',
+      type: RawSqlTokenSymbol,
       values: [
         'foo'
       ]
@@ -43,7 +46,7 @@ test('throws an erorr if least parameter is greater than 1', (t) => {
   t.throws(() => {
     createRawSqlSqlFragment({
       sql: '($2)',
-      type: 'RAW_SQL',
+      type: RawSqlTokenSymbol,
       values: [
         'foo',
         'bar'
