@@ -11,7 +11,7 @@ A [battle-tested](#battle-tested) PostgreSQL client with strict types, detail lo
 
 ![Tailing Slonik logs](./.README/slonik-log-tailing.gif)
 
-(The above GIF shows Slonik produced query logs. Slonik produces logs using [Roarr](https://github.com/gajus/roarr). Logs include stack trace of the actual query invocation location and values used to execute the query.)
+(The above GIF shows Slonik producing [query logs](https://github.com/gajus/slonik#logging). Slonik produces logs using [Roarr](https://github.com/gajus/roarr). Logs include stack trace of the actual query invocation location and values used to execute the query.)
 
 <a name="slonik-principles"></a>
 ## Principles
