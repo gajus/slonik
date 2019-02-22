@@ -5,6 +5,7 @@ export type {
   DatabasePoolConnectionType,
   DatabasePoolType,
   DatabaseTransactionConnectionType,
+  FieldType,
   InterceptorType
 } from './types';
 export {
