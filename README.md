@@ -66,10 +66,7 @@ Note: Using this project does not require TypeScript or Flow. It is a regular ES
         * [Built-in type parsers](#slonik-type-parsers-built-in-type-parsers)
     * [Interceptors](#slonik-interceptors)
         * [Interceptor methods](#slonik-interceptors-interceptor-methods)
-    * [Built-in interceptors](#slonik-built-in-interceptors)
-        * [Field name transformation interceptor](#slonik-built-in-interceptors-field-name-transformation-interceptor)
-        * [Query normalization interceptor](#slonik-built-in-interceptors-query-normalization-interceptor)
-        * [Benchmarking interceptor](#slonik-built-in-interceptors-benchmarking-interceptor)
+    * [Community interceptors](#slonik-community-interceptors)
     * [Recipes](#slonik-recipes)
         * [Inserting large number of rows](#slonik-recipes-inserting-large-number-of-rows)
         * [Logging `auto_explain`](#slonik-recipes-logging-auto_explain)
@@ -483,39 +480,12 @@ await pool.query(sql`SELECT 1`);
 <a name="slonik-usage-default-configuration-default-interceptors"></a>
 #### Default interceptors
 
-These interceptors are enabled by default:
-
-* [Field name transformation interceptor](#field-name-transformation-interceptor)
-* [Query normalization interceptor](#query-normalization-interceptor)
-
-To disable the default interceptors, pass an empty array, e.g.
-
-```js
-createPool('postgres://', {
-  interceptors: []
-});
-
-```
-
-You can create default interceptor collection using `createInterceptorPreset`, e.g.
-
-```js
-import {
-  createInterceptorPreset
-} from 'slonik';
-
-createPool('postgres://', {
-  interceptors: [
-    ...createInterceptorPreset()
-  ]
-});
-
-```
+None.
 
 <a name="slonik-usage-default-configuration-default-type-parsers"></a>
 #### Default type parsers
 
-These interceptors are enabled by default:
+These type parsers are enabled by default:
 
 |Type name|Implemnetation|
 |---|---|
@@ -532,7 +502,7 @@ createPool('postgres://', {
 
 ```
 
-You can create default interceptor collection using `createTypeParserPreset`, e.g.
+You can create default type parser collection using `createTypeParserPreset`, e.g.
 
 ```js
 import {
@@ -595,7 +565,7 @@ As the name suggests, [`pg-promise`](https://github.com/vitaly-t/pg-promise) was
 The primary difference between Slonik and `pg-promise`:
 
 * Slonik does not allow to execute raw text queries. Slonik queries can only be constructed using [`sql` tagged template literals](#slonik-value-placeholders-tagged-template-literals). This design [protects against unsafe value interpolation](#protecting-against-unsafe-value-interpolation).
-* Slonik implements [interceptor API](#slonik-interceptors) (middleware). Middlewares allow to modify connection handling, override queries and modify the query results. Slonik comes with a set of built-in middlewares that provide [field name transformation](#field-name-transformation-interceptor), [query normalization](#query-normalization-interceptor) and [benchmarking](#benchmarking-interceptor).
+* Slonik implements [interceptor API](#slonik-interceptors) (middleware). Middlewares allow to modify connection handling, override queries and modify the query results. Example Slonik interceptors include [field name transformation](https://github.com/gajus/slonik-interceptor-field-name-transformation), [query normalization](https://github.com/gajus/slonik-interceptor-query-normalisation) and [query benchmarking](https://github.com/gajus/slonik-interceptor-query-benchmarking).
 * Slonik implements [transaction nesting](#transaction-nesting).
 
 Other differences are primarily in how the equivalent features are imlemented, e.g.
@@ -781,177 +751,14 @@ Executed before `beforeQueryExecution`.
 
 Transforms query.
 
-<a name="slonik-built-in-interceptors"></a>
-## Built-in interceptors
+<a name="slonik-community-interceptors"></a>
+## Community interceptors
 
-<a name="slonik-built-in-interceptors-field-name-transformation-interceptor"></a>
-### Field name transformation interceptor
-
-`createFormatFieldNameInterceptor` creates an interceptor that formats query result field names.
-
-This interceptor removes the necessity to alias field names, e.g.
-
-```js
-connection.any(sql`
-  SELECT
-    id,
-    full_name "fullName"
-  FROM person
-`);
-
-```
-
-Field name formatter uses `afterQuery` interceptor to format field names.
-
-<a name="slonik-built-in-interceptors-field-name-transformation-interceptor-api-1"></a>
-#### API
-
-```js
-import {
-  createFieldNameTransformationInterceptor
-} from 'slonik';
-
-```
-
-```js
-/**
- * @property format The only supported format is CAMEL_CASE.
- * @property test Tests whether the field should be formatted. The default behaviour is to include all fields that match ^[a-z0-9_]+$ regex.
- */
-type ConfigurationType = {|
-  +format: 'CAMEL_CASE',
-  +test: (field: FieldType) => boolean
-|};
-
-(configuration: ConfigurationType) => InterceptorType;
-
-```
-
-<a name="slonik-built-in-interceptors-field-name-transformation-interceptor-example-usage"></a>
-#### Example usage
-
-```js
-import {
-  createFieldNameTransformationInterceptor,
-  createPool
-} from 'slonik';
-
-const interceptors = [
-  createFieldNameTransformationInterceptor({
-    format: 'CAMEL_CASE'
-  })
-];
-
-const connection = createPool('postgres://', {
-  interceptors
-});
-
-connection.any(sql`
-  SELECT
-    id,
-    full_name
-  FROM person
-`);
-
-// [
-//   {
-//     id: 1,
-//     fullName: 1
-//   }
-// ]
-
-```
-
-<a name="slonik-built-in-interceptors-query-normalization-interceptor"></a>
-### Query normalization interceptor
-
-Normalizes the query.
-
-<a name="slonik-built-in-interceptors-query-normalization-interceptor-api-2"></a>
-#### API
-
-```js
-import {
-  createQueryNormalizationInterceptor
-} from 'slonik';
-
-```
-
-```js
-/**
- * @property stripComments Strips comments from the query (default: true).
- */
-type ConfigurationType = {|
-  +stripComments?: boolean
-|};
-
-(configuration?: ConfigurationType) => InterceptorType;
-
-```
-
-<a name="slonik-built-in-interceptors-benchmarking-interceptor"></a>
-### Benchmarking interceptor
-
-Summarizes all queries that were run during the life-time of a connection.
-
-Example output:
-
-```
-╔═══════════════════════════════════════════════════════════════╤═══════════╤═════════╤═══════╗
-║ Query                                                         │ Execution │ Average │ Total ║
-║                                                               │ count     │ time    │ time  ║
-╟───────────────────────────────────────────────────────────────┼───────────┼─────────┼───────╢
-║ SELECT id FROM seating_plan WHERE auditorium_id = $1 AND      │ 1         │ 176ms   │ 176ms ║
-║ fingerprint = $2                                              │           │         │       ║
-╟───────────────────────────────────────────────────────────────┼───────────┼─────────┼───────╢
-║ UPDATE event SET scrape_event_seating_session = $1,           │ 1         │ 176ms   │ 176ms ║
-║ scrape_event_seating_session_created_at = now() WHERE id =    │           │         │       ║
-║ $2                                                            │           │         │       ║
-╟───────────────────────────────────────────────────────────────┼───────────┼─────────┼───────╢
-║ SELECT v1.cinema_id "cinemaId",                               │ 1         │ 182ms   │ 182ms ║
-║ last_event_seating_plan_change.seating_plan_id                │           │         │       ║
-║ "seatingPlanId" FROM event e1 INNER JOIN venue v1 ON v1.id =  │           │         │       ║
-║ e1.venue_id INNER JOIN LATERAL ( SELECT DISTINCT ON           │           │         │       ║
-║ (espc1.event_id) espc1.seating_plan_id FROM                   │           │         │       ║
-║ event_seating_plan_change espc1 WHERE espc1.event_id = e1.id  │           │         │       ║
-║ ORDER BY espc1.event_id, espc1.id DESC )                      │           │         │       ║
-║ last_event_seating_plan_change ON TRUE WHERE e1.id = $1       │           │         │       ║
-╟───────────────────────────────────────────────────────────────┼───────────┼─────────┼───────╢
-║ UPDATE event_seating_lookup SET ended_at =                    │ 1         │ 185ms   │ 185ms ║
-║ statement_timestamp(), log = $1, lookup_is_successful = $2,   │           │         │       ║
-║ error_name = $3, error_message = $4, error = $5 WHERE id =    │           │         │       ║
-║ $6                                                            │           │         │       ║
-╟───────────────────────────────────────────────────────────────┼───────────┼─────────┼───────╢
-║ SELECT s1.id, s1.location_column "locationColumn",            │ 1         │ 237ms   │ 237ms ║
-║ s1.location_row "locationRow", sa1.fuid "seatingAreaFuid"     │           │         │       ║
-║ FROM seat s1 INNER JOIN seating_area sa1 ON sa1.id =          │           │         │       ║
-║ s1.seating_area_id WHERE s1.seating_plan_id = $1              │           │         │       ║
-╟───────────────────────────────────────────────────────────────┼───────────┼─────────┼───────╢
-║ SELECT extract(epoch from                                     │ 1         │ 647ms   │ 647ms ║
-║ (c1.maximum_event_seating_lookup_duration)) FROM event e1     │           │         │       ║
-║ INNER JOIN venue v1 ON v1.id = e1.venue_id INNER JOIN cinema  │           │         │       ║
-║ c1 ON c1.id = v1.cinema_id WHERE e1.id = $1                   │           │         │       ║
-╟───────────────────────────────────────────────────────────────┼───────────┼─────────┼───────╢
-║ SELECT id FROM cinema_foreign_seat_type WHERE cinema_id = $1  │ 133       │ 150ms   │ 19.9s ║
-║ AND fuid = $2                                                 │           │         │       ║
-╚═══════════════════════════════════════════════════════════════╧═══════════╧═════════╧═══════╝
-
-```
-
-<a name="slonik-built-in-interceptors-benchmarking-interceptor-api-3"></a>
-#### API
-
-```js
-import {
-  createBenchmarkingInterceptor
-} from 'slonik';
-
-```
-
-```js
-() => InterceptorType;
-
-```
+|Name|Description|
+|---|---|
+|[`slonik-interceptor-field-name-transformation`](https://github.com/gajus/slonik-interceptor-field-name-transformation)|Transforms Slonik query result field names.|
+|[`slonik-interceptor-query-benchmarking`](https://github.com/gajus/slonik-interceptor-query-benchmarking)|Benchmarks Slonik queries.|
+|[`slonik-interceptor-query-normalisation`](https://github.com/gajus/slonik-interceptor-query-normalisation)|Normalises Slonik queries.|
 
 
 <a name="slonik-recipes"></a>
