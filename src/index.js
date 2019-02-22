@@ -6,7 +6,8 @@ export type {
   DatabasePoolType,
   DatabaseTransactionConnectionType,
   FieldType,
-  InterceptorType
+  InterceptorType,
+  QueryContextType
 } from './types';
 export {
   createInterceptorPreset,
