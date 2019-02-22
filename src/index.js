@@ -9,6 +9,7 @@ export type {
 } from './types';
 export {
   createInterceptorPreset,
+  createTypeParserPreset,
   createPool
 } from './factories';
 export {
