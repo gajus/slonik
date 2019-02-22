@@ -10,7 +10,6 @@ export type {
   QueryContextType
 } from './types';
 export {
-  createInterceptorPreset,
   createTypeParserPreset,
   createPool
 } from './factories';
@@ -19,11 +18,6 @@ export {
   createTimestampTypeParser,
   createTimestampWithTimeZoneTypeParser
 } from './factories/typeParsers';
-export {
-  createBenchmarkingInterceptor,
-  createFieldNameTransformationInterceptor,
-  createQueryNormalizationInterceptor
-} from './interceptors';
 export {
   sql
 } from './templateTags';

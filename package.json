@@ -10,8 +10,6 @@
     ]
   },
   "dependencies": {
-    "ajv": "^6.9.1",
-    "array-flatten": "^2.1.2",
     "boolean": "^0.2.0",
     "camelcase": "^5.0.0",
     "crack-json": "^1.2.0",
@@ -24,9 +22,7 @@
     "pretty-ms": "^4.0.0",
     "roarr": "^2.13.0",
     "serialize-error": "^3.0.0",
-    "table": "^5.2.3",
-    "ulid": "^2.3.0",
-    "word-wrap": "^1.2.3"
+    "ulid": "^2.3.0"
   },
   "description": "A PostgreSQL client with strict types, detail logging and assertions.",
   "devDependencies": {

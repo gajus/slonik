@@ -95,38 +95,11 @@ await pool.query(sql`SELECT 1`);
 
 #### Default interceptors
 
-These interceptors are enabled by default:
-
-* [Field name transformation interceptor](#field-name-transformation-interceptor)
-* [Query normalization interceptor](#query-normalization-interceptor)
-
-To disable the default interceptors, pass an empty array, e.g.
-
-```js
-createPool('postgres://', {
-  interceptors: []
-});
-
-```
-
-You can create default interceptor collection using `createInterceptorPreset`, e.g.
-
-```js
-import {
-  createInterceptorPreset
-} from 'slonik';
-
-createPool('postgres://', {
-  interceptors: [
-    ...createInterceptorPreset()
-  ]
-});
-
-```
+None.
 
 #### Default type parsers
 
-These interceptors are enabled by default:
+These type parsers are enabled by default:
 
 |Type name|Implemnetation|
 |---|---|
@@ -143,7 +116,7 @@ createPool('postgres://', {
 
 ```
 
-You can create default interceptor collection using `createTypeParserPreset`, e.g.
+You can create default type parser collection using `createTypeParserPreset`, e.g.
 
 ```js
 import {
@@ -202,7 +175,7 @@ As the name suggests, [`pg-promise`](https://github.com/vitaly-t/pg-promise) was
 The primary difference between Slonik and `pg-promise`:
 
 * Slonik does not allow to execute raw text queries. Slonik queries can only be constructed using [`sql` tagged template literals](#slonik-value-placeholders-tagged-template-literals). This design [protects against unsafe value interpolation](#protecting-against-unsafe-value-interpolation).
-* Slonik implements [interceptor API](#slonik-interceptors) (middleware). Middlewares allow to modify connection handling, override queries and modify the query results. Slonik comes with a set of built-in middlewares that provide [field name transformation](#field-name-transformation-interceptor), [query normalization](#query-normalization-interceptor) and [benchmarking](#benchmarking-interceptor).
+* Slonik implements [interceptor API](#slonik-interceptors) (middleware). Middlewares allow to modify connection handling, override queries and modify the query results. Example Slonik interceptors include [field name transformation](https://github.com/gajus/slonik-interceptor-field-name-transformation), [query normalization](https://github.com/gajus/slonik-interceptor-query-normalisation) and [query benchmarking](https://github.com/gajus/slonik-interceptor-query-benchmarking).
 * Slonik implements [transaction nesting](#transaction-nesting).
 
 Other differences are primarily in how the equivalent features are imlemented, e.g.
