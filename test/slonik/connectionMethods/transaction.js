@@ -6,7 +6,7 @@ import createPool from '../../helpers/createPool';
 test('commits successful transaction', async (t) => {
   const pool = createPool();
 
-  await pool.transaction(() => {});
+  await pool.transaction(async () => {});
 
   t.true(pool.querySpy.getCall(0).args[0] === 'START TRANSACTION');
   t.true(pool.querySpy.getCall(1).args[0] === 'COMMIT');
@@ -15,7 +15,7 @@ test('commits successful transaction', async (t) => {
 test('rollbacks unsuccessful transaction', async (t) => {
   const pool = createPool();
 
-  await t.throwsAsync(pool.transaction(() => {
+  await t.throwsAsync(pool.transaction(async () => {
     return Promise.reject(new Error('foo'));
   }));
 

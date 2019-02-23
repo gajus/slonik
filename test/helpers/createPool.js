@@ -10,7 +10,8 @@ import type {
 import log from './Logger';
 
 const defaultConfiguration = {
-  interceptors: []
+  interceptors: [],
+  typeParsers: []
 };
 
 export default (clientConfiguration: ClientUserConfigurationType = defaultConfiguration) => {
@@ -42,7 +43,11 @@ export default (clientConfiguration: ClientUserConfigurationType = defaultConfig
     log,
     internalPool,
     {
+      // @see https://github.com/facebook/flow/issues/7505
+      // $FlowFixMe
       interceptors: [],
+
+      // $FlowFixMe
       typeParsers: [],
       ...clientConfiguration
     }
