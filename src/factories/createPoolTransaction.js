@@ -53,6 +53,7 @@ export default async (
 
   const connectionContext = {
     connectionId,
+    connectionType: 'IMPLICIT_TRANSACTION',
     log: connectionLog,
     poolId: pool.slonik.poolId
   };
