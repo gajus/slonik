@@ -35,9 +35,18 @@ export type FieldType = {|
   +tableID: number
 |};
 
+type NoticeType = {|
+  +code: string,
+  +length: number,
+  +name: string,
+  +severity: string,
+  +where: string
+|};
+
 type QueryResultType<T> = {|
   +command: 'DELETE' | 'INSERT' | 'SELECT' | 'UPDATE',
   +fields: $ReadOnlyArray<FieldType>,
+  +notices: $ReadOnlyArray<NoticeType>,
   +oid: number | null,
   +rowAsArray: boolean,
   +rowCount: number,

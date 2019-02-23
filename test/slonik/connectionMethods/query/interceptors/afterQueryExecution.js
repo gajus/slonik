@@ -12,6 +12,7 @@ test('overrides results', async (t) => {
           return {
             command: 'SELECT',
             fields: [],
+            notices: [],
             oid: null,
             rowAsArray: false,
             rowCount: 1,
@@ -31,6 +32,7 @@ test('overrides results', async (t) => {
   t.deepEqual(result, {
     command: 'SELECT',
     fields: [],
+    notices: [],
     oid: null,
     rowAsArray: false,
     rowCount: 1,

@@ -124,8 +124,6 @@ const query: InternalQueryFunctionType<*> = async (connectionLogger, connection,
 
   try {
     result = await connection.query(actualQuery.sql, actualQuery.values);
-
-    result.notices = notices;
   } catch (error) {
     log.error({
       error: serializeError(error),
@@ -152,6 +150,8 @@ const query: InternalQueryFunctionType<*> = async (connectionLogger, connection,
   } finally {
     connection.off('notice', noticeListener);
   }
+
+  result.notices = notices;
 
   for (const interceptor of clientConfiguration.interceptors) {
     if (interceptor.afterQueryExecution) {
