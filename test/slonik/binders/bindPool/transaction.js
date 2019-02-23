@@ -1,56 +1,14 @@
 // @flow
 
 import test from 'ava';
-import sinon from 'sinon';
 import delay from 'delay';
 import sql from '../../../../src/templateTags/sql';
-import bindPool from '../../../../src/binders/bindPool';
-import log from '../../../helpers/Logger';
-
-const createConnection = () => {
-  return {
-    connection: {
-      slonik: {
-        connectionId: '1',
-        transactionDepth: null
-      }
-    },
-    query: () => {},
-    release: () => {}
-  };
-};
+import createPool from '../../../helpers/createPool';
 
 const getQueries = (spy) => {
   return spy.getCalls().map((call) => {
     return call.args[0];
   });
-};
-
-const createPool = () => {
-  const connection = createConnection();
-
-  const internalPool = {
-    connect: () => {
-      return connection;
-    },
-    slonik: {
-      poolId: '1'
-    }
-  };
-
-  const querySpy = sinon.spy(connection, 'query');
-
-  return {
-    ...bindPool(
-      log,
-      internalPool,
-      {
-        interceptors: [],
-        typeParsers: []
-      }
-    ),
-    querySpy
-  };
 };
 
 test('commits successful transaction', async (t) => {

@@ -3,53 +3,7 @@
 import test from 'ava';
 import sinon from 'sinon';
 import sql from '../../../../../src/templateTags/sql';
-import bindPool from '../../../../../src/binders/bindPool';
-import log from '../../../../helpers/Logger';
-
-const createConnection = () => {
-  return {
-    connection: {
-      slonik: {
-        connectionId: '1',
-        transactionDepth: null
-      }
-    },
-    query: () => {},
-    release: () => {}
-  };
-};
-
-const createPool = (clientConfiguration = {}) => {
-  const connection = createConnection();
-
-  const internalPool = {
-    connect: () => {
-      return connection;
-    },
-    slonik: {
-      poolId: '1'
-    }
-  };
-
-  const connectSpy = sinon.spy(internalPool, 'connect');
-  const releaseSpy = sinon.spy(connection, 'release');
-
-  const pool = bindPool(
-    log,
-    internalPool,
-    {
-      interceptors: [],
-      typeParsers: [],
-      ...clientConfiguration
-    }
-  );
-
-  return {
-    ...pool,
-    connectSpy,
-    releaseSpy
-  };
-};
+import createPool from '../../../../helpers/createPool';
 
 test('`afterPoolConnection` is called after `connect`', async (t) => {
   const afterPoolConnection = sinon.stub();
