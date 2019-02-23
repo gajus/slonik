@@ -349,7 +349,7 @@ export type InterceptorType = {|
   +beforeQueryExecution?: (
     queryContext: QueryContextType,
     query: QueryType
-  ) => MaybePromiseType<QueryResultType<QueryResultRowType>> | MaybePromiseType<void>,
+  ) => MaybePromiseType<QueryResultType<QueryResultRowType> | void>,
   +transformQuery?: (
     queryContext: QueryContextType,
     query: QueryType
