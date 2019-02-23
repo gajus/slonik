@@ -2,6 +2,7 @@
 
 /* eslint-disable fp/no-events */
 
+import EventEmitter from 'events';
 import sinon from 'sinon';
 import bindPool from '../../src/binders/bindPool';
 import type {
@@ -15,6 +16,8 @@ const defaultConfiguration = {
 };
 
 export default (clientConfiguration: ClientUserConfigurationType = defaultConfiguration) => {
+  const eventEmitter = new EventEmitter();
+
   const connection = {
     connection: {
       slonik: {
@@ -22,7 +25,11 @@ export default (clientConfiguration: ClientUserConfigurationType = defaultConfig
         transactionDepth: null
       }
     },
-    query: () => {},
+    off: eventEmitter.on.bind(eventEmitter),
+    on: eventEmitter.on.bind(eventEmitter),
+    query: () => {
+      return {};
+    },
     release: () => {}
   };
 
@@ -37,7 +44,7 @@ export default (clientConfiguration: ClientUserConfigurationType = defaultConfig
 
   const connectSpy = sinon.spy(internalPool, 'connect');
   const releaseSpy = sinon.spy(connection, 'release');
-  const querySpy = sinon.spy(connection, 'query');
+  const querySpy = sinon.stub(connection, 'query').returns({});
 
   const pool = bindPool(
     log,
