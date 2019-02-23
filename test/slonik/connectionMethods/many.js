@@ -1,16 +1,16 @@
 // @flow
 
 import test from 'ava';
-import sinon from 'sinon';
-import log from '../../helpers/Logger';
-import createClientConfiguration from '../../helpers/createClientConfiguration';
-import many from '../../../src/connectionMethods/many';
+import createPool from '../../helpers/createPool';
+import sql from '../../../src/templateTags/sql';
 import {
   NotFoundError
 } from '../../../src/errors';
 
 test('returns the query results rows', async (t) => {
-  const stub = sinon.stub().returns({
+  const pool = createPool();
+
+  pool.querySpy.returns({
     rows: [
       {
         foo: 1
@@ -21,11 +21,7 @@ test('returns the query results rows', async (t) => {
     ]
   });
 
-  const connection: any = {
-    query: stub
-  };
-
-  const result = await many(log, connection, createClientConfiguration(), '');
+  const result = await pool.many(sql`SELECT 1`);
 
   t.deepEqual(result, [
     {
@@ -38,13 +34,11 @@ test('returns the query results rows', async (t) => {
 });
 
 test('throws an error if no rows are returned', async (t) => {
-  const stub = sinon.stub().returns({
+  const pool = createPool();
+
+  pool.querySpy.returns({
     rows: []
   });
 
-  const connection: any = {
-    query: stub
-  };
-
-  await t.throwsAsync(many(log, connection, createClientConfiguration(), ''), NotFoundError);
+  await t.throwsAsync(pool.many(sql`SELECT 1`), NotFoundError);
 });

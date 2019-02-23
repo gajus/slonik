@@ -1,16 +1,16 @@
 // @flow
 
 import test from 'ava';
-import sinon from 'sinon';
-import log from '../../helpers/Logger';
-import createClientConfiguration from '../../helpers/createClientConfiguration';
-import maybeOneFirst from '../../../src/connectionMethods/maybeOneFirst';
+import createPool from '../../helpers/createPool';
+import sql from '../../../src/templateTags/sql';
 import {
   DataIntegrityError
 } from '../../../src/errors';
 
 test('returns the first row', async (t) => {
-  const stub = sinon.stub().returns({
+  const pool = createPool();
+
+  pool.querySpy.returns({
     rows: [
       {
         foo: 1
@@ -18,31 +18,27 @@ test('returns the first row', async (t) => {
     ]
   });
 
-  const connection: any = {
-    query: stub
-  };
-
-  const result = await maybeOneFirst(log, connection, createClientConfiguration(), '');
+  const result = await pool.maybeOneFirst(sql`SELECT 1`);
 
   t.deepEqual(result, 1);
 });
 
 test('returns null if no results', async (t) => {
-  const stub = sinon.stub().returns({
+  const pool = createPool();
+
+  pool.querySpy.returns({
     rows: []
   });
 
-  const connection: any = {
-    query: stub
-  };
-
-  const result = await maybeOneFirst(log, connection, createClientConfiguration(), '');
+  const result = await pool.maybeOneFirst(sql`SELECT 1`);
 
   t.true(result === null);
 });
 
 test('throws an error if more than one row is returned', async (t) => {
-  const stub = sinon.stub().returns({
+  const pool = createPool();
+
+  pool.querySpy.returns({
     rows: [
       {
         foo: 1
@@ -53,15 +49,13 @@ test('throws an error if more than one row is returned', async (t) => {
     ]
   });
 
-  const connection: any = {
-    query: stub
-  };
-
-  await t.throwsAsync(maybeOneFirst(log, connection, createClientConfiguration(), ''), DataIntegrityError);
+  await t.throwsAsync(pool.maybeOneFirst(sql`SELECT 1`), DataIntegrityError);
 });
 
 test('throws an error if more than one column is returned', async (t) => {
-  const stub = sinon.stub().returns({
+  const pool = createPool();
+
+  pool.querySpy.returns({
     rows: [
       {
         bar: 1,
@@ -70,9 +64,5 @@ test('throws an error if more than one column is returned', async (t) => {
     ]
   });
 
-  const connection: any = {
-    query: stub
-  };
-
-  await t.throwsAsync(maybeOneFirst(log, connection, createClientConfiguration(), ''), DataIntegrityError);
+  await t.throwsAsync(pool.maybeOneFirst(sql`SELECT 1`), DataIntegrityError);
 });

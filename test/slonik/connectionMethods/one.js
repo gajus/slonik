@@ -1,17 +1,17 @@
 // @flow
 
 import test from 'ava';
-import sinon from 'sinon';
-import log from '../../helpers/Logger';
-import createClientConfiguration from '../../helpers/createClientConfiguration';
-import one from '../../../src/connectionMethods/one';
+import createPool from '../../helpers/createPool';
+import sql from '../../../src/templateTags/sql';
 import {
   DataIntegrityError,
   NotFoundError
 } from '../../../src/errors';
 
 test('returns the first row', async (t) => {
-  const stub = sinon.stub().returns({
+  const pool = createPool();
+
+  pool.querySpy.returns({
     rows: [
       {
         foo: 1
@@ -19,11 +19,7 @@ test('returns the first row', async (t) => {
     ]
   });
 
-  const connection: any = {
-    query: stub
-  };
-
-  const result = await one(log, connection, createClientConfiguration(), '');
+  const result = await pool.one(sql`SELECT 1`);
 
   t.deepEqual(result, {
     foo: 1
@@ -31,19 +27,19 @@ test('returns the first row', async (t) => {
 });
 
 test('throws an error if no rows are returned', async (t) => {
-  const stub = sinon.stub().returns({
+  const pool = createPool();
+
+  pool.querySpy.returns({
     rows: []
   });
 
-  const connection: any = {
-    query: stub
-  };
-
-  await t.throwsAsync(one(log, connection, createClientConfiguration(), ''), NotFoundError);
+  await t.throwsAsync(pool.one(sql`SELECT 1`), NotFoundError);
 });
 
 test('throws an error if more than one row is returned', async (t) => {
-  const stub = sinon.stub().returns({
+  const pool = createPool();
+
+  pool.querySpy.returns({
     rows: [
       {
         foo: 1
@@ -54,9 +50,5 @@ test('throws an error if more than one row is returned', async (t) => {
     ]
   });
 
-  const connection: any = {
-    query: stub
-  };
-
-  await t.throwsAsync(one(log, connection, createClientConfiguration(), ''), DataIntegrityError);
+  await t.throwsAsync(pool.one(sql`SELECT 1`), DataIntegrityError);
 });

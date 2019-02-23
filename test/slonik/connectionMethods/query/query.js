@@ -1,13 +1,13 @@
 // @flow
 
 import test from 'ava';
-import sinon from 'sinon';
-import log from '../../../helpers/Logger';
-import createClientConfiguration from '../../../helpers/createClientConfiguration';
-import query from '../../../../src/connectionMethods/query';
+import createPool from '../../../helpers/createPool';
+import sql from '../../../../src/templateTags/sql';
 
 test('executes the query and returns the result', async (t) => {
-  const stub = sinon.stub().returns({
+  const pool = createPool();
+
+  pool.querySpy.returns({
     rows: [
       {
         foo: 1
@@ -15,13 +15,10 @@ test('executes the query and returns the result', async (t) => {
     ]
   });
 
-  const connection: any = {
-    query: stub
-  };
-
-  const result = await query(log, connection, createClientConfiguration(), '');
+  const result = await pool.query(sql`SELECT 1`);
 
   t.deepEqual(result, {
+    notices: [],
     rows: [
       {
         foo: 1

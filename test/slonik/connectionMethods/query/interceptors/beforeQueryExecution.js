@@ -1,31 +1,32 @@
 // @flow
 
 import test from 'ava';
-import sinon from 'sinon';
-import log from '../../../../helpers/Logger';
-import query from '../../../../../src/connectionMethods/query';
+import createPool from '../../../../helpers/createPool';
+import sql from '../../../../../src/templateTags/sql';
 
 test('short-circuits the query execution', async (t) => {
-  const interceptors = [
-    {
-      beforeQueryExecution: () => {
-        return {
-          command: 'SELECT',
-          fields: [],
-          oid: null,
-          rowAsArray: false,
-          rowCount: 1,
-          rows: [
-            {
-              foo: 2
-            }
-          ]
-        };
+  const pool = createPool({
+    interceptors: [
+      {
+        beforeQueryExecution: () => {
+          return {
+            command: 'SELECT',
+            fields: [],
+            oid: null,
+            rowAsArray: false,
+            rowCount: 1,
+            rows: [
+              {
+                foo: 2
+              }
+            ]
+          };
+        }
       }
-    }
-  ];
+    ]
+  });
 
-  const stub = sinon.stub().returns({
+  pool.querySpy.returns({
     rows: [
       {
         foo: 1
@@ -33,21 +34,7 @@ test('short-circuits the query execution', async (t) => {
     ]
   });
 
-  const connection: any = {
-    query: stub
-  };
-
-  const result = await query(
-    log,
-    connection,
-    {
-      interceptors,
-      typeParsers: []
-    },
-    ''
-  );
-
-  t.true(stub.callCount === 0);
+  const result = await pool.query(sql`SELECT 1`);
 
   t.deepEqual(result, {
     command: 'SELECT',
@@ -64,15 +51,15 @@ test('short-circuits the query execution', async (t) => {
 });
 
 test('executes query if "beforeQuery" does not return results', async (t) => {
-  const interceptors = [
-    {
-      beforeQueryExecution: () => {
-
+  const pool = createPool({
+    interceptors: [
+      {
+        beforeQueryExecution: () => {}
       }
-    }
-  ];
+    ]
+  });
 
-  const stub = sinon.stub().returns({
+  pool.querySpy.returns({
     rows: [
       {
         foo: 1
@@ -80,23 +67,10 @@ test('executes query if "beforeQuery" does not return results', async (t) => {
     ]
   });
 
-  const connection: any = {
-    query: stub
-  };
-
-  const result = await query(
-    log,
-    connection,
-    {
-      interceptors,
-      typeParsers: []
-    },
-    ''
-  );
-
-  t.true(stub.callCount === 1);
+  const result = await pool.query(sql`SELECT 1`);
 
   t.deepEqual(result, {
+    notices: [],
     rows: [
       {
         foo: 1

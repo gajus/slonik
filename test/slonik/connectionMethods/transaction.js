@@ -1,71 +1,24 @@
 // @flow
 
 import test from 'ava';
-import sinon from 'sinon';
-import log from '../../helpers/Logger';
-import createClientConfiguration from '../../helpers/createClientConfiguration';
-import transaction from '../../../src/connectionMethods/transaction';
+import createPool from '../../helpers/createPool';
 
 test('commits successful transaction', async (t) => {
-  const query = sinon.stub();
+  const pool = createPool();
 
-  query.returns({});
+  await pool.transaction(() => {});
 
-  const connection = {
-    connection: {
-      slonik: {
-        transactionDepth: null
-      }
-    },
-    query
-  };
-
-  const result = await transaction(log, connection, createClientConfiguration(), async () => {
-    await query('FOO');
-
-    return 'BAR';
-  });
-
-  t.true(result === 'BAR');
-
-  t.true(query.args[0].length === 1);
-  t.true(query.args[0][0] === 'START TRANSACTION');
-
-  t.true(query.args[1].length === 1);
-  t.true(query.args[1][0] === 'FOO');
-
-  t.true(query.args[2].length === 1);
-  t.true(query.args[2][0] === 'COMMIT');
+  t.true(pool.querySpy.getCall(0).args[0] === 'START TRANSACTION');
+  t.true(pool.querySpy.getCall(1).args[0] === 'COMMIT');
 });
 
 test('rollbacks unsuccessful transaction', async (t) => {
-  const query = sinon.stub();
+  const pool = createPool();
 
-  query.returns({});
+  await t.throwsAsync(pool.transaction(() => {
+    return Promise.reject(new Error('foo'));
+  }));
 
-  const connection = {
-    connection: {
-      slonik: {
-        transactionDepth: null
-      }
-    },
-    query
-  };
-
-  const transactionExecution = transaction(log, connection, createClientConfiguration(), async () => {
-    await query('FOO');
-
-    throw new Error('Instigated error.');
-  });
-
-  await t.throwsAsync(transactionExecution);
-
-  t.true(query.args[0].length === 1);
-  t.true(query.args[0][0] === 'START TRANSACTION');
-
-  t.true(query.args[1].length === 1);
-  t.true(query.args[1][0] === 'FOO');
-
-  t.true(query.args[2].length === 1);
-  t.true(query.args[2][0] === 'ROLLBACK');
+  t.true(pool.querySpy.getCall(0).args[0] === 'START TRANSACTION');
+  t.true(pool.querySpy.getCall(1).args[0] === 'ROLLBACK');
 });

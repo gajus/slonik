@@ -1,16 +1,16 @@
 // @flow
 
 import test from 'ava';
-import sinon from 'sinon';
-import log from '../../helpers/Logger';
-import createClientConfiguration from '../../helpers/createClientConfiguration';
-import anyFirst from '../../../src/connectionMethods/anyFirst';
+import createPool from '../../helpers/createPool';
+import sql from '../../../src/templateTags/sql';
 import {
   DataIntegrityError
 } from '../../../src/errors';
 
 test('returns values of the query result rows', async (t) => {
-  const stub = sinon.stub().returns({
+  const pool = createPool();
+
+  pool.querySpy.returns({
     rows: [
       {
         foo: 1
@@ -21,11 +21,7 @@ test('returns values of the query result rows', async (t) => {
     ]
   });
 
-  const connection: any = {
-    query: stub
-  };
-
-  const result = await anyFirst(log, connection, createClientConfiguration(), '');
+  const result = await pool.anyFirst(sql`SELECT 1`);
 
   t.deepEqual(result, [
     1,
@@ -34,7 +30,9 @@ test('returns values of the query result rows', async (t) => {
 });
 
 test('throws an error if more than one column is returned', async (t) => {
-  const stub = sinon.stub().returns({
+  const pool = createPool();
+
+  pool.querySpy.returns({
     rows: [
       {
         bar: 1,
@@ -43,9 +41,5 @@ test('throws an error if more than one column is returned', async (t) => {
     ]
   });
 
-  const connection: any = {
-    query: stub
-  };
-
-  await t.throwsAsync(anyFirst(log, connection, createClientConfiguration(), ''), DataIntegrityError);
+  await t.throwsAsync(pool.anyFirst(sql`SELECT 1`), DataIntegrityError);
 });

@@ -1,53 +1,32 @@
 // @flow
 
 import test from 'ava';
-import sinon from 'sinon';
-import log from '../../../../helpers/Logger';
-import query from '../../../../../src/connectionMethods/query';
+import sql from '../../../../../src/templateTags/sql';
+import createPool from '../../../../helpers/createPool';
 
 test('overrides results', async (t) => {
-  const interceptors = [
-    {
-      afterQueryExecution: () => {
-        return {
-          command: 'SELECT',
-          fields: [],
-          oid: null,
-          rowAsArray: false,
-          rowCount: 1,
-          rows: [
-            {
-              foo: 2
-            }
-          ]
-        };
-      }
-    }
-  ];
-
-  const stub = sinon.stub().returns({
-    rows: [
+  const pool = createPool({
+    interceptors: [
       {
-        foo: 1
+        afterQueryExecution: () => {
+          return {
+            command: 'SELECT',
+            fields: [],
+            oid: null,
+            rowAsArray: false,
+            rowCount: 1,
+            rows: [
+              {
+                foo: 2
+              }
+            ]
+          };
+        }
       }
     ]
   });
 
-  const connection: any = {
-    query: stub
-  };
-
-  const result = await query(
-    log,
-    connection,
-    {
-      interceptors,
-      typeParsers: []
-    },
-    ''
-  );
-
-  t.true(stub.callCount === 1);
+  const result = await pool.query(sql`SELECT 1`);
 
   t.deepEqual(result, {
     command: 'SELECT',
