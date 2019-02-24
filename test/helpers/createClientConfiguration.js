@@ -6,6 +6,7 @@ import type {
 
 export default (): ClientConfigurationType => {
   return {
+    captureStackTrace: true,
     interceptors: [],
     typeParsers: []
   };

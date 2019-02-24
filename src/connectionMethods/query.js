@@ -5,9 +5,6 @@ import {
   getStackTrace
 } from 'get-stack-trace';
 import {
-  SLONIK_LOG_STACK_TRACE
-} from '../config';
-import {
   createQueryId
 } from '../utilities';
 import {
@@ -26,7 +23,7 @@ const query: InternalQueryFunctionType<*> = async (connectionLogger, connection,
 
   let stackTrace = null;
 
-  if (SLONIK_LOG_STACK_TRACE) {
+  if (clientConfiguration.captureStackTrace) {
     const callSites = await getStackTrace();
 
     stackTrace = callSites

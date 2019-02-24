@@ -29,7 +29,7 @@ Note: Using this project does not require TypeScript or Flow. It is a regular ES
 * [Safe value interpolation](#protecting-against-unsafe-value-interpolation).
 * [Transaction nesting](#transaction-nesting).
 * Detail [logging](#slonik-debugging).
-* [Asynchronous stack trace resolution](#log-stack-trace).
+* [Asynchronous stack trace resolution](#capture-stack-trace).
 * [Middlewares](#slonik-interceptors).
 * [Mapped errors](#error-handling).
 * [Atom plugin](#slonik-syntax-highlighting).

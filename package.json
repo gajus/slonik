@@ -12,7 +12,6 @@
   "dependencies": {
     "boolean": "^0.2.0",
     "camelcase": "^5.0.0",
-    "crack-json": "^1.2.0",
     "delay": "^4.1.0",
     "es6-error": "^4.1.1",
     "get-stack-trace": "^2.0.1",

@@ -1,8 +1,5 @@
 // @flow
 
-import {
-  createLogInterceptor
-} from '../interceptors';
 import type {
   ClientConfigurationType,
   ClientUserConfigurationType
@@ -10,21 +7,20 @@ import type {
 import createTypeParserPreset from './createTypeParserPreset';
 
 export default (clientUserConfiguration?: ClientUserConfigurationType): ClientConfigurationType => {
-  let configuration = {
+  const configuration = {
+    captureStackTrace: true,
+
+    // $FlowFixMe
+    interceptors: [],
+
+    // $FlowFixMe
+    typeParsers: [],
     ...clientUserConfiguration
   };
 
   if (!configuration.typeParsers) {
     configuration.typeParsers = createTypeParserPreset();
   }
-
-  configuration = {
-    ...configuration,
-    interceptors: [
-      createLogInterceptor(),
-      ...configuration.interceptors || []
-    ]
-  };
 
   return configuration;
 };

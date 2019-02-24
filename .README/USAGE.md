@@ -68,10 +68,12 @@ type DatabaseConfigurationType =
   |};
 
 /**
+ * @property captureStackTrace Dictates whether to capture stack trace before executing query. Middlewares access stack trace through query execution context. (Default: true)
  * @property interceptors An array of [Slonik interceptors](https://github.com/gajus/slonik#slonik-interceptors).
  * @property interceptors An array of [Slonik type parsers](https://github.com/gajus/slonik#slonik-type-parsers).
  */
 type ClientConfigurationType = {|
+  +captureStackTrace?: boolean,
   +interceptors?: $ReadOnlyArray<InterceptorType>,
   +typeParsers?: $ReadOnlyArray<TypeParserType>
 |};

@@ -6,8 +6,7 @@ import {
   parse as parseConnectionString
 } from 'pg-connection-string';
 import {
-  createUlid,
-  formatNotice
+  createUlid
 } from '../utilities';
 import type {
   ClientUserConfigurationType,
@@ -51,7 +50,10 @@ export default (
 
     client.on('notice', (notice) => {
       poolLog.info({
-        notice: formatNotice(notice)
+        notice: {
+          level: notice.name,
+          message: notice.message
+        }
       }, 'notice message');
     });
 
