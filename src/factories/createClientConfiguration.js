@@ -18,7 +18,7 @@ export default (clientUserConfiguration?: ClientUserConfigurationType): ClientCo
     ...clientUserConfiguration
   };
 
-  if (!configuration.typeParsers) {
+  if (!configuration.typeParsers || !configuration.typeParsers.length) {
     configuration.typeParsers = createTypeParserPreset();
   }
 

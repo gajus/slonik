@@ -30,7 +30,7 @@ Read: [Default type parsers](#default-type-parsers).
 
 ### Built-in type parsers
 
-||Type name|Implemnetation|Factory function name|
+|Type name|Implemnetation|Factory function name|
 |---|---|---|
 |`int8`|Produces an integer.|`createBigintTypeParser`|
 |`timestamp`|Produces a unix timestamp (in milliseconds).|`createTimestampTypeParser`|
