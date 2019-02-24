@@ -23,7 +23,7 @@ export opaque type QueryIdType = string;
 
 type MaybePromiseType<T> = T | Promise<T>;
 
-export type ConnecionTypeType = 'EXPLICIT' | 'IMPLICIT_QUERY' | 'IMPLICIT_TRANSACTION';
+export type ConnectionTypeType = 'EXPLICIT' | 'IMPLICIT_QUERY' | 'IMPLICIT_TRANSACTION';
 
 export type FieldType = {|
   +columnID: number,
@@ -174,7 +174,7 @@ export type PoolContextType = {|
  */
 export type ConnectionContextType = {|
   +connectionId: string,
-  +connectionType: ConnecionTypeType,
+  +connectionType: ConnectionTypeType,
   +log: LoggerType,
   +poolId: string
 |};

@@ -5,7 +5,7 @@ export type {
   DatabasePoolConnectionType,
   DatabasePoolType,
   DatabaseTransactionConnectionType,
-  ConnecionTypeType,
+  ConnectionTypeType,
   FieldType,
   InterceptorType,
   QueryContextType

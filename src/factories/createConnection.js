@@ -2,7 +2,7 @@
 
 import type {
   ClientConfigurationType,
-  ConnecionTypeType,
+  ConnectionTypeType,
   DatabasePoolType,
   DatabasePoolConnectionType,
   InternalDatabaseConnectionType,
@@ -29,7 +29,7 @@ const createConnection = async (
   parentLog: LoggerType,
   pool: InternalDatabasePoolType,
   clientConfiguration: ClientConfigurationType,
-  connectionType: ConnecionTypeType,
+  connectionType: ConnectionTypeType,
   connectionHandler: ConnectionHandlerType,
   poolHandler: PoolHandlerType,
   query?: TaggedTemplateLiteralInvocationType | null = null
