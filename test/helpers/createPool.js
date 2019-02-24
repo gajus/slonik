@@ -25,7 +25,7 @@ export default (clientConfiguration: ClientUserConfigurationType = defaultConfig
         transactionDepth: null
       }
     },
-    off: eventEmitter.on.bind(eventEmitter),
+    off: eventEmitter.off.bind(eventEmitter),
     on: eventEmitter.on.bind(eventEmitter),
     query: () => {
       return {};
