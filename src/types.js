@@ -38,6 +38,7 @@ export type FieldType = {|
 type NoticeType = {|
   +code: string,
   +length: number,
+  +message: string,
   +name: string,
   +severity: string,
   +where: string
