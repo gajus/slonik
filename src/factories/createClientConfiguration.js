@@ -22,7 +22,7 @@ export default (clientUserConfiguration?: ClientUserConfigurationType): ClientCo
     ...configuration,
     interceptors: [
       createLogInterceptor(),
-      ...configuration.interceptors
+      ...configuration.interceptors || []
     ]
   };
 
