@@ -26,6 +26,7 @@ export default (clientConfiguration: ClientUserConfigurationType = defaultConfig
         transactionDepth: null
       }
     },
+    emit: eventEmitter.emit.bind(eventEmitter),
     off: eventEmitter.off.bind(eventEmitter),
     on: eventEmitter.on.bind(eventEmitter),
     query: () => {
@@ -63,6 +64,7 @@ export default (clientConfiguration: ClientUserConfigurationType = defaultConfig
 
   return {
     ...pool,
+    connection,
     connectSpy,
     querySpy,
     releaseSpy

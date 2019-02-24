@@ -1,6 +1,7 @@
 // @flow
 
 import test from 'ava';
+import delay from 'delay';
 import createPool from '../../../helpers/createPool';
 import sql from '../../../../src/templateTags/sql';
 import {
@@ -34,6 +35,46 @@ test('executes the query and returns the result', async (t) => {
 
   t.deepEqual(result, {
     notices: [],
+    rows: [
+      {
+        foo: 1
+      }
+    ]
+  });
+});
+
+test('adds notices observed during the query execution to the query result object', async (t) => {
+  const pool = createPool();
+
+  let resolveQuery;
+
+  pool.querySpy.reset();
+  pool.querySpy.callsFake(() => {
+    return new Promise((resolve) => {
+      resolveQuery = resolve;
+    });
+  });
+
+  const queryResultPromise = pool.query(sql`SELECT 1`);
+
+  await delay(100);
+
+  pool.connection.emit('notice', 'foo');
+  pool.connection.emit('notice', 'bar');
+
+  resolveQuery({
+    rows: [
+      {
+        foo: 1
+      }
+    ]
+  });
+
+  t.deepEqual(await queryResultPromise, {
+    notices: [
+      'foo',
+      'bar'
+    ],
     rows: [
       {
         foo: 1
