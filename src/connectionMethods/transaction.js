@@ -17,11 +17,12 @@ const transaction: InternalTransactionFunctionType = async (parentLog, connectio
   }
 
   connection.connection.slonik.transactionDepth = 0;
+  connection.connection.slonik.transactionId = createUlid();
 
   await connection.query('START TRANSACTION');
 
   const log = parentLog.child({
-    transactionId: createUlid()
+    transactionId: connection.connection.slonik.transactionId
   });
 
   try {
@@ -40,6 +41,7 @@ const transaction: InternalTransactionFunctionType = async (parentLog, connectio
     throw error;
   } finally {
     connection.connection.slonik.transactionDepth = null;
+    connection.connection.slonik.transactionId = null;
   }
 };
 
