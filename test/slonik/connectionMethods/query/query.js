@@ -62,6 +62,10 @@ test('adds notices observed during the query execution to the query result objec
   pool.connection.emit('notice', 'foo');
   pool.connection.emit('notice', 'bar');
 
+  if (!resolveQuery) {
+    throw new Error('Unexpected state.');
+  }
+
   resolveQuery({
     rows: [
       {
