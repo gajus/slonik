@@ -2,37 +2,48 @@
 
 import type {
   ClientConfigurationType,
+  ConnecionTypeType,
+  DatabasePoolType,
+  DatabasePoolConnectionType,
   InternalDatabaseConnectionType,
   InternalDatabasePoolType,
   LoggerType,
-  TransactionFunctionType
+  TaggedTemplateLiteralInvocationType
 } from '../types';
 import {
   setupTypeParsers
 } from '../routines';
 import {
-  transaction
-} from '../connectionMethods';
-import {
   bindPoolConnection
 } from '../binders';
 
-export default async (
+type ConnectionHandlerType = (
+  connectionLog: LoggerType,
+  connection: InternalDatabaseConnectionType,
+  boundConnection: DatabasePoolConnectionType,
+  clientConfiguration: ClientConfigurationType
+) => Promise<*>;
+type PoolHandlerType = (pool: DatabasePoolType) => Promise<*>;
+
+const createConnection = async (
   parentLog: LoggerType,
   pool: InternalDatabasePoolType,
   clientConfiguration: ClientConfigurationType,
-  handler: TransactionFunctionType
+  connectionType: ConnecionTypeType,
+  connectionHandler: ConnectionHandlerType,
+  poolHandler: PoolHandlerType,
+  query?: TaggedTemplateLiteralInvocationType | null = null
 ): Promise<*> => {
   for (const interceptor of clientConfiguration.interceptors) {
     if (interceptor.beforePoolConnection) {
       const maybeNewPool = await interceptor.beforePoolConnection({
         log: parentLog,
         poolId: pool.slonik.poolId,
-        query: null
+        query
       });
 
       if (maybeNewPool) {
-        return maybeNewPool.transaction(handler);
+        return poolHandler(maybeNewPool);
       }
     }
   }
@@ -53,7 +64,7 @@ export default async (
 
   const connectionContext = {
     connectionId,
-    connectionType: 'IMPLICIT_TRANSACTION',
+    connectionType,
     log: connectionLog,
     poolId: pool.slonik.poolId
   };
@@ -75,7 +86,7 @@ export default async (
   let result;
 
   try {
-    result = await transaction(connectionLog, connection, clientConfiguration, handler);
+    result = await connectionHandler(connectionLog, connection, boundConnection, clientConfiguration);
   } catch (error) {
     await connection.release();
 
@@ -94,3 +105,5 @@ export default async (
 
   return result;
 };
+
+export default createConnection;

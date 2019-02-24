@@ -66,7 +66,7 @@ test('uses savepoints to nest transactions', async (t) => {
   ]);
 });
 
-test('rollsback to last savepoint', async (t) => {
+test('rollsback to the last savepoint', async (t) => {
   const pool = createPool();
 
   await pool.connect(async (c1) => {

@@ -26,7 +26,7 @@ test('releases connection after promise is rejected', async (t) => {
   t.true(pool.releaseSpy.callCount === 1);
 });
 
-test('does not connect if beforePoolConnection throws an error', async (t) => {
+test('does not connect if `beforePoolConnection` throws an error', async (t) => {
   const pool = createPool({
     interceptors: [
       {
@@ -45,7 +45,7 @@ test('does not connect if beforePoolConnection throws an error', async (t) => {
   t.true(pool.releaseSpy.callCount === 0);
 });
 
-test('releases connection if afterPoolConnection throws an error', async (t) => {
+test('releases connection if `afterPoolConnection` throws an error', async (t) => {
   const pool = createPool({
     interceptors: [
       {
@@ -64,7 +64,7 @@ test('releases connection if afterPoolConnection throws an error', async (t) => 
   t.true(pool.releaseSpy.callCount === 1);
 });
 
-test('releases connection if beforePoolConnectionRelease throws an error', async (t) => {
+test('releases connection if `beforePoolConnectionRelease` throws an error', async (t) => {
   const pool = createPool({
     interceptors: [
       {
@@ -83,7 +83,7 @@ test('releases connection if beforePoolConnectionRelease throws an error', async
   t.true(pool.releaseSpy.callCount === 1);
 });
 
-test('if beforePoolConnection returns pool object, then the returned pool object is used to create a connection', async (t) => {
+test('if `beforePoolConnection` returns pool object, then the returned pool object is used to create a connection (IMPLICIT_QUERY)', async (t) => {
   const pool0 = createPool();
 
   const pool1 = createPool({
@@ -106,7 +106,57 @@ test('if beforePoolConnection returns pool object, then the returned pool object
   t.true(pool1.releaseSpy.callCount === 0);
 });
 
-test('if beforePoolConnection returns null, then the current pool object is used to create a connection', async (t) => {
+test('if `beforePoolConnection` returns pool object, then the returned pool object is used to create a connection (IMPLICIT_TRANSACTION)', async (t) => {
+  const pool0 = createPool();
+
+  const pool1 = createPool({
+    interceptors: [
+      {
+        beforePoolConnection: () => {
+          // $FlowFixMe
+          return pool0;
+        }
+      }
+    ]
+  });
+
+  await pool1.transaction((connection) => {
+    return connection.query(sql`SELECT 1`);
+  });
+
+  t.true(pool0.connectSpy.callCount === 1);
+  t.true(pool0.releaseSpy.callCount === 1);
+
+  t.true(pool1.connectSpy.callCount === 0);
+  t.true(pool1.releaseSpy.callCount === 0);
+});
+
+test('if `beforePoolConnection` returns pool object, then the returned pool object is used to create a connection (EXPLICIT)', async (t) => {
+  const pool0 = createPool();
+
+  const pool1 = createPool({
+    interceptors: [
+      {
+        beforePoolConnection: () => {
+          // $FlowFixMe
+          return pool0;
+        }
+      }
+    ]
+  });
+
+  await pool1.connect((connection) => {
+    return connection.query(sql`SELECT 1`);
+  });
+
+  t.true(pool0.connectSpy.callCount === 1);
+  t.true(pool0.releaseSpy.callCount === 1);
+
+  t.true(pool1.connectSpy.callCount === 0);
+  t.true(pool1.releaseSpy.callCount === 0);
+});
+
+test('if `beforePoolConnection` returns null, then the current pool object is used to create a connection', async (t) => {
   const pool = createPool({
     interceptors: [
       {
