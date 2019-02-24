@@ -36,14 +36,6 @@ const manyFirst: InternalQueryManyFirstFunctionType = async (log, connection, cl
 
   const firstColumnName = keys[0];
 
-  if (typeof firstColumnName !== 'string') {
-    log.error({
-      queryId
-    }, 'DataIntegrityError');
-
-    throw new DataIntegrityError();
-  }
-
   return rows.map((row) => {
     return row[firstColumnName];
   });

@@ -18,39 +18,8 @@ import {
 } from '../errors';
 import type {
   InternalQueryFunctionType,
-  LoggerType,
   QueryContextType
 } from '../types';
-
-const getPoolId = (log: LoggerType): string => {
-  const poolId = log.getContext().poolId;
-
-  if (typeof poolId !== 'string') {
-    throw new TypeError('Unexpected state.');
-  }
-
-  return poolId;
-};
-
-const getConnectionId = (log: LoggerType): string => {
-  const connectionId = log.getContext().connectionId;
-
-  if (typeof connectionId !== 'string') {
-    throw new TypeError('Unexpected state.');
-  }
-
-  return connectionId;
-};
-
-const getTransactionId = (log: LoggerType): string | void => {
-  const transactionId = log.getContext().transactionId;
-
-  if (typeof transactionId !== 'string' && typeof transactionId !== 'undefined') {
-    throw new TypeError('Unexpected state.');
-  }
-
-  return transactionId;
-};
 
 const query: InternalQueryFunctionType<*> = async (connectionLogger, connection, clientConfiguration, rawSql, values, inheritedQueryId) => {
   const queryInputTime = process.hrtime.bigint();
@@ -86,14 +55,14 @@ const query: InternalQueryFunctionType<*> = async (connectionLogger, connection,
   };
 
   const executionContext: QueryContextType = {
-    connectionId: getConnectionId(log),
+    connectionId: connection.connection.slonik.connectionId,
     log,
     originalQuery,
-    poolId: getPoolId(log),
+    poolId: connection.connection.slonik.poolId,
     queryId,
     queryInputTime,
     stackTrace,
-    transactionId: getTransactionId(log)
+    transactionId: connection.connection.slonik.transactionId
   };
 
   for (const interceptor of clientConfiguration.interceptors) {

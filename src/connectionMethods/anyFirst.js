@@ -34,10 +34,6 @@ const anyFirst: InternalQueryAnyFirstFunctionType = async (log, connection, clie
 
   const firstColumnName = keys[0];
 
-  if (typeof firstColumnName !== 'string') {
-    throw new DataIntegrityError();
-  }
-
   return rows.map((row) => {
     return row[firstColumnName];
   });
