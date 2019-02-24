@@ -32,7 +32,7 @@ Note: Using this project does not require TypeScript or Flow. It is a regular ES
 * [Safe value interpolation](#protecting-against-unsafe-value-interpolation).
 * [Transaction nesting](#transaction-nesting).
 * Detail [logging](#slonik-debugging).
-* [Asynchronous stack trace resolution](#log-stack-trace).
+* [Asynchronous stack trace resolution](#capture-stack-trace).
 * [Middlewares](#slonik-interceptors).
 * [Mapped errors](#error-handling).
 * [Atom plugin](#slonik-syntax-highlighting).
@@ -69,7 +69,6 @@ Note: Using this project does not require TypeScript or Flow. It is a regular ES
     * [Community interceptors](#slonik-community-interceptors)
     * [Recipes](#slonik-recipes)
         * [Inserting large number of rows](#slonik-recipes-inserting-large-number-of-rows)
-        * [Logging `auto_explain`](#slonik-recipes-logging-auto_explain)
         * [Using `sql.raw` to generate dynamic queries](#slonik-recipes-using-sql-raw-to-generate-dynamic-queries)
         * [Routing queries to different connections](#slonik-recipes-routing-queries-to-different-connections)
     * [Conventions](#slonik-conventions)
@@ -106,7 +105,7 @@ Note: Using this project does not require TypeScript or Flow. It is a regular ES
     * [Types](#slonik-types)
     * [Debugging](#slonik-debugging)
         * [Logging](#slonik-debugging-logging)
-        * [Log stack trace](#slonik-debugging-log-stack-trace)
+        * [Capture stack trace](#slonik-debugging-capture-stack-trace)
     * [Syntax highlighting](#slonik-syntax-highlighting)
         * [Atom](#slonik-syntax-highlighting-atom)
 
@@ -451,10 +450,12 @@ type DatabaseConfigurationType =
   |};
 
 /**
+ * @property captureStackTrace Dictates whether to capture stack trace before executing query. Middlewares access stack trace through query execution context. (Default: true)
  * @property interceptors An array of [Slonik interceptors](https://github.com/gajus/slonik#slonik-interceptors).
  * @property interceptors An array of [Slonik type parsers](https://github.com/gajus/slonik#slonik-type-parsers).
  */
 type ClientConfigurationType = {|
+  +captureStackTrace?: boolean,
   +interceptors?: $ReadOnlyArray<InterceptorType>,
   +typeParsers?: $ReadOnlyArray<TypeParserType>
 |};
@@ -758,6 +759,7 @@ Transforms query.
 |---|---|
 |[`slonik-interceptor-field-name-transformation`](https://github.com/gajus/slonik-interceptor-field-name-transformation)|Transforms Slonik query result field names.|
 |[`slonik-interceptor-query-benchmarking`](https://github.com/gajus/slonik-interceptor-query-benchmarking)|Benchmarks Slonik queries.|
+|[`slonik-interceptor-query-logging`](https://github.com/gajus/slonik-interceptor-query-logging)|Logs Slonik queries.|
 |[`slonik-interceptor-query-normalisation`](https://github.com/gajus/slonik-interceptor-query-normalisation)|Normalises Slonik queries.|
 
 
@@ -849,91 +851,6 @@ Produces:
 ```
 
 Inserting data this way ensures that the query is stable and reduces the amount of time it takes to parse the query.
-
-<a name="slonik-recipes-logging-auto_explain"></a>
-### Logging <code>auto_explain</code>
-
-`executionTime` log property describes how long it took for the client to execute the query, i.e. it includes the overhead of waiting for a connection and the network latency, among other things. However, it is possible to get the real query execution time by using [`auto_explain` module](https://www.postgresql.org/docs/current/auto-explain.html).
-
-There are several pre-requisites:
-
-```sql
--- Load the extension.
-LOAD 'auto_explain';
--- or (if you are using AWS RDS):
-LOAD '$libdir/plugins/auto_explain';
-
--- Enable logging of all queries.
-SET auto_explain.log_analyze=true;
-SET auto_explain.log_format=json;
-SET auto_explain.log_min_duration=0;
-SET auto_explain.log_timing=true;
-
--- Enables Slonik to capture auto_explain logs.
-SET client_min_messages=log;
-
-```
-
-This can be configured using `afterPoolConnection` interceptor, e.g.
-
-
-
-```js
-const pool = createPool('postgres://localhost', {
-  interceptors: [
-    {
-      afterPoolConnection: async (connection) => {
-        await connection.query(sql`LOAD 'auto_explain'`);
-        await connection.query(sql`SET auto_explain.log_analyze=true`);
-        await connection.query(sql`SET auto_explain.log_format=json`);
-        await connection.query(sql`SET auto_explain.log_min_duration=0`);
-        await connection.query(sql`SET auto_explain.log_timing=true`);
-        await connection.query(sql`SET client_min_messages=log`);
-      }
-    }
-  ]
-});
-
-```
-
-Slonik recognises and parses the `auto_explain` JSON message; Roarr logger will produce a pretty-print of the explain output, e.g.
-
-```yaml
-[2018-12-31T21:15:21.010Z] INFO (30) (@slonik): notice message
-notice:
-  level:   notice
-  message:
-    Query Text: SELECT count(*) FROM actor
-    Plan:
-      Node Type:           Aggregate
-      Strategy:            Plain
-      Partial Mode:        Simple
-      Parallel Aware:      false
-      Startup Cost:        4051.33
-      Total Cost:          4051.34
-      Plan Rows:           1
-      Plan Width:          8
-      Actual Startup Time: 26.791
-      Actual Total Time:   26.791
-      Actual Rows:         1
-      Actual Loops:        1
-      Plans:
-        -
-          Node Type:           Seq Scan
-          Parent Relationship: Outer
-          Parallel Aware:      false
-          Relation Name:       actor
-          Alias:               actor
-          Startup Cost:        0
-          Total Cost:          3561.86
-          Plan Rows:           195786
-          Plan Width:          0
-          Actual Startup Time: 0.132
-          Actual Total Time:   15.29
-          Actual Rows:         195786
-          Actual Loops:        1
-
-```
 
 <a name="slonik-recipes-using-sql-raw-to-generate-dynamic-queries"></a>
 ### Using <code>sql.raw</code> to generate dynamic queries
@@ -1768,20 +1685,14 @@ Slonik uses [roarr](https://github.com/gajus/roarr) to log queries.
 
 To enable logging, define `ROARR_LOG=true` environment variable.
 
-By default, Slonik logs the input query, query execution time and affected row count.
+By default, Slonik logs only connection events, e.g. when connection is created, connection is acquired and notices.
 
-You can enable additional logging details by configuring the following environment variables.
+Query-level logging can be added using [`slonik-interceptor-query-logging`](https://github.com/gajus/slonik-interceptor-query-logging) interceptor.
 
-```bash
-# Logs query parameter values
-export SLONIK_LOG_VALUES=true
+<a name="slonik-debugging-capture-stack-trace"></a>
+### Capture stack trace
 
-```
-
-<a name="slonik-debugging-log-stack-trace"></a>
-### Log stack trace
-
-`SLONIK_LOG_STACK_TRACE=1` will create a stack trace before invoking the query and include the stack trace in the logs, e.g.
+Enabling `captureStackTrace` configuration will create a stack trace before invoking the query and include the stack trace in the logs, e.g.
 
 ```json
 {"context":{"package":"slonik","namespace":"slonik","logLevel":20,"executionTime":"357 ms","queryId":"01CV2V5S4H57KCYFFBS0BJ8K7E","rowCount":1,"sql":"SELECT schedule_cinema_data_task();","stackTrace":["/Users/gajus/Documents/dev/applaudience/data-management-program/node_modules/slonik/dist:162:28","/Users/gajus/Documents/dev/applaudience/data-management-program/node_modules/slonik/dist:314:12","/Users/gajus/Documents/dev/applaudience/data-management-program/node_modules/slonik/dist:361:20","/Users/gajus/Documents/dev/applaudience/data-management-program/node_modules/slonik/dist/utilities:17:13","/Users/gajus/Documents/dev/applaudience/data-management-program/src/bin/commands/do-cinema-data-tasks.js:59:21","/Users/gajus/Documents/dev/applaudience/data-management-program/src/bin/commands/do-cinema-data-tasks.js:590:45","internal/process/next_tick.js:68:7"],"values":[]},"message":"query","sequence":4,"time":1540915127833,"version":"1.0.0"}
