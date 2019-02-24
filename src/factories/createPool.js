@@ -35,12 +35,14 @@ export default (
     poolId
   };
 
+  // istanbul ignore next
   pool.on('error', (error) => {
     poolLog.error({
       error: serializeError(error)
     }, 'client connection error');
   });
 
+  // istanbul ignore next
   pool.on('connect', (client) => {
     client.connection.slonik = {
       connectionId: createUlid(),
@@ -67,6 +69,7 @@ export default (
     }, 'created a new client connection');
   });
 
+  // istanbul ignore next
   pool.on('acquire', (client) => {
     poolLog.info({
       processId: client.processID,
@@ -78,6 +81,7 @@ export default (
     }, 'client is checked out from the pool');
   });
 
+  // istanbul ignore next
   pool.on('remove', (client) => {
     poolLog.info({
       processId: client.processID,
