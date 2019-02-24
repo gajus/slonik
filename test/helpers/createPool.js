@@ -22,6 +22,7 @@ export default (clientConfiguration: ClientUserConfigurationType = defaultConfig
     connection: {
       slonik: {
         connectionId: '1',
+        poolId: '1',
         transactionDepth: null
       }
     },

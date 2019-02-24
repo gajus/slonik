@@ -6,7 +6,8 @@ import test from 'ava';
 import createPool from '../../helpers/createPool';
 import sql from '../../../src/templateTags/sql';
 import {
-  DataIntegrityError
+  DataIntegrityError,
+  NotFoundError
 } from '../../../src/errors';
 
 test('returns values of the query result rows', async (t) => {
@@ -29,6 +30,16 @@ test('returns values of the query result rows', async (t) => {
     1,
     2
   ]);
+});
+
+test('throws an error if no rows are returned', async (t) => {
+  const pool = createPool();
+
+  pool.querySpy.returns({
+    rows: []
+  });
+
+  await t.throwsAsync(pool.manyFirst(sql`SELECT 1`), NotFoundError);
 });
 
 test('throws an error if more than one column is returned', async (t) => {

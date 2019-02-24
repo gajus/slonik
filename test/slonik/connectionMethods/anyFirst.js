@@ -7,7 +7,19 @@ import {
   DataIntegrityError
 } from '../../../src/errors';
 
-test('returns values of the query result rows', async (t) => {
+test('returns empty array if no rows are returned', async (t) => {
+  const pool = createPool();
+
+  pool.querySpy.returns({
+    rows: []
+  });
+
+  const result = await pool.anyFirst(sql`SELECT 1`);
+
+  t.deepEqual(result, []);
+});
+
+test('returns first column values of the query result rows', async (t) => {
   const pool = createPool();
 
   pool.querySpy.returns({
