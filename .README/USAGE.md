@@ -99,6 +99,8 @@ await pool.query(sql`SELECT 1`);
 
 None.
 
+Check out [`slonik-interceptor-preset`](https://github.com/gajus/slonik-interceptor-preset) for an opinionated collection of interceptors.
+
 #### Default type parsers
 
 These type parsers are enabled by default:
