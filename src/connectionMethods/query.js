@@ -21,125 +21,140 @@ import type {
 } from '../types';
 
 const query: InternalQueryFunctionType<*> = async (connectionLogger, connection, clientConfiguration, rawSql, values, inheritedQueryId) => {
-  const queryInputTime = process.hrtime.bigint();
+  // eslint-disable-next-line no-async-promise-executor
+  return new Promise(async (resolve, reject) => {
+    try {
+      const queryInputTime = process.hrtime.bigint();
 
-  let stackTrace = null;
+      let stackTrace = null;
 
-  if (clientConfiguration.captureStackTrace) {
-    const callSites = await getStackTrace();
+      if (clientConfiguration.captureStackTrace) {
+        const callSites = await getStackTrace();
 
-    stackTrace = callSites
-      .map((callSite) => {
-        return {
-          columnNumber: callSite.columnNumber,
-          fileName: callSite.fileName,
-          lineNumber: callSite.lineNumber
-        };
-      });
-  }
-
-  const queryId = inheritedQueryId || createQueryId();
-
-  const log = connectionLogger.child({
-    queryId
-  });
-
-  const originalQuery = {
-    sql: rawSql,
-    values
-  };
-
-  let actualQuery = {
-    ...originalQuery
-  };
-
-  const executionContext: QueryContextType = {
-    connectionId: connection.connection.slonik.connectionId,
-    log,
-    originalQuery,
-    poolId: connection.connection.slonik.poolId,
-    queryId,
-    queryInputTime,
-    stackTrace,
-    transactionId: connection.connection.slonik.transactionId
-  };
-
-  for (const interceptor of clientConfiguration.interceptors) {
-    if (interceptor.transformQuery) {
-      actualQuery = await interceptor.transformQuery(executionContext, actualQuery);
-    }
-  }
-
-  let result;
-
-  for (const interceptor of clientConfiguration.interceptors) {
-    if (interceptor.beforeQueryExecution) {
-      result = await interceptor.beforeQueryExecution(executionContext, actualQuery);
-
-      if (result) {
-        return result;
+        stackTrace = callSites
+          .map((callSite) => {
+            return {
+              columnNumber: callSite.columnNumber,
+              fileName: callSite.fileName,
+              lineNumber: callSite.lineNumber
+            };
+          });
       }
+
+      const queryId = inheritedQueryId || createQueryId();
+
+      const log = connectionLogger.child({
+        queryId
+      });
+
+      const originalQuery = {
+        sql: rawSql,
+        values
+      };
+
+      let actualQuery = {
+        ...originalQuery
+      };
+
+      const executionContext: QueryContextType = {
+        connectionId: connection.connection.slonik.connectionId,
+        log,
+        originalQuery,
+        poolId: connection.connection.slonik.poolId,
+        queryId,
+        queryInputTime,
+        stackTrace,
+        transactionId: connection.connection.slonik.transactionId
+      };
+
+      for (const interceptor of clientConfiguration.interceptors) {
+        if (interceptor.transformQuery) {
+          actualQuery = await interceptor.transformQuery(executionContext, actualQuery);
+        }
+      }
+
+      let result;
+
+      for (const interceptor of clientConfiguration.interceptors) {
+        if (interceptor.beforeQueryExecution) {
+          result = await interceptor.beforeQueryExecution(executionContext, actualQuery);
+
+          if (result) {
+            resolve(result);
+
+            return;
+          }
+        }
+      }
+
+      const notices = [];
+
+      const noticeListener = (notice) => {
+        notices.push(notice);
+      };
+
+      connection.on('notice', noticeListener);
+
+      try {
+        result = await connection.query(actualQuery.sql, actualQuery.values);
+      } catch (error) {
+        if (error.code === '57P01') {
+          const clientError = new BackendTerminatedError();
+
+          connection.connection.slonik.rejectConnection(clientError);
+
+          throw clientError;
+        }
+
+        if (error.code === '57014') {
+          throw new QueryCancelledError();
+        }
+
+        log.error({
+          error: serializeError(error),
+          queryId
+        }, 'query produced an error');
+
+        if (error.code === '23502') {
+          throw new NotNullIntegrityConstraintViolationError(error.constraint);
+        }
+
+        if (error.code === '23503') {
+          throw new ForeignKeyIntegrityConstraintViolationError(error.constraint);
+        }
+
+        if (error.code === '23505') {
+          throw new UniqueIntegrityConstraintViolationError(error.constraint);
+        }
+
+        if (error.code === '23514') {
+          throw new CheckIntegrityConstraintViolationError(error.constraint);
+        }
+
+        throw error;
+      } finally {
+        connection.off('notice', noticeListener);
+      }
+
+      result.notices = notices;
+
+      for (const interceptor of clientConfiguration.interceptors) {
+        if (interceptor.afterQueryExecution) {
+          result = await interceptor.afterQueryExecution(executionContext, actualQuery, result);
+        }
+      }
+
+      resolve(result);
+    } catch (error) {
+      if (!(error instanceof BackendTerminatedError)) {
+        reject(error);
+      }
+
+      // If error is an instance of BackendTerminatedError, then we neither reject or resolve the promise.
+      // This design prevents unsafe use of connection object.
+      // @see https://github.com/gajus/slonik/issues/39
     }
-  }
-
-  const notices = [];
-
-  const noticeListener = (notice) => {
-    notices.push(notice);
-  };
-
-  connection.on('notice', noticeListener);
-
-  try {
-    result = await connection.query(actualQuery.sql, actualQuery.values);
-  } catch (error) {
-    if (error.code === '57P01') {
-      const clientError = new BackendTerminatedError();
-
-      connection.connection.slonik.rejectConnection(clientError);
-
-      throw clientError;
-    }
-
-    if (error.code === '57014') {
-      throw new QueryCancelledError();
-    }
-
-    log.error({
-      error: serializeError(error),
-      queryId
-    }, 'query produced an error');
-
-    if (error.code === '23502') {
-      throw new NotNullIntegrityConstraintViolationError(error.constraint);
-    }
-
-    if (error.code === '23503') {
-      throw new ForeignKeyIntegrityConstraintViolationError(error.constraint);
-    }
-
-    if (error.code === '23505') {
-      throw new UniqueIntegrityConstraintViolationError(error.constraint);
-    }
-
-    if (error.code === '23514') {
-      throw new CheckIntegrityConstraintViolationError(error.constraint);
-    }
-
-    throw error;
-  } finally {
-    connection.off('notice', noticeListener);
-  }
-
-  result.notices = notices;
-
-  for (const interceptor of clientConfiguration.interceptors) {
-    if (interceptor.afterQueryExecution) {
-      result = await interceptor.afterQueryExecution(executionContext, actualQuery, result);
-    }
-  }
-
-  return result;
+  });
 };
 
 export default query;

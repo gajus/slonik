@@ -2,9 +2,11 @@
 
 import test from 'ava';
 import delay from 'delay';
+import sinon from 'sinon';
 import createPool from '../../../helpers/createPool';
 import sql from '../../../../src/templateTags/sql';
 import {
+  BackendTerminatedError,
   CheckIntegrityConstraintViolationError,
   ForeignKeyIntegrityConstraintViolationError,
   NotNullIntegrityConstraintViolationError,
@@ -117,4 +119,32 @@ test('maps 23505 error code to UniqueIntegrityConstraintViolationError', async (
   pool.querySpy.rejects(createErrorWithCode('23505'));
 
   await t.throwsAsync(pool.query(sql`SELECT 1`), UniqueIntegrityConstraintViolationError);
+});
+
+test('57P01 error causes the connection to be rejected (IMPLICIT_QUERY connection)', async (t) => {
+  const pool = createPool();
+
+  pool.querySpy.rejects(createErrorWithCode('57P01'));
+
+  await t.throwsAsync(pool.query(sql`SELECT 1`), BackendTerminatedError);
+});
+
+test('57P01 error causes the connection to be rejected (EXPLICIT connection)', async (t) => {
+  const pool = createPool();
+
+  pool.querySpy.rejects(createErrorWithCode('57P01'));
+
+  const spy = sinon.spy();
+
+  await t.throwsAsync(pool.connect(async (connection) => {
+    try {
+      await connection.query(sql`SELECT 1`);
+    } catch (error) {
+      //
+    }
+
+    spy();
+  }), BackendTerminatedError);
+
+  t.true(spy.called === false);
 });
