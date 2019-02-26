@@ -71,8 +71,6 @@ Note: Using this project does not require TypeScript or Flow. It is a regular ES
         * [Inserting large number of rows](#slonik-recipes-inserting-large-number-of-rows)
         * [Using `sql.raw` to generate dynamic queries](#slonik-recipes-using-sql-raw-to-generate-dynamic-queries)
         * [Routing queries to different connections](#slonik-recipes-routing-queries-to-different-connections)
-    * [Conventions](#slonik-conventions)
-        * [No multiline values](#slonik-conventions-no-multiline-values)
     * [Value placeholders](#slonik-value-placeholders)
         * [Tagged template literals](#slonik-value-placeholders-tagged-template-literals)
         * [Manually constructing the query](#slonik-value-placeholders-manually-constructing-the-query)
@@ -941,31 +939,6 @@ masterPool.query(sql`UPDATE 1`);
 
 ```
 
-
-<a name="slonik-conventions"></a>
-## Conventions
-
-<a name="slonik-conventions-no-multiline-values"></a>
-### No multiline values
-
-Slonik will strip all comments and line-breaks from a query before processing it.
-
-This makes logging of the queries easier.
-
-The implication is that your query cannot contain values that include a newline character, e.g.
-
-```js
-// Do not do this
-connection.query(sql`INSERT INTO foo (bar) VALUES ('\n')`);
-
-```
-
-If you want to communicate a value that includes a multiline character, use value placeholder interpolation, e.g.
-
-```js
-connection.query(sql`INSERT INTO foo (bar) VALUES (${'\n'})`);
-
-```
 
 <a name="slonik-value-placeholders"></a>
 ## Value placeholders
