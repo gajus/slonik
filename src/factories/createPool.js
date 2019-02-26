@@ -57,9 +57,11 @@ export default (
 
   // istanbul ignore next
   pool.on('error', (error) => {
-    poolLog.error({
-      error: serializeError(error)
-    }, 'client connection error');
+    if (error.client.connection.slonik.terminated !== true) {
+      poolLog.error({
+        error: serializeError(error)
+      }, 'client connection error');
+    }
   });
 
   // istanbul ignore next

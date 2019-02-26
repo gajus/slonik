@@ -93,11 +93,6 @@ const query: InternalQueryFunctionType<*> = async (connectionLogger, connection,
   try {
     result = await connection.query(actualQuery.sql, actualQuery.values);
   } catch (error) {
-    log.error({
-      error: serializeError(error),
-      queryId
-    }, 'query produced an error');
-
     if (error.code === '57P01') {
       const clientError = new BackendTerminatedError();
 
@@ -109,6 +104,11 @@ const query: InternalQueryFunctionType<*> = async (connectionLogger, connection,
     if (error.code === '57014') {
       throw new QueryCancelledError();
     }
+
+    log.error({
+      error: serializeError(error),
+      queryId
+    }, 'query produced an error');
 
     if (error.code === '23502') {
       throw new NotNullIntegrityConstraintViolationError(error.constraint);

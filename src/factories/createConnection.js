@@ -64,7 +64,11 @@ const createConnection = async (
         throw new ConnectionError(error.message);
       }
 
-      connection.connection.slonik.rejectConnection = reject;
+      connection.connection.slonik.rejectConnection = (error) => {
+        connection.connection.slonik.terminated = true;
+
+        reject(error);
+      };
 
       if (!connection.connection.slonik.typeParserSetupPromise) {
         connection.connection.slonik.typeParserSetupPromise = setupTypeParsers(connection, clientConfiguration.typeParsers);
