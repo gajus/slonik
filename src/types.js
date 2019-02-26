@@ -62,8 +62,8 @@ export type InternalDatabaseConnectionType = any;
 
 /**
  * @property captureStackTrace Dictates whether to capture stack trace before executing query. Middlewares access stack trace through query execution context. (Default: true)
- * @property connectionTimeout: Timeout (in milliseconds) after which an error is raised if cannot cannot be established. (Default: 1000)
- * @property idleTimeout Timeout (in milliseconds) after which idle clients are closed. (Default: 1000)
+ * @property connectionTimeout: Timeout (in milliseconds) after which an error is raised if cannot cannot be established. (Default: 5000)
+ * @property idleTimeout Timeout (in milliseconds) after which idle clients are closed. (Default: 5000)
  * @property interceptors An array of [Slonik interceptors](https://github.com/gajus/slonik#slonik-interceptors).
  * @property maximumPoolSize Do not allow more than this many connections. (Default: 10)
  * @property minimumPoolSize Add more server connections to pool if below this number. (Default: 1)

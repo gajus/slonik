@@ -6,8 +6,8 @@ import createTypeParserPreset from '../../../src/factories/createTypeParserPrese
 
 const defaultConfiguration = {
   captureStackTrace: true,
-  connectionTimeout: 1000,
-  idleTimeout: 1000,
+  connectionTimeout: 5000,
+  idleTimeout: 5000,
   interceptors: [],
   maximumPoolSize: 10,
   minimumPoolSize: 0,

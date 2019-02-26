@@ -9,8 +9,8 @@ import createTypeParserPreset from './createTypeParserPreset';
 export default (clientUserConfiguration?: ClientUserConfigurationType): ClientConfigurationType => {
   const configuration = {
     captureStackTrace: true,
-    connectionTimeout: 1000,
-    idleTimeout: 1000,
+    connectionTimeout: 5000,
+    idleTimeout: 5000,
 
     // $FlowFixMe
     interceptors: [],
