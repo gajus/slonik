@@ -483,6 +483,8 @@ await pool.query(sql`SELECT 1`);
 
 None.
 
+Check out [`slonik-interceptor-preset`](https://github.com/gajus/slonik-interceptor-preset) for an opinionated collection of interceptors.
+
 <a name="slonik-usage-default-configuration-default-type-parsers"></a>
 #### Default type parsers
 
@@ -761,6 +763,8 @@ Transforms query.
 |[`slonik-interceptor-query-benchmarking`](https://github.com/gajus/slonik-interceptor-query-benchmarking)|Benchmarks Slonik queries.|
 |[`slonik-interceptor-query-logging`](https://github.com/gajus/slonik-interceptor-query-logging)|Logs Slonik queries.|
 |[`slonik-interceptor-query-normalisation`](https://github.com/gajus/slonik-interceptor-query-normalisation)|Normalises Slonik queries.|
+
+Check out [`slonik-interceptor-preset`](https://github.com/gajus/slonik-interceptor-preset) for an opinionated collection of interceptors.
 
 
 <a name="slonik-recipes"></a>
