@@ -27,6 +27,7 @@ export default (clientConfiguration: ClientUserConfigurationType = defaultConfig
       }
     },
     emit: eventEmitter.emit.bind(eventEmitter),
+    end: () => {},
     off: eventEmitter.off.bind(eventEmitter),
     on: eventEmitter.on.bind(eventEmitter),
     query: () => {
@@ -46,6 +47,7 @@ export default (clientConfiguration: ClientUserConfigurationType = defaultConfig
 
   const connectSpy = sinon.spy(internalPool, 'connect');
   const releaseSpy = sinon.spy(connection, 'release');
+  const endSpy = sinon.spy(connection, 'end');
   const querySpy = sinon.stub(connection, 'query').returns({});
 
   const pool = bindPool(
@@ -66,6 +68,7 @@ export default (clientConfiguration: ClientUserConfigurationType = defaultConfig
     ...pool,
     connection,
     connectSpy,
+    endSpy,
     querySpy,
     releaseSpy
   };

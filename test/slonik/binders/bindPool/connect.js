@@ -15,7 +15,7 @@ test('releases connection after promise is resolved', async (t) => {
   t.true(pool.releaseSpy.callCount === 1);
 });
 
-test('releases connection after promise is rejected', async (t) => {
+test('ends connection after promise is rejected', async (t) => {
   const pool = createPool();
 
   await t.throwsAsync(pool.connect(async () => {
@@ -23,7 +23,7 @@ test('releases connection after promise is rejected', async (t) => {
   }));
 
   t.true(pool.connectSpy.callCount === 1);
-  t.true(pool.releaseSpy.callCount === 1);
+  t.true(pool.endSpy.callCount === 1);
 });
 
 test('does not connect if `beforePoolConnection` throws an error', async (t) => {
@@ -45,7 +45,7 @@ test('does not connect if `beforePoolConnection` throws an error', async (t) => 
   t.true(pool.releaseSpy.callCount === 0);
 });
 
-test('releases connection if `afterPoolConnection` throws an error', async (t) => {
+test('ends connection if `afterPoolConnection` throws an error', async (t) => {
   const pool = createPool({
     interceptors: [
       {
@@ -61,10 +61,10 @@ test('releases connection if `afterPoolConnection` throws an error', async (t) =
   }));
 
   t.true(pool.connectSpy.callCount === 1);
-  t.true(pool.releaseSpy.callCount === 1);
+  t.true(pool.endSpy.callCount === 1);
 });
 
-test('releases connection if `beforePoolConnectionRelease` throws an error', async (t) => {
+test('ends connection if `beforePoolConnectionRelease` throws an error', async (t) => {
   const pool = createPool({
     interceptors: [
       {
@@ -80,7 +80,7 @@ test('releases connection if `beforePoolConnectionRelease` throws an error', asy
   }));
 
   t.true(pool.connectSpy.callCount === 1);
-  t.true(pool.releaseSpy.callCount === 1);
+  t.true(pool.endSpy.callCount === 1);
 });
 
 test('if `beforePoolConnection` returns pool object, then the returned pool object is used to create a connection (IMPLICIT_QUERY)', async (t) => {

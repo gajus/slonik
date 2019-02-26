@@ -37,97 +37,86 @@ const createConnection = async (
   poolHandler: PoolHandlerType,
   query?: TaggedTemplateLiteralInvocationType | null = null
 ): Promise<*> => {
-  // eslint-disable-next-line no-async-promise-executor
-  return new Promise(async (resolve, reject) => {
-    try {
-      for (const interceptor of clientConfiguration.interceptors) {
-        if (interceptor.beforePoolConnection) {
-          const maybeNewPool = await interceptor.beforePoolConnection({
-            log: parentLog,
-            poolId: pool.slonik.poolId,
-            query
-          });
-
-          if (maybeNewPool) {
-            resolve(poolHandler(maybeNewPool));
-
-            return;
-          }
-        }
-      }
-
-      let connection: InternalDatabaseConnectionType;
-
-      try {
-        connection = await pool.connect();
-      } catch (error) {
-        throw new ConnectionError(error.message);
-      }
-
-      connection.connection.slonik.rejectConnection = (error) => {
-        connection.connection.slonik.terminated = true;
-
-        reject(error);
-      };
-
-      if (!connection.connection.slonik.typeParserSetupPromise) {
-        connection.connection.slonik.typeParserSetupPromise = setupTypeParsers(connection, clientConfiguration.typeParsers);
-      }
-
-      await connection.connection.slonik.typeParserSetupPromise;
-
-      const connectionId = connection.connection.slonik.connectionId;
-
-      const connectionLog = parentLog.child({
-        connectionId
+  for (const interceptor of clientConfiguration.interceptors) {
+    if (interceptor.beforePoolConnection) {
+      const maybeNewPool = await interceptor.beforePoolConnection({
+        log: parentLog,
+        poolId: pool.slonik.poolId,
+        query
       });
 
-      const connectionContext = {
-        connectionId,
-        connectionType,
-        log: connectionLog,
-        poolId: pool.slonik.poolId
-      };
-
-      const boundConnection = bindPoolConnection(connectionLog, connection, clientConfiguration);
-
-      try {
-        for (const interceptor of clientConfiguration.interceptors) {
-          if (interceptor.afterPoolConnection) {
-            await interceptor.afterPoolConnection(connectionContext, boundConnection);
-          }
-        }
-      } catch (error) {
-        await connection.release();
-
-        throw error;
+      if (maybeNewPool) {
+        return poolHandler(maybeNewPool);
       }
-
-      let result;
-
-      try {
-        result = await connectionHandler(connectionLog, connection, boundConnection, clientConfiguration);
-      } catch (error) {
-        await connection.release();
-
-        throw error;
-      }
-
-      try {
-        for (const interceptor of clientConfiguration.interceptors) {
-          if (interceptor.beforePoolConnectionRelease) {
-            await interceptor.beforePoolConnectionRelease(connectionContext, boundConnection);
-          }
-        }
-      } finally {
-        await connection.release();
-      }
-
-      resolve(result);
-    } catch (error) {
-      reject(error);
     }
+  }
+
+  let connection: InternalDatabaseConnectionType;
+
+  try {
+    connection = await pool.connect();
+  } catch (error) {
+    throw new ConnectionError(error.message);
+  }
+
+  if (!connection.connection.slonik.typeParserSetupPromise) {
+    connection.connection.slonik.typeParserSetupPromise = setupTypeParsers(connection, clientConfiguration.typeParsers);
+  }
+
+  await connection.connection.slonik.typeParserSetupPromise;
+
+  const connectionId = connection.connection.slonik.connectionId;
+
+  const connectionLog = parentLog.child({
+    connectionId
   });
+
+  const connectionContext = {
+    connectionId,
+    connectionType,
+    log: connectionLog,
+    poolId: pool.slonik.poolId
+  };
+
+  const boundConnection = bindPoolConnection(connectionLog, connection, clientConfiguration);
+
+  try {
+    for (const interceptor of clientConfiguration.interceptors) {
+      if (interceptor.afterPoolConnection) {
+        await interceptor.afterPoolConnection(connectionContext, boundConnection);
+      }
+    }
+  } catch (error) {
+    await connection.end();
+
+    throw error;
+  }
+
+  let result;
+
+  try {
+    result = await connectionHandler(connectionLog, connection, boundConnection, clientConfiguration);
+  } catch (error) {
+    await connection.end();
+
+    throw error;
+  }
+
+  try {
+    for (const interceptor of clientConfiguration.interceptors) {
+      if (interceptor.beforePoolConnectionRelease) {
+        await interceptor.beforePoolConnectionRelease(connectionContext, boundConnection);
+      }
+    }
+  } catch (error) {
+    await connection.end();
+
+    throw error;
+  }
+
+  await connection.release();
+
+  return result;
 };
 
 export default createConnection;
