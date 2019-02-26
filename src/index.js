@@ -24,6 +24,7 @@ export {
 } from './templateTags';
 export {
   CheckIntegrityConstraintViolationError,
+  ConnectionError,
   DataIntegrityError,
   ForeignKeyIntegrityConstraintViolationError,
   IntegrityConstraintViolationError,

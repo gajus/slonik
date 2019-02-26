@@ -82,6 +82,8 @@ connection.query(sql`INSERT INTO foo (bar) VALUES (${'\n'})`);
 
 {"gitdown": "include", "file": "./ERROR_HANDLING.md"}
 
+{"gitdown": "include", "file": "./TYPES.md"}
+
 {"gitdown": "include", "file": "./DEBUGGING.md"}
 
 ## Syntax highlighting

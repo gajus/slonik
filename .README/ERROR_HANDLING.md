@@ -17,6 +17,10 @@ try {
 
 ```
 
+### Handling `ConnectionError`
+
+`ConnectionError` is thrown when connection cannot be established to the PostgreSQL server.
+
 ### Handling `NotFoundError`
 
 To handle the case where query returns less than one row, catch `NotFoundError` error.
@@ -67,52 +71,16 @@ try {
 
 ### Handling `NotNullIntegrityConstraintViolationError`
 
-`NotNullIntegrityConstraintViolationError` is thrown when Postgres responds with [`unique_violation`](https://www.postgresql.org/docs/9.4/static/errcodes-appendix.html) (`23502`) error.
+`NotNullIntegrityConstraintViolationError` is thrown when PostgreSQL responds with [`unique_violation`](https://www.postgresql.org/docs/9.4/static/errcodes-appendix.html) (`23502`) error.
 
 ### Handling `ForeignKeyIntegrityConstraintViolationError`
 
-`ForeignKeyIntegrityConstraintViolationError` is thrown when Postgres responds with [`unique_violation`](https://www.postgresql.org/docs/9.4/static/errcodes-appendix.html) (`23503`) error.
+`ForeignKeyIntegrityConstraintViolationError` is thrown when PostgreSQL responds with [`unique_violation`](https://www.postgresql.org/docs/9.4/static/errcodes-appendix.html) (`23503`) error.
 
 ### Handling `UniqueIntegrityConstraintViolationError`
 
-`UniqueIntegrityConstraintViolationError` is thrown when Postgres responds with [`unique_violation`](https://www.postgresql.org/docs/9.4/static/errcodes-appendix.html) (`23505`) error.
+`UniqueIntegrityConstraintViolationError` is thrown when PostgreSQL responds with [`unique_violation`](https://www.postgresql.org/docs/9.4/static/errcodes-appendix.html) (`23505`) error.
 
 ### Handling `CheckIntegrityConstraintViolationError`
 
-`CheckIntegrityConstraintViolationError` is thrown when Postgres responds with [`unique_violation`](https://www.postgresql.org/docs/9.4/static/errcodes-appendix.html) (`23514`) error.
-
-## Types
-
-This package is using [Flow](https://flow.org/) types.
-
-Refer to [`./src/types.js`](./src/types.js).
-
-The public interface exports the following types:
-
-* `DatabaseConnectionType`
-* `DatabasePoolConnectionType`
-* `DatabaseSingleConnectionType`
-
-Use these types to annotate `connection` instance in your code base, e.g.
-
-```js
-// @flow
-
-import type {
-  DatabaseConnectionType
-} from 'slonik';
-
-export default async (
-  connection: DatabaseConnectionType,
-  code: string
-): Promise<number> => {
-  const countryId = await connection.oneFirst(sql`
-    SELECT id
-    FROM country
-    WHERE code = ${code}
-  `);
-
-  return countryId;
-};
-
-```
+`CheckIntegrityConstraintViolationError` is thrown when PostgreSQL responds with [`unique_violation`](https://www.postgresql.org/docs/9.4/static/errcodes-appendix.html) (`23514`) error.

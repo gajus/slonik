@@ -16,6 +16,9 @@ import {
 import {
   bindPoolConnection
 } from '../binders';
+import {
+  ConnectionError
+} from '../errors';
 
 type ConnectionHandlerType = (
   connectionLog: LoggerType,
@@ -48,7 +51,13 @@ const createConnection = async (
     }
   }
 
-  const connection: InternalDatabaseConnectionType = await pool.connect();
+  let connection: InternalDatabaseConnectionType;
+
+  try {
+    connection = await pool.connect();
+  } catch (error) {
+    throw new ConnectionError(error.message);
+  }
 
   if (!connection.connection.slonik.typeParserSetupPromise) {
     connection.connection.slonik.typeParserSetupPromise = setupTypeParsers(connection, clientConfiguration.typeParsers);
