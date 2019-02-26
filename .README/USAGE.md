@@ -48,24 +48,13 @@ Beware that in the latter example, the connection picked to execute the query is
 ### API
 
 ```js
+/**
+ * @param connectionUri PostgreSQL [Connection URI](https://www.postgresql.org/docs/current/libpq-connect.html#LIBPQ-CONNSTRING).
+ */
 createPool(
-  connectionConfiguration: DatabaseConfigurationType,
+  connectionUri: string,
   clientConfiguration: ClientConfigurationType
 ): DatabasePoolType;
-
-type DatabaseConnectionUriType = string;
-
-type DatabaseConfigurationType =
-  DatabaseConnectionUriType |
-  {|
-    +database?: string,
-    +host?: string,
-    +idleTimeoutMillis?: number,
-    +max?: number,
-    +password?: string,
-    +port?: number,
-    +user?: string
-  |};
 
 /**
  * @property captureStackTrace Dictates whether to capture stack trace before executing query. Middlewares access stack trace through query execution context. (Default: true)

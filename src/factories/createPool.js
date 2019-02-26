@@ -10,15 +10,17 @@ import {
 } from '../utilities';
 import type {
   ClientUserConfigurationType,
-  DatabasePoolType,
-  DatabaseConfigurationType
+  DatabasePoolType
 } from '../types';
 import Logger from '../Logger';
 import bindPool from '../binders/bindPool';
 import createClientConfiguration from './createClientConfiguration';
 
+/**
+ * @param connectionUri PostgreSQL [Connection URI](https://www.postgresql.org/docs/current/libpq-connect.html#LIBPQ-CONNSTRING).
+ */
 export default (
-  connectionConfiguration: DatabaseConfigurationType,
+  connectionUri: string,
   clientUserConfiguration?: ClientUserConfigurationType
 ): DatabasePoolType => {
   const clientConfiguration = createClientConfiguration(clientUserConfiguration);
@@ -29,7 +31,7 @@ export default (
     poolId
   });
 
-  const pool = new pg.Pool(typeof connectionConfiguration === 'string' ? parseConnectionString(connectionConfiguration) : connectionConfiguration);
+  const pool = new pg.Pool(parseConnectionString(connectionUri));
 
   pool.slonik = {
     poolId

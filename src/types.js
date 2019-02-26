@@ -77,20 +77,6 @@ export type ClientConfigurationType = {|
   +typeParsers: $ReadOnlyArray<TypeParserType>
 |};
 
-export type DatabaseConnectionUriType = string;
-
-export type DatabaseConfigurationType =
-  DatabaseConnectionUriType |
-  {|
-    +database?: string,
-    +host?: string,
-    +idleTimeoutMillis?: number,
-    +max?: number,
-    +password?: string,
-    +port?: number,
-    +user?: string
-  |};
-
 type CommonQueryMethodsType = {|
   +any: QueryAnyFunctionType<*>,
   +anyFirst: QueryAnyFirstFunctionType<*>,
