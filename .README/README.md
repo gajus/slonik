@@ -53,29 +53,6 @@ Note: Using this project does not require TypeScript or Flow. It is a regular ES
 
 {"gitdown": "include", "file": "./RECIPES.md"}
 
-## Conventions
-
-### No multiline values
-
-Slonik will strip all comments and line-breaks from a query before processing it.
-
-This makes logging of the queries easier.
-
-The implication is that your query cannot contain values that include a newline character, e.g.
-
-```js
-// Do not do this
-connection.query(sql`INSERT INTO foo (bar) VALUES ('\n')`);
-
-```
-
-If you want to communicate a value that includes a multiline character, use value placeholder interpolation, e.g.
-
-```js
-connection.query(sql`INSERT INTO foo (bar) VALUES (${'\n'})`);
-
-```
-
 {"gitdown": "include", "file": "./VALUE_PLACEHOLDERS.md"}
 
 {"gitdown": "include", "file": "./QUERY_METHODS.md"}
