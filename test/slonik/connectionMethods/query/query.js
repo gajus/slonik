@@ -124,15 +124,7 @@ test('maps 23505 error code to UniqueIntegrityConstraintViolationError', async (
 test('57P01 error causes the connection to be rejected (IMPLICIT_QUERY connection)', async (t) => {
   const pool = createPool();
 
-  // $FlowFixMe
-  pool.querySpy.rejects({
-    ...createErrorWithCode('57P01'),
-    client: {
-      connection: {
-        slonik: {}
-      }
-    }
-  });
+  pool.querySpy.rejects(createErrorWithCode('57P01'));
 
   await t.throwsAsync(pool.query(sql`SELECT 1`), BackendTerminatedError);
 });

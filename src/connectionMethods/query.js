@@ -13,6 +13,7 @@ import {
   ForeignKeyIntegrityConstraintViolationError,
   NotNullIntegrityConstraintViolationError,
   QueryCancelledError,
+  UnexpectedStateError,
   UniqueIntegrityConstraintViolationError
 } from '../errors';
 import type {
@@ -21,6 +22,10 @@ import type {
 } from '../types';
 
 const query: InternalQueryFunctionType<*> = async (connectionLogger, connection, clientConfiguration, rawSql, values, inheritedQueryId) => {
+  if (connection.connection.slonik.terminated) {
+    throw new UnexpectedStateError('Cannot use terminated connection.');
+  }
+
   const queryInputTime = process.hrtime.bigint();
 
   let stackTrace = null;
@@ -94,7 +99,7 @@ const query: InternalQueryFunctionType<*> = async (connectionLogger, connection,
     result = await connection.query(actualQuery.sql, actualQuery.values);
   } catch (error) {
     if (error.code === '57P01') {
-      error.client.connection.slonik.terminated = true;
+      connection.connection.slonik.terminated = true;
 
       throw new BackendTerminatedError();
     }
