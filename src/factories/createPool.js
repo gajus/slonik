@@ -31,7 +31,25 @@ export default (
     poolId
   });
 
-  const pool = new pg.Pool(parseConnectionString(connectionUri));
+  const poolConfiguration = parseConnectionString(connectionUri);
+
+  if (clientConfiguration.connectionTimeout) {
+    poolConfiguration.connectionTimeoutMillis = clientConfiguration.connectionTimeout;
+  }
+
+  if (clientConfiguration.idleTimeout) {
+    poolConfiguration.idleTimeoutMillis = clientConfiguration.idleTimeout;
+  }
+
+  if (clientConfiguration.maximumPoolSize) {
+    poolConfiguration.max = clientConfiguration.maximumPoolSize;
+  }
+
+  if (clientConfiguration.minimumPoolSize) {
+    poolConfiguration.min = clientConfiguration.minimumPoolSize;
+  }
+
+  const pool = new pg.Pool(poolConfiguration);
 
   pool.slonik = {
     poolId

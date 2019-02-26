@@ -58,12 +58,20 @@ createPool(
 
 /**
  * @property captureStackTrace Dictates whether to capture stack trace before executing query. Middlewares access stack trace through query execution context. (Default: true)
+ * @property connectionTimeout: Timeout (in milliseconds) after which an error is raised if cannot cannot be established. (Default: 1000)
+ * @property idleTimeout Timeout (in milliseconds) after which idle clients are closed. (Default: 1000)
  * @property interceptors An array of [Slonik interceptors](https://github.com/gajus/slonik#slonik-interceptors).
- * @property interceptors An array of [Slonik type parsers](https://github.com/gajus/slonik#slonik-type-parsers).
+ * @property maximumPoolSize Do not allow more than this many connections. (Default: 10)
+ * @property minimumPoolSize Add more server connections to pool if below this number. (Default: 0)
+ * @property typeParsers An array of [Slonik type parsers](https://github.com/gajus/slonik#slonik-type-parsers).
  */
 type ClientConfigurationType = {|
   +captureStackTrace?: boolean,
+  +connectionTimeout?: number,
+  +idleTimeout?: number,
   +interceptors?: $ReadOnlyArray<InterceptorType>,
+  +maximumPoolSize?: number,
+  +minimumPoolSize?: number,
   +typeParsers?: $ReadOnlyArray<TypeParserType>
 |};
 
