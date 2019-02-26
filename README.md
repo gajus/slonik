@@ -96,6 +96,7 @@ Note: Using this project does not require TypeScript or Flow. It is a regular ES
         * [`query`](#slonik-query-methods-query)
         * [`transaction`](#slonik-query-methods-transaction)
     * [Error handling](#slonik-error-handling)
+        * [Handling `ConnectionError`](#slonik-error-handling-handling-connectionerror)
         * [Handling `NotFoundError`](#slonik-error-handling-handling-notfounderror)
         * [Handling `DataIntegrityError`](#slonik-error-handling-handling-dataintegrityerror)
         * [Handling `NotNullIntegrityConstraintViolationError`](#slonik-error-handling-handling-notnullintegrityconstraintviolationerror)
@@ -1568,6 +1569,11 @@ try {
 
 ```
 
+<a name="slonik-error-handling-handling-connectionerror"></a>
+### Handling <code>ConnectionError</code>
+
+`ConnectionError` is thrown when connection cannot be established to the PostgreSQL server.
+
 <a name="slonik-error-handling-handling-notfounderror"></a>
 ### Handling <code>NotFoundError</code>
 
@@ -1621,22 +1627,23 @@ try {
 <a name="slonik-error-handling-handling-notnullintegrityconstraintviolationerror"></a>
 ### Handling <code>NotNullIntegrityConstraintViolationError</code>
 
-`NotNullIntegrityConstraintViolationError` is thrown when Postgres responds with [`unique_violation`](https://www.postgresql.org/docs/9.4/static/errcodes-appendix.html) (`23502`) error.
+`NotNullIntegrityConstraintViolationError` is thrown when PostgreSQL responds with [`unique_violation`](https://www.postgresql.org/docs/9.4/static/errcodes-appendix.html) (`23502`) error.
 
 <a name="slonik-error-handling-handling-foreignkeyintegrityconstraintviolationerror"></a>
 ### Handling <code>ForeignKeyIntegrityConstraintViolationError</code>
 
-`ForeignKeyIntegrityConstraintViolationError` is thrown when Postgres responds with [`unique_violation`](https://www.postgresql.org/docs/9.4/static/errcodes-appendix.html) (`23503`) error.
+`ForeignKeyIntegrityConstraintViolationError` is thrown when PostgreSQL responds with [`unique_violation`](https://www.postgresql.org/docs/9.4/static/errcodes-appendix.html) (`23503`) error.
 
 <a name="slonik-error-handling-handling-uniqueintegrityconstraintviolationerror"></a>
 ### Handling <code>UniqueIntegrityConstraintViolationError</code>
 
-`UniqueIntegrityConstraintViolationError` is thrown when Postgres responds with [`unique_violation`](https://www.postgresql.org/docs/9.4/static/errcodes-appendix.html) (`23505`) error.
+`UniqueIntegrityConstraintViolationError` is thrown when PostgreSQL responds with [`unique_violation`](https://www.postgresql.org/docs/9.4/static/errcodes-appendix.html) (`23505`) error.
 
 <a name="slonik-error-handling-handling-checkintegrityconstraintviolationerror"></a>
 ### Handling <code>CheckIntegrityConstraintViolationError</code>
 
-`CheckIntegrityConstraintViolationError` is thrown when Postgres responds with [`unique_violation`](https://www.postgresql.org/docs/9.4/static/errcodes-appendix.html) (`23514`) error.
+`CheckIntegrityConstraintViolationError` is thrown when PostgreSQL responds with [`unique_violation`](https://www.postgresql.org/docs/9.4/static/errcodes-appendix.html) (`23514`) error.
+
 
 <a name="slonik-types"></a>
 ## Types
