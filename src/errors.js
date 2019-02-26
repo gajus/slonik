@@ -10,6 +10,10 @@ export class UnexpectedStateError extends SlonikError {}
 
 export class ConnectionError extends SlonikError {}
 
+export class QueryCancelledError extends SlonikError {}
+
+export class BackendTerminatedError extends SlonikError {}
+
 export class NotFoundError extends SlonikError {
   constructor () {
     super('Resource not found.');

@@ -21,6 +21,68 @@ try {
 
 `ConnectionError` is thrown when connection cannot be established to the PostgreSQL server.
 
+### Handling `QueryCancelledError`
+
+`QueryCancelledError` is thrown when a query is cancelled by the user, i.e. [`pg_cancel_backend`](https://www.postgresql.org/docs/current/functions-admin.html#FUNCTIONS-ADMIN-SIGNAL).
+
+It should be safe to use the same connection if the `QueryCancelledError` is handled, e.g.
+
+```js
+await pool.connect(async (connection0) => {
+  await pool.connect(async (connection1) => {
+    const backendProcessId = await connection1.oneFirst(sql`SELECT pg_backend_pid()`);
+
+    setTimeout(() => {
+      connection0.query(sql`SELECT pg_cancel_backend(${backendProcessId})`)
+    }, 2000);
+
+    try {
+      await connection1.query(sql`SELECT pg_sleep(30)`);
+    } catch (error) {
+      if (error instanceof QueryCancelledError) {
+        // Safe to continue using the same connection.
+      } else {
+        throw error;
+      }
+    }
+  });
+});
+
+```
+
+### Handling `BackendTerminatedError`
+
+`BackendTerminatedError` is thrown when the backend is terminated by the user, i.e. [`pg_terminate_backend`](https://www.postgresql.org/docs/current/functions-admin.html#FUNCTIONS-ADMIN-SIGNAL).
+
+`BackendTerminatedError` must be handled at the connection level, i.e.
+
+```js
+await pool.connect(async (connection0) => {
+  try {
+    await pool.connect(async (connection1) => {
+      const backendProcessId = await connection1.oneFirst(sql`SELECT pg_backend_pid()`);
+
+      setTimeout(() => {
+        connection0.query(sql`SELECT pg_cancel_backend(${backendProcessId})`)
+      }, 2000);
+
+      try {
+        await connection1.query(sql`SELECT pg_sleep(30)`);
+      } catch (error) {
+        // This code will not be executed.
+      }
+    });
+  } catch (error) {
+    if (error instanceof BackendTerminatedError) {
+      // Handle backend termination.
+    } else {
+      throw error;
+    }
+  }
+});
+
+```
+
 ### Handling `NotFoundError`
 
 To handle the case where query returns less than one row, catch `NotFoundError` error.

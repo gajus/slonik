@@ -23,6 +23,7 @@ export {
   sql
 } from './templateTags';
 export {
+  BackendTerminatedError,
   CheckIntegrityConstraintViolationError,
   ConnectionError,
   DataIntegrityError,
@@ -30,6 +31,7 @@ export {
   IntegrityConstraintViolationError,
   NotFoundError,
   NotNullIntegrityConstraintViolationError,
+  QueryCancelledError,
   SlonikError,
   UniqueIntegrityConstraintViolationError
 } from './errors';

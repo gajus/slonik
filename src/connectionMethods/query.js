@@ -8,9 +8,11 @@ import {
   createQueryId
 } from '../utilities';
 import {
+  BackendTerminatedError,
   CheckIntegrityConstraintViolationError,
   ForeignKeyIntegrityConstraintViolationError,
   NotNullIntegrityConstraintViolationError,
+  QueryCancelledError,
   UniqueIntegrityConstraintViolationError
 } from '../errors';
 import type {
@@ -95,6 +97,18 @@ const query: InternalQueryFunctionType<*> = async (connectionLogger, connection,
       error: serializeError(error),
       queryId
     }, 'query produced an error');
+
+    if (error.code === '57P01') {
+      const clientError = new BackendTerminatedError();
+
+      connection.connection.slonik.rejectConnection(clientError);
+
+      throw clientError;
+    }
+
+    if (error.code === '57014') {
+      throw new QueryCancelledError();
+    }
 
     if (error.code === '23502') {
       throw new NotNullIntegrityConstraintViolationError(error.constraint);
