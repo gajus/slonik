@@ -6,7 +6,7 @@ import {
   RawSqlTokenSymbol
 } from '../../../src/symbols';
 
-test('creates a tuple with a single parameter', (t) => {
+test('creates a plain sql token', (t) => {
   const sqlFragment = createRawSqlSqlFragment({
     sql: 'foo',
     type: RawSqlTokenSymbol,
@@ -14,43 +14,31 @@ test('creates a tuple with a single parameter', (t) => {
   }, 0);
 
   t.true(sqlFragment.sql === 'foo');
-  t.deepEqual(sqlFragment.parameters, []);
+  t.deepEqual(sqlFragment.values, []);
 });
 
-test('offsets parameter position', (t) => {
+test('creates a tuple with a single positional parameter', (t) => {
   const sqlFragment = createRawSqlSqlFragment({
     sql: '($1)',
     type: RawSqlTokenSymbol,
     values: [
       'foo'
     ]
-  }, 1);
+  }, 0);
 
-  t.true(sqlFragment.sql === '($2)');
-  t.deepEqual(sqlFragment.parameters, ['foo']);
+  t.true(sqlFragment.sql === '($1)');
+  t.deepEqual(sqlFragment.values, ['foo']);
 });
 
-test('throws an erorr if the greatest parameter position is greater than the number of parameter values', (t) => {
-  t.throws(() => {
-    createRawSqlSqlFragment({
-      sql: '($1, $2)',
-      type: RawSqlTokenSymbol,
-      values: [
-        'foo'
-      ]
-    }, 0);
-  }, 'The greatest parameter position is greater than the number of parameter values.');
-});
+test('creates a tuple with a single named parameter', (t) => {
+  const sqlFragment = createRawSqlSqlFragment({
+    sql: '(:foo)',
+    type: RawSqlTokenSymbol,
+    values: {
+      foo: 'foo'
+    }
+  }, 0);
 
-test('throws an erorr if least parameter is greater than 1', (t) => {
-  t.throws(() => {
-    createRawSqlSqlFragment({
-      sql: '($2)',
-      type: RawSqlTokenSymbol,
-      values: [
-        'foo',
-        'bar'
-      ]
-    }, 0);
-  }, 'Parameter position must start at 1.');
+  t.true(sqlFragment.sql === '($1)');
+  t.deepEqual(sqlFragment.values, ['foo']);
 });

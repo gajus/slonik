@@ -20,7 +20,7 @@ export default (token: IdentifierTokenType): SqlFragmentType => {
     .join('.');
 
   return {
-    parameters: [],
-    sql
+    sql,
+    values: []
   };
 };

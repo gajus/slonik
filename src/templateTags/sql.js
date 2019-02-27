@@ -48,13 +48,13 @@ const sql: SqlTaggedTemplateType = (
 ): SqlSqlTokenType => {
   let rawSql = '';
 
-  const parameters = [];
+  const parameterValues = [];
 
   let index = 0;
 
   const appendSqlFragment = (sqlFragment: SqlFragmentType) => {
     rawSql += sqlFragment.sql;
-    parameters.push(...sqlFragment.parameters);
+    parameterValues.push(...sqlFragment.values);
   };
 
   for (const part of parts) {
@@ -67,31 +67,31 @@ const sql: SqlTaggedTemplateType = (
     }
 
     if (isPrimitiveValueExpression(token)) {
-      rawSql += '$' + (parameters.length + 1);
+      rawSql += '$' + (parameterValues.length + 1);
 
-      parameters.push(token);
+      parameterValues.push(token);
     } else if (token && token.type === SqlTokenSymbol) {
       // @see https://github.com/gajus/slonik/issues/36 regarding FlowFixMe use.
       // $FlowFixMe
-      appendSqlFragment(createSqlSqlFragment(token, parameters.length));
+      appendSqlFragment(createSqlSqlFragment(token, parameterValues.length));
     } else if (token && token.type === RawSqlTokenSymbol) {
       // $FlowFixMe
-      appendSqlFragment(createRawSqlSqlFragment(token, parameters.length));
+      appendSqlFragment(createRawSqlSqlFragment(token, parameterValues.length));
     } else if (token && token.type === IdentifierTokenSymbol) {
       // $FlowFixMe
       appendSqlFragment(createIdentifierSqlFragment(token));
     } else if (token && token.type === ValueListTokenSymbol) {
       // $FlowFixMe
-      appendSqlFragment(createValueListSqlFragment(token, parameters.length));
+      appendSqlFragment(createValueListSqlFragment(token, parameterValues.length));
     } else if (token && token.type === TupleTokenSymbol) {
       // $FlowFixMe
-      appendSqlFragment(createTupleSqlFragment(token, parameters.length));
+      appendSqlFragment(createTupleSqlFragment(token, parameterValues.length));
     } else if (token && token.type === TupleListTokenSymbol) {
       // $FlowFixMe
-      appendSqlFragment(createTupleListSqlFragment(token, parameters.length));
+      appendSqlFragment(createTupleListSqlFragment(token, parameterValues.length));
     } else if (token && token.type === UnnestTokenSymbol) {
       // $FlowFixMe
-      appendSqlFragment(createUnnestSqlFragment(token, parameters.length));
+      appendSqlFragment(createUnnestSqlFragment(token, parameterValues.length));
     } else {
       log.error({
         constructedSql: rawSql,
@@ -105,7 +105,7 @@ const sql: SqlTaggedTemplateType = (
   const query = deepFreeze({
     sql: rawSql,
     type: SqlTokenSymbol,
-    values: parameters
+    values: parameterValues
   });
 
   return query;

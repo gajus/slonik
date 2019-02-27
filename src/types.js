@@ -143,8 +143,8 @@ export type QueryType = {|
 |};
 
 export type SqlFragmentType = {|
-  +parameters: $ReadOnlyArray<PrimitiveValueExpressionType>,
-  +sql: string
+  +sql: string,
+  +values: $ReadOnlyArray<PrimitiveValueExpressionType>
 |};
 
 /**
@@ -204,6 +204,11 @@ export type QueryContextType = {|
   +transactionId?: string
 |};
 
+export type PositionalParameterValuesType = $ReadOnlyArray<PrimitiveValueExpressionType>;
+export type NamedParameterValuesType = {
+  [key: string]: PrimitiveValueExpressionType
+};
+
 export type IdentifierTokenType = {|
   +names: $ReadOnlyArray<string>,
   +type: typeof IdentifierTokenSymbol
@@ -212,33 +217,33 @@ export type IdentifierTokenType = {|
 export type SqlSqlTokenType = {|
   +sql: string,
   +type: typeof SqlTokenSymbol,
-  +values: $ReadOnlyArray<PrimitiveValueExpressionType>
+  +values: PositionalParameterValuesType
 |};
 
 export type RawSqlTokenType = {|
   +sql: string,
   +type: typeof RawSqlTokenSymbol,
-  +values: $ReadOnlyArray<PrimitiveValueExpressionType>
+  +values: PositionalParameterValuesType | NamedParameterValuesType
 |};
 
 export type ValueListSqlTokenType = {|
-  +values: $ReadOnlyArray<PrimitiveValueExpressionType>,
+  +values: PositionalParameterValuesType,
   +type: typeof ValueListTokenSymbol
 |};
 
 export type TupleSqlTokenType = {|
-  +values: $ReadOnlyArray<PrimitiveValueExpressionType>,
+  +values: PositionalParameterValuesType,
   +type: typeof TupleTokenSymbol
 |};
 
 export type TupleListSqlTokenType = {|
-  +tuples: $ReadOnlyArray<$ReadOnlyArray<PrimitiveValueExpressionType>>,
+  +tuples: $ReadOnlyArray<PositionalParameterValuesType>,
   +type: typeof TupleListTokenSymbol
 |};
 
 export type UnnestSqlTokenType = {|
   +columnTypes: $ReadOnlyArray<string>,
-  +tuples: $ReadOnlyArray<$ReadOnlyArray<PrimitiveValueExpressionType>>,
+  +tuples: $ReadOnlyArray<PositionalParameterValuesType>,
   +type: typeof UnnestTokenSymbol
 |};
 

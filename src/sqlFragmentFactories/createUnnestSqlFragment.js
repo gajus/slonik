@@ -11,7 +11,7 @@ import {
 export default (token: UnnestSqlTokenType, greatestParameterPosition: number): SqlFragmentType => {
   const columnTypes = token.columnTypes;
 
-  const parameters = [];
+  const values = [];
 
   const unnestBindings = [];
   const unnsetSqlTokens = [];
@@ -50,12 +50,12 @@ export default (token: UnnestSqlTokenType, greatestParameterPosition: number): S
     }
   }
 
-  parameters.push(...unnestBindings);
+  values.push(...unnestBindings);
 
   const sql = 'unnest(' + unnsetSqlTokens.join(', ') + ')';
 
   return {
-    parameters,
-    sql
+    sql,
+    values
   };
 };

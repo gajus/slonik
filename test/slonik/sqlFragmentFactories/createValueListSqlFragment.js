@@ -15,7 +15,7 @@ test('creates a single parameter', (t) => {
   }, 0);
 
   t.true(sqlFragment.sql === '$1');
-  t.deepEqual(sqlFragment.parameters, ['foo']);
+  t.deepEqual(sqlFragment.values, ['foo']);
 });
 
 test('creates multiple parameters', (t) => {
@@ -29,7 +29,7 @@ test('creates multiple parameters', (t) => {
   }, 0);
 
   t.true(sqlFragment.sql === '$1, $2, $3');
-  t.deepEqual(sqlFragment.parameters, ['foo', 'bar', 'baz']);
+  t.deepEqual(sqlFragment.values, ['foo', 'bar', 'baz']);
 });
 
 test('offsets parameter position', (t) => {
@@ -43,7 +43,7 @@ test('offsets parameter position', (t) => {
   }, 3);
 
   t.true(sqlFragment.sql === '$4, $5, $6');
-  t.deepEqual(sqlFragment.parameters, ['foo', 'bar', 'baz']);
+  t.deepEqual(sqlFragment.values, ['foo', 'bar', 'baz']);
 });
 
 test('throws an error if value list is empty', (t) => {

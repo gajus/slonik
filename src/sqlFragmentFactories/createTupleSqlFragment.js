@@ -9,7 +9,7 @@ import {
 } from '../errors';
 
 export default (token: TupleSqlTokenType, greatestParameterPosition: number): SqlFragmentType => {
-  const parameters = [];
+  const values = [];
   const placeholders = [];
 
   let placeholderIndex = greatestParameterPosition;
@@ -21,13 +21,13 @@ export default (token: TupleSqlTokenType, greatestParameterPosition: number): Sq
   for (const tupleValue of token.values) {
     placeholders.push('$' + ++placeholderIndex);
 
-    parameters.push(tupleValue);
+    values.push(tupleValue);
   }
 
   const sql = '(' + placeholders.join(', ') + ')';
 
   return {
-    parameters,
-    sql
+    sql,
+    values
   };
 };
