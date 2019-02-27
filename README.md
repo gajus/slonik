@@ -1232,7 +1232,7 @@ Produces:
 
 ```
 
-The second parameter of the `sql.raw` can be used to bind values, e.g.
+The second parameter of the `sql.raw` can be used to bind [positional parameter](https://www.postgresql.org/docs/current/sql-expressions.html#SQL-EXPRESSIONS-PARAMETERS-POSITIONAL) values, e.g.
 
 ```js
 sql`
@@ -1252,6 +1252,33 @@ Produces:
 }
 
 ```
+
+<a name="slonik-value-placeholders-sql-raw-named-parameters"></a>
+#### Named parameters
+
+`sql.raw` supports named parameters, e.g.
+
+```js
+sql`
+  SELECT ${sql.raw(':foo, :bar', {bar: 'BAR', foo: 'FOO'})}
+`;
+
+```
+
+Produces:
+
+```js
+{
+  sql: 'SELECT $1, $2',
+  values: [
+    'FOO',
+    'BAR'
+  ]
+}
+
+```
+
+Named parameters are matched using `/[\s,(]:([a-z_]+)/g` regex.
 
 
 <a name="slonik-query-methods"></a>
