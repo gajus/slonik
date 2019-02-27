@@ -37,6 +37,7 @@ export default (clientConfiguration: ClientUserConfigurationType = defaultConfig
   };
 
   const internalPool = {
+    _remove: () => {},
     connect: () => {
       return connection;
     },
@@ -46,9 +47,10 @@ export default (clientConfiguration: ClientUserConfigurationType = defaultConfig
   };
 
   const connectSpy = sinon.spy(internalPool, 'connect');
-  const releaseSpy = sinon.spy(connection, 'release');
   const endSpy = sinon.spy(connection, 'end');
   const querySpy = sinon.stub(connection, 'query').returns({});
+  const releaseSpy = sinon.spy(connection, 'release');
+  const removeSpy = sinon.spy(internalPool, '_remove');
 
   const pool = bindPool(
     log,
@@ -70,6 +72,7 @@ export default (clientConfiguration: ClientUserConfigurationType = defaultConfig
     connectSpy,
     endSpy,
     querySpy,
-    releaseSpy
+    releaseSpy,
+    removeSpy
   };
 };

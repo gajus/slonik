@@ -23,7 +23,7 @@ test('ends connection after promise is rejected', async (t) => {
   }));
 
   t.true(pool.connectSpy.callCount === 1);
-  t.true(pool.endSpy.callCount === 1);
+  t.true(pool.removeSpy.callCount === 1);
 });
 
 test('does not connect if `beforePoolConnection` throws an error', async (t) => {
@@ -61,7 +61,7 @@ test('ends connection if `afterPoolConnection` throws an error', async (t) => {
   }));
 
   t.true(pool.connectSpy.callCount === 1);
-  t.true(pool.endSpy.callCount === 1);
+  t.true(pool.removeSpy.callCount === 1);
 });
 
 test('ends connection if `beforePoolConnectionRelease` throws an error', async (t) => {
@@ -80,7 +80,7 @@ test('ends connection if `beforePoolConnectionRelease` throws an error', async (
   }));
 
   t.true(pool.connectSpy.callCount === 1);
-  t.true(pool.endSpy.callCount === 1);
+  t.true(pool.removeSpy.callCount === 1);
 });
 
 test('if `beforePoolConnection` returns pool object, then the returned pool object is used to create a connection (IMPLICIT_QUERY)', async (t) => {
