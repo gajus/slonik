@@ -98,7 +98,9 @@ const query: InternalQueryFunctionType<*> = async (connectionLogger, connection,
   try {
     result = await connection.query(actualQuery.sql, actualQuery.values);
   } catch (error) {
-    if (error.code === '57P01') {
+    // 'Connection terminated' refers to node-postgres error.
+    // @see https://github.com/brianc/node-postgres/blob/eb076db5d47a29c19d3212feac26cd7b6d257a95/lib/client.js#L199
+    if (error.code === '57P01' || error.message === 'Connection terminated') {
       connection.connection.slonik.terminated = true;
 
       throw new BackendTerminatedError();
