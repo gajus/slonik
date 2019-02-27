@@ -299,6 +299,34 @@ Produces:
 
 ```
 
+#### Building dynamic queries
+
+If you require to build a query based on a _dynamic_ condition, then consider using an SQL builder for that specific query, e.g. [Sqorn](https://sqorn.org/).
+
+```js
+const query = sq
+  .return({
+    authorId: 'a.id',
+    name: 'a.last_name'
+  })
+  .distinct
+  .from({
+    b: 'book'
+    })
+  .leftJoin({
+    a: 'author'
+  })
+  .on`b.author_id = a.id`
+  .where({
+    title: 'Oathbringer',
+    genre: 'fantasy'
+  })
+  .query;
+
+sql`${sql.raw(query.text, query.args)}`
+
+```
+
 #### Named parameters
 
 `sql.raw` supports named parameters, e.g.
