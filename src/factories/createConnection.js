@@ -87,7 +87,7 @@ const createConnection = async (
       }
     }
   } catch (error) {
-    await connection.end();
+    pool._remove(connection);
 
     throw error;
   }
@@ -97,7 +97,7 @@ const createConnection = async (
   try {
     result = await connectionHandler(connectionLog, connection, boundConnection, clientConfiguration);
   } catch (error) {
-    await connection.end();
+    pool._remove(connection);
 
     throw error;
   }
@@ -109,7 +109,7 @@ const createConnection = async (
       }
     }
   } catch (error) {
-    await connection.end();
+    pool._remove(connection);
 
     throw error;
   }
