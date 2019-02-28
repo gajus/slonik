@@ -10,8 +10,21 @@ import {
 
 export default (token: IdentifierListTokenType): SqlFragmentType => {
   const sql = token.identifiers
-    .map((names) => {
-      return names
+    .map((identifier) => {
+      if (Array.isArray(identifier)) {
+        return identifier
+          .map((identifierName) => {
+            if (typeof identifierName !== 'string') {
+              throw new TypeError('Identifier name must be a string.');
+            }
+
+            return escapeIdentifier(identifierName);
+          })
+          .join('.');
+      }
+
+      return identifier
+        .identifier
         .map((identifierName) => {
           if (typeof identifierName !== 'string') {
             throw new TypeError('Identifier name must be a string.');
@@ -19,7 +32,7 @@ export default (token: IdentifierListTokenType): SqlFragmentType => {
 
           return escapeIdentifier(identifierName);
         })
-        .join('.');
+        .join('.') + ' ' + escapeIdentifier(identifier.alias);
     })
     .join(', ');
 

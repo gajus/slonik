@@ -275,7 +275,38 @@ Produces:
 
 ```js
 {
-  sql: 'SELECT 1 FROM "bar"."bar", "qux"."quux"',
+  sql: 'SELECT 1 FROM "bar"."baz", "qux"."quux"',
+  values: []
+}
+
+```
+
+#### Identifier aliases
+
+A member of the identifier list can be aliased:
+
+```js
+sql`
+  SELECT 1
+  FROM ${sql.identifierList([
+    {
+      alias: 'qux',
+      identifier: ['bar', 'baz']
+    },
+    {
+      alias: 'corge',
+      identifier: ['quux', 'quuz']
+    }
+  ])}
+`;
+
+```
+
+Produces:
+
+```js
+{
+  sql: 'SELECT 1 FROM "bar"."baz" "qux", "quux"."quuz" "corge"',
   values: []
 }
 

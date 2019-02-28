@@ -6,7 +6,7 @@ import {
   SqlTokenSymbol
 } from '../../../../src/symbols';
 
-test('creates an object describing a query with inlined identifiers', (t) => {
+test('creates an object describing a query with identifiers', (t) => {
   const query = sql`SELECT ${'foo'} FROM ${sql.identifierList([['bar'], ['baz']])}`;
 
   t.deepEqual(query, {
@@ -18,7 +18,28 @@ test('creates an object describing a query with inlined identifiers', (t) => {
   });
 });
 
-test('creates an object describing a query with inlined identifiers (specifier)', (t) => {
+test('creates an object describing a query with aliased identifiers', (t) => {
+  const query = sql`SELECT ${'foo'} FROM ${sql.identifierList([
+    {
+      alias: 'baz',
+      identifier: ['bar']
+    },
+    {
+      alias: 'quux',
+      identifier: ['qux']
+    }
+  ])}`;
+
+  t.deepEqual(query, {
+    sql: 'SELECT $1 FROM "bar" "baz", "qux" "quux"',
+    type: SqlTokenSymbol,
+    values: [
+      'foo'
+    ]
+  });
+});
+
+test('creates an object describing a query with identifiers (specifier)', (t) => {
   const query = sql`SELECT ${'foo'} FROM ${sql.identifierList([
     ['bar', 'baz'],
     ['qux', 'quux']

@@ -215,8 +215,14 @@ export type IdentifierTokenType = {|
   +type: typeof IdentifierTokenSymbol
 |};
 
+type IdentifierListMemberType = $ReadOnlyArray<string> |
+  {|
+    +alias: string,
+    +identifier: $ReadOnlyArray<string>
+  |};
+
 export type IdentifierListTokenType = {|
-  +identifiers: $ReadOnlyArray<$ReadOnlyArray<string>>,
+  +identifiers: $ReadOnlyArray<IdentifierListMemberType>,
   +type: typeof IdentifierListTokenSymbol
 |};
 
