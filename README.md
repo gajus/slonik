@@ -80,6 +80,7 @@ Note: Using this project does not require TypeScript or Flow. It is a regular ES
         * [`sql.tupleList`](#slonik-value-placeholders-sql-tuplelist)
         * [`sql.unnset`](#slonik-value-placeholders-sql-unnset)
         * [`sql.identifier`](#slonik-value-placeholders-sql-identifier)
+        * [`sql.identifierList`](#slonik-value-placeholders-sql-identifierlist)
         * [`sql.raw`](#slonik-value-placeholders-sql-raw)
     * [Query methods](#slonik-query-methods)
         * [`any`](#slonik-query-methods-any)
@@ -1198,6 +1199,37 @@ Produces:
 ```js
 {
   sql: 'SELECT 1 FROM "bar"."bar"',
+  values: []
+}
+
+```
+
+<a name="slonik-value-placeholders-sql-identifierlist"></a>
+### <code>sql.identifierList</code>
+
+```js
+(identifiers: $ReadOnlyArray<$ReadOnlyArray<string>>) => IdentifierListTokenType;
+
+```
+
+Creates a list of identifiers, e.g.
+
+```js
+sql`
+  SELECT 1
+  FROM ${sql.identifierList([
+    ['bar', 'baz'],
+    ['qux', 'quux']
+  ])}
+`;
+
+```
+
+Produces:
+
+```js
+{
+  sql: 'SELECT 1 FROM "bar"."bar", "qux"."quux"',
   values: []
 }
 
