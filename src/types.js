@@ -9,6 +9,7 @@ import {
   SqlTokenSymbol,
   RawSqlTokenSymbol,
   IdentifierTokenSymbol,
+  IdentifierListTokenSymbol,
   ValueListTokenSymbol,
   TupleTokenSymbol,
   TupleListTokenSymbol,
@@ -212,6 +213,11 @@ export type NamedParameterValuesType = {
 export type IdentifierTokenType = {|
   +names: $ReadOnlyArray<string>,
   +type: typeof IdentifierTokenSymbol
+|};
+
+export type IdentifierListTokenType = {|
+  +identifiers: $ReadOnlyArray<$ReadOnlyArray<string>>,
+  +type: typeof IdentifierListTokenSymbol
 |};
 
 export type SqlSqlTokenType = {|

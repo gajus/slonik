@@ -2,6 +2,7 @@
 
 import type {
   IdentifierTokenType,
+  IdentifierListTokenType,
   PrimitiveValueExpressionType,
   RawSqlTokenType,
   SqlFragmentType,
@@ -20,6 +21,7 @@ import {
 import Logger from '../Logger';
 import {
   createIdentifierSqlFragment,
+  createIdentifierListSqlFragment,
   createRawSqlSqlFragment,
   createSqlSqlFragment,
   createTupleListSqlFragment,
@@ -31,6 +33,7 @@ import {
   SqlTokenSymbol,
   RawSqlTokenSymbol,
   IdentifierTokenSymbol,
+  IdentifierListTokenSymbol,
   ValueListTokenSymbol,
   TupleTokenSymbol,
   TupleListTokenSymbol,
@@ -80,6 +83,9 @@ const sql: SqlTaggedTemplateType = (
     } else if (token && token.type === IdentifierTokenSymbol) {
       // $FlowFixMe
       appendSqlFragment(createIdentifierSqlFragment(token));
+    } else if (token && token.type === IdentifierListTokenSymbol) {
+      // $FlowFixMe
+      appendSqlFragment(createIdentifierListSqlFragment(token));
     } else if (token && token.type === ValueListTokenSymbol) {
       // $FlowFixMe
       appendSqlFragment(createValueListSqlFragment(token, parameterValues.length));
@@ -119,6 +125,15 @@ sql.identifier = (
   return deepFreeze({
     names,
     type: IdentifierTokenSymbol
+  });
+};
+
+sql.identifierList = (
+  identifiers: $ReadOnlyArray<$ReadOnlyArray<string>>
+): IdentifierListTokenType => {
+  return deepFreeze({
+    identifiers,
+    type: IdentifierListTokenSymbol
   });
 };
 

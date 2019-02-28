@@ -251,6 +251,36 @@ Produces:
 
 ```
 
+### `sql.identifierList`
+
+```js
+(identifiers: $ReadOnlyArray<$ReadOnlyArray<string>>) => IdentifierListTokenType;
+
+```
+
+Creates a list of identifiers, e.g.
+
+```js
+sql`
+  SELECT 1
+  FROM ${sql.identifierList([
+    ['bar', 'baz'],
+    ['qux', 'quux']
+  ])}
+`;
+
+```
+
+Produces:
+
+```js
+{
+  sql: 'SELECT 1 FROM "bar"."bar", "qux"."quux"',
+  values: []
+}
+
+```
+
 ### `sql.raw`
 
 ```js
