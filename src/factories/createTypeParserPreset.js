@@ -5,6 +5,7 @@ import type {
 } from '../types';
 import {
   createBigintTypeParser,
+  createIntervalTypeParser,
   createTimestampTypeParser,
   createTimestampWithTimeZoneTypeParser
 } from './typeParsers';
@@ -12,6 +13,7 @@ import {
 export default (): $ReadOnlyArray<TypeParserType> => {
   return [
     createBigintTypeParser(),
+    createIntervalTypeParser(),
     createTimestampTypeParser(),
     createTimestampWithTimeZoneTypeParser()
   ];

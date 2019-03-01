@@ -105,6 +105,7 @@ These type parsers are enabled by default:
 |Type name|Implemnetation|
 |---|---|
 |`int8`|Produces an integer.|
+|`interval`|Produces interval in seconds (integer).|
 |`timestamp`|Produces a unix timestamp (in milliseconds).|
 |`timestamptz`|Produces a unix timestamp (in milliseconds).|
 

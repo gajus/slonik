@@ -13,9 +13,11 @@
     "delay": "^4.1.0",
     "es6-error": "^4.1.1",
     "get-stack-trace": "^2.0.1",
+    "iso8601-duration": "^1.1.7",
     "pg": "^7.8.1",
     "pg-connection-string": "^2.0.0",
     "pg-types": "^2.0.0",
+    "postgres-interval": "^1.2.0",
     "roarr": "^2.13.0",
     "serialize-error": "^3.0.0",
     "ulid": "^2.3.0"

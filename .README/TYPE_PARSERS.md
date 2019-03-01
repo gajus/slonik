@@ -43,6 +43,7 @@ Read: [Default type parsers](#default-type-parsers).
 |Type name|Implemnetation|Factory function name|
 |---|---|---|
 |`int8`|Produces an integer.|`createBigintTypeParser`|
+|`interval`|Produces interval in seconds (integer).|`createIntervalTypeParser`|
 |`timestamp`|Produces a unix timestamp (in milliseconds).|`createTimestampTypeParser`|
 |`timestamptz`|Produces a unix timestamp (in milliseconds).|`createTimestampWithTimeZoneParser`|
 
