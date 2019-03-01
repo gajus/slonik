@@ -91,15 +91,15 @@ export type ClientConfigurationType = {|
 |};
 
 type CommonQueryMethodsType = {|
-  +any: QueryAnyFunctionType<*>,
-  +anyFirst: QueryAnyFirstFunctionType<*>,
-  +many: QueryManyFunctionType<*>,
-  +manyFirst: QueryManyFirstFunctionType<*>,
-  +maybeOne: QueryMaybeOneFunctionType<*>,
-  +maybeOneFirst: QueryMaybeOneFirstFunctionType<*>,
-  +one: QueryOneFunctionType<*>,
-  +oneFirst: QueryOneFirstFunctionType<*>,
-  +query: QueryFunctionType<*>
+  +any: QueryAnyFunctionType,
+  +anyFirst: QueryAnyFirstFunctionType,
+  +many: QueryManyFunctionType,
+  +manyFirst: QueryManyFirstFunctionType,
+  +maybeOne: QueryMaybeOneFunctionType,
+  +maybeOneFirst: QueryMaybeOneFirstFunctionType,
+  +one: QueryOneFunctionType,
+  +oneFirst: QueryOneFirstFunctionType,
+  +query: QueryFunctionType
 |};
 
 export type DatabaseTransactionConnectionType = {|
@@ -346,15 +346,15 @@ type QueryMethodType<R> = (
   sql: TaggedTemplateLiteralInvocationType
 ) => Promise<R>;
 
-export type QueryAnyFirstFunctionType<T: QueryResultRowColumnType> = QueryMethodType<$ReadOnlyArray<T>>;
-export type QueryAnyFunctionType<T: QueryResultRowType> = QueryMethodType<$ReadOnlyArray<T>>;
-export type QueryFunctionType<T: QueryResultRowType> = QueryMethodType<T>;
-export type QueryManyFirstFunctionType<T: QueryResultRowColumnType> = QueryMethodType<$ReadOnlyArray<T>>;
-export type QueryManyFunctionType<T: QueryResultRowType> = QueryMethodType<$ReadOnlyArray<T>>;
-export type QueryMaybeOneFirstFunctionType<T: QueryResultRowColumnType> = QueryMethodType<T>;
-export type QueryMaybeOneFunctionType<T: QueryResultRowType | null> = QueryMethodType<T>;
-export type QueryOneFirstFunctionType<T: QueryResultRowColumnType> = QueryMethodType<T>;
-export type QueryOneFunctionType<T: QueryResultRowType> = QueryMethodType<T>;
+export type QueryAnyFirstFunctionType = QueryMethodType<$ReadOnlyArray<QueryResultRowColumnType>>;
+export type QueryAnyFunctionType = QueryMethodType<$ReadOnlyArray<QueryResultRowType>>;
+export type QueryFunctionType = QueryMethodType<QueryResultRowType>;
+export type QueryManyFirstFunctionType = QueryMethodType<$ReadOnlyArray<QueryResultRowColumnType>>;
+export type QueryManyFunctionType = QueryMethodType<$ReadOnlyArray<QueryResultRowType>>;
+export type QueryMaybeOneFirstFunctionType = QueryMethodType<QueryResultRowColumnType>;
+export type QueryMaybeOneFunctionType = QueryMethodType<QueryResultRowType | null>;
+export type QueryOneFirstFunctionType = QueryMethodType<QueryResultRowColumnType>;
+export type QueryOneFunctionType = QueryMethodType<QueryResultRowType>;
 
 export type InterceptorType = {|
   +afterPoolConnection?: (
