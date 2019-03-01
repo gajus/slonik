@@ -613,6 +613,16 @@ Example:
 
 Note: Unlike [`pg-types`](https://github.com/brianc/node-pg-types) that uses OIDs to identify types, Slonik identifies types using their names.
 
+Use this query to find type names:
+
+```sql
+SELECT
+  typname
+FROM pg_type
+ORDER BY typname ASC
+
+```
+
 Type parsers are configured using [`typeParsers` client configuration](#slonik-usage-api).
 
 Read: [Default type parsers](#default-type-parsers).
