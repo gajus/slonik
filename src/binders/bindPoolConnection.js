@@ -5,10 +5,12 @@ import {
 } from '../utilities';
 import type {
   ClientConfigurationType,
-  TransactionFunctionType,
   DatabasePoolConnectionType,
   InternalDatabaseConnectionType,
-  LoggerType
+  LoggerType,
+  StreamHandlerType,
+  TaggedTemplateLiteralInvocationType,
+  TransactionFunctionType
 } from '../types';
 import {
   any,
@@ -39,12 +41,12 @@ export default (
     one: mapTaggedTemplateLiteralInvocation(one.bind(null, parentLog, connection, clientConfiguration)),
     oneFirst: mapTaggedTemplateLiteralInvocation(oneFirst.bind(null, parentLog, connection, clientConfiguration)),
     query: mapTaggedTemplateLiteralInvocation(query.bind(null, parentLog, connection, clientConfiguration)),
-    stream:  async (query: TaggedTemplateLiteralInvocationType, streamHandler: StreamHandlerType) => {
-      if (typeof query === 'string') {
+    stream: async (streamQuery: TaggedTemplateLiteralInvocationType, streamHandler: StreamHandlerType) => {
+      if (typeof streamQuery === 'string') {
         throw new TypeError('Query must be constructed using `sql` tagged template literal.');
       }
 
-      return stream(parentLog, connection, clientConfiguration, query.sql, query.values, streamHandler)
+      return stream(parentLog, connection, clientConfiguration, streamQuery.sql, streamQuery.values, streamHandler);
     },
     transaction: async (handler: TransactionFunctionType) => {
       return transaction(parentLog, connection, clientConfiguration, handler);

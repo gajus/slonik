@@ -41,7 +41,7 @@ export default async (
   connection: InternalDatabaseConnectionType,
   clientConfiguration: ClientConfigurationType,
   rawSql: string,
-  values: $ReadOnlyArray<PrimitiveValueExpressionType> = [],
+  values: $ReadOnlyArray<PrimitiveValueExpressionType>,
   inheritedQueryId?: QueryIdType,
   executionRoutine: ExecutionRoutineType
 ) => {

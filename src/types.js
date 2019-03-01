@@ -216,6 +216,7 @@ export type QueryContextType = {|
 |};
 
 export type PositionalParameterValuesType = $ReadOnlyArray<PrimitiveValueExpressionType>;
+
 export type NamedParameterValuesType = {
   [key: string]: PrimitiveValueExpressionType
 };
@@ -284,7 +285,7 @@ export type ValueExpressionType =
 export type TaggedTemplateLiteralInvocationType = {|
   +sql: string,
   +type: typeof SqlTokenSymbol,
-  +values: $ReadOnlyArray<ValueExpressionType>
+  +values: $ReadOnlyArray<PrimitiveValueExpressionType>
 |};
 
 /**
