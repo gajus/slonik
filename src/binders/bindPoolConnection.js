@@ -39,7 +39,13 @@ export default (
     one: mapTaggedTemplateLiteralInvocation(one.bind(null, parentLog, connection, clientConfiguration)),
     oneFirst: mapTaggedTemplateLiteralInvocation(oneFirst.bind(null, parentLog, connection, clientConfiguration)),
     query: mapTaggedTemplateLiteralInvocation(query.bind(null, parentLog, connection, clientConfiguration)),
-    stream: mapTaggedTemplateLiteralInvocation(stream.bind(null, parentLog, connection, clientConfiguration)),
+    stream:  async (query: TaggedTemplateLiteralInvocationType, streamHandler: StreamHandlerType) => {
+      if (typeof query === 'string') {
+        throw new TypeError('Query must be constructed using `sql` tagged template literal.');
+      }
+
+      return stream(parentLog, connection, clientConfiguration, query.sql, query.values, streamHandler)
+    },
     transaction: async (handler: TransactionFunctionType) => {
       return transaction(parentLog, connection, clientConfiguration, handler);
     }

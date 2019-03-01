@@ -35,26 +35,31 @@ const stream: InternalStreamFunctionType = async (connectionLogger, connection, 
           reject(error);
         });
 
-        queryStream.on('end', () => {
+        const transformedStream = queryStream.pipe(through.obj(function (row, enc, callback) {
+          let finalRow = row;
+
+          if (rowTransformers.length) {
+            for (const rowTransformer of rowTransformers) {
+              finalRow = rowTransformer(executionContext, actualQuery, finalRow);
+            }
+          }
+
+          // eslint-disable-next-line fp/no-this, babel/no-invalid-this
+          this.push(finalRow);
+
+          callback();
+        }));
+
+        transformedStream.on('end', () => {
           resolve({});
         });
 
-        streamHandler(
-          queryStream.pipe(through.obj(function (row, enc, callback) {
-            let finalRow = row;
+        // Invoked if stream is destroyed using transformedStream.destroy().
+        transformedStream.on('close', () => {
+          resolve({});
+        });
 
-            if (rowTransformers.length) {
-              for (const rowTransformer of rowTransformers) {
-                finalRow = rowTransformer(executionContext, actualQuery, finalRow);
-              }
-            }
-
-            // eslint-disable-next-line fp/no-this, babel/no-invalid-this
-            this.push(finalRow);
-
-            callback();
-          }))
-        );
+        streamHandler(transformedStream);
       });
     }
   );
