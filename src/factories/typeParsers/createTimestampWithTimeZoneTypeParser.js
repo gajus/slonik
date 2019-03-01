@@ -10,7 +10,7 @@ const timestampParser = (value) => {
 
 export default (): TypeParserType => {
   return {
-    name: 'timestamp',
+    name: 'timestamptz',
     parse: timestampParser
   };
 };
