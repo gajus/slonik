@@ -93,6 +93,7 @@ Note: Using this project does not require TypeScript or Flow. It is a regular ES
         * [`one`](#slonik-query-methods-one)
         * [`oneFirst`](#slonik-query-methods-onefirst)
         * [`query`](#slonik-query-methods-query)
+        * [`stream`](#slonik-query-methods-stream)
         * [`transaction`](#slonik-query-methods-transaction)
     * [Error handling](#slonik-error-handling)
         * [Handling `ConnectionError`](#slonik-error-handling-handling-connectionerror)
@@ -1556,6 +1557,47 @@ const foo = await connection.oneFirst(sql`SELECT foo`);
 ### <code>query</code>
 
 API and the result shape are equivalent to [`pg#query`](https://github.com/brianc/node-postgres).
+
+Example:
+
+```js
+await connection.query(sql`SELECT foo`);
+
+// {
+//   command: 'SELECT',
+//   fields: [],
+//   notices: [],
+//   oid: null,
+//   rowAsArray: false,
+//   rowCount: 1,
+//   rows: [
+//     {
+//       foo: 'bar'
+//     }
+//   ]
+// }
+
+```
+
+<a name="slonik-query-methods-stream"></a>
+### <code>stream</code>
+
+Streams query results.
+
+Example:
+
+```js
+await connection.stream(sql`SELECT foo`, (stream) => {
+  stream.on('data', (row) => {
+    // {
+    //   foo: 'bar'
+    // }
+  });
+});
+
+```
+
+Note: Implemneted using [`pg-query-stream`](https://github.com/brianc/node-pg-query-stream).
 
 <a name="slonik-query-methods-transaction"></a>
 ### <code>transaction</code>
