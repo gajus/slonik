@@ -1,6 +1,7 @@
 // @flow
 
 import type {
+  MaybePromiseType,
   ClientConfigurationType,
   ConnectionTypeType,
   DatabasePoolType,
@@ -25,7 +26,8 @@ type ConnectionHandlerType = (
   connection: InternalDatabaseConnectionType,
   boundConnection: DatabasePoolConnectionType,
   clientConfiguration: ClientConfigurationType
-) => Promise<*>;
+) => MaybePromiseType<*>;
+
 type PoolHandlerType = (pool: DatabasePoolType) => Promise<*>;
 
 const createConnection = async (
@@ -36,7 +38,7 @@ const createConnection = async (
   connectionHandler: ConnectionHandlerType,
   poolHandler: PoolHandlerType,
   query?: TaggedTemplateLiteralInvocationType | null = null
-): Promise<*> => {
+) => {
   for (const interceptor of clientConfiguration.interceptors) {
     if (interceptor.beforePoolConnection) {
       const maybeNewPool = await interceptor.beforePoolConnection({

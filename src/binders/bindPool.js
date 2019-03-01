@@ -5,6 +5,7 @@ import type {
   DatabasePoolType,
   InternalDatabasePoolType,
   LoggerType,
+  StreamHandlerType,
   TaggedTemplateLiteralInvocationType
 } from '../types';
 import {
@@ -65,6 +66,27 @@ export default (
     one: mapConnection('one'),
     oneFirst: mapConnection('oneFirst'),
     query: mapConnection('query'),
+    stream: async (query: TaggedTemplateLiteralInvocationType, streamHandler: StreamHandlerType) => {
+      if (typeof query === 'string') {
+        throw new TypeError('Query must be constructed using `sql` tagged template literal.');
+      }
+
+      await createConnection(
+        parentLog,
+        pool,
+        clientConfiguration,
+        'IMPLICIT_QUERY',
+        (connectionLog, connection, boundConnection) => {
+          return boundConnection.stream(query, streamHandler);
+        },
+        (newPool) => {
+          return newPool.stream(query, streamHandler);
+        },
+        query
+      );
+
+      return null;
+    },
     transaction: async (transactionHandler) => {
       return createConnection(
         parentLog,

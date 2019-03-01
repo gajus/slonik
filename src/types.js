@@ -3,6 +3,9 @@
 /* eslint-disable no-use-before-define, import/exports-last, flowtype/require-types-at-top */
 
 import type {
+  Readable
+} from 'stream';
+import type {
   LoggerType
 } from 'roarr';
 import {
@@ -22,7 +25,9 @@ export type {
 
 export opaque type QueryIdType = string;
 
-type MaybePromiseType<T> = T | Promise<T>;
+export type MaybePromiseType<T> = T | Promise<T>;
+
+export type StreamHandlerType = (stream: Readable) => void;
 
 export type ConnectionTypeType = 'EXPLICIT' | 'IMPLICIT_QUERY' | 'IMPLICIT_TRANSACTION';
 
@@ -111,6 +116,8 @@ export type TransactionFunctionType = (connection: DatabaseTransactionConnection
 
 export type DatabasePoolConnectionType = {|
   ...CommonQueryMethodsType,
+
+  +stream: (sql: TaggedTemplateLiteralInvocationType, streamHandler: StreamHandlerType) => Promise<null>,
   +transaction: (handler: TransactionFunctionType) => Promise<*>
 |};
 
@@ -119,6 +126,9 @@ export type ConnectionRoutineType = (connection: DatabasePoolConnectionType) => 
 export type DatabasePoolType = {|
   ...CommonQueryMethodsType,
   +connect: (connectionRoutine: ConnectionRoutineType) => Promise<*>,
+
+  // $FlowFixMe
+  +stream: (sql: TaggedTemplateLiteralInvocationType, streamHandler: StreamHandlerType) => Promise<null>,
   +transaction: (handler: TransactionFunctionType) => Promise<*>
 |};
 
@@ -132,15 +142,15 @@ export type DatabaseConnectionType =
     ...DatabasePoolType
   }>;
 
-type QueryResultRowColumnType = string | number;
+type QueryResultRowColumnType = string | number | null;
 
 export type QueryResultRowType = {
-  [key: string]: QueryResultRowColumnType
+  +[key: string]: QueryResultRowColumnType
 };
 
 export type QueryType = {|
   +sql: string,
-  +values?: $ReadOnlyArray<PrimitiveValueExpressionType>
+  +values: $ReadOnlyArray<PrimitiveValueExpressionType>
 |};
 
 export type SqlFragmentType = {|
@@ -313,7 +323,7 @@ export type InternalQueryMethodType<R> = (
   connection: InternalDatabaseConnectionType,
   clientConfiguration: ClientConfigurationType,
   sql: string,
-  values?: $ReadOnlyArray<PrimitiveValueExpressionType>,
+  values: $ReadOnlyArray<PrimitiveValueExpressionType>,
   uid?: QueryIdType
 ) => Promise<R>;
 
@@ -326,6 +336,18 @@ export type InternalQueryMaybeOneFirstFunctionType = InternalQueryMethodType<Que
 export type InternalQueryMaybeOneFunctionType = InternalQueryMethodType<QueryResultRowType | null>;
 export type InternalQueryOneFirstFunctionType = InternalQueryMethodType<QueryResultRowColumnType>;
 export type InternalQueryOneFunctionType = InternalQueryMethodType<QueryResultRowType>;
+
+export type InternalStreamFunctionType = (
+  log: LoggerType,
+  connection: InternalDatabaseConnectionType,
+  clientConfiguration: ClientConfigurationType,
+  sql: string,
+  values: $ReadOnlyArray<PrimitiveValueExpressionType>,
+  streamHandler: StreamHandlerType,
+  uid?: QueryIdType
+
+// eslint-disable-next-line flowtype/no-weak-types
+) => Promise<Object>;
 
 export type InternalTransactionFunctionType = (
   log: LoggerType,

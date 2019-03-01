@@ -78,6 +78,8 @@ pool.connect();
 
 Use `afterQuery` to modify the query result.
 
+Note: When query is executed using `stream`, then `afterQuery` is called with empty result set and does not affect the query result.
+
 #### `beforeQueryExecution`
 
 This function can optionally return a direct result of the query which will cause the actual query never to be executed.

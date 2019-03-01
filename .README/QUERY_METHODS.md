@@ -145,6 +145,46 @@ const foo = await connection.oneFirst(sql`SELECT foo`);
 
 API and the result shape are equivalent to [`pg#query`](https://github.com/brianc/node-postgres).
 
+Example:
+
+```js
+await connection.query(sql`SELECT foo`);
+
+// {
+//   command: 'SELECT',
+//   fields: [],
+//   notices: [],
+//   oid: null,
+//   rowAsArray: false,
+//   rowCount: 1,
+//   rows: [
+//     {
+//       foo: 'bar'
+//     }
+//   ]
+// }
+
+```
+
+### `stream`
+
+Streams query results.
+
+Example:
+
+```js
+await connection.stream(sql`SELECT foo`, (stream) => {
+  stream.on('data', (row) => {
+    // {
+    //   foo: 'bar'
+    // }
+  });
+});
+
+```
+
+Note: Implemneted using [`pg-query-stream`](https://github.com/brianc/node-pg-query-stream).
+
 ### `transaction`
 
 `transaction` method is used wrap execution of queries in `START TRANSACTION` and `COMMIT` or `ROLLBACK`. `COMMIT` is called if the transaction handler returns a promise that resolves; `ROLLBACK` is called otherwise.

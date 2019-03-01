@@ -10,4 +10,5 @@ export {default as nestedTransaction} from './nestedTransaction';
 export {default as one} from './one';
 export {default as oneFirst} from './oneFirst';
 export {default as query} from './query';
+export {default as stream} from './stream';
 export {default as transaction} from './transaction';

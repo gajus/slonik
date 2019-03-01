@@ -17,10 +17,23 @@ import {
   UniqueIntegrityConstraintViolationError
 } from '../errors';
 import type {
-  QueryContextType
+  ClientConfigurationType,
+  InternalDatabaseConnectionType,
+  LoggerType,
+  PrimitiveValueExpressionType,
+  QueryContextType,
+  QueryIdType,
+  QueryResultRowType,
+  QueryType
 } from '../types';
 
-type ExecutionRoutineType = (connection: InternalDatabaseConnectionType, sql: string, values: $ReadOnlyArray<PrimitiveValueExpressionType>) => Promise<*>;
+type ExecutionRoutineType = (
+  connection: InternalDatabaseConnectionType,
+  sql: string,
+  values: $ReadOnlyArray<PrimitiveValueExpressionType>,
+  queryContext: QueryContextType,
+  query: QueryType
+) => Promise<*>;
 
 // eslint-disable-next-line complexity
 export default async (
@@ -28,8 +41,8 @@ export default async (
   connection: InternalDatabaseConnectionType,
   clientConfiguration: ClientConfigurationType,
   rawSql: string,
-  values: $ReadOnlyArray<PrimitiveValueExpressionType>,
-  inheritedQueryId: QueryIdType,
+  values: $ReadOnlyArray<PrimitiveValueExpressionType> = [],
+  inheritedQueryId?: QueryIdType,
   executionRoutine: ExecutionRoutineType
 ) => {
   if (connection.connection.slonik.terminated) {
@@ -81,7 +94,7 @@ export default async (
 
   for (const interceptor of clientConfiguration.interceptors) {
     if (interceptor.transformQuery) {
-      actualQuery = await interceptor.transformQuery(executionContext, actualQuery);
+      actualQuery = interceptor.transformQuery(executionContext, actualQuery);
     }
   }
 
@@ -106,7 +119,7 @@ export default async (
   connection.on('notice', noticeListener);
 
   try {
-    result = await executionRoutine(connection, actualQuery.sql, actualQuery.values);
+    result = await executionRoutine(connection, actualQuery.sql, actualQuery.values, executionContext, actualQuery);
   } catch (error) {
     // 'Connection terminated' refers to node-postgres error.
     // @see https://github.com/brianc/node-postgres/blob/eb076db5d47a29c19d3212feac26cd7b6d257a95/lib/client.js#L199
@@ -150,15 +163,22 @@ export default async (
 
   for (const interceptor of clientConfiguration.interceptors) {
     if (interceptor.afterQueryExecution) {
-      result = interceptor.afterQueryExecution(executionContext, actualQuery, result);
+      result = await interceptor.afterQueryExecution(executionContext, actualQuery, result);
     }
   }
 
   for (const interceptor of clientConfiguration.interceptors) {
     if (interceptor.transformRow) {
-      result.rows = result.rows.map((row) => {
-        return interceptor.transformRow(executionContext, actualQuery, row);
+      const transformRow = interceptor.transformRow;
+
+      const rows: $ReadOnlyArray<QueryResultRowType> = result.rows.map((row) => {
+        return transformRow(executionContext, actualQuery, row);
       });
+
+      result = {
+        ...result,
+        rows
+      };
     }
   }
 

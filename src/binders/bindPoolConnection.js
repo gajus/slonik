@@ -20,6 +20,7 @@ import {
   one,
   oneFirst,
   query,
+  stream,
   transaction
 } from '../connectionMethods';
 
@@ -38,6 +39,7 @@ export default (
     one: mapTaggedTemplateLiteralInvocation(one.bind(null, parentLog, connection, clientConfiguration)),
     oneFirst: mapTaggedTemplateLiteralInvocation(oneFirst.bind(null, parentLog, connection, clientConfiguration)),
     query: mapTaggedTemplateLiteralInvocation(query.bind(null, parentLog, connection, clientConfiguration)),
+    stream: mapTaggedTemplateLiteralInvocation(stream.bind(null, parentLog, connection, clientConfiguration)),
     transaction: async (handler: TransactionFunctionType) => {
       return transaction(parentLog, connection, clientConfiguration, handler);
     }
