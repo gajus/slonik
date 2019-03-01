@@ -174,9 +174,23 @@ Example:
 
 ```js
 await connection.stream(sql`SELECT foo`, (stream) => {
-  stream.on('data', (row) => {
+  stream.on('data', (datum) => {
+    datum;
     // {
-    //   foo: 'bar'
+    //   fields: [
+    //     {
+    //       name: 'foo',
+    //       tableID: 0,
+    //       columnID: 0,
+    //       dataTypeID: 23,
+    //       dataTypeSize: 4,
+    //       dataTypeModifier: -1,
+    //       format: 'text'
+    //     }
+    //   ],
+    //   row: {
+    //     foo: 'bar'
+    //   }
     // }
   });
 });

@@ -167,18 +167,23 @@ export default async (
     }
   }
 
-  for (const interceptor of clientConfiguration.interceptors) {
-    if (interceptor.transformRow) {
-      const transformRow = interceptor.transformRow;
+  // Stream does not have `rows` in the result object and all rows are already transformed.
+  if (result.rows) {
+    for (const interceptor of clientConfiguration.interceptors) {
+      if (interceptor.transformRow) {
+        const transformRow = interceptor.transformRow;
+        const fields = result.fields;
 
-      const rows: $ReadOnlyArray<QueryResultRowType> = result.rows.map((row) => {
-        return transformRow(executionContext, actualQuery, row);
-      });
+        // eslint-disable-next-line no-loop-func
+        const rows: $ReadOnlyArray<QueryResultRowType> = result.rows.map((row) => {
+          return transformRow(executionContext, actualQuery, row, fields);
+        });
 
-      result = {
-        ...result,
-        rows
-      };
+        result = {
+          ...result,
+          rows
+        };
+      }
     }
   }
 

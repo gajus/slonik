@@ -54,7 +54,8 @@ type InterceptorType = {|
   +transformRow?: (
     queryContext: QueryContextType,
     query: QueryType,
-    row: QueryResultRowType
+    row: QueryResultRowType,
+    fields: $ReadOnlyArray<FieldType>
   ) => QueryResultRowType
 |};
 

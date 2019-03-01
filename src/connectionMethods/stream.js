@@ -1,6 +1,5 @@
 // @flow
 
-import QueryStream from 'pg-query-stream';
 import through from 'through2';
 import {
   executeQuery
@@ -8,6 +7,7 @@ import {
 import type {
   InternalStreamFunctionType
 } from '../types';
+import QueryStream from '../QueryStream';
 
 const stream: InternalStreamFunctionType = async (connectionLogger, connection, clientConfiguration, rawSql, values, streamHandler) => {
   return executeQuery(
@@ -35,17 +35,20 @@ const stream: InternalStreamFunctionType = async (connectionLogger, connection, 
           reject(error);
         });
 
-        const transformedStream = queryStream.pipe(through.obj(function (row, enc, callback) {
-          let finalRow = row;
+        const transformedStream = queryStream.pipe(through.obj(function (datum, enc, callback) {
+          let finalRow = datum.row;
 
           if (rowTransformers.length) {
             for (const rowTransformer of rowTransformers) {
-              finalRow = rowTransformer(executionContext, actualQuery, finalRow);
+              finalRow = rowTransformer(executionContext, actualQuery, finalRow, datum.fields);
             }
           }
 
           // eslint-disable-next-line fp/no-this, babel/no-invalid-this
-          this.push(finalRow);
+          this.push({
+            fields: datum.fields,
+            row: finalRow
+          });
 
           callback();
         }));
