@@ -381,5 +381,10 @@ export type InterceptorType = {|
   +transformQuery?: (
     queryContext: QueryContextType,
     query: QueryType
-  ) => MaybePromiseType<QueryType>
+  ) => QueryType,
+  +transformRow?: (
+    queryContext: QueryContextType,
+    query: QueryType,
+    row: QueryResultRowType
+  ) => QueryResultRowType
 |};

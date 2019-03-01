@@ -154,5 +154,13 @@ export default async (
     }
   }
 
+  for (const interceptor of clientConfiguration.interceptors) {
+    if (interceptor.transformRow) {
+      result.rows = result.rows.map((row) => {
+        return interceptor.transformRow(executionContext, actualQuery, row);
+      });
+    }
+  }
+
   return result;
 };

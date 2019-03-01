@@ -50,7 +50,12 @@ type InterceptorType = {|
   +transformQuery?: (
     queryContext: QueryContextType,
     query: QueryType
-  ) => MaybePromiseType<QueryType>
+  ) => QueryType,
+  +transformRow?: (
+    queryContext: QueryContextType,
+    query: QueryType,
+    row: QueryResultRowType
+  ) => QueryResultRowType
 |};
 
 ```
@@ -97,6 +102,14 @@ pool.connect(async () => {
 Executed before `beforeQueryExecution`.
 
 Transforms query.
+
+#### `transformRow`
+
+Executed for each row.
+
+Transforms row.
+
+Use `transformRow` to modify the query result.
 
 ## Community interceptors
 
