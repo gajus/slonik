@@ -343,8 +343,7 @@ export type InternalNestedTransactionFunctionType = (
 ) => Promise<*>;
 
 type QueryMethodType<R> = (
-  sql: TaggedTemplateLiteralInvocationType,
-  values?: $ReadOnlyArray<PrimitiveValueExpressionType>
+  sql: TaggedTemplateLiteralInvocationType
 ) => Promise<R>;
 
 export type QueryAnyFirstFunctionType<T: QueryResultRowColumnType> = QueryMethodType<$ReadOnlyArray<T>>;
