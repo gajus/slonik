@@ -742,6 +742,8 @@ pool.connect();
 
 Use `afterQuery` to modify the query result.
 
+Note: When query is executed using `stream`, then `afterQuery` is called with empty result set and does not affect the query result.
+
 <a name="slonik-interceptors-interceptor-methods-beforequeryexecution"></a>
 #### <code>beforeQueryExecution</code>
 
