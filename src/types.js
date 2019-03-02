@@ -369,15 +369,28 @@ type QueryMethodType<R> = (
   sql: TaggedTemplateLiteralInvocationType
 ) => Promise<R>;
 
-export type QueryAnyFirstFunctionType = QueryMethodType<$ReadOnlyArray<QueryResultRowColumnType>>;
-export type QueryAnyFunctionType = QueryMethodType<$ReadOnlyArray<QueryResultRowType>>;
-export type QueryFunctionType = QueryMethodType<QueryResultRowType>;
-export type QueryManyFirstFunctionType = QueryMethodType<$ReadOnlyArray<QueryResultRowColumnType>>;
-export type QueryManyFunctionType = QueryMethodType<$ReadOnlyArray<QueryResultRowType>>;
-export type QueryMaybeOneFirstFunctionType = QueryMethodType<QueryResultRowColumnType>;
-export type QueryMaybeOneFunctionType = QueryMethodType<QueryResultRowType | null>;
-export type QueryOneFirstFunctionType = QueryMethodType<QueryResultRowColumnType>;
-export type QueryOneFunctionType = QueryMethodType<QueryResultRowType>;
+// @todo Figure out a reasonable column type that user can specific further.
+// Using `QueryResultRowType` and `QueryResultRowColumnType` is not an option
+// because all cases where user specifies expected type cause an error, e.g.
+// `let fooId: number = await oneFirst()` would produce an error since
+// QueryResultRowColumnType type allows `string | number | null`.
+// Therefore, we can only safely assume the shape of the result, e.g. collection vs object.
+
+// eslint-disable-next-line flowtype/no-weak-types
+type ExternalQueryResultRowColumnType = any;
+
+// eslint-disable-next-line flowtype/no-weak-types
+type ExternalQueryResultRowType = Object;
+
+export type QueryAnyFirstFunctionType = QueryMethodType<$ReadOnlyArray<ExternalQueryResultRowColumnType>>;
+export type QueryAnyFunctionType = QueryMethodType<$ReadOnlyArray<ExternalQueryResultRowType>>;
+export type QueryFunctionType = QueryMethodType<ExternalQueryResultRowType>;
+export type QueryManyFirstFunctionType = QueryMethodType<$ReadOnlyArray<ExternalQueryResultRowColumnType>>;
+export type QueryManyFunctionType = QueryMethodType<$ReadOnlyArray<ExternalQueryResultRowType>>;
+export type QueryMaybeOneFirstFunctionType = QueryMethodType<ExternalQueryResultRowColumnType>;
+export type QueryMaybeOneFunctionType = QueryMethodType<ExternalQueryResultRowType | null>;
+export type QueryOneFirstFunctionType = QueryMethodType<ExternalQueryResultRowColumnType>;
+export type QueryOneFunctionType = QueryMethodType<ExternalQueryResultRowType>;
 
 export type InterceptorType = {|
   +afterPoolConnection?: (
