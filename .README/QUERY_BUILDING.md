@@ -72,6 +72,22 @@ Unlike `sql.valueList`, `sql.array` generates a stable query of a predictable le
 
 Furthermore, unlike `sql.valueList`, `sql.array` can be used with an empty array of values.
 
+Example:
+
+```js
+sql`SELECT id FROM foo WHERE id IN (${sql.valueList([1, 2, 3])})`;
+sql`SELECT id FROM foo WHERE id NOT IN (${sql.valueList([1, 2, 3])})`;
+
+```
+
+Is equivalent to:
+
+```js
+sql`SELECT id FROM foo WHERE id = ANY(${sql.array([1, 2, 3], 'int4')})`;
+sql`SELECT id FROM foo WHERE id != ALL(${sql.array([1, 2, 3], 'int4')})`;
+
+```
+
 In short, `sql.array` should be preferred over `sql.valueList` when the list values is dynamic.
 
 ### `sql.tuple`
