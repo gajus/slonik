@@ -55,6 +55,8 @@ Note: Using this project does not require TypeScript or Flow. It is a regular ES
 
 {"gitdown": "include", "file": "./VALUE_PLACEHOLDERS.md"}
 
+{"gitdown": "include", "file": "./BUILDING_QUERY.md"}
+
 {"gitdown": "include", "file": "./QUERY_METHODS.md"}
 
 {"gitdown": "include", "file": "./ERROR_HANDLING.md"}
