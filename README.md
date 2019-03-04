@@ -75,13 +75,14 @@ Note: Using this project does not require TypeScript or Flow. It is a regular ES
         * [Tagged template literals](#slonik-value-placeholders-tagged-template-literals)
         * [Manually constructing the query](#slonik-value-placeholders-manually-constructing-the-query)
         * [Nesting `sql`](#slonik-value-placeholders-nesting-sql)
-        * [`sql.valueList`](#slonik-value-placeholders-sql-valuelist)
-        * [`sql.tuple`](#slonik-value-placeholders-sql-tuple)
-        * [`sql.tupleList`](#slonik-value-placeholders-sql-tuplelist)
-        * [`sql.unnset`](#slonik-value-placeholders-sql-unnset)
-        * [`sql.identifier`](#slonik-value-placeholders-sql-identifier)
-        * [`sql.identifierList`](#slonik-value-placeholders-sql-identifierlist)
-        * [`sql.raw`](#slonik-value-placeholders-sql-raw)
+    * [Building query](#slonik-building-query)
+        * [`sql.valueList`](#slonik-building-query-sql-valuelist)
+        * [`sql.tuple`](#slonik-building-query-sql-tuple)
+        * [`sql.tupleList`](#slonik-building-query-sql-tuplelist)
+        * [`sql.unnset`](#slonik-building-query-sql-unnset)
+        * [`sql.identifier`](#slonik-building-query-sql-identifier)
+        * [`sql.identifierList`](#slonik-building-query-sql-identifierlist)
+        * [`sql.raw`](#slonik-building-query-sql-raw)
     * [Query methods](#slonik-query-methods)
         * [`any`](#slonik-query-methods-any)
         * [`anyFirst`](#slonik-query-methods-anyfirst)
@@ -1056,7 +1057,11 @@ Produces:
 
 ```
 
-<a name="slonik-value-placeholders-sql-valuelist"></a>
+
+<a name="slonik-building-query"></a>
+## Building query
+
+<a name="slonik-building-query-sql-valuelist"></a>
 ### <code>sql.valueList</code>
 
 ```js
@@ -1087,7 +1092,7 @@ Produces:
 
 ```
 
-<a name="slonik-value-placeholders-sql-tuple"></a>
+<a name="slonik-building-query-sql-tuple"></a>
 ### <code>sql.tuple</code>
 
 ```js
@@ -1119,7 +1124,7 @@ Produces:
 
 ```
 
-<a name="slonik-value-placeholders-sql-tuplelist"></a>
+<a name="slonik-building-query-sql-tuplelist"></a>
 ### <code>sql.tupleList</code>
 
 ```js
@@ -1157,7 +1162,7 @@ Produces:
 
 ```
 
-<a name="slonik-value-placeholders-sql-unnset"></a>
+<a name="slonik-building-query-sql-unnset"></a>
 ### <code>sql.unnset</code>
 
 ```js
@@ -1206,7 +1211,7 @@ Produces:
 
 ```
 
-<a name="slonik-value-placeholders-sql-identifier"></a>
+<a name="slonik-building-query-sql-identifier"></a>
 ### <code>sql.identifier</code>
 
 ```js
@@ -1234,7 +1239,7 @@ Produces:
 
 ```
 
-<a name="slonik-value-placeholders-sql-identifierlist"></a>
+<a name="slonik-building-query-sql-identifierlist"></a>
 ### <code>sql.identifierList</code>
 
 ```js
@@ -1265,7 +1270,7 @@ Produces:
 
 ```
 
-<a name="slonik-value-placeholders-sql-identifierlist-identifier-aliases"></a>
+<a name="slonik-building-query-sql-identifierlist-identifier-aliases"></a>
 #### Identifier aliases
 
 A member of the identifier list can be aliased:
@@ -1297,7 +1302,7 @@ Produces:
 
 ```
 
-<a name="slonik-value-placeholders-sql-raw"></a>
+<a name="slonik-building-query-sql-raw"></a>
 ### <code>sql.raw</code>
 
 ```js
@@ -1346,7 +1351,7 @@ Produces:
 
 ```
 
-<a name="slonik-value-placeholders-sql-raw-building-dynamic-queries"></a>
+<a name="slonik-building-query-sql-raw-building-dynamic-queries"></a>
 #### Building dynamic queries
 
 If you require to build a query based on a _dynamic_ condition, then consider using an SQL builder for that specific query, e.g. [Sqorn](https://sqorn.org/).
@@ -1375,7 +1380,7 @@ sql`${sql.raw(query.text, query.args)}`
 
 ```
 
-<a name="slonik-value-placeholders-sql-raw-named-parameters"></a>
+<a name="slonik-building-query-sql-raw-named-parameters"></a>
 #### Named parameters
 
 `sql.raw` supports named parameters, e.g.
