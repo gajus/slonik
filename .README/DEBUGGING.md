@@ -12,6 +12,8 @@ Query-level logging can be added using [`slonik-interceptor-query-logging`](http
 
 ### Capture stack trace
 
+Note: Requires [`slonik-interceptor-query-logging`](https://github.com/gajus/slonik-interceptor-query-logging).
+
 Enabling `captureStackTrace` configuration will create a stack trace before invoking the query and include the stack trace in the logs, e.g.
 
 ```json
