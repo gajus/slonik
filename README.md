@@ -1152,7 +1152,7 @@ sql`SELECT id FROM foo WHERE id != ALL(${sql.array([1, 2, 3], 'int4')})`;
 
 ```
 
-In short, `sql.array` should be preferred over `sql.valueList` when the list values is dynamic.
+In short, when the value list length is dynamic then `sql.array` should be preferred over `sql.valueList`.
 
 <a name="slonik-query-building-sql-tuple"></a>
 ### <code>sql.tuple</code>
