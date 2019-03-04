@@ -75,14 +75,15 @@ Note: Using this project does not require TypeScript or Flow. It is a regular ES
         * [Tagged template literals](#slonik-value-placeholders-tagged-template-literals)
         * [Manually constructing the query](#slonik-value-placeholders-manually-constructing-the-query)
         * [Nesting `sql`](#slonik-value-placeholders-nesting-sql)
-    * [Building query](#slonik-building-query)
-        * [`sql.valueList`](#slonik-building-query-sql-valuelist)
-        * [`sql.tuple`](#slonik-building-query-sql-tuple)
-        * [`sql.tupleList`](#slonik-building-query-sql-tuplelist)
-        * [`sql.unnset`](#slonik-building-query-sql-unnset)
-        * [`sql.identifier`](#slonik-building-query-sql-identifier)
-        * [`sql.identifierList`](#slonik-building-query-sql-identifierlist)
-        * [`sql.raw`](#slonik-building-query-sql-raw)
+    * [Query building](#slonik-query-building)
+        * [`sql.valueList`](#slonik-query-building-sql-valuelist)
+        * [`sql.array`](#slonik-query-building-sql-array)
+        * [`sql.tuple`](#slonik-query-building-sql-tuple)
+        * [`sql.tupleList`](#slonik-query-building-sql-tuplelist)
+        * [`sql.unnest`](#slonik-query-building-sql-unnest)
+        * [`sql.identifier`](#slonik-query-building-sql-identifier)
+        * [`sql.identifierList`](#slonik-query-building-sql-identifierlist)
+        * [`sql.raw`](#slonik-query-building-sql-raw)
     * [Query methods](#slonik-query-methods)
         * [`any`](#slonik-query-methods-any)
         * [`anyFirst`](#slonik-query-methods-anyfirst)
@@ -839,7 +840,7 @@ There are 2 downsides to this approach:
   * Query parsing time increases with the query size.
 2. There is a maximum number of parameters that can be bound to the statement (65535).
 
-As an alternative, we can use [`sql.unnest`](#sqlunnest) to create a set of rows using `unnset`. Using the `unnset` approach requires only 1 variable per every column; values for each column are passed as an array, e.g.
+As an alternative, we can use [`sql.unnest`](#sqlunnest) to create a set of rows using `unnest`. Using the `unnest` approach requires only 1 variable per every column; values for each column are passed as an array, e.g.
 
 ```js
 await connection.query(sql`
@@ -1058,11 +1059,13 @@ Produces:
 ```
 
 
-<a name="slonik-building-query"></a>
-## Building query
+<a name="slonik-query-building"></a>
+## Query building
 
-<a name="slonik-building-query-sql-valuelist"></a>
+<a name="slonik-query-building-sql-valuelist"></a>
 ### <code>sql.valueList</code>
+
+Note: Before using `sql.valueList` evaluate if [`sql.array`](#sqlarray) is not a better option.
 
 ```js
 (values: $ReadOnlyArray<PrimitiveValueExpressionType>) => ValueListSqlTokenType;
@@ -1092,7 +1095,50 @@ Produces:
 
 ```
 
-<a name="slonik-building-query-sql-tuple"></a>
+<a name="slonik-query-building-sql-array"></a>
+### <code>sql.array</code>
+
+```js
+(values: $ReadOnlyArray<PrimitiveValueExpressionType>) => ValueListSqlTokenType;
+
+```
+
+Creates an array value binding, e.g.
+
+```js
+await connection.query(sql`
+  SELECT (${sql.array([1, 2, 3], 'int4')})
+`);
+
+```
+
+Produces:
+
+```js
+{
+  sql: 'SELECT $1::int4[]',
+  values: [
+    [
+      1,
+      2,
+      3
+    ]
+  ]
+}
+
+```
+
+
+Unlike `sql.valueList`, `sql.array` generates a stable query of a predictable length, i.e. regardless of the number of the values in the array, the generated query remains the same:
+
+* Having a stable query enables [`pg_stat_statements`](https://www.postgresql.org/docs/current/pgstatstatements.html) to aggregate all query execution statistics.
+* Keeping the query length short reduces query parsing time.
+
+Furthermore, unlike `sql.valueList`, `sql.array` can be used with an empty array of values.
+
+In short, `sql.array` should be preferred over `sql.valueList` when the list values is dynamic.
+
+<a name="slonik-query-building-sql-tuple"></a>
 ### <code>sql.tuple</code>
 
 ```js
@@ -1124,7 +1170,7 @@ Produces:
 
 ```
 
-<a name="slonik-building-query-sql-tuplelist"></a>
+<a name="slonik-query-building-sql-tuplelist"></a>
 ### <code>sql.tupleList</code>
 
 ```js
@@ -1162,8 +1208,8 @@ Produces:
 
 ```
 
-<a name="slonik-building-query-sql-unnset"></a>
-### <code>sql.unnset</code>
+<a name="slonik-query-building-sql-unnest"></a>
+### <code>sql.unnest</code>
 
 ```js
 (
@@ -1173,7 +1219,7 @@ Produces:
 
 ```
 
-Creates an `unnset` expressions, e.g.
+Creates an `unnest` expressions, e.g.
 
 ```js
 await connection.query(sql`
@@ -1211,7 +1257,7 @@ Produces:
 
 ```
 
-<a name="slonik-building-query-sql-identifier"></a>
+<a name="slonik-query-building-sql-identifier"></a>
 ### <code>sql.identifier</code>
 
 ```js
@@ -1239,7 +1285,7 @@ Produces:
 
 ```
 
-<a name="slonik-building-query-sql-identifierlist"></a>
+<a name="slonik-query-building-sql-identifierlist"></a>
 ### <code>sql.identifierList</code>
 
 ```js
@@ -1270,7 +1316,7 @@ Produces:
 
 ```
 
-<a name="slonik-building-query-sql-identifierlist-identifier-aliases"></a>
+<a name="slonik-query-building-sql-identifierlist-identifier-aliases"></a>
 #### Identifier aliases
 
 A member of the identifier list can be aliased:
@@ -1302,7 +1348,7 @@ Produces:
 
 ```
 
-<a name="slonik-building-query-sql-raw"></a>
+<a name="slonik-query-building-sql-raw"></a>
 ### <code>sql.raw</code>
 
 ```js
@@ -1351,7 +1397,7 @@ Produces:
 
 ```
 
-<a name="slonik-building-query-sql-raw-building-dynamic-queries"></a>
+<a name="slonik-query-building-sql-raw-building-dynamic-queries"></a>
 #### Building dynamic queries
 
 If you require to build a query based on a _dynamic_ condition, then consider using an SQL builder for that specific query, e.g. [Sqorn](https://sqorn.org/).
@@ -1380,7 +1426,7 @@ sql`${sql.raw(query.text, query.args)}`
 
 ```
 
-<a name="slonik-building-query-sql-raw-named-parameters"></a>
+<a name="slonik-query-building-sql-raw-named-parameters"></a>
 #### Named parameters
 
 `sql.raw` supports named parameters, e.g.
