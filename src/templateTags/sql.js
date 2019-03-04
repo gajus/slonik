@@ -1,8 +1,10 @@
 // @flow
 
 import type {
-  IdentifierTokenType,
+  ArraySqlTokenType,
+  IdentifierListMemberType,
   IdentifierListTokenType,
+  IdentifierTokenType,
   PrimitiveValueExpressionType,
   RawSqlTokenType,
   SqlFragmentType,
@@ -20,6 +22,7 @@ import {
 } from '../utilities';
 import Logger from '../Logger';
 import {
+  createArraySqlFragment,
   createIdentifierSqlFragment,
   createIdentifierListSqlFragment,
   createRawSqlSqlFragment,
@@ -30,6 +33,7 @@ import {
   createValueListSqlFragment
 } from '../sqlFragmentFactories';
 import {
+  ArrayTokenSymbol,
   SqlTokenSymbol,
   RawSqlTokenSymbol,
   IdentifierTokenSymbol,
@@ -44,6 +48,7 @@ const log = Logger.child({
   namespace: 'sql'
 });
 
+/* eslint-disable complexity */
 // $FlowFixMe
 const sql: SqlTaggedTemplateType = (
   parts: $ReadOnlyArray<string>,
@@ -86,6 +91,9 @@ const sql: SqlTaggedTemplateType = (
     } else if (token && token.type === IdentifierListTokenSymbol) {
       // $FlowFixMe
       appendSqlFragment(createIdentifierListSqlFragment(token));
+    } else if (token && token.type === ArrayTokenSymbol) {
+      // $FlowFixMe
+      appendSqlFragment(createArraySqlFragment(token, parameterValues.length));
     } else if (token && token.type === ValueListTokenSymbol) {
       // $FlowFixMe
       appendSqlFragment(createValueListSqlFragment(token, parameterValues.length));
@@ -129,7 +137,7 @@ sql.identifier = (
 };
 
 sql.identifierList = (
-  identifiers: $ReadOnlyArray<$ReadOnlyArray<string>>
+  identifiers: $ReadOnlyArray<IdentifierListMemberType>
 ): IdentifierListTokenType => {
   return deepFreeze({
     identifiers,
@@ -153,6 +161,17 @@ sql.valueList = (
 ): ValueListSqlTokenType => {
   return deepFreeze({
     type: ValueListTokenSymbol,
+    values
+  });
+};
+
+sql.array = (
+  values: $ReadOnlyArray<PrimitiveValueExpressionType>,
+  memberType: string
+): ArraySqlTokenType => {
+  return deepFreeze({
+    memberType,
+    type: ArrayTokenSymbol,
     values
   });
 };

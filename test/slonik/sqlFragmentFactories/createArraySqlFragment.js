@@ -1,0 +1,61 @@
+// @flow
+
+import test from 'ava';
+import createArraySqlFragment from '../../../src/sqlFragmentFactories/createArraySqlFragment';
+import {
+  ArrayTokenSymbol
+} from '../../../src/symbols';
+
+test('creates an empty array binding', (t) => {
+  const sqlFragment = createArraySqlFragment({
+    memberType: 'int4',
+    type: ArrayTokenSymbol,
+    values: []
+  }, 0);
+
+  t.true(sqlFragment.sql === '$1::"int4"[]');
+  t.deepEqual(sqlFragment.values, [[]]);
+});
+
+test('creates an array binding with a single value', (t) => {
+  const sqlFragment = createArraySqlFragment({
+    memberType: 'int4',
+    type: ArrayTokenSymbol,
+    values: [
+      1
+    ]
+  }, 0);
+
+  t.true(sqlFragment.sql === '$1::"int4"[]');
+  t.deepEqual(sqlFragment.values, [[1]]);
+});
+
+test('creates an array binding with multiple values', (t) => {
+  const sqlFragment = createArraySqlFragment({
+    memberType: 'int4',
+    type: ArrayTokenSymbol,
+    values: [
+      1,
+      2,
+      3
+    ]
+  }, 0);
+
+  t.true(sqlFragment.sql === '$1::"int4"[]');
+  t.deepEqual(sqlFragment.values, [[1, 2, 3]]);
+});
+
+test('offsets parameter position', (t) => {
+  const sqlFragment = createArraySqlFragment({
+    memberType: 'int4',
+    type: ArrayTokenSymbol,
+    values: [
+      1,
+      2,
+      3
+    ]
+  }, 3);
+
+  t.true(sqlFragment.sql === '$4::"int4"[]');
+  t.deepEqual(sqlFragment.values, [[1, 2, 3]]);
+});

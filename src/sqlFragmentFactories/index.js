@@ -1,5 +1,6 @@
 // @flow
 
+export {default as createArraySqlFragment} from './createArraySqlFragment';
 export {default as createIdentifierSqlFragment} from './createIdentifierSqlFragment';
 export {default as createIdentifierListSqlFragment} from './createIdentifierListSqlFragment';
 export {default as createRawSqlSqlFragment} from './createRawSqlSqlFragment';

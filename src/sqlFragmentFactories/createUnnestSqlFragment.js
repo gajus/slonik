@@ -14,7 +14,7 @@ export default (token: UnnestSqlTokenType, greatestParameterPosition: number): S
   const values = [];
 
   const unnestBindings = [];
-  const unnsetSqlTokens = [];
+  const unnestSqlTokens = [];
 
   let columnIndex = 0;
 
@@ -23,7 +23,7 @@ export default (token: UnnestSqlTokenType, greatestParameterPosition: number): S
   while (columnIndex < columnTypes.length) {
     const columnType = columnTypes[columnIndex];
 
-    unnsetSqlTokens.push('$' + ++placeholderIndex + '::' + escapeIdentifier(columnType) + '[]');
+    unnestSqlTokens.push('$' + ++placeholderIndex + '::' + escapeIdentifier(columnType) + '[]');
 
     unnestBindings[columnIndex] = [];
 
@@ -52,7 +52,7 @@ export default (token: UnnestSqlTokenType, greatestParameterPosition: number): S
 
   values.push(...unnestBindings);
 
-  const sql = 'unnest(' + unnsetSqlTokens.join(', ') + ')';
+  const sql = 'unnest(' + unnestSqlTokens.join(', ') + ')';
 
   return {
     sql,

@@ -9,6 +9,7 @@ import type {
   LoggerType
 } from 'roarr';
 import {
+  ArrayTokenSymbol,
   SqlTokenSymbol,
   RawSqlTokenSymbol,
   IdentifierTokenSymbol,
@@ -226,7 +227,7 @@ export type IdentifierTokenType = {|
   +type: typeof IdentifierTokenSymbol
 |};
 
-type IdentifierListMemberType = $ReadOnlyArray<string> |
+export type IdentifierListMemberType = $ReadOnlyArray<string> |
   {|
     +alias: string,
     +identifier: $ReadOnlyArray<string>
@@ -240,7 +241,7 @@ export type IdentifierListTokenType = {|
 export type SqlSqlTokenType = {|
   +sql: string,
   +type: typeof SqlTokenSymbol,
-  +values: PositionalParameterValuesType
+  +values: $ReadOnlyArray<PrimitiveValueExpressionType>
 |};
 
 export type RawSqlTokenType = {|
@@ -252,6 +253,12 @@ export type RawSqlTokenType = {|
 export type ValueListSqlTokenType = {|
   +values: PositionalParameterValuesType,
   +type: typeof ValueListTokenSymbol
+|};
+
+export type ArraySqlTokenType = {|
+  +memberType: string,
+  +type: typeof ArrayTokenSymbol,
+  +values: PositionalParameterValuesType
 |};
 
 export type TupleSqlTokenType = {|
@@ -273,8 +280,10 @@ export type UnnestSqlTokenType = {|
 export type PrimitiveValueExpressionType = string | number | boolean | null;
 
 export type ValueExpressionType =
+  ArraySqlTokenType |
   PrimitiveValueExpressionType |
   IdentifierTokenType |
+  IdentifierListTokenType |
   RawSqlTokenType |
   SqlSqlTokenType |
   TupleListSqlTokenType |
@@ -297,9 +306,16 @@ export type SqlTaggedTemplateType = {|
     parts: $ReadOnlyArray<string>,
     ...values: $ReadOnlyArray<ValueExpressionType>
   ) => SqlSqlTokenType,
+  array: (
+    values: $ReadOnlyArray<PrimitiveValueExpressionType>,
+    memberType: string
+  ) => ArraySqlTokenType,
   identifier: (
     names: $ReadOnlyArray<string>
   ) => IdentifierTokenType,
+  identifierList: (
+    identifiers: $ReadOnlyArray<IdentifierListMemberType>
+  ) => IdentifierListTokenType,
   raw: (
     rawSql: string,
     values?: $ReadOnlyArray<PrimitiveValueExpressionType>

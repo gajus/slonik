@@ -1,6 +1,8 @@
-## Building query
+## Query building
 
 ### `sql.valueList`
+
+Note: Before using `sql.valueList` evaluate if [`sql.array`](#sqlarray) is not a better option.
 
 ```js
 (values: $ReadOnlyArray<PrimitiveValueExpressionType>) => ValueListSqlTokenType;
@@ -29,6 +31,48 @@ Produces:
 }
 
 ```
+
+### `sql.array`
+
+```js
+(values: $ReadOnlyArray<PrimitiveValueExpressionType>) => ValueListSqlTokenType;
+
+```
+
+Creates an array value binding, e.g.
+
+```js
+await connection.query(sql`
+  SELECT (${sql.array([1, 2, 3], 'int4')})
+`);
+
+```
+
+Produces:
+
+```js
+{
+  sql: 'SELECT $1::int4[]',
+  values: [
+    [
+      1,
+      2,
+      3
+    ]
+  ]
+}
+
+```
+
+
+Unlike `sql.valueList`, `sql.array` generates a stable query of a predictable length, i.e. regardless of the number of the values in the array, the generated query remains the same:
+
+* Having a stable query enables [`pg_stat_statements`](https://www.postgresql.org/docs/current/pgstatstatements.html) to aggregate all query execution statistics.
+* Keeping the query length short reduces query parsing time.
+
+Furthermore, unlike `sql.valueList`, `sql.array` can be used with an empty array of values.
+
+In short, `sql.array` should be preferred over `sql.valueList` when the list values is dynamic.
 
 ### `sql.tuple`
 
@@ -98,7 +142,7 @@ Produces:
 
 ```
 
-### `sql.unnset`
+### `sql.unnest`
 
 ```js
 (
@@ -108,7 +152,7 @@ Produces:
 
 ```
 
-Creates an `unnset` expressions, e.g.
+Creates an `unnest` expressions, e.g.
 
 ```js
 await connection.query(sql`

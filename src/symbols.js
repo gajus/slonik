@@ -1,5 +1,6 @@
 // @flow
 
+export const ArrayTokenSymbol = Symbol('SLONIK_ARRAY');
 export const SqlTokenSymbol = Symbol('SLONIK_SQL');
 export const RawSqlTokenSymbol = Symbol('SLONIK_RAW_SQL');
 export const IdentifierTokenSymbol = Symbol('SLONIK_IDENTIFIER');

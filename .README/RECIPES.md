@@ -39,7 +39,7 @@ There are 2 downsides to this approach:
   * Query parsing time increases with the query size.
 2. There is a maximum number of parameters that can be bound to the statement (65535).
 
-As an alternative, we can use [`sql.unnest`](#sqlunnest) to create a set of rows using `unnset`. Using the `unnset` approach requires only 1 variable per every column; values for each column are passed as an array, e.g.
+As an alternative, we can use [`sql.unnest`](#sqlunnest) to create a set of rows using `unnest`. Using the `unnest` approach requires only 1 variable per every column; values for each column are passed as an array, e.g.
 
 ```js
 await connection.query(sql`
