@@ -6,7 +6,30 @@ import {
   SqlTokenSymbol
 } from '../../../../src/symbols';
 
-test('creates an unnest expression', (t) => {
+test('creates an unnest expression using primitive values', (t) => {
+  const query = sql`SELECT * FROM ${sql.unnest([[1, 2, 3], [4, 5, 6]], ['int4', 'int4', 'int4'])}`;
+
+  t.deepEqual(query, {
+    sql: 'SELECT * FROM unnest($1::"int4"[], $2::"int4"[], $3::"int4"[])',
+    type: SqlTokenSymbol,
+    values: [
+      [
+        1,
+        4
+      ],
+      [
+        2,
+        5
+      ],
+      [
+        3,
+        6
+      ]
+    ]
+  });
+});
+
+test('creates an unnest expression using arrays', (t) => {
   const query = sql`SELECT * FROM ${sql.unnest([[1, 2, 3], [4, 5, 6]], ['int4', 'int4', 'int4'])}`;
 
   t.deepEqual(query, {
@@ -47,6 +70,24 @@ test('creates incremental alias names if no alias names are provided', (t) => {
       [
         3,
         6
+      ]
+    ]
+  });
+});
+
+test('recognizes an array an array', (t) => {
+  const query = sql`SELECT * FROM ${sql.unnest([[[[1], [2], [3]]]], ['int4[]'])}`;
+
+  t.deepEqual(query, {
+    sql: 'SELECT * FROM unnest($1::"int4"[][])',
+    type: SqlTokenSymbol,
+    values: [
+      [
+        [
+          [1],
+          [2],
+          [3]
+        ]
       ]
     ]
   });

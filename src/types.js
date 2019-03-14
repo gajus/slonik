@@ -327,7 +327,12 @@ export type SqlTaggedTemplateType = {|
     tuples: $ReadOnlyArray<$ReadOnlyArray<PrimitiveValueExpressionType>>
   ) => TupleListSqlTokenType,
   unnest: (
-    tuples: $ReadOnlyArray<$ReadOnlyArray<PrimitiveValueExpressionType>>,
+
+    // Value might be $ReadOnlyArray<$ReadOnlyArray<PrimitiveValueExpressionType>>,
+    // or it can be infinitely nested array, e.g.
+    // https://github.com/gajus/slonik/issues/44
+    // eslint-disable-next-line flowtype/no-weak-types
+    tuples: $ReadOnlyArray<$ReadOnlyArray<any>>,
     columnTypes: $ReadOnlyArray<string>
   ) => UnnestSqlTokenType,
   valueList: (
