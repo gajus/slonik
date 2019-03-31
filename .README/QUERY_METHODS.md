@@ -26,21 +26,6 @@ const fooValues = await connection.anyFirst(sql`SELECT foo`);
 
 ```
 
-### `insert`
-
-Used when inserting 1 row.
-
-Example:
-
-```js
-const {
-  insertId
-} = await connection.insert(sql`INSERT INTO foo SET bar='baz'`);
-
-```
-
-The reason for using this method over `#query` is to leverage the strict types. `#insert` method result type is `InsertResultType`.
-
 ### `many`
 
 Returns result rows.
