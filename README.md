@@ -87,7 +87,6 @@ Note: Using this project does not require TypeScript or Flow. It is a regular ES
     * [Query methods](#slonik-query-methods)
         * [`any`](#slonik-query-methods-any)
         * [`anyFirst`](#slonik-query-methods-anyfirst)
-        * [`insert`](#slonik-query-methods-insert)
         * [`many`](#slonik-query-methods-many)
         * [`manyFirst`](#slonik-query-methods-manyfirst)
         * [`maybeOne`](#slonik-query-methods-maybeone)
@@ -1500,22 +1499,6 @@ Example:
 const fooValues = await connection.anyFirst(sql`SELECT foo`);
 
 ```
-
-<a name="slonik-query-methods-insert"></a>
-### <code>insert</code>
-
-Used when inserting 1 row.
-
-Example:
-
-```js
-const {
-  insertId
-} = await connection.insert(sql`INSERT INTO foo SET bar='baz'`);
-
-```
-
-The reason for using this method over `#query` is to leverage the strict types. `#insert` method result type is `InsertResultType`.
 
 <a name="slonik-query-methods-many"></a>
 ### <code>many</code>
