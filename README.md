@@ -84,6 +84,7 @@ Note: Using this project does not require TypeScript or Flow. It is a regular ES
         * [`sql.identifier`](#slonik-query-building-sql-identifier)
         * [`sql.identifierList`](#slonik-query-building-sql-identifierlist)
         * [`sql.raw`](#slonik-query-building-sql-raw)
+        * [`sql.booleanExpression`](#slonik-query-building-sql-booleanexpression)
         * [`sql.comparisonPredicate`](#slonik-query-building-sql-comparisonpredicate)
     * [Query methods](#slonik-query-methods)
         * [`any`](#slonik-query-methods-any)
@@ -1545,6 +1546,70 @@ Produces:
 ```
 
 Named parameters are matched using `/[\s,(]:([a-z_]+)/g` regex.
+
+<a name="slonik-query-building-sql-booleanexpression"></a>
+### <code>sql.booleanExpression</code>
+
+```js
+(
+  members: $ReadOnlyArray<ValueExpressionType>,
+  operator: LogicalBooleanOperatorType
+) => BooleanExpressionTokenType;
+
+```
+
+Boolean expression.
+
+```js
+sql`
+  SELECT ${sql.booleanExpression([3, 4], 'AND')}
+`;
+
+```
+
+Produces:
+
+```js
+{
+  sql: 'SELECT $1 AND $2',
+  values: [
+    3,
+    4
+  ]
+}
+
+```
+
+Boolean expressions can describe SQL tokens (including other boolean expressions), e.g.
+
+```js
+sql`
+  SELECT ${sql.booleanExpression([
+    sql.comparisonPredicate(sql.identifier(['foo']), '=', sql.raw('to_timestamp($1)', 2)),
+    sql.booleanExpression([
+      3,
+      4
+    ], 'OR')
+  ], 'AND')}
+`;
+
+```
+
+Produces:
+
+```js
+{
+  sql: 'SELECT ("foo" = to_timestamp($1) AND ($1 OR $2))',
+  values: [
+    2,
+    3,
+    4
+  ]
+}
+
+```
+
+Note: Do not use `sql.booleanExpression` when expression consists of a single predicate. Use `sql.comparisonPredicate`.
 
 <a name="slonik-query-building-sql-comparisonpredicate"></a>
 ### <code>sql.comparisonPredicate</code>
