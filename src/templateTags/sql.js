@@ -7,7 +7,6 @@ import type {
   IdentifierTokenType,
   PrimitiveValueExpressionType,
   RawSqlTokenType,
-  SqlFragmentType,
   SqlSqlTokenType,
   SqlTaggedTemplateType,
   TupleListSqlTokenType,
@@ -18,20 +17,13 @@ import type {
 } from '../types';
 import {
   deepFreeze,
-  isPrimitiveValueExpression
+  isPrimitiveValueExpression,
+  isSqlToken
 } from '../utilities';
 import Logger from '../Logger';
 import {
-  createArraySqlFragment,
-  createIdentifierSqlFragment,
-  createIdentifierListSqlFragment,
-  createRawSqlSqlFragment,
-  createSqlSqlFragment,
-  createTupleListSqlFragment,
-  createTupleSqlFragment,
-  createUnnestSqlFragment,
-  createValueListSqlFragment
-} from '../sqlFragmentFactories';
+  createSqlTokenSqlFragment
+} from '../factories';
 import {
   ArrayTokenSymbol,
   SqlTokenSymbol,
@@ -60,11 +52,6 @@ const sql: SqlTaggedTemplateType = (
 
   let index = 0;
 
-  const appendSqlFragment = (sqlFragment: SqlFragmentType) => {
-    rawSql += sqlFragment.sql;
-    parameterValues.push(...sqlFragment.values);
-  };
-
   for (const part of parts) {
     const token = values[index++];
 
@@ -78,34 +65,11 @@ const sql: SqlTaggedTemplateType = (
       rawSql += '$' + (parameterValues.length + 1);
 
       parameterValues.push(token);
-    } else if (token && token.type === SqlTokenSymbol) {
-      // @see https://github.com/gajus/slonik/issues/36 regarding FlowFixMe use.
-      // $FlowFixMe
-      appendSqlFragment(createSqlSqlFragment(token, parameterValues.length));
-    } else if (token && token.type === RawSqlTokenSymbol) {
-      // $FlowFixMe
-      appendSqlFragment(createRawSqlSqlFragment(token, parameterValues.length));
-    } else if (token && token.type === IdentifierTokenSymbol) {
-      // $FlowFixMe
-      appendSqlFragment(createIdentifierSqlFragment(token));
-    } else if (token && token.type === IdentifierListTokenSymbol) {
-      // $FlowFixMe
-      appendSqlFragment(createIdentifierListSqlFragment(token));
-    } else if (token && token.type === ArrayTokenSymbol) {
-      // $FlowFixMe
-      appendSqlFragment(createArraySqlFragment(token, parameterValues.length));
-    } else if (token && token.type === ValueListTokenSymbol) {
-      // $FlowFixMe
-      appendSqlFragment(createValueListSqlFragment(token, parameterValues.length));
-    } else if (token && token.type === TupleTokenSymbol) {
-      // $FlowFixMe
-      appendSqlFragment(createTupleSqlFragment(token, parameterValues.length));
-    } else if (token && token.type === TupleListTokenSymbol) {
-      // $FlowFixMe
-      appendSqlFragment(createTupleListSqlFragment(token, parameterValues.length));
-    } else if (token && token.type === UnnestTokenSymbol) {
-      // $FlowFixMe
-      appendSqlFragment(createUnnestSqlFragment(token, parameterValues.length));
+    } else if (isSqlToken(token)) {
+      const sqlFragment = createSqlTokenSqlFragment(token, parameterValues.length);
+
+      rawSql += sqlFragment.sql;
+      parameterValues.push(...sqlFragment.values);
     } else {
       log.error({
         constructedSql: rawSql,
@@ -157,7 +121,7 @@ sql.raw = (
 };
 
 sql.valueList = (
-  values: $ReadOnlyArray<PrimitiveValueExpressionType>
+  values: $ReadOnlyArray<ValueExpressionType>
 ): ValueListSqlTokenType => {
   return deepFreeze({
     type: ValueListTokenSymbol,
@@ -177,7 +141,7 @@ sql.array = (
 };
 
 sql.tuple = (
-  values: $ReadOnlyArray<PrimitiveValueExpressionType>
+  values: $ReadOnlyArray<ValueExpressionType>
 ): TupleSqlTokenType => {
   return deepFreeze({
     type: TupleTokenSymbol,
@@ -186,7 +150,7 @@ sql.tuple = (
 };
 
 sql.tupleList = (
-  tuples: $ReadOnlyArray<$ReadOnlyArray<PrimitiveValueExpressionType>>
+  tuples: $ReadOnlyArray<$ReadOnlyArray<ValueExpressionType>>
 ): TupleListSqlTokenType => {
   return deepFreeze({
     tuples,

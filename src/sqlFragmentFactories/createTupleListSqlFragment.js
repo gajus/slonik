@@ -7,6 +7,12 @@ import type {
 import {
   UnexpectedStateError
 } from '../errors';
+import {
+  isSqlToken
+} from '../utilities';
+import {
+  createSqlTokenSqlFragment
+} from '../factories';
 
 export default (token: TupleListSqlTokenType, greatestParameterPosition: number): SqlFragmentType => {
   const values = [];
@@ -31,9 +37,18 @@ export default (token: TupleListSqlTokenType, greatestParameterPosition: number)
     lastTupleSize = tuple.length;
 
     for (const member of tuple) {
-      placeholders.push('$' + ++placeholderIndex);
+      if (isSqlToken(member)) {
+        // $FlowFixMe
+        const sqlFragment = createSqlTokenSqlFragment(member, placeholderIndex);
 
-      values.push(member);
+        placeholders.push(sqlFragment.sql);
+        placeholderIndex += sqlFragment.values.length;
+        values.push(...sqlFragment.values);
+      } else {
+        placeholders.push('$' + ++placeholderIndex);
+
+        values.push(member);
+      }
     }
 
     tupleListMemberSql.push('(' + placeholders.join(', ') + ')');

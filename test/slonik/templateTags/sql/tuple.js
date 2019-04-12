@@ -20,6 +20,34 @@ test('creates a tuple', (t) => {
   });
 });
 
+test('expands SQL tokens', (t) => {
+  const query = sql`SELECT ${sql.tuple([1, sql.raw('foo'), 3])}`;
+
+  t.deepEqual(query, {
+    sql: 'SELECT ($1, foo, $2)',
+    type: SqlTokenSymbol,
+    values: [
+      1,
+      3
+    ]
+  });
+});
+
+test('expands SQL tokens (with bound values)', (t) => {
+  const query = sql`SELECT ${sql.tuple([1, sql.raw('to_timestamp($1), $2', [2, 3]), 4])}`;
+
+  t.deepEqual(query, {
+    sql: 'SELECT ($1, to_timestamp($2), $3, $4)',
+    type: SqlTokenSymbol,
+    values: [
+      1,
+      2,
+      3,
+      4
+    ]
+  });
+});
+
 test('the resulting object is immutable', (t) => {
   const token = sql.tuple([1, 2, 3]);
 

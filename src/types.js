@@ -279,9 +279,8 @@ export type UnnestSqlTokenType = {|
 
 export type PrimitiveValueExpressionType = string | number | boolean | null;
 
-export type ValueExpressionType =
+export type SqlTokenType =
   ArraySqlTokenType |
-  PrimitiveValueExpressionType |
   IdentifierTokenType |
   IdentifierListTokenType |
   RawSqlTokenType |
@@ -290,6 +289,10 @@ export type ValueExpressionType =
   TupleSqlTokenType |
   UnnestSqlTokenType |
   ValueListSqlTokenType;
+
+export type ValueExpressionType =
+  SqlTokenType |
+  PrimitiveValueExpressionType;
 
 export type TaggedTemplateLiteralInvocationType = {|
   +sql: string,
@@ -321,10 +324,10 @@ export type SqlTaggedTemplateType = {|
     values?: $ReadOnlyArray<PrimitiveValueExpressionType>
   ) => RawSqlTokenType,
   tuple: (
-    values: $ReadOnlyArray<PrimitiveValueExpressionType>
+    values: $ReadOnlyArray<ValueExpressionType>
   ) => TupleSqlTokenType,
   tupleList: (
-    tuples: $ReadOnlyArray<$ReadOnlyArray<PrimitiveValueExpressionType>>
+    tuples: $ReadOnlyArray<$ReadOnlyArray<ValueExpressionType>>
   ) => TupleListSqlTokenType,
   unnest: (
 
@@ -336,7 +339,7 @@ export type SqlTaggedTemplateType = {|
     columnTypes: $ReadOnlyArray<string>
   ) => UnnestSqlTokenType,
   valueList: (
-    values: $ReadOnlyArray<PrimitiveValueExpressionType>
+    values: $ReadOnlyArray<ValueExpressionType>
   ) => ValueListSqlTokenType
 |};
 

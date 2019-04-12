@@ -32,6 +32,29 @@ Produces:
 
 ```
 
+Value list can describe other SQL tokens, e.g.
+
+```js
+await connection.query(sql`
+  SELECT (${sql.valueList([1, sql.raw('to_timestamp($1)', [2]), 3])})
+`);
+
+```
+
+Produces:
+
+```js
+{
+  sql: 'SELECT ($1, to_timestamp($2), $3)',
+  values: [
+    1,
+    2,
+    3
+  ]
+}
+
+```
+
 ### `sql.array`
 
 ```js
@@ -121,6 +144,30 @@ Produces:
 
 ```
 
+Tuple can describe other SQL tokens, e.g.
+
+```js
+await connection.query(sql`
+  INSERT INTO (foo, bar, baz)
+  VALUES ${sql.tuple([1, sql.raw('to_timestamp($1)', [2]), 3])}
+`);
+
+```
+
+Produces:
+
+```js
+{
+  sql: 'INSERT INTO (foo, bar, baz) VALUES ($1, to_timestamp($2), $3)',
+  values: [
+    1,
+    2,
+    3
+  ]
+}
+
+```
+
 ### `sql.tupleList`
 
 ```js
@@ -146,6 +193,36 @@ Produces:
 ```js
 {
   sql: 'INSERT INTO (foo, bar, baz) VALUES ($1, $2, $3), ($4, $5, $6)',
+  values: [
+    1,
+    2,
+    3,
+    4,
+    5,
+    6
+  ]
+}
+
+```
+
+Tuple list can describe other SQL tokens, e.g.
+
+```js
+await connection.query(sql`
+  INSERT INTO (foo, bar, baz)
+  VALUES ${sql.tupleList([
+    [1, sql.raw('to_timestamp($1)', [2]), 3],
+    [4, sql.raw('to_timestamp($1)', [5]), 6]
+  ])}
+`);
+
+```
+
+Produces:
+
+```js
+{
+  sql: 'INSERT INTO (foo, bar, baz) VALUES ($1, to_timestamp($2), $3), ($4, to_timestamp($5), $6)',
   values: [
     1,
     2,
