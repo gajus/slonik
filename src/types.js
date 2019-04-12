@@ -34,6 +34,7 @@ export type StreamHandlerType = (stream: Readable) => void;
 export type ConnectionTypeType = 'EXPLICIT' | 'IMPLICIT_QUERY' | 'IMPLICIT_TRANSACTION';
 
 export type ComparisonOperatorType = '<' | '>' | '<=' | '>=' | '=' | '<>' | '!=';
+export type LogicalBooleanOperatorType = 'AND' | 'OR';
 
 export type FieldType = {|
   +columnID: number,
@@ -287,6 +288,12 @@ export type ComparisonPredicateTokenType = {|
   +type: typeof ComparisonPredicateTokenSymbol
 |};
 
+export type BooleanExpressionTokenType = {|
+  +members: $ReadOnlyArray<ValueExpressionType>,
+  +operator: LogicalBooleanOperatorType,
+  +type: typeof ComparisonPredicateTokenSymbol
+|};
+
 export type PrimitiveValueExpressionType = string | number | boolean | null;
 
 export type SqlTokenType =
@@ -298,7 +305,9 @@ export type SqlTokenType =
   TupleListSqlTokenType |
   TupleSqlTokenType |
   UnnestSqlTokenType |
-  ValueListSqlTokenType;
+  ValueListSqlTokenType |
+  ComparisonPredicateTokenType |
+  BooleanExpressionTokenType;
 
 export type ValueExpressionType =
   SqlTokenType |
@@ -323,6 +332,15 @@ export type SqlTaggedTemplateType = {|
     values: $ReadOnlyArray<PrimitiveValueExpressionType>,
     memberType: string
   ) => ArraySqlTokenType,
+  booleanExpression: (
+    members: $ReadOnlyArray<ValueExpressionType>,
+    operator: LogicalBooleanOperatorType
+  ) => BooleanExpressionTokenType,
+  comparisonPredicate: (
+    leftOperand: ValueExpressionType,
+    operator: ComparisonOperatorType,
+    rightOperand: ValueExpressionType
+  ) => ComparisonPredicateTokenType,
   identifier: (
     names: $ReadOnlyArray<string>
   ) => IdentifierTokenType,

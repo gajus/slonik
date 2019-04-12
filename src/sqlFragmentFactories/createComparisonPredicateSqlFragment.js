@@ -10,8 +10,25 @@ import {
 import {
   createSqlTokenSqlFragment
 } from '../factories';
+import {
+  UnexpectedStateError
+} from '../errors';
+
+export type ComparisonOperatorType = '<' | '>' | '<=' | '>=' | '=' | '<>' | '!=';
 
 export default (token: ComparisonPredicateTokenType, greatestParameterPosition: number): SqlFragmentType => {
+  if (
+    token.operator !== '<' &&
+    token.operator !== '>' &&
+    token.operator !== '<=' &&
+    token.operator !== '>=' &&
+    token.operator !== '=' &&
+    token.operator !== '<>' &&
+    token.operator !== '!='
+  ) {
+    throw new UnexpectedStateError('Invalid operator.');
+  }
+
   const values = [];
   const placeholders = [];
 

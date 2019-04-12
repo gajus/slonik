@@ -1,6 +1,7 @@
 // @flow
 
 export {default as createArraySqlFragment} from './createArraySqlFragment';
+export {default as createBooleanExpressionSqlFragment} from './createBooleanExpressionSqlFragment';
 export {default as createComparisonPredicateSqlFragment} from './createComparisonPredicateSqlFragment';
 export {default as createIdentifierListSqlFragment} from './createIdentifierListSqlFragment';
 export {default as createIdentifierSqlFragment} from './createIdentifierSqlFragment';

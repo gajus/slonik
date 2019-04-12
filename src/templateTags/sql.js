@@ -2,11 +2,13 @@
 
 import type {
   ArraySqlTokenType,
+  BooleanExpressionTokenType,
   ComparisonOperatorType,
   ComparisonPredicateTokenType,
   IdentifierListMemberType,
   IdentifierListTokenType,
   IdentifierTokenType,
+  LogicalBooleanOperatorType,
   PrimitiveValueExpressionType,
   RawSqlTokenType,
   SqlSqlTokenType,
@@ -28,6 +30,7 @@ import {
 } from '../factories';
 import {
   ArrayTokenSymbol,
+  BooleanExpressionTokenSymbol,
   ComparisonPredicateTokenSymbol,
   IdentifierListTokenSymbol,
   IdentifierTokenSymbol,
@@ -169,6 +172,17 @@ sql.unnest = (
     columnTypes,
     tuples,
     type: UnnestTokenSymbol
+  });
+};
+
+sql.booleanExpression = (
+  members: $ReadOnlyArray<ValueExpressionType>,
+  operator: LogicalBooleanOperatorType
+): BooleanExpressionTokenType => {
+  return deepFreeze({
+    members,
+    operator,
+    type: BooleanExpressionTokenSymbol
   });
 };
 

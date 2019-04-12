@@ -1,6 +1,7 @@
 // @flow
 
 export const ArrayTokenSymbol = Symbol('SLONIK_ARRAY');
+export const BooleanExpressionTokenSymbol = Symbol('SLONIK_BOOLEAN_EXPRESSION');
 export const ComparisonPredicateTokenSymbol = Symbol('SLONIK_COMPARISON_PREDICATE');
 export const IdentifierListTokenSymbol = Symbol('SLONIK_IDENTIFIER_LIST');
 export const IdentifierTokenSymbol = Symbol('SLONIK_IDENTIFIER');

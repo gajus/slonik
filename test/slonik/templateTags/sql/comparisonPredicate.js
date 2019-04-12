@@ -43,8 +43,15 @@ test('creates comparison of a value to a SQL token (right)', (t) => {
   });
 });
 
+test('throws an error if an invalid operator is used', (t) => {
+  t.throws(() => {
+    // $FlowFixMe
+    sql`${sql.comparisonPredicate(1, 'FOO', 2)}`;
+  }, 'Invalid operator.');
+});
+
 test('the resulting object is immutable', (t) => {
-  const token = sql.raw('foo');
+  const token = sql.comparisonPredicate(1, '=', 2);
 
   t.throws(() => {
     // $FlowFixMe
