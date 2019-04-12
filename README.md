@@ -1920,12 +1920,12 @@ try {
 <a name="slonik-error-handling-handling-notnullintegrityconstraintviolationerror"></a>
 ### Handling <code>NotNullIntegrityConstraintViolationError</code>
 
-`NotNullIntegrityConstraintViolationError` is thrown when PostgreSQL responds with [`unique_violation`](https://www.postgresql.org/docs/9.4/static/errcodes-appendix.html) (`23502`) error.
+`NotNullIntegrityConstraintViolationError` is thrown when PostgreSQL responds with [`not_null_violation`](https://www.postgresql.org/docs/9.4/static/errcodes-appendix.html) (`23502`) error.
 
 <a name="slonik-error-handling-handling-foreignkeyintegrityconstraintviolationerror"></a>
 ### Handling <code>ForeignKeyIntegrityConstraintViolationError</code>
 
-`ForeignKeyIntegrityConstraintViolationError` is thrown when PostgreSQL responds with [`unique_violation`](https://www.postgresql.org/docs/9.4/static/errcodes-appendix.html) (`23503`) error.
+`ForeignKeyIntegrityConstraintViolationError` is thrown when PostgreSQL responds with [`foreign_key_violation`](https://www.postgresql.org/docs/9.4/static/errcodes-appendix.html) (`23503`) error.
 
 <a name="slonik-error-handling-handling-uniqueintegrityconstraintviolationerror"></a>
 ### Handling <code>UniqueIntegrityConstraintViolationError</code>
@@ -1935,7 +1935,7 @@ try {
 <a name="slonik-error-handling-handling-checkintegrityconstraintviolationerror"></a>
 ### Handling <code>CheckIntegrityConstraintViolationError</code>
 
-`CheckIntegrityConstraintViolationError` is thrown when PostgreSQL responds with [`unique_violation`](https://www.postgresql.org/docs/9.4/static/errcodes-appendix.html) (`23514`) error.
+`CheckIntegrityConstraintViolationError` is thrown when PostgreSQL responds with [`check_violation`](https://www.postgresql.org/docs/9.4/static/errcodes-appendix.html) (`23514`) error.
 
 
 <a name="slonik-types"></a>
