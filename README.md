@@ -84,6 +84,7 @@ Note: Using this project does not require TypeScript or Flow. It is a regular ES
         * [`sql.identifier`](#slonik-query-building-sql-identifier)
         * [`sql.identifierList`](#slonik-query-building-sql-identifierlist)
         * [`sql.raw`](#slonik-query-building-sql-raw)
+        * [`sql.comparisonPredicate`](#slonik-query-building-sql-comparisonpredicate)
     * [Query methods](#slonik-query-methods)
         * [`any`](#slonik-query-methods-any)
         * [`anyFirst`](#slonik-query-methods-anyfirst)
@@ -1544,6 +1545,61 @@ Produces:
 ```
 
 Named parameters are matched using `/[\s,(]:([a-z_]+)/g` regex.
+
+<a name="slonik-query-building-sql-comparisonpredicate"></a>
+### <code>sql.comparisonPredicate</code>
+
+```js
+(
+  leftOperand: ValueExpressionType,
+  operator: ComparisonOperatorType,
+  rightOperand: ValueExpressionType
+) => ComparisonPredicateTokenType;
+
+```
+
+A comparison predicate compares two expressions using a comparison operator.
+
+```js
+sql`
+  SELECT ${sql.comparisonPredicate(3, '=', 4)}
+`;
+
+```
+
+Produces:
+
+```js
+{
+  sql: 'SELECT $1 = $2',
+  values: [
+    3,
+    4
+  ]
+}
+
+```
+
+Comparison predicate operands can describe SQL tokens, e.g.
+
+```js
+sql`
+  SELECT ${sql.comparisonPredicate(sql.identifier(['foo']), '=', sql.raw('to_timestamp($1)', 2))}
+`;
+
+```
+
+Produces:
+
+```js
+{
+  sql: 'SELECT "foo" = to_timestamp($1)',
+  values: [
+    2
+  ]
+}
+
+```
 
 
 <a name="slonik-query-methods"></a>
