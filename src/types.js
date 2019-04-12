@@ -10,14 +10,15 @@ import type {
 } from 'roarr';
 import {
   ArrayTokenSymbol,
-  SqlTokenSymbol,
-  RawSqlTokenSymbol,
-  IdentifierTokenSymbol,
+  ComparisonPredicateTokenSymbol,
   IdentifierListTokenSymbol,
-  ValueListTokenSymbol,
-  TupleTokenSymbol,
+  IdentifierTokenSymbol,
+  RawSqlTokenSymbol,
+  SqlTokenSymbol,
   TupleListTokenSymbol,
-  UnnestTokenSymbol
+  TupleTokenSymbol,
+  UnnestTokenSymbol,
+  ValueListTokenSymbol
 } from './symbols';
 
 export type {
@@ -31,6 +32,8 @@ export type MaybePromiseType<T> = T | Promise<T>;
 export type StreamHandlerType = (stream: Readable) => void;
 
 export type ConnectionTypeType = 'EXPLICIT' | 'IMPLICIT_QUERY' | 'IMPLICIT_TRANSACTION';
+
+export type ComparisonOperatorType = '<' | '>' | '<=' | '>=' | '=' | '<>' | '!=';
 
 export type FieldType = {|
   +columnID: number,
@@ -275,6 +278,13 @@ export type UnnestSqlTokenType = {|
   +columnTypes: $ReadOnlyArray<string>,
   +tuples: $ReadOnlyArray<PositionalParameterValuesType>,
   +type: typeof UnnestTokenSymbol
+|};
+
+export type ComparisonPredicateTokenType = {|
+  +leftOperand: ValueExpressionType,
+  +operator: ComparisonOperatorType,
+  +rightOperand: ValueExpressionType,
+  +type: typeof ComparisonPredicateTokenSymbol
 |};
 
 export type PrimitiveValueExpressionType = string | number | boolean | null;

@@ -2,17 +2,19 @@
 
 import {
   ArrayTokenSymbol,
-  SqlTokenSymbol,
-  RawSqlTokenSymbol,
-  IdentifierTokenSymbol,
+  ComparisonPredicateTokenSymbol,
   IdentifierListTokenSymbol,
-  ValueListTokenSymbol,
-  TupleTokenSymbol,
+  IdentifierTokenSymbol,
+  RawSqlTokenSymbol,
+  SqlTokenSymbol,
   TupleListTokenSymbol,
-  UnnestTokenSymbol
+  TupleTokenSymbol,
+  UnnestTokenSymbol,
+  ValueListTokenSymbol
 } from '../symbols';
 import {
   createArraySqlFragment,
+  createComparisonPredicateSqlFragment,
   createIdentifierSqlFragment,
   createIdentifierListSqlFragment,
   createRawSqlSqlFragment,
@@ -59,6 +61,9 @@ export default (token: SqlTokenType, greatestParameterPosition: number): SqlFrag
   } else if (token.type === UnnestTokenSymbol) {
     // $FlowFixMe
     return createUnnestSqlFragment(token, greatestParameterPosition);
+  } else if (token.type === ComparisonPredicateTokenSymbol) {
+    // $FlowFixMe
+    return createComparisonPredicateSqlFragment(token, greatestParameterPosition);
   }
 
   throw new UnexpectedStateError();

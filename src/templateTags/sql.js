@@ -2,6 +2,8 @@
 
 import type {
   ArraySqlTokenType,
+  ComparisonOperatorType,
+  ComparisonPredicateTokenType,
   IdentifierListMemberType,
   IdentifierListTokenType,
   IdentifierTokenType,
@@ -26,14 +28,15 @@ import {
 } from '../factories';
 import {
   ArrayTokenSymbol,
-  SqlTokenSymbol,
-  RawSqlTokenSymbol,
-  IdentifierTokenSymbol,
+  ComparisonPredicateTokenSymbol,
   IdentifierListTokenSymbol,
-  ValueListTokenSymbol,
-  TupleTokenSymbol,
+  IdentifierTokenSymbol,
+  RawSqlTokenSymbol,
+  SqlTokenSymbol,
   TupleListTokenSymbol,
-  UnnestTokenSymbol
+  TupleTokenSymbol,
+  UnnestTokenSymbol,
+  ValueListTokenSymbol
 } from '../symbols';
 
 const log = Logger.child({
@@ -166,6 +169,19 @@ sql.unnest = (
     columnTypes,
     tuples,
     type: UnnestTokenSymbol
+  });
+};
+
+sql.comparisonPredicate = (
+  leftOperand: ValueExpressionType,
+  operator: ComparisonOperatorType,
+  rightOperand: ValueExpressionType
+): ComparisonPredicateTokenType => {
+  return deepFreeze({
+    leftOperand,
+    operator,
+    rightOperand,
+    type: ComparisonPredicateTokenSymbol
   });
 };
 

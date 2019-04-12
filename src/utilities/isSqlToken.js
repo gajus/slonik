@@ -2,26 +2,28 @@
 
 import {
   ArrayTokenSymbol,
-  SqlTokenSymbol,
-  RawSqlTokenSymbol,
-  IdentifierTokenSymbol,
+  ComparisonPredicateTokenSymbol,
   IdentifierListTokenSymbol,
-  ValueListTokenSymbol,
-  TupleTokenSymbol,
+  IdentifierTokenSymbol,
+  RawSqlTokenSymbol,
+  SqlTokenSymbol,
   TupleListTokenSymbol,
-  UnnestTokenSymbol
+  TupleTokenSymbol,
+  UnnestTokenSymbol,
+  ValueListTokenSymbol
 } from '../symbols';
 
 const tokenSymbols = [
   ArrayTokenSymbol,
-  SqlTokenSymbol,
-  RawSqlTokenSymbol,
-  IdentifierTokenSymbol,
+  ComparisonPredicateTokenSymbol,
   IdentifierListTokenSymbol,
-  ValueListTokenSymbol,
-  TupleTokenSymbol,
+  IdentifierTokenSymbol,
+  RawSqlTokenSymbol,
+  SqlTokenSymbol,
   TupleListTokenSymbol,
-  UnnestTokenSymbol
+  TupleTokenSymbol,
+  UnnestTokenSymbol,
+  ValueListTokenSymbol
 ];
 
 export default (subject: *) => {

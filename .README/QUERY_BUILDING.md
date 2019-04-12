@@ -472,3 +472,57 @@ Produces:
 ```
 
 Named parameters are matched using `/[\s,(]:([a-z_]+)/g` regex.
+
+### `sql.comparisonPredicate`
+
+```js
+(
+  leftOperand: ValueExpressionType,
+  operator: ComparisonOperatorType,
+  rightOperand: ValueExpressionType
+) => ComparisonPredicateTokenType;
+
+```
+
+A comparison predicate compares two expressions using a comparison operator.
+
+```js
+sql`
+  SELECT ${sql.comparisonPredicate(3, '=', 4)}
+`;
+
+```
+
+Produces:
+
+```js
+{
+  sql: 'SELECT $1 = $2',
+  values: [
+    3,
+    4
+  ]
+}
+
+```
+
+Comparison predicate operands can describe SQL tokens, e.g.
+
+```js
+sql`
+  SELECT ${sql.comparisonPredicate(sql.identifier(['foo']), '=', sql.raw('to_timestamp($1)', 2))}
+`;
+
+```
+
+Produces:
+
+```js
+{
+  sql: 'SELECT "foo" = to_timestamp($1)',
+  values: [
+    2
+  ]
+}
+
+```
