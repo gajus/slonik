@@ -4,6 +4,7 @@
     "filenames/match-regex": 0,
     "flowtype/no-flow-fix-me-comments": 0,
     "flowtype/no-weak-types": 0,
-    "id-length": 0
+    "id-length": 0,
+    "import/no-cycle": 0
   }
 }
