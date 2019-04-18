@@ -1,14 +1,15 @@
 // @flow
 
 export type {
+  ConnectionTypeType,
   DatabaseConnectionType,
   DatabasePoolConnectionType,
   DatabasePoolType,
   DatabaseTransactionConnectionType,
-  ConnectionTypeType,
   FieldType,
   InterceptorType,
-  QueryContextType
+  QueryContextType,
+  ValueExpressionType
 } from './types';
 export {
   createTypeParserPreset,
