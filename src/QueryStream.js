@@ -68,6 +68,7 @@ export default class QueryStream extends Readable {
     this.cursor.close(callback || close);
   }
 
+  // $FlowFixMe
   _read (size: number) {
     if (this._reading || this._closed) {
       return;
