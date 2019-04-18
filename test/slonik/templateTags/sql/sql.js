@@ -5,6 +5,9 @@ import sql from '../../../../src/templateTags/sql';
 import {
   SqlTokenSymbol
 } from '../../../../src/symbols';
+import {
+  InvalidInputError
+} from '../../../../src/errors';
 
 test('creates an object describing a query', (t) => {
   const query = sql`SELECT 1`;
@@ -14,6 +17,24 @@ test('creates an object describing a query', (t) => {
     type: SqlTokenSymbol,
     values: []
   });
+});
+
+test('throws a descriptive error if query is empty', (t) => {
+  const error = t.throws(() => {
+    sql``;
+  });
+
+  t.true(error instanceof InvalidInputError);
+  t.true(error.message === 'Unexpected SQL input. Query cannot be empty.');
+});
+
+test('throws a descriptive error if the entire query is a value binding', (t) => {
+  const error = t.throws(() => {
+    sql`${1}`;
+  });
+
+  t.true(error instanceof InvalidInputError);
+  t.true(error.message === 'Unexpected SQL input. Query cannot be empty. Found only value binding.');
 });
 
 test('creates an object describing query value bindings', (t) => {

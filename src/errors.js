@@ -6,6 +6,8 @@ import ExtendableError from 'es6-error';
 
 export class SlonikError extends ExtendableError {}
 
+export class InvalidInputError extends SlonikError {}
+
 export class UnexpectedStateError extends SlonikError {}
 
 export class ConnectionError extends SlonikError {}

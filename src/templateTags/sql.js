@@ -41,6 +41,9 @@ import {
   UnnestTokenSymbol,
   ValueListTokenSymbol
 } from '../symbols';
+import {
+  InvalidInputError
+} from '../errors';
 
 const log = Logger.child({
   namespace: 'sql'
@@ -84,6 +87,14 @@ const sql: SqlTaggedTemplateType = (
 
       throw new TypeError('Unexpected value expression.');
     }
+  }
+
+  if (rawSql.trim() === '') {
+    throw new InvalidInputError('Unexpected SQL input. Query cannot be empty.');
+  }
+
+  if (rawSql.trim() === '$1') {
+    throw new InvalidInputError('Unexpected SQL input. Query cannot be empty. Found only value binding.');
   }
 
   const query = deepFreeze({
