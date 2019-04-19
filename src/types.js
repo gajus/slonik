@@ -299,7 +299,7 @@ export type AssignmentListTokenType = {|
   +type: typeof ComparisonPredicateTokenSymbol
 |};
 
-export type PrimitiveValueExpressionType = string | number | boolean | null;
+export type PrimitiveValueExpressionType = string | number | boolean | Date | null;
 
 export type SqlTokenType =
   ArraySqlTokenType |
