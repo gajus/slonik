@@ -2,6 +2,7 @@
 
 import {
   ArrayTokenSymbol,
+  AssignmentListTokenSymbol,
   BooleanExpressionTokenSymbol,
   ComparisonPredicateTokenSymbol,
   IdentifierListTokenSymbol,
@@ -16,6 +17,7 @@ import {
 
 const tokenSymbols = [
   ArrayTokenSymbol,
+  AssignmentListTokenSymbol,
   BooleanExpressionTokenSymbol,
   ComparisonPredicateTokenSymbol,
   IdentifierListTokenSymbol,

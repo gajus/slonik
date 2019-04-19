@@ -2,6 +2,7 @@
 
 import type {
   ArraySqlTokenType,
+  AssignmentListTokenType,
   BooleanExpressionTokenType,
   ComparisonOperatorType,
   ComparisonPredicateTokenType,
@@ -9,6 +10,7 @@ import type {
   IdentifierListTokenType,
   IdentifierTokenType,
   LogicalBooleanOperatorType,
+  NamedAssignmentType,
   PrimitiveValueExpressionType,
   RawSqlTokenType,
   SqlSqlTokenType,
@@ -30,6 +32,7 @@ import {
 } from '../factories';
 import {
   ArrayTokenSymbol,
+  AssignmentListTokenSymbol,
   BooleanExpressionTokenSymbol,
   ComparisonPredicateTokenSymbol,
   IdentifierListTokenSymbol,
@@ -207,6 +210,15 @@ sql.comparisonPredicate = (
     operator,
     rightOperand,
     type: ComparisonPredicateTokenSymbol
+  });
+};
+
+sql.assignmentList = (
+  namedAssignment: NamedAssignmentType
+): AssignmentListTokenType => {
+  return deepFreeze({
+    namedAssignment,
+    type: AssignmentListTokenSymbol
   });
 };
 

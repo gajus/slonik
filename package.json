@@ -22,6 +22,7 @@
     "postgres-interval": "^1.2.0",
     "roarr": "^2.13.0",
     "serialize-error": "^4.1.0",
+    "snake-case": "^2.1.0",
     "through2": "^3.0.1",
     "ulid": "^2.3.0"
   },

@@ -294,10 +294,16 @@ export type BooleanExpressionTokenType = {|
   +type: typeof ComparisonPredicateTokenSymbol
 |};
 
+export type AssignmentListTokenType = {|
+  +namedAssignment: NamedAssignmentType,
+  +type: typeof ComparisonPredicateTokenSymbol
+|};
+
 export type PrimitiveValueExpressionType = string | number | boolean | null;
 
 export type SqlTokenType =
   ArraySqlTokenType |
+  AssignmentListTokenType |
   IdentifierTokenType |
   IdentifierListTokenType |
   RawSqlTokenType |
@@ -312,6 +318,10 @@ export type SqlTokenType =
 export type ValueExpressionType =
   SqlTokenType |
   PrimitiveValueExpressionType;
+
+export type NamedAssignmentType = {
+  +[key: string]: ValueExpressionType
+};
 
 export type TaggedTemplateLiteralInvocationType = {|
   +sql: string,
@@ -332,6 +342,9 @@ export type SqlTaggedTemplateType = {|
     values: $ReadOnlyArray<PrimitiveValueExpressionType>,
     memberType: string
   ) => ArraySqlTokenType,
+  assignmentList: (
+    namedAssignmentValueBindings: NamedAssignmentType
+  ) => AssignmentListTokenType,
   booleanExpression: (
     members: $ReadOnlyArray<ValueExpressionType>,
     operator: LogicalBooleanOperatorType

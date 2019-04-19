@@ -2,6 +2,7 @@
 
 import {
   ArrayTokenSymbol,
+  AssignmentListTokenSymbol,
   BooleanExpressionTokenSymbol,
   ComparisonPredicateTokenSymbol,
   IdentifierListTokenSymbol,
@@ -15,6 +16,7 @@ import {
 } from '../symbols';
 import {
   createArraySqlFragment,
+  createAssignmentListSqlFragment,
   createBooleanExpressionSqlFragment,
   createComparisonPredicateSqlFragment,
   createIdentifierSqlFragment,
@@ -69,6 +71,9 @@ export default (token: SqlTokenType, greatestParameterPosition: number): SqlFrag
   } else if (token.type === BooleanExpressionTokenSymbol) {
     // $FlowFixMe
     return createBooleanExpressionSqlFragment(token, greatestParameterPosition);
+  } else if (token.type === AssignmentListTokenSymbol) {
+    // $FlowFixMe
+    return createAssignmentListSqlFragment(token, greatestParameterPosition);
   }
 
   throw new UnexpectedStateError();

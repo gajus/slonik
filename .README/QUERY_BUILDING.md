@@ -5,7 +5,9 @@
 Note: Before using `sql.valueList` evaluate if [`sql.array`](#sqlarray) is not a better option.
 
 ```js
-(values: $ReadOnlyArray<PrimitiveValueExpressionType>) => ValueListSqlTokenType;
+(
+  values: $ReadOnlyArray<PrimitiveValueExpressionType>
+) => ValueListSqlTokenType;
 
 ```
 
@@ -58,7 +60,9 @@ Produces:
 ### `sql.array`
 
 ```js
-(values: $ReadOnlyArray<PrimitiveValueExpressionType>) => ValueListSqlTokenType;
+(
+  values: $ReadOnlyArray<PrimitiveValueExpressionType>
+) => ValueListSqlTokenType;
 
 ```
 
@@ -116,7 +120,9 @@ In short, when the value list length is dynamic then `sql.array` should be prefe
 ### `sql.tuple`
 
 ```js
-(values: $ReadOnlyArray<PrimitiveValueExpressionType>) => TupleSqlTokenType;
+(
+  values: $ReadOnlyArray<PrimitiveValueExpressionType>
+) => TupleSqlTokenType;
 
 ```
 
@@ -171,7 +177,9 @@ Produces:
 ### `sql.tupleList`
 
 ```js
-(tuples: $ReadOnlyArray<$ReadOnlyArray<PrimitiveValueExpressionType>>) => TupleListSqlTokenType;
+(
+  tuples: $ReadOnlyArray<$ReadOnlyArray<PrimitiveValueExpressionType>>
+) => TupleListSqlTokenType;
 
 ```
 
@@ -286,7 +294,9 @@ Produces:
 ### `sql.identifier`
 
 ```js
-(names: $ReadOnlyArray<string>) => IdentifierTokenType;
+(
+  names: $ReadOnlyArray<string>
+) => IdentifierTokenType;
 
 ```
 
@@ -313,7 +323,9 @@ Produces:
 ### `sql.identifierList`
 
 ```js
-(identifiers: $ReadOnlyArray<$ReadOnlyArray<string>>) => IdentifierListTokenType;
+(
+  identifiers: $ReadOnlyArray<$ReadOnlyArray<string>>
+) => IdentifierListTokenType;
 
 ```
 
@@ -374,7 +386,10 @@ Produces:
 ### `sql.raw`
 
 ```js
-(rawSql: string, values?: $ReadOnlyArray<PrimitiveValueExpressionType>) => RawSqlTokenType;
+(
+  rawSql: string,
+  values?: $ReadOnlyArray<PrimitiveValueExpressionType>
+) => RawSqlTokenType;
 
 ```
 
@@ -589,3 +604,98 @@ Produces:
 }
 
 ```
+
+### `sql.assignmentList`
+
+```js
+(
+  namedAssignmentValueBindings: NamedAssignmentType
+) => AssignmentListTokenType
+
+```
+
+Creates an assignment list, e.g.
+
+```js
+await connection.query(sql`
+  UPDATE foo
+  SET ${sql.assignmentList({
+    bar: 'baz',
+    qux: 'quux'
+  })}
+`);
+
+```
+
+Produces:
+
+```js
+{
+  sql: 'UPDATE foo SET bar = $1, qux = $2',
+  values: [
+    'baz',
+    'quux'
+  ]
+}
+
+```
+
+Assignment list can describe other SQL tokens, e.g.
+
+```js
+await connection.query(sql`
+  UPDATE foo
+  SET ${sql.assignmentList({
+    bar: sql.raw('to_timestamp($1)', ['baz']),
+    qux: sql.raw('to_timestamp($1)', ['quux'])
+  })}
+`);
+
+```
+
+Produces:
+
+```js
+{
+  sql: 'UPDATE foo SET bar = to_timestamp($1), qux = to_timestamp($2)',
+  values: [
+    'baz',
+    'quux'
+  ]
+}
+
+```
+
+#### Snake-case normalization
+
+`sql.assignmentList` converts object keys to snake-case, e.g.
+
+```js
+await connection.query(sql`
+  UPDATE foo
+  SET ${sql.assignmentList({
+    barBaz: sql.raw('to_timestamp($1)', ['qux']),
+    quuxQuuz: sql.raw('to_timestamp($1)', ['corge'])
+  })}
+`);
+
+```
+
+Produces:
+
+```js
+{
+  sql: 'UPDATE foo SET bar_baz = to_timestamp($1), quux_quuz = to_timestamp($2)',
+  values: [
+    'qux',
+    'corge'
+  ]
+}
+
+```
+
+This behaviour might be sometimes undesirable.
+
+There is currently no way to override this behaviour.
+
+Use this issue https://github.com/gajus/slonik/issues/53 to describe your use case and propose a solution.
