@@ -84,3 +84,16 @@ test('the resulting object is immutable', (t) => {
     query.sql = 'SELECT 2';
   });
 });
+
+test('creates an object describing query value bindings with Date', (t) => {
+  const date = new Date();
+  const query = sql`SELECT ${date}`;
+
+  t.deepEqual(query, {
+    sql: 'SELECT $1',
+    type: SqlTokenSymbol,
+    values: [
+      date
+    ]
+  });
+});

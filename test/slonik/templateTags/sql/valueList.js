@@ -56,3 +56,16 @@ test('the resulting object is immutable', (t) => {
     token.foo = 'bar';
   });
 });
+
+test('creates a value list with Date', (t) => {
+  const date = new Date();
+  const query = sql`SELECT (${sql.valueList([date])})`;
+
+  t.deepEqual(query, {
+    sql: 'SELECT ($1)',
+    type: SqlTokenSymbol,
+    values: [
+      date
+    ]
+  });
+});
