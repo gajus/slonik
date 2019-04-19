@@ -1,6 +1,8 @@
 // @flow
 
-import snakeCase from 'snake-case';
+import {
+  snakeCase
+} from 'lodash';
 import type {
   AssignmentListTokenType,
   SqlFragmentType
