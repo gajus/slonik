@@ -100,6 +100,7 @@ Note: Using this project does not require TypeScript or Flow. It is a regular ES
         * [`stream`](#slonik-query-methods-stream)
         * [`transaction`](#slonik-query-methods-transaction)
     * [Error handling](#slonik-error-handling)
+        * [Original `node-postgres` error](#slonik-error-handling-original-node-postgres-error)
         * [Handling `ConnectionError`](#slonik-error-handling-handling-connectionerror)
         * [Handling `QueryCancelledError`](#slonik-error-handling-handling-querycancellederror)
         * [Handling `BackendTerminatedError`](#slonik-error-handling-handling-backendterminatederror)
@@ -2108,6 +2109,15 @@ try {
 }
 
 ```
+
+<a name="slonik-error-handling-original-node-postgres-error"></a>
+### Original <code>node-postgres</code> error
+
+When error originates from `node-postgres`, the original error is available under `originalError` property.
+
+This propery is exposed for debugging purposes only. Do not use it for conditional checks – it can change.
+
+If you require to extract meta-data about a specific type of error (e.g. contraint violation name), raise a GitHub issue describing your use case.
 
 <a name="slonik-error-handling-handling-connectionerror"></a>
 ### Handling <code>ConnectionError</code>
