@@ -17,6 +17,14 @@ try {
 
 ```
 
+### Original `node-postgres` error
+
+When error originates from `node-postgres`, the original error is available under `originalError` property.
+
+This propery is exposed for debugging purposes only. Do not use it for conditional checks – it can change.
+
+If you require to extract meta-data about a specific type of error (e.g. contraint violation name), raise a GitHub issue describing your use case.
+
 ### Handling `ConnectionError`
 
 `ConnectionError` is thrown when connection cannot be established to the PostgreSQL server.

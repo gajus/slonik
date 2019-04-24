@@ -126,11 +126,11 @@ export default async (
     if (error.code === '57P01' || error.message === 'Connection terminated') {
       connection.connection.slonik.terminated = true;
 
-      throw new BackendTerminatedError();
+      throw new BackendTerminatedError(error);
     }
 
     if (error.code === '57014') {
-      throw new QueryCancelledError();
+      throw new QueryCancelledError(error);
     }
 
     log.error({
@@ -139,19 +139,19 @@ export default async (
     }, 'query produced an error');
 
     if (error.code === '23502') {
-      throw new NotNullIntegrityConstraintViolationError(error.constraint);
+      throw new NotNullIntegrityConstraintViolationError(error, error.constraint);
     }
 
     if (error.code === '23503') {
-      throw new ForeignKeyIntegrityConstraintViolationError(error.constraint);
+      throw new ForeignKeyIntegrityConstraintViolationError(error, error.constraint);
     }
 
     if (error.code === '23505') {
-      throw new UniqueIntegrityConstraintViolationError(error.constraint);
+      throw new UniqueIntegrityConstraintViolationError(error, error.constraint);
     }
 
     if (error.code === '23514') {
-      throw new CheckIntegrityConstraintViolationError(error.constraint);
+      throw new CheckIntegrityConstraintViolationError(error, error.constraint);
     }
 
     throw error;

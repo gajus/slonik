@@ -12,9 +12,23 @@ export class UnexpectedStateError extends SlonikError {}
 
 export class ConnectionError extends SlonikError {}
 
-export class QueryCancelledError extends SlonikError {}
+export class QueryCancelledError extends SlonikError {
+  constructor (error: Error) {
+    super();
 
-export class BackendTerminatedError extends SlonikError {}
+    this.originalError = error;
+    this.message = 'Query has been cancelled.';
+  }
+}
+
+export class BackendTerminatedError extends SlonikError {
+  constructor (error: Error) {
+    super();
+
+    this.originalError = error;
+    this.message = 'Backend has been terminated.';
+  }
+}
 
 export class NotFoundError extends SlonikError {
   constructor () {
@@ -31,9 +45,10 @@ export class DataIntegrityError extends SlonikError {
 export class IntegrityConstraintViolationError extends SlonikError {
   constraint: string;
 
-  constructor (constraint: string) {
+  constructor (error: Error, constraint: string) {
     super();
 
+    this.originalError = error;
     this.constraint = constraint;
   }
 }
@@ -42,33 +57,37 @@ export class IntegrityConstraintViolationError extends SlonikError {
 // @see https://www.postgresql.org/docs/9.4/static/errcodes-appendix.html
 
 export class NotNullIntegrityConstraintViolationError extends IntegrityConstraintViolationError {
-  constructor (constraint: string) {
+  constructor (error: Error, constraint: string) {
     super(constraint);
 
+    this.originalError = error;
     this.message = 'Query violates a not NULL integrity constraint.';
   }
 }
 
 export class ForeignKeyIntegrityConstraintViolationError extends IntegrityConstraintViolationError {
-  constructor (constraint: string) {
+  constructor (error: Error, constraint: string) {
     super(constraint);
 
+    this.originalError = error;
     this.message = 'Query violates a foreign key integrity constraint.';
   }
 }
 
 export class UniqueIntegrityConstraintViolationError extends IntegrityConstraintViolationError {
-  constructor (constraint: string) {
+  constructor (error: Error, constraint: string) {
     super(constraint);
 
+    this.originalError = error;
     this.message = 'Query violates a unique integrity constraint.';
   }
 }
 
 export class CheckIntegrityConstraintViolationError extends IntegrityConstraintViolationError {
-  constructor (constraint: string) {
+  constructor (error: Error, constraint: string) {
     super(constraint);
 
+    this.originalError = error;
     this.message = 'Query violates a check integrity constraint.';
   }
 }
