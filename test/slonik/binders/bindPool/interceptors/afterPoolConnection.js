@@ -20,7 +20,7 @@ test('`afterPoolConnection` is called after `connect`', async (t) => {
     return Promise.resolve('foo');
   });
 
-  t.true(pool.connectSpy.calledBefore(afterPoolConnection));
+  t.assert(pool.connectSpy.calledBefore(afterPoolConnection));
 });
 
 test('`connectionType` is "EXPLICIT" when `connect` is used to create connection', async (t) => {
@@ -38,7 +38,7 @@ test('`connectionType` is "EXPLICIT" when `connect` is used to create connection
     return Promise.resolve('foo');
   });
 
-  t.true(afterPoolConnection.firstCall.args[0].connectionType === 'EXPLICIT');
+  t.assert(afterPoolConnection.firstCall.args[0].connectionType === 'EXPLICIT');
 });
 
 test('`connectionType` is "IMPLICIT_QUERY" when a query method is used to create a connection', async (t) => {
@@ -54,7 +54,7 @@ test('`connectionType` is "IMPLICIT_QUERY" when a query method is used to create
 
   await pool.query(sql`SELECT 1`);
 
-  t.true(afterPoolConnection.firstCall.args[0].connectionType === 'IMPLICIT_QUERY');
+  t.assert(afterPoolConnection.firstCall.args[0].connectionType === 'IMPLICIT_QUERY');
 });
 
 test('`connectionType` is "IMPLICIT_TRANSACTION" when `transaction` is used to create a connection', async (t) => {
@@ -72,5 +72,5 @@ test('`connectionType` is "IMPLICIT_TRANSACTION" when `transaction` is used to c
     return Promise.resolve('foo');
   });
 
-  t.true(afterPoolConnection.firstCall.args[0].connectionType === 'IMPLICIT_TRANSACTION');
+  t.assert(afterPoolConnection.firstCall.args[0].connectionType === 'IMPLICIT_TRANSACTION');
 });

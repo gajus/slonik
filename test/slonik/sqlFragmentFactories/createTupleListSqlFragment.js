@@ -16,7 +16,7 @@ test('creates a single tuple with a single parameter', (t) => {
     type: TupleListTokenSymbol
   }, 0);
 
-  t.true(sqlFragment.sql === '($1)');
+  t.assert(sqlFragment.sql === '($1)');
   t.deepEqual(sqlFragment.values, ['foo']);
 });
 
@@ -36,7 +36,7 @@ test('creates a comma separated list of tuples with a single parameter', (t) => 
     type: TupleListTokenSymbol
   }, 0);
 
-  t.true(sqlFragment.sql === '($1), ($2), ($3)');
+  t.assert(sqlFragment.sql === '($1), ($2), ($3)');
   t.deepEqual(sqlFragment.values, ['foo', 'bar', 'baz']);
 });
 
@@ -56,7 +56,7 @@ test('offsets parameter position', (t) => {
     type: TupleListTokenSymbol
   }, 3);
 
-  t.true(sqlFragment.sql === '($4), ($5), ($6)');
+  t.assert(sqlFragment.sql === '($4), ($5), ($6)');
   t.deepEqual(sqlFragment.values, ['foo', 'bar', 'baz']);
 });
 

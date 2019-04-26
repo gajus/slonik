@@ -12,7 +12,7 @@ test('creates a tuple with a single parameter', (t) => {
     values: ['foo']
   }, 0);
 
-  t.true(sqlFragment.sql === '($1)');
+  t.assert(sqlFragment.sql === '($1)');
   t.deepEqual(sqlFragment.values, ['foo']);
 });
 
@@ -22,7 +22,7 @@ test('creates a tuple multiple parameters', (t) => {
     values: ['foo', 'bar', 'baz']
   }, 0);
 
-  t.true(sqlFragment.sql === '($1, $2, $3)');
+  t.assert(sqlFragment.sql === '($1, $2, $3)');
   t.deepEqual(sqlFragment.values, ['foo', 'bar', 'baz']);
 });
 
@@ -32,7 +32,7 @@ test('offsets parameter', (t) => {
     values: ['foo']
   }, 1);
 
-  t.true(sqlFragment.sql === '($2)');
+  t.assert(sqlFragment.sql === '($2)');
   t.deepEqual(sqlFragment.values, ['foo']);
 });
 

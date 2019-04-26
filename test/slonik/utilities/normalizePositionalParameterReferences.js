@@ -8,7 +8,7 @@ import {
 test('creates a plain sql token', (t) => {
   const sqlFragment = normalizePositionalParameterReferences('foo', [], 0);
 
-  t.true(sqlFragment.sql === 'foo');
+  t.assert(sqlFragment.sql === 'foo');
   t.deepEqual(sqlFragment.values, []);
 });
 
@@ -17,7 +17,7 @@ test('creates a tuple with a single positional parameter', (t) => {
     'foo'
   ], 0);
 
-  t.true(sqlFragment.sql === '($1)');
+  t.assert(sqlFragment.sql === '($1)');
   t.deepEqual(sqlFragment.values, ['foo']);
 });
 
@@ -26,7 +26,7 @@ test('offsets parameter position', (t) => {
     'foo'
   ], 1);
 
-  t.true(sqlFragment.sql === '($2)');
+  t.assert(sqlFragment.sql === '($2)');
   t.deepEqual(sqlFragment.values, ['foo']);
 });
 

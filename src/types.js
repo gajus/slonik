@@ -113,15 +113,14 @@ type CommonQueryMethodsType = {|
 |};
 
 export type DatabaseTransactionConnectionType = {|
-  ...CommonQueryMethodsType,
+  ...$Exact<CommonQueryMethodsType>,
   +transaction: (handler: TransactionFunctionType) => Promise<*>
 |};
 
 export type TransactionFunctionType = (connection: DatabaseTransactionConnectionType) => Promise<*>;
 
 export type DatabasePoolConnectionType = {|
-  ...CommonQueryMethodsType,
-
+  ...$Exact<CommonQueryMethodsType>,
   +stream: (sql: TaggedTemplateLiteralInvocationType, streamHandler: StreamHandlerType) => Promise<null>,
   +transaction: (handler: TransactionFunctionType) => Promise<*>
 |};
@@ -129,7 +128,7 @@ export type DatabasePoolConnectionType = {|
 export type ConnectionRoutineType = (connection: DatabasePoolConnectionType) => Promise<*>;
 
 export type DatabasePoolType = {|
-  ...CommonQueryMethodsType,
+  ...$Exact<CommonQueryMethodsType>,
   +connect: (connectionRoutine: ConnectionRoutineType) => Promise<*>,
 
   // $FlowFixMe
@@ -143,8 +142,8 @@ export type DatabasePoolType = {|
  */
 export type DatabaseConnectionType =
   $Shape<{
-    ...DatabasePoolConnectionType,
-    ...DatabasePoolType
+    ...$Exact<DatabasePoolConnectionType>,
+    ...$Exact<DatabasePoolType>
   }>;
 
 type QueryResultRowColumnType = string | number | null;

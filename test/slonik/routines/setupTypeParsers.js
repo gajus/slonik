@@ -32,10 +32,10 @@ test('uses typname to retrieve pg_type oid and binds connection types', async (t
   ]);
 
   // $FlowFixMe
-  t.true(typeof connection._types.text.foo === 'function');
+  t.assert(typeof connection._types.text.foo === 'function');
 
   // $FlowFixMe
-  t.true(typeof connection._types.text.bar === 'function');
+  t.assert(typeof connection._types.text.bar === 'function');
 });
 
 test('throws an error if type cannot be found', async (t) => {

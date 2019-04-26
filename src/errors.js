@@ -58,7 +58,7 @@ export class IntegrityConstraintViolationError extends SlonikError {
 
 export class NotNullIntegrityConstraintViolationError extends IntegrityConstraintViolationError {
   constructor (error: Error, constraint: string) {
-    super(constraint);
+    super(error, constraint);
 
     this.originalError = error;
     this.message = 'Query violates a not NULL integrity constraint.';
@@ -67,7 +67,7 @@ export class NotNullIntegrityConstraintViolationError extends IntegrityConstrain
 
 export class ForeignKeyIntegrityConstraintViolationError extends IntegrityConstraintViolationError {
   constructor (error: Error, constraint: string) {
-    super(constraint);
+    super(error, constraint);
 
     this.originalError = error;
     this.message = 'Query violates a foreign key integrity constraint.';
@@ -76,7 +76,7 @@ export class ForeignKeyIntegrityConstraintViolationError extends IntegrityConstr
 
 export class UniqueIntegrityConstraintViolationError extends IntegrityConstraintViolationError {
   constructor (error: Error, constraint: string) {
-    super(constraint);
+    super(error, constraint);
 
     this.originalError = error;
     this.message = 'Query violates a unique integrity constraint.';
@@ -85,7 +85,7 @@ export class UniqueIntegrityConstraintViolationError extends IntegrityConstraint
 
 export class CheckIntegrityConstraintViolationError extends IntegrityConstraintViolationError {
   constructor (error: Error, constraint: string) {
-    super(constraint);
+    super(error, constraint);
 
     this.originalError = error;
     this.message = 'Query violates a check integrity constraint.';

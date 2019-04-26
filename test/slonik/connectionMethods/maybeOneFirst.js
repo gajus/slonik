@@ -32,7 +32,7 @@ test('returns null if no results', async (t) => {
 
   const result = await pool.maybeOneFirst(sql`SELECT 1`);
 
-  t.true(result === null);
+  t.assert(result === null);
 });
 
 test('throws an error if more than one row is returned', async (t) => {

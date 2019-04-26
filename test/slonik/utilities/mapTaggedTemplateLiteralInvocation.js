@@ -12,9 +12,9 @@ test('sql tag invocation', (t) => {
 
   mapTaggedTemplateLiteralInvocation(spy)(sql`foo`);
 
-  t.true(spy.calledOnce);
+  t.assert(spy.calledOnce);
 
-  t.true(spy.firstCall.args[0] === 'foo');
+  t.assert(spy.firstCall.args[0] === 'foo');
   t.deepEqual(spy.firstCall.args[1], []);
 });
 
@@ -23,9 +23,9 @@ test('sql tag invocation with expressions', (t) => {
 
   mapTaggedTemplateLiteralInvocation(spy)(sql`foo ${'bar'}`);
 
-  t.true(spy.calledOnce);
+  t.assert(spy.calledOnce);
 
-  t.true(spy.firstCall.args[0] === 'foo $1');
+  t.assert(spy.firstCall.args[0] === 'foo $1');
   t.deepEqual(spy.firstCall.args[1], ['bar']);
 });
 

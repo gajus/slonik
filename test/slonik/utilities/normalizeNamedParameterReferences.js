@@ -8,7 +8,7 @@ import {
 test('does not error when placeholders are absent', (t) => {
   const sqlFragment = normalizeNamedParameterReferences('SELECT 1', {}, 0);
 
-  t.true(sqlFragment.sql === 'SELECT 1');
+  t.assert(sqlFragment.sql === 'SELECT 1');
   t.deepEqual(sqlFragment.values, []);
 });
 
@@ -17,7 +17,7 @@ test('interpolates a named parameter reference', (t) => {
     foo: 'FOO'
   }, 0);
 
-  t.true(sqlFragment.sql === 'SELECT $1');
+  t.assert(sqlFragment.sql === 'SELECT $1');
   t.deepEqual(sqlFragment.values, [
     'FOO'
   ]);
@@ -29,7 +29,7 @@ test('interpolates multiple named parameter references', (t) => {
     foo: 'FOO'
   }, 0);
 
-  t.true(sqlFragment.sql === 'SELECT $1, $2');
+  t.assert(sqlFragment.sql === 'SELECT $1, $2');
   t.deepEqual(sqlFragment.values, [
     'FOO',
     'BAR'
@@ -41,7 +41,7 @@ test('interpolates multiple named parameter references (same name)', (t) => {
     foo: 'FOO'
   }, 0);
 
-  t.true(sqlFragment.sql === 'SELECT $1, $2');
+  t.assert(sqlFragment.sql === 'SELECT $1, $2');
   t.deepEqual(sqlFragment.values, [
     'FOO',
     'FOO'

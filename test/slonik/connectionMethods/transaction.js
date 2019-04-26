@@ -8,8 +8,8 @@ test('commits successful transaction', async (t) => {
 
   await pool.transaction(async () => {});
 
-  t.true(pool.querySpy.getCall(0).args[0] === 'START TRANSACTION');
-  t.true(pool.querySpy.getCall(1).args[0] === 'COMMIT');
+  t.assert(pool.querySpy.getCall(0).args[0] === 'START TRANSACTION');
+  t.assert(pool.querySpy.getCall(1).args[0] === 'COMMIT');
 });
 
 test('rollbacks unsuccessful transaction', async (t) => {
@@ -19,6 +19,6 @@ test('rollbacks unsuccessful transaction', async (t) => {
     return Promise.reject(new Error('foo'));
   }));
 
-  t.true(pool.querySpy.getCall(0).args[0] === 'START TRANSACTION');
-  t.true(pool.querySpy.getCall(1).args[0] === 'ROLLBACK');
+  t.assert(pool.querySpy.getCall(0).args[0] === 'START TRANSACTION');
+  t.assert(pool.querySpy.getCall(1).args[0] === 'ROLLBACK');
 });

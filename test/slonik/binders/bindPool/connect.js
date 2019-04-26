@@ -11,8 +11,8 @@ test('releases connection after promise is resolved', async (t) => {
     return Promise.resolve('foo');
   });
 
-  t.true(pool.connectSpy.callCount === 1);
-  t.true(pool.releaseSpy.callCount === 1);
+  t.assert(pool.connectSpy.callCount === 1);
+  t.assert(pool.releaseSpy.callCount === 1);
 });
 
 test('ends connection after promise is rejected', async (t) => {
@@ -22,8 +22,8 @@ test('ends connection after promise is rejected', async (t) => {
     return Promise.reject(new Error('foo'));
   }));
 
-  t.true(pool.connectSpy.callCount === 1);
-  t.true(pool.removeSpy.callCount === 1);
+  t.assert(pool.connectSpy.callCount === 1);
+  t.assert(pool.removeSpy.callCount === 1);
 });
 
 test('does not connect if `beforePoolConnection` throws an error', async (t) => {
@@ -41,8 +41,8 @@ test('does not connect if `beforePoolConnection` throws an error', async (t) => 
     return null;
   }));
 
-  t.true(pool.connectSpy.callCount === 0);
-  t.true(pool.releaseSpy.callCount === 0);
+  t.assert(pool.connectSpy.callCount === 0);
+  t.assert(pool.releaseSpy.callCount === 0);
 });
 
 test('ends connection if `afterPoolConnection` throws an error', async (t) => {
@@ -60,8 +60,8 @@ test('ends connection if `afterPoolConnection` throws an error', async (t) => {
     return null;
   }));
 
-  t.true(pool.connectSpy.callCount === 1);
-  t.true(pool.removeSpy.callCount === 1);
+  t.assert(pool.connectSpy.callCount === 1);
+  t.assert(pool.removeSpy.callCount === 1);
 });
 
 test('ends connection if `beforePoolConnectionRelease` throws an error', async (t) => {
@@ -79,8 +79,8 @@ test('ends connection if `beforePoolConnectionRelease` throws an error', async (
     return null;
   }));
 
-  t.true(pool.connectSpy.callCount === 1);
-  t.true(pool.removeSpy.callCount === 1);
+  t.assert(pool.connectSpy.callCount === 1);
+  t.assert(pool.removeSpy.callCount === 1);
 });
 
 test('if `beforePoolConnection` returns pool object, then the returned pool object is used to create a connection (IMPLICIT_QUERY)', async (t) => {
@@ -99,11 +99,11 @@ test('if `beforePoolConnection` returns pool object, then the returned pool obje
 
   await pool1.query(sql`SELECT 1`);
 
-  t.true(pool0.connectSpy.callCount === 1);
-  t.true(pool0.releaseSpy.callCount === 1);
+  t.assert(pool0.connectSpy.callCount === 1);
+  t.assert(pool0.releaseSpy.callCount === 1);
 
-  t.true(pool1.connectSpy.callCount === 0);
-  t.true(pool1.releaseSpy.callCount === 0);
+  t.assert(pool1.connectSpy.callCount === 0);
+  t.assert(pool1.releaseSpy.callCount === 0);
 });
 
 test('if `beforePoolConnection` returns pool object, then the returned pool object is used to create a connection (IMPLICIT_TRANSACTION)', async (t) => {
@@ -124,11 +124,11 @@ test('if `beforePoolConnection` returns pool object, then the returned pool obje
     return connection.query(sql`SELECT 1`);
   });
 
-  t.true(pool0.connectSpy.callCount === 1);
-  t.true(pool0.releaseSpy.callCount === 1);
+  t.assert(pool0.connectSpy.callCount === 1);
+  t.assert(pool0.releaseSpy.callCount === 1);
 
-  t.true(pool1.connectSpy.callCount === 0);
-  t.true(pool1.releaseSpy.callCount === 0);
+  t.assert(pool1.connectSpy.callCount === 0);
+  t.assert(pool1.releaseSpy.callCount === 0);
 });
 
 test('if `beforePoolConnection` returns pool object, then the returned pool object is used to create a connection (EXPLICIT)', async (t) => {
@@ -149,11 +149,11 @@ test('if `beforePoolConnection` returns pool object, then the returned pool obje
     return connection.query(sql`SELECT 1`);
   });
 
-  t.true(pool0.connectSpy.callCount === 1);
-  t.true(pool0.releaseSpy.callCount === 1);
+  t.assert(pool0.connectSpy.callCount === 1);
+  t.assert(pool0.releaseSpy.callCount === 1);
 
-  t.true(pool1.connectSpy.callCount === 0);
-  t.true(pool1.releaseSpy.callCount === 0);
+  t.assert(pool1.connectSpy.callCount === 0);
+  t.assert(pool1.releaseSpy.callCount === 0);
 });
 
 test('if `beforePoolConnection` returns null, then the current pool object is used to create a connection', async (t) => {
@@ -169,6 +169,6 @@ test('if `beforePoolConnection` returns null, then the current pool object is us
 
   await pool.query(sql`SELECT 1`);
 
-  t.true(pool.connectSpy.callCount === 1);
-  t.true(pool.releaseSpy.callCount === 1);
+  t.assert(pool.connectSpy.callCount === 1);
+  t.assert(pool.releaseSpy.callCount === 1);
 });

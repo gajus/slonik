@@ -24,8 +24,8 @@ test('throws a descriptive error if query is empty', (t) => {
     sql``;
   });
 
-  t.true(error instanceof InvalidInputError);
-  t.true(error.message === 'Unexpected SQL input. Query cannot be empty.');
+  t.assert(error instanceof InvalidInputError);
+  t.assert(error.message === 'Unexpected SQL input. Query cannot be empty.');
 });
 
 test('throws a descriptive error if the entire query is a value binding', (t) => {
@@ -33,8 +33,8 @@ test('throws a descriptive error if the entire query is a value binding', (t) =>
     sql`${1}`;
   });
 
-  t.true(error instanceof InvalidInputError);
-  t.true(error.message === 'Unexpected SQL input. Query cannot be empty. Found only value binding.');
+  t.assert(error instanceof InvalidInputError);
+  t.assert(error.message === 'Unexpected SQL input. Query cannot be empty. Found only value binding.');
 });
 
 test('creates an object describing query value bindings', (t) => {

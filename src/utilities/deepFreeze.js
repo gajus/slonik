@@ -7,9 +7,9 @@
 const deepFreeze = (subject: Object) => {
   Object.freeze(subject);
 
-  for (const prop of Object.getOwnPropertyNames(subject)) {
-    if (subject.hasOwnProperty(prop) && subject[prop] !== null && (typeof subject[prop] === 'object' || typeof subject[prop] === 'function') && subject[prop].constructor !== Buffer && !Object.isFrozen(subject[prop])) {
-      deepFreeze(subject[prop]);
+  for (const property of Object.getOwnPropertyNames(subject)) {
+    if (subject.hasOwnProperty(property) && subject[property] !== null && (typeof subject[property] === 'object' || typeof subject[property] === 'function') && subject[property].constructor !== Buffer && !Object.isFrozen(subject[property])) {
+      deepFreeze(subject[property]);
     }
   }
 

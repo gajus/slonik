@@ -13,7 +13,7 @@ test('creates a plain sql token', (t) => {
     values: []
   }, 0);
 
-  t.true(sqlFragment.sql === 'foo');
+  t.assert(sqlFragment.sql === 'foo');
   t.deepEqual(sqlFragment.values, []);
 });
 
@@ -26,7 +26,7 @@ test('creates a tuple with a single positional parameter', (t) => {
     ]
   }, 0);
 
-  t.true(sqlFragment.sql === '($1)');
+  t.assert(sqlFragment.sql === '($1)');
   t.deepEqual(sqlFragment.values, ['foo']);
 });
 
@@ -39,6 +39,6 @@ test('creates a tuple with a single named parameter', (t) => {
     }
   }, 0);
 
-  t.true(sqlFragment.sql === '($1)');
+  t.assert(sqlFragment.sql === '($1)');
   t.deepEqual(sqlFragment.values, ['foo']);
 });
