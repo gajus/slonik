@@ -6,7 +6,7 @@
 [![Canonical Code Style](https://img.shields.io/badge/code%20style-canonical-blue.svg?style=flat-square)](https://github.com/gajus/canonical)
 [![Twitter Follow](https://img.shields.io/twitter/follow/kuizinas.svg?style=social&label=Follow)](https://twitter.com/kuizinas)
 
-A [battle-tested](#battle-tested) PostgreSQL client with strict types, detail logging and assertions.
+A [battle-tested](#battle-tested) PostgreSQL client with strict types, detailed logging and assertions.
 
 ![Tailing Slonik logs](./.README/slonik-log-tailing.gif)
 
@@ -28,7 +28,7 @@ Note: Using this project does not require TypeScript or Flow. It is a regular ES
 * [Safe transaction handling](#protecting-against-unsafe-transaction-handling).
 * [Safe value interpolation](#protecting-against-unsafe-value-interpolation).
 * [Transaction nesting](#transaction-nesting).
-* Detail [logging](#slonik-debugging).
+* Detailed [logging](#slonik-debugging).
 * [Asynchronous stack trace resolution](#capture-stack-trace).
 * [Middlewares](#slonik-interceptors).
 * [Mapped errors](#error-handling).

@@ -26,7 +26,7 @@
     "through2": "^3.0.1",
     "ulid": "^2.3.0"
   },
-  "description": "A PostgreSQL client with strict types, detail logging and assertions.",
+  "description": "A PostgreSQL client with strict types, detailed logging and assertions.",
   "devDependencies": {
     "@babel/cli": "^7.4.3",
     "@babel/core": "^7.4.3",
