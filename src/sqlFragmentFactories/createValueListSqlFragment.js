@@ -11,6 +11,7 @@ import {
   isSqlToken
 } from '../utilities';
 import {
+  createPrimitiveValueExpressions,
   createSqlTokenSqlFragment
 } from '../factories';
 
@@ -41,6 +42,6 @@ export default (token: ValueListSqlTokenType, greatestParameterPosition: number)
 
   return {
     sql: placeholders.join(', '),
-    values
+    values: createPrimitiveValueExpressions(values)
   };
 };

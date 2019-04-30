@@ -131,7 +131,7 @@ sql.identifierList = (
 
 sql.raw = (
   rawSql: string,
-  values?: $ReadOnlyArray<PrimitiveValueExpressionType>
+  values?: $ReadOnlyArray<ValueExpressionType>
 ): RawSqlTokenType => {
   return deepFreeze({
     sql: rawSql,

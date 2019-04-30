@@ -8,6 +8,7 @@ import type {
 } from '../types';
 
 const query: InternalQueryFunctionType<*> = async (connectionLogger, connection, clientConfiguration, rawSql, values, inheritedQueryId) => {
+  // $FlowFixMe
   return executeQuery(
     connectionLogger,
     connection,

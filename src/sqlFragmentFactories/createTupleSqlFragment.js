@@ -11,6 +11,7 @@ import {
   isSqlToken
 } from '../utilities';
 import {
+  createPrimitiveValueExpressions,
   createSqlTokenSqlFragment
 } from '../factories';
 
@@ -43,6 +44,6 @@ export default (token: TupleSqlTokenType, greatestParameterPosition: number): Sq
 
   return {
     sql,
-    values
+    values: createPrimitiveValueExpressions(values)
   };
 };

@@ -159,6 +159,7 @@ export default async (
     connection.off('notice', noticeListener);
   }
 
+  // $FlowFixMe
   result.notices = notices;
 
   for (const interceptor of clientConfiguration.interceptors) {

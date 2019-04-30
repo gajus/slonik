@@ -54,11 +54,13 @@ const stream: InternalStreamFunctionType = async (connectionLogger, connection, 
         }));
 
         transformedStream.on('end', () => {
+          // $FlowFixMe
           resolve({});
         });
 
         // Invoked if stream is destroyed using transformedStream.destroy().
         transformedStream.on('close', () => {
+          // $FlowFixMe
           resolve({});
         });
 

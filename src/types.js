@@ -219,10 +219,10 @@ export type QueryContextType = {|
   +transactionId?: string
 |};
 
-export type PositionalParameterValuesType = $ReadOnlyArray<PrimitiveValueExpressionType>;
+export type PositionalParameterValuesType = $ReadOnlyArray<ValueExpressionType>;
 
 export type NamedParameterValuesType = {
-  [key: string]: PrimitiveValueExpressionType
+  [key: string]: ValueExpressionType
 };
 
 export type IdentifierTokenType = {|
@@ -361,7 +361,7 @@ export type SqlTaggedTemplateType = {|
   ) => IdentifierListTokenType,
   raw: (
     rawSql: string,
-    values?: $ReadOnlyArray<PrimitiveValueExpressionType>
+    values?: $ReadOnlyArray<ValueExpressionType>
   ) => RawSqlTokenType,
   tuple: (
     values: $ReadOnlyArray<ValueExpressionType>

@@ -5,14 +5,15 @@ import type {
   SqlFragmentType
 } from '../types';
 import {
-  normalizePositionalParameterReferences,
-  normalizeNamedParameterReferences
+  interpolatePositionalParameterReferences,
+  interpolateNamedParameterReferences
 } from '../utilities';
 
 export default (token: RawSqlTokenType, greatestParameterPosition: number): SqlFragmentType => {
   if (Array.isArray(token.values)) {
-    return normalizePositionalParameterReferences(token.sql, token.values, greatestParameterPosition);
+    return interpolatePositionalParameterReferences(token.sql, token.values, greatestParameterPosition);
   } else {
-    return normalizeNamedParameterReferences(token.sql, token.values, greatestParameterPosition);
+    // $FlowFixMe
+    return interpolateNamedParameterReferences(token.sql, token.values, greatestParameterPosition);
   }
 };
