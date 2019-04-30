@@ -78,6 +78,7 @@ const sql: SqlTaggedTemplateType = (
 
       parameterValues.push(token);
     } else if (isSqlToken(token)) {
+      // $FlowFixMe
       const sqlFragment = createSqlTokenSqlFragment(token, parameterValues.length);
 
       rawSql += sqlFragment.sql;

@@ -298,7 +298,7 @@ export type AssignmentListTokenType = {|
   +type: typeof ComparisonPredicateTokenSymbol
 |};
 
-export type PrimitiveValueExpressionType = string | number | boolean | null;
+export type PrimitiveValueExpressionType = $ReadOnlyArray<PrimitiveValueExpressionType> | string | number | boolean | null;
 
 export type SqlTokenType =
   ArraySqlTokenType |

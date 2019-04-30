@@ -11,7 +11,7 @@ export default (values: $ReadOnlyArray<*>): $ReadOnlyArray<PrimitiveValueExpress
   const primitiveValueExpressions = [];
 
   for (const value of values) {
-    if (typeof value === 'string' || typeof value === 'number' || typeof value === 'boolean' || value === null) {
+    if (Array.isArray(value) || typeof value === 'string' || typeof value === 'number' || typeof value === 'boolean' || value === null) {
       primitiveValueExpressions.push(value);
     } else {
       throw new UnexpectedStateError('Unexpected value expression.');
