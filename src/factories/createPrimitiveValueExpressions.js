@@ -20,7 +20,8 @@ export default (values: $ReadOnlyArray<*>): $ReadOnlyArray<PrimitiveValueExpress
       primitiveValueExpressions.push(value);
     } else {
       log.warn({
-        value
+        value,
+        values
       }, 'unexpected value expression');
 
       throw new UnexpectedStateError('Unexpected value expression.');
