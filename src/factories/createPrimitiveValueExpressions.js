@@ -9,7 +9,7 @@ import type {
 } from '../types';
 
 const log = Logger.child({
-  namespace: 'createPrimitibeValueExpressions'
+  namespace: 'createPrimitiveValueExpressions'
 });
 
 export default (values: $ReadOnlyArray<*>): $ReadOnlyArray<PrimitiveValueExpressionType> => {
