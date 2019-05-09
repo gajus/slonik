@@ -1,6 +1,7 @@
 <a name="slonik"></a>
 # Slonik
 
+![[GitSpo Mentions](https://gitspo.com/mentions/gajus/slonik)](https://gitspo.com/badges/gajus/swing?style=flat-square)
 [![Travis build status](http://img.shields.io/travis/gajus/slonik/master.svg?style=flat-square)](https://travis-ci.org/gajus/slonik)
 [![Coveralls](https://img.shields.io/coveralls/gajus/slonik.svg?style=flat-square)](https://coveralls.io/github/gajus/slonik)
 [![NPM version](http://img.shields.io/npm/v/slonik.svg?style=flat-square)](https://www.npmjs.org/package/slonik)
