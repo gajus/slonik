@@ -1,6 +1,6 @@
 # Slonik
 
-[![GitSpo Mentions](https://gitspo.com/badges/gajus/slonik?style=flat-square)](https://gitspo.com/mentions/gajus/slonik)
+[![GitSpo Mentions](https://gitspo.com/badges/mentions/gajus/slonik?style=flat-square)](https://gitspo.com/mentions/gajus/slonik)
 [![Travis build status](http://img.shields.io/travis/gajus/slonik/master.svg?style=flat-square)](https://travis-ci.org/gajus/slonik)
 [![Coveralls](https://img.shields.io/coveralls/gajus/slonik.svg?style=flat-square)](https://coveralls.io/github/gajus/slonik)
 [![NPM version](http://img.shields.io/npm/v/slonik.svg?style=flat-square)](https://www.npmjs.org/package/slonik)
