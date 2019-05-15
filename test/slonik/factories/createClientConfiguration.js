@@ -61,3 +61,15 @@ test('overrides provided properties', (t) => {
     }
   );
 });
+
+test('disables default type parsers', (t) => {
+  t.deepEqual(
+    createClientConfiguration({
+      typeParsers: []
+    }),
+    {
+      ...defaultConfiguration,
+      typeParsers: []
+    }
+  );
+});

@@ -2,11 +2,13 @@
 
 import type {
   ClientConfigurationType,
-  ClientUserConfigurationType
+  ClientUserConfigurationType,
+  TypeParserType
 } from '../types';
 import createTypeParserPreset from './createTypeParserPreset';
 
 export default (clientUserConfiguration?: ClientUserConfigurationType): ClientConfigurationType => {
+  const typeParsers: $ReadOnlyArray<TypeParserType> = [];
   const configuration = {
     captureStackTrace: true,
     connectionTimeout: 5000,
@@ -18,12 +20,12 @@ export default (clientUserConfiguration?: ClientUserConfigurationType): ClientCo
     maximumPoolSize: 10,
     minimumPoolSize: 0,
 
-    // $FlowFixMe
-    typeParsers: [],
+    typeParsers,
     ...clientUserConfiguration
   };
 
-  if (!configuration.typeParsers || !configuration.typeParsers.length) {
+  if (!configuration.typeParsers || configuration.typeParsers === typeParsers) {
+    // $FlowFixMe
     configuration.typeParsers = createTypeParserPreset();
   }
 
