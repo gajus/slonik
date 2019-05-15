@@ -13,7 +13,7 @@ test('creates an empty array binding', (t) => {
     values: []
   }, 0);
 
-  t.assert(sqlFragment.sql === '$1::"int4"[]');
+  t.assert(sqlFragment.sql === '$1::int4[]');
   t.deepEqual(sqlFragment.values, [[]]);
 });
 
@@ -26,7 +26,7 @@ test('creates an array binding with a single value', (t) => {
     ]
   }, 0);
 
-  t.assert(sqlFragment.sql === '$1::"int4"[]');
+  t.assert(sqlFragment.sql === '$1::int4[]');
   t.deepEqual(sqlFragment.values, [[1]]);
 });
 
@@ -41,7 +41,7 @@ test('creates an array binding with multiple values', (t) => {
     ]
   }, 0);
 
-  t.assert(sqlFragment.sql === '$1::"int4"[]');
+  t.assert(sqlFragment.sql === '$1::int4[]');
   t.deepEqual(sqlFragment.values, [[1, 2, 3]]);
 });
 
@@ -56,6 +56,6 @@ test('offsets parameter position', (t) => {
     ]
   }, 3);
 
-  t.assert(sqlFragment.sql === '$4::"int4"[]');
+  t.assert(sqlFragment.sql === '$4::int4[]');
   t.deepEqual(sqlFragment.values, [[1, 2, 3]]);
 });

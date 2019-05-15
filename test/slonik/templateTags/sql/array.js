@@ -10,7 +10,7 @@ test('creates a value list', (t) => {
   const query = sql`SELECT ${sql.array([1, 2, 3], 'int4')}`;
 
   t.deepEqual(query, {
-    sql: 'SELECT $1::"int4"[]',
+    sql: 'SELECT $1::int4[]',
     type: SqlTokenSymbol,
     values: [
       [
