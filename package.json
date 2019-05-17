@@ -17,7 +17,7 @@
     "iso8601-duration": "^1.2.0",
     "lodash": "^4.17.11",
     "pg": "^7.11.0",
-    "pg-connection-string": "^2.0.0",
+    "pg-connection-string": "github:hjr3/pg-connection-string#ssl-support",
     "pg-cursor": "^2.0.0",
     "pg-types": "^2.0.1",
     "postgres-interval": "^1.2.0",
