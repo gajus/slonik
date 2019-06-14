@@ -43,6 +43,7 @@
     "flow-copy-source": "^2.0.6",
     "gitdown": "^2.5.7",
     "husky": "^2.3.0",
+    "inline-loops.macro": "^1.0.3",
     "nyc": "^14.1.1",
     "semantic-release": "^15.13.12",
     "sinon": "^7.3.2"

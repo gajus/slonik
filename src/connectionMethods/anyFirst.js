@@ -1,6 +1,9 @@
 // @flow
 
 import {
+  map
+} from 'inline-loops.macro';
+import {
   createQueryId
 } from '../utilities';
 import {
@@ -34,7 +37,7 @@ const anyFirst: InternalQueryAnyFirstFunctionType = async (log, connection, clie
 
   const firstColumnName = keys[0];
 
-  return rows.map((row) => {
+  return map(rows, (row) => {
     return row[firstColumnName];
   });
 };

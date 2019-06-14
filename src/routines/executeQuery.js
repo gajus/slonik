@@ -1,5 +1,8 @@
 // @flow
 
+import {
+  map
+} from 'inline-loops.macro';
 import serializeError from 'serialize-error';
 import {
   getStackTrace
@@ -56,14 +59,13 @@ export default async (
   if (clientConfiguration.captureStackTrace) {
     const callSites = await getStackTrace();
 
-    stackTrace = callSites
-      .map((callSite) => {
-        return {
-          columnNumber: callSite.columnNumber,
-          fileName: callSite.fileName,
-          lineNumber: callSite.lineNumber
-        };
-      });
+    stackTrace = map(callSites, (callSite) => {
+      return {
+        columnNumber: callSite.columnNumber,
+        fileName: callSite.fileName,
+        lineNumber: callSite.lineNumber
+      };
+    });
   }
 
   const queryId = inheritedQueryId || createQueryId();
@@ -176,7 +178,7 @@ export default async (
         const fields = result.fields;
 
         // eslint-disable-next-line no-loop-func
-        const rows: $ReadOnlyArray<QueryResultRowType> = result.rows.map((row) => {
+        const rows: $ReadOnlyArray<QueryResultRowType> = map(result.rows, (row) => {
           return transformRow(executionContext, actualQuery, row, fields);
         });
 
