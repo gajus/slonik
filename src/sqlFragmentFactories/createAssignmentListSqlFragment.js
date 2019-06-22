@@ -1,15 +1,13 @@
 // @flow
 
-import {
-  snakeCase
-} from 'lodash';
 import type {
   AssignmentListTokenType,
   SqlFragmentType
 } from '../types';
 import {
   escapeIdentifier,
-  isSqlToken
+  isSqlToken,
+  normalizeIdentifier
 } from '../utilities';
 import {
   createSqlTokenSqlFragment
@@ -31,15 +29,16 @@ export default (token: AssignmentListTokenType, greatestParameterPosition: numbe
 
         values.push(...sqlFragment.values);
 
-        return escapeIdentifier(snakeCase(column)) + ' = ' + sqlFragment.sql;
+        return escapeIdentifier(normalizeIdentifier(column)) + ' = ' + sqlFragment.sql;
       } else {
         // $FlowFixMe
         values.push(value);
 
-        // @todo `snakeCase` is opinionated modification assignment expression modification.
+        // @todo `normalizeIdentifier` is opinionated modification assignment expression modification.
         // Add a way to override the default behaviour, e.g. by allowing AssignmentListTokenType
         // key to be sql.identifier.
-        return escapeIdentifier(snakeCase(column)) + ' = $' + ++placeholderIndex;
+        // @see https://github.com/gajus/slonik/issues/53
+        return escapeIdentifier(normalizeIdentifier(column)) + ' = $' + ++placeholderIndex;
       }
     })
     .join(', ');

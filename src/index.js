@@ -12,6 +12,9 @@ export type {
   ValueExpressionType
 } from './types';
 export {
+  normalizeIdentifier
+} from './utilities';
+export {
   createTypeParserPreset,
   createPool
 } from './factories';
