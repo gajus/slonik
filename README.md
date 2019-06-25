@@ -88,6 +88,7 @@ Note: Using this project does not require TypeScript or Flow. It is a regular ES
         * [`sql.booleanExpression`](#slonik-query-building-sql-booleanexpression)
         * [`sql.comparisonPredicate`](#slonik-query-building-sql-comparisonpredicate)
         * [`sql.assignmentList`](#slonik-query-building-sql-assignmentlist)
+        * [`sql.json`](#slonik-query-building-sql-json)
     * [Query methods](#slonik-query-methods)
         * [`any`](#slonik-query-methods-any)
         * [`anyFirst`](#slonik-query-methods-anyfirst)
@@ -1780,6 +1781,46 @@ This behaviour might be sometimes undesirable.
 There is currently no way to override this behaviour.
 
 Use this issue https://github.com/gajus/slonik/issues/53 to describe your use case and propose a solution.
+
+<a name="slonik-query-building-sql-json"></a>
+### <code>sql.json</code>
+
+```js
+(
+  value: SerializableValueType
+) => JsonTokenType;
+
+```
+
+Serializes value and binds it as an array, e.g.
+
+```js
+await connection.query(sql`
+  SELECT (${sql.json([1, 2, 3])})
+`);
+
+```
+
+Produces:
+
+```js
+{
+  sql: 'SELECT $1::"json"',
+  values: [
+    '[1,2,3]'
+  ]
+}
+
+```
+
+This is a convenience function equivalent to:
+
+```js
+await connection.query(sql`
+  SELECT (${JSON.stringify([1, 2, 3])}::json})
+`);
+
+```
 
 
 <a name="slonik-query-methods"></a>
