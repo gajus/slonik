@@ -699,3 +699,42 @@ This behaviour might be sometimes undesirable.
 There is currently no way to override this behaviour.
 
 Use this issue https://github.com/gajus/slonik/issues/53 to describe your use case and propose a solution.
+
+### `sql.json`
+
+```js
+(
+  value: SerializableValueType
+) => JsonTokenType;
+
+```
+
+Serializes value and binds it as an array, e.g.
+
+```js
+await connection.query(sql`
+  SELECT (${sql.json([1, 2, 3])})
+`);
+
+```
+
+Produces:
+
+```js
+{
+  sql: 'SELECT $1::"json"',
+  values: [
+    '[1,2,3]'
+  ]
+}
+
+```
+
+This is a convenience function equivalent to:
+
+```js
+await connection.query(sql`
+  SELECT (${JSON.stringify([1, 2, 3])}::json})
+`);
+
+```

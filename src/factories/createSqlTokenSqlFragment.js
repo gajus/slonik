@@ -7,6 +7,7 @@ import {
   ComparisonPredicateTokenSymbol,
   IdentifierListTokenSymbol,
   IdentifierTokenSymbol,
+  JsonTokenSymbol,
   RawSqlTokenSymbol,
   SqlTokenSymbol,
   TupleListTokenSymbol,
@@ -19,8 +20,9 @@ import {
   createAssignmentListSqlFragment,
   createBooleanExpressionSqlFragment,
   createComparisonPredicateSqlFragment,
-  createIdentifierSqlFragment,
   createIdentifierListSqlFragment,
+  createIdentifierSqlFragment,
+  createJsonSqlFragment,
   createRawSqlSqlFragment,
   createSqlSqlFragment,
   createTupleListSqlFragment,
@@ -74,6 +76,9 @@ export default (token: SqlTokenType, greatestParameterPosition: number): SqlFrag
   } else if (token.type === AssignmentListTokenSymbol) {
     // $FlowFixMe
     return createAssignmentListSqlFragment(token, greatestParameterPosition);
+  } else if (token.type === JsonTokenSymbol) {
+    // $FlowFixMe
+    return createJsonSqlFragment(token, greatestParameterPosition);
   }
 
   throw new UnexpectedStateError();

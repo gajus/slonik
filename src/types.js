@@ -13,6 +13,7 @@ import {
   ComparisonPredicateTokenSymbol,
   IdentifierListTokenSymbol,
   IdentifierTokenSymbol,
+  JsonTokenSymbol,
   RawSqlTokenSymbol,
   SqlTokenSymbol,
   TupleListTokenSymbol,
@@ -24,6 +25,8 @@ import {
 export type {
   LoggerType
 };
+
+export type SerializableValueType = string | number | boolean | null | {+[key: string]: SerializableValueType} | $ReadOnlyArray<SerializableValueType>;
 
 export opaque type QueryIdType = string;
 
@@ -298,21 +301,27 @@ export type AssignmentListTokenType = {|
   +type: typeof ComparisonPredicateTokenSymbol
 |};
 
+export type JsonSqlTokenType = {|
+  +value: SerializableValueType,
+  +type: typeof JsonTokenSymbol
+|};
+
 export type PrimitiveValueExpressionType = $ReadOnlyArray<PrimitiveValueExpressionType> | string | number | boolean | null;
 
 export type SqlTokenType =
   ArraySqlTokenType |
   AssignmentListTokenType |
-  IdentifierTokenType |
+  BooleanExpressionTokenType |
+  ComparisonPredicateTokenType |
   IdentifierListTokenType |
+  IdentifierTokenType |
+  JsonSqlTokenType |
   RawSqlTokenType |
   SqlSqlTokenType |
   TupleListSqlTokenType |
   TupleSqlTokenType |
   UnnestSqlTokenType |
-  ValueListSqlTokenType |
-  ComparisonPredicateTokenType |
-  BooleanExpressionTokenType;
+  ValueListSqlTokenType;
 
 export type ValueExpressionType =
   SqlTokenType |
@@ -359,6 +368,9 @@ export type SqlTaggedTemplateType = {|
   identifierList: (
     identifiers: $ReadOnlyArray<IdentifierListMemberType>
   ) => IdentifierListTokenType,
+  json: (
+    value: SerializableValueType
+  ) => JsonSqlTokenType,
   raw: (
     rawSql: string,
     values?: $ReadOnlyArray<ValueExpressionType>

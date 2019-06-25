@@ -9,10 +9,12 @@ import type {
   IdentifierListMemberType,
   IdentifierListTokenType,
   IdentifierTokenType,
+  JsonSqlTokenType,
   LogicalBooleanOperatorType,
   NamedAssignmentType,
   PrimitiveValueExpressionType,
   RawSqlTokenType,
+  SerializableValueType,
   SqlSqlTokenType,
   SqlTaggedTemplateType,
   TupleListSqlTokenType,
@@ -37,6 +39,7 @@ import {
   ComparisonPredicateTokenSymbol,
   IdentifierListTokenSymbol,
   IdentifierTokenSymbol,
+  JsonTokenSymbol,
   RawSqlTokenSymbol,
   SqlTokenSymbol,
   TupleListTokenSymbol,
@@ -220,6 +223,15 @@ sql.assignmentList = (
   return deepFreeze({
     namedAssignment,
     type: AssignmentListTokenSymbol
+  });
+};
+
+sql.json = (
+  value: SerializableValueType
+): JsonSqlTokenType => {
+  return deepFreeze({
+    type: JsonTokenSymbol,
+    value
   });
 };
 
