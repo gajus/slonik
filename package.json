@@ -47,14 +47,14 @@
     "babel-plugin-istanbul": "^5.1.4",
     "babel-plugin-transform-export-default-name": "^2.0.4",
     "coveralls": "^3.0.4",
-    "eslint": "^6.0.0",
+    "eslint": "^6.0.1",
     "eslint-config-canonical": "^17.1.1",
     "flow-bin": "^0.101.1",
     "flow-copy-source": "^2.0.6",
     "gitdown": "^2.6.1",
-    "husky": "^2.4.1",
+    "husky": "^2.5.0",
     "nyc": "^14.1.1",
-    "semantic-release": "^15.13.16",
+    "semantic-release": "^15.13.17",
     "sinon": "^7.3.2"
   },
   "engines": {
