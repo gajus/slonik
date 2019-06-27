@@ -10,7 +10,7 @@ test('creates a value list', (t) => {
   const query = sql`SELECT ${sql.json({foo: 'bar'})}`;
 
   t.deepEqual(query, {
-    sql: 'SELECT $1::"json"',
+    sql: 'SELECT $1',
     type: SqlTokenSymbol,
     values: [
       '{"foo":"bar"}'
