@@ -722,7 +722,7 @@ Produces:
 
 ```js
 {
-  sql: 'SELECT $1::"json"',
+  sql: 'SELECT $1',
   values: [
     '[1,2,3]'
   ]
@@ -734,7 +734,7 @@ This is a convenience function equivalent to:
 
 ```js
 await connection.query(sql`
-  SELECT (${JSON.stringify([1, 2, 3])}::json})
+  SELECT (${JSON.stringify([1, 2, 3])}})
 `);
 
 ```
