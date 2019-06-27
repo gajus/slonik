@@ -49,12 +49,12 @@
     "coveralls": "^3.0.4",
     "eslint": "^6.0.1",
     "eslint-config-canonical": "^17.1.1",
-    "flow-bin": "^0.101.1",
+    "flow-bin": "^0.102.0",
     "flow-copy-source": "^2.0.6",
     "gitdown": "^2.6.1",
     "husky": "^2.5.0",
     "nyc": "^14.1.1",
-    "semantic-release": "^15.13.17",
+    "semantic-release": "^15.13.18",
     "sinon": "^7.3.2"
   },
   "engines": {
