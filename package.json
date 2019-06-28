@@ -23,7 +23,7 @@
     "delay": "^4.3.0",
     "es6-error": "^4.1.1",
     "get-stack-trace": "^2.0.1",
-    "inline-loops.macro": "^1.2.1",
+    "inline-loops.macro": "^1.2.2",
     "iso8601-duration": "^1.2.0",
     "lodash": "^4.17.11",
     "pg": "^7.11.0",
@@ -52,7 +52,7 @@
     "flow-bin": "^0.102.0",
     "flow-copy-source": "^2.0.6",
     "gitdown": "^2.6.1",
-    "husky": "^2.5.0",
+    "husky": "^2.7.0",
     "nyc": "^14.1.1",
     "semantic-release": "^15.13.18",
     "sinon": "^7.3.2"
