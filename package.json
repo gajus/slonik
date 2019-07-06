@@ -45,6 +45,7 @@
     "@babel/register": "^7.4.4",
     "ava": "^2.1.0",
     "babel-plugin-istanbul": "^5.1.4",
+    "babel-plugin-macros": "^2.6.1",
     "babel-plugin-transform-export-default-name": "^2.0.4",
     "coveralls": "^3.0.4",
     "eslint": "^6.0.1",
