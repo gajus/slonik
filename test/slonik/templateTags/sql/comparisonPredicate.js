@@ -3,15 +3,15 @@
 import test from 'ava';
 import sql from '../../../../src/templateTags/sql';
 import {
-  SqlTokenSymbol
-} from '../../../../src/symbols';
+  SqlToken
+} from '../../../../src/tokens';
 
 test('creates comparison of two values', (t) => {
   const query = sql`SELECT ${sql.comparisonPredicate(1, '=', 2)}`;
 
   t.deepEqual(query, {
     sql: 'SELECT $1 = $2',
-    type: SqlTokenSymbol,
+    type: SqlToken,
     values: [
       1,
       2
@@ -24,7 +24,7 @@ test('creates comparison of a value to a SQL token (left)', (t) => {
 
   t.deepEqual(query, {
     sql: 'SELECT "foo" = $1',
-    type: SqlTokenSymbol,
+    type: SqlToken,
     values: [
       1
     ]
@@ -36,7 +36,7 @@ test('creates comparison of a value to a SQL token (right)', (t) => {
 
   t.deepEqual(query, {
     sql: 'SELECT $1 = "foo"',
-    type: SqlTokenSymbol,
+    type: SqlToken,
     values: [
       1
     ]

@@ -3,15 +3,15 @@
 import test from 'ava';
 import sql from '../../../../src/templateTags/sql';
 import {
-  SqlTokenSymbol
-} from '../../../../src/symbols';
+  SqlToken
+} from '../../../../src/tokens';
 
 test('creates a list of tuples', (t) => {
   const query = sql`INSERT INTO (foo, bar, baz) VALUES ${sql.tupleList([[1, 2, 3], [4, 5, 6]])}`;
 
   t.deepEqual(query, {
     sql: 'INSERT INTO (foo, bar, baz) VALUES ($1, $2, $3), ($4, $5, $6)',
-    type: SqlTokenSymbol,
+    type: SqlToken,
     values: [
       1,
       2,
@@ -28,7 +28,7 @@ test('expands SQL tokens', (t) => {
 
   t.deepEqual(query, {
     sql: 'SELECT ($1, foo, $2)',
-    type: SqlTokenSymbol,
+    type: SqlToken,
     values: [
       1,
       3
@@ -41,7 +41,7 @@ test('expands SQL tokens (with bound values)', (t) => {
 
   t.deepEqual(query, {
     sql: 'SELECT ($1, to_timestamp($2), $3, $4)',
-    type: SqlTokenSymbol,
+    type: SqlToken,
     values: [
       1,
       2,

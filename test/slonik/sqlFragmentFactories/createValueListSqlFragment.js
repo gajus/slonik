@@ -3,12 +3,12 @@
 import test from 'ava';
 import createValueListSqlFragment from '../../../src/sqlFragmentFactories/createValueListSqlFragment';
 import {
-  ValueListTokenSymbol
-} from '../../../src/symbols';
+  ValueListToken
+} from '../../../src/tokens';
 
 test('creates a single parameter', (t) => {
   const sqlFragment = createValueListSqlFragment({
-    type: ValueListTokenSymbol,
+    type: ValueListToken,
     values: [
       'foo'
     ]
@@ -20,7 +20,7 @@ test('creates a single parameter', (t) => {
 
 test('creates multiple parameters', (t) => {
   const sqlFragment = createValueListSqlFragment({
-    type: ValueListTokenSymbol,
+    type: ValueListToken,
     values: [
       'foo',
       'bar',
@@ -34,7 +34,7 @@ test('creates multiple parameters', (t) => {
 
 test('offsets parameter position', (t) => {
   const sqlFragment = createValueListSqlFragment({
-    type: ValueListTokenSymbol,
+    type: ValueListToken,
     values: [
       'foo',
       'bar',
@@ -49,7 +49,7 @@ test('offsets parameter position', (t) => {
 test('throws an error if value list is empty', (t) => {
   t.throws(() => {
     createValueListSqlFragment({
-      type: ValueListTokenSymbol,
+      type: ValueListToken,
       values: []
     }, 0);
   }, 'Value list must have at least 1 member.');

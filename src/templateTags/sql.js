@@ -33,20 +33,20 @@ import {
   createSqlTokenSqlFragment
 } from '../factories';
 import {
-  ArrayTokenSymbol,
-  AssignmentListTokenSymbol,
-  BooleanExpressionTokenSymbol,
-  ComparisonPredicateTokenSymbol,
-  IdentifierListTokenSymbol,
-  IdentifierTokenSymbol,
-  JsonTokenSymbol,
-  RawSqlTokenSymbol,
-  SqlTokenSymbol,
-  TupleListTokenSymbol,
-  TupleTokenSymbol,
-  UnnestTokenSymbol,
-  ValueListTokenSymbol
-} from '../symbols';
+  ArrayToken,
+  AssignmentListToken,
+  BooleanExpressionToken,
+  ComparisonPredicateToken,
+  IdentifierListToken,
+  IdentifierToken,
+  JsonToken,
+  RawSqlToken,
+  SqlToken,
+  TupleListToken,
+  TupleToken,
+  UnnestToken,
+  ValueListToken
+} from '../tokens';
 import {
   InvalidInputError
 } from '../errors';
@@ -106,7 +106,7 @@ const sql: SqlTaggedTemplateType = (
 
   const query = deepFreeze({
     sql: rawSql,
-    type: SqlTokenSymbol,
+    type: SqlToken,
     values: parameterValues
   });
 
@@ -120,7 +120,7 @@ sql.identifier = (
   // @see https://github.com/facebook/flow/issues/810
   return deepFreeze({
     names,
-    type: IdentifierTokenSymbol
+    type: IdentifierToken
   });
 };
 
@@ -129,7 +129,7 @@ sql.identifierList = (
 ): IdentifierListTokenType => {
   return deepFreeze({
     identifiers,
-    type: IdentifierListTokenSymbol
+    type: IdentifierListToken
   });
 };
 
@@ -139,7 +139,7 @@ sql.raw = (
 ): RawSqlTokenType => {
   return deepFreeze({
     sql: rawSql,
-    type: RawSqlTokenSymbol,
+    type: RawSqlToken,
     values: values || []
   });
 };
@@ -148,7 +148,7 @@ sql.valueList = (
   values: $ReadOnlyArray<ValueExpressionType>
 ): ValueListSqlTokenType => {
   return deepFreeze({
-    type: ValueListTokenSymbol,
+    type: ValueListToken,
     values
   });
 };
@@ -159,7 +159,7 @@ sql.array = (
 ): ArraySqlTokenType => {
   return deepFreeze({
     memberType,
-    type: ArrayTokenSymbol,
+    type: ArrayToken,
     values
   });
 };
@@ -168,7 +168,7 @@ sql.tuple = (
   values: $ReadOnlyArray<ValueExpressionType>
 ): TupleSqlTokenType => {
   return deepFreeze({
-    type: TupleTokenSymbol,
+    type: TupleToken,
     values
   });
 };
@@ -178,7 +178,7 @@ sql.tupleList = (
 ): TupleListSqlTokenType => {
   return deepFreeze({
     tuples,
-    type: TupleListTokenSymbol
+    type: TupleListToken
   });
 };
 
@@ -189,7 +189,7 @@ sql.unnest = (
   return deepFreeze({
     columnTypes,
     tuples,
-    type: UnnestTokenSymbol
+    type: UnnestToken
   });
 };
 
@@ -200,7 +200,7 @@ sql.booleanExpression = (
   return deepFreeze({
     members,
     operator,
-    type: BooleanExpressionTokenSymbol
+    type: BooleanExpressionToken
   });
 };
 
@@ -213,7 +213,7 @@ sql.comparisonPredicate = (
     leftOperand,
     operator,
     rightOperand,
-    type: ComparisonPredicateTokenSymbol
+    type: ComparisonPredicateToken
   });
 };
 
@@ -222,7 +222,7 @@ sql.assignmentList = (
 ): AssignmentListTokenType => {
   return deepFreeze({
     namedAssignment,
-    type: AssignmentListTokenSymbol
+    type: AssignmentListToken
   });
 };
 
@@ -230,7 +230,7 @@ sql.json = (
   value: SerializableValueType
 ): JsonSqlTokenType => {
   return deepFreeze({
-    type: JsonTokenSymbol,
+    type: JsonToken,
     value
   });
 };

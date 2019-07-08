@@ -3,15 +3,15 @@
 import test from 'ava';
 import sql from '../../../../src/templateTags/sql';
 import {
-  SqlTokenSymbol
-} from '../../../../src/symbols';
+  SqlToken
+} from '../../../../src/tokens';
 
 test('combines multiple boolean expressions (primitive values)', (t) => {
   const query = sql`SELECT ${sql.booleanExpression([1, 2], 'AND')}`;
 
   t.deepEqual(query, {
     sql: 'SELECT ($1 AND $2)',
-    type: SqlTokenSymbol,
+    type: SqlToken,
     values: [
       1,
       2
@@ -24,7 +24,7 @@ test('combines multiple boolean expressions (SQL tokens)', (t) => {
 
   t.deepEqual(query, {
     sql: 'SELECT ($1 AND $2)',
-    type: SqlTokenSymbol,
+    type: SqlToken,
     values: [
       1,
       2
@@ -37,7 +37,7 @@ test('nests boolean expressions', (t) => {
 
   t.deepEqual(query, {
     sql: 'SELECT ($1 AND ($2 OR $3))',
-    type: SqlTokenSymbol,
+    type: SqlToken,
     values: [
       1,
       2,

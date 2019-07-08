@@ -3,13 +3,13 @@
 import test from 'ava';
 import createArraySqlFragment from '../../../src/sqlFragmentFactories/createArraySqlFragment';
 import {
-  ArrayTokenSymbol
-} from '../../../src/symbols';
+  ArrayToken
+} from '../../../src/tokens';
 
 test('creates an empty array binding', (t) => {
   const sqlFragment = createArraySqlFragment({
     memberType: 'int4',
-    type: ArrayTokenSymbol,
+    type: ArrayToken,
     values: []
   }, 0);
 
@@ -20,7 +20,7 @@ test('creates an empty array binding', (t) => {
 test('creates an array binding with a single value', (t) => {
   const sqlFragment = createArraySqlFragment({
     memberType: 'int4',
-    type: ArrayTokenSymbol,
+    type: ArrayToken,
     values: [
       1
     ]
@@ -33,7 +33,7 @@ test('creates an array binding with a single value', (t) => {
 test('creates an array binding with multiple values', (t) => {
   const sqlFragment = createArraySqlFragment({
     memberType: 'int4',
-    type: ArrayTokenSymbol,
+    type: ArrayToken,
     values: [
       1,
       2,
@@ -48,7 +48,7 @@ test('creates an array binding with multiple values', (t) => {
 test('offsets parameter position', (t) => {
   const sqlFragment = createArraySqlFragment({
     memberType: 'int4',
-    type: ArrayTokenSymbol,
+    type: ArrayToken,
     values: [
       1,
       2,

@@ -1,35 +1,35 @@
 // @flow
 
 import {
-  ArrayTokenSymbol,
-  AssignmentListTokenSymbol,
-  BooleanExpressionTokenSymbol,
-  ComparisonPredicateTokenSymbol,
-  IdentifierListTokenSymbol,
-  IdentifierTokenSymbol,
-  JsonTokenSymbol,
-  RawSqlTokenSymbol,
-  SqlTokenSymbol,
-  TupleListTokenSymbol,
-  TupleTokenSymbol,
-  UnnestTokenSymbol,
-  ValueListTokenSymbol
-} from '../symbols';
+  ArrayToken,
+  AssignmentListToken,
+  BooleanExpressionToken,
+  ComparisonPredicateToken,
+  IdentifierListToken,
+  IdentifierToken,
+  JsonToken,
+  RawSqlToken,
+  SqlToken,
+  TupleListToken,
+  TupleToken,
+  UnnestToken,
+  ValueListToken
+} from '../tokens';
 
-const tokenSymbols = [
-  ArrayTokenSymbol,
-  AssignmentListTokenSymbol,
-  BooleanExpressionTokenSymbol,
-  ComparisonPredicateTokenSymbol,
-  IdentifierListTokenSymbol,
-  IdentifierTokenSymbol,
-  JsonTokenSymbol,
-  RawSqlTokenSymbol,
-  SqlTokenSymbol,
-  TupleListTokenSymbol,
-  TupleTokenSymbol,
-  UnnestTokenSymbol,
-  ValueListTokenSymbol
+const Tokens = [
+  ArrayToken,
+  AssignmentListToken,
+  BooleanExpressionToken,
+  ComparisonPredicateToken,
+  IdentifierListToken,
+  IdentifierToken,
+  JsonToken,
+  RawSqlToken,
+  SqlToken,
+  TupleListToken,
+  TupleToken,
+  UnnestToken,
+  ValueListToken
 ];
 
 export default (subject: *) => {
@@ -37,5 +37,5 @@ export default (subject: *) => {
     return false;
   }
 
-  return tokenSymbols.includes(subject.type);
+  return Tokens.includes(subject.type);
 };

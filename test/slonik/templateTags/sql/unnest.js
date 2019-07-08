@@ -3,15 +3,15 @@
 import test from 'ava';
 import sql from '../../../../src/templateTags/sql';
 import {
-  SqlTokenSymbol
-} from '../../../../src/symbols';
+  SqlToken
+} from '../../../../src/tokens';
 
 test('creates an unnest expression using primitive values', (t) => {
   const query = sql`SELECT * FROM ${sql.unnest([[1, 2, 3], [4, 5, 6]], ['int4', 'int4', 'int4'])}`;
 
   t.deepEqual(query, {
     sql: 'SELECT * FROM unnest($1::"int4"[], $2::"int4"[], $3::"int4"[])',
-    type: SqlTokenSymbol,
+    type: SqlToken,
     values: [
       [
         1,
@@ -34,7 +34,7 @@ test('creates an unnest expression using arrays', (t) => {
 
   t.deepEqual(query, {
     sql: 'SELECT * FROM unnest($1::"int4"[], $2::"int4"[], $3::"int4"[])',
-    type: SqlTokenSymbol,
+    type: SqlToken,
     values: [
       [
         1,
@@ -57,7 +57,7 @@ test('creates incremental alias names if no alias names are provided', (t) => {
 
   t.deepEqual(query, {
     sql: 'SELECT * FROM unnest($1::"int4"[], $2::"int4"[], $3::"int4"[])',
-    type: SqlTokenSymbol,
+    type: SqlToken,
     values: [
       [
         1,
@@ -80,7 +80,7 @@ test('recognizes an array an array', (t) => {
 
   t.deepEqual(query, {
     sql: 'SELECT * FROM unnest($1::"int4"[][])',
-    type: SqlTokenSymbol,
+    type: SqlToken,
     values: [
       [
         [

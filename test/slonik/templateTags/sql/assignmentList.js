@@ -3,15 +3,15 @@
 import test from 'ava';
 import sql from '../../../../src/templateTags/sql';
 import {
-  SqlTokenSymbol
-} from '../../../../src/symbols';
+  SqlToken
+} from '../../../../src/tokens';
 
 test('creates a single value assignment', (t) => {
   const query = sql`SELECT ${sql.assignmentList({foo: 'bar'})}`;
 
   t.deepEqual(query, {
     sql: 'SELECT "foo" = $1',
-    type: SqlTokenSymbol,
+    type: SqlToken,
     values: [
       'bar'
     ]
@@ -23,7 +23,7 @@ test('interpolates SQL tokens', (t) => {
 
   t.deepEqual(query, {
     sql: 'SELECT "foo" = to_timestamp($1)',
-    type: SqlTokenSymbol,
+    type: SqlToken,
     values: [
       'bar'
     ]
@@ -38,7 +38,7 @@ test('creates multiple value assignment', (t) => {
 
   t.deepEqual(query, {
     sql: 'SELECT "baz" = $1, "foo" = $2',
-    type: SqlTokenSymbol,
+    type: SqlToken,
     values: [
       'qux',
       'bar'
@@ -53,7 +53,7 @@ test('converts camel-case to snake-case', (t) => {
 
   t.deepEqual(query, {
     sql: 'SELECT "foo_bar" = $1',
-    type: SqlTokenSymbol,
+    type: SqlToken,
     values: [
       'baz'
     ]

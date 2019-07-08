@@ -217,7 +217,7 @@ export type NamedParameterValuesType = {
 
 export type IdentifierTokenType = {|
   +names: $ReadOnlyArray<string>,
-  +type: 'SLONIK_IDENTIFIER'
+  +type: 'SLONIK_TOKEN_IDENTIFIER'
 |};
 
 export type IdentifierListMemberType = $ReadOnlyArray<string> |
@@ -228,69 +228,69 @@ export type IdentifierListMemberType = $ReadOnlyArray<string> |
 
 export type IdentifierListTokenType = {|
   +identifiers: $ReadOnlyArray<IdentifierListMemberType>,
-  +type: 'SLONIK_IDENTIFIER_LIST'
+  +type: 'SLONIK_TOKEN_IDENTIFIER_LIST'
 |};
 
 export type SqlSqlTokenType = {|
   +sql: string,
-  +type: 'SLONIK_SQL',
+  +type: 'SLONIK_TOKEN_SQL',
   +values: $ReadOnlyArray<PrimitiveValueExpressionType>
 |};
 
 export type RawSqlTokenType = {|
   +sql: string,
-  +type: 'SLONIK_RAW_SQL',
+  +type: 'SLONIK_TOKEN_RAW_SQL',
   +values: PositionalParameterValuesType | NamedParameterValuesType
 |};
 
 export type ValueListSqlTokenType = {|
   +values: PositionalParameterValuesType,
-  +type: 'SLONIK_VALUE_LIST'
+  +type: 'SLONIK_TOKEN_VALUE_LIST'
 |};
 
 export type ArraySqlTokenType = {|
   +memberType: string,
-  +type: 'SLONIK_ARRAY',
+  +type: 'SLONIK_TOKEN_ARRAY',
   +values: PositionalParameterValuesType
 |};
 
 export type TupleSqlTokenType = {|
   +values: PositionalParameterValuesType,
-  +type: 'SLONIK_TUPLE'
+  +type: 'SLONIK_TOKEN_TUPLE'
 |};
 
 export type TupleListSqlTokenType = {|
   +tuples: $ReadOnlyArray<PositionalParameterValuesType>,
-  +type: 'SLONIK_TUPLE_LIST'
+  +type: 'SLONIK_TOKEN_TUPLE_LIST'
 |};
 
 export type UnnestSqlTokenType = {|
   +columnTypes: $ReadOnlyArray<string>,
   +tuples: $ReadOnlyArray<PositionalParameterValuesType>,
-  +type: 'SLONIK_UNNEST'
+  +type: 'SLONIK_TOKEN_UNNEST'
 |};
 
 export type ComparisonPredicateTokenType = {|
   +leftOperand: ValueExpressionType,
   +operator: ComparisonOperatorType,
   +rightOperand: ValueExpressionType,
-  +type: 'SLONIK_COMPARISON_PREDICATE'
+  +type: 'SLONIK_TOKEN_COMPARISON_PREDICATE'
 |};
 
 export type BooleanExpressionTokenType = {|
   +members: $ReadOnlyArray<ValueExpressionType>,
   +operator: LogicalBooleanOperatorType,
-  +type: 'SLONIK_BOOLEAN_EXPRESSION'
+  +type: 'SLONIK_TOKEN_BOOLEAN_EXPRESSION'
 |};
 
 export type AssignmentListTokenType = {|
   +namedAssignment: NamedAssignmentType,
-  +type: 'SLONIK_ASSIGNMENT_LIST'
+  +type: 'SLONIK_TOKEN_ASSIGNMENT_LIST'
 |};
 
 export type JsonSqlTokenType = {|
   +value: SerializableValueType,
-  +type: 'SLONIK_JSON'
+  +type: 'SLONIK_TOKEN_JSON'
 |};
 
 export type PrimitiveValueExpressionType = $ReadOnlyArray<PrimitiveValueExpressionType> | string | number | boolean | null;
@@ -320,7 +320,7 @@ export type NamedAssignmentType = {
 
 export type TaggedTemplateLiteralInvocationType = {|
   +sql: string,
-  +type: 'SLONIK_SQL',
+  +type: 'SLONIK_TOKEN_SQL',
   +values: $ReadOnlyArray<PrimitiveValueExpressionType>
 |};
 

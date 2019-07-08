@@ -3,15 +3,15 @@
 import test from 'ava';
 import sql from '../../../../src/templateTags/sql';
 import {
-  SqlTokenSymbol
-} from '../../../../src/symbols';
+  SqlToken
+} from '../../../../src/tokens';
 
 test('creates a value list', (t) => {
   const query = sql`SELECT ${sql.array([1, 2, 3], 'int4')}`;
 
   t.deepEqual(query, {
     sql: 'SELECT $1::"int4"[]',
-    type: SqlTokenSymbol,
+    type: SqlToken,
     values: [
       [
         1,

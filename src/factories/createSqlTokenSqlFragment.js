@@ -1,20 +1,20 @@
 // @flow
 
 import {
-  ArrayTokenSymbol,
-  AssignmentListTokenSymbol,
-  BooleanExpressionTokenSymbol,
-  ComparisonPredicateTokenSymbol,
-  IdentifierListTokenSymbol,
-  IdentifierTokenSymbol,
-  JsonTokenSymbol,
-  RawSqlTokenSymbol,
-  SqlTokenSymbol,
-  TupleListTokenSymbol,
-  TupleTokenSymbol,
-  UnnestTokenSymbol,
-  ValueListTokenSymbol
-} from '../symbols';
+  ArrayToken,
+  AssignmentListToken,
+  BooleanExpressionToken,
+  ComparisonPredicateToken,
+  IdentifierListToken,
+  IdentifierToken,
+  JsonToken,
+  RawSqlToken,
+  SqlToken,
+  TupleListToken,
+  TupleToken,
+  UnnestToken,
+  ValueListToken
+} from '../tokens';
 import {
   createArraySqlFragment,
   createAssignmentListSqlFragment,
@@ -39,44 +39,44 @@ import type {
 } from '../types';
 
 export default (token: SqlTokenType, greatestParameterPosition: number): SqlFragmentType => {
-  if (token.type === SqlTokenSymbol) {
+  if (token.type === SqlToken) {
     // @see https://github.com/gajus/slonik/issues/36 regarding FlowFixMe use.
     // $FlowFixMe
     return createSqlSqlFragment(token, greatestParameterPosition);
-  } else if (token.type === RawSqlTokenSymbol) {
+  } else if (token.type === RawSqlToken) {
     // $FlowFixMe
     return createRawSqlSqlFragment(token, greatestParameterPosition);
-  } else if (token.type === IdentifierTokenSymbol) {
+  } else if (token.type === IdentifierToken) {
     // $FlowFixMe
     return createIdentifierSqlFragment(token);
-  } else if (token.type === IdentifierListTokenSymbol) {
+  } else if (token.type === IdentifierListToken) {
     // $FlowFixMe
     return createIdentifierListSqlFragment(token);
-  } else if (token.type === ArrayTokenSymbol) {
+  } else if (token.type === ArrayToken) {
     // $FlowFixMe
     return createArraySqlFragment(token, greatestParameterPosition);
-  } else if (token.type === ValueListTokenSymbol) {
+  } else if (token.type === ValueListToken) {
     // $FlowFixMe
     return createValueListSqlFragment(token, greatestParameterPosition);
-  } else if (token.type === TupleTokenSymbol) {
+  } else if (token.type === TupleToken) {
     // $FlowFixMe
     return createTupleSqlFragment(token, greatestParameterPosition);
-  } else if (token.type === TupleListTokenSymbol) {
+  } else if (token.type === TupleListToken) {
     // $FlowFixMe
     return createTupleListSqlFragment(token, greatestParameterPosition);
-  } else if (token.type === UnnestTokenSymbol) {
+  } else if (token.type === UnnestToken) {
     // $FlowFixMe
     return createUnnestSqlFragment(token, greatestParameterPosition);
-  } else if (token.type === ComparisonPredicateTokenSymbol) {
+  } else if (token.type === ComparisonPredicateToken) {
     // $FlowFixMe
     return createComparisonPredicateSqlFragment(token, greatestParameterPosition);
-  } else if (token.type === BooleanExpressionTokenSymbol) {
+  } else if (token.type === BooleanExpressionToken) {
     // $FlowFixMe
     return createBooleanExpressionSqlFragment(token, greatestParameterPosition);
-  } else if (token.type === AssignmentListTokenSymbol) {
+  } else if (token.type === AssignmentListToken) {
     // $FlowFixMe
     return createAssignmentListSqlFragment(token, greatestParameterPosition);
-  } else if (token.type === JsonTokenSymbol) {
+  } else if (token.type === JsonToken) {
     // $FlowFixMe
     return createJsonSqlFragment(token, greatestParameterPosition);
   }

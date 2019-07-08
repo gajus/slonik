@@ -3,15 +3,15 @@
 import test from 'ava';
 import sql from '../../../../src/templateTags/sql';
 import {
-  SqlTokenSymbol
-} from '../../../../src/symbols';
+  SqlToken
+} from '../../../../src/tokens';
 
 test('creates an object describing a query with identifiers', (t) => {
   const query = sql`SELECT ${'foo'} FROM ${sql.identifierList([['bar'], ['baz']])}`;
 
   t.deepEqual(query, {
     sql: 'SELECT $1 FROM "bar", "baz"',
-    type: SqlTokenSymbol,
+    type: SqlToken,
     values: [
       'foo'
     ]
@@ -32,7 +32,7 @@ test('creates an object describing a query with aliased identifiers', (t) => {
 
   t.deepEqual(query, {
     sql: 'SELECT $1 FROM "bar" "baz", "qux" "quux"',
-    type: SqlTokenSymbol,
+    type: SqlToken,
     values: [
       'foo'
     ]
@@ -47,7 +47,7 @@ test('creates an object describing a query with identifiers (specifier)', (t) =>
 
   t.deepEqual(query, {
     sql: 'SELECT $1 FROM "bar"."baz", "qux"."quux"',
-    type: SqlTokenSymbol,
+    type: SqlToken,
     values: [
       'foo'
     ]
