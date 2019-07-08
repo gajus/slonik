@@ -18,11 +18,7 @@ export {
   createTypeParserPreset,
   createPool
 } from './factories';
-export {
-  createBigintTypeParser,
-  createTimestampTypeParser,
-  createTimestampWithTimeZoneTypeParser
-} from './factories/typeParsers';
+export * from './factories/typeParsers';
 export {
   sql
 } from './templateTags';

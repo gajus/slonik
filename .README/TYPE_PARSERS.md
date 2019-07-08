@@ -42,10 +42,12 @@ Read: [Default type parsers](#default-type-parsers).
 
 |Type name|Implemnetation|Factory function name|
 |---|---|---|
+|`date`|Produces a literal date as a string (format: YYYY-MM-DD).|`createDateTypeParser`|
 |`int8`|Produces an integer.|`createBigintTypeParser`|
 |`interval`|Produces interval in seconds (integer).|`createIntervalTypeParser`|
+|`numeric`|Produces a float.|`createNumericTypeParser`|
 |`timestamp`|Produces a unix timestamp (in milliseconds).|`createTimestampTypeParser`|
-|`timestamptz`|Produces a unix timestamp (in milliseconds).|`createTimestampWithTimeZoneParser`|
+|`timestamptz`|Produces a unix timestamp (in milliseconds).|`createTimestampWithTimeZoneTypeParser`|
 
 Built-in type parsers can be created using the exported factory functions, e.g.
 
