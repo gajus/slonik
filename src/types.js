@@ -230,7 +230,7 @@ export type NamedParameterValuesType = {
 
 export type IdentifierTokenType = {|
   +names: $ReadOnlyArray<string>,
-  +type: typeof IdentifierTokenSymbol
+  +type: IdentifierTokenSymbol
 |};
 
 export type IdentifierListMemberType = $ReadOnlyArray<string> |
@@ -241,69 +241,69 @@ export type IdentifierListMemberType = $ReadOnlyArray<string> |
 
 export type IdentifierListTokenType = {|
   +identifiers: $ReadOnlyArray<IdentifierListMemberType>,
-  +type: typeof IdentifierListTokenSymbol
+  +type: IdentifierListTokenSymbol
 |};
 
 export type SqlSqlTokenType = {|
   +sql: string,
-  +type: typeof SqlTokenSymbol,
+  +type: SqlTokenSymbol,
   +values: $ReadOnlyArray<PrimitiveValueExpressionType>
 |};
 
 export type RawSqlTokenType = {|
   +sql: string,
-  +type: typeof RawSqlTokenSymbol,
+  +type: RawSqlTokenSymbol,
   +values: PositionalParameterValuesType | NamedParameterValuesType
 |};
 
 export type ValueListSqlTokenType = {|
   +values: PositionalParameterValuesType,
-  +type: typeof ValueListTokenSymbol
+  +type: ValueListTokenSymbol
 |};
 
 export type ArraySqlTokenType = {|
   +memberType: string,
-  +type: typeof ArrayTokenSymbol,
+  +type: ArrayTokenSymbol,
   +values: PositionalParameterValuesType
 |};
 
 export type TupleSqlTokenType = {|
   +values: PositionalParameterValuesType,
-  +type: typeof TupleTokenSymbol
+  +type: TupleTokenSymbol
 |};
 
 export type TupleListSqlTokenType = {|
   +tuples: $ReadOnlyArray<PositionalParameterValuesType>,
-  +type: typeof TupleListTokenSymbol
+  +type: TupleListTokenSymbol
 |};
 
 export type UnnestSqlTokenType = {|
   +columnTypes: $ReadOnlyArray<string>,
   +tuples: $ReadOnlyArray<PositionalParameterValuesType>,
-  +type: typeof UnnestTokenSymbol
+  +type: UnnestTokenSymbol
 |};
 
 export type ComparisonPredicateTokenType = {|
   +leftOperand: ValueExpressionType,
   +operator: ComparisonOperatorType,
   +rightOperand: ValueExpressionType,
-  +type: typeof ComparisonPredicateTokenSymbol
+  +type: ComparisonPredicateTokenSymbol
 |};
 
 export type BooleanExpressionTokenType = {|
   +members: $ReadOnlyArray<ValueExpressionType>,
   +operator: LogicalBooleanOperatorType,
-  +type: typeof ComparisonPredicateTokenSymbol
+  +type: ComparisonPredicateTokenSymbol
 |};
 
 export type AssignmentListTokenType = {|
   +namedAssignment: NamedAssignmentType,
-  +type: typeof ComparisonPredicateTokenSymbol
+  +type: ComparisonPredicateTokenSymbol
 |};
 
 export type JsonSqlTokenType = {|
   +value: SerializableValueType,
-  +type: typeof JsonTokenSymbol
+  +type: JsonTokenSymbol
 |};
 
 export type PrimitiveValueExpressionType = $ReadOnlyArray<PrimitiveValueExpressionType> | string | number | boolean | null;
@@ -333,7 +333,7 @@ export type NamedAssignmentType = {
 
 export type TaggedTemplateLiteralInvocationType = {|
   +sql: string,
-  +type: typeof SqlTokenSymbol,
+  +type: SqlTokenSymbol,
   +values: $ReadOnlyArray<PrimitiveValueExpressionType>
 |};
 
