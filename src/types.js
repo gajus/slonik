@@ -8,19 +8,6 @@ import type {
 import type {
   LoggerType
 } from 'roarr';
-import {
-  ArrayTokenSymbol,
-  ComparisonPredicateTokenSymbol,
-  IdentifierListTokenSymbol,
-  IdentifierTokenSymbol,
-  JsonTokenSymbol,
-  RawSqlTokenSymbol,
-  SqlTokenSymbol,
-  TupleListTokenSymbol,
-  TupleTokenSymbol,
-  UnnestTokenSymbol,
-  ValueListTokenSymbol
-} from './symbols';
 
 export type {
   LoggerType
@@ -230,7 +217,7 @@ export type NamedParameterValuesType = {
 
 export type IdentifierTokenType = {|
   +names: $ReadOnlyArray<string>,
-  +type: IdentifierTokenSymbol
+  +type: 'SLONIK_IDENTIFIER'
 |};
 
 export type IdentifierListMemberType = $ReadOnlyArray<string> |
@@ -241,69 +228,69 @@ export type IdentifierListMemberType = $ReadOnlyArray<string> |
 
 export type IdentifierListTokenType = {|
   +identifiers: $ReadOnlyArray<IdentifierListMemberType>,
-  +type: IdentifierListTokenSymbol
+  +type: 'SLONIK_IDENTIFIER_LIST'
 |};
 
 export type SqlSqlTokenType = {|
   +sql: string,
-  +type: SqlTokenSymbol,
+  +type: 'SLONIK_SQL',
   +values: $ReadOnlyArray<PrimitiveValueExpressionType>
 |};
 
 export type RawSqlTokenType = {|
   +sql: string,
-  +type: RawSqlTokenSymbol,
+  +type: 'SLONIK_RAW_SQL',
   +values: PositionalParameterValuesType | NamedParameterValuesType
 |};
 
 export type ValueListSqlTokenType = {|
   +values: PositionalParameterValuesType,
-  +type: ValueListTokenSymbol
+  +type: 'SLONIK_VALUE_LIST'
 |};
 
 export type ArraySqlTokenType = {|
   +memberType: string,
-  +type: ArrayTokenSymbol,
+  +type: 'SLONIK_ARRAY',
   +values: PositionalParameterValuesType
 |};
 
 export type TupleSqlTokenType = {|
   +values: PositionalParameterValuesType,
-  +type: TupleTokenSymbol
+  +type: 'SLONIK_TUPLE'
 |};
 
 export type TupleListSqlTokenType = {|
   +tuples: $ReadOnlyArray<PositionalParameterValuesType>,
-  +type: TupleListTokenSymbol
+  +type: 'SLONIK_TUPLE_LIST'
 |};
 
 export type UnnestSqlTokenType = {|
   +columnTypes: $ReadOnlyArray<string>,
   +tuples: $ReadOnlyArray<PositionalParameterValuesType>,
-  +type: UnnestTokenSymbol
+  +type: 'SLONIK_UNNEST'
 |};
 
 export type ComparisonPredicateTokenType = {|
   +leftOperand: ValueExpressionType,
   +operator: ComparisonOperatorType,
   +rightOperand: ValueExpressionType,
-  +type: ComparisonPredicateTokenSymbol
+  +type: 'SLONIK_COMPARISON_PREDICATE'
 |};
 
 export type BooleanExpressionTokenType = {|
   +members: $ReadOnlyArray<ValueExpressionType>,
   +operator: LogicalBooleanOperatorType,
-  +type: ComparisonPredicateTokenSymbol
+  +type: 'SLONIK_BOOLEAN_EXPRESSION'
 |};
 
 export type AssignmentListTokenType = {|
   +namedAssignment: NamedAssignmentType,
-  +type: ComparisonPredicateTokenSymbol
+  +type: 'SLONIK_ASSIGNMENT_LIST'
 |};
 
 export type JsonSqlTokenType = {|
   +value: SerializableValueType,
-  +type: JsonTokenSymbol
+  +type: 'SLONIK_JSON'
 |};
 
 export type PrimitiveValueExpressionType = $ReadOnlyArray<PrimitiveValueExpressionType> | string | number | boolean | null;
@@ -333,7 +320,7 @@ export type NamedAssignmentType = {
 
 export type TaggedTemplateLiteralInvocationType = {|
   +sql: string,
-  +type: SqlTokenSymbol,
+  +type: 'SLONIK_SQL',
   +values: $ReadOnlyArray<PrimitiveValueExpressionType>
 |};
 
