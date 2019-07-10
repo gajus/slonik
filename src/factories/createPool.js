@@ -12,9 +12,6 @@ import type {
   ClientUserConfigurationType,
   DatabasePoolType
 } from '../types';
-import {
-  UnexpectedStateError
-} from '../errors';
 import Logger from '../Logger';
 import bindPool from '../binders/bindPool';
 import createClientConfiguration from './createClientConfiguration';
@@ -60,7 +57,8 @@ export default (
   const pool = new pg.Pool(poolConfiguration);
 
   pool.slonik = {
-    poolId
+    poolId,
+    typeOverrides: null
   };
 
   // istanbul ignore next
@@ -76,8 +74,7 @@ export default (
   pool.on('connect', (client) => {
     client.connection.slonik = {
       connectionId: createUlid(),
-      transactionDepth: null,
-      typeParserSetupPromise: null
+      transactionDepth: null
     };
 
     client.on('notice', (notice) => {

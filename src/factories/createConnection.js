@@ -12,7 +12,7 @@ import type {
   TaggedTemplateLiteralInvocationType
 } from '../types';
 import {
-  setupTypeParsers
+  createTypeOverrides
 } from '../routines';
 import {
   bindPoolConnection
@@ -61,11 +61,12 @@ const createConnection = async (
     throw new ConnectionError(error.message);
   }
 
-  if (!connection.connection.slonik.typeParserSetupPromise) {
-    connection.connection.slonik.typeParserSetupPromise = setupTypeParsers(connection, clientConfiguration.typeParsers);
+  if (!pool.typeOverrides) {
+    pool.typeOverrides = createTypeOverrides(connection, clientConfiguration.typeParsers);
   }
 
-  await connection.connection.slonik.typeParserSetupPromise;
+  // eslint-disable-next-line id-match
+  connection._types = await pool.typeOverrides;
 
   const connectionId = connection.connection.slonik.connectionId;
 

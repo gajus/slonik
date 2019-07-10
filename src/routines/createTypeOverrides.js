@@ -9,9 +9,11 @@ import type {
   TypeParserType
 } from '../types';
 
-export default async (connection: InternalDatabaseConnectionType, typeParsers: $ReadOnlyArray<TypeParserType>) => {
+export default async (connection: InternalDatabaseConnectionType, typeParsers: $ReadOnlyArray<TypeParserType>): TypeOverrides => {
+  const typeOverrides = new TypeOverrides();
+
   if (typeParsers.length === 0) {
-    return null;
+    return typeOverrides;
   }
 
   const typeNames = typeParsers.map((typeParser) => {
@@ -24,8 +26,6 @@ export default async (connection: InternalDatabaseConnectionType, typeParsers: $
     ])
   ).rows;
 
-  const types = new TypeOverrides();
-
   for (const typeParser of typeParsers) {
     const postgresType = postgresTypes.find((maybeTargetPostgresType) => {
       return maybeTargetPostgresType.typname === typeParser.name;
@@ -35,12 +35,12 @@ export default async (connection: InternalDatabaseConnectionType, typeParsers: $
       throw new Error('Database type "' + typeParser.name + '" not found.');
     }
 
-    types.setTypeParser(postgresType.oid, (value) => {
+    typeOverrides.setTypeParser(postgresType.oid, (value) => {
       return typeParser.parse(value);
     });
 
     if (postgresType.typarray) {
-      types.setTypeParser(postgresType.typarray, (value) => {
+      typeOverrides.setTypeParser(postgresType.typarray, (value) => {
         return arrayParser
           .create(
             value,
@@ -51,8 +51,5 @@ export default async (connection: InternalDatabaseConnectionType, typeParsers: $
     }
   }
 
-  // eslint-disable-next-line id-match
-  connection._types = types;
-
-  return null;
+  return typeOverrides;
 };

@@ -1,9 +1,9 @@
 // @flow
 
 import test from 'ava';
-import setupTypeParsers from '../../../src/routines/setupTypeParsers';
+import createTypeOverrides from '../../../src/routines/createTypeOverrides';
 
-test('uses typname to retrieve pg_type oid and binds connection types', async (t) => {
+test('uses typname to retrieve pg_type oid', async (t) => {
   const connection = {
     query: () => {
       return {
@@ -27,15 +27,12 @@ test('uses typname to retrieve pg_type oid and binds connection types', async (t
     }
   };
 
-  await setupTypeParsers(connection, [
+  const typeOverrides = await createTypeOverrides(connection, [
     typeParser
   ]);
 
-  // $FlowFixMe
-  t.assert(typeof connection._types.text.foo === 'function');
-
-  // $FlowFixMe
-  t.assert(typeof connection._types.text.bar === 'function');
+  t.is(typeof typeOverrides.text.foo, 'function');
+  t.is(typeof typeOverrides.text.bar, 'function');
 });
 
 test('throws an error if type cannot be found', async (t) => {
@@ -56,7 +53,7 @@ test('throws an error if type cannot be found', async (t) => {
     }
   };
 
-  await t.throwsAsync(setupTypeParsers(connection, [
+  await t.throwsAsync(createTypeOverrides(connection, [
     typeParser
   ]), 'Database type "int8" not found.');
 });
