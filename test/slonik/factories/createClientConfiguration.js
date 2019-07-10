@@ -73,3 +73,35 @@ test('disables default type parsers', (t) => {
     }
   );
 });
+
+test('connectionTimeout=0 sets timeout to 1 millisecond', (t) => {
+  const configuration = createClientConfiguration({
+    connectionTimeout: 0
+  });
+
+  t.is(configuration.connectionTimeout, 1);
+});
+
+test('connectionTimeout=DISABLE_TIMEOUT sets timeout to 0 milliseconds (which pg-pool interprets as disabled)', (t) => {
+  const configuration = createClientConfiguration({
+    connectionTimeout: 0
+  });
+
+  t.is(configuration.connectionTimeout, 1);
+});
+
+test('idleTimeout=0 sets timeout to 1 millisecond', (t) => {
+  const configuration = createClientConfiguration({
+    idleTimeout: 0
+  });
+
+  t.is(configuration.idleTimeout, 1);
+});
+
+test('idleTimeout=DISABLE_TIMEOUT sets timeout to 0 milliseconds (which pg-pool interprets as disabled)', (t) => {
+  const configuration = createClientConfiguration({
+    idleTimeout: 0
+  });
+
+  t.is(configuration.idleTimeout, 1);
+});
