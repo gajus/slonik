@@ -33,21 +33,10 @@ export default (
 
   const poolConfiguration = parseConnectionString(connectionUri);
 
-  if (clientConfiguration.connectionTimeout) {
-    poolConfiguration.connectionTimeoutMillis = clientConfiguration.connectionTimeout;
-  }
-
-  if (clientConfiguration.idleTimeout) {
-    poolConfiguration.idleTimeoutMillis = clientConfiguration.idleTimeout;
-  }
-
-  if (clientConfiguration.maximumPoolSize) {
-    poolConfiguration.max = clientConfiguration.maximumPoolSize;
-  }
-
-  if (clientConfiguration.minimumPoolSize) {
-    poolConfiguration.min = clientConfiguration.minimumPoolSize;
-  }
+  poolConfiguration.connectionTimeoutMillis = clientConfiguration.connectionTimeout;
+  poolConfiguration.idleTimeoutMillis = clientConfiguration.idleTimeout;
+  poolConfiguration.max = clientConfiguration.maximumPoolSize;
+  poolConfiguration.min = clientConfiguration.minimumPoolSize;
 
   const pool = new pg.Pool(poolConfiguration);
 
