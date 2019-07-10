@@ -12,6 +12,9 @@ import type {
   ClientUserConfigurationType,
   DatabasePoolType
 } from '../types';
+import {
+  UnexpectedStateError
+} from '../errors';
 import Logger from '../Logger';
 import bindPool from '../binders/bindPool';
 import createClientConfiguration from './createClientConfiguration';
@@ -37,6 +40,22 @@ export default (
   poolConfiguration.idleTimeoutMillis = clientConfiguration.idleTimeout;
   poolConfiguration.max = clientConfiguration.maximumPoolSize;
   poolConfiguration.min = clientConfiguration.minimumPoolSize;
+
+  if (clientConfiguration.connectionTimeout === 'DISABLE_TIMEOUT') {
+    poolConfiguration.connectionTimeout = 0;
+  } else if (clientConfiguration.connectionTimeout === 0) {
+    poolLog.warn('connectionTimeout=0 sets timeout to 0 milliseconds; use connectionTimeout=DISABLE_TIMEOUT to disable timeout');
+
+    poolConfiguration.connectionTimeout = 1;
+  }
+
+  if (clientConfiguration.idleTimeout === 'DISABLE_TIMEOUT') {
+    poolConfiguration.idleTimeout = 0;
+  } else if (clientConfiguration.idleTimeout === 0) {
+    poolLog.warn('idleTimeout=0 sets timeout to 0 milliseconds; use idleTimeout=DISABLE_TIMEOUT to disable timeout');
+
+    poolConfiguration.idleTimeout = 1;
+  }
 
   const pool = new pg.Pool(poolConfiguration);
 

@@ -82,11 +82,11 @@ export type ClientUserConfigurationType = {|
 
 export type ClientConfigurationType = {|
   +captureStackTrace: boolean,
-  +connectionTimeout?: number,
-  +idleTimeout?: number,
+  +connectionTimeout: number | 'DISABLE_TIMEOUT',
+  +idleTimeout: number | 'DISABLE_TIMEOUT',
   +interceptors: $ReadOnlyArray<InterceptorType>,
-  +maximumPoolSize?: number,
-  +minimumPoolSize?: number,
+  +maximumPoolSize: number,
+  +minimumPoolSize: number,
   +typeParsers: $ReadOnlyArray<TypeParserType>
 |};
 
