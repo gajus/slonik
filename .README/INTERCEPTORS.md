@@ -47,6 +47,11 @@ type InterceptorType = {|
     queryContext: QueryContextType,
     query: QueryType
   ) => MaybePromiseType<QueryResultType<QueryResultRowType>> | MaybePromiseType<void>,
+  +queryExecutionError?: (
+    queryContext: QueryContextType,
+    query: QueryType,
+    error: SlonikError
+  ) => MaybePromiseType<void>,
   +transformQuery?: (
     queryContext: QueryContextType,
     query: QueryType
@@ -99,6 +104,12 @@ pool.connect(async () => {
 });
 
 ```
+
+#### `queryExecutionError`
+
+Executed if query execution produces an error.
+
+Use `queryExecutionError` to log and/ or re-throw another error.
 
 #### `transformQuery`
 

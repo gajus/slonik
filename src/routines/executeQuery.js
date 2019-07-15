@@ -3,7 +3,6 @@
 import {
   map
 } from 'inline-loops.macro';
-import serializeError from 'serialize-error';
 import {
   getStackTrace
 } from 'get-stack-trace';
@@ -121,44 +120,49 @@ export default async (
   connection.on('notice', noticeListener);
 
   try {
-    result = await executionRoutine(connection, actualQuery.sql, actualQuery.values, executionContext, actualQuery);
+    try {
+      result = await executionRoutine(connection, actualQuery.sql, actualQuery.values, executionContext, actualQuery);
+    } catch (error) {
+      // 'Connection terminated' refers to node-postgres error.
+      // @see https://github.com/brianc/node-postgres/blob/eb076db5d47a29c19d3212feac26cd7b6d257a95/lib/client.js#L199
+      if (error.code === '57P01' || error.message === 'Connection terminated') {
+        connection.connection.slonik.terminated = true;
+
+        throw new BackendTerminatedError(error);
+      }
+
+      if (error.code === '57014') {
+        throw new QueryCancelledError(error);
+      }
+
+      if (error.code === '23502') {
+        throw new NotNullIntegrityConstraintViolationError(error, error.constraint);
+      }
+
+      if (error.code === '23503') {
+        throw new ForeignKeyIntegrityConstraintViolationError(error, error.constraint);
+      }
+
+      if (error.code === '23505') {
+        throw new UniqueIntegrityConstraintViolationError(error, error.constraint);
+      }
+
+      if (error.code === '23514') {
+        throw new CheckIntegrityConstraintViolationError(error, error.constraint);
+      }
+
+      throw error;
+    } finally {
+      connection.off('notice', noticeListener);
+    }
   } catch (error) {
-    // 'Connection terminated' refers to node-postgres error.
-    // @see https://github.com/brianc/node-postgres/blob/eb076db5d47a29c19d3212feac26cd7b6d257a95/lib/client.js#L199
-    if (error.code === '57P01' || error.message === 'Connection terminated') {
-      connection.connection.slonik.terminated = true;
-
-      throw new BackendTerminatedError(error);
-    }
-
-    if (error.code === '57014') {
-      throw new QueryCancelledError(error);
-    }
-
-    log.error({
-      error: serializeError(error),
-      queryId
-    }, 'query produced an error');
-
-    if (error.code === '23502') {
-      throw new NotNullIntegrityConstraintViolationError(error, error.constraint);
-    }
-
-    if (error.code === '23503') {
-      throw new ForeignKeyIntegrityConstraintViolationError(error, error.constraint);
-    }
-
-    if (error.code === '23505') {
-      throw new UniqueIntegrityConstraintViolationError(error, error.constraint);
-    }
-
-    if (error.code === '23514') {
-      throw new CheckIntegrityConstraintViolationError(error, error.constraint);
+    for (const interceptor of clientConfiguration.interceptors) {
+      if (interceptor.queryExecutionError) {
+        await interceptor.queryExecutionError(executionContext, actualQuery, error);
+      }
     }
 
     throw error;
-  } finally {
-    connection.off('notice', noticeListener);
   }
 
   // $FlowFixMe

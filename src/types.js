@@ -8,6 +8,9 @@ import type {
 import type {
   LoggerType
 } from 'roarr';
+import {
+  SlonikError
+} from './errors';
 
 export type {
   LoggerType
@@ -476,6 +479,11 @@ export type InterceptorType = {|
     queryContext: QueryContextType,
     query: QueryType
   ) => MaybePromiseType<QueryResultType<QueryResultRowType> | void>,
+  +queryExecutionError?: (
+    queryContext: QueryContextType,
+    query: QueryType,
+    error: SlonikError
+  ) => MaybePromiseType<void>,
   +transformQuery?: (
     queryContext: QueryContextType,
     query: QueryType
