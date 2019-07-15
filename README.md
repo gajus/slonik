@@ -718,6 +718,11 @@ type InterceptorType = {|
     queryContext: QueryContextType,
     query: QueryType
   ) => MaybePromiseType<QueryResultType<QueryResultRowType>> | MaybePromiseType<void>,
+  +queryExecutionError?: (
+    queryContext: QueryContextType,
+    query: QueryType,
+    error: SlonikError
+  ) => MaybePromiseType<void>,
   +transformQuery?: (
     queryContext: QueryContextType,
     query: QueryType
@@ -774,6 +779,13 @@ pool.connect(async () => {
 });
 
 ```
+
+<a name="slonik-interceptors-interceptor-methods-queryexecutionerror"></a>
+#### <code>queryExecutionError</code>
+
+Executed if query execution produces an error.
+
+Use `queryExecutionError` to log and/ or re-throw another error.
 
 <a name="slonik-interceptors-interceptor-methods-transformquery"></a>
 #### <code>transformQuery</code>
