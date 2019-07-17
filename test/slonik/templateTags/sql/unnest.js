@@ -1,10 +1,12 @@
 // @flow
 
 import test from 'ava';
-import sql from '../../../../src/templateTags/sql';
+import createSqlTag from '../../../../src/factories/createSqlTag';
 import {
   SqlToken
 } from '../../../../src/tokens';
+
+const sql = createSqlTag();
 
 test('creates an unnest expression using primitive values', (t) => {
   const query = sql`SELECT * FROM ${sql.unnest([[1, 2, 3], [4, 5, 6]], ['int4', 'int4', 'int4'])}`;

@@ -2,10 +2,12 @@
 
 import test from 'ava';
 import createPool from '../../helpers/createPool';
-import sql from '../../../src/templateTags/sql';
+import createSqlTag from '../../../src/factories/createSqlTag';
 import {
   NotFoundError
 } from '../../../src/errors';
+
+const sql = createSqlTag();
 
 test('returns the query results rows', async (t) => {
   const pool = createPool();

@@ -1,10 +1,12 @@
 // @flow
 
 import test from 'ava';
-import sql from '../../../../src/templateTags/sql';
+import createSqlTag from '../../../../src/factories/createSqlTag';
 import {
   SqlToken
 } from '../../../../src/tokens';
+
+const sql = createSqlTag();
 
 test('creates a list of tuples', (t) => {
   const query = sql`INSERT INTO (foo, bar, baz) VALUES ${sql.tupleList([[1, 2, 3], [4, 5, 6]])}`;

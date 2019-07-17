@@ -1,5 +1,11 @@
 // @flow
 
+import {
+  createSqlTag
+} from './factories';
+
+export const sql = createSqlTag();
+
 export type {
   ConnectionTypeType,
   DatabaseConnectionType,
@@ -15,13 +21,11 @@ export {
   normalizeIdentifier
 } from './utilities';
 export {
-  createTypeParserPreset,
-  createPool
+  createPool,
+  createSqlTag,
+  createTypeParserPreset
 } from './factories';
 export * from './factories/typeParsers';
-export {
-  sql
-} from './templateTags';
 export {
   BackendTerminatedError,
   CheckIntegrityConstraintViolationError,

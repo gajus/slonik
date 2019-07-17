@@ -1,10 +1,12 @@
 // @flow
 
 import test from 'ava';
-import sql from '../../../../src/templateTags/sql';
+import createSqlTag from '../../../../src/factories/createSqlTag';
 import {
   SqlToken
 } from '../../../../src/tokens';
+
+const sql = createSqlTag();
 
 test('creates a value list', (t) => {
   const query = sql`SELECT ${sql.json({foo: 'bar'})}`;

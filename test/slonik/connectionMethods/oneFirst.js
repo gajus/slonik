@@ -2,12 +2,14 @@
 
 import test from 'ava';
 import createPool from '../../helpers/createPool';
-import sql from '../../../src/templateTags/sql';
+import createSqlTag from '../../../src/factories/createSqlTag';
 import {
   DataIntegrityError,
   NotFoundError,
   UnexpectedStateError
 } from '../../../src/errors';
+
+const sql = createSqlTag();
 
 test('returns value of the first column from the first row', async (t) => {
   const pool = createPool();

@@ -6,8 +6,7 @@ import type {
 } from '../types';
 import {
   escapeIdentifier,
-  isSqlToken,
-  normalizeIdentifier
+  isSqlToken
 } from '../utilities';
 import {
   createSqlTokenSqlFragment
@@ -29,16 +28,14 @@ export default (token: AssignmentListTokenType, greatestParameterPosition: numbe
 
         values.push(...sqlFragment.values);
 
-        return escapeIdentifier(normalizeIdentifier(column)) + ' = ' + sqlFragment.sql;
+        return escapeIdentifier(token.normalizeIdentifier(column)) + ' = ' + sqlFragment.sql;
       } else {
         // $FlowFixMe
         values.push(value);
 
-        // @todo `normalizeIdentifier` is opinionated modification assignment expression modification.
-        // Add a way to override the default behaviour, e.g. by allowing AssignmentListTokenType
-        // key to be sql.identifier.
+        // @todo allow AssignmentListTokenType key to be sql.identifier.
         // @see https://github.com/gajus/slonik/issues/53
-        return escapeIdentifier(normalizeIdentifier(column)) + ' = $' + ++placeholderIndex;
+        return escapeIdentifier(token.normalizeIdentifier(column)) + ' = $' + ++placeholderIndex;
       }
     })
     .join(', ');

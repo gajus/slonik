@@ -1,10 +1,12 @@
 // @flow
 
 import test from 'ava';
-import sql from '../../../../src/templateTags/sql';
+import createSqlTag from '../../../../src/factories/createSqlTag';
 import {
   SqlToken
 } from '../../../../src/tokens';
+
+const sql = createSqlTag();
 
 test('creates a single value assignment', (t) => {
   const query = sql`SELECT ${sql.assignmentList({foo: 'bar'})}`;
@@ -53,6 +55,26 @@ test('converts camel-case to snake-case', (t) => {
 
   t.deepEqual(query, {
     sql: 'SELECT "foo_bar" = $1',
+    type: SqlToken,
+    values: [
+      'baz'
+    ]
+  });
+});
+
+test('uses normalizeIdentifier to normalize identifier names', (t) => {
+  const customSql = createSqlTag({
+    normalizeIdentifier: (name) => {
+      return name;
+    }
+  });
+
+  const query = customSql`SELECT ${customSql.assignmentList({
+    fooBar: 'baz'
+  })}`;
+
+  t.deepEqual(query, {
+    sql: 'SELECT "fooBar" = $1',
     type: SqlToken,
     values: [
       'baz'

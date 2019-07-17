@@ -4,7 +4,7 @@ import test from 'ava';
 import delay from 'delay';
 import sinon from 'sinon';
 import createPool from '../../../helpers/createPool';
-import sql from '../../../../src/templateTags/sql';
+import createSqlTag from '../../../../src/factories/createSqlTag';
 import {
   BackendTerminatedError,
   CheckIntegrityConstraintViolationError,
@@ -12,6 +12,8 @@ import {
   NotNullIntegrityConstraintViolationError,
   UniqueIntegrityConstraintViolationError
 } from '../../../../src/errors';
+
+const sql = createSqlTag();
 
 const createErrorWithCode = (code: string) => {
   const error = new Error('foo');

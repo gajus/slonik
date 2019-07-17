@@ -1,10 +1,12 @@
 // @flow
 
 import test from 'ava';
-import sql from '../../../src/templateTags/sql';
+import createSqlTag from '../../../src/factories/createSqlTag';
 import {
   interpolateNamedParameterReferences
 } from '../../../src/utilities';
+
+const sql = createSqlTag();
 
 test('does not error when placeholders are absent', (t) => {
   const sqlFragment = interpolateNamedParameterReferences('SELECT 1', {}, 0);

@@ -1,10 +1,12 @@
 // @flow
 
 import test from 'ava';
-import sql from '../../../../src/templateTags/sql';
+import createSqlTag from '../../../../src/factories/createSqlTag';
 import {
   SqlToken
 } from '../../../../src/tokens';
+
+const sql = createSqlTag();
 
 test('creates an object describing a query with identifiers', (t) => {
   const query = sql`SELECT ${'foo'} FROM ${sql.identifierList([['bar'], ['baz']])}`;

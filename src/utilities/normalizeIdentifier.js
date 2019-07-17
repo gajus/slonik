@@ -3,7 +3,12 @@
 import {
   snakeCase
 } from 'lodash';
+import type {
+  IdentifierNormalizerType
+} from '../types';
 
-export default (propertyName: string): string => {
+const normalizeIdentifier: IdentifierNormalizerType = (propertyName: string): string => {
   return snakeCase(propertyName);
 };
+
+export default normalizeIdentifier;

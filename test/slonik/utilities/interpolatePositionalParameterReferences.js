@@ -1,10 +1,12 @@
 // @flow
 
 import test from 'ava';
-import sql from '../../../src/templateTags/sql';
+import createSqlTag from '../../../src/factories/createSqlTag';
 import {
   interpolatePositionalParameterReferences
 } from '../../../src/utilities';
+
+const sql = createSqlTag();
 
 test('creates a plain sql token', (t) => {
   const sqlFragment = interpolatePositionalParameterReferences('foo', [], 0);

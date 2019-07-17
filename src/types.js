@@ -288,6 +288,7 @@ export type BooleanExpressionTokenType = {|
 
 export type AssignmentListTokenType = {|
   +namedAssignment: NamedAssignmentType,
+  +normalizeIdentifier: IdentifierNormalizerType,
   +type: 'SLONIK_TOKEN_ASSIGNMENT_LIST'
 |};
 
@@ -495,3 +496,8 @@ export type InterceptorType = {|
     fields: $ReadOnlyArray<FieldType>
   ) => QueryResultRowType
 |};
+
+/**
+ * Normalizes identifier name. Used when identifier's name is passed as a plain-text property name (see `sql.assignmentList`).
+ */
+export type IdentifierNormalizerType = (identifierName: string) => string;

@@ -1,5 +1,7 @@
 ## Query building
 
+Queries are built using methods of the `sql` tagged template literal.
+
 ### `sql.valueList`
 
 Note: Before using `sql.valueList` evaluate if [`sql.array`](#sqlarray) is not a better option.
@@ -668,7 +670,7 @@ Produces:
 
 #### Snake-case normalization
 
-`sql.assignmentList` converts object keys to snake-case, e.g.
+By default, `sql.assignmentList` converts object keys to snake-case, e.g.
 
 ```js
 await connection.query(sql`
@@ -694,11 +696,33 @@ Produces:
 
 ```
 
-This behaviour might be sometimes undesirable.
+This behaviour can be overriden by [constructing a custom `sql` tag](#sql-tag) and configuring `normalizeIdentifier`, e.g.
 
-There is currently no way to override this behaviour.
+```js
+import {
+  createSqlTag
+} from 'slonik';
 
-Use this issue https://github.com/gajus/slonik/issues/53 to describe your use case and propose a solution.
+const sql = createSqlTag({
+  normalizeIdentifier: (identifierName) => {
+    return identifierName;
+  }
+});
+
+```
+
+With this configuration, the earlier code example produces:
+
+```js
+{
+  sql: 'UPDATE foo SET "barBaz" = to_timestamp($1), "quuxQuuz" = to_timestamp($2)',
+  values: [
+    'qux',
+    'corge'
+  ]
+}
+
+```
 
 ### `sql.json`
 

@@ -1,8 +1,10 @@
 // @flow
 
 import test from 'ava';
-import sql from '../../../../../src/templateTags/sql';
+import createSqlTag from '../../../../../src/factories/createSqlTag';
 import createPool from '../../../../helpers/createPool';
+
+const sql = createSqlTag();
 
 test('overrides result row', async (t) => {
   const pool = createPool({

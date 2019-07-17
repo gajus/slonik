@@ -2,8 +2,10 @@
 
 import test from 'ava';
 import delay from 'delay';
-import sql from '../../../../src/templateTags/sql';
+import createSqlTag from '../../../../src/factories/createSqlTag';
 import createPool from '../../../helpers/createPool';
+
+const sql = createSqlTag();
 
 const getQueries = (spy) => {
   return spy.getCalls().map((call) => {

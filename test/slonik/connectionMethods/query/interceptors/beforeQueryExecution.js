@@ -2,7 +2,9 @@
 
 import test from 'ava';
 import createPool from '../../../../helpers/createPool';
-import sql from '../../../../../src/templateTags/sql';
+import createSqlTag from '../../../../../src/factories/createSqlTag';
+
+const sql = createSqlTag();
 
 test('short-circuits the query execution', async (t) => {
   const pool = createPool({

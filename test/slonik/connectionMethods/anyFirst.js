@@ -2,10 +2,12 @@
 
 import test from 'ava';
 import createPool from '../../helpers/createPool';
-import sql from '../../../src/templateTags/sql';
+import createSqlTag from '../../../src/factories/createSqlTag';
 import {
   DataIntegrityError
 } from '../../../src/errors';
+
+const sql = createSqlTag();
 
 test('returns empty array if no rows are returned', async (t) => {
   const pool = createPool();

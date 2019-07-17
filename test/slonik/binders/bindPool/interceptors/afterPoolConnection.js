@@ -2,8 +2,10 @@
 
 import test from 'ava';
 import sinon from 'sinon';
-import sql from '../../../../../src/templateTags/sql';
+import createSqlTag from '../../../../../src/factories/createSqlTag';
 import createPool from '../../../../helpers/createPool';
+
+const sql = createSqlTag();
 
 test('`afterPoolConnection` is called after `connect`', async (t) => {
   const afterPoolConnection = sinon.stub();
