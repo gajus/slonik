@@ -72,6 +72,7 @@ Note: Using this project does not require TypeScript or Flow. It is a regular ES
         * [Inserting large number of rows](#slonik-recipes-inserting-large-number-of-rows)
         * [Using `sql.raw` to generate dynamic queries](#slonik-recipes-using-sql-raw-to-generate-dynamic-queries)
         * [Routing queries to different connections](#slonik-recipes-routing-queries-to-different-connections)
+    * [`sql` tag](#slonik-sql-tag)
     * [Value placeholders](#slonik-value-placeholders)
         * [Tagged template literals](#slonik-value-placeholders-tagged-template-literals)
         * [Manually constructing the query](#slonik-value-placeholders-manually-constructing-the-query)
@@ -993,6 +994,53 @@ masterPool.query(sql`UPDATE 1`);
 ```
 
 
+<a name="slonik-sql-tag"></a>
+## <code>sql</code> tag
+
+`sql` tag serves two purposes:
+
+* It is used to construct queries with bound parameter values (see [Value placeholders](#value-placeholders)).
+* It used to generate dynamic query fragments (see [Query building](#query-building)).
+
+`sql` tag can be imported from Slonik package:
+
+```js
+import {
+  sql
+} from 'slonik';
+
+```
+
+Sometiems it may be desirable to construct a custom instance of `sql` tag (e.g. see a note in [`sql.assignmentList`](#slonik-query-building-sql-assignmentlist)). In those cases, you can use the `createSqlTag` factory, e.g.
+
+```js
+import {
+  createSqlTag
+} from 'slonik';
+
+/**
+ * Normalizes identifier name. Used when identifier's name is passed as a plain-text property name (see `sql.assignmentList`).
+ * The default IdentifierNormalizer (defined in `./src/utilities/normalizeIdentifier.js` and exported as `normalizeIdentifier` from Slonik package)
+ * converts string to snake_case.
+ *
+ * @typedef {Function} IdentifierNormalizer
+ * @param {string} propertyName
+ * @returns {string}
+ */
+
+/**
+ * @typedef SqlTagConfiguration
+ * @property {IdentifierNormalizer} [normalizeIdentifier]
+ */
+
+/**
+ * @param {SqlTagConfiguration} configuration
+ */
+const sql = createSqlTag(configuration);
+
+```
+
+
 <a name="slonik-value-placeholders"></a>
 ## Value placeholders
 
@@ -1080,6 +1128,8 @@ Produces:
 
 <a name="slonik-query-building"></a>
 ## Query building
+
+Queries are built using methods of the `sql` tagged template literal.
 
 <a name="slonik-query-building-sql-valuelist"></a>
 ### <code>sql.valueList</code>
@@ -1764,7 +1814,7 @@ Produces:
 <a name="slonik-query-building-sql-assignmentlist-snake-case-normalization"></a>
 #### Snake-case normalization
 
-`sql.assignmentList` converts object keys to snake-case, e.g.
+By default, `sql.assignmentList` converts object keys to snake-case, e.g.
 
 ```js
 await connection.query(sql`
@@ -1790,11 +1840,33 @@ Produces:
 
 ```
 
-This behaviour might be sometimes undesirable.
+This behaviour can be overriden by [constructing a custom `sql` tag](#sql-tag) and configuring `normalizeIdentifier`, e.g.
 
-There is currently no way to override this behaviour.
+```js
+import {
+  createSqlTag
+} from 'slonik';
 
-Use this issue https://github.com/gajus/slonik/issues/53 to describe your use case and propose a solution.
+const sql = createSqlTag({
+  normalizeIdentifier: (identifierName) => {
+    return identifierName;
+  }
+});
+
+```
+
+With this configuration, the earlier code example produces:
+
+```js
+{
+  sql: 'UPDATE foo SET "barBaz" = to_timestamp($1), "quuxQuuz" = to_timestamp($2)',
+  values: [
+    'qux',
+    'corge'
+  ]
+}
+
+```
 
 <a name="slonik-query-building-sql-json"></a>
 ### <code>sql.json</code>
