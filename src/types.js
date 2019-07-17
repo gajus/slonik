@@ -317,8 +317,9 @@ export type ValueExpressionType =
   SqlTokenType |
   PrimitiveValueExpressionType;
 
+export type NamedAssignmentValueType = ValueExpressionType | void;
 export type NamedAssignmentType = {
-  +[key: string]: ValueExpressionType
+  +[key: string]: NamedAssignmentValueType
 };
 
 export type TaggedTemplateLiteralInvocationType = {|

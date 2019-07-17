@@ -20,6 +20,9 @@ export default (token: AssignmentListTokenType, greatestParameterPosition: numbe
 
   const sql = Object
     .entries(token.namedAssignment)
+    .filter(([, value]) => {
+      return value !== undefined;
+    })
     .map(([column, value]) => {
       if (isSqlToken(value)) {
         // $FlowFixMe
