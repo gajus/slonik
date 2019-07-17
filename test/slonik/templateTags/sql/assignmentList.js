@@ -60,6 +60,21 @@ test('converts camel-case to snake-case', (t) => {
   });
 });
 
+test('omits undefined values', (t) => {
+  const query = sql`SELECT ${sql.assignmentList({
+    foo: 'baz',
+    lel: undefined
+  })}`;
+
+  t.deepEqual(query, {
+    sql: 'SELECT "foo" = $1',
+    type: SqlToken,
+    values: [
+      'baz'
+    ]
+  });
+});
+
 test('the resulting object is immutable', (t) => {
   const token = sql.assignmentList({foo: 'bar'});
 
