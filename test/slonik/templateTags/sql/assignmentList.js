@@ -3,7 +3,7 @@
 import test from 'ava';
 import createSqlTag from '../../../../src/factories/createSqlTag';
 import {
-  SqlToken
+  SqlToken,
 } from '../../../../src/tokens';
 
 const sql = createSqlTag();
@@ -15,8 +15,8 @@ test('creates a single value assignment', (t) => {
     sql: 'SELECT "foo" = $1',
     type: SqlToken,
     values: [
-      'bar'
-    ]
+      'bar',
+    ],
   });
 });
 
@@ -27,15 +27,15 @@ test('interpolates SQL tokens', (t) => {
     sql: 'SELECT "foo" = to_timestamp($1)',
     type: SqlToken,
     values: [
-      'bar'
-    ]
+      'bar',
+    ],
   });
 });
 
 test('creates multiple value assignment', (t) => {
   const query = sql`SELECT ${sql.assignmentList({
     baz: 'qux',
-    foo: 'bar'
+    foo: 'bar',
   })}`;
 
   t.deepEqual(query, {
@@ -43,22 +43,22 @@ test('creates multiple value assignment', (t) => {
     type: SqlToken,
     values: [
       'qux',
-      'bar'
-    ]
+      'bar',
+    ],
   });
 });
 
 test('converts camel-case to snake-case', (t) => {
   const query = sql`SELECT ${sql.assignmentList({
-    fooBar: 'baz'
+    fooBar: 'baz',
   })}`;
 
   t.deepEqual(query, {
     sql: 'SELECT "foo_bar" = $1',
     type: SqlToken,
     values: [
-      'baz'
-    ]
+      'baz',
+    ],
   });
 });
 
@@ -66,19 +66,19 @@ test('uses normalizeIdentifier to normalize identifier names', (t) => {
   const customSql = createSqlTag({
     normalizeIdentifier: (name) => {
       return name;
-    }
+    },
   });
 
   const query = customSql`SELECT ${customSql.assignmentList({
-    fooBar: 'baz'
+    fooBar: 'baz',
   })}`;
 
   t.deepEqual(query, {
     sql: 'SELECT "fooBar" = $1',
     type: SqlToken,
     values: [
-      'baz'
-    ]
+      'baz',
+    ],
   });
 });
 

@@ -1,13 +1,13 @@
 // @flow
 
 import {
-  createQueryId
+  createQueryId,
 } from '../utilities';
 import {
-  UnexpectedStateError
+  UnexpectedStateError,
 } from '../errors';
 import type {
-  InternalQueryOneFirstFunctionType
+  InternalQueryOneFirstFunctionType,
 } from '../types';
 import one from './one';
 
@@ -27,7 +27,7 @@ const oneFirst: InternalQueryOneFirstFunctionType = async (log, connection, clie
 
   if (keys.length > 1) {
     log.error({
-      queryId
+      queryId,
     }, 'DataIntegrityError');
 
     throw new UnexpectedStateError();

@@ -11,11 +11,11 @@ test('uses typname to retrieve pg_type oid', async (t) => {
           {
             oid: 'foo',
             typarray: 'bar',
-            typname: 'int8'
-          }
-        ]
+            typname: 'int8',
+          },
+        ],
       };
-    }
+    },
   };
 
   const typeParser = {
@@ -24,11 +24,11 @@ test('uses typname to retrieve pg_type oid', async (t) => {
     // eslint-disable-next-line no-unused-vars
     parse: (value) => {
       return null;
-    }
+    },
   };
 
   const typeOverrides = await createTypeOverrides(connection, [
-    typeParser
+    typeParser,
   ]);
 
   t.is(typeof typeOverrides.text.foo, 'function');
@@ -39,9 +39,9 @@ test('throws an error if type cannot be found', async (t) => {
   const connection = {
     query: () => {
       return {
-        rows: []
+        rows: [],
       };
-    }
+    },
   };
 
   const typeParser = {
@@ -50,10 +50,10 @@ test('throws an error if type cannot be found', async (t) => {
     // eslint-disable-next-line no-unused-vars
     parse: (value) => {
       return null;
-    }
+    },
   };
 
   await t.throwsAsync(createTypeOverrides(connection, [
-    typeParser
+    typeParser,
   ]), 'Database type "int8" not found.');
 });

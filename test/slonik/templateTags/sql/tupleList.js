@@ -3,7 +3,7 @@
 import test from 'ava';
 import createSqlTag from '../../../../src/factories/createSqlTag';
 import {
-  SqlToken
+  SqlToken,
 } from '../../../../src/tokens';
 
 const sql = createSqlTag();
@@ -20,8 +20,8 @@ test('creates a list of tuples', (t) => {
       3,
       4,
       5,
-      6
-    ]
+      6,
+    ],
   });
 });
 
@@ -33,8 +33,8 @@ test('expands SQL tokens', (t) => {
     type: SqlToken,
     values: [
       1,
-      3
-    ]
+      3,
+    ],
   });
 });
 
@@ -48,8 +48,8 @@ test('expands SQL tokens (with bound values)', (t) => {
       1,
       2,
       3,
-      4
-    ]
+      4,
+    ],
   });
 });
 

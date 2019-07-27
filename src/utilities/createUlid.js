@@ -2,7 +2,7 @@
 
 import {
   factory as ulidFactory,
-  detectPrng
+  detectPrng,
 } from 'ulid';
 
 const ulid = ulidFactory(detectPrng(true));

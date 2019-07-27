@@ -3,10 +3,10 @@
 import parseInterval from 'postgres-interval';
 import {
   parse as parseIsoDuration,
-  toSeconds as durationToSeconds
+  toSeconds as durationToSeconds,
 } from 'iso8601-duration';
 import type {
-  TypeParserType
+  TypeParserType,
 } from '../../types';
 
 const intervalParser = (value) => {
@@ -16,6 +16,6 @@ const intervalParser = (value) => {
 export default (): TypeParserType => {
   return {
     name: 'interval',
-    parse: intervalParser
+    parse: intervalParser,
   };
 };

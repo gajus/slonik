@@ -3,7 +3,7 @@
 import test from 'ava';
 import createSqlTag from '../../../src/factories/createSqlTag';
 import {
-  interpolatePositionalParameterReferences
+  interpolatePositionalParameterReferences,
 } from '../../../src/utilities';
 
 const sql = createSqlTag();
@@ -17,7 +17,7 @@ test('creates a plain sql token', (t) => {
 
 test('creates a tuple with a single positional parameter', (t) => {
   const sqlFragment = interpolatePositionalParameterReferences('($1)', [
-    'foo'
+    'foo',
   ], 0);
 
   t.assert(sqlFragment.sql === '($1)');
@@ -26,7 +26,7 @@ test('creates a tuple with a single positional parameter', (t) => {
 
 test('interpolates SQL token', (t) => {
   const sqlFragment = interpolatePositionalParameterReferences('$1', [
-    sql.raw('to_timestamp($1)', ['foo'])
+    sql.raw('to_timestamp($1)', ['foo']),
   ], 0);
 
   t.assert(sqlFragment.sql === 'to_timestamp($1)');
@@ -35,7 +35,7 @@ test('interpolates SQL token', (t) => {
 
 test('offsets parameter position', (t) => {
   const sqlFragment = interpolatePositionalParameterReferences('($1)', [
-    'foo'
+    'foo',
   ], 1);
 
   t.assert(sqlFragment.sql === '($2)');
@@ -47,9 +47,9 @@ test('offsets parameter position (SQL token)', (t) => {
     'foo',
     sql.raw('$1, $2', [
       'bar',
-      'baz'
+      'baz',
     ]),
-    'qux'
+    'qux',
   ], 1);
 
   t.assert(sqlFragment.sql === '$2, $3, $4, $5');
@@ -59,7 +59,7 @@ test('offsets parameter position (SQL token)', (t) => {
 test('throws an erorr if the greatest parameter position is greater than the number of parameter values', (t) => {
   t.throws(() => {
     interpolatePositionalParameterReferences('($1, $2)', [
-      'foo'
+      'foo',
     ], 0);
   }, 'The greatest parameter position is greater than the number of parameter values.');
 });
@@ -68,7 +68,7 @@ test('throws an erorr if least parameter is greater than 1', (t) => {
   t.throws(() => {
     interpolatePositionalParameterReferences('($2)', [
       'foo',
-      'bar'
+      'bar',
     ], 0);
   }, 'Parameter position must start at 1.');
 });

@@ -13,7 +13,7 @@ import {
   TupleListToken,
   TupleToken,
   UnnestToken,
-  ValueListToken
+  ValueListToken,
 } from '../tokens';
 import {
   createArraySqlFragment,
@@ -28,14 +28,14 @@ import {
   createTupleListSqlFragment,
   createTupleSqlFragment,
   createUnnestSqlFragment,
-  createValueListSqlFragment
+  createValueListSqlFragment,
 } from '../sqlFragmentFactories';
 import {
-  UnexpectedStateError
+  UnexpectedStateError,
 } from '../errors';
 import type {
   SqlTokenType,
-  SqlFragmentType
+  SqlFragmentType,
 } from '../types';
 
 export default (token: SqlTokenType, greatestParameterPosition: number): SqlFragmentType => {

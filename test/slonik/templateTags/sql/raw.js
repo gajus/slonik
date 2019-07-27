@@ -3,7 +3,7 @@
 import test from 'ava';
 import createSqlTag from '../../../../src/factories/createSqlTag';
 import {
-  SqlToken
+  SqlToken,
 } from '../../../../src/tokens';
 
 const sql = createSqlTag();
@@ -14,7 +14,7 @@ test('inlines raw SQL', (t) => {
   t.deepEqual(query, {
     sql: 'SELECT 1 FROM "bar"',
     type: SqlToken,
-    values: []
+    values: [],
   });
 });
 
@@ -25,8 +25,8 @@ test('inlines raw SQL with values', (t) => {
     sql: 'SELECT $1',
     type: SqlToken,
     values: [
-      'foo'
-    ]
+      'foo',
+    ],
   });
 });
 
@@ -38,8 +38,8 @@ test('offsets bindings to match existing bindings', (t) => {
     type: SqlToken,
     values: [
       'foo',
-      'bar'
-    ]
+      'bar',
+    ],
   });
 });
 

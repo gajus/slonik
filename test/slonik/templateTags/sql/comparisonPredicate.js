@@ -3,7 +3,7 @@
 import test from 'ava';
 import createSqlTag from '../../../../src/factories/createSqlTag';
 import {
-  SqlToken
+  SqlToken,
 } from '../../../../src/tokens';
 
 const sql = createSqlTag();
@@ -16,8 +16,8 @@ test('creates comparison of two values', (t) => {
     type: SqlToken,
     values: [
       1,
-      2
-    ]
+      2,
+    ],
   });
 });
 
@@ -28,8 +28,8 @@ test('creates comparison of a value to a SQL token (left)', (t) => {
     sql: 'SELECT "foo" = $1',
     type: SqlToken,
     values: [
-      1
-    ]
+      1,
+    ],
   });
 });
 
@@ -40,8 +40,8 @@ test('creates comparison of a value to a SQL token (right)', (t) => {
     sql: 'SELECT $1 = "foo"',
     type: SqlToken,
     values: [
-      1
-    ]
+      1,
+    ],
   });
 });
 

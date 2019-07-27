@@ -2,17 +2,17 @@
 
 import type {
   SqlFragmentType,
-  ValueListSqlTokenType
+  ValueListSqlTokenType,
 } from '../types';
 import {
-  UnexpectedStateError
+  UnexpectedStateError,
 } from '../errors';
 import {
-  isSqlToken
+  isSqlToken,
 } from '../utilities';
 import {
   createPrimitiveValueExpressions,
-  createSqlTokenSqlFragment
+  createSqlTokenSqlFragment,
 } from '../factories';
 
 export default (token: ValueListSqlTokenType, greatestParameterPosition: number): SqlFragmentType => {
@@ -42,6 +42,6 @@ export default (token: ValueListSqlTokenType, greatestParameterPosition: number)
 
   return {
     sql: placeholders.join(', '),
-    values: createPrimitiveValueExpressions(values)
+    values: createPrimitiveValueExpressions(values),
   };
 };

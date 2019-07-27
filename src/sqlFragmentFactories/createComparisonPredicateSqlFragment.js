@@ -2,16 +2,16 @@
 
 import type {
   ComparisonPredicateTokenType,
-  SqlFragmentType
+  SqlFragmentType,
 } from '../types';
 import {
-  isSqlToken
+  isSqlToken,
 } from '../utilities';
 import {
-  createSqlTokenSqlFragment
+  createSqlTokenSqlFragment,
 } from '../factories';
 import {
-  UnexpectedStateError
+  UnexpectedStateError,
 } from '../errors';
 
 export type ComparisonOperatorType = '<' | '>' | '<=' | '>=' | '=' | '<>' | '!=';
@@ -68,6 +68,6 @@ export default (token: ComparisonPredicateTokenType, greatestParameterPosition: 
 
   return {
     sql: placeholders.join(' '),
-    values
+    values,
   };
 };

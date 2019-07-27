@@ -2,10 +2,10 @@
 
 import type {
   SqlSqlTokenType,
-  SqlFragmentType
+  SqlFragmentType,
 } from '../types';
 import {
-  UnexpectedStateError
+  UnexpectedStateError,
 } from '../errors';
 
 export default (token: SqlSqlTokenType, greatestParameterPosition: number): SqlFragmentType => {
@@ -38,6 +38,6 @@ export default (token: SqlSqlTokenType, greatestParameterPosition: number): SqlF
 
   return {
     sql,
-    values: token.values
+    values: token.values,
   };
 };

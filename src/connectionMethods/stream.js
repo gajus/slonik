@@ -2,10 +2,10 @@
 
 import through from 'through2';
 import {
-  executeQuery
+  executeQuery,
 } from '../routines';
 import type {
-  InternalStreamFunctionType
+  InternalStreamFunctionType,
 } from '../types';
 import QueryStream from '../QueryStream';
 
@@ -47,7 +47,7 @@ const stream: InternalStreamFunctionType = async (connectionLogger, connection, 
           // eslint-disable-next-line fp/no-this, babel/no-invalid-this
           this.push({
             fields: datum.fields,
-            row: finalRow
+            row: finalRow,
           });
 
           callback();

@@ -1,13 +1,13 @@
 // @flow
 
 import {
-  map
+  map,
 } from 'inline-loops.macro';
 import {
-  getStackTrace
+  getStackTrace,
 } from 'get-stack-trace';
 import {
-  createQueryId
+  createQueryId,
 } from '../utilities';
 import {
   BackendTerminatedError,
@@ -16,7 +16,7 @@ import {
   NotNullIntegrityConstraintViolationError,
   QueryCancelledError,
   UnexpectedStateError,
-  UniqueIntegrityConstraintViolationError
+  UniqueIntegrityConstraintViolationError,
 } from '../errors';
 import type {
   ClientConfigurationType,
@@ -26,7 +26,7 @@ import type {
   QueryContextType,
   QueryIdType,
   QueryResultRowType,
-  QueryType
+  QueryType,
 } from '../types';
 
 type ExecutionRoutineType = (
@@ -62,7 +62,7 @@ export default async (
       return {
         columnNumber: callSite.columnNumber,
         fileName: callSite.fileName,
-        lineNumber: callSite.lineNumber
+        lineNumber: callSite.lineNumber,
       };
     });
   }
@@ -70,16 +70,16 @@ export default async (
   const queryId = inheritedQueryId || createQueryId();
 
   const log = connectionLogger.child({
-    queryId
+    queryId,
   });
 
   const originalQuery = {
     sql: rawSql,
-    values
+    values,
   };
 
   let actualQuery = {
-    ...originalQuery
+    ...originalQuery,
   };
 
   const executionContext: QueryContextType = {
@@ -90,7 +90,7 @@ export default async (
     queryId,
     queryInputTime,
     stackTrace,
-    transactionId: connection.connection.slonik.transactionId
+    transactionId: connection.connection.slonik.transactionId,
   };
 
   for (const interceptor of clientConfiguration.interceptors) {
@@ -188,7 +188,7 @@ export default async (
 
         result = {
           ...result,
-          rows
+          rows,
         };
       }
     }

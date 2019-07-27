@@ -13,7 +13,7 @@ import {
   TupleListToken,
   TupleToken,
   UnnestToken,
-  ValueListToken
+  ValueListToken,
 } from '../tokens';
 
 const Tokens = [
@@ -29,7 +29,7 @@ const Tokens = [
   TupleListToken,
   TupleToken,
   UnnestToken,
-  ValueListToken
+  ValueListToken,
 ];
 
 export default (subject: *) => {

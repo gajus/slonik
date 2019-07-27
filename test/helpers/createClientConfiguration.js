@@ -1,7 +1,7 @@
 // @flow
 
 import type {
-  ClientConfigurationType
+  ClientConfigurationType,
 } from '../../src/types';
 
 export default (): ClientConfigurationType => {
@@ -12,6 +12,6 @@ export default (): ClientConfigurationType => {
     interceptors: [],
     maximumPoolSize: 10,
     minimumPoolSize: 0,
-    typeParsers: []
+    typeParsers: [],
   };
 };

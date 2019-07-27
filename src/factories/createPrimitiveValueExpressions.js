@@ -2,14 +2,14 @@
 
 import Logger from '../Logger';
 import {
-  UnexpectedStateError
+  UnexpectedStateError,
 } from '../errors';
 import type {
-  PrimitiveValueExpressionType
+  PrimitiveValueExpressionType,
 } from '../types';
 
 const log = Logger.child({
-  namespace: 'createPrimitiveValueExpressions'
+  namespace: 'createPrimitiveValueExpressions',
 });
 
 export default (values: $ReadOnlyArray<*>): $ReadOnlyArray<PrimitiveValueExpressionType> => {
@@ -21,7 +21,7 @@ export default (values: $ReadOnlyArray<*>): $ReadOnlyArray<PrimitiveValueExpress
     } else {
       log.warn({
         value,
-        values
+        values,
       }, 'unexpected value expression');
 
       throw new UnexpectedStateError('Unexpected value expression.');

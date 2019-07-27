@@ -12,19 +12,19 @@ test('overrides result row', async (t) => {
       {
         transformRow: () => {
           return {
-            foo: 2
+            foo: 2,
           };
-        }
-      }
-    ]
+        },
+      },
+    ],
   });
 
   pool.querySpy.returns({
     rows: [
       {
-        foo: 1
-      }
-    ]
+        foo: 1,
+      },
+    ],
   });
 
   const result = await pool.query(sql`SELECT 1`);
@@ -33,8 +33,8 @@ test('overrides result row', async (t) => {
     notices: [],
     rows: [
       {
-        foo: 2
-      }
-    ]
+        foo: 2,
+      },
+    ],
   });
 });

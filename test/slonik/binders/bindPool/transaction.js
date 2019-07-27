@@ -25,7 +25,7 @@ test('commits successful transaction', async (t) => {
   t.deepEqual(getQueries(pool.querySpy), [
     'START TRANSACTION',
     'SELECT 1',
-    'COMMIT'
+    'COMMIT',
   ]);
 });
 
@@ -43,7 +43,7 @@ test('rollsback unsuccessful transaction', async (t) => {
   t.deepEqual(getQueries(pool.querySpy), [
     'START TRANSACTION',
     'SELECT 1',
-    'ROLLBACK'
+    'ROLLBACK',
   ]);
 });
 
@@ -64,7 +64,7 @@ test('uses savepoints to nest transactions', async (t) => {
     'SELECT 1',
     'SAVEPOINT slonik_savepoint_1',
     'SELECT 2',
-    'COMMIT'
+    'COMMIT',
   ]);
 });
 
@@ -89,7 +89,7 @@ test('rollsback to the last savepoint', async (t) => {
     'SAVEPOINT slonik_savepoint_1',
     'SELECT 2',
     'ROLLBACK TO SAVEPOINT slonik_savepoint_1',
-    'COMMIT'
+    'COMMIT',
   ]);
 });
 
@@ -114,7 +114,7 @@ test('rollsback the entire transaction with multiple savepoints', async (t) => {
     'SAVEPOINT slonik_savepoint_1',
     'SELECT 2',
     'ROLLBACK TO SAVEPOINT slonik_savepoint_1',
-    'ROLLBACK'
+    'ROLLBACK',
   ]);
 });
 
@@ -146,7 +146,7 @@ test('rollsback the entire transaction with multiple savepoints (multiple depth 
     'SELECT 3',
     'ROLLBACK TO SAVEPOINT slonik_savepoint_2',
     'ROLLBACK TO SAVEPOINT slonik_savepoint_1',
-    'ROLLBACK'
+    'ROLLBACK',
   ]);
 });
 
@@ -160,7 +160,7 @@ test('throws an error if an attempt is made to create a new transaction before t
       }),
       c1.transaction(() => {
         return delay(1000);
-      })
+      }),
     ]);
   });
 

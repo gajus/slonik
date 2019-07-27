@@ -1,10 +1,10 @@
 // @flow
 
 import {
-  executeQuery
+  executeQuery,
 } from '../routines';
 import type {
-  InternalQueryFunctionType
+  InternalQueryFunctionType,
 } from '../types';
 
 const query: InternalQueryFunctionType<*> = async (connectionLogger, connection, clientConfiguration, rawSql, values, inheritedQueryId) => {

@@ -3,10 +3,10 @@
 import test from 'ava';
 import createSqlTag from '../../../../src/factories/createSqlTag';
 import {
-  SqlToken
+  SqlToken,
 } from '../../../../src/tokens';
 import {
-  InvalidInputError
+  InvalidInputError,
 } from '../../../../src/errors';
 
 const sql = createSqlTag();
@@ -17,7 +17,7 @@ test('creates an object describing a query', (t) => {
   t.deepEqual(query, {
     sql: 'SELECT 1',
     type: SqlToken,
-    values: []
+    values: [],
   });
 });
 
@@ -46,8 +46,8 @@ test('creates an object describing query value bindings', (t) => {
     sql: 'SELECT $1',
     type: SqlToken,
     values: [
-      'foo'
-    ]
+      'foo',
+    ],
   });
 });
 
@@ -59,8 +59,8 @@ test('creates an object describing query value bindings (multiple)', (t) => {
     type: SqlToken,
     values: [
       'foo',
-      'bar'
-    ]
+      'bar',
+    ],
   });
 });
 
@@ -73,8 +73,8 @@ test('nests sql templates', (t) => {
     type: SqlToken,
     values: [
       'baz',
-      'foo'
-    ]
+      'foo',
+    ],
   });
 });
 

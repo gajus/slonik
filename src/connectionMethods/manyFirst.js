@@ -1,16 +1,16 @@
 // @flow
 
 import {
-  map
+  map,
 } from 'inline-loops.macro';
 import {
-  createQueryId
+  createQueryId,
 } from '../utilities';
 import {
-  DataIntegrityError
+  DataIntegrityError,
 } from '../errors';
 import type {
-  InternalQueryManyFirstFunctionType
+  InternalQueryManyFirstFunctionType,
 } from '../types';
 import many from './many';
 
@@ -21,7 +21,7 @@ const manyFirst: InternalQueryManyFirstFunctionType = async (log, connection, cl
 
   if (rows.length === 0) {
     log.error({
-      queryId
+      queryId,
     }, 'DataIntegrityError');
 
     throw new DataIntegrityError();
@@ -31,7 +31,7 @@ const manyFirst: InternalQueryManyFirstFunctionType = async (log, connection, cl
 
   if (keys.length !== 1) {
     log.error({
-      queryId
+      queryId,
     }, 'DataIntegrityError');
 
     throw new DataIntegrityError();

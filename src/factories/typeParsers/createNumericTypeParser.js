@@ -1,7 +1,7 @@
 // @flow
 
 import type {
-  TypeParserType
+  TypeParserType,
 } from '../../types';
 
 const numericParser = (value) => {
@@ -11,6 +11,6 @@ const numericParser = (value) => {
 export default (): TypeParserType => {
   return {
     name: 'numeric',
-    parse: numericParser
+    parse: numericParser,
   };
 };

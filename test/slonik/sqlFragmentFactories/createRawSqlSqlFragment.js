@@ -3,14 +3,14 @@
 import test from 'ava';
 import createRawSqlSqlFragment from '../../../src/sqlFragmentFactories/createRawSqlSqlFragment';
 import {
-  RawSqlToken
+  RawSqlToken,
 } from '../../../src/tokens';
 
 test('creates a plain sql token', (t) => {
   const sqlFragment = createRawSqlSqlFragment({
     sql: 'foo',
     type: RawSqlToken,
-    values: []
+    values: [],
   }, 0);
 
   t.assert(sqlFragment.sql === 'foo');
@@ -22,8 +22,8 @@ test('creates a tuple with a single positional parameter', (t) => {
     sql: '($1)',
     type: RawSqlToken,
     values: [
-      'foo'
-    ]
+      'foo',
+    ],
   }, 0);
 
   t.assert(sqlFragment.sql === '($1)');
@@ -35,8 +35,8 @@ test('creates a tuple with a single named parameter', (t) => {
     sql: '(:foo)',
     type: RawSqlToken,
     values: {
-      foo: 'foo'
-    }
+      foo: 'foo',
+    },
   }, 0);
 
   t.assert(sqlFragment.sql === '($1)');

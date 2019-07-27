@@ -34,9 +34,9 @@ test('does not connect if `beforePoolConnection` throws an error', async (t) => 
       {
         beforePoolConnection: () => {
           return Promise.reject(new Error('foo'));
-        }
-      }
-    ]
+        },
+      },
+    ],
   });
 
   await t.throwsAsync(pool.connect(async () => {
@@ -53,9 +53,9 @@ test('ends connection if `afterPoolConnection` throws an error', async (t) => {
       {
         afterPoolConnection: () => {
           return Promise.reject(new Error('foo'));
-        }
-      }
-    ]
+        },
+      },
+    ],
   });
 
   await t.throwsAsync(pool.connect(async () => {
@@ -72,9 +72,9 @@ test('ends connection if `beforePoolConnectionRelease` throws an error', async (
       {
         afterPoolConnection: () => {
           return Promise.reject(new Error('foo'));
-        }
-      }
-    ]
+        },
+      },
+    ],
   });
 
   await t.throwsAsync(pool.connect(async () => {
@@ -94,9 +94,9 @@ test('if `beforePoolConnection` returns pool object, then the returned pool obje
         beforePoolConnection: () => {
           // $FlowFixMe
           return pool0;
-        }
-      }
-    ]
+        },
+      },
+    ],
   });
 
   await pool1.query(sql`SELECT 1`);
@@ -117,9 +117,9 @@ test('if `beforePoolConnection` returns pool object, then the returned pool obje
         beforePoolConnection: () => {
           // $FlowFixMe
           return pool0;
-        }
-      }
-    ]
+        },
+      },
+    ],
   });
 
   await pool1.transaction((connection) => {
@@ -142,9 +142,9 @@ test('if `beforePoolConnection` returns pool object, then the returned pool obje
         beforePoolConnection: () => {
           // $FlowFixMe
           return pool0;
-        }
-      }
-    ]
+        },
+      },
+    ],
   });
 
   await pool1.connect((connection) => {
@@ -164,9 +164,9 @@ test('if `beforePoolConnection` returns null, then the current pool object is us
       {
         beforePoolConnection: () => {
           return null;
-        }
-      }
-    ]
+        },
+      },
+    ],
   });
 
   await pool.query(sql`SELECT 1`);

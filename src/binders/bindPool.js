@@ -6,13 +6,13 @@ import type {
   InternalDatabasePoolType,
   LoggerType,
   StreamHandlerType,
-  TaggedTemplateLiteralInvocationType
+  TaggedTemplateLiteralInvocationType,
 } from '../types';
 import {
-  createConnection
+  createConnection,
 } from '../factories';
 import {
-  transaction
+  transaction,
 } from '../connectionMethods';
 
 export default (
@@ -100,6 +100,6 @@ export default (
           return newPool.transaction(transactionHandler);
         }
       );
-    }
+    },
   };
 };

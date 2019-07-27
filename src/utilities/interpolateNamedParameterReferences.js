@@ -1,19 +1,19 @@
 // @flow
 
 import {
-  difference
+  difference,
 } from 'lodash';
 import Logger from '../Logger';
 import {
-  UnexpectedStateError
+  UnexpectedStateError,
 } from '../errors';
 import type {
-  NamedParameterValuesType
+  NamedParameterValuesType,
 } from '../types';
 import interpolatePositionalParameterReferences from './interpolatePositionalParameterReferences';
 
 const log = Logger.child({
-  namespace: 'interpolateNamedParameterReferences'
+  namespace: 'interpolateNamedParameterReferences',
 });
 
 /**
@@ -56,7 +56,7 @@ export default (
 
   if (unusedParameterNames.length > 0) {
     log.warn({
-      unusedParameterNames
+      unusedParameterNames,
     }, 'unused parameter names');
 
     throw new UnexpectedStateError('Values object contains value(s) not present as named parameter references in the query.');

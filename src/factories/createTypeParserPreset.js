@@ -1,7 +1,7 @@
 // @flow
 
 import type {
-  TypeParserType
+  TypeParserType,
 } from '../types';
 import {
   createBigintTypeParser,
@@ -9,7 +9,7 @@ import {
   createIntervalTypeParser,
   createNumericTypeParser,
   createTimestampTypeParser,
-  createTimestampWithTimeZoneTypeParser
+  createTimestampWithTimeZoneTypeParser,
 } from './typeParsers';
 
 export default (): $ReadOnlyArray<TypeParserType> => {
@@ -19,6 +19,6 @@ export default (): $ReadOnlyArray<TypeParserType> => {
     createIntervalTypeParser(),
     createNumericTypeParser(),
     createTimestampTypeParser(),
-    createTimestampWithTimeZoneTypeParser()
+    createTimestampWithTimeZoneTypeParser(),
   ];
 };

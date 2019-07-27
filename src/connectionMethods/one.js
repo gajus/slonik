@@ -1,14 +1,14 @@
 // @flow
 
 import type {
-  InternalQueryOneFunctionType
+  InternalQueryOneFunctionType,
 } from '../types';
 import {
   DataIntegrityError,
-  NotFoundError
+  NotFoundError,
 } from '../errors';
 import {
-  createQueryId
+  createQueryId,
 } from '../utilities';
 import query from './query';
 
@@ -22,12 +22,12 @@ const one: InternalQueryOneFunctionType = async (log, connection, clientConfigur
   const queryId = inheritedQueryId || createQueryId();
 
   const {
-    rows
+    rows,
   } = await query(log, connection, clientConfiguration, rawSql, values, queryId);
 
   if (rows.length === 0) {
     log.error({
-      queryId
+      queryId,
     }, 'NotFoundError');
 
     throw new NotFoundError();
@@ -35,7 +35,7 @@ const one: InternalQueryOneFunctionType = async (log, connection, clientConfigur
 
   if (rows.length > 1) {
     log.error({
-      queryId
+      queryId,
     }, 'DataIntegrityError');
 
     throw new DataIntegrityError();

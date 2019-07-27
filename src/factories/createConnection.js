@@ -9,16 +9,16 @@ import type {
   InternalDatabaseConnectionType,
   InternalDatabasePoolType,
   LoggerType,
-  TaggedTemplateLiteralInvocationType
+  TaggedTemplateLiteralInvocationType,
 } from '../types';
 import {
-  createTypeOverrides
+  createTypeOverrides,
 } from '../routines';
 import {
-  bindPoolConnection
+  bindPoolConnection,
 } from '../binders';
 import {
-  ConnectionError
+  ConnectionError,
 } from '../errors';
 
 type ConnectionHandlerType = (
@@ -44,7 +44,7 @@ const createConnection = async (
       const maybeNewPool = await interceptor.beforePoolConnection({
         log: parentLog,
         poolId: pool.slonik.poolId,
-        query
+        query,
       });
 
       if (maybeNewPool) {
@@ -71,14 +71,14 @@ const createConnection = async (
   const connectionId = connection.connection.slonik.connectionId;
 
   const connectionLog = parentLog.child({
-    connectionId
+    connectionId,
   });
 
   const connectionContext = {
     connectionId,
     connectionType,
     log: connectionLog,
-    poolId: pool.slonik.poolId
+    poolId: pool.slonik.poolId,
   };
 
   const boundConnection = bindPoolConnection(connectionLog, connection, clientConfiguration);

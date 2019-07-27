@@ -1,7 +1,7 @@
 // @flow
 
 import type {
-  TypeParserType
+  TypeParserType,
 } from '../../types';
 
 const bigintParser = (value) => {
@@ -12,6 +12,6 @@ const bigintParser = (value) => {
 export default (): TypeParserType => {
   return {
     name: 'int8',
-    parse: bigintParser
+    parse: bigintParser,
   };
 };

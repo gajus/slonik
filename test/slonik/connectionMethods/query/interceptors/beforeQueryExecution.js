@@ -20,21 +20,21 @@ test('short-circuits the query execution', async (t) => {
             rowCount: 1,
             rows: [
               {
-                foo: 2
-              }
-            ]
+                foo: 2,
+              },
+            ],
           };
-        }
-      }
-    ]
+        },
+      },
+    ],
   });
 
   pool.querySpy.returns({
     rows: [
       {
-        foo: 1
-      }
-    ]
+        foo: 1,
+      },
+    ],
   });
 
   const result = await pool.query(sql`SELECT 1`);
@@ -48,9 +48,9 @@ test('short-circuits the query execution', async (t) => {
     rowCount: 1,
     rows: [
       {
-        foo: 2
-      }
-    ]
+        foo: 2,
+      },
+    ],
   });
 });
 
@@ -58,17 +58,17 @@ test('executes query if "beforeQuery" does not return results', async (t) => {
   const pool = createPool({
     interceptors: [
       {
-        beforeQueryExecution: () => {}
-      }
-    ]
+        beforeQueryExecution: () => {},
+      },
+    ],
   });
 
   pool.querySpy.returns({
     rows: [
       {
-        foo: 1
-      }
-    ]
+        foo: 1,
+      },
+    ],
   });
 
   const result = await pool.query(sql`SELECT 1`);
@@ -77,8 +77,8 @@ test('executes query if "beforeQuery" does not return results', async (t) => {
     notices: [],
     rows: [
       {
-        foo: 1
-      }
-    ]
+        foo: 1,
+      },
+    ],
   });
 });

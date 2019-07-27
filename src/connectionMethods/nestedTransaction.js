@@ -2,13 +2,13 @@
 
 import serializeError from 'serialize-error';
 import {
-  bindTransactionConnection
+  bindTransactionConnection,
 } from '../binders';
 import {
-  createUlid
+  createUlid,
 } from '../utilities';
 import type {
-  InternalNestedTransactionFunctionType
+  InternalNestedTransactionFunctionType,
 } from '../types';
 
 const nestedTransaction: InternalNestedTransactionFunctionType = async (parentLog, connection, clientConfiguration, handler, transactionDepth) => {
@@ -17,7 +17,7 @@ const nestedTransaction: InternalNestedTransactionFunctionType = async (parentLo
   await connection.query('SAVEPOINT slonik_savepoint_' + newTransactionDepth);
 
   const log = parentLog.child({
-    transactionId: createUlid()
+    transactionId: createUlid(),
   });
 
   try {
@@ -30,7 +30,7 @@ const nestedTransaction: InternalNestedTransactionFunctionType = async (parentLo
     await connection.query('ROLLBACK TO SAVEPOINT slonik_savepoint_' + newTransactionDepth);
 
     log.error({
-      error: serializeError(error)
+      error: serializeError(error),
     }, 'rolling back transaction due to an error');
 
     throw error;

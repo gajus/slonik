@@ -3,7 +3,7 @@
 import test from 'ava';
 import createSqlTag from '../../../../src/factories/createSqlTag';
 import {
-  SqlToken
+  SqlToken,
 } from '../../../../src/tokens';
 
 const sql = createSqlTag();
@@ -16,8 +16,8 @@ test('combines multiple boolean expressions (primitive values)', (t) => {
     type: SqlToken,
     values: [
       1,
-      2
-    ]
+      2,
+    ],
   });
 });
 
@@ -29,8 +29,8 @@ test('combines multiple boolean expressions (SQL tokens)', (t) => {
     type: SqlToken,
     values: [
       1,
-      2
-    ]
+      2,
+    ],
   });
 });
 
@@ -43,8 +43,8 @@ test('nests boolean expressions', (t) => {
     values: [
       1,
       2,
-      3
-    ]
+      3,
+    ],
   });
 });
 

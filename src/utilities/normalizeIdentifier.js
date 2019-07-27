@@ -1,10 +1,10 @@
 // @flow
 
 import {
-  snakeCase
+  snakeCase,
 } from 'lodash';
 import type {
-  IdentifierNormalizerType
+  IdentifierNormalizerType,
 } from '../types';
 
 const normalizeIdentifier: IdentifierNormalizerType = (propertyName: string): string => {

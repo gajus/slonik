@@ -10,9 +10,9 @@ test('`beforePoolConnection` is called before `connect`', async (t) => {
   const pool = createPool({
     interceptors: [
       {
-        beforePoolConnection
-      }
-    ]
+        beforePoolConnection,
+      },
+    ],
   });
 
   await pool.connect(() => {

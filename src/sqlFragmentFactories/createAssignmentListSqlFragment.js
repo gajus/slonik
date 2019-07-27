@@ -2,14 +2,14 @@
 
 import type {
   AssignmentListTokenType,
-  SqlFragmentType
+  SqlFragmentType,
 } from '../types';
 import {
   escapeIdentifier,
-  isSqlToken
+  isSqlToken,
 } from '../utilities';
 import {
-  createSqlTokenSqlFragment
+  createSqlTokenSqlFragment,
 } from '../factories';
 
 export default (token: AssignmentListTokenType, greatestParameterPosition: number): SqlFragmentType => {
@@ -42,6 +42,6 @@ export default (token: AssignmentListTokenType, greatestParameterPosition: numbe
 
   return {
     sql,
-    values
+    values,
   };
 };

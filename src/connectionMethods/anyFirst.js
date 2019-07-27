@@ -1,16 +1,16 @@
 // @flow
 
 import {
-  map
+  map,
 } from 'inline-loops.macro';
 import {
-  createQueryId
+  createQueryId,
 } from '../utilities';
 import {
-  DataIntegrityError
+  DataIntegrityError,
 } from '../errors';
 import type {
-  InternalQueryAnyFirstFunctionType
+  InternalQueryAnyFirstFunctionType,
 } from '../types';
 import any from './any';
 
@@ -29,7 +29,7 @@ const anyFirst: InternalQueryAnyFirstFunctionType = async (log, connection, clie
 
   if (keys.length !== 1) {
     log.error({
-      queryId
+      queryId,
     }, 'result row has no columns');
 
     throw new DataIntegrityError();

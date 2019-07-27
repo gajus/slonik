@@ -13,11 +13,11 @@ test('transforms query', async (t) => {
         transformQuery: (executionContext, query) => {
           return {
             ...query,
-            sql: 'SELECT 2'
+            sql: 'SELECT 2',
           };
-        }
-      }
-    ]
+        },
+      },
+    ],
   });
 
   await pool.query(sql`SELECT 1`);

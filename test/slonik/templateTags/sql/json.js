@@ -3,7 +3,7 @@
 import test from 'ava';
 import createSqlTag from '../../../../src/factories/createSqlTag';
 import {
-  SqlToken
+  SqlToken,
 } from '../../../../src/tokens';
 
 const sql = createSqlTag();
@@ -15,14 +15,14 @@ test('creates a value list', (t) => {
     sql: 'SELECT $1',
     type: SqlToken,
     values: [
-      '{"foo":"bar"}'
-    ]
+      '{"foo":"bar"}',
+    ],
   });
 });
 
 test('the resulting object is immutable', (t) => {
   const token = sql.json({
-    foo: 'bar'
+    foo: 'bar',
   });
 
   t.throws(() => {

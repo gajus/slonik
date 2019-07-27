@@ -3,14 +3,14 @@
 import pg from 'pg';
 import serializeError from 'serialize-error';
 import {
-  parse as parseConnectionString
+  parse as parseConnectionString,
 } from 'pg-connection-string';
 import {
-  createUlid
+  createUlid,
 } from '../utilities';
 import type {
   ClientUserConfigurationType,
-  DatabasePoolType
+  DatabasePoolType,
 } from '../types';
 import Logger from '../Logger';
 import bindPool from '../binders/bindPool';
@@ -28,7 +28,7 @@ export default (
   const poolId = createUlid();
 
   const poolLog = Logger.child({
-    poolId
+    poolId,
   });
 
   const poolConfiguration = parseConnectionString(connectionUri);
@@ -58,14 +58,14 @@ export default (
 
   pool.slonik = {
     poolId,
-    typeOverrides: null
+    typeOverrides: null,
   };
 
   // istanbul ignore next
   pool.on('error', (error) => {
     if (error.client.connection.slonik.terminated !== true) {
       poolLog.error({
-        error: serializeError(error)
+        error: serializeError(error),
       }, 'client connection error');
     }
   });
@@ -74,15 +74,15 @@ export default (
   pool.on('connect', (client) => {
     client.connection.slonik = {
       connectionId: createUlid(),
-      transactionDepth: null
+      transactionDepth: null,
     };
 
     client.on('notice', (notice) => {
       poolLog.info({
         notice: {
           level: notice.name,
-          message: notice.message
-        }
+          message: notice.message,
+        },
       }, 'notice message');
     });
 
@@ -91,8 +91,8 @@ export default (
       stats: {
         idleConnectionCount: pool.idleCount,
         totalConnectionCount: pool.totalCount,
-        waitingRequestCount: pool.waitingCount
-      }
+        waitingRequestCount: pool.waitingCount,
+      },
     }, 'created a new client connection');
   });
 
@@ -103,8 +103,8 @@ export default (
       stats: {
         idleConnectionCount: pool.idleCount,
         totalConnectionCount: pool.totalCount,
-        waitingRequestCount: pool.waitingCount
-      }
+        waitingRequestCount: pool.waitingCount,
+      },
     }, 'client is checked out from the pool');
   });
 
@@ -115,8 +115,8 @@ export default (
       stats: {
         idleConnectionCount: pool.idleCount,
         totalConnectionCount: pool.totalCount,
-        waitingRequestCount: pool.waitingCount
-      }
+        waitingRequestCount: pool.waitingCount,
+      },
     }, 'client connection is closed and removed from the client pool');
   });
 

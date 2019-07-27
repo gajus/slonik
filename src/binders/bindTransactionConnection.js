@@ -1,7 +1,7 @@
 // @flow
 
 import {
-  mapTaggedTemplateLiteralInvocation
+  mapTaggedTemplateLiteralInvocation,
 } from '../utilities';
 import {
   any,
@@ -13,7 +13,7 @@ import {
   nestedTransaction,
   one,
   oneFirst,
-  query
+  query,
 } from '../connectionMethods';
 import type {
   ClientConfigurationType,
@@ -21,7 +21,7 @@ import type {
   InternalDatabaseConnectionType,
   LoggerType,
   TaggedTemplateLiteralInvocationType,
-  TransactionFunctionType
+  TransactionFunctionType,
 } from '../types';
 
 export default (
@@ -54,6 +54,6 @@ export default (
     query: mapInvocation(query.bind(null, parentLog, connection, clientConfiguration)),
     transaction: (handler: TransactionFunctionType) => {
       return nestedTransaction(parentLog, connection, clientConfiguration, handler, transactionDepth);
-    }
+    },
   };
 };

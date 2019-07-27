@@ -1,7 +1,7 @@
 // @flow
 
 import type {
-  TypeParserType
+  TypeParserType,
 } from '../../types';
 
 const timestampParser = (value) => {
@@ -11,6 +11,6 @@ const timestampParser = (value) => {
 export default (): TypeParserType => {
   return {
     name: 'timestamp',
-    parse: timestampParser
+    parse: timestampParser,
   };
 };

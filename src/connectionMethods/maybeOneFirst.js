@@ -1,13 +1,13 @@
 // @flow
 
 import {
-  createQueryId
+  createQueryId,
 } from '../utilities';
 import {
-  DataIntegrityError
+  DataIntegrityError,
 } from '../errors';
 import type {
-  InternalQueryMaybeOneFirstFunctionType
+  InternalQueryMaybeOneFirstFunctionType,
 } from '../types';
 import maybeOne from './maybeOne';
 
@@ -30,7 +30,7 @@ const maybeOneFirst: InternalQueryMaybeOneFirstFunctionType = async (log, connec
 
   if (keys.length !== 1) {
     log.error({
-      queryId
+      queryId,
     }, 'DataIntegrityError');
 
     throw new DataIntegrityError();

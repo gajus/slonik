@@ -3,17 +3,17 @@
 import test from 'ava';
 import createTupleListSqlFragment from '../../../src/sqlFragmentFactories/createTupleListSqlFragment';
 import {
-  TupleListToken
+  TupleListToken,
 } from '../../../src/tokens';
 
 test('creates a single tuple with a single parameter', (t) => {
   const sqlFragment = createTupleListSqlFragment({
     tuples: [
       [
-        'foo'
-      ]
+        'foo',
+      ],
     ],
-    type: TupleListToken
+    type: TupleListToken,
   }, 0);
 
   t.assert(sqlFragment.sql === '($1)');
@@ -24,16 +24,16 @@ test('creates a comma separated list of tuples with a single parameter', (t) => 
   const sqlFragment = createTupleListSqlFragment({
     tuples: [
       [
-        'foo'
+        'foo',
       ],
       [
-        'bar'
+        'bar',
       ],
       [
-        'baz'
-      ]
+        'baz',
+      ],
     ],
-    type: TupleListToken
+    type: TupleListToken,
   }, 0);
 
   t.assert(sqlFragment.sql === '($1), ($2), ($3)');
@@ -44,16 +44,16 @@ test('offsets parameter position', (t) => {
   const sqlFragment = createTupleListSqlFragment({
     tuples: [
       [
-        'foo'
+        'foo',
       ],
       [
-        'bar'
+        'bar',
       ],
       [
-        'baz'
-      ]
+        'baz',
+      ],
     ],
-    type: TupleListToken
+    type: TupleListToken,
   }, 3);
 
   t.assert(sqlFragment.sql === '($4), ($5), ($6)');
@@ -64,9 +64,9 @@ test('throws an error if tuple has no members', (t) => {
   t.throws(() => {
     createTupleListSqlFragment({
       tuples: [
-        []
+        [],
       ],
-      type: TupleListToken
+      type: TupleListToken,
     }, 0);
   }, 'Tuple must have at least 1 member.');
 });
@@ -77,13 +77,13 @@ test('throws an error if tuple member number is inconsistent', (t) => {
       tuples: [
         [
           'foo',
-          'foo'
+          'foo',
         ],
         [
-          'bar'
-        ]
+          'bar',
+        ],
       ],
-      type: TupleListToken
+      type: TupleListToken,
     }, 0);
   }, 'Each tuple in a list of tuples must have an equal number of members.');
 });

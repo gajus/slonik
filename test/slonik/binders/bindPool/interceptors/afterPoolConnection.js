@@ -14,8 +14,8 @@ test('`afterPoolConnection` is called after `connect`', async (t) => {
     interceptors: [
       {
 
-      }
-    ]
+      },
+    ],
   });
 
   await pool.connect(() => {
@@ -31,9 +31,9 @@ test('`connectionType` is "EXPLICIT" when `connect` is used to create connection
   const pool = createPool({
     interceptors: [
       {
-        afterPoolConnection
-      }
-    ]
+        afterPoolConnection,
+      },
+    ],
   });
 
   await pool.connect(() => {
@@ -49,9 +49,9 @@ test('`connectionType` is "IMPLICIT_QUERY" when a query method is used to create
   const pool = createPool({
     interceptors: [
       {
-        afterPoolConnection
-      }
-    ]
+        afterPoolConnection,
+      },
+    ],
   });
 
   await pool.query(sql`SELECT 1`);
@@ -65,9 +65,9 @@ test('`connectionType` is "IMPLICIT_TRANSACTION" when `transaction` is used to c
   const pool = createPool({
     interceptors: [
       {
-        afterPoolConnection
-      }
-    ]
+        afterPoolConnection,
+      },
+    ],
   });
 
   await pool.transaction(() => {

@@ -3,7 +3,7 @@
 import test from 'ava';
 import createSqlTag from '../../../../src/factories/createSqlTag';
 import {
-  SqlToken
+  SqlToken,
 } from '../../../../src/tokens';
 
 const sql = createSqlTag();
@@ -17,17 +17,17 @@ test('creates an unnest expression using primitive values', (t) => {
     values: [
       [
         1,
-        4
+        4,
       ],
       [
         2,
-        5
+        5,
       ],
       [
         3,
-        6
-      ]
-    ]
+        6,
+      ],
+    ],
   });
 });
 
@@ -40,17 +40,17 @@ test('creates an unnest expression using arrays', (t) => {
     values: [
       [
         1,
-        4
+        4,
       ],
       [
         2,
-        5
+        5,
       ],
       [
         3,
-        6
-      ]
-    ]
+        6,
+      ],
+    ],
   });
 });
 
@@ -63,17 +63,17 @@ test('creates incremental alias names if no alias names are provided', (t) => {
     values: [
       [
         1,
-        4
+        4,
       ],
       [
         2,
-        5
+        5,
       ],
       [
         3,
-        6
-      ]
-    ]
+        6,
+      ],
+    ],
   });
 });
 
@@ -88,10 +88,10 @@ test('recognizes an array an array', (t) => {
         [
           [1],
           [2],
-          [3]
-        ]
-      ]
-    ]
+          [3],
+        ],
+      ],
+    ],
   });
 });
 

@@ -3,7 +3,7 @@
 import type {
   ClientConfigurationType,
   ClientUserConfigurationType,
-  TypeParserType
+  TypeParserType,
 } from '../types';
 import createTypeParserPreset from './createTypeParserPreset';
 
@@ -24,7 +24,7 @@ export default (clientUserConfiguration?: ClientUserConfigurationType): ClientCo
     typeParsers,
 
     // $FlowFixMe
-    ...clientUserConfiguration
+    ...clientUserConfiguration,
   };
 
   if (!configuration.typeParsers || configuration.typeParsers === typeParsers) {

@@ -11,7 +11,7 @@ const defaultConfiguration = {
   interceptors: [],
   maximumPoolSize: 10,
   minimumPoolSize: 0,
-  typeParsers: createTypeParserPreset()
+  typeParsers: createTypeParserPreset(),
 };
 
 test('creates default configuration', (t) => {
@@ -23,11 +23,11 @@ test('creates default configuration', (t) => {
 test('overrides provided properties', (t) => {
   t.deepEqual(
     createClientConfiguration({
-      captureStackTrace: false
+      captureStackTrace: false,
     }),
     {
       ...defaultConfiguration,
-      captureStackTrace: false
+      captureStackTrace: false,
     }
   );
 
@@ -35,14 +35,14 @@ test('overrides provided properties', (t) => {
     createClientConfiguration({
       interceptors: [
         // $FlowFixMe
-        'foo'
-      ]
+        'foo',
+      ],
     }),
     {
       ...defaultConfiguration,
       interceptors: [
-        'foo'
-      ]
+        'foo',
+      ],
     }
   );
 
@@ -50,14 +50,14 @@ test('overrides provided properties', (t) => {
     createClientConfiguration({
       typeParsers: [
         // $FlowFixMe
-        'foo'
-      ]
+        'foo',
+      ],
     }),
     {
       ...defaultConfiguration,
       typeParsers: [
-        'foo'
-      ]
+        'foo',
+      ],
     }
   );
 });
@@ -65,11 +65,11 @@ test('overrides provided properties', (t) => {
 test('disables default type parsers', (t) => {
   t.deepEqual(
     createClientConfiguration({
-      typeParsers: []
+      typeParsers: [],
     }),
     {
       ...defaultConfiguration,
-      typeParsers: []
+      typeParsers: [],
     }
   );
 });

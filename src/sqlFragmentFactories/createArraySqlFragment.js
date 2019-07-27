@@ -2,15 +2,15 @@
 
 import type {
   SqlFragmentType,
-  ArraySqlTokenType
+  ArraySqlTokenType,
 } from '../types';
 import {
-  escapeIdentifier
+  escapeIdentifier,
 } from '../utilities';
 
 export default (token: ArraySqlTokenType, greatestParameterPosition: number): SqlFragmentType => {
   const values = [
-    token.values
+    token.values,
   ];
 
   const sql = '$' + (greatestParameterPosition + 1) + '::' + escapeIdentifier(token.memberType) + '[]';
@@ -19,6 +19,6 @@ export default (token: ArraySqlTokenType, greatestParameterPosition: number): Sq
     sql,
 
     // $FlowFixMe
-    values
+    values,
   };
 };

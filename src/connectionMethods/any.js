@@ -1,10 +1,10 @@
 // @flow
 
 import {
-  createQueryId
+  createQueryId,
 } from '../utilities';
 import type {
-  InternalQueryAnyFunctionType
+  InternalQueryAnyFunctionType,
 } from '../types';
 import query from './query';
 
@@ -15,7 +15,7 @@ const any: InternalQueryAnyFunctionType = async (log, connection, clientConfigur
   const queryId = inheritedQueryId || createQueryId();
 
   const {
-    rows
+    rows,
   } = await query(log, connection, clientConfiguration, rawSql, values, queryId);
 
   return rows;

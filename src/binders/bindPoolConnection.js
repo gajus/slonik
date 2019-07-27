@@ -1,7 +1,7 @@
 // @flow
 
 import {
-  mapTaggedTemplateLiteralInvocation
+  mapTaggedTemplateLiteralInvocation,
 } from '../utilities';
 import type {
   ClientConfigurationType,
@@ -10,7 +10,7 @@ import type {
   LoggerType,
   StreamHandlerType,
   TaggedTemplateLiteralInvocationType,
-  TransactionFunctionType
+  TransactionFunctionType,
 } from '../types';
 import {
   any,
@@ -23,7 +23,7 @@ import {
   oneFirst,
   query,
   stream,
-  transaction
+  transaction,
 } from '../connectionMethods';
 
 export default (
@@ -50,6 +50,6 @@ export default (
     },
     transaction: async (handler: TransactionFunctionType) => {
       return transaction(parentLog, connection, clientConfiguration, handler);
-    }
+    },
   };
 };

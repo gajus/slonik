@@ -2,17 +2,17 @@
 
 import type {
   SqlFragmentType,
-  TupleSqlTokenType
+  TupleSqlTokenType,
 } from '../types';
 import {
-  UnexpectedStateError
+  UnexpectedStateError,
 } from '../errors';
 import {
-  isSqlToken
+  isSqlToken,
 } from '../utilities';
 import {
   createPrimitiveValueExpressions,
-  createSqlTokenSqlFragment
+  createSqlTokenSqlFragment,
 } from '../factories';
 
 export default (token: TupleSqlTokenType, greatestParameterPosition: number): SqlFragmentType => {
@@ -44,6 +44,6 @@ export default (token: TupleSqlTokenType, greatestParameterPosition: number): Sq
 
   return {
     sql,
-    values: createPrimitiveValueExpressions(values)
+    values: createPrimitiveValueExpressions(values),
   };
 };

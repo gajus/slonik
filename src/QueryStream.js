@@ -3,7 +3,7 @@
 /* eslint-disable fp/no-class, fp/no-this, id-match, flowtype/no-weak-types */
 
 import {
-  Readable
+  Readable,
 } from 'stream';
 import Cursor from 'pg-cursor';
 
@@ -38,7 +38,7 @@ export default class QueryStream extends Readable {
   constructor (text, values, options) {
     super({
       objectMode: true,
-      ...options
+      ...options,
     });
     this.cursor = new Cursor(text, values);
     this._reading = false;
@@ -105,7 +105,7 @@ export default class QueryStream extends Readable {
         // $FlowFixMe
         this.push({
           fields: result.fields,
-          row
+          row,
         });
       }
     });

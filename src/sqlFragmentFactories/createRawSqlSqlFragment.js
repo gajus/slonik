@@ -2,11 +2,11 @@
 
 import type {
   RawSqlTokenType,
-  SqlFragmentType
+  SqlFragmentType,
 } from '../types';
 import {
   interpolatePositionalParameterReferences,
-  interpolateNamedParameterReferences
+  interpolateNamedParameterReferences,
 } from '../utilities';
 
 export default (token: RawSqlTokenType, greatestParameterPosition: number): SqlFragmentType => {

@@ -2,7 +2,7 @@
 
 import test from 'ava';
 import {
-  escapeIdentifier
+  escapeIdentifier,
 } from '../../../src/utilities';
 
 test('escapes SQL identifiers', (t) => {

@@ -7,7 +7,7 @@ import createPool from '../../helpers/createPool';
 import createSqlTag from '../../../src/factories/createSqlTag';
 import {
   DataIntegrityError,
-  NotFoundError
+  NotFoundError,
 } from '../../../src/errors';
 
 const sql = createSqlTag();
@@ -18,19 +18,19 @@ test('returns values of the query result rows', async (t) => {
   pool.querySpy.returns({
     rows: [
       {
-        foo: 1
+        foo: 1,
       },
       {
-        foo: 2
-      }
-    ]
+        foo: 2,
+      },
+    ],
   });
 
   const result = await pool.manyFirst(sql`SELECT 1`);
 
   t.deepEqual(result, [
     1,
-    2
+    2,
   ]);
 });
 
@@ -38,7 +38,7 @@ test('throws an error if no rows are returned', async (t) => {
   const pool = createPool();
 
   pool.querySpy.returns({
-    rows: []
+    rows: [],
   });
 
   await t.throwsAsync(pool.manyFirst(sql`SELECT 1`), NotFoundError);
@@ -51,9 +51,9 @@ test('throws an error if more than one column is returned', async (t) => {
     rows: [
       {
         bar: 1,
-        foo: 1
-      }
-    ]
+        foo: 1,
+      },
+    ],
   });
 
   await t.throwsAsync(pool.manyFirst(sql`SELECT 1`), DataIntegrityError);

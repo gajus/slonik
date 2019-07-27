@@ -1,7 +1,7 @@
 // @flow
 
 import {
-  createSqlTag
+  createSqlTag,
 } from './factories';
 
 export const sql = createSqlTag();
@@ -15,15 +15,15 @@ export type {
   FieldType,
   InterceptorType,
   QueryContextType,
-  ValueExpressionType
+  ValueExpressionType,
 } from './types';
 export {
-  normalizeIdentifier
+  normalizeIdentifier,
 } from './utilities';
 export {
   createPool,
   createSqlTag,
-  createTypeParserPreset
+  createTypeParserPreset,
 } from './factories';
 export * from './factories/typeParsers';
 export {
@@ -37,5 +37,5 @@ export {
   NotNullIntegrityConstraintViolationError,
   QueryCancelledError,
   SlonikError,
-  UniqueIntegrityConstraintViolationError
+  UniqueIntegrityConstraintViolationError,
 } from './errors';

@@ -1,7 +1,7 @@
 // @flow
 
 import type {
-  QueryIdType
+  QueryIdType,
 } from '../types';
 import createUlid from './createUlid';
 

@@ -2,10 +2,10 @@
 
 import type {
   IdentifierTokenType,
-  SqlFragmentType
+  SqlFragmentType,
 } from '../types';
 import {
-  escapeIdentifier
+  escapeIdentifier,
 } from '../utilities';
 
 export default (token: IdentifierTokenType): SqlFragmentType => {
@@ -21,6 +21,6 @@ export default (token: IdentifierTokenType): SqlFragmentType => {
 
   return {
     sql,
-    values: []
+    values: [],
   };
 };

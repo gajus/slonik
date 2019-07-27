@@ -20,13 +20,13 @@ test('overrides results', async (t) => {
             rowCount: 1,
             rows: [
               {
-                foo: 2
-              }
-            ]
+                foo: 2,
+              },
+            ],
           };
-        }
-      }
-    ]
+        },
+      },
+    ],
   });
 
   const result = await pool.query(sql`SELECT 1`);
@@ -40,8 +40,8 @@ test('overrides results', async (t) => {
     rowCount: 1,
     rows: [
       {
-        foo: 2
-      }
-    ]
+        foo: 2,
+      },
+    ],
   });
 });

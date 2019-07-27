@@ -2,12 +2,12 @@
 
 import type {
   SqlFragmentType,
-  UnnestSqlTokenType
+  UnnestSqlTokenType,
 } from '../types';
 import {
   countArrayDimensions,
   escapeIdentifier,
-  stripArrayNotation
+  stripArrayNotation,
 } from '../utilities';
 
 export default (token: UnnestSqlTokenType, greatestParameterPosition: number): SqlFragmentType => {
@@ -58,6 +58,6 @@ export default (token: UnnestSqlTokenType, greatestParameterPosition: number): S
 
   return {
     sql,
-    values
+    values,
   };
 };

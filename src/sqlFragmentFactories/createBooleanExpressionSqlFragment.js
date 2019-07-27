@@ -2,16 +2,16 @@
 
 import type {
   BooleanExpressionTokenType,
-  SqlFragmentType
+  SqlFragmentType,
 } from '../types';
 import {
-  isSqlToken
+  isSqlToken,
 } from '../utilities';
 import {
-  createSqlTokenSqlFragment
+  createSqlTokenSqlFragment,
 } from '../factories';
 import {
-  UnexpectedStateError
+  UnexpectedStateError,
 } from '../errors';
 
 export default (token: BooleanExpressionTokenType, greatestParameterPosition: number): SqlFragmentType => {
@@ -43,6 +43,6 @@ export default (token: BooleanExpressionTokenType, greatestParameterPosition: nu
 
   return {
     sql: '(' + placeholders.join(' ' + token.operator + ' ') + ')',
-    values
+    values,
   };
 };

@@ -1,13 +1,13 @@
 // @flow
 
 import {
-  UnexpectedStateError
+  UnexpectedStateError,
 } from '../errors';
 import type {
-  PositionalParameterValuesType
+  PositionalParameterValuesType,
 } from '../types';
 import {
-  createSqlTokenSqlFragment
+  createSqlTokenSqlFragment,
 } from '../factories';
 import isSqlToken from './isSqlToken';
 
@@ -55,6 +55,6 @@ export default (
 
   return {
     sql: resultSql,
-    values: resultValues
+    values: resultValues,
   };
 };

@@ -3,17 +3,17 @@
 /* eslint-disable no-use-before-define, import/exports-last, flowtype/require-types-at-top */
 
 import type {
-  Readable
+  Readable,
 } from 'stream';
 import type {
-  LoggerType
+  LoggerType,
 } from 'roarr';
 import {
-  SlonikError
+  SlonikError,
 } from './errors';
 
 export type {
-  LoggerType
+  LoggerType,
 };
 
 export type SerializableValueType = string | number | boolean | null | {+[key: string]: SerializableValueType} | $ReadOnlyArray<SerializableValueType>;
@@ -36,7 +36,7 @@ export type FieldType = {|
   +dataTypeSize: number,
   +format: string,
   +name: string,
-  +tableID: number
+  +tableID: number,
 |};
 
 type NoticeType = {|
@@ -45,7 +45,7 @@ type NoticeType = {|
   +message: string,
   +name: string,
   +severity: string,
-  +where: string
+  +where: string,
 |};
 
 type QueryResultType<T> = {|
@@ -55,7 +55,7 @@ type QueryResultType<T> = {|
   +oid: number | null,
   +rowAsArray: boolean,
   +rowCount: number,
-  +rows: $ReadOnlyArray<T>
+  +rows: $ReadOnlyArray<T>,
 |};
 
 // eslint-disable-next-line flowtype/no-weak-types
@@ -80,7 +80,7 @@ export type ClientUserConfigurationType = {|
   +interceptors?: $ReadOnlyArray<InterceptorType>,
   +maximumPoolSize?: number,
   +minimumPoolSize?: number,
-  +typeParsers?: $ReadOnlyArray<TypeParserType>
+  +typeParsers?: $ReadOnlyArray<TypeParserType>,
 |};
 
 export type ClientConfigurationType = {|
@@ -90,7 +90,7 @@ export type ClientConfigurationType = {|
   +interceptors: $ReadOnlyArray<InterceptorType>,
   +maximumPoolSize: number,
   +minimumPoolSize: number,
-  +typeParsers: $ReadOnlyArray<TypeParserType>
+  +typeParsers: $ReadOnlyArray<TypeParserType>,
 |};
 
 type CommonQueryMethodsType = {|
@@ -102,12 +102,12 @@ type CommonQueryMethodsType = {|
   +maybeOneFirst: QueryMaybeOneFirstFunctionType,
   +one: QueryOneFunctionType,
   +oneFirst: QueryOneFirstFunctionType,
-  +query: QueryFunctionType
+  +query: QueryFunctionType,
 |};
 
 export type DatabaseTransactionConnectionType = {|
   ...$Exact<CommonQueryMethodsType>,
-  +transaction: (handler: TransactionFunctionType) => Promise<*>
+  +transaction: (handler: TransactionFunctionType) => Promise<*>,
 |};
 
 export type TransactionFunctionType = (connection: DatabaseTransactionConnectionType) => Promise<*>;
@@ -115,7 +115,7 @@ export type TransactionFunctionType = (connection: DatabaseTransactionConnection
 export type DatabasePoolConnectionType = {|
   ...$Exact<CommonQueryMethodsType>,
   +stream: (sql: TaggedTemplateLiteralInvocationType, streamHandler: StreamHandlerType) => Promise<null>,
-  +transaction: (handler: TransactionFunctionType) => Promise<*>
+  +transaction: (handler: TransactionFunctionType) => Promise<*>,
 |};
 
 export type ConnectionRoutineType = (connection: DatabasePoolConnectionType) => Promise<*>;
@@ -126,7 +126,7 @@ export type DatabasePoolType = {|
 
   // $FlowFixMe
   +stream: (sql: TaggedTemplateLiteralInvocationType, streamHandler: StreamHandlerType) => Promise<null>,
-  +transaction: (handler: TransactionFunctionType) => Promise<*>
+  +transaction: (handler: TransactionFunctionType) => Promise<*>,
 |};
 
 /**
@@ -136,23 +136,23 @@ export type DatabasePoolType = {|
 export type DatabaseConnectionType =
   $Shape<{
     ...$Exact<DatabasePoolConnectionType>,
-    ...$Exact<DatabasePoolType>
+    ...$Exact<DatabasePoolType>,
   }>;
 
 type QueryResultRowColumnType = string | number | null;
 
 export type QueryResultRowType = {
-  +[key: string]: QueryResultRowColumnType
+  +[key: string]: QueryResultRowColumnType,
 };
 
 export type QueryType = {|
   +sql: string,
-  +values: $ReadOnlyArray<PrimitiveValueExpressionType>
+  +values: $ReadOnlyArray<PrimitiveValueExpressionType>,
 |};
 
 export type SqlFragmentType = {|
   +sql: string,
-  +values: $ReadOnlyArray<PrimitiveValueExpressionType>
+  +values: $ReadOnlyArray<PrimitiveValueExpressionType>,
 |};
 
 /**
@@ -160,7 +160,7 @@ export type SqlFragmentType = {|
  */
 export type TypeParserType = {|
   +name: string,
-  +parse: (value: string) => *
+  +parse: (value: string) => *,
 |};
 
 /**
@@ -171,7 +171,7 @@ export type TypeParserType = {|
 export type PoolContextType = {|
   +log: LoggerType,
   +poolId: string,
-  +query: TaggedTemplateLiteralInvocationType | null
+  +query: TaggedTemplateLiteralInvocationType | null,
 |};
 
 /**
@@ -183,13 +183,13 @@ export type ConnectionContextType = {|
   +connectionId: string,
   +connectionType: ConnectionTypeType,
   +log: LoggerType,
-  +poolId: string
+  +poolId: string,
 |};
 
 type CallSiteType = {|
   +columnNumber: number,
   +fileName: string | null,
-  +lineNumber: number
+  +lineNumber: number,
 |};
 
 /**
@@ -209,92 +209,92 @@ export type QueryContextType = {|
   +queryId: QueryIdType,
   +stackTrace: $ReadOnlyArray<CallSiteType> | null,
   +queryInputTime: number,
-  +transactionId?: string
+  +transactionId?: string,
 |};
 
 export type PositionalParameterValuesType = $ReadOnlyArray<ValueExpressionType>;
 
 export type NamedParameterValuesType = {
-  [key: string]: ValueExpressionType
+  [key: string]: ValueExpressionType,
 };
 
 export type IdentifierTokenType = {|
   +names: $ReadOnlyArray<string>,
-  +type: 'SLONIK_TOKEN_IDENTIFIER'
+  +type: 'SLONIK_TOKEN_IDENTIFIER',
 |};
 
 export type IdentifierListMemberType = $ReadOnlyArray<string> |
   {|
     +alias: string,
-    +identifier: $ReadOnlyArray<string>
+    +identifier: $ReadOnlyArray<string>,
   |};
 
 export type IdentifierListTokenType = {|
   +identifiers: $ReadOnlyArray<IdentifierListMemberType>,
-  +type: 'SLONIK_TOKEN_IDENTIFIER_LIST'
+  +type: 'SLONIK_TOKEN_IDENTIFIER_LIST',
 |};
 
 export type SqlSqlTokenType = {|
   +sql: string,
   +type: 'SLONIK_TOKEN_SQL',
-  +values: $ReadOnlyArray<PrimitiveValueExpressionType>
+  +values: $ReadOnlyArray<PrimitiveValueExpressionType>,
 |};
 
 export type RawSqlTokenType = {|
   +sql: string,
   +type: 'SLONIK_TOKEN_RAW_SQL',
-  +values: PositionalParameterValuesType | NamedParameterValuesType
+  +values: PositionalParameterValuesType | NamedParameterValuesType,
 |};
 
 export type ValueListSqlTokenType = {|
   +values: PositionalParameterValuesType,
-  +type: 'SLONIK_TOKEN_VALUE_LIST'
+  +type: 'SLONIK_TOKEN_VALUE_LIST',
 |};
 
 export type ArraySqlTokenType = {|
   +memberType: string,
   +type: 'SLONIK_TOKEN_ARRAY',
-  +values: PositionalParameterValuesType
+  +values: PositionalParameterValuesType,
 |};
 
 export type TupleSqlTokenType = {|
   +values: PositionalParameterValuesType,
-  +type: 'SLONIK_TOKEN_TUPLE'
+  +type: 'SLONIK_TOKEN_TUPLE',
 |};
 
 export type TupleListSqlTokenType = {|
   +tuples: $ReadOnlyArray<PositionalParameterValuesType>,
-  +type: 'SLONIK_TOKEN_TUPLE_LIST'
+  +type: 'SLONIK_TOKEN_TUPLE_LIST',
 |};
 
 export type UnnestSqlTokenType = {|
   +columnTypes: $ReadOnlyArray<string>,
   +tuples: $ReadOnlyArray<PositionalParameterValuesType>,
-  +type: 'SLONIK_TOKEN_UNNEST'
+  +type: 'SLONIK_TOKEN_UNNEST',
 |};
 
 export type ComparisonPredicateTokenType = {|
   +leftOperand: ValueExpressionType,
   +operator: ComparisonOperatorType,
   +rightOperand: ValueExpressionType,
-  +type: 'SLONIK_TOKEN_COMPARISON_PREDICATE'
+  +type: 'SLONIK_TOKEN_COMPARISON_PREDICATE',
 |};
 
 export type BooleanExpressionTokenType = {|
   +members: $ReadOnlyArray<ValueExpressionType>,
   +operator: LogicalBooleanOperatorType,
-  +type: 'SLONIK_TOKEN_BOOLEAN_EXPRESSION'
+  +type: 'SLONIK_TOKEN_BOOLEAN_EXPRESSION',
 |};
 
 export type AssignmentListTokenType = {|
   +namedAssignment: NamedAssignmentType,
   +normalizeIdentifier: IdentifierNormalizerType,
-  +type: 'SLONIK_TOKEN_ASSIGNMENT_LIST'
+  +type: 'SLONIK_TOKEN_ASSIGNMENT_LIST',
 |};
 
 export type JsonSqlTokenType = {|
   +value: SerializableValueType,
-  +type: 'SLONIK_TOKEN_JSON'
+  +type: 'SLONIK_TOKEN_JSON',
 |};
 
 export type PrimitiveValueExpressionType = $ReadOnlyArray<PrimitiveValueExpressionType> | string | number | boolean | null;
@@ -319,13 +319,13 @@ export type ValueExpressionType =
   PrimitiveValueExpressionType;
 
 export type NamedAssignmentType = {
-  +[key: string]: ValueExpressionType
+  +[key: string]: ValueExpressionType,
 };
 
 export type TaggedTemplateLiteralInvocationType = {|
   +sql: string,
   +type: 'SLONIK_TOKEN_SQL',
-  +values: $ReadOnlyArray<PrimitiveValueExpressionType>
+  +values: $ReadOnlyArray<PrimitiveValueExpressionType>,
 |};
 
 /**
@@ -383,7 +383,7 @@ export type SqlTaggedTemplateType = {|
   ) => UnnestSqlTokenType,
   valueList: (
     values: $ReadOnlyArray<ValueExpressionType>
-  ) => ValueListSqlTokenType
+  ) => ValueListSqlTokenType,
 |};
 
 export type InternalQueryMethodType<R> = (
@@ -494,7 +494,7 @@ export type InterceptorType = {|
     query: QueryType,
     row: QueryResultRowType,
     fields: $ReadOnlyArray<FieldType>
-  ) => QueryResultRowType
+  ) => QueryResultRowType,
 |};
 
 /**

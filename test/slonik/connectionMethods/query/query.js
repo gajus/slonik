@@ -10,7 +10,7 @@ import {
   CheckIntegrityConstraintViolationError,
   ForeignKeyIntegrityConstraintViolationError,
   NotNullIntegrityConstraintViolationError,
-  UniqueIntegrityConstraintViolationError
+  UniqueIntegrityConstraintViolationError,
 } from '../../../../src/errors';
 
 const sql = createSqlTag();
@@ -30,9 +30,9 @@ test('executes the query and returns the result', async (t) => {
   pool.querySpy.returns({
     rows: [
       {
-        foo: 1
-      }
-    ]
+        foo: 1,
+      },
+    ],
   });
 
   const result = await pool.query(sql`SELECT 1`);
@@ -41,9 +41,9 @@ test('executes the query and returns the result', async (t) => {
     notices: [],
     rows: [
       {
-        foo: 1
-      }
-    ]
+        foo: 1,
+      },
+    ],
   });
 });
 
@@ -73,21 +73,21 @@ test('adds notices observed during the query execution to the query result objec
   resolveQuery({
     rows: [
       {
-        foo: 1
-      }
-    ]
+        foo: 1,
+      },
+    ],
   });
 
   t.deepEqual(await queryResultPromise, {
     notices: [
       'foo',
-      'bar'
+      'bar',
     ],
     rows: [
       {
-        foo: 1
-      }
-    ]
+        foo: 1,
+      },
+    ],
   });
 });
 

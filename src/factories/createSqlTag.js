@@ -22,13 +22,13 @@ import type {
   TupleSqlTokenType,
   UnnestSqlTokenType,
   ValueExpressionType,
-  ValueListSqlTokenType
+  ValueListSqlTokenType,
 } from '../types';
 import {
   deepFreeze,
   isPrimitiveValueExpression,
   isSqlToken,
-  normalizeIdentifier as defaultNormalizeIdentifier
+  normalizeIdentifier as defaultNormalizeIdentifier,
 } from '../utilities';
 import Logger from '../Logger';
 import {
@@ -44,19 +44,19 @@ import {
   TupleListToken,
   TupleToken,
   UnnestToken,
-  ValueListToken
+  ValueListToken,
 } from '../tokens';
 import {
-  InvalidInputError
+  InvalidInputError,
 } from '../errors';
 import createSqlTokenSqlFragment from './createSqlTokenSqlFragment';
 
 type SqlTagConfigurationType = {|
-  +normalizeIdentifier?: IdentifierNormalizerType
+  +normalizeIdentifier?: IdentifierNormalizerType,
 |};
 
 const log = Logger.child({
-  namespace: 'sql'
+  namespace: 'sql',
 });
 
 export default (configuration?: SqlTagConfigurationType) => {
@@ -96,7 +96,7 @@ export default (configuration?: SqlTagConfigurationType) => {
       } else {
         log.error({
           constructedSql: rawSql,
-          offendingToken: token
+          offendingToken: token,
         }, 'unexpected value expression');
 
         throw new TypeError('Unexpected value expression.');
@@ -114,7 +114,7 @@ export default (configuration?: SqlTagConfigurationType) => {
     const query = deepFreeze({
       sql: rawSql,
       type: SqlToken,
-      values: parameterValues
+      values: parameterValues,
     });
 
     return query;
@@ -127,7 +127,7 @@ export default (configuration?: SqlTagConfigurationType) => {
     // @see https://github.com/facebook/flow/issues/810
     return deepFreeze({
       names,
-      type: IdentifierToken
+      type: IdentifierToken,
     });
   };
 
@@ -136,7 +136,7 @@ export default (configuration?: SqlTagConfigurationType) => {
   ): IdentifierListTokenType => {
     return deepFreeze({
       identifiers,
-      type: IdentifierListToken
+      type: IdentifierListToken,
     });
   };
 
@@ -147,7 +147,7 @@ export default (configuration?: SqlTagConfigurationType) => {
     return deepFreeze({
       sql: rawSql,
       type: RawSqlToken,
-      values: values || []
+      values: values || [],
     });
   };
 
@@ -156,7 +156,7 @@ export default (configuration?: SqlTagConfigurationType) => {
   ): ValueListSqlTokenType => {
     return deepFreeze({
       type: ValueListToken,
-      values
+      values,
     });
   };
 
@@ -167,7 +167,7 @@ export default (configuration?: SqlTagConfigurationType) => {
     return deepFreeze({
       memberType,
       type: ArrayToken,
-      values
+      values,
     });
   };
 
@@ -176,7 +176,7 @@ export default (configuration?: SqlTagConfigurationType) => {
   ): TupleSqlTokenType => {
     return deepFreeze({
       type: TupleToken,
-      values
+      values,
     });
   };
 
@@ -185,7 +185,7 @@ export default (configuration?: SqlTagConfigurationType) => {
   ): TupleListSqlTokenType => {
     return deepFreeze({
       tuples,
-      type: TupleListToken
+      type: TupleListToken,
     });
   };
 
@@ -196,7 +196,7 @@ export default (configuration?: SqlTagConfigurationType) => {
     return deepFreeze({
       columnTypes,
       tuples,
-      type: UnnestToken
+      type: UnnestToken,
     });
   };
 
@@ -207,7 +207,7 @@ export default (configuration?: SqlTagConfigurationType) => {
     return deepFreeze({
       members,
       operator,
-      type: BooleanExpressionToken
+      type: BooleanExpressionToken,
     });
   };
 
@@ -220,7 +220,7 @@ export default (configuration?: SqlTagConfigurationType) => {
       leftOperand,
       operator,
       rightOperand,
-      type: ComparisonPredicateToken
+      type: ComparisonPredicateToken,
     });
   };
 
@@ -230,7 +230,7 @@ export default (configuration?: SqlTagConfigurationType) => {
     return deepFreeze({
       namedAssignment,
       normalizeIdentifier,
-      type: AssignmentListToken
+      type: AssignmentListToken,
     });
   };
 
@@ -239,7 +239,7 @@ export default (configuration?: SqlTagConfigurationType) => {
   ): JsonSqlTokenType => {
     return deepFreeze({
       type: JsonToken,
-      value
+      value,
     });
   };
 

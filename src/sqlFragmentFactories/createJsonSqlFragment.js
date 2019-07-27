@@ -2,7 +2,7 @@
 
 import type {
   JsonSqlTokenType,
-  SqlFragmentType
+  SqlFragmentType,
 } from '../types';
 
 export default (token: JsonSqlTokenType, greatestParameterPosition: number): SqlFragmentType => {
@@ -10,7 +10,7 @@ export default (token: JsonSqlTokenType, greatestParameterPosition: number): Sql
   return {
     sql: '$' + (greatestParameterPosition + 1),
     values: [
-      JSON.stringify(token.value)
-    ]
+      JSON.stringify(token.value),
+    ],
   };
 };

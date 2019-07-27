@@ -2,13 +2,13 @@
 
 import serializeError from 'serialize-error';
 import {
-  bindTransactionConnection
+  bindTransactionConnection,
 } from '../binders';
 import {
-  createUlid
+  createUlid,
 } from '../utilities';
 import type {
-  InternalTransactionFunctionType
+  InternalTransactionFunctionType,
 } from '../types';
 
 const transaction: InternalTransactionFunctionType = async (parentLog, connection, clientConfiguration, handler) => {
@@ -22,7 +22,7 @@ const transaction: InternalTransactionFunctionType = async (parentLog, connectio
   await connection.query('START TRANSACTION');
 
   const log = parentLog.child({
-    transactionId: connection.connection.slonik.transactionId
+    transactionId: connection.connection.slonik.transactionId,
   });
 
   try {
@@ -35,7 +35,7 @@ const transaction: InternalTransactionFunctionType = async (parentLog, connectio
     await connection.query('ROLLBACK');
 
     log.error({
-      error: serializeError(error)
+      error: serializeError(error),
     }, 'rolling back transaction due to an error');
 
     throw error;

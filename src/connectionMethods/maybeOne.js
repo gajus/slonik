@@ -1,13 +1,13 @@
 // @flow
 
 import {
-  createQueryId
+  createQueryId,
 } from '../utilities';
 import {
-  DataIntegrityError
+  DataIntegrityError,
 } from '../errors';
 import type {
-  InternalQueryMaybeOneFunctionType
+  InternalQueryMaybeOneFunctionType,
 } from '../types';
 import query from './query';
 
@@ -20,7 +20,7 @@ const maybeOne: InternalQueryMaybeOneFunctionType = async (log, connection, clie
   const queryId = inheritedQueryId || createQueryId();
 
   const {
-    rows
+    rows,
   } = await query(log, connection, clientConfiguration, rawSql, values, queryId);
 
   if (rows.length === 0) {
@@ -29,7 +29,7 @@ const maybeOne: InternalQueryMaybeOneFunctionType = async (log, connection, clie
 
   if (rows.length > 1) {
     log.error({
-      queryId
+      queryId,
     }, 'DataIntegrityError');
 
     throw new DataIntegrityError();

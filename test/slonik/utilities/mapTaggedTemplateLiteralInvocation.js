@@ -4,7 +4,7 @@ import test from 'ava';
 import sinon from 'sinon';
 import createSqlTag from '../../../src/factories/createSqlTag';
 import {
-  mapTaggedTemplateLiteralInvocation
+  mapTaggedTemplateLiteralInvocation,
 } from '../../../src/utilities';
 
 const sql = createSqlTag();

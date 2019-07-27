@@ -1,7 +1,7 @@
 // @flow
 
 import type {
-  ConnectionContextType
+  ConnectionContextType,
 } from '../../src/types';
 
 export default (): ConnectionContextType => {
@@ -12,10 +12,10 @@ export default (): ConnectionContextType => {
       getContext: () => {
         return {
           connectionId: '1',
-          poolId: '1'
+          poolId: '1',
         };
-      }
+      },
     },
-    poolId: '1'
+    poolId: '1',
   };
 };

@@ -3,7 +3,7 @@
 import test from 'ava';
 import createSqlTag from '../../../../src/factories/createSqlTag';
 import {
-  SqlToken
+  SqlToken,
 } from '../../../../src/tokens';
 
 const sql = createSqlTag();
@@ -15,8 +15,8 @@ test('creates an object describing a query with inlined identifiers', (t) => {
     sql: 'SELECT $1 FROM "bar"',
     type: SqlToken,
     values: [
-      'foo'
-    ]
+      'foo',
+    ],
   });
 });
 
@@ -27,8 +27,8 @@ test('creates an object describing a query with inlined identifiers (specifier)'
     sql: 'SELECT $1 FROM "bar"."baz"',
     type: SqlToken,
     values: [
-      'foo'
-    ]
+      'foo',
+    ],
   });
 });
 

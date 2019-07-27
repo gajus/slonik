@@ -1,12 +1,12 @@
 // @flow
 
 import {
-  arrayParser
+  arrayParser,
 } from 'pg-types';
 import TypeOverrides from 'pg/lib/type-overrides';
 import type {
   InternalDatabaseConnectionType,
-  TypeParserType
+  TypeParserType,
 } from '../types';
 
 export default async (connection: InternalDatabaseConnectionType, typeParsers: $ReadOnlyArray<TypeParserType>): TypeOverrides => {
@@ -22,7 +22,7 @@ export default async (connection: InternalDatabaseConnectionType, typeParsers: $
 
   const postgresTypes = (
     await connection.query('SELECT oid, typarray, typname FROM pg_type WHERE typname = ANY($1::text[])', [
-      typeNames
+      typeNames,
     ])
   ).rows;
 

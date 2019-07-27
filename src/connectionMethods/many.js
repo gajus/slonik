@@ -1,13 +1,13 @@
 // @flow
 
 import {
-  createQueryId
+  createQueryId,
 } from '../utilities';
 import {
-  NotFoundError
+  NotFoundError,
 } from '../errors';
 import type {
-  InternalQueryManyFunctionType
+  InternalQueryManyFunctionType,
 } from '../types';
 import query from './query';
 
@@ -20,12 +20,12 @@ const many: InternalQueryManyFunctionType = async (log, connection, clientConfig
   const queryId = inheritedQueryId || createQueryId();
 
   const {
-    rows
+    rows,
   } = await query(log, connection, clientConfiguration, rawSql, values, queryId);
 
   if (rows.length === 0) {
     log.error({
-      queryId
+      queryId,
     }, 'NotFoundError');
 
     throw new NotFoundError();

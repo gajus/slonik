@@ -6,13 +6,13 @@ import EventEmitter from 'events';
 import sinon from 'sinon';
 import bindPool from '../../src/binders/bindPool';
 import type {
-  ClientUserConfigurationType
+  ClientUserConfigurationType,
 } from '../../src/types';
 import log from './Logger';
 
 const defaultConfiguration = {
   interceptors: [],
-  typeParsers: []
+  typeParsers: [],
 };
 
 export default (clientConfiguration: ClientUserConfigurationType = defaultConfiguration) => {
@@ -23,8 +23,8 @@ export default (clientConfiguration: ClientUserConfigurationType = defaultConfig
       slonik: {
         connectionId: '1',
         poolId: '1',
-        transactionDepth: null
-      }
+        transactionDepth: null,
+      },
     },
     emit: eventEmitter.emit.bind(eventEmitter),
     end: () => {},
@@ -33,7 +33,7 @@ export default (clientConfiguration: ClientUserConfigurationType = defaultConfig
     query: () => {
       return {};
     },
-    release: () => {}
+    release: () => {},
   };
 
   const internalPool = {
@@ -42,8 +42,8 @@ export default (clientConfiguration: ClientUserConfigurationType = defaultConfig
       return connection;
     },
     slonik: {
-      poolId: '1'
-    }
+      poolId: '1',
+    },
   };
 
   const connectSpy = sinon.spy(internalPool, 'connect');
@@ -62,7 +62,7 @@ export default (clientConfiguration: ClientUserConfigurationType = defaultConfig
 
       // $FlowFixMe
       typeParsers: [],
-      ...clientConfiguration
+      ...clientConfiguration,
     }
   );
 
@@ -73,6 +73,6 @@ export default (clientConfiguration: ClientUserConfigurationType = defaultConfig
     endSpy,
     querySpy,
     releaseSpy,
-    removeSpy
+    removeSpy,
   };
 };

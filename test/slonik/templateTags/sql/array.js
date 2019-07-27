@@ -3,7 +3,7 @@
 import test from 'ava';
 import createSqlTag from '../../../../src/factories/createSqlTag';
 import {
-  SqlToken
+  SqlToken,
 } from '../../../../src/tokens';
 
 const sql = createSqlTag();
@@ -18,9 +18,9 @@ test('creates a value list', (t) => {
       [
         1,
         2,
-        3
-      ]
-    ]
+        3,
+      ],
+    ],
   });
 });
 
