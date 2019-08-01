@@ -30,7 +30,7 @@
     "pg-cursor": "^2.0.0",
     "pg-types": "^2.1.0",
     "postgres-interval": "^1.2.0",
-    "roarr": "^2.13.2",
+    "roarr": "^2.13.3",
     "serialize-error": "^4.1.0",
     "through2": "^3.0.1",
     "ulid": "^2.3.0"
@@ -48,13 +48,13 @@
     "babel-plugin-transform-export-default-name": "^2.0.4",
     "coveralls": "^3.0.5",
     "eslint": "^6.1.0",
-    "eslint-config-canonical": "^17.3.1",
+    "eslint-config-canonical": "^17.3.2",
     "flow-bin": "^0.104.0",
     "flow-copy-source": "^2.0.7",
     "gitdown": "^3.1.1",
-    "husky": "^3.0.1",
+    "husky": "^3.0.2",
     "nyc": "^14.1.1",
-    "semantic-release": "^15.13.18",
+    "semantic-release": "^15.13.19",
     "sinon": "^7.3.2"
   },
   "engines": {
