@@ -14,7 +14,7 @@ import {
   UnexpectedStateError,
 } from '../errors';
 
-export type ComparisonOperatorType = '<' | '>' | '<=' | '>=' | '=' | '<>' | '!=';
+export type ComparisonOperatorType = '<' | '>' | '<=' | '>=' | '=' | '<>' | '!=' | '%';
 
 export default (token: ComparisonPredicateTokenType, greatestParameterPosition: number): SqlFragmentType => {
   if (
@@ -24,7 +24,8 @@ export default (token: ComparisonPredicateTokenType, greatestParameterPosition: 
     token.operator !== '>=' &&
     token.operator !== '=' &&
     token.operator !== '<>' &&
-    token.operator !== '!='
+    token.operator !== '!=' &&
+    token.operator !== '%'
   ) {
     throw new UnexpectedStateError('Invalid operator.');
   }

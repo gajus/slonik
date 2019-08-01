@@ -26,7 +26,7 @@ export type StreamHandlerType = (stream: Readable) => void;
 
 export type ConnectionTypeType = 'EXPLICIT' | 'IMPLICIT_QUERY' | 'IMPLICIT_TRANSACTION';
 
-export type ComparisonOperatorType = '<' | '>' | '<=' | '>=' | '=' | '<>' | '!=';
+export type ComparisonOperatorType = '<' | '>' | '<=' | '>=' | '=' | '<>' | '!=' | '%';
 export type LogicalBooleanOperatorType = 'AND' | 'OR';
 
 export type FieldType = {|
