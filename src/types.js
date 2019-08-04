@@ -218,8 +218,6 @@ export type NamedParameterValuesType = {
   [key: string]: ValueExpressionType,
 };
 
-
-
 export type IdentifierListMemberType = $ReadOnlyArray<string> |
   {|
     +alias: string,

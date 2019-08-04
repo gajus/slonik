@@ -120,6 +120,51 @@ export default (configuration?: SqlTagConfigurationType) => {
     return query;
   };
 
+  sql.array = (
+    values: $ReadOnlyArray<PrimitiveValueExpressionType>,
+    memberType: string
+  ): ArraySqlTokenType => {
+    return deepFreeze({
+      memberType,
+      type: ArrayToken,
+      values,
+    });
+  };
+
+  sql.assignmentList = (
+    namedAssignment: NamedAssignmentType
+  ): AssignmentListSqlTokenType => {
+    return deepFreeze({
+      namedAssignment,
+      normalizeIdentifier,
+      type: AssignmentListToken,
+    });
+  };
+
+  sql.booleanExpression = (
+    members: $ReadOnlyArray<ValueExpressionType>,
+    operator: LogicalBooleanOperatorType
+  ): BooleanExpressionSqlTokenType => {
+    return deepFreeze({
+      members,
+      operator,
+      type: BooleanExpressionToken,
+    });
+  };
+
+  sql.comparisonPredicate = (
+    leftOperand: ValueExpressionType,
+    operator: ComparisonOperatorType,
+    rightOperand: ValueExpressionType
+  ): ComparisonPredicateSqlTokenType => {
+    return deepFreeze({
+      leftOperand,
+      operator,
+      rightOperand,
+      type: ComparisonPredicateToken,
+    });
+  };
+
   sql.identifier = (
     names: $ReadOnlyArray<string>
   ): IdentifierSqlTokenType => {
@@ -140,6 +185,15 @@ export default (configuration?: SqlTagConfigurationType) => {
     });
   };
 
+  sql.json = (
+    value: SerializableValueType
+  ): JsonSqlTokenType => {
+    return deepFreeze({
+      type: JsonToken,
+      value,
+    });
+  };
+
   sql.raw = (
     rawSql: string,
     values?: $ReadOnlyArray<ValueExpressionType>
@@ -148,26 +202,6 @@ export default (configuration?: SqlTagConfigurationType) => {
       sql: rawSql,
       type: RawSqlToken,
       values: values || [],
-    });
-  };
-
-  sql.valueList = (
-    values: $ReadOnlyArray<ValueExpressionType>
-  ): ValueListSqlTokenType => {
-    return deepFreeze({
-      type: ValueListToken,
-      values,
-    });
-  };
-
-  sql.array = (
-    values: $ReadOnlyArray<PrimitiveValueExpressionType>,
-    memberType: string
-  ): ArraySqlTokenType => {
-    return deepFreeze({
-      memberType,
-      type: ArrayToken,
-      values,
     });
   };
 
@@ -200,46 +234,12 @@ export default (configuration?: SqlTagConfigurationType) => {
     });
   };
 
-  sql.booleanExpression = (
-    members: $ReadOnlyArray<ValueExpressionType>,
-    operator: LogicalBooleanOperatorType
-  ): BooleanExpressionSqlTokenType => {
+  sql.valueList = (
+    values: $ReadOnlyArray<ValueExpressionType>
+  ): ValueListSqlTokenType => {
     return deepFreeze({
-      members,
-      operator,
-      type: BooleanExpressionToken,
-    });
-  };
-
-  sql.comparisonPredicate = (
-    leftOperand: ValueExpressionType,
-    operator: ComparisonOperatorType,
-    rightOperand: ValueExpressionType
-  ): ComparisonPredicateSqlTokenType => {
-    return deepFreeze({
-      leftOperand,
-      operator,
-      rightOperand,
-      type: ComparisonPredicateToken,
-    });
-  };
-
-  sql.assignmentList = (
-    namedAssignment: NamedAssignmentType
-  ): AssignmentListSqlTokenType => {
-    return deepFreeze({
-      namedAssignment,
-      normalizeIdentifier,
-      type: AssignmentListToken,
-    });
-  };
-
-  sql.json = (
-    value: SerializableValueType
-  ): JsonSqlTokenType => {
-    return deepFreeze({
-      type: JsonToken,
-      value,
+      type: ValueListToken,
+      values,
     });
   };
 
