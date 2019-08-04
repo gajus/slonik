@@ -122,7 +122,7 @@ export default (configuration?: SqlTagConfigurationType) => {
 
   sql.array = (
     values: $ReadOnlyArray<PrimitiveValueExpressionType>,
-    memberType: string
+    memberType: string | RawSqlTokenType
   ): ArraySqlTokenType => {
     return deepFreeze({
       memberType,

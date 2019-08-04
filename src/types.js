@@ -225,7 +225,7 @@ export type IdentifierListMemberType = $ReadOnlyArray<string> |
   |};
 
 export type ArraySqlTokenType = {|
-  +memberType: string,
+  +memberType: string | RawSqlTokenType,
   +type: 'SLONIK_TOKEN_ARRAY',
   +values: PositionalParameterValuesType,
 |};
@@ -339,7 +339,7 @@ export type SqlTaggedTemplateType = {|
   ) => SqlSqlTokenType,
   array: (
     values: $ReadOnlyArray<PrimitiveValueExpressionType>,
-    memberType: string
+    memberType: string | RawSqlTokenType
   ) => ArraySqlTokenType,
   assignmentList: (
     namedAssignmentValueBindings: NamedAssignmentType

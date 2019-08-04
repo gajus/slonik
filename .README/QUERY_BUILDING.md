@@ -7,7 +7,7 @@ Queries are built using methods of the `sql` tagged template literal.
 ```js
 (
   values: $ReadOnlyArray<PrimitiveValueExpressionType>,
-  memberType: string
+  memberType: string | RawSqlTokenType
 ) => ArraySqlTokenType;
 
 ```
@@ -25,7 +25,7 @@ Produces:
 
 ```js
 {
-  sql: 'SELECT $1::int4[]',
+  sql: 'SELECT $1::"int4"[]',
   values: [
     [
       1,
@@ -37,6 +37,34 @@ Produces:
 
 ```
 
+#### `sql.array` `memberType`
+
+If `memberType` is a string, then it is treated as a type name identifier and will be quoted using double quotes, i.e. `sql.array([1, 2, 3], 'int4')` is equivalent to `$1::"int4"[]`. The implication is that keywrods that are often used interchangeably with type names are not going to work, e.g. [`int4`](https://github.com/postgres/postgres/blob/69edf4f8802247209e77f69e089799b3d83c13a4/src/include/catalog/pg_type.dat#L74-L78) is a type name identifier and will work. However, [`int`](https://github.com/postgres/postgres/blob/69edf4f8802247209e77f69e089799b3d83c13a4/src/include/parser/kwlist.h#L213) is a keyword and will not work. You can either use type name identifiers or you can construct custom member using `sql.raw`, e.g.
+
+```js
+await connection.query(sql`
+  SELECT (${sql.array([1, 2, 3], sql.raw('int[]'))})
+`);
+
+```
+
+Produces:
+
+```js
+{
+  sql: 'SELECT $1::int[]',
+  values: [
+    [
+      1,
+      2,
+      3
+    ]
+  ]
+}
+
+```
+
+#### `sql.array` vs `sql.valueList`
 
 Unlike `sql.valueList`, `sql.array` generates a stable query of a predictable length, i.e. regardless of the number of the values in the array, the generated query remains the same:
 
