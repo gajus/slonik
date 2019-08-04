@@ -78,18 +78,18 @@ Note: Using this project does not require TypeScript or Flow. It is a regular ES
         * [Manually constructing the query](#slonik-value-placeholders-manually-constructing-the-query)
         * [Nesting `sql`](#slonik-value-placeholders-nesting-sql)
     * [Query building](#slonik-query-building)
-        * [`sql.valueList`](#slonik-query-building-sql-valuelist)
         * [`sql.array`](#slonik-query-building-sql-array)
+        * [`sql.assignmentList`](#slonik-query-building-sql-assignmentlist)
+        * [`sql.booleanExpression`](#slonik-query-building-sql-booleanexpression)
+        * [`sql.comparisonPredicate`](#slonik-query-building-sql-comparisonpredicate)
+        * [`sql.identifier`](#slonik-query-building-sql-identifier)
+        * [`sql.identifierList`](#slonik-query-building-sql-identifierlist)
+        * [`sql.json`](#slonik-query-building-sql-json)
+        * [`sql.raw`](#slonik-query-building-sql-raw)
         * [`sql.tuple`](#slonik-query-building-sql-tuple)
         * [`sql.tupleList`](#slonik-query-building-sql-tuplelist)
         * [`sql.unnest`](#slonik-query-building-sql-unnest)
-        * [`sql.identifier`](#slonik-query-building-sql-identifier)
-        * [`sql.identifierList`](#slonik-query-building-sql-identifierlist)
-        * [`sql.raw`](#slonik-query-building-sql-raw)
-        * [`sql.booleanExpression`](#slonik-query-building-sql-booleanexpression)
-        * [`sql.comparisonPredicate`](#slonik-query-building-sql-comparisonpredicate)
-        * [`sql.assignmentList`](#slonik-query-building-sql-assignmentlist)
-        * [`sql.json`](#slonik-query-building-sql-json)
+        * [`sql.valueList`](#slonik-query-building-sql-valuelist)
     * [Query methods](#slonik-query-methods)
         * [`any`](#slonik-query-methods-any)
         * [`anyFirst`](#slonik-query-methods-anyfirst)
@@ -1131,64 +1131,6 @@ Produces:
 
 Queries are built using methods of the `sql` tagged template literal.
 
-<a name="slonik-query-building-sql-valuelist"></a>
-### <code>sql.valueList</code>
-
-Note: Before using `sql.valueList` evaluate if [`sql.array`](#sqlarray) is not a better option.
-
-```js
-(
-  values: $ReadOnlyArray<PrimitiveValueExpressionType>
-) => ValueListSqlTokenType;
-
-```
-
-Creates a list of values, e.g.
-
-```js
-await connection.query(sql`
-  SELECT (${sql.valueList([1, 2, 3])})
-`);
-
-```
-
-Produces:
-
-```js
-{
-  sql: 'SELECT ($1, $2, $3)',
-  values: [
-    1,
-    2,
-    3
-  ]
-}
-
-```
-
-Value list can describe other SQL tokens, e.g.
-
-```js
-await connection.query(sql`
-  SELECT (${sql.valueList([1, sql.raw('to_timestamp($1)', [2]), 3])})
-`);
-
-```
-
-Produces:
-
-```js
-{
-  sql: 'SELECT ($1, to_timestamp($2), $3)',
-  values: [
-    1,
-    2,
-    3
-  ]
-}
-
-```
-
 <a name="slonik-query-building-sql-array"></a>
 ### <code>sql.array</code>
 
@@ -1249,6 +1191,487 @@ sql`SELECT id FROM foo WHERE id != ALL(${sql.array([1, 2, 3], 'int4')})`;
 ```
 
 In short, when the value list length is dynamic then `sql.array` should be preferred over `sql.valueList`.
+
+<a name="slonik-query-building-sql-assignmentlist"></a>
+### <code>sql.assignmentList</code>
+
+```js
+(
+  namedAssignmentValueBindings: NamedAssignmentType
+) => AssignmentListSqlTokenType
+
+```
+
+Creates an assignment list, e.g.
+
+```js
+await connection.query(sql`
+  UPDATE foo
+  SET ${sql.assignmentList({
+    bar: 'baz',
+    qux: 'quux'
+  })}
+`);
+
+```
+
+Produces:
+
+```js
+{
+  sql: 'UPDATE foo SET bar = $1, qux = $2',
+  values: [
+    'baz',
+    'quux'
+  ]
+}
+
+```
+
+Assignment list can describe other SQL tokens, e.g.
+
+```js
+await connection.query(sql`
+  UPDATE foo
+  SET ${sql.assignmentList({
+    bar: sql.raw('to_timestamp($1)', ['baz']),
+    qux: sql.raw('to_timestamp($1)', ['quux'])
+  })}
+`);
+
+```
+
+Produces:
+
+```js
+{
+  sql: 'UPDATE foo SET bar = to_timestamp($1), qux = to_timestamp($2)',
+  values: [
+    'baz',
+    'quux'
+  ]
+}
+
+```
+
+<a name="slonik-query-building-sql-assignmentlist-snake-case-normalization"></a>
+#### Snake-case normalization
+
+By default, `sql.assignmentList` converts object keys to snake-case, e.g.
+
+```js
+await connection.query(sql`
+  UPDATE foo
+  SET ${sql.assignmentList({
+    barBaz: sql.raw('to_timestamp($1)', ['qux']),
+    quuxQuuz: sql.raw('to_timestamp($1)', ['corge'])
+  })}
+`);
+
+```
+
+Produces:
+
+```js
+{
+  sql: 'UPDATE foo SET bar_baz = to_timestamp($1), quux_quuz = to_timestamp($2)',
+  values: [
+    'qux',
+    'corge'
+  ]
+}
+
+```
+
+This behaviour can be overriden by [constructing a custom `sql` tag](#sql-tag) and configuring `normalizeIdentifier`, e.g.
+
+```js
+import {
+  createSqlTag
+} from 'slonik';
+
+const sql = createSqlTag({
+  normalizeIdentifier: (identifierName) => {
+    return identifierName;
+  }
+});
+
+```
+
+With this configuration, the earlier code example produces:
+
+```js
+{
+  sql: 'UPDATE foo SET "barBaz" = to_timestamp($1), "quuxQuuz" = to_timestamp($2)',
+  values: [
+    'qux',
+    'corge'
+  ]
+}
+
+```
+
+<a name="slonik-query-building-sql-booleanexpression"></a>
+### <code>sql.booleanExpression</code>
+
+```js
+(
+  members: $ReadOnlyArray<ValueExpressionType>,
+  operator: LogicalBooleanOperatorType
+) => BooleanExpressionSqlTokenType;
+
+```
+
+Boolean expression.
+
+```js
+sql`
+  SELECT ${sql.booleanExpression([3, 4], 'AND')}
+`;
+
+```
+
+Produces:
+
+```js
+{
+  sql: 'SELECT $1 AND $2',
+  values: [
+    3,
+    4
+  ]
+}
+
+```
+
+Boolean expressions can describe SQL tokens (including other boolean expressions), e.g.
+
+```js
+sql`
+  SELECT ${sql.booleanExpression([
+    sql.comparisonPredicate(sql.identifier(['foo']), '=', sql.raw('to_timestamp($1)', 2)),
+    sql.booleanExpression([
+      3,
+      4
+    ], 'OR')
+  ], 'AND')}
+`;
+
+```
+
+Produces:
+
+```js
+{
+  sql: 'SELECT ("foo" = to_timestamp($1) AND ($1 OR $2))',
+  values: [
+    2,
+    3,
+    4
+  ]
+}
+
+```
+
+Note: Do not use `sql.booleanExpression` when expression consists of a single predicate. Use `sql.comparisonPredicate`.
+
+<a name="slonik-query-building-sql-comparisonpredicate"></a>
+### <code>sql.comparisonPredicate</code>
+
+```js
+(
+  leftOperand: ValueExpressionType,
+  operator: ComparisonOperatorType,
+  rightOperand: ValueExpressionType
+) => ComparisonPredicateSqlTokenType;
+
+```
+
+A comparison predicate compares two expressions using a comparison operator.
+
+```js
+sql`
+  SELECT ${sql.comparisonPredicate(3, '=', 4)}
+`;
+
+```
+
+Produces:
+
+```js
+{
+  sql: 'SELECT $1 = $2',
+  values: [
+    3,
+    4
+  ]
+}
+
+```
+
+Comparison predicate operands can describe SQL tokens, e.g.
+
+```js
+sql`
+  SELECT ${sql.comparisonPredicate(sql.identifier(['foo']), '=', sql.raw('to_timestamp($1)', 2))}
+`;
+
+```
+
+Produces:
+
+```js
+{
+  sql: 'SELECT "foo" = to_timestamp($1)',
+  values: [
+    2
+  ]
+}
+
+```
+
+<a name="slonik-query-building-sql-identifier"></a>
+### <code>sql.identifier</code>
+
+```js
+(
+  names: $ReadOnlyArray<string>
+) => IdentifierSqlTokenType;
+
+```
+
+[Delimited identifiers](https://www.postgresql.org/docs/current/static/sql-syntax-lexical.html#SQL-SYNTAX-IDENTIFIERS) are created by enclosing an arbitrary sequence of characters in double-quotes ("). To create create a delimited identifier, create an `sql` tag function placeholder value using `sql.identifier`, e.g.
+
+```js
+sql`
+  SELECT 1
+  FROM ${sql.identifier(['bar', 'baz'])}
+`;
+
+```
+
+Produces:
+
+```js
+{
+  sql: 'SELECT 1 FROM "bar"."bar"',
+  values: []
+}
+
+```
+
+<a name="slonik-query-building-sql-identifierlist"></a>
+### <code>sql.identifierList</code>
+
+```js
+(
+  identifiers: $ReadOnlyArray<$ReadOnlyArray<string>>
+) => IdentifierListSqlTokenType;
+
+```
+
+Creates a list of identifiers, e.g.
+
+```js
+sql`
+  SELECT 1
+  FROM ${sql.identifierList([
+    ['bar', 'baz'],
+    ['qux', 'quux']
+  ])}
+`;
+
+```
+
+Produces:
+
+```js
+{
+  sql: 'SELECT 1 FROM "bar"."baz", "qux"."quux"',
+  values: []
+}
+
+```
+
+<a name="slonik-query-building-sql-identifierlist-identifier-aliases"></a>
+#### Identifier aliases
+
+A member of the identifier list can be aliased:
+
+```js
+sql`
+  SELECT 1
+  FROM ${sql.identifierList([
+    {
+      alias: 'qux',
+      identifier: ['bar', 'baz']
+    },
+    {
+      alias: 'corge',
+      identifier: ['quux', 'quuz']
+    }
+  ])}
+`;
+
+```
+
+Produces:
+
+```js
+{
+  sql: 'SELECT 1 FROM "bar"."baz" "qux", "quux"."quuz" "corge"',
+  values: []
+}
+
+```
+
+<a name="slonik-query-building-sql-json"></a>
+### <code>sql.json</code>
+
+```js
+(
+  value: SerializableValueType
+) => JsonSqlTokenType;
+
+```
+
+Serializes value and binds it as an array, e.g.
+
+```js
+await connection.query(sql`
+  SELECT (${sql.json([1, 2, 3])})
+`);
+
+```
+
+Produces:
+
+```js
+{
+  sql: 'SELECT $1',
+  values: [
+    '[1,2,3]'
+  ]
+}
+
+```
+
+This is a convenience function equivalent to:
+
+```js
+await connection.query(sql`
+  SELECT (${JSON.stringify([1, 2, 3])}})
+`);
+
+```
+
+<a name="slonik-query-building-sql-raw"></a>
+### <code>sql.raw</code>
+
+```js
+(
+  rawSql: string,
+  values?: $ReadOnlyArray<PrimitiveValueExpressionType>
+) => RawSqlTokenType;
+
+```
+
+Raw/ dynamic SQL can be inlined using `sql.raw`, e.g.
+
+```js
+sql`
+  SELECT 1
+  FROM ${sql.raw('"bar"')}
+`;
+
+```
+
+Produces:
+
+```js
+{
+  sql: 'SELECT 1 FROM "bar"',
+  values: []
+}
+
+```
+
+The second parameter of the `sql.raw` can be used to bind [positional parameter](https://www.postgresql.org/docs/current/sql-expressions.html#SQL-EXPRESSIONS-PARAMETERS-POSITIONAL) values, e.g.
+
+```js
+sql`
+  SELECT ${sql.raw('$1', [1])}
+`;
+
+```
+
+Produces:
+
+```js
+{
+  sql: 'SELECT $1',
+  values: [
+    1
+  ]
+}
+
+```
+
+<a name="slonik-query-building-sql-raw-building-dynamic-queries"></a>
+#### Building dynamic queries
+
+If you require to build a query based on a _dynamic_ condition, then consider using an SQL builder for that specific query, e.g. [Sqorn](https://sqorn.org/).
+
+```js
+const query = sq
+  .return({
+    authorId: 'a.id',
+    name: 'a.last_name'
+  })
+  .distinct
+  .from({
+    b: 'book'
+    })
+  .leftJoin({
+    a: 'author'
+  })
+  .on`b.author_id = a.id`
+  .where({
+    title: 'Oathbringer',
+    genre: 'fantasy'
+  })
+  .query;
+
+sql`${sql.raw(query.text, query.args)}`
+
+```
+
+<a name="slonik-query-building-sql-raw-named-parameters"></a>
+#### Named parameters
+
+`sql.raw` supports named parameters, e.g.
+
+```js
+sql`
+  SELECT ${sql.raw(':foo, :bar', {bar: 'BAR', foo: 'FOO'})}
+`;
+
+```
+
+Produces:
+
+```js
+{
+  sql: 'SELECT $1, $2',
+  values: [
+    'FOO',
+    'BAR'
+  ]
+}
+
+```
+
+Named parameters are matched using `/[\s,(]:([a-z_]+)/g` regex.
 
 <a name="slonik-query-building-sql-tuple"></a>
 ### <code>sql.tuple</code>
@@ -1426,57 +1849,24 @@ Produces:
 }
 
 ```
+<a name="slonik-query-building-sql-valuelist"></a>
+### <code>sql.valueList</code>
 
-<a name="slonik-query-building-sql-identifier"></a>
-### <code>sql.identifier</code>
-
-```js
-(
-  names: $ReadOnlyArray<string>
-) => IdentifierSqlTokenType;
-
-```
-
-[Delimited identifiers](https://www.postgresql.org/docs/current/static/sql-syntax-lexical.html#SQL-SYNTAX-IDENTIFIERS) are created by enclosing an arbitrary sequence of characters in double-quotes ("). To create create a delimited identifier, create an `sql` tag function placeholder value using `sql.identifier`, e.g.
-
-```js
-sql`
-  SELECT 1
-  FROM ${sql.identifier(['bar', 'baz'])}
-`;
-
-```
-
-Produces:
-
-```js
-{
-  sql: 'SELECT 1 FROM "bar"."bar"',
-  values: []
-}
-
-```
-
-<a name="slonik-query-building-sql-identifierlist"></a>
-### <code>sql.identifierList</code>
+Note: Before using `sql.valueList` evaluate if [`sql.array`](#sqlarray) is not a better option.
 
 ```js
 (
-  identifiers: $ReadOnlyArray<$ReadOnlyArray<string>>
-) => IdentifierListSqlTokenType;
+  values: $ReadOnlyArray<PrimitiveValueExpressionType>
+) => ValueListSqlTokenType;
 
 ```
 
-Creates a list of identifiers, e.g.
+Creates a list of values, e.g.
 
 ```js
-sql`
-  SELECT 1
-  FROM ${sql.identifierList([
-    ['bar', 'baz'],
-    ['qux', 'quux']
-  ])}
-`;
+await connection.query(sql`
+  SELECT (${sql.valueList([1, 2, 3])})
+`);
 
 ```
 
@@ -1484,290 +1874,21 @@ Produces:
 
 ```js
 {
-  sql: 'SELECT 1 FROM "bar"."baz", "qux"."quux"',
-  values: []
-}
-
-```
-
-<a name="slonik-query-building-sql-identifierlist-identifier-aliases"></a>
-#### Identifier aliases
-
-A member of the identifier list can be aliased:
-
-```js
-sql`
-  SELECT 1
-  FROM ${sql.identifierList([
-    {
-      alias: 'qux',
-      identifier: ['bar', 'baz']
-    },
-    {
-      alias: 'corge',
-      identifier: ['quux', 'quuz']
-    }
-  ])}
-`;
-
-```
-
-Produces:
-
-```js
-{
-  sql: 'SELECT 1 FROM "bar"."baz" "qux", "quux"."quuz" "corge"',
-  values: []
-}
-
-```
-
-<a name="slonik-query-building-sql-raw"></a>
-### <code>sql.raw</code>
-
-```js
-(
-  rawSql: string,
-  values?: $ReadOnlyArray<PrimitiveValueExpressionType>
-) => RawSqlTokenType;
-
-```
-
-Raw/ dynamic SQL can be inlined using `sql.raw`, e.g.
-
-```js
-sql`
-  SELECT 1
-  FROM ${sql.raw('"bar"')}
-`;
-
-```
-
-Produces:
-
-```js
-{
-  sql: 'SELECT 1 FROM "bar"',
-  values: []
-}
-
-```
-
-The second parameter of the `sql.raw` can be used to bind [positional parameter](https://www.postgresql.org/docs/current/sql-expressions.html#SQL-EXPRESSIONS-PARAMETERS-POSITIONAL) values, e.g.
-
-```js
-sql`
-  SELECT ${sql.raw('$1', [1])}
-`;
-
-```
-
-Produces:
-
-```js
-{
-  sql: 'SELECT $1',
+  sql: 'SELECT ($1, $2, $3)',
   values: [
-    1
-  ]
-}
-
-```
-
-<a name="slonik-query-building-sql-raw-building-dynamic-queries"></a>
-#### Building dynamic queries
-
-If you require to build a query based on a _dynamic_ condition, then consider using an SQL builder for that specific query, e.g. [Sqorn](https://sqorn.org/).
-
-```js
-const query = sq
-  .return({
-    authorId: 'a.id',
-    name: 'a.last_name'
-  })
-  .distinct
-  .from({
-    b: 'book'
-    })
-  .leftJoin({
-    a: 'author'
-  })
-  .on`b.author_id = a.id`
-  .where({
-    title: 'Oathbringer',
-    genre: 'fantasy'
-  })
-  .query;
-
-sql`${sql.raw(query.text, query.args)}`
-
-```
-
-<a name="slonik-query-building-sql-raw-named-parameters"></a>
-#### Named parameters
-
-`sql.raw` supports named parameters, e.g.
-
-```js
-sql`
-  SELECT ${sql.raw(':foo, :bar', {bar: 'BAR', foo: 'FOO'})}
-`;
-
-```
-
-Produces:
-
-```js
-{
-  sql: 'SELECT $1, $2',
-  values: [
-    'FOO',
-    'BAR'
-  ]
-}
-
-```
-
-Named parameters are matched using `/[\s,(]:([a-z_]+)/g` regex.
-
-<a name="slonik-query-building-sql-booleanexpression"></a>
-### <code>sql.booleanExpression</code>
-
-```js
-(
-  members: $ReadOnlyArray<ValueExpressionType>,
-  operator: LogicalBooleanOperatorType
-) => BooleanExpressionSqlTokenType;
-
-```
-
-Boolean expression.
-
-```js
-sql`
-  SELECT ${sql.booleanExpression([3, 4], 'AND')}
-`;
-
-```
-
-Produces:
-
-```js
-{
-  sql: 'SELECT $1 AND $2',
-  values: [
-    3,
-    4
-  ]
-}
-
-```
-
-Boolean expressions can describe SQL tokens (including other boolean expressions), e.g.
-
-```js
-sql`
-  SELECT ${sql.booleanExpression([
-    sql.comparisonPredicate(sql.identifier(['foo']), '=', sql.raw('to_timestamp($1)', 2)),
-    sql.booleanExpression([
-      3,
-      4
-    ], 'OR')
-  ], 'AND')}
-`;
-
-```
-
-Produces:
-
-```js
-{
-  sql: 'SELECT ("foo" = to_timestamp($1) AND ($1 OR $2))',
-  values: [
+    1,
     2,
-    3,
-    4
+    3
   ]
 }
 
 ```
 
-Note: Do not use `sql.booleanExpression` when expression consists of a single predicate. Use `sql.comparisonPredicate`.
-
-<a name="slonik-query-building-sql-comparisonpredicate"></a>
-### <code>sql.comparisonPredicate</code>
-
-```js
-(
-  leftOperand: ValueExpressionType,
-  operator: ComparisonOperatorType,
-  rightOperand: ValueExpressionType
-) => ComparisonPredicateSqlTokenType;
-
-```
-
-A comparison predicate compares two expressions using a comparison operator.
-
-```js
-sql`
-  SELECT ${sql.comparisonPredicate(3, '=', 4)}
-`;
-
-```
-
-Produces:
-
-```js
-{
-  sql: 'SELECT $1 = $2',
-  values: [
-    3,
-    4
-  ]
-}
-
-```
-
-Comparison predicate operands can describe SQL tokens, e.g.
-
-```js
-sql`
-  SELECT ${sql.comparisonPredicate(sql.identifier(['foo']), '=', sql.raw('to_timestamp($1)', 2))}
-`;
-
-```
-
-Produces:
-
-```js
-{
-  sql: 'SELECT "foo" = to_timestamp($1)',
-  values: [
-    2
-  ]
-}
-
-```
-
-<a name="slonik-query-building-sql-assignmentlist"></a>
-### <code>sql.assignmentList</code>
-
-```js
-(
-  namedAssignmentValueBindings: NamedAssignmentType
-) => AssignmentListSqlTokenType
-
-```
-
-Creates an assignment list, e.g.
+Value list can describe other SQL tokens, e.g.
 
 ```js
 await connection.query(sql`
-  UPDATE foo
-  SET ${sql.assignmentList({
-    bar: 'baz',
-    qux: 'quux'
-  })}
+  SELECT (${sql.valueList([1, sql.raw('to_timestamp($1)', [2]), 3])})
 `);
 
 ```
@@ -1776,135 +1897,13 @@ Produces:
 
 ```js
 {
-  sql: 'UPDATE foo SET bar = $1, qux = $2',
+  sql: 'SELECT ($1, to_timestamp($2), $3)',
   values: [
-    'baz',
-    'quux'
+    1,
+    2,
+    3
   ]
 }
-
-```
-
-Assignment list can describe other SQL tokens, e.g.
-
-```js
-await connection.query(sql`
-  UPDATE foo
-  SET ${sql.assignmentList({
-    bar: sql.raw('to_timestamp($1)', ['baz']),
-    qux: sql.raw('to_timestamp($1)', ['quux'])
-  })}
-`);
-
-```
-
-Produces:
-
-```js
-{
-  sql: 'UPDATE foo SET bar = to_timestamp($1), qux = to_timestamp($2)',
-  values: [
-    'baz',
-    'quux'
-  ]
-}
-
-```
-
-<a name="slonik-query-building-sql-assignmentlist-snake-case-normalization"></a>
-#### Snake-case normalization
-
-By default, `sql.assignmentList` converts object keys to snake-case, e.g.
-
-```js
-await connection.query(sql`
-  UPDATE foo
-  SET ${sql.assignmentList({
-    barBaz: sql.raw('to_timestamp($1)', ['qux']),
-    quuxQuuz: sql.raw('to_timestamp($1)', ['corge'])
-  })}
-`);
-
-```
-
-Produces:
-
-```js
-{
-  sql: 'UPDATE foo SET bar_baz = to_timestamp($1), quux_quuz = to_timestamp($2)',
-  values: [
-    'qux',
-    'corge'
-  ]
-}
-
-```
-
-This behaviour can be overriden by [constructing a custom `sql` tag](#sql-tag) and configuring `normalizeIdentifier`, e.g.
-
-```js
-import {
-  createSqlTag
-} from 'slonik';
-
-const sql = createSqlTag({
-  normalizeIdentifier: (identifierName) => {
-    return identifierName;
-  }
-});
-
-```
-
-With this configuration, the earlier code example produces:
-
-```js
-{
-  sql: 'UPDATE foo SET "barBaz" = to_timestamp($1), "quuxQuuz" = to_timestamp($2)',
-  values: [
-    'qux',
-    'corge'
-  ]
-}
-
-```
-
-<a name="slonik-query-building-sql-json"></a>
-### <code>sql.json</code>
-
-```js
-(
-  value: SerializableValueType
-) => JsonSqlTokenType;
-
-```
-
-Serializes value and binds it as an array, e.g.
-
-```js
-await connection.query(sql`
-  SELECT (${sql.json([1, 2, 3])})
-`);
-
-```
-
-Produces:
-
-```js
-{
-  sql: 'SELECT $1',
-  values: [
-    '[1,2,3]'
-  ]
-}
-
-```
-
-This is a convenience function equivalent to:
-
-```js
-await connection.query(sql`
-  SELECT (${JSON.stringify([1, 2, 3])}})
-`);
 
 ```
 
