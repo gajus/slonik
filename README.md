@@ -1136,8 +1136,9 @@ Queries are built using methods of the `sql` tagged template literal.
 
 ```js
 (
-  values: $ReadOnlyArray<PrimitiveValueExpressionType>
-) => ValueListSqlTokenType;
+  values: $ReadOnlyArray<PrimitiveValueExpressionType>,
+  memberType: string
+) => ArraySqlTokenType;
 
 ```
 
@@ -1849,6 +1850,7 @@ Produces:
 }
 
 ```
+
 <a name="slonik-query-building-sql-valuelist"></a>
 ### <code>sql.valueList</code>
 
