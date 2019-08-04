@@ -1874,7 +1874,7 @@ With this configuration, the earlier code example produces:
 ```js
 (
   value: SerializableValueType
-) => JsonTokenType;
+) => JsonSqlTokenType;
 
 ```
 
