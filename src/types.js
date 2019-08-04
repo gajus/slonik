@@ -218,10 +218,7 @@ export type NamedParameterValuesType = {
   [key: string]: ValueExpressionType,
 };
 
-export type IdentifierTokenType = {|
-  +names: $ReadOnlyArray<string>,
-  +type: 'SLONIK_TOKEN_IDENTIFIER',
-|};
+
 
 export type IdentifierListMemberType = $ReadOnlyArray<string> |
   {|
@@ -229,48 +226,22 @@ export type IdentifierListMemberType = $ReadOnlyArray<string> |
     +identifier: $ReadOnlyArray<string>,
   |};
 
-export type IdentifierListTokenType = {|
-  +identifiers: $ReadOnlyArray<IdentifierListMemberType>,
-  +type: 'SLONIK_TOKEN_IDENTIFIER_LIST',
-|};
-
-export type SqlSqlTokenType = {|
-  +sql: string,
-  +type: 'SLONIK_TOKEN_SQL',
-  +values: $ReadOnlyArray<PrimitiveValueExpressionType>,
-|};
-
-export type RawSqlTokenType = {|
-  +sql: string,
-  +type: 'SLONIK_TOKEN_RAW_SQL',
-  +values: PositionalParameterValuesType | NamedParameterValuesType,
-|};
-
-export type ValueListSqlTokenType = {|
-  +values: PositionalParameterValuesType,
-  +type: 'SLONIK_TOKEN_VALUE_LIST',
-|};
-
 export type ArraySqlTokenType = {|
   +memberType: string,
   +type: 'SLONIK_TOKEN_ARRAY',
   +values: PositionalParameterValuesType,
 |};
 
-export type TupleSqlTokenType = {|
-  +values: PositionalParameterValuesType,
-  +type: 'SLONIK_TOKEN_TUPLE',
+export type AssignmentListTokenType = {|
+  +namedAssignment: NamedAssignmentType,
+  +normalizeIdentifier: IdentifierNormalizerType,
+  +type: 'SLONIK_TOKEN_ASSIGNMENT_LIST',
 |};
 
-export type TupleListSqlTokenType = {|
-  +tuples: $ReadOnlyArray<PositionalParameterValuesType>,
-  +type: 'SLONIK_TOKEN_TUPLE_LIST',
-|};
-
-export type UnnestSqlTokenType = {|
-  +columnTypes: $ReadOnlyArray<string>,
-  +tuples: $ReadOnlyArray<PositionalParameterValuesType>,
-  +type: 'SLONIK_TOKEN_UNNEST',
+export type BooleanExpressionTokenType = {|
+  +members: $ReadOnlyArray<ValueExpressionType>,
+  +operator: LogicalBooleanOperatorType,
+  +type: 'SLONIK_TOKEN_BOOLEAN_EXPRESSION',
 |};
 
 export type ComparisonPredicateTokenType = {|
@@ -280,21 +251,52 @@ export type ComparisonPredicateTokenType = {|
   +type: 'SLONIK_TOKEN_COMPARISON_PREDICATE',
 |};
 
-export type BooleanExpressionTokenType = {|
-  +members: $ReadOnlyArray<ValueExpressionType>,
-  +operator: LogicalBooleanOperatorType,
-  +type: 'SLONIK_TOKEN_BOOLEAN_EXPRESSION',
+export type IdentifierListTokenType = {|
+  +identifiers: $ReadOnlyArray<IdentifierListMemberType>,
+  +type: 'SLONIK_TOKEN_IDENTIFIER_LIST',
 |};
 
-export type AssignmentListTokenType = {|
-  +namedAssignment: NamedAssignmentType,
-  +normalizeIdentifier: IdentifierNormalizerType,
-  +type: 'SLONIK_TOKEN_ASSIGNMENT_LIST',
+export type IdentifierTokenType = {|
+  +names: $ReadOnlyArray<string>,
+  +type: 'SLONIK_TOKEN_IDENTIFIER',
 |};
 
 export type JsonSqlTokenType = {|
   +value: SerializableValueType,
   +type: 'SLONIK_TOKEN_JSON',
+|};
+
+export type RawSqlTokenType = {|
+  +sql: string,
+  +type: 'SLONIK_TOKEN_RAW_SQL',
+  +values: PositionalParameterValuesType | NamedParameterValuesType,
+|};
+
+export type SqlSqlTokenType = {|
+  +sql: string,
+  +type: 'SLONIK_TOKEN_SQL',
+  +values: $ReadOnlyArray<PrimitiveValueExpressionType>,
+|};
+
+export type TupleListSqlTokenType = {|
+  +tuples: $ReadOnlyArray<PositionalParameterValuesType>,
+  +type: 'SLONIK_TOKEN_TUPLE_LIST',
+|};
+
+export type TupleSqlTokenType = {|
+  +values: PositionalParameterValuesType,
+  +type: 'SLONIK_TOKEN_TUPLE',
+|};
+
+export type UnnestSqlTokenType = {|
+  +columnTypes: $ReadOnlyArray<string>,
+  +tuples: $ReadOnlyArray<PositionalParameterValuesType>,
+  +type: 'SLONIK_TOKEN_UNNEST',
+|};
+
+export type ValueListSqlTokenType = {|
+  +values: PositionalParameterValuesType,
+  +type: 'SLONIK_TOKEN_VALUE_LIST',
 |};
 
 export type PrimitiveValueExpressionType = $ReadOnlyArray<PrimitiveValueExpressionType> | string | number | boolean | null;
