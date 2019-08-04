@@ -1,7 +1,7 @@
 // @flow
 
 import type {
-  BooleanExpressionTokenType,
+  BooleanExpressionSqlTokenType,
   SqlFragmentType,
 } from '../types';
 import {
@@ -14,7 +14,7 @@ import {
   UnexpectedStateError,
 } from '../errors';
 
-export default (token: BooleanExpressionTokenType, greatestParameterPosition: number): SqlFragmentType => {
+export default (token: BooleanExpressionSqlTokenType, greatestParameterPosition: number): SqlFragmentType => {
   if (token.operator !== 'AND' && token.operator !== 'OR') {
     throw new UnexpectedStateError('Invalid operator.');
   }

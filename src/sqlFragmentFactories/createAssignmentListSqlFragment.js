@@ -1,7 +1,7 @@
 // @flow
 
 import type {
-  AssignmentListTokenType,
+  AssignmentListSqlTokenType,
   SqlFragmentType,
 } from '../types';
 import {
@@ -12,7 +12,7 @@ import {
   createSqlTokenSqlFragment,
 } from '../factories';
 
-export default (token: AssignmentListTokenType, greatestParameterPosition: number): SqlFragmentType => {
+export default (token: AssignmentListSqlTokenType, greatestParameterPosition: number): SqlFragmentType => {
   let placeholderIndex = greatestParameterPosition;
 
   const values = [];
@@ -33,7 +33,7 @@ export default (token: AssignmentListTokenType, greatestParameterPosition: numbe
         // $FlowFixMe
         values.push(value);
 
-        // @todo allow AssignmentListTokenType key to be sql.identifier.
+        // @todo allow AssignmentListSqlTokenType key to be sql.identifier.
         // @see https://github.com/gajus/slonik/issues/53
         return escapeIdentifier(token.normalizeIdentifier(column)) + ' = $' + ++placeholderIndex;
       }

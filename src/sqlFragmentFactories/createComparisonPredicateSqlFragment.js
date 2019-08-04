@@ -1,7 +1,7 @@
 // @flow
 
 import type {
-  ComparisonPredicateTokenType,
+  ComparisonPredicateSqlTokenType,
   SqlFragmentType,
 } from '../types';
 import {
@@ -16,7 +16,7 @@ import {
 
 export type ComparisonOperatorType = '<' | '>' | '<=' | '>=' | '=' | '<>' | '!=' | '%';
 
-export default (token: ComparisonPredicateTokenType, greatestParameterPosition: number): SqlFragmentType => {
+export default (token: ComparisonPredicateSqlTokenType, greatestParameterPosition: number): SqlFragmentType => {
   if (
     token.operator !== '<' &&
     token.operator !== '>' &&

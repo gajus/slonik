@@ -1,14 +1,14 @@
 // @flow
 
 import type {
-  IdentifierListTokenType,
+  IdentifierListSqlTokenType,
   SqlFragmentType,
 } from '../types';
 import {
   escapeIdentifier,
 } from '../utilities';
 
-export default (token: IdentifierListTokenType): SqlFragmentType => {
+export default (token: IdentifierListSqlTokenType): SqlFragmentType => {
   const sql = token.identifiers
     .map((identifier) => {
       if (Array.isArray(identifier)) {

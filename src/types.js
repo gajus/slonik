@@ -232,31 +232,31 @@ export type ArraySqlTokenType = {|
   +values: PositionalParameterValuesType,
 |};
 
-export type AssignmentListTokenType = {|
+export type AssignmentListSqlTokenType = {|
   +namedAssignment: NamedAssignmentType,
   +normalizeIdentifier: IdentifierNormalizerType,
   +type: 'SLONIK_TOKEN_ASSIGNMENT_LIST',
 |};
 
-export type BooleanExpressionTokenType = {|
+export type BooleanExpressionSqlTokenType = {|
   +members: $ReadOnlyArray<ValueExpressionType>,
   +operator: LogicalBooleanOperatorType,
   +type: 'SLONIK_TOKEN_BOOLEAN_EXPRESSION',
 |};
 
-export type ComparisonPredicateTokenType = {|
+export type ComparisonPredicateSqlTokenType = {|
   +leftOperand: ValueExpressionType,
   +operator: ComparisonOperatorType,
   +rightOperand: ValueExpressionType,
   +type: 'SLONIK_TOKEN_COMPARISON_PREDICATE',
 |};
 
-export type IdentifierListTokenType = {|
+export type IdentifierListSqlTokenType = {|
   +identifiers: $ReadOnlyArray<IdentifierListMemberType>,
   +type: 'SLONIK_TOKEN_IDENTIFIER_LIST',
 |};
 
-export type IdentifierTokenType = {|
+export type IdentifierSqlTokenType = {|
   +names: $ReadOnlyArray<string>,
   +type: 'SLONIK_TOKEN_IDENTIFIER',
 |};
@@ -303,11 +303,11 @@ export type PrimitiveValueExpressionType = $ReadOnlyArray<PrimitiveValueExpressi
 
 export type SqlTokenType =
   ArraySqlTokenType |
-  AssignmentListTokenType |
-  BooleanExpressionTokenType |
-  ComparisonPredicateTokenType |
-  IdentifierListTokenType |
-  IdentifierTokenType |
+  AssignmentListSqlTokenType |
+  BooleanExpressionSqlTokenType |
+  ComparisonPredicateSqlTokenType |
+  IdentifierListSqlTokenType |
+  IdentifierSqlTokenType |
   JsonSqlTokenType |
   RawSqlTokenType |
   SqlSqlTokenType |
@@ -345,22 +345,22 @@ export type SqlTaggedTemplateType = {|
   ) => ArraySqlTokenType,
   assignmentList: (
     namedAssignmentValueBindings: NamedAssignmentType
-  ) => AssignmentListTokenType,
+  ) => AssignmentListSqlTokenType,
   booleanExpression: (
     members: $ReadOnlyArray<ValueExpressionType>,
     operator: LogicalBooleanOperatorType
-  ) => BooleanExpressionTokenType,
+  ) => BooleanExpressionSqlTokenType,
   comparisonPredicate: (
     leftOperand: ValueExpressionType,
     operator: ComparisonOperatorType,
     rightOperand: ValueExpressionType
-  ) => ComparisonPredicateTokenType,
+  ) => ComparisonPredicateSqlTokenType,
   identifier: (
     names: $ReadOnlyArray<string>
-  ) => IdentifierTokenType,
+  ) => IdentifierSqlTokenType,
   identifierList: (
     identifiers: $ReadOnlyArray<IdentifierListMemberType>
-  ) => IdentifierListTokenType,
+  ) => IdentifierListSqlTokenType,
   json: (
     value: SerializableValueType
   ) => JsonSqlTokenType,

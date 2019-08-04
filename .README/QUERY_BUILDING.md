@@ -298,7 +298,7 @@ Produces:
 ```js
 (
   names: $ReadOnlyArray<string>
-) => IdentifierTokenType;
+) => IdentifierSqlTokenType;
 
 ```
 
@@ -327,7 +327,7 @@ Produces:
 ```js
 (
   identifiers: $ReadOnlyArray<$ReadOnlyArray<string>>
-) => IdentifierListTokenType;
+) => IdentifierListSqlTokenType;
 
 ```
 
@@ -496,7 +496,7 @@ Named parameters are matched using `/[\s,(]:([a-z_]+)/g` regex.
 (
   members: $ReadOnlyArray<ValueExpressionType>,
   operator: LogicalBooleanOperatorType
-) => BooleanExpressionTokenType;
+) => BooleanExpressionSqlTokenType;
 
 ```
 
@@ -560,7 +560,7 @@ Note: Do not use `sql.booleanExpression` when expression consists of a single pr
   leftOperand: ValueExpressionType,
   operator: ComparisonOperatorType,
   rightOperand: ValueExpressionType
-) => ComparisonPredicateTokenType;
+) => ComparisonPredicateSqlTokenType;
 
 ```
 
@@ -612,7 +612,7 @@ Produces:
 ```js
 (
   namedAssignmentValueBindings: NamedAssignmentType
-) => AssignmentListTokenType
+) => AssignmentListSqlTokenType
 
 ```
 
@@ -729,7 +729,7 @@ With this configuration, the earlier code example produces:
 ```js
 (
   value: SerializableValueType
-) => JsonTokenType;
+) => JsonSqlTokenType;
 
 ```
 

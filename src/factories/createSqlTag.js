@@ -2,14 +2,14 @@
 
 import type {
   ArraySqlTokenType,
-  AssignmentListTokenType,
-  BooleanExpressionTokenType,
+  AssignmentListSqlTokenType,
+  BooleanExpressionSqlTokenType,
   ComparisonOperatorType,
-  ComparisonPredicateTokenType,
+  ComparisonPredicateSqlTokenType,
   IdentifierListMemberType,
-  IdentifierListTokenType,
+  IdentifierListSqlTokenType,
   IdentifierNormalizerType,
-  IdentifierTokenType,
+  IdentifierSqlTokenType,
   JsonSqlTokenType,
   LogicalBooleanOperatorType,
   NamedAssignmentType,
@@ -122,7 +122,7 @@ export default (configuration?: SqlTagConfigurationType) => {
 
   sql.identifier = (
     names: $ReadOnlyArray<string>
-  ): IdentifierTokenType => {
+  ): IdentifierSqlTokenType => {
     // @todo Replace `type` with a symbol once Flow adds symbol support
     // @see https://github.com/facebook/flow/issues/810
     return deepFreeze({
@@ -133,7 +133,7 @@ export default (configuration?: SqlTagConfigurationType) => {
 
   sql.identifierList = (
     identifiers: $ReadOnlyArray<IdentifierListMemberType>
-  ): IdentifierListTokenType => {
+  ): IdentifierListSqlTokenType => {
     return deepFreeze({
       identifiers,
       type: IdentifierListToken,
@@ -203,7 +203,7 @@ export default (configuration?: SqlTagConfigurationType) => {
   sql.booleanExpression = (
     members: $ReadOnlyArray<ValueExpressionType>,
     operator: LogicalBooleanOperatorType
-  ): BooleanExpressionTokenType => {
+  ): BooleanExpressionSqlTokenType => {
     return deepFreeze({
       members,
       operator,
@@ -215,7 +215,7 @@ export default (configuration?: SqlTagConfigurationType) => {
     leftOperand: ValueExpressionType,
     operator: ComparisonOperatorType,
     rightOperand: ValueExpressionType
-  ): ComparisonPredicateTokenType => {
+  ): ComparisonPredicateSqlTokenType => {
     return deepFreeze({
       leftOperand,
       operator,
@@ -226,7 +226,7 @@ export default (configuration?: SqlTagConfigurationType) => {
 
   sql.assignmentList = (
     namedAssignment: NamedAssignmentType
-  ): AssignmentListTokenType => {
+  ): AssignmentListSqlTokenType => {
     return deepFreeze({
       namedAssignment,
       normalizeIdentifier,
