@@ -104,15 +104,15 @@ Note: Using this project does not require TypeScript or Flow. It is a regular ES
         * [`transaction`](#slonik-query-methods-transaction)
     * [Error handling](#slonik-error-handling)
         * [Original `node-postgres` error](#slonik-error-handling-original-node-postgres-error)
-        * [Handling `ConnectionError`](#slonik-error-handling-handling-connectionerror)
-        * [Handling `QueryCancelledError`](#slonik-error-handling-handling-querycancellederror)
         * [Handling `BackendTerminatedError`](#slonik-error-handling-handling-backendterminatederror)
-        * [Handling `NotFoundError`](#slonik-error-handling-handling-notfounderror)
-        * [Handling `DataIntegrityError`](#slonik-error-handling-handling-dataintegrityerror)
-        * [Handling `NotNullIntegrityConstraintViolationError`](#slonik-error-handling-handling-notnullintegrityconstraintviolationerror)
-        * [Handling `ForeignKeyIntegrityConstraintViolationError`](#slonik-error-handling-handling-foreignkeyintegrityconstraintviolationerror)
-        * [Handling `UniqueIntegrityConstraintViolationError`](#slonik-error-handling-handling-uniqueintegrityconstraintviolationerror)
         * [Handling `CheckIntegrityConstraintViolationError`](#slonik-error-handling-handling-checkintegrityconstraintviolationerror)
+        * [Handling `ConnectionError`](#slonik-error-handling-handling-connectionerror)
+        * [Handling `DataIntegrityError`](#slonik-error-handling-handling-dataintegrityerror)
+        * [Handling `ForeignKeyIntegrityConstraintViolationError`](#slonik-error-handling-handling-foreignkeyintegrityconstraintviolationerror)
+        * [Handling `NotFoundError`](#slonik-error-handling-handling-notfounderror)
+        * [Handling `NotNullIntegrityConstraintViolationError`](#slonik-error-handling-handling-notnullintegrityconstraintviolationerror)
+        * [Handling `QueryCancelledError`](#slonik-error-handling-handling-querycancellederror)
+        * [Handling `UniqueIntegrityConstraintViolationError`](#slonik-error-handling-handling-uniqueintegrityconstraintviolationerror)
     * [Types](#slonik-types)
     * [Debugging](#slonik-debugging)
         * [Logging](#slonik-debugging-logging)
@@ -2246,41 +2246,6 @@ This propery is exposed for debugging purposes only. Do not use it for condition
 
 If you require to extract meta-data about a specific type of error (e.g. contraint violation name), raise a GitHub issue describing your use case.
 
-<a name="slonik-error-handling-handling-connectionerror"></a>
-### Handling <code>ConnectionError</code>
-
-`ConnectionError` is thrown when connection cannot be established to the PostgreSQL server.
-
-<a name="slonik-error-handling-handling-querycancellederror"></a>
-### Handling <code>QueryCancelledError</code>
-
-`QueryCancelledError` is thrown when a query is cancelled by the user, i.e. [`pg_cancel_backend`](https://www.postgresql.org/docs/current/functions-admin.html#FUNCTIONS-ADMIN-SIGNAL).
-
-It should be safe to use the same connection if the `QueryCancelledError` is handled, e.g.
-
-```js
-await pool.connect(async (connection0) => {
-  await pool.connect(async (connection1) => {
-    const backendProcessId = await connection1.oneFirst(sql`SELECT pg_backend_pid()`);
-
-    setTimeout(() => {
-      connection0.query(sql`SELECT pg_cancel_backend(${backendProcessId})`)
-    }, 2000);
-
-    try {
-      await connection1.query(sql`SELECT pg_sleep(30)`);
-    } catch (error) {
-      if (error instanceof QueryCancelledError) {
-        // Safe to continue using the same connection.
-      } else {
-        throw error;
-      }
-    }
-  });
-});
-
-```
-
 <a name="slonik-error-handling-handling-backendterminatederror"></a>
 ### Handling <code>BackendTerminatedError</code>
 
@@ -2315,6 +2280,45 @@ await pool.connect(async (connection0) => {
 
 ```
 
+<a name="slonik-error-handling-handling-checkintegrityconstraintviolationerror"></a>
+### Handling <code>CheckIntegrityConstraintViolationError</code>
+
+`CheckIntegrityConstraintViolationError` is thrown when PostgreSQL responds with [`check_violation`](https://www.postgresql.org/docs/9.4/static/errcodes-appendix.html) (`23514`) error.
+
+<a name="slonik-error-handling-handling-connectionerror"></a>
+### Handling <code>ConnectionError</code>
+
+`ConnectionError` is thrown when connection cannot be established to the PostgreSQL server.
+
+<a name="slonik-error-handling-handling-dataintegrityerror"></a>
+### Handling <code>DataIntegrityError</code>
+
+To handle the case where the data result does not match the expectations, catch `DataIntegrityError` error.
+
+```js
+import {
+  NotFoundError
+} from 'slonik';
+
+let row;
+
+try {
+  row = await connection.one(sql`SELECT foo`);
+} catch (error) {
+  if (error instanceof DataIntegrityError) {
+    console.error('There is more than one row matching the select criteria.');
+  } else {
+    throw error;
+  }
+}
+
+```
+
+<a name="slonik-error-handling-handling-foreignkeyintegrityconstraintviolationerror"></a>
+### Handling <code>ForeignKeyIntegrityConstraintViolationError</code>
+
+`ForeignKeyIntegrityConstraintViolationError` is thrown when PostgreSQL responds with [`foreign_key_violation`](https://www.postgresql.org/docs/9.4/static/errcodes-appendix.html) (`23503`) error.
+
 <a name="slonik-error-handling-handling-notfounderror"></a>
 ### Handling <code>NotFoundError</code>
 
@@ -2341,49 +2345,45 @@ if (row) {
 
 ```
 
-<a name="slonik-error-handling-handling-dataintegrityerror"></a>
-### Handling <code>DataIntegrityError</code>
-
-To handle the case where the data result does not match the expectations, catch `DataIntegrityError` error.
-
-```js
-import {
-  NotFoundError
-} from 'slonik';
-
-let row;
-
-try {
-  row = await connection.one(sql`SELECT foo`);
-} catch (error) {
-  if (error instanceof DataIntegrityError) {
-    console.error('There is more than one row matching the select criteria.');
-  } else {
-    throw error;
-  }
-}
-
-```
-
 <a name="slonik-error-handling-handling-notnullintegrityconstraintviolationerror"></a>
 ### Handling <code>NotNullIntegrityConstraintViolationError</code>
 
 `NotNullIntegrityConstraintViolationError` is thrown when PostgreSQL responds with [`not_null_violation`](https://www.postgresql.org/docs/9.4/static/errcodes-appendix.html) (`23502`) error.
 
-<a name="slonik-error-handling-handling-foreignkeyintegrityconstraintviolationerror"></a>
-### Handling <code>ForeignKeyIntegrityConstraintViolationError</code>
+<a name="slonik-error-handling-handling-querycancellederror"></a>
+### Handling <code>QueryCancelledError</code>
 
-`ForeignKeyIntegrityConstraintViolationError` is thrown when PostgreSQL responds with [`foreign_key_violation`](https://www.postgresql.org/docs/9.4/static/errcodes-appendix.html) (`23503`) error.
+`QueryCancelledError` is thrown when a query is cancelled by the user, i.e. [`pg_cancel_backend`](https://www.postgresql.org/docs/current/functions-admin.html#FUNCTIONS-ADMIN-SIGNAL).
+
+It should be safe to use the same connection if the `QueryCancelledError` is handled, e.g.
+
+```js
+await pool.connect(async (connection0) => {
+  await pool.connect(async (connection1) => {
+    const backendProcessId = await connection1.oneFirst(sql`SELECT pg_backend_pid()`);
+
+    setTimeout(() => {
+      connection0.query(sql`SELECT pg_cancel_backend(${backendProcessId})`)
+    }, 2000);
+
+    try {
+      await connection1.query(sql`SELECT pg_sleep(30)`);
+    } catch (error) {
+      if (error instanceof QueryCancelledError) {
+        // Safe to continue using the same connection.
+      } else {
+        throw error;
+      }
+    }
+  });
+});
+
+```
 
 <a name="slonik-error-handling-handling-uniqueintegrityconstraintviolationerror"></a>
 ### Handling <code>UniqueIntegrityConstraintViolationError</code>
 
 `UniqueIntegrityConstraintViolationError` is thrown when PostgreSQL responds with [`unique_violation`](https://www.postgresql.org/docs/9.4/static/errcodes-appendix.html) (`23505`) error.
-
-<a name="slonik-error-handling-handling-checkintegrityconstraintviolationerror"></a>
-### Handling <code>CheckIntegrityConstraintViolationError</code>
-
-`CheckIntegrityConstraintViolationError` is thrown when PostgreSQL responds with [`check_violation`](https://www.postgresql.org/docs/9.4/static/errcodes-appendix.html) (`23514`) error.
 
 
 <a name="slonik-types"></a>
