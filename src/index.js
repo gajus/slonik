@@ -7,15 +7,28 @@ import {
 export const sql = createSqlTag();
 
 export type {
+  ArraySqlTokenType,
+  AssignmentListSqlTokenType,
+  BooleanExpressionSqlTokenType,
+  ComparisonPredicateSqlTokenType,
   ConnectionTypeType,
   DatabaseConnectionType,
   DatabasePoolConnectionType,
   DatabasePoolType,
   DatabaseTransactionConnectionType,
   FieldType,
+  IdentifierListSqlTokenType,
+  IdentifierSqlTokenType,
   InterceptorType,
+  JsonSqlTokenType,
   QueryContextType,
+  RawSqlTokenType,
+  SqlSqlTokenType,
+  TupleListSqlTokenType,
+  TupleSqlTokenType,
+  UnnestSqlTokenType,
   ValueExpressionType,
+  ValueListSqlTokenType,
 } from './types';
 export {
   normalizeIdentifier,
