@@ -1568,7 +1568,7 @@ Produces:
 
 ```
 
-Serializes value and binds it as an array, e.g.
+Serializes value and binds it as a JSON string literal, e.g.
 
 ```js
 await connection.query(sql`
@@ -1589,14 +1589,13 @@ Produces:
 
 ```
 
-This is a convenience function equivalent to:
+<a name="slonik-query-building-sql-json-difference-from-json-stringify"></a>
+#### Difference from <code>JSON.stringify</code>
 
-```js
-await connection.query(sql`
-  SELECT (${JSON.stringify([1, 2, 3])}})
-`);
-
-```
+|Input|`sql.json`|`JSON.stringify`|
+|---|---|---|
+|`undefined`|Throws `InvalidInputError` error.|`undefined`|
+|`null`|`null`|`"null"` (string literal)|
 
 <a name="slonik-query-building-sql-raw"></a>
 ### <code>sql.raw</code>

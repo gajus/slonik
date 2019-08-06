@@ -426,7 +426,7 @@ Produces:
 
 ```
 
-Serializes value and binds it as an array, e.g.
+Serializes value and binds it as a JSON string literal, e.g.
 
 ```js
 await connection.query(sql`
@@ -447,14 +447,12 @@ Produces:
 
 ```
 
-This is a convenience function equivalent to:
+#### Difference from `JSON.stringify`
 
-```js
-await connection.query(sql`
-  SELECT (${JSON.stringify([1, 2, 3])}})
-`);
-
-```
+|Input|`sql.json`|`JSON.stringify`|
+|---|---|---|
+|`undefined`|Throws `InvalidInputError` error.|`undefined`|
+|`null`|`null`|`"null"` (string literal)|
 
 ### `sql.raw`
 

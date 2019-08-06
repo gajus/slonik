@@ -20,6 +20,18 @@ test('creates a value list', (t) => {
   });
 });
 
+test('passes null unstringified', (t) => {
+  const query = sql`SELECT ${sql.json(null)}`;
+
+  t.deepEqual(query, {
+    sql: 'SELECT $1',
+    type: SqlToken,
+    values: [
+      null,
+    ],
+  });
+});
+
 test('the resulting object is immutable', (t) => {
   const token = sql.json({
     foo: 'bar',
