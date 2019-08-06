@@ -909,6 +909,8 @@ Inserting data this way ensures that the query is stable and reduces the amount 
 <a name="slonik-recipes-using-sql-raw-to-generate-dynamic-queries"></a>
 ### Using <code>sql.raw</code> to generate dynamic queries
 
+Warning: Do not use `sql.raw` to concatenate query strings. This would defeat the purpose of Slonik. `sql.raw` is available only for hand-crafting complex query fragments (e.g. type expressions). For conditional queries, use `sql.booleanExpression`. For comparison expression, use `sql.comparisonPredicate`. If you are still unclear how to create a query, then raise an issue to discuss your requirement.
+
 [`sql.raw`](#sqlraw) can be used to generate fragments of an arbitrary SQL that are interpolated into the main query, e.g.
 
 ```js
