@@ -77,12 +77,12 @@ export default (
         clientConfiguration,
         'IMPLICIT_QUERY',
         (connectionLog, connection, boundConnection) => {
-          return boundConnection.stream(query, streamHandler);
+          return boundConnection.stream(streamQuery, streamHandler);
         },
         (newPool) => {
-          return newPool.stream(query, streamHandler);
+          return newPool.stream(streamQuery, streamHandler);
         },
-        query
+        streamQuery
       );
     },
     transaction: async (transactionHandler) => {
