@@ -16,6 +16,17 @@ export type {
   LoggerType,
 };
 
+export type TypeNameIdentifierType =
+  'bool' |
+  'bytea' |
+  'float4' |
+  'float8' |
+  'int2' |
+  'int4' |
+  'json' |
+  'text' |
+  'timestamptz';
+
 export type SerializableValueType = string | number | boolean | null | {+[key: string]: SerializableValueType} | $ReadOnlyArray<SerializableValueType>;
 
 export opaque type QueryIdType = string;
@@ -225,7 +236,7 @@ export type IdentifierListMemberType = $ReadOnlyArray<string> |
   |};
 
 export type ArraySqlTokenType = {|
-  +memberType: string | RawSqlTokenType,
+  +memberType: TypeNameIdentifierType | RawSqlTokenType,
   +type: 'SLONIK_TOKEN_ARRAY',
   +values: PositionalParameterValuesType,
 |};
@@ -339,7 +350,7 @@ export type SqlTaggedTemplateType = {|
   ) => SqlSqlTokenType,
   array: (
     values: $ReadOnlyArray<PrimitiveValueExpressionType>,
-    memberType: string | RawSqlTokenType
+    memberType: TypeNameIdentifierType | RawSqlTokenType
   ) => ArraySqlTokenType,
   assignmentList: (
     namedAssignmentValueBindings: NamedAssignmentType
