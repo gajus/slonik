@@ -13,6 +13,7 @@ import type {
 import {
   any,
   anyFirst,
+  copyFromBinary,
   many,
   manyFirst,
   maybeOne,
@@ -35,6 +36,19 @@ export default (
   return {
     any: mapTaggedTemplateLiteralInvocation(any.bind(null, parentLog, connection, clientConfiguration)),
     anyFirst: mapTaggedTemplateLiteralInvocation(anyFirst.bind(null, parentLog, connection, clientConfiguration)),
+    copyFromBinary: async (copyQuery, values, columnTypes) => {
+      assertSqlSqlToken(copyQuery);
+
+      return copyFromBinary(
+        parentLog,
+        connection,
+        clientConfiguration,
+        copyQuery.sql,
+        copyQuery.values,
+        values,
+        columnTypes
+      );
+    },
     many: mapTaggedTemplateLiteralInvocation(many.bind(null, parentLog, connection, clientConfiguration)),
     manyFirst: mapTaggedTemplateLiteralInvocation(manyFirst.bind(null, parentLog, connection, clientConfiguration)),
     maybeOne: mapTaggedTemplateLiteralInvocation(maybeOne.bind(null, parentLog, connection, clientConfiguration)),

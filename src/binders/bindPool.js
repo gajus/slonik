@@ -61,6 +61,30 @@ export default (
         }
       );
     },
+    copyFromBinary: (copyQuery, values, columnTypes) => {
+      assertSqlSqlToken(copyQuery);
+
+      return createConnection(
+        parentLog,
+        pool,
+        clientConfiguration,
+        'IMPLICIT_QUERY',
+        (connectionLog, connection, boundConnection) => {
+          return boundConnection.copyFromBinary(
+            copyQuery,
+            values,
+            columnTypes
+          );
+        },
+        (newPool) => {
+          return newPool.copyFromBinary(
+            copyQuery,
+            values,
+            columnTypes
+          );
+        },
+      );
+    },
     many: mapConnection('many'),
     manyFirst: mapConnection('manyFirst'),
     maybeOne: mapConnection('maybeOne'),

@@ -27,6 +27,8 @@
     "lodash": "^4.17.15",
     "pg": "^7.12.0",
     "pg-connection-string": "^2.1.0",
+    "pg-copy-streams": "^2.2.2",
+    "pg-copy-streams-binary": "^1.1.2",
     "pg-cursor": "^2.0.0",
     "pg-types": "^2.1.0",
     "postgres-interval": "^1.2.0",

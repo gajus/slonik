@@ -26,6 +26,63 @@ const fooValues = await connection.anyFirst(sql`SELECT foo`);
 
 ```
 
+### `copyFromBinary`
+
+```js
+(
+  streamQuery: TaggedTemplateLiteralInvocationType,
+  tupleList: $ReadOnlyArray<$ReadOnlyArray<any>>,
+  columnTypes: $ReadOnlyArray<TypeNameIdentifierType>
+) => Promise<null>;
+
+```
+
+Copies from a binary stream.
+
+The binary stream is constructed using user supplied `tupleList` and `columnTypes` values.
+
+Example:
+
+```js
+const tupleList = [
+  [
+    1,
+    'baz'
+  ],
+  [
+    2,
+    'baz'
+  ]
+];
+
+const columnTypes = [
+  'int4',
+  'text'
+];
+
+await connection.copyFromBinary(
+  sql`
+    COPY foo
+    (
+      id,
+      baz
+    )
+    FROM STDIN BINARY
+  `,
+  tupleList,
+  columnTypes
+);
+
+```
+
+Limitations:
+
+* Individual tuples cannot contain `NULL` values.
+
+Related documentation:
+
+* [`COPY` documentation](https://www.postgresql.org/docs/current/sql-copy.html)
+
 ### `many`
 
 Returns result rows.

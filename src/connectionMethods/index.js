@@ -2,6 +2,7 @@
 
 export {default as any} from './any';
 export {default as anyFirst} from './anyFirst';
+export {default as copyFromBinary} from './copyFromBinary';
 export {default as many} from './many';
 export {default as manyFirst} from './manyFirst';
 export {default as maybeOne} from './maybeOne';

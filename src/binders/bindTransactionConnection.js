@@ -6,6 +6,7 @@ import {
 import {
   any,
   anyFirst,
+  copyFromBinary,
   many,
   manyFirst,
   maybeOne,
@@ -23,6 +24,9 @@ import type {
   TaggedTemplateLiteralInvocationType,
   TransactionFunctionType,
 } from '../types';
+import {
+  assertSqlSqlToken,
+} from '../assertions';
 
 export default (
   parentLog: LoggerType,
@@ -45,6 +49,19 @@ export default (
   return {
     any: mapInvocation(any.bind(null, parentLog, connection, clientConfiguration)),
     anyFirst: mapInvocation(anyFirst.bind(null, parentLog, connection, clientConfiguration)),
+    copyFromBinary: async (streamQuery, values, columnTypes) => {
+      assertSqlSqlToken(streamQuery);
+
+      return copyFromBinary(
+        parentLog,
+        connection,
+        clientConfiguration,
+        streamQuery.sql,
+        streamQuery.values,
+        values,
+        columnTypes
+      );
+    },
     many: mapInvocation(many.bind(null, parentLog, connection, clientConfiguration)),
     manyFirst: mapInvocation(manyFirst.bind(null, parentLog, connection, clientConfiguration)),
     maybeOne: mapInvocation(maybeOne.bind(null, parentLog, connection, clientConfiguration)),

@@ -111,9 +111,20 @@ export type StreamFunctionType = (
 // $FlowFixMe
 ) => Promise<null>;
 
+export type QueryCopyFromBinaryFunctionType = (
+  streamQuery: TaggedTemplateLiteralInvocationType,
+
+  // eslint-disable-next-line flowtype/no-weak-types
+  tupleList: $ReadOnlyArray<$ReadOnlyArray<any>>,
+  columnTypes: $ReadOnlyArray<TypeNameIdentifierType>
+
+// $FlowFixMe
+) => Promise<null>;
+
 type CommonQueryMethodsType = {|
   +any: QueryAnyFunctionType,
   +anyFirst: QueryAnyFirstFunctionType,
+  +copyFromBinary: QueryCopyFromBinaryFunctionType,
   +many: QueryManyFunctionType,
   +manyFirst: QueryManyFirstFunctionType,
   +maybeOne: QueryMaybeOneFunctionType,
@@ -420,6 +431,20 @@ export type InternalQueryMaybeOneFirstFunctionType = InternalQueryMethodType<Que
 export type InternalQueryMaybeOneFunctionType = InternalQueryMethodType<QueryResultRowType | null>;
 export type InternalQueryOneFirstFunctionType = InternalQueryMethodType<QueryResultRowColumnType>;
 export type InternalQueryOneFunctionType = InternalQueryMethodType<QueryResultRowType>;
+
+export type InternalCopyFromBinaryFunctionType = (
+  log: LoggerType,
+  connection: InternalDatabaseConnectionType,
+  clientConfiguration: ClientConfigurationType,
+  sql: string,
+  boundValues: $ReadOnlyArray<PrimitiveValueExpressionType>,
+
+  // eslint-disable-next-line flowtype/no-weak-types
+  tupleList: $ReadOnlyArray<$ReadOnlyArray<any>>,
+  columnTypes: $ReadOnlyArray<TypeNameIdentifierType>
+
+// eslint-disable-next-line flowtype/no-weak-types
+) => Promise<Object>;
 
 export type InternalStreamFunctionType = (
   log: LoggerType,

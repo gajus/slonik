@@ -93,6 +93,7 @@ Note: Using this project does not require TypeScript or Flow. It is a regular ES
     * [Query methods](#slonik-query-methods)
         * [`any`](#slonik-query-methods-any)
         * [`anyFirst`](#slonik-query-methods-anyfirst)
+        * [`copyFromBinary`](#slonik-query-methods-copyfrombinary)
         * [`many`](#slonik-query-methods-many)
         * [`manyFirst`](#slonik-query-methods-manyfirst)
         * [`maybeOne`](#slonik-query-methods-maybeone)
@@ -1971,6 +1972,64 @@ Example:
 const fooValues = await connection.anyFirst(sql`SELECT foo`);
 
 ```
+
+<a name="slonik-query-methods-copyfrombinary"></a>
+### <code>copyFromBinary</code>
+
+```js
+(
+  streamQuery: TaggedTemplateLiteralInvocationType,
+  tupleList: $ReadOnlyArray<$ReadOnlyArray<any>>,
+  columnTypes: $ReadOnlyArray<TypeNameIdentifierType>
+) => Promise<null>;
+
+```
+
+Copies from a binary stream.
+
+The binary stream is constructed using user supplied `tupleList` and `columnTypes` values.
+
+Example:
+
+```js
+const tupleList = [
+  [
+    1,
+    'baz'
+  ],
+  [
+    2,
+    'baz'
+  ]
+];
+
+const columnTypes = [
+  'int4',
+  'text'
+];
+
+await connection.copyFromBinary(
+  sql`
+    COPY foo
+    (
+      id,
+      baz
+    )
+    FROM STDIN BINARY
+  `,
+  tupleList,
+  columnTypes
+);
+
+```
+
+Limitations:
+
+* Individual tuples cannot contain `NULL` values.
+
+Related documentation:
+
+* [`COPY` documentation](https://www.postgresql.org/docs/current/sql-copy.html)
 
 <a name="slonik-query-methods-many"></a>
 ### <code>many</code>
