@@ -1,20 +1,29 @@
 // @flow
 
 import {
-  Readable,
+  Duplex,
 } from 'stream';
 import {
   from,
 } from 'pg-copy-streams';
-import {
-  deparser,
-} from 'pg-copy-streams-binary';
 import {
   executeQuery,
 } from '../routines';
 import type {
   InternalCopyFromBinaryFunctionType,
 } from '../types';
+import {
+  encodeTupleList,
+} from '../utilities';
+
+const bufferToStream = (buffer) => {
+  const stream = new Duplex();
+
+  stream.push(buffer);
+  stream.push(null);
+
+  return stream;
+};
 
 const copyFromBinary: InternalCopyFromBinaryFunctionType = async (
   connectionLogger,
@@ -25,6 +34,8 @@ const copyFromBinary: InternalCopyFromBinaryFunctionType = async (
   tupleList,
   columnTypes,
 ) => {
+  const payloadBuffer = await encodeTupleList(tupleList, columnTypes);
+
   return executeQuery(
     connectionLogger,
     connection,
@@ -35,43 +46,7 @@ const copyFromBinary: InternalCopyFromBinaryFunctionType = async (
     (finalConnection, finalSql) => {
       const copyFromBinaryStream = finalConnection.query(from(finalSql));
 
-      const tupleStream = new Readable({
-        objectMode: true,
-      });
-
-      tupleStream
-        .pipe(deparser())
-        .pipe(copyFromBinaryStream);
-
-      let lastTupleSize;
-
-      for (const tuple of tupleList) {
-        if (typeof lastTupleSize === 'number' && lastTupleSize !== tuple.length) {
-          throw new Error('Each tuple in a list of tuples must have an equal number of members.');
-        }
-
-        if (tuple.length !== columnTypes.length) {
-          throw new Error('Column types length must match tuple member length.');
-        }
-
-        lastTupleSize = tuple.length;
-
-        const payload = new Array(lastTupleSize);
-
-        let tupleColumnIndex = -1;
-
-        while (tupleColumnIndex++ < lastTupleSize - 1) {
-          payload[tupleColumnIndex] = {
-            type: columnTypes[tupleColumnIndex],
-            value: tuple[tupleColumnIndex],
-          };
-        }
-
-        // $FlowFixMe
-        tupleStream.push(payload);
-      }
-
-      tupleStream.push(null);
+      bufferToStream(payloadBuffer).pipe(copyFromBinaryStream);
 
       return new Promise((resolve, reject) => {
         copyFromBinaryStream.on('error', (error) => {

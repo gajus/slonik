@@ -19,6 +19,7 @@
     ]
   },
   "dependencies": {
+    "concat-stream": "^2.0.0",
     "delay": "^4.3.0",
     "es6-error": "^4.1.1",
     "get-stack-trace": "^2.0.1",
