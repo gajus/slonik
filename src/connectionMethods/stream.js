@@ -17,8 +17,8 @@ const stream: InternalStreamFunctionType = async (connectionLogger, connection, 
     rawSql,
     values,
     undefined,
-    (finalConnection, finsalSql, finalValues, executionContext, actualQuery) => {
-      const query = new QueryStream(finsalSql, finalValues);
+    (finalConnection, finalSql, finalValues, executionContext, actualQuery) => {
+      const query = new QueryStream(finalSql, finalValues);
 
       const queryStream = finalConnection.query(query);
 
