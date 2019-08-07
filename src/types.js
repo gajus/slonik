@@ -104,6 +104,13 @@ export type ClientConfigurationType = {|
   +typeParsers: $ReadOnlyArray<TypeParserType>,
 |};
 
+export type StreamFunctionType = (
+  sql: TaggedTemplateLiteralInvocationType,
+  streamHandler: StreamHandlerType
+
+// $FlowFixMe
+) => Promise<null>;
+
 type CommonQueryMethodsType = {|
   +any: QueryAnyFunctionType,
   +anyFirst: QueryAnyFirstFunctionType,
@@ -125,7 +132,7 @@ export type TransactionFunctionType = (connection: DatabaseTransactionConnection
 
 export type DatabasePoolConnectionType = {|
   ...$Exact<CommonQueryMethodsType>,
-  +stream: (sql: TaggedTemplateLiteralInvocationType, streamHandler: StreamHandlerType) => Promise<null>,
+  +stream: StreamFunctionType,
   +transaction: (handler: TransactionFunctionType) => Promise<*>,
 |};
 
@@ -134,9 +141,7 @@ export type ConnectionRoutineType = (connection: DatabasePoolConnectionType) => 
 export type DatabasePoolType = {|
   ...$Exact<CommonQueryMethodsType>,
   +connect: (connectionRoutine: ConnectionRoutineType) => Promise<*>,
-
-  // $FlowFixMe
-  +stream: (sql: TaggedTemplateLiteralInvocationType, streamHandler: StreamHandlerType) => Promise<null>,
+  +stream: StreamFunctionType,
   +transaction: (handler: TransactionFunctionType) => Promise<*>,
 |};
 

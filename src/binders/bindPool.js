@@ -66,12 +66,8 @@ export default (
     one: mapConnection('one'),
     oneFirst: mapConnection('oneFirst'),
     query: mapConnection('query'),
-    stream: async (query: TaggedTemplateLiteralInvocationType, streamHandler: StreamHandlerType) => {
-      if (typeof query === 'string') {
-        throw new TypeError('Query must be constructed using `sql` tagged template literal.');
-      }
-
-      await createConnection(
+    stream: async (query, streamHandler) => {
+      return createConnection(
         parentLog,
         pool,
         clientConfiguration,
@@ -84,8 +80,6 @@ export default (
         },
         query
       );
-
-      return null;
     },
     transaction: async (transactionHandler) => {
       return createConnection(

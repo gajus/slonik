@@ -8,8 +8,6 @@ import type {
   DatabasePoolConnectionType,
   InternalDatabaseConnectionType,
   LoggerType,
-  StreamHandlerType,
-  TaggedTemplateLiteralInvocationType,
   TransactionFunctionType,
 } from '../types';
 import {
@@ -41,15 +39,27 @@ export default (
     one: mapTaggedTemplateLiteralInvocation(one.bind(null, parentLog, connection, clientConfiguration)),
     oneFirst: mapTaggedTemplateLiteralInvocation(oneFirst.bind(null, parentLog, connection, clientConfiguration)),
     query: mapTaggedTemplateLiteralInvocation(query.bind(null, parentLog, connection, clientConfiguration)),
-    stream: async (streamQuery: TaggedTemplateLiteralInvocationType, streamHandler: StreamHandlerType) => {
+    stream: async (streamQuery, streamHandler) => {
       if (typeof streamQuery === 'string') {
         throw new TypeError('Query must be constructed using `sql` tagged template literal.');
       }
 
-      return stream(parentLog, connection, clientConfiguration, streamQuery.sql, streamQuery.values, streamHandler);
+      return stream(
+        parentLog,
+        connection,
+        clientConfiguration,
+        streamQuery.sql,
+        streamQuery.values,
+        streamHandler
+      );
     },
     transaction: async (handler: TransactionFunctionType) => {
-      return transaction(parentLog, connection, clientConfiguration, handler);
+      return transaction(
+        parentLog,
+        connection,
+        clientConfiguration,
+        handler
+      );
     },
   };
 };
