@@ -2023,11 +2023,18 @@ await connection.copyFromBinary(
 
 ```
 
-Limitations:
+<a name="slonik-query-methods-copyfrombinary-limitations"></a>
+#### Limitations
 
-* Individual tuples cannot contain `NULL` values.
+* Tuples cannot contain `NULL` values.
 
-Related documentation:
+<a name="slonik-query-methods-copyfrombinary-implementation-notes"></a>
+#### Implementation notes
+
+`copyFromBinary` implementation is designed to minimize the query execution time at the cost of increased script memory usage and execution time. This is achieved by separating data encoding from feeding data to PostgreSQL, i.e. all data passed to `copyFromBinary` is first encoded and then fed to PostgreSQL (contrast this to using a stream with encoding transformation to feed data to PostgreSQL).
+
+<a name="slonik-query-methods-copyfrombinary-related-documentation"></a>
+#### Related documentation
 
 * [`COPY` documentation](https://www.postgresql.org/docs/current/sql-copy.html)
 

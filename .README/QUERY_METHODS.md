@@ -75,11 +75,15 @@ await connection.copyFromBinary(
 
 ```
 
-Limitations:
+#### Limitations
 
-* Individual tuples cannot contain `NULL` values.
+* Tuples cannot contain `NULL` values.
 
-Related documentation:
+#### Implementation notes
+
+`copyFromBinary` implementation is designed to minimize the query execution time at the cost of increased script memory usage and execution time. This is achieved by separating data encoding from feeding data to PostgreSQL, i.e. all data passed to `copyFromBinary` is first encoded and then fed to PostgreSQL (contrast this to using a stream with encoding transformation to feed data to PostgreSQL).
+
+#### Related documentation
 
 * [`COPY` documentation](https://www.postgresql.org/docs/current/sql-copy.html)
 
