@@ -23,6 +23,9 @@ import {
   stream,
   transaction,
 } from '../connectionMethods';
+import {
+  assertSqlSqlToken,
+} from '../assertions';
 
 export default (
   parentLog: LoggerType,
@@ -40,9 +43,7 @@ export default (
     oneFirst: mapTaggedTemplateLiteralInvocation(oneFirst.bind(null, parentLog, connection, clientConfiguration)),
     query: mapTaggedTemplateLiteralInvocation(query.bind(null, parentLog, connection, clientConfiguration)),
     stream: async (streamQuery, streamHandler) => {
-      if (typeof streamQuery === 'string') {
-        throw new TypeError('Query must be constructed using `sql` tagged template literal.');
-      }
+      assertSqlSqlToken(streamQuery);
 
       return stream(
         parentLog,

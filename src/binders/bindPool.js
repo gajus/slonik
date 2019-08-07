@@ -5,7 +5,6 @@ import type {
   DatabasePoolType,
   InternalDatabasePoolType,
   LoggerType,
-  StreamHandlerType,
   TaggedTemplateLiteralInvocationType,
 } from '../types';
 import {
@@ -14,6 +13,9 @@ import {
 import {
   transaction,
 } from '../connectionMethods';
+import {
+  assertSqlSqlToken,
+} from '../assertions';
 
 export default (
   parentLog: LoggerType,
@@ -66,7 +68,9 @@ export default (
     one: mapConnection('one'),
     oneFirst: mapConnection('oneFirst'),
     query: mapConnection('query'),
-    stream: async (query, streamHandler) => {
+    stream: (streamQuery, streamHandler) => {
+      assertSqlSqlToken(streamQuery);
+
       return createConnection(
         parentLog,
         pool,
