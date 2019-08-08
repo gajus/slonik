@@ -26,7 +26,7 @@ export default (token: ArraySqlTokenType, greatestParameterPosition: number): Sq
 
   let sql = '$' + placeholderIndex + '::';
 
-  if (isSqlToken(token.memberType) && token.memberType.type === 'SLONIK_TOKEN_RAW_SQL') {
+  if (isSqlToken(token.memberType) && token.memberType.type === 'SLONIK_TOKEN_RAW') {
     // $FlowFixMe
     const sqlFragment = createSqlTokenSqlFragment(token.memberType, placeholderIndex);
 
@@ -38,7 +38,7 @@ export default (token: ArraySqlTokenType, greatestParameterPosition: number): Sq
   } else if (typeof token.memberType === 'string') {
     sql += escapeIdentifier(token.memberType) + '[]';
   } else {
-    throw new UnexpectedStateError('Unsupported `memberType`. `memberType` must be a string or SqlToken of "SLONIK_TOKEN_RAW_SQL" type.');
+    throw new UnexpectedStateError('Unsupported `memberType`. `memberType` must be a string or SqlToken of "SLONIK_TOKEN_RAW" type.');
   }
 
   return {

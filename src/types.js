@@ -293,7 +293,7 @@ export type JsonSqlTokenType = {|
 
 export type RawSqlTokenType = {|
   +sql: string,
-  +type: 'SLONIK_TOKEN_RAW_SQL',
+  +type: 'SLONIK_TOKEN_RAW',
   +values: PositionalParameterValuesType | NamedParameterValuesType,
 |};
 

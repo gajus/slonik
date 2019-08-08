@@ -40,11 +40,11 @@ test('creates a value list using SqlRawToken', (t) => {
   });
 });
 
-test('throws if memberType is not a string or SqlToken of different type than "SLONIK_TOKEN_RAW_SQL"', (t) => {
+test('throws if memberType is not a string or SqlToken of different type than "SLONIK_TOKEN_RAW"', (t) => {
   t.throws(() => {
     // $FlowFixMe
     sql`SELECT ${sql.array([1, 2, 3], sql.identifier(['int']))}`;
-  }, 'Unsupported `memberType`. `memberType` must be a string or SqlToken of "SLONIK_TOKEN_RAW_SQL" type.');
+  }, 'Unsupported `memberType`. `memberType` must be a string or SqlToken of "SLONIK_TOKEN_RAW" type.');
 });
 
 test('the resulting object is immutable', (t) => {
