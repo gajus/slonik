@@ -14,18 +14,18 @@ import {
   UnexpectedStateError,
 } from '../errors';
 
-export type ComparisonOperatorType = '<' | '>' | '<=' | '>=' | '=' | '<>' | '!=' | '%';
-
 export default (token: ComparisonPredicateSqlTokenType, greatestParameterPosition: number): SqlFragmentType => {
   if (
-    token.operator !== '<' &&
-    token.operator !== '>' &&
-    token.operator !== '<=' &&
-    token.operator !== '>=' &&
-    token.operator !== '=' &&
-    token.operator !== '<>' &&
     token.operator !== '!=' &&
-    token.operator !== '%'
+    token.operator !== '%' &&
+    token.operator !== '<' &&
+    token.operator !== '<=' &&
+    token.operator !== '<>' &&
+    token.operator !== '=' &&
+    token.operator !== '>' &&
+    token.operator !== '>=' &&
+    token.operator !== 'ILIKE' &&
+    token.operator !== 'LIKE'
   ) {
     throw new UnexpectedStateError('Invalid operator.');
   }
