@@ -1745,14 +1745,14 @@ Produces:
 Use `sql.rawList` with `sql.raw` and `sql.valueList` to create a list of function invocations, e.g.
 
 ```js
-await pool.any(sql`
+sql`
   SELECT ARRAY[
     ${sql.rawList([
       sql.raw('ST_GeogFromText($1)', [sql.valueList(['SRID=4267;POINT(-77.0092 38.889588)'])]),
       sql.raw('ST_GeogFromText($1)', [sql.valueList(['SRID=4267;POINT(-77.0092 38.889588)'])]),
     ])}
   ]::geography[]
-`)
+`
 
 ```
 
