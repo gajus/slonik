@@ -1,13 +1,13 @@
 // @flow
 
 import test from 'ava';
-import createRawSqlSqlFragment from '../../../src/sqlFragmentFactories/createRawSqlSqlFragment';
+import createRawSqlFragment from '../../../src/sqlFragmentFactories/createRawSqlFragment';
 import {
   RawSqlToken,
 } from '../../../src/tokens';
 
 test('creates a plain sql token', (t) => {
-  const sqlFragment = createRawSqlSqlFragment({
+  const sqlFragment = createRawSqlFragment({
     sql: 'foo',
     type: RawSqlToken,
     values: [],
@@ -18,7 +18,7 @@ test('creates a plain sql token', (t) => {
 });
 
 test('creates a tuple with a single positional parameter', (t) => {
-  const sqlFragment = createRawSqlSqlFragment({
+  const sqlFragment = createRawSqlFragment({
     sql: '($1)',
     type: RawSqlToken,
     values: [
@@ -31,7 +31,7 @@ test('creates a tuple with a single positional parameter', (t) => {
 });
 
 test('creates a tuple with a single named parameter', (t) => {
-  const sqlFragment = createRawSqlSqlFragment({
+  const sqlFragment = createRawSqlFragment({
     sql: '(:foo)',
     type: RawSqlToken,
     values: {

@@ -23,7 +23,7 @@ import {
   createIdentifierListSqlFragment,
   createIdentifierSqlFragment,
   createJsonSqlFragment,
-  createRawSqlSqlFragment,
+  createRawSqlFragment,
   createSqlSqlFragment,
   createTupleListSqlFragment,
   createTupleSqlFragment,
@@ -45,7 +45,7 @@ export default (token: SqlTokenType, greatestParameterPosition: number): SqlFrag
     return createSqlSqlFragment(token, greatestParameterPosition);
   } else if (token.type === RawSqlToken) {
     // $FlowFixMe
-    return createRawSqlSqlFragment(token, greatestParameterPosition);
+    return createRawSqlFragment(token, greatestParameterPosition);
   } else if (token.type === IdentifierToken) {
     // $FlowFixMe
     return createIdentifierSqlFragment(token);
