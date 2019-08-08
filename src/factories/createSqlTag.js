@@ -15,6 +15,7 @@ import type {
   NamedAssignmentType,
   PrimitiveValueExpressionType,
   RawSqlTokenType,
+  RawListSqlTokenType,
   SerializableValueType,
   SqlSqlTokenType,
   SqlTaggedTemplateType,
@@ -39,7 +40,8 @@ import {
   IdentifierListToken,
   IdentifierToken,
   JsonToken,
-  RawSqlToken,
+  RawToken,
+  RawListToken,
   SqlToken,
   TupleListToken,
   TupleToken,
@@ -200,8 +202,17 @@ export default (configuration?: SqlTagConfigurationType) => {
   ): RawSqlTokenType => {
     return deepFreeze({
       sql: rawSql,
-      type: RawSqlToken,
+      type: RawToken,
       values: values || [],
+    });
+  };
+
+  sql.rawList = (
+    tokens: $ReadOnlyArray<RawSqlTokenType>
+  ): RawListSqlTokenType => {
+    return deepFreeze({
+      tokens,
+      type: RawListToken,
     });
   };
 

@@ -86,6 +86,7 @@ Note: Using this project does not require TypeScript or Flow. It is a regular ES
         * [`sql.identifierList`](#slonik-query-building-sql-identifierlist)
         * [`sql.json`](#slonik-query-building-sql-json)
         * [`sql.raw`](#slonik-query-building-sql-raw)
+        * [`sql.rawList`](#slonik-query-building-sql-rawlist)
         * [`sql.tuple`](#slonik-query-building-sql-tuple)
         * [`sql.tupleList`](#slonik-query-building-sql-tuplelist)
         * [`sql.unnest`](#slonik-query-building-sql-unnest)
@@ -1705,6 +1706,68 @@ Produces:
 ```
 
 Named parameters are matched using `/[\s,(]:([a-z_]+)/g` regex.
+
+<a name="slonik-query-building-sql-rawlist"></a>
+### <code>sql.rawList</code>
+
+```js
+(
+  tokens?: $ReadOnlyArray<RawSqlTokenType>
+) => RawListSqlTokenType;
+
+```
+
+Produces a comma-separated list of `sql.raw` expressions, e.g.
+
+```js
+sql`SELECT 1 FROM ${sql.rawList([
+  sql.raw('$1, $2', ['foo', 'bar']),
+  sql.raw('$1, $2', ['baz', 'qux']),
+])}`
+
+```
+
+Produces:
+
+```js
+{
+  sql: 'SELECT 1 FROM $1, $2, $3, $4',
+  values: [
+    'foo',
+    'bar',
+    'baz',
+    'qux'
+  ]
+}
+
+```
+
+Use `sql.rawList` with `sql.raw` and `sql.valueList` to create a list of function invocations, e.g.
+
+```js
+await pool.any(sql`
+  SELECT ARRAY[
+    ${sql.rawList([
+      sql.raw('ST_GeogFromText($1)', [sql.valueList(['SRID=4267;POINT(-77.0092 38.889588)'])]),
+      sql.raw('ST_GeogFromText($1)', [sql.valueList(['SRID=4267;POINT(-77.0092 38.889588)'])]),
+    ])}
+  ]::geography[]
+`)
+
+```
+
+Produces:
+
+```js
+{
+  sql: 'SELECT ARRAY[ST_GeogFromText($1), ST_GeogFromText($2)]::geography[]',
+  values: [
+    'SRID=4267;POINT(-77.0092 38.889588)',
+    'SRID=4267;POINT(-77.0092 38.889588)'
+  ]
+}
+
+```
 
 <a name="slonik-query-building-sql-tuple"></a>
 ### <code>sql.tuple</code>

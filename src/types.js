@@ -297,6 +297,11 @@ export type RawSqlTokenType = {|
   +values: PositionalParameterValuesType | NamedParameterValuesType,
 |};
 
+export type RawListSqlTokenType = {|
+  +type: 'SLONIK_TOKEN_RAW_LIST',
+  +tokens: $ReadOnlyArray<RawSqlTokenType>,
+|};
+
 export type SqlSqlTokenType = {|
   +sql: string,
   +type: 'SLONIK_TOKEN_SQL',
@@ -335,6 +340,7 @@ export type SqlTokenType =
   IdentifierSqlTokenType |
   JsonSqlTokenType |
   RawSqlTokenType |
+  RawListSqlTokenType |
   SqlSqlTokenType |
   TupleListSqlTokenType |
   TupleSqlTokenType |
@@ -393,6 +399,9 @@ export type SqlTaggedTemplateType = {|
     rawSql: string,
     values?: $ReadOnlyArray<ValueExpressionType>
   ) => RawSqlTokenType,
+  rawList: (
+    tokens: $ReadOnlyArray<RawSqlTokenType>
+  ) => RawListSqlTokenType,
   tuple: (
     values: $ReadOnlyArray<ValueExpressionType>
   ) => TupleSqlTokenType,

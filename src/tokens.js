@@ -8,6 +8,7 @@ export const IdentifierListToken = 'SLONIK_TOKEN_IDENTIFIER_LIST';
 export const IdentifierToken = 'SLONIK_TOKEN_IDENTIFIER';
 export const JsonToken = 'SLONIK_TOKEN_JSON';
 export const RawToken = 'SLONIK_TOKEN_RAW';
+export const RawListToken = 'SLONIK_TOKEN_RAW_LIST';
 export const SqlToken = 'SLONIK_TOKEN_SQL';
 export const TupleListToken = 'SLONIK_TOKEN_TUPLE_LIST';
 export const TupleToken = 'SLONIK_TOKEN_TUPLE';

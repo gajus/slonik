@@ -8,6 +8,7 @@ export {default as createIdentifierListSqlFragment} from './createIdentifierList
 export {default as createIdentifierSqlFragment} from './createIdentifierSqlFragment';
 export {default as createJsonSqlFragment} from './createJsonSqlFragment';
 export {default as createRawSqlFragment} from './createRawSqlFragment';
+export {default as createRawListSqlFragment} from './createRawListSqlFragment';
 export {default as createSqlSqlFragment} from './createSqlSqlFragment';
 export {default as createTupleListSqlFragment} from './createTupleListSqlFragment';
 export {default as createTupleSqlFragment} from './createTupleSqlFragment';

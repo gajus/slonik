@@ -8,7 +8,8 @@ import {
   IdentifierListToken,
   IdentifierToken,
   JsonToken,
-  RawSqlToken,
+  RawListToken,
+  RawToken,
   SqlToken,
   TupleListToken,
   TupleToken,
@@ -23,6 +24,7 @@ import {
   createIdentifierListSqlFragment,
   createIdentifierSqlFragment,
   createJsonSqlFragment,
+  createRawListSqlFragment,
   createRawSqlFragment,
   createSqlSqlFragment,
   createTupleListSqlFragment,
@@ -43,9 +45,12 @@ export default (token: SqlTokenType, greatestParameterPosition: number): SqlFrag
     // @see https://github.com/gajus/slonik/issues/36 regarding FlowFixMe use.
     // $FlowFixMe
     return createSqlSqlFragment(token, greatestParameterPosition);
-  } else if (token.type === RawSqlToken) {
+  } else if (token.type === RawToken) {
     // $FlowFixMe
     return createRawSqlFragment(token, greatestParameterPosition);
+  } else if (token.type === RawListToken) {
+    // $FlowFixMe
+    return createRawListSqlFragment(token, greatestParameterPosition);
   } else if (token.type === IdentifierToken) {
     // $FlowFixMe
     return createIdentifierSqlFragment(token);
