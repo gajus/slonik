@@ -3,6 +3,7 @@
 import {
   ArrayToken,
   AssignmentListToken,
+  BinaryToken,
   BooleanExpressionToken,
   ComparisonPredicateToken,
   IdentifierListToken,
@@ -19,6 +20,7 @@ import {
 import {
   createArraySqlFragment,
   createAssignmentListSqlFragment,
+  createBinarySqlFragment,
   createBooleanExpressionSqlFragment,
   createComparisonPredicateSqlFragment,
   createIdentifierListSqlFragment,
@@ -84,6 +86,9 @@ export default (token: SqlTokenType, greatestParameterPosition: number): SqlFrag
   } else if (token.type === JsonToken) {
     // $FlowFixMe
     return createJsonSqlFragment(token, greatestParameterPosition);
+  } else if (token.type === BinaryToken) {
+    // $FlowFixMe
+    return createBinarySqlFragment(token, greatestParameterPosition);
   }
 
   throw new UnexpectedStateError();

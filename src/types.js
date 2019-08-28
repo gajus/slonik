@@ -277,6 +277,11 @@ export type AssignmentListSqlTokenType = {|
   +type: 'SLONIK_TOKEN_ASSIGNMENT_LIST',
 |};
 
+export type BinarySqlTokenType = {|
+  +data: Buffer,
+  +type: 'SLONIK_TOKEN_BINARY',
+|};
+
 export type BooleanExpressionSqlTokenType = {|
   +members: $ReadOnlyArray<ValueExpressionType>,
   +operator: LogicalBooleanOperatorType,
@@ -348,13 +353,14 @@ export type PrimitiveValueExpressionType = $ReadOnlyArray<PrimitiveValueExpressi
 export type SqlTokenType =
   ArraySqlTokenType |
   AssignmentListSqlTokenType |
+  BinarySqlTokenType |
   BooleanExpressionSqlTokenType |
   ComparisonPredicateSqlTokenType |
   IdentifierListSqlTokenType |
   IdentifierSqlTokenType |
   JsonSqlTokenType |
-  RawSqlTokenType |
   RawListSqlTokenType |
+  RawSqlTokenType |
   SqlSqlTokenType |
   TupleListSqlTokenType |
   TupleSqlTokenType |
@@ -392,6 +398,9 @@ export type SqlTaggedTemplateType = {|
   assignmentList: (
     namedAssignmentValueBindings: NamedAssignmentType
   ) => AssignmentListSqlTokenType,
+  binary: (
+    data: Buffer
+  ) => BinarySqlTokenType,
   booleanExpression: (
     members: $ReadOnlyArray<ValueExpressionType>,
     operator: LogicalBooleanOperatorType

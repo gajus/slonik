@@ -2,6 +2,7 @@
 
 export const ArrayToken = 'SLONIK_TOKEN_ARRAY';
 export const AssignmentListToken = 'SLONIK_TOKEN_ASSIGNMENT_LIST';
+export const BinaryToken = 'SLONIK_TOKEN_BINARY';
 export const BooleanExpressionToken = 'SLONIK_TOKEN_BOOLEAN_EXPRESSION';
 export const ComparisonPredicateToken = 'SLONIK_TOKEN_COMPARISON_PREDICATE';
 export const IdentifierListToken = 'SLONIK_TOKEN_IDENTIFIER_LIST';

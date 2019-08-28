@@ -208,6 +208,36 @@ With this configuration, the earlier code example produces:
 
 ```
 
+### `sql.binary`
+
+```js
+(
+  data: Buffer
+) => BinarySqlTokenType;
+
+```
+
+Binds binary ([`bytea`](https://www.postgresql.org/docs/current/datatype-binary.html)) data, e.g.
+
+```js
+await connection.query(sql`
+  SELECT ${sql.binary(Buffer.from('foo'))}
+`);
+
+```
+
+Produces:
+
+```js
+{
+  sql: 'SELECT $1',
+  values: [
+    Buffer.from('foo')
+  ]
+}
+
+```
+
 ### `sql.booleanExpression`
 
 ```js
