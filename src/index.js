@@ -9,6 +9,7 @@ export const sql = createSqlTag();
 export type {
   ArraySqlTokenType,
   AssignmentListSqlTokenType,
+  BinarySqlTokenType,
   BooleanExpressionSqlTokenType,
   ComparisonPredicateSqlTokenType,
   ConnectionTypeType,
