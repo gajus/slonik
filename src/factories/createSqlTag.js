@@ -3,6 +3,7 @@
 import type {
   ArraySqlTokenType,
   AssignmentListSqlTokenType,
+  BinarySqlTokenType,
   BooleanExpressionSqlTokenType,
   ComparisonOperatorType,
   ComparisonPredicateSqlTokenType,
@@ -14,8 +15,8 @@ import type {
   LogicalBooleanOperatorType,
   NamedAssignmentType,
   PrimitiveValueExpressionType,
-  RawSqlTokenType,
   RawListSqlTokenType,
+  RawSqlTokenType,
   SerializableValueType,
   SqlSqlTokenType,
   SqlTaggedTemplateType,
@@ -33,6 +34,7 @@ import {
 } from '../utilities';
 import Logger from '../Logger';
 import {
+  BinaryToken,
   ArrayToken,
   AssignmentListToken,
   BooleanExpressionToken,
@@ -140,6 +142,15 @@ export default (configuration?: SqlTagConfigurationType) => {
       namedAssignment,
       normalizeIdentifier,
       type: AssignmentListToken,
+    });
+  };
+
+  sql.binary = (
+    data: Buffer,
+  ): BinarySqlTokenType => {
+    return deepFreeze({
+      data,
+      type: BinaryToken,
     });
   };
 
