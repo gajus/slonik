@@ -3,6 +3,7 @@
 import {
   ArrayToken,
   AssignmentListToken,
+  BinaryToken,
   BooleanExpressionToken,
   ComparisonPredicateToken,
   IdentifierListToken,
@@ -20,6 +21,7 @@ import {
 const Tokens = [
   ArrayToken,
   AssignmentListToken,
+  BinaryToken,
   BooleanExpressionToken,
   ComparisonPredicateToken,
   IdentifierListToken,
