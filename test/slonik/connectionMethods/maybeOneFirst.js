@@ -22,7 +22,7 @@ test('returns the first row', async (t) => {
 
   const result = await pool.maybeOneFirst(sql`SELECT 1`);
 
-  t.deepEqual(result, 1);
+  t.is(result, 1);
 });
 
 test('returns null if no results', async (t) => {

@@ -27,7 +27,7 @@ export type TypeNameIdentifierType =
   'text' |
   'timestamptz';
 
-export type SerializableValueType = string | number | boolean | null | {+[key: string]: SerializableValueType} | $ReadOnlyArray<SerializableValueType>;
+export type SerializableValueType = string | number | boolean | null | {+[key: string]: SerializableValueType, ...} | $ReadOnlyArray<SerializableValueType>;
 
 export opaque type QueryIdType = string;
 
@@ -175,12 +175,14 @@ export type DatabaseConnectionType =
   $Shape<{
     ...$Exact<DatabasePoolConnectionType>,
     ...$Exact<DatabasePoolType>,
+    ...,
   }>;
 
 type QueryResultRowColumnType = string | number | null;
 
 export type QueryResultRowType = {
   +[key: string]: QueryResultRowColumnType,
+  ...,
 };
 
 export type QueryType = {|
@@ -254,6 +256,7 @@ export type PositionalParameterValuesType = $ReadOnlyArray<ValueExpressionType>;
 
 export type NamedParameterValuesType = {
   [key: string]: ValueExpressionType,
+  ...,
 };
 
 export type IdentifierListMemberType = $ReadOnlyArray<string> |
@@ -364,6 +367,7 @@ export type ValueExpressionType =
 
 export type NamedAssignmentType = {
   +[key: string]: ValueExpressionType,
+  ...,
 };
 
 export type TaggedTemplateLiteralInvocationType = {|

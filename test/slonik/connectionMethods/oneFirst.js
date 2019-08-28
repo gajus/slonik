@@ -24,7 +24,7 @@ test('returns value of the first column from the first row', async (t) => {
 
   const result = await pool.oneFirst(sql`SELECT 1`);
 
-  t.deepEqual(result, 1);
+  t.is(result, 1);
 });
 
 test('throws an error if no rows are returned', async (t) => {
