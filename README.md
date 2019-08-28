@@ -80,6 +80,7 @@ Note: Using this project does not require TypeScript or Flow. It is a regular ES
     * [Query building](#slonik-query-building)
         * [`sql.array`](#slonik-query-building-sql-array)
         * [`sql.assignmentList`](#slonik-query-building-sql-assignmentlist)
+        * [`sql.binary`](#slonik-query-building-sql-binary)
         * [`sql.booleanExpression`](#slonik-query-building-sql-booleanexpression)
         * [`sql.comparisonPredicate`](#slonik-query-building-sql-comparisonpredicate)
         * [`sql.identifier`](#slonik-query-building-sql-identifier)
@@ -1341,6 +1342,37 @@ With this configuration, the earlier code example produces:
   values: [
     'qux',
     'corge'
+  ]
+}
+
+```
+
+<a name="slonik-query-building-sql-binary"></a>
+### <code>sql.binary</code>
+
+```js
+(
+  data: Buffer
+) => BinarySqlTokenType;
+
+```
+
+Binds binary ([`bytea`](https://www.postgresql.org/docs/current/datatype-binary.html)) data, e.g.
+
+```js
+await connection.query(sql`
+  SELECT ${sql.binary(Buffer.from('foo'))}
+`);
+
+```
+
+Produces:
+
+```js
+{
+  sql: 'SELECT $1',
+  values: [
+    Buffer.from('foo')
   ]
 }
 
