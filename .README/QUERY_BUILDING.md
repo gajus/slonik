@@ -2,6 +2,8 @@
 
 Queries are built using methods of the `sql` tagged template literal.
 
+If this is your first time using Slonik, read [Dynamically generating SQL queries using Node.js](https://dev.to/gajus/dynamically-generating-sql-queries-using-node-js-2c1g).
+
 ### `sql.array`
 
 ```js
@@ -43,7 +45,7 @@ If `memberType` is a string (`TypeNameIdentifierType`), then it is treated as a 
 
 ```js
 await connection.query(sql`
-  SELECT (${sql.array([1, 2, 3], sql.raw('int[]'))})
+  SELECT (${sql.array([1, 2, 3], sql`int[]`)})
 `);
 
 ```
@@ -132,8 +134,8 @@ Assignment list can describe other SQL tokens, e.g.
 await connection.query(sql`
   UPDATE foo
   SET ${sql.assignmentList({
-    bar: sql.raw('to_timestamp($1)', ['baz']),
-    qux: sql.raw('to_timestamp($1)', ['quux'])
+    bar: sql`to_timestamp(${'baz'})`,
+    qux: sql`to_timestamp(${'quux'})`
   })}
 `);
 
@@ -160,8 +162,8 @@ By default, `sql.assignmentList` converts object keys to snake-case, e.g.
 await connection.query(sql`
   UPDATE foo
   SET ${sql.assignmentList({
-    barBaz: sql.raw('to_timestamp($1)', ['qux']),
-    quuxQuuz: sql.raw('to_timestamp($1)', ['corge'])
+    barBaz: sql`to_timestamp(${'qux'})`,
+    quuxQuuz: sql`to_timestamp(${'corge'})`
   })}
 `);
 
@@ -275,7 +277,11 @@ Boolean expressions can describe SQL tokens (including other boolean expressions
 ```js
 sql`
   SELECT ${sql.booleanExpression([
-    sql.comparisonPredicate(sql.identifier(['foo']), '=', sql.raw('to_timestamp($1)', 2)),
+    sql.comparisonPredicate(
+      sql.identifier(['foo']),
+      '=',
+      sql`to_timestamp(${2})`
+    ),
     sql.booleanExpression([
       3,
       4
@@ -338,7 +344,7 @@ Comparison predicate operands can describe SQL tokens, e.g.
 
 ```js
 sql`
-  SELECT ${sql.comparisonPredicate(sql.identifier(['foo']), '=', sql.raw('to_timestamp($1)', 2))}
+  SELECT ${sql.comparisonPredicate(sql.identifier(['foo']), '=', sql`to_timestamp(${2})`)}
 `;
 
 ```
@@ -494,6 +500,8 @@ Produces:
 
 ```
 
+Danger! Read carefully: There are no known use cases for generating queries using `sql.raw` that aren't covered by nesting bound `sql` expressions or by one of the other existing [query building methods](#slonik-query-building). `sql.raw` exists as a mechanism to execute externally stored _static_ (e.g. queries stored in files).
+
 Raw/ dynamic SQL can be inlined using `sql.raw`, e.g.
 
 ```js
@@ -532,34 +540,6 @@ Produces:
     1
   ]
 }
-
-```
-
-#### Building dynamic queries
-
-If you require to build a query based on a _dynamic_ condition, then consider using an SQL builder for that specific query, e.g. [Sqorn](https://sqorn.org/).
-
-```js
-const query = sq
-  .return({
-    authorId: 'a.id',
-    name: 'a.last_name'
-  })
-  .distinct
-  .from({
-    b: 'book'
-    })
-  .leftJoin({
-    a: 'author'
-  })
-  .on`b.author_id = a.id`
-  .where({
-    title: 'Oathbringer',
-    genre: 'fantasy'
-  })
-  .query;
-
-sql`${sql.raw(query.text, query.args)}`
 
 ```
 
@@ -688,7 +668,7 @@ Tuple can describe other SQL tokens, e.g.
 ```js
 await connection.query(sql`
   INSERT INTO (foo, bar, baz)
-  VALUES ${sql.tuple([1, sql.raw('to_timestamp($1)', [2]), 3])}
+  VALUES ${sql.tuple([1, sql`to_timestamp(${2})`, 3])}
 `);
 
 ```
@@ -752,8 +732,8 @@ Tuple list can describe other SQL tokens, e.g.
 await connection.query(sql`
   INSERT INTO (foo, bar, baz)
   VALUES ${sql.tupleList([
-    [1, sql.raw('to_timestamp($1)', [2]), 3],
-    [4, sql.raw('to_timestamp($1)', [5]), 6]
+    [1, sql`to_timestamp(${2})`, 3],
+    [4, sql`to_timestamp(${5})`, 6]
   ])}
 `);
 
@@ -862,7 +842,7 @@ Value list can describe other SQL tokens, e.g.
 
 ```js
 await connection.query(sql`
-  SELECT (${sql.valueList([1, sql.raw('to_timestamp($1)', [2]), 3])})
+  SELECT (${sql.valueList([1, sql`to_timestamp(${2})`, 3])})
 `);
 
 ```

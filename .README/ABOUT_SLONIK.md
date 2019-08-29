@@ -238,7 +238,7 @@ WHERE foo.b IN ($7, $8)
 
 That is executed with the parameters provided by the user.
 
-Finally, if there comes a day that you _must_ generate the whole or a fragment of a query using string concatenation, then Slonik provides [`sql.raw`](#sqlraw) method. However, even when using `sql.raw`, we derisk the dangers of generating SQL by allowing developer to bind values only to the scope of the fragment that is being generated, e.g.
+Finally, if there comes a day that you _must_ generate a whole or a fragment of a query using string concatenation, then Slonik provides [`sql.raw`](#sqlraw) method. However, even when using `sql.raw`, we derisk the dangers of generating SQL by allowing developer to bind values only to the scope of the fragment that is being generated, e.g.
 
 ```js
 sql`

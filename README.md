@@ -14,6 +14,14 @@ A [battle-tested](#battle-tested) PostgreSQL client with strict types, detailed 
 
 (The above GIF shows Slonik producing [query logs](https://github.com/gajus/slonik#logging). Slonik produces logs using [Roarr](https://github.com/gajus/roarr). Logs include stack trace of the actual query invocation location and values used to execute the query.)
 
+<a name="slonik-sponsors"></a>
+## Sponsors
+
+If you value my work and want to see Slonik and [many other of my](https://github.com/gajus/) Open-Source projects to be continuously improved, then please consider becoming a patron:
+
+[![Buy Me A Coffee](https://www.buymeacoffee.com/assets/img/custom_images/orange_img.png)](https://www.buymeacoffee.com/gajus)
+[![Become a Patron](https://c5.patreon.com/external/logo/become_a_patron_button.png)](https://www.patreon.com/gajus)
+
 <a name="slonik-principles"></a>
 ## Principles
 
@@ -43,6 +51,7 @@ Note: Using this project does not require TypeScript or Flow. It is a regular ES
 ## Contents
 
 * [Slonik](#slonik)
+    * [Sponsors](#slonik-sponsors)
     * [Principles](#slonik-principles)
     * [Features](#slonik-features)
     * [Contents](#slonik-contents)
@@ -55,7 +64,6 @@ Note: Using this project does not require TypeScript or Flow. It is a regular ES
         * [Protecting against unsafe value interpolation](#slonik-about-slonik-protecting-against-unsafe-value-interpolation)
     * [Documentation](#slonik-documentation)
     * [Usage](#slonik-usage)
-        * [Install](#slonik-usage-install)
         * [Create connection](#slonik-usage-create-connection)
         * [API](#slonik-usage-api)
         * [Default configuration](#slonik-usage-default-configuration)
@@ -70,7 +78,6 @@ Note: Using this project does not require TypeScript or Flow. It is a regular ES
     * [Community interceptors](#slonik-community-interceptors)
     * [Recipes](#slonik-recipes)
         * [Inserting large number of rows](#slonik-recipes-inserting-large-number-of-rows)
-        * [Using `sql.raw` to generate dynamic queries](#slonik-recipes-using-sql-raw-to-generate-dynamic-queries)
         * [Routing queries to different connections](#slonik-recipes-routing-queries-to-different-connections)
     * [`sql` tag](#slonik-sql-tag)
     * [Value placeholders](#slonik-value-placeholders)
@@ -373,7 +380,7 @@ WHERE foo.b IN ($7, $8)
 
 That is executed with the parameters provided by the user.
 
-Finally, if there comes a day that you _must_ generate the whole or a fragment of a query using string concatenation, then Slonik provides [`sql.raw`](#sqlraw) method. However, even when using `sql.raw`, we derisk the dangers of generating SQL by allowing developer to bind values only to the scope of the fragment that is being generated, e.g.
+Finally, if there comes a day that you _must_ generate a whole or a fragment of a query using string concatenation, then Slonik provides [`sql.raw`](#sqlraw) method. However, even when using `sql.raw`, we derisk the dangers of generating SQL by allowing developer to bind values only to the scope of the fragment that is being generated, e.g.
 
 ```js
 sql`
@@ -392,17 +399,6 @@ To sum up, Slonik is designed to prevent accidental creation of queries vulnerab
 
 <a name="slonik-usage"></a>
 ## Usage
-
-<a name="slonik-usage-install"></a>
-### Install
-
-```bash
-npm install slonik
-
-```
-
-[![Buy Me A Coffee](https://www.buymeacoffee.com/assets/img/custom_images/orange_img.png)](https://www.buymeacoffee.com/gajus)
-[![Become a Patron](https://c5.patreon.com/external/logo/become_a_patron_button.png)](https://www.patreon.com/gajus)
 
 <a name="slonik-usage-create-connection"></a>
 ### Create connection
@@ -909,66 +905,6 @@ Produces:
 
 Inserting data this way ensures that the query is stable and reduces the amount of time it takes to parse the query.
 
-<a name="slonik-recipes-using-sql-raw-to-generate-dynamic-queries"></a>
-### Using <code>sql.raw</code> to generate dynamic queries
-
-Warning: Do not use `sql.raw` to concatenate query strings. This defeats the purpose of Slonik. `sql.raw` is available only for hand-crafting complex query fragments (e.g. type expressions). For conditional queries, use `sql.booleanExpression`. For comparison expressions, use `sql.comparisonPredicate`. If you are still unsure how to create a query, then raise an issue to discuss your requirement.
-
-[`sql.raw`](#sqlraw) can be used to generate fragments of an arbitrary SQL that are interpolated into the main query, e.g.
-
-```js
-const uniquePairs = [
-  ['a', 1],
-  ['b', 2]
-];
-
-let placeholderIndex = 1;
-
-const whereConditionSql = uniquePairs
-  .map(() => {
-    return needleColumns
-      .map((column) => {
-        return column + ' = $' + placeholderIndex++;
-      })
-      .join(' AND ');
-  })
-  .join(' OR ');
-
-const values = [];
-
-for (const pairValues of uniquePairs) {
-  values.push(...pairValues);
-}
-
-const query = sql`
-  SELECT
-    id
-  FROM foo
-  WHERE
-    ${sql.raw(whereConditionSql, values)}
-`;
-
-await connection.any(query);
-
-```
-
-In the above example, `query` is:
-
-```js
-{
-  sql: 'SELECT id FROM foo WHERE (a = $1 AND b = $2) OR (a = $3 AND b = $4)',
-  values: [
-    'a',
-    1,
-    'b',
-    2
-  ]
-}
-
-```
-
-Multiple `sql.raw` fragments can be used to create a query.
-
 <a name="slonik-recipes-routing-queries-to-different-connections"></a>
 ### Routing queries to different connections
 
@@ -1136,6 +1072,8 @@ Produces:
 
 Queries are built using methods of the `sql` tagged template literal.
 
+If this is your first time using Slonik, read [Dynamically generating SQL queries using Node.js](https://dev.to/gajus/dynamically-generating-sql-queries-using-node-js-2c1g).
+
 <a name="slonik-query-building-sql-array"></a>
 ### <code>sql.array</code>
 
@@ -1179,7 +1117,7 @@ If `memberType` is a string (`TypeNameIdentifierType`), then it is treated as a 
 
 ```js
 await connection.query(sql`
-  SELECT (${sql.array([1, 2, 3], sql.raw('int[]'))})
+  SELECT (${sql.array([1, 2, 3], sql`int[]`)})
 `);
 
 ```
@@ -1270,8 +1208,8 @@ Assignment list can describe other SQL tokens, e.g.
 await connection.query(sql`
   UPDATE foo
   SET ${sql.assignmentList({
-    bar: sql.raw('to_timestamp($1)', ['baz']),
-    qux: sql.raw('to_timestamp($1)', ['quux'])
+    bar: sql`to_timestamp(${'baz'})`,
+    qux: sql`to_timestamp(${'quux'})`
   })}
 `);
 
@@ -1299,8 +1237,8 @@ By default, `sql.assignmentList` converts object keys to snake-case, e.g.
 await connection.query(sql`
   UPDATE foo
   SET ${sql.assignmentList({
-    barBaz: sql.raw('to_timestamp($1)', ['qux']),
-    quuxQuuz: sql.raw('to_timestamp($1)', ['corge'])
+    barBaz: sql`to_timestamp(${'qux'})`,
+    quuxQuuz: sql`to_timestamp(${'corge'})`
   })}
 `);
 
@@ -1416,7 +1354,11 @@ Boolean expressions can describe SQL tokens (including other boolean expressions
 ```js
 sql`
   SELECT ${sql.booleanExpression([
-    sql.comparisonPredicate(sql.identifier(['foo']), '=', sql.raw('to_timestamp($1)', 2)),
+    sql.comparisonPredicate(
+      sql.identifier(['foo']),
+      '=',
+      sql`to_timestamp(${2})`
+    ),
     sql.booleanExpression([
       3,
       4
@@ -1480,7 +1422,7 @@ Comparison predicate operands can describe SQL tokens, e.g.
 
 ```js
 sql`
-  SELECT ${sql.comparisonPredicate(sql.identifier(['foo']), '=', sql.raw('to_timestamp($1)', 2))}
+  SELECT ${sql.comparisonPredicate(sql.identifier(['foo']), '=', sql`to_timestamp(${2})`)}
 `;
 
 ```
@@ -1642,6 +1584,8 @@ Produces:
 
 ```
 
+Danger! Read carefully: There are no known use cases for generating queries using `sql.raw` that aren't covered by nesting bound `sql` expressions or by one of the other existing [query building methods](#slonik-query-building). `sql.raw` exists as a mechanism to execute externally stored _static_ (e.g. queries stored in files).
+
 Raw/ dynamic SQL can be inlined using `sql.raw`, e.g.
 
 ```js
@@ -1680,35 +1624,6 @@ Produces:
     1
   ]
 }
-
-```
-
-<a name="slonik-query-building-sql-raw-building-dynamic-queries"></a>
-#### Building dynamic queries
-
-If you require to build a query based on a _dynamic_ condition, then consider using an SQL builder for that specific query, e.g. [Sqorn](https://sqorn.org/).
-
-```js
-const query = sq
-  .return({
-    authorId: 'a.id',
-    name: 'a.last_name'
-  })
-  .distinct
-  .from({
-    b: 'book'
-    })
-  .leftJoin({
-    a: 'author'
-  })
-  .on`b.author_id = a.id`
-  .where({
-    title: 'Oathbringer',
-    genre: 'fantasy'
-  })
-  .query;
-
-sql`${sql.raw(query.text, query.args)}`
 
 ```
 
@@ -1840,7 +1755,7 @@ Tuple can describe other SQL tokens, e.g.
 ```js
 await connection.query(sql`
   INSERT INTO (foo, bar, baz)
-  VALUES ${sql.tuple([1, sql.raw('to_timestamp($1)', [2]), 3])}
+  VALUES ${sql.tuple([1, sql`to_timestamp(${2})`, 3])}
 `);
 
 ```
@@ -1905,8 +1820,8 @@ Tuple list can describe other SQL tokens, e.g.
 await connection.query(sql`
   INSERT INTO (foo, bar, baz)
   VALUES ${sql.tupleList([
-    [1, sql.raw('to_timestamp($1)', [2]), 3],
-    [4, sql.raw('to_timestamp($1)', [5]), 6]
+    [1, sql`to_timestamp(${2})`, 3],
+    [4, sql`to_timestamp(${5})`, 6]
   ])}
 `);
 
@@ -2017,7 +1932,7 @@ Value list can describe other SQL tokens, e.g.
 
 ```js
 await connection.query(sql`
-  SELECT (${sql.valueList([1, sql.raw('to_timestamp($1)', [2]), 3])})
+  SELECT (${sql.valueList([1, sql`to_timestamp(${2})`, 3])})
 `);
 
 ```
