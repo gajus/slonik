@@ -16,8 +16,8 @@ const query: InternalQueryFunctionType<*> = async (connectionLogger, connection,
     rawSql,
     values,
     inheritedQueryId,
-    (finalConnection, finsalSql, finalValues) => {
-      return finalConnection.query(finsalSql, finalValues);
+    (finalConnection, finalSql, finalValues) => {
+      return finalConnection.query(finalSql, finalValues);
     }
   );
 };
