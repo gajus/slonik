@@ -30,7 +30,7 @@ test('inlines raw SQL with values', (t) => {
   });
 });
 
-test('offsets bindings to match existing bindings', (t) => {
+test('offsets positional parameter indexes', (t) => {
   const query = sql`SELECT ${'foo'}, ${sql.raw('$1', ['bar'])}`;
 
   t.deepEqual(query, {

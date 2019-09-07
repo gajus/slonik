@@ -8,7 +8,7 @@ import {
 
 const sql = createSqlTag();
 
-test('creates a tuple', (t) => {
+test('binds a tuple', (t) => {
   const query = sql`INSERT INTO (foo, bar, baz) VALUES ${sql.tuple([1, 2, 3])}`;
 
   t.deepEqual(query, {
@@ -22,7 +22,23 @@ test('creates a tuple', (t) => {
   });
 });
 
-test('expands SQL tokens', (t) => {
+test('offsets positional parameter indexes', (t) => {
+  const query = sql`INSERT INTO (foo, bar, baz) VALUES ${1}, ${sql.tuple([1, 2, 3])}, ${3}`;
+
+  t.deepEqual(query, {
+    sql: 'INSERT INTO (foo, bar, baz) VALUES $1, ($2, $3, $4), $5',
+    type: SqlToken,
+    values: [
+      1,
+      1,
+      2,
+      3,
+      3,
+    ],
+  });
+});
+
+test('interpolates SQL tokens', (t) => {
   const query = sql`SELECT ${sql.tuple([1, sql.raw('foo'), 3])}`;
 
   t.deepEqual(query, {
@@ -35,7 +51,7 @@ test('expands SQL tokens', (t) => {
   });
 });
 
-test('expands SQL tokens (with bound values)', (t) => {
+test('interpolates SQL tokens with bound values', (t) => {
   const query = sql`SELECT ${sql.tuple([1, sql.raw('to_timestamp($1), $2', [2, 3]), 4])}`;
 
   t.deepEqual(query, {
