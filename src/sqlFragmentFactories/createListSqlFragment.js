@@ -2,7 +2,7 @@
 
 import type {
   SqlFragmentType,
-  ValueListSqlTokenType,
+  ListSqlTokenType,
 } from '../types';
 import {
   UnexpectedStateError,
@@ -15,20 +15,20 @@ import {
   createSqlTokenSqlFragment,
 } from '../factories';
 
-export default (token: ValueListSqlTokenType, greatestParameterPosition: number): SqlFragmentType => {
+export default (token: ListSqlTokenType, greatestParameterPosition: number): SqlFragmentType => {
   const values = [];
   const placeholders = [];
 
   let placeholderIndex = greatestParameterPosition;
 
-  if (token.values.length === 0) {
+  if (token.members.length === 0) {
     throw new UnexpectedStateError('Value list must have at least 1 member.');
   }
 
-  for (const listValue of token.values) {
-    if (isSqlToken(listValue)) {
+  for (const member of token.members) {
+    if (isSqlToken(member)) {
       // $FlowFixMe
-      const sqlFragment = createSqlTokenSqlFragment(listValue, placeholderIndex);
+      const sqlFragment = createSqlTokenSqlFragment(member, placeholderIndex);
 
       placeholders.push(sqlFragment.sql);
       placeholderIndex += sqlFragment.values.length;
@@ -36,7 +36,7 @@ export default (token: ValueListSqlTokenType, greatestParameterPosition: number)
     } else {
       placeholders.push('$' + ++placeholderIndex);
 
-      values.push(listValue);
+      values.push(member);
     }
   }
 

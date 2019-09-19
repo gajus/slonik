@@ -14,7 +14,7 @@ import {
 
 ```
 
-Sometiems it may be desirable to construct a custom instance of `sql` tag (e.g. see a note in [`sql.assignmentList`](#slonik-query-building-sql-assignmentlist)). In those cases, you can use the `createSqlTag` factory, e.g.
+Sometiems it may be desirable to construct a custom instance of `sql` tag. In those cases, you can use the `createSqlTag` factory, e.g.
 
 ```js
 import {
@@ -22,18 +22,7 @@ import {
 } from 'slonik';
 
 /**
- * Normalizes identifier name. Used when identifier's name is passed as a plain-text property name (see `sql.assignmentList`).
- * The default IdentifierNormalizer (defined in `./src/utilities/normalizeIdentifier.js` and exported as `normalizeIdentifier` from Slonik package)
- * converts string to snake_case.
- *
- * @typedef {Function} IdentifierNormalizer
- * @param {string} propertyName
- * @returns {string}
- */
-
-/**
  * @typedef SqlTagConfiguration
- * @property {IdentifierNormalizer} [normalizeIdentifier]
  */
 
 /**

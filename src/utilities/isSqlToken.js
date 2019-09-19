@@ -2,38 +2,24 @@
 
 import {
   ArrayToken,
-  AssignmentListToken,
   BinaryToken,
-  BooleanExpressionToken,
   ComparisonPredicateToken,
-  IdentifierListToken,
   IdentifierToken,
   JsonToken,
-  RawToken,
-  RawListToken,
+  ListToken,
   SqlToken,
-  TupleListToken,
-  TupleToken,
   UnnestToken,
-  ValueListToken,
 } from '../tokens';
 
 const Tokens = [
   ArrayToken,
-  AssignmentListToken,
   BinaryToken,
-  BooleanExpressionToken,
   ComparisonPredicateToken,
-  IdentifierListToken,
   IdentifierToken,
   JsonToken,
-  RawToken,
-  RawListToken,
+  ListToken,
   SqlToken,
-  TupleListToken,
-  TupleToken,
   UnnestToken,
-  ValueListToken,
 ];
 
 export default (subject: *) => {

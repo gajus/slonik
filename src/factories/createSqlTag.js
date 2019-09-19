@@ -2,70 +2,43 @@
 
 import type {
   ArraySqlTokenType,
-  AssignmentListSqlTokenType,
   BinarySqlTokenType,
-  BooleanExpressionSqlTokenType,
-  ComparisonOperatorType,
-  ComparisonPredicateSqlTokenType,
-  IdentifierListMemberType,
-  IdentifierListSqlTokenType,
-  IdentifierNormalizerType,
   IdentifierSqlTokenType,
   JsonSqlTokenType,
-  LogicalBooleanOperatorType,
-  NamedAssignmentType,
+  ListSqlTokenType,
   PrimitiveValueExpressionType,
-  RawListSqlTokenType,
-  RawSqlTokenType,
   SerializableValueType,
   SqlSqlTokenType,
   SqlTaggedTemplateType,
-  TupleListSqlTokenType,
-  TupleSqlTokenType,
+  SqlTokenType,
   UnnestSqlTokenType,
   ValueExpressionType,
-  ValueListSqlTokenType,
 } from '../types';
 import {
   deepFreeze,
   isPrimitiveValueExpression,
   isSqlToken,
-  normalizeIdentifier as defaultNormalizeIdentifier,
 } from '../utilities';
 import Logger from '../Logger';
 import {
-  BinaryToken,
   ArrayToken,
-  AssignmentListToken,
-  BooleanExpressionToken,
-  ComparisonPredicateToken,
-  IdentifierListToken,
+  BinaryToken,
   IdentifierToken,
   JsonToken,
-  RawToken,
-  RawListToken,
+  ListToken,
   SqlToken,
-  TupleListToken,
-  TupleToken,
   UnnestToken,
-  ValueListToken,
 } from '../tokens';
 import {
   InvalidInputError,
 } from '../errors';
 import createSqlTokenSqlFragment from './createSqlTokenSqlFragment';
 
-type SqlTagConfigurationType = {|
-  +normalizeIdentifier?: IdentifierNormalizerType,
-|};
-
 const log = Logger.child({
   namespace: 'sql',
 });
 
-export default (configuration?: SqlTagConfigurationType) => {
-  const normalizeIdentifier = configuration && configuration.normalizeIdentifier || defaultNormalizeIdentifier;
-
+export default () => {
   /* eslint-disable complexity */
   // $FlowFixMe
   const sql: SqlTaggedTemplateType = (
@@ -126,22 +99,12 @@ export default (configuration?: SqlTagConfigurationType) => {
 
   sql.array = (
     values: $ReadOnlyArray<PrimitiveValueExpressionType>,
-    memberType: string | RawSqlTokenType
+    memberType: string | SqlTokenType
   ): ArraySqlTokenType => {
     return deepFreeze({
       memberType,
       type: ArrayToken,
       values,
-    });
-  };
-
-  sql.assignmentList = (
-    namedAssignment: NamedAssignmentType
-  ): AssignmentListSqlTokenType => {
-    return deepFreeze({
-      namedAssignment,
-      normalizeIdentifier,
-      type: AssignmentListToken,
     });
   };
 
@@ -151,30 +114,6 @@ export default (configuration?: SqlTagConfigurationType) => {
     return deepFreeze({
       data,
       type: BinaryToken,
-    });
-  };
-
-  sql.booleanExpression = (
-    members: $ReadOnlyArray<ValueExpressionType>,
-    operator: LogicalBooleanOperatorType
-  ): BooleanExpressionSqlTokenType => {
-    return deepFreeze({
-      members,
-      operator,
-      type: BooleanExpressionToken,
-    });
-  };
-
-  sql.comparisonPredicate = (
-    leftOperand: ValueExpressionType,
-    operator: ComparisonOperatorType,
-    rightOperand: ValueExpressionType
-  ): ComparisonPredicateSqlTokenType => {
-    return deepFreeze({
-      leftOperand,
-      operator,
-      rightOperand,
-      type: ComparisonPredicateToken,
     });
   };
 
@@ -189,15 +128,6 @@ export default (configuration?: SqlTagConfigurationType) => {
     });
   };
 
-  sql.identifierList = (
-    identifiers: $ReadOnlyArray<IdentifierListMemberType>
-  ): IdentifierListSqlTokenType => {
-    return deepFreeze({
-      identifiers,
-      type: IdentifierListToken,
-    });
-  };
-
   sql.json = (
     value: SerializableValueType
   ): JsonSqlTokenType => {
@@ -207,41 +137,25 @@ export default (configuration?: SqlTagConfigurationType) => {
     });
   };
 
+  sql.join = (
+    members: $ReadOnlyArray<ListSqlTokenType>,
+    glue: $ReadOnlyArray<SqlTokenType>,
+  ): ListSqlTokenType => {
+    return deepFreeze({
+      glue,
+      members,
+      type: ListToken,
+    });
+  };
+
   sql.raw = (
     rawSql: string,
     values?: $ReadOnlyArray<ValueExpressionType>
-  ): RawSqlTokenType => {
+  ): SqlSqlTokenType => {
     return deepFreeze({
       sql: rawSql,
-      type: RawToken,
+      type: SqlToken,
       values: values || [],
-    });
-  };
-
-  sql.rawList = (
-    tokens: $ReadOnlyArray<RawSqlTokenType>
-  ): RawListSqlTokenType => {
-    return deepFreeze({
-      tokens,
-      type: RawListToken,
-    });
-  };
-
-  sql.tuple = (
-    values: $ReadOnlyArray<ValueExpressionType>
-  ): TupleSqlTokenType => {
-    return deepFreeze({
-      type: TupleToken,
-      values,
-    });
-  };
-
-  sql.tupleList = (
-    tuples: $ReadOnlyArray<$ReadOnlyArray<ValueExpressionType>>
-  ): TupleListSqlTokenType => {
-    return deepFreeze({
-      tuples,
-      type: TupleListToken,
     });
   };
 
@@ -253,15 +167,6 @@ export default (configuration?: SqlTagConfigurationType) => {
       columnTypes,
       tuples,
       type: UnnestToken,
-    });
-  };
-
-  sql.valueList = (
-    values: $ReadOnlyArray<ValueExpressionType>
-  ): ValueListSqlTokenType => {
-    return deepFreeze({
-      type: ValueListToken,
-      values,
     });
   };
 

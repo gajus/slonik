@@ -9,7 +9,7 @@ If this is your first time using Slonik, read [Dynamically generating SQL querie
 ```js
 (
   values: $ReadOnlyArray<PrimitiveValueExpressionType>,
-  memberType: TypeNameIdentifierType | RawSqlTokenType
+  memberType: TypeNameIdentifierType | SqlTokenType
 ) => ArraySqlTokenType;
 
 ```
@@ -66,20 +66,18 @@ Produces:
 
 ```
 
-#### `sql.array` vs `sql.valueList`
+#### `sql.array` vs `sql.join`
 
-Unlike `sql.valueList`, `sql.array` generates a stable query of a predictable length, i.e. regardless of the number of the values in the array, the generated query remains the same:
+Unlike `sql.join`, `sql.array` generates a stable query of a predictable length, i.e. regardless of the number of values in the array, the generated query remains the same:
 
 * Having a stable query enables [`pg_stat_statements`](https://www.postgresql.org/docs/current/pgstatstatements.html) to aggregate all query execution statistics.
 * Keeping the query length short reduces query parsing time.
 
-Furthermore, unlike `sql.valueList`, `sql.array` can be used with an empty array of values.
-
 Example:
 
 ```js
-sql`SELECT id FROM foo WHERE id IN (${sql.valueList([1, 2, 3])})`;
-sql`SELECT id FROM foo WHERE id NOT IN (${sql.valueList([1, 2, 3])})`;
+sql`SELECT id FROM foo WHERE id IN (${sql.join([1, 2, 3], sql`, `)})`;
+sql`SELECT id FROM foo WHERE id NOT IN (${sql.join([1, 2, 3], sql`, `)})`;
 
 ```
 
@@ -91,124 +89,7 @@ sql`SELECT id FROM foo WHERE id != ALL(${sql.array([1, 2, 3], 'int4')})`;
 
 ```
 
-In short, when the value list length is dynamic then `sql.array` should be preferred over `sql.valueList`.
-
-### `sql.assignmentList`
-
-```js
-(
-  namedAssignmentValueBindings: NamedAssignmentType
-) => AssignmentListSqlTokenType
-
-```
-
-Creates an assignment list, e.g.
-
-```js
-await connection.query(sql`
-  UPDATE foo
-  SET ${sql.assignmentList({
-    bar: 'baz',
-    qux: 'quux'
-  })}
-`);
-
-```
-
-Produces:
-
-```js
-{
-  sql: 'UPDATE foo SET bar = $1, qux = $2',
-  values: [
-    'baz',
-    'quux'
-  ]
-}
-
-```
-
-Assignment list can describe other SQL tokens, e.g.
-
-```js
-await connection.query(sql`
-  UPDATE foo
-  SET ${sql.assignmentList({
-    bar: sql`to_timestamp(${'baz'})`,
-    qux: sql`to_timestamp(${'quux'})`
-  })}
-`);
-
-```
-
-Produces:
-
-```js
-{
-  sql: 'UPDATE foo SET bar = to_timestamp($1), qux = to_timestamp($2)',
-  values: [
-    'baz',
-    'quux'
-  ]
-}
-
-```
-
-#### Snake-case normalization
-
-By default, `sql.assignmentList` converts object keys to snake-case, e.g.
-
-```js
-await connection.query(sql`
-  UPDATE foo
-  SET ${sql.assignmentList({
-    barBaz: sql`to_timestamp(${'qux'})`,
-    quuxQuuz: sql`to_timestamp(${'corge'})`
-  })}
-`);
-
-```
-
-Produces:
-
-```js
-{
-  sql: 'UPDATE foo SET bar_baz = to_timestamp($1), quux_quuz = to_timestamp($2)',
-  values: [
-    'qux',
-    'corge'
-  ]
-}
-
-```
-
-This behaviour can be overriden by [constructing a custom `sql` tag](#sql-tag) and configuring `normalizeIdentifier`, e.g.
-
-```js
-import {
-  createSqlTag
-} from 'slonik';
-
-const sql = createSqlTag({
-  normalizeIdentifier: (identifierName) => {
-    return identifierName;
-  }
-});
-
-```
-
-With this configuration, the earlier code example produces:
-
-```js
-{
-  sql: 'UPDATE foo SET "barBaz" = to_timestamp($1), "quuxQuuz" = to_timestamp($2)',
-  values: [
-    'qux',
-    'corge'
-  ]
-}
-
-```
+Furthermore, unlike `sql.join`, `sql.array` can be used with an empty array of values. In short, `sql.array` should be preferred over `sql.join` when possible.
 
 ### `sql.binary`
 
@@ -240,127 +121,6 @@ Produces:
 
 ```
 
-### `sql.booleanExpression`
-
-```js
-(
-  members: $ReadOnlyArray<ValueExpressionType>,
-  operator: LogicalBooleanOperatorType
-) => BooleanExpressionSqlTokenType;
-
-```
-
-Boolean expression.
-
-```js
-sql`
-  SELECT ${sql.booleanExpression([3, 4], 'AND')}
-`;
-
-```
-
-Produces:
-
-```js
-{
-  sql: 'SELECT $1 AND $2',
-  values: [
-    3,
-    4
-  ]
-}
-
-```
-
-Boolean expressions can describe SQL tokens (including other boolean expressions), e.g.
-
-```js
-sql`
-  SELECT ${sql.booleanExpression([
-    sql.comparisonPredicate(
-      sql.identifier(['foo']),
-      '=',
-      sql`to_timestamp(${2})`
-    ),
-    sql.booleanExpression([
-      3,
-      4
-    ], 'OR')
-  ], 'AND')}
-`;
-
-```
-
-Produces:
-
-```js
-{
-  sql: 'SELECT ("foo" = to_timestamp($1) AND ($1 OR $2))',
-  values: [
-    2,
-    3,
-    4
-  ]
-}
-
-```
-
-Note: Do not use `sql.booleanExpression` when expression consists of a single predicate. Use `sql.comparisonPredicate`.
-
-### `sql.comparisonPredicate`
-
-```js
-(
-  leftOperand: ValueExpressionType,
-  operator: ComparisonOperatorType,
-  rightOperand: ValueExpressionType
-) => ComparisonPredicateSqlTokenType;
-
-```
-
-A comparison predicate compares two expressions using a comparison operator.
-
-```js
-sql`
-  SELECT ${sql.comparisonPredicate(3, '=', 4)}
-`;
-
-```
-
-Produces:
-
-```js
-{
-  sql: 'SELECT $1 = $2',
-  values: [
-    3,
-    4
-  ]
-}
-
-```
-
-Comparison predicate operands can describe SQL tokens, e.g.
-
-```js
-sql`
-  SELECT ${sql.comparisonPredicate(sql.identifier(['foo']), '=', sql`to_timestamp(${2})`)}
-`;
-
-```
-
-Produces:
-
-```js
-{
-  sql: 'SELECT "foo" = to_timestamp($1)',
-  values: [
-    2
-  ]
-}
-
-```
-
 ### `sql.identifier`
 
 ```js
@@ -385,69 +145,6 @@ Produces:
 ```js
 {
   sql: 'SELECT 1 FROM "bar"."bar"',
-  values: []
-}
-
-```
-
-### `sql.identifierList`
-
-```js
-(
-  identifiers: $ReadOnlyArray<$ReadOnlyArray<string>>
-) => IdentifierListSqlTokenType;
-
-```
-
-Creates a list of identifiers, e.g.
-
-```js
-sql`
-  SELECT 1
-  FROM ${sql.identifierList([
-    ['bar', 'baz'],
-    ['qux', 'quux']
-  ])}
-`;
-
-```
-
-Produces:
-
-```js
-{
-  sql: 'SELECT 1 FROM "bar"."baz", "qux"."quux"',
-  values: []
-}
-
-```
-
-#### Identifier aliases
-
-A member of the identifier list can be aliased:
-
-```js
-sql`
-  SELECT 1
-  FROM ${sql.identifierList([
-    {
-      alias: 'qux',
-      identifier: ['bar', 'baz']
-    },
-    {
-      alias: 'corge',
-      identifier: ['quux', 'quuz']
-    }
-  ])}
-`;
-
-```
-
-Produces:
-
-```js
-{
-  sql: 'SELECT 1 FROM "bar"."baz" "qux", "quux"."quuz" "corge"',
   values: []
 }
 
@@ -489,6 +186,89 @@ Produces:
 |---|---|---|
 |`undefined`|Throws `InvalidInputError` error.|`undefined`|
 |`null`|`null`|`"null"` (string literal)|
+
+### `sql.join`
+
+```js
+(
+  members: $ReadOnlyArray<SqlTokenType>,
+  glue: SqlTokenType
+) => ListSqlTokenType;
+
+```
+
+Concatenates SQL expressions using `glue` separator, e.g.
+
+```js
+await connection.query(sql`
+  SELECT ${sql.join([1, 2, 3], sql`, `)}
+`);
+
+```
+
+Produces:
+
+```js
+{
+  sql: 'SELECT $1, $2, $3',
+  values: [
+    1,
+    2,
+    3
+  ]
+}
+
+```
+
+`sql.join` is the primary building block for most of the SQL, e.g.
+
+Boolean expressions:
+
+```js
+sql`
+  SELECT ${sql.join([1, 2], sql` AND `)}
+`
+
+// SELECT $1 AND $2
+
+```
+
+Tuple:
+
+```js
+sql`
+  SELECT (${sql.join([1, 2], sql`, `)})
+`
+
+// SELECT ($1, $2)
+
+```
+
+Tuple list:
+
+```js
+sql`
+  SELECT ${sql.join(
+    [
+      sql`(${sql.join([1, 2], sql`, `)})`,
+      sql`(${sql.join([3, 4], sql`, `)})`,
+    ],
+    sql`, `
+  )}
+`
+
+// SELECT ($1, $2), ($3, $4)
+
+```
+
+#### Difference from `JSON.stringify`
+
+|Input|`sql.json`|`JSON.stringify`|
+|---|---|---|
+|`undefined`|Throws `InvalidInputError` error.|`undefined`|
+|`null`|`null`|`"null"` (string literal)|
+
+
 
 ### `sql.raw`
 
@@ -569,193 +349,6 @@ Produces:
 
 Named parameters are matched using `/[\s,(]:([a-z_]+)/g` regex.
 
-### `sql.rawList`
-
-```js
-(
-  tokens?: $ReadOnlyArray<RawSqlTokenType>
-) => RawListSqlTokenType;
-
-```
-
-Produces a comma-separated list of `sql.raw` expressions, e.g.
-
-```js
-sql`SELECT 1 FROM ${sql.rawList([
-  sql.raw('$1, $2', ['foo', 'bar']),
-  sql.raw('$1, $2', ['baz', 'qux']),
-])}`
-
-```
-
-Produces:
-
-```js
-{
-  sql: 'SELECT 1 FROM $1, $2, $3, $4',
-  values: [
-    'foo',
-    'bar',
-    'baz',
-    'qux'
-  ]
-}
-
-```
-
-Use `sql.rawList` with `sql.raw` and `sql.valueList` to create a list of function invocations, e.g.
-
-```js
-sql`
-  SELECT ARRAY[
-    ${sql.rawList([
-      sql.raw('ST_GeogFromText($1)', [sql.valueList(['SRID=4267;POINT(-77.0092 38.889588)'])]),
-      sql.raw('ST_GeogFromText($1)', [sql.valueList(['SRID=4267;POINT(-77.0092 38.889588)'])]),
-    ])}
-  ]::geography[]
-`
-
-```
-
-Produces:
-
-```js
-{
-  sql: 'SELECT ARRAY[ST_GeogFromText($1), ST_GeogFromText($2)]::geography[]',
-  values: [
-    'SRID=4267;POINT(-77.0092 38.889588)',
-    'SRID=4267;POINT(-77.0092 38.889588)'
-  ]
-}
-
-```
-
-### `sql.tuple`
-
-```js
-(
-  values: $ReadOnlyArray<PrimitiveValueExpressionType>
-) => TupleSqlTokenType;
-
-```
-
-Creates a tuple (typed row construct), e.g.
-
-```js
-await connection.query(sql`
-  INSERT INTO (foo, bar, baz)
-  VALUES ${sql.tuple([1, 2, 3])}
-`);
-
-```
-
-Produces:
-
-```js
-{
-  sql: 'INSERT INTO (foo, bar, baz) VALUES ($1, $2, $3)',
-  values: [
-    1,
-    2,
-    3
-  ]
-}
-
-```
-
-Tuple can describe other SQL tokens, e.g.
-
-```js
-await connection.query(sql`
-  INSERT INTO (foo, bar, baz)
-  VALUES ${sql.tuple([1, sql`to_timestamp(${2})`, 3])}
-`);
-
-```
-
-Produces:
-
-```js
-{
-  sql: 'INSERT INTO (foo, bar, baz) VALUES ($1, to_timestamp($2), $3)',
-  values: [
-    1,
-    2,
-    3
-  ]
-}
-
-```
-
-### `sql.tupleList`
-
-```js
-(
-  tuples: $ReadOnlyArray<$ReadOnlyArray<PrimitiveValueExpressionType>>
-) => TupleListSqlTokenType;
-
-```
-
-Creates a list of tuples (typed row constructs), e.g.
-
-```js
-await connection.query(sql`
-  INSERT INTO (foo, bar, baz)
-  VALUES ${sql.tupleList([
-    [1, 2, 3],
-    [4, 5, 6]
-  ])}
-`);
-
-```
-
-Produces:
-
-```js
-{
-  sql: 'INSERT INTO (foo, bar, baz) VALUES ($1, $2, $3), ($4, $5, $6)',
-  values: [
-    1,
-    2,
-    3,
-    4,
-    5,
-    6
-  ]
-}
-
-```
-
-Tuple list can describe other SQL tokens, e.g.
-
-```js
-await connection.query(sql`
-  INSERT INTO (foo, bar, baz)
-  VALUES ${sql.tupleList([
-    [1, sql`to_timestamp(${2})`, 3],
-    [4, sql`to_timestamp(${5})`, 6]
-  ])}
-`);
-
-```
-
-Produces:
-
-```js
-{
-  sql: 'INSERT INTO (foo, bar, baz) VALUES ($1, to_timestamp($2), $3), ($4, to_timestamp($5), $6)',
-  values: [
-    1,
-    2,
-    3,
-    4,
-    5,
-    6
-  ]
-}
-
-```
-
 ### `sql.unnest`
 
 ```js
@@ -799,63 +392,6 @@ Produces:
       'foo',
       'bar'
     ]
-  ]
-}
-
-```
-
-### `sql.valueList`
-
-Note: Before using `sql.valueList` evaluate if [`sql.array`](#sqlarray) is not a better option.
-
-```js
-(
-  values: $ReadOnlyArray<PrimitiveValueExpressionType>
-) => ValueListSqlTokenType;
-
-```
-
-Creates a list of values, e.g.
-
-```js
-await connection.query(sql`
-  SELECT (${sql.valueList([1, 2, 3])})
-`);
-
-```
-
-Produces:
-
-```js
-{
-  sql: 'SELECT ($1, $2, $3)',
-  values: [
-    1,
-    2,
-    3
-  ]
-}
-
-```
-
-Value list can describe other SQL tokens, e.g.
-
-```js
-await connection.query(sql`
-  SELECT (${sql.valueList([1, sql`to_timestamp(${2})`, 3])})
-`);
-
-```
-
-Produces:
-
-```js
-{
-  sql: 'SELECT ($1, to_timestamp($2), $3)',
-  values: [
-    1,
-    2,
-    3
   ]
 }
 

@@ -26,7 +26,7 @@ export default (token: ArraySqlTokenType, greatestParameterPosition: number): Sq
 
   let sql = '$' + placeholderIndex + '::';
 
-  if (isSqlToken(token.memberType) && token.memberType.type === 'SLONIK_TOKEN_RAW') {
+  if (isSqlToken(token.memberType) && token.memberType.type === 'SLONIK_TOKEN_SQL') {
     // $FlowFixMe
     const sqlFragment = createSqlTokenSqlFragment(token.memberType, placeholderIndex);
 

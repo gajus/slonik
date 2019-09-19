@@ -37,20 +37,6 @@ export type StreamHandlerType = (stream: Readable) => void;
 
 export type ConnectionTypeType = 'EXPLICIT' | 'IMPLICIT_QUERY' | 'IMPLICIT_TRANSACTION';
 
-export type ComparisonOperatorType =
-  '!=' |
-  '%' |
-  '<' |
-  '<=' |
-  '<>' |
-  '=' |
-  '>' |
-  '>=' |
-  'ILIKE' |
-  'LIKE';
-
-export type LogicalBooleanOperatorType = 'AND' | 'OR';
-
 export type FieldType = {|
   +columnID: number,
   +dataTypeID: number,
@@ -259,22 +245,10 @@ export type NamedParameterValuesType = {
   ...,
 };
 
-export type IdentifierListMemberType = $ReadOnlyArray<string> |
-  {|
-    +alias: string,
-    +identifier: $ReadOnlyArray<string>,
-  |};
-
 export type ArraySqlTokenType = {|
-  +memberType: TypeNameIdentifierType | RawSqlTokenType,
+  +memberType: TypeNameIdentifierType | SqlTokenType,
   +type: 'SLONIK_TOKEN_ARRAY',
   +values: PositionalParameterValuesType,
-|};
-
-export type AssignmentListSqlTokenType = {|
-  +namedAssignment: NamedAssignmentType,
-  +normalizeIdentifier: IdentifierNormalizerType,
-  +type: 'SLONIK_TOKEN_ASSIGNMENT_LIST',
 |};
 
 export type BinarySqlTokenType = {|
@@ -282,43 +256,20 @@ export type BinarySqlTokenType = {|
   +type: 'SLONIK_TOKEN_BINARY',
 |};
 
-export type BooleanExpressionSqlTokenType = {|
-  +members: $ReadOnlyArray<ValueExpressionType>,
-  +operator: LogicalBooleanOperatorType,
-  +type: 'SLONIK_TOKEN_BOOLEAN_EXPRESSION',
-|};
-
-export type ComparisonPredicateSqlTokenType = {|
-  +leftOperand: ValueExpressionType,
-  +operator: ComparisonOperatorType,
-  +rightOperand: ValueExpressionType,
-  +type: 'SLONIK_TOKEN_COMPARISON_PREDICATE',
-|};
-
-export type IdentifierListSqlTokenType = {|
-  +identifiers: $ReadOnlyArray<IdentifierListMemberType>,
-  +type: 'SLONIK_TOKEN_IDENTIFIER_LIST',
-|};
-
 export type IdentifierSqlTokenType = {|
   +names: $ReadOnlyArray<string>,
   +type: 'SLONIK_TOKEN_IDENTIFIER',
 |};
 
+export type ListSqlTokenType = {|
+  +glue: SqlTokenType,
+  +members: $ReadOnlyArray<SqlTokenType>,
+  +type: 'SLONIK_TOKEN_LIST',
+|};
+
 export type JsonSqlTokenType = {|
   +value: SerializableValueType,
   +type: 'SLONIK_TOKEN_JSON',
-|};
-
-export type RawSqlTokenType = {|
-  +sql: string,
-  +type: 'SLONIK_TOKEN_RAW',
-  +values: PositionalParameterValuesType | NamedParameterValuesType,
-|};
-
-export type RawListSqlTokenType = {|
-  +type: 'SLONIK_TOKEN_RAW_LIST',
-  +tokens: $ReadOnlyArray<RawSqlTokenType>,
 |};
 
 export type SqlSqlTokenType = {|
@@ -327,45 +278,22 @@ export type SqlSqlTokenType = {|
   +values: $ReadOnlyArray<PrimitiveValueExpressionType>,
 |};
 
-export type TupleListSqlTokenType = {|
-  +tuples: $ReadOnlyArray<PositionalParameterValuesType>,
-  +type: 'SLONIK_TOKEN_TUPLE_LIST',
-|};
-
-export type TupleSqlTokenType = {|
-  +values: PositionalParameterValuesType,
-  +type: 'SLONIK_TOKEN_TUPLE',
-|};
-
 export type UnnestSqlTokenType = {|
   +columnTypes: $ReadOnlyArray<string>,
   +tuples: $ReadOnlyArray<PositionalParameterValuesType>,
   +type: 'SLONIK_TOKEN_UNNEST',
 |};
 
-export type ValueListSqlTokenType = {|
-  +values: PositionalParameterValuesType,
-  +type: 'SLONIK_TOKEN_VALUE_LIST',
-|};
-
 export type PrimitiveValueExpressionType = $ReadOnlyArray<PrimitiveValueExpressionType> | string | number | boolean | null;
 
 export type SqlTokenType =
   ArraySqlTokenType |
-  AssignmentListSqlTokenType |
   BinarySqlTokenType |
-  BooleanExpressionSqlTokenType |
-  ComparisonPredicateSqlTokenType |
-  IdentifierListSqlTokenType |
   IdentifierSqlTokenType |
   JsonSqlTokenType |
-  RawListSqlTokenType |
-  RawSqlTokenType |
+  ListSqlTokenType |
   SqlSqlTokenType |
-  TupleListSqlTokenType |
-  TupleSqlTokenType |
-  UnnestSqlTokenType |
-  ValueListSqlTokenType;
+  UnnestSqlTokenType;
 
 export type ValueExpressionType =
   SqlTokenType |
@@ -393,45 +321,21 @@ export type SqlTaggedTemplateType = {|
   ) => SqlSqlTokenType,
   array: (
     values: $ReadOnlyArray<PrimitiveValueExpressionType>,
-    memberType: TypeNameIdentifierType | RawSqlTokenType
+    memberType: TypeNameIdentifierType | SqlTokenType
   ) => ArraySqlTokenType,
-  assignmentList: (
-    namedAssignmentValueBindings: NamedAssignmentType
-  ) => AssignmentListSqlTokenType,
   binary: (
     data: Buffer
   ) => BinarySqlTokenType,
-  booleanExpression: (
-    members: $ReadOnlyArray<ValueExpressionType>,
-    operator: LogicalBooleanOperatorType
-  ) => BooleanExpressionSqlTokenType,
-  comparisonPredicate: (
-    leftOperand: ValueExpressionType,
-    operator: ComparisonOperatorType,
-    rightOperand: ValueExpressionType
-  ) => ComparisonPredicateSqlTokenType,
   identifier: (
     names: $ReadOnlyArray<string>
   ) => IdentifierSqlTokenType,
-  identifierList: (
-    identifiers: $ReadOnlyArray<IdentifierListMemberType>
-  ) => IdentifierListSqlTokenType,
   json: (
     value: SerializableValueType
   ) => JsonSqlTokenType,
   raw: (
     rawSql: string,
     values?: $ReadOnlyArray<ValueExpressionType>
-  ) => RawSqlTokenType,
-  rawList: (
-    tokens: $ReadOnlyArray<RawSqlTokenType>
-  ) => RawListSqlTokenType,
-  tuple: (
-    values: $ReadOnlyArray<ValueExpressionType>
-  ) => TupleSqlTokenType,
-  tupleList: (
-    tuples: $ReadOnlyArray<$ReadOnlyArray<ValueExpressionType>>
-  ) => TupleListSqlTokenType,
+  ) => SqlTokenType,
   unnest: (
 
     // Value might be $ReadOnlyArray<$ReadOnlyArray<PrimitiveValueExpressionType>>,
@@ -441,9 +345,6 @@ export type SqlTaggedTemplateType = {|
     tuples: $ReadOnlyArray<$ReadOnlyArray<any>>,
     columnTypes: $ReadOnlyArray<string>
   ) => UnnestSqlTokenType,
-  valueList: (
-    values: $ReadOnlyArray<ValueExpressionType>
-  ) => ValueListSqlTokenType,
 |};
 
 export type InternalQueryMethodType<R> = (
@@ -571,7 +472,4 @@ export type InterceptorType = {|
   ) => QueryResultRowType,
 |};
 
-/**
- * Normalizes identifier name. Used when identifier's name is passed as a plain-text property name (see `sql.assignmentList`).
- */
 export type IdentifierNormalizerType = (identifierName: string) => string;

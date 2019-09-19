@@ -8,7 +8,19 @@ import {
 
 const sql = createSqlTag();
 
-test('creates a value list using type name identifier', (t) => {
+test('binds an empty array', (t) => {
+  const query = sql`SELECT ${sql.array([], 'int4')}`;
+
+  t.deepEqual(query, {
+    sql: 'SELECT $1::"int4"[]',
+    type: SqlToken,
+    values: [
+      [],
+    ],
+  });
+});
+
+test('binds an array with multiple values', (t) => {
   const query = sql`SELECT ${sql.array([1, 2, 3], 'int4')}`;
 
   t.deepEqual(query, {
@@ -24,8 +36,26 @@ test('creates a value list using type name identifier', (t) => {
   });
 });
 
-test('creates a value list using SqlRawToken', (t) => {
-  const query = sql`SELECT ${sql.array([1, 2, 3], sql.raw('int[]'))}`;
+test('offsets positional parameter indexes', (t) => {
+  const query = sql`SELECT ${1}, ${sql.array([1, 2, 3], 'int4')}, ${3}`;
+
+  t.deepEqual(query, {
+    sql: 'SELECT $1, $2::"int4"[], $3',
+    type: SqlToken,
+    values: [
+      1,
+      [
+        1,
+        2,
+        3,
+      ],
+      3,
+    ],
+  });
+});
+
+test('binds a SQL token', (t) => {
+  const query = sql`SELECT ${sql.array([1, 2, 3], sql`int[]`)}`;
 
   t.deepEqual(query, {
     sql: 'SELECT $1::int[]',
