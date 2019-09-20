@@ -41,7 +41,8 @@ export default (token: ListSqlTokenType, greatestParameterPosition: number): Sql
   }
 
   return {
-    sql: placeholders.join(', '),
+    // $FlowFixMe
+    sql: placeholders.join(token.glue.sql),
     values: createPrimitiveValueExpressions(values),
   };
 };

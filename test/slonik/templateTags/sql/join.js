@@ -22,6 +22,17 @@ test('creates a list of values', (t) => {
   });
 });
 
+test('creates a list of values using glue', (t) => {
+  const query = sql`SELECT ${sql.join([sql`TRUE`, sql`TRUE`], sql` AND `)}`;
+
+  t.deepEqual(query, {
+    sql: 'SELECT TRUE AND TRUE',
+    type: SqlToken,
+    values: [],
+  });
+});
+
+
 test('interpolates SQL tokens', (t) => {
   const query = sql`SELECT (${sql.join([1, sql`foo`, 3], sql`, `)})`;
 
