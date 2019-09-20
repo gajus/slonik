@@ -32,7 +32,6 @@ test('creates a list of values using glue', (t) => {
   });
 });
 
-
 test('interpolates SQL tokens', (t) => {
   const query = sql`SELECT (${sql.join([1, sql`foo`, 3], sql`, `)})`;
 
