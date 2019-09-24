@@ -1493,7 +1493,7 @@ const rows = await connection.any(sql`SELECT foo`);
 
 Returns value of the first column of every row in the result set.
 
-* Throws `DataIntegrityError` if query returns multiple rows.
+* Throws `DataIntegrityError` if query returns multiple columns.
 
 Example:
 
