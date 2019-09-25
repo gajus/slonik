@@ -1587,7 +1587,7 @@ const rows = await connection.many(sql`SELECT foo`);
 Returns value of the first column of every row in the result set.
 
 * Throws `NotFoundError` if query returns no rows.
-* Throws `DataIntegrityError` if query returns multiple rows.
+* Throws `DataIntegrityError` if query returns multiple columns.
 
 Example:
 
