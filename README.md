@@ -44,7 +44,8 @@ Note: Using this project does not require TypeScript or Flow. It is a regular ES
 * [Asynchronous stack trace resolution](#capture-stack-trace).
 * [Middlewares](#slonik-interceptors).
 * [Mapped errors](#error-handling).
-* [Atom plugin](#slonik-syntax-highlighting).
+* [Atom plugin](#slonik-syntax-highlighting-atom).
+* [VS Code extension](#slonik-syntax-highlighting-vscode).
 * [ESLint plugin](https://github.com/gajus/eslint-plugin-sql).
 
 <a name="slonik-contents"></a>
@@ -2088,7 +2089,7 @@ Use [`@roarr/cli`](https://github.com/gajus/roarr-cli) to pretty-print the outpu
 ## Syntax highlighting
 
 <a name="slonik-syntax-highlighting-atom"></a>
-### Atom
+### Atom Syntax Highlighting Plugin
 
 Using [Atom](https://atom.io/) IDE you can leverage the [`language-babel`](https://github.com/gandm/language-babel) package in combination with the [`language-sql`](https://github.com/atom/language-sql) to enable highlighting of the SQL strings in the codebase.
 
@@ -2101,3 +2102,10 @@ To enable highlighting, you need to:
 1. Use [`sql` helper to construct the queries](https://github.com/gajus/slonik#tagged-template-literals).
 
 For more information, refer to the [JavaScript Tagged Template Literal Grammar Extensions](https://github.com/gandm/language-babel#javascript-tagged-template-literal-grammar-extensions) documentation of `language-babel` package.
+
+<a name="slonik-syntax-highlighting-vscode"></a>
+### VS Code Syntax Highlighting Extension
+
+The [`vscode-sql-template-literal` extension](https://marketplace.visualstudio.com/items?itemName=forbeslindesay.vscode-sql-template-literal) provides syntax highlighting for VS Code:
+
+![Syntax highlighting in VS Code](./.README/vscode-syntax-highlighting.png)
