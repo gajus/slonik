@@ -46,6 +46,7 @@ Note: Using this project does not require TypeScript or Flow. It is a regular ES
 * [Mapped errors](#error-handling).
 * [Atom plugin](#slonik-syntax-highlighting).
 * [ESLint plugin](https://github.com/gajus/eslint-plugin-sql).
+* [Migrations](#slonik-migrations).
 
 <a name="slonik-contents"></a>
 ## Contents
@@ -2101,3 +2102,12 @@ To enable highlighting, you need to:
 1. Use [`sql` helper to construct the queries](https://github.com/gajus/slonik#tagged-template-literals).
 
 For more information, refer to the [JavaScript Tagged Template Literal Grammar Extensions](https://github.com/gandm/language-babel#javascript-tagged-template-literal-grammar-extensions) documentation of `language-babel` package.
+
+<a name="slonik-migrations"></a>
+## Migrations
+
+Slonik doesn't include migration management in the library - this is a philosophical decision (as per [#42](https://github.com/gajus/slonik/issues/42#issuecomment-510146858)):
+
+> I like the idea of keeping Slonik simple and focused
+
+However, other libraries like [`node-pg-migrate`](https://github.com/salsita/node-pg-migrate) or [`@slonik/migrator`](https://github.com/mmkal/slonik-tools/tree/master/packages/migrator) can be good starting points.
