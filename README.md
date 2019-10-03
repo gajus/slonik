@@ -2110,4 +2110,4 @@ Slonik doesn't include migration management in the library - this is a philosoph
 
 > I like the idea of keeping Slonik simple and focused
 
-However, other libraries like [`node-pg-migrate`](https://github.com/salsita/node-pg-migrate) or [`@slonik/migrator`](https://github.com/mmkal/slonik-tools/tree/master/packages/migrator) can be good starting points.
+However, other libraries like [`node-pg-migrate`](https://github.com/salsita/node-pg-migrate) or [`@slonik/migrator`](https://www.npmjs.com/package/@slonik/migrator) can be good starting points.
