@@ -44,7 +44,6 @@ Note: Using this project does not require TypeScript or Flow. It is a regular ES
 * [Asynchronous stack trace resolution](#capture-stack-trace).
 * [Middlewares](#slonik-interceptors).
 * [Mapped errors](#error-handling).
-* [Atom plugin](#slonik-syntax-highlighting).
 * [ESLint plugin](https://github.com/gajus/eslint-plugin-sql).
 
 <a name="slonik-contents"></a>
@@ -120,8 +119,9 @@ Note: Using this project does not require TypeScript or Flow. It is a regular ES
     * [Debugging](#slonik-debugging)
         * [Logging](#slonik-debugging-logging)
         * [Capture stack trace](#slonik-debugging-capture-stack-trace)
-    * [Syntax highlighting](#slonik-syntax-highlighting)
-        * [Atom](#slonik-syntax-highlighting-atom)
+    * [Syntax Highlighting](#slonik-syntax-highlighting)
+        * [Atom Syntax Highlighting Plugin](#slonik-syntax-highlighting-atom-syntax-highlighting-plugin)
+        * [VS Code Syntax Highlighting Extension](#slonik-syntax-highlighting-vs-code-syntax-highlighting-extension)
 
 
 <a name="slonik-about-slonik"></a>
@@ -2085,10 +2085,10 @@ Use [`@roarr/cli`](https://github.com/gajus/roarr-cli) to pretty-print the outpu
 
 
 <a name="slonik-syntax-highlighting"></a>
-## Syntax highlighting
+## Syntax Highlighting
 
-<a name="slonik-syntax-highlighting-atom"></a>
-### Atom
+<a name="slonik-syntax-highlighting-atom-syntax-highlighting-plugin"></a>
+### Atom Syntax Highlighting Plugin
 
 Using [Atom](https://atom.io/) IDE you can leverage the [`language-babel`](https://github.com/gandm/language-babel) package in combination with the [`language-sql`](https://github.com/atom/language-sql) to enable highlighting of the SQL strings in the codebase.
 
@@ -2101,3 +2101,9 @@ To enable highlighting, you need to:
 1. Use [`sql` helper to construct the queries](https://github.com/gajus/slonik#tagged-template-literals).
 
 For more information, refer to the [JavaScript Tagged Template Literal Grammar Extensions](https://github.com/gandm/language-babel#javascript-tagged-template-literal-grammar-extensions) documentation of `language-babel` package.
+
+<a name="slonik-syntax-highlighting-vs-code-syntax-highlighting-extension"></a>
+### VS Code Syntax Highlighting Extension
+
+The [`vscode-sql-template-literal` extension](https://marketplace.visualstudio.com/items?itemName=forbeslindesay.vscode-sql-template-literal) provides syntax highlighting for VS Code:
+![Syntax highlighting in VS Code](./.README/vscode-syntax-highlighting.png)
