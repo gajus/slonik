@@ -138,8 +138,8 @@ export default () => {
   };
 
   sql.join = (
-    members: $ReadOnlyArray<ListSqlTokenType>,
-    glue: $ReadOnlyArray<SqlTokenType>,
+    members: $ReadOnlyArray<ValueExpressionType>,
+    glue: SqlTokenType,
   ): ListSqlTokenType => {
     return deepFreeze({
       glue,

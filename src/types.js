@@ -332,6 +332,10 @@ export type SqlTaggedTemplateType = {|
   json: (
     value: SerializableValueType
   ) => JsonSqlTokenType,
+  join: (
+    members: $ReadOnlyArray<ValueExpressionType>,
+    glue: SqlTokenType,
+  ) => ListSqlTokenType,
   raw: (
     rawSql: string,
     values?: $ReadOnlyArray<ValueExpressionType>
