@@ -29,7 +29,7 @@ export type TypeNameIdentifierType =
 
 export type SerializableValueType = string | number | boolean | null | {+[key: string]: SerializableValueType, ...} | $ReadOnlyArray<SerializableValueType>;
 
-export opaque type QueryIdType = string;
+export type QueryIdType = string;
 
 export type MaybePromiseType<T> = T | Promise<T>;
 
