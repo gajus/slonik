@@ -1,7 +1,9 @@
 // @flow
 
 import pg from 'pg';
-import serializeError from 'serialize-error';
+import {
+  serializeError,
+} from 'serialize-error';
 import {
   parse as parseConnectionString,
 } from 'pg-connection-string';
