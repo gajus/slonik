@@ -66,6 +66,7 @@ Note: Using this project does not require TypeScript or Flow. It is a regular ES
         * [Create connection](#slonik-usage-create-connection)
         * [API](#slonik-usage-api)
         * [Default configuration](#slonik-usage-default-configuration)
+        * [Using native libpq bindings](#slonik-usage-using-native-libpq-bindings)
         * [Checking out a client from the connection pool](#slonik-usage-checking-out-a-client-from-the-connection-pool)
     * [How are they different?](#slonik-how-are-they-different)
         * [`pg` vs `slonik`](#slonik-how-are-they-different-pg-vs-slonik)
@@ -457,6 +458,7 @@ createPool(
  * @property interceptors An array of [Slonik interceptors](https://github.com/gajus/slonik#slonik-interceptors).
  * @property maximumPoolSize Do not allow more than this many connections. Use 'DISABLE_TIMEOUT' constant to disable the timeout. (Default: 10)
  * @property minimumPoolSize Add more server connections to pool if below this number. (Default: 1)
+ * @property preferNativeBindings Uses libpq bindings when `pg-native` module is installed. (Default: true)
  * @property typeParsers An array of [Slonik type parsers](https://github.com/gajus/slonik#slonik-type-parsers).
  */
 type ClientConfigurationType = {|
@@ -466,6 +468,7 @@ type ClientConfigurationType = {|
   +interceptors?: $ReadOnlyArray<InterceptorType>,
   +maximumPoolSize?: number,
   +minimumPoolSize?: number,
+  +preferNativeBindings?: boolean,
   +typeParsers?: $ReadOnlyArray<TypeParserType>
 |};
 
@@ -529,6 +532,18 @@ createPool('postgres://', {
 });
 
 ```
+
+<a name="slonik-usage-using-native-libpq-bindings"></a>
+### Using native libpq bindings
+
+In order to use native [libpq](https://www.npmjs.com/package/libpq) PostgreSQL bindings install `pg-native`.
+
+```bash
+$ npm install pg-native
+
+```
+
+By default, Slonik uses native bindings when `pg-native` is installed. To use JavaScript bindings when `pg-native` is installed, configure `preferNativeBindings: false`.
 
 <a name="slonik-usage-checking-out-a-client-from-the-connection-pool"></a>
 ### Checking out a client from the connection pool

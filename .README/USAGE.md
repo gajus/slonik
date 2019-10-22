@@ -53,6 +53,7 @@ createPool(
  * @property interceptors An array of [Slonik interceptors](https://github.com/gajus/slonik#slonik-interceptors).
  * @property maximumPoolSize Do not allow more than this many connections. Use 'DISABLE_TIMEOUT' constant to disable the timeout. (Default: 10)
  * @property minimumPoolSize Add more server connections to pool if below this number. (Default: 1)
+ * @property preferNativeBindings Uses libpq bindings when `pg-native` module is installed. (Default: true)
  * @property typeParsers An array of [Slonik type parsers](https://github.com/gajus/slonik#slonik-type-parsers).
  */
 type ClientConfigurationType = {|
@@ -62,6 +63,7 @@ type ClientConfigurationType = {|
   +interceptors?: $ReadOnlyArray<InterceptorType>,
   +maximumPoolSize?: number,
   +minimumPoolSize?: number,
+  +preferNativeBindings?: boolean,
   +typeParsers?: $ReadOnlyArray<TypeParserType>
 |};
 
@@ -122,6 +124,17 @@ createPool('postgres://', {
 });
 
 ```
+
+### Using native libpq bindings
+
+In order to use native [libpq](https://www.npmjs.com/package/libpq) PostgreSQL bindings install `pg-native`.
+
+```bash
+$ npm install pg-native
+
+```
+
+By default, Slonik uses native bindings when `pg-native` is installed. To use JavaScript bindings when `pg-native` is installed, configure `preferNativeBindings: false`.
 
 ### Checking out a client from the connection pool
 

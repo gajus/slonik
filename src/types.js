@@ -79,6 +79,7 @@ export type InternalDatabaseConnectionType = any;
  * @property interceptors An array of [Slonik interceptors](https://github.com/gajus/slonik#slonik-interceptors).
  * @property maximumPoolSize Do not allow more than this many connections. Use 'DISABLE_TIMEOUT' constant to disable the timeout. (Default: 10)
  * @property minimumPoolSize Add more server connections to pool if below this number. (Default: 1)
+ * @property preferNativeBindings Uses libpq bindings when `pg-native` module is installed. (Default: true)
  * @property typeParsers An array of [Slonik type parsers](https://github.com/gajus/slonik#slonik-type-parsers).
  */
 export type ClientUserConfigurationType = {|
@@ -88,6 +89,7 @@ export type ClientUserConfigurationType = {|
   +interceptors?: $ReadOnlyArray<InterceptorType>,
   +maximumPoolSize?: number,
   +minimumPoolSize?: number,
+  +preferNativeBindings?: boolean,
   +typeParsers?: $ReadOnlyArray<TypeParserType>,
 |};
 
@@ -98,6 +100,7 @@ export type ClientConfigurationType = {|
   +interceptors: $ReadOnlyArray<InterceptorType>,
   +maximumPoolSize: number,
   +minimumPoolSize: number,
+  +preferNativeBindings: boolean,
   +typeParsers: $ReadOnlyArray<TypeParserType>,
 |};
 

@@ -21,6 +21,8 @@ export default (clientUserConfiguration?: ClientUserConfigurationType): ClientCo
     maximumPoolSize: 10,
     minimumPoolSize: 0,
 
+    preferNativeBindings: true,
+
     typeParsers,
 
     // $FlowFixMe

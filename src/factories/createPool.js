@@ -1,6 +1,5 @@
 // @flow
 
-import pg from 'pg';
 import {
   serializeError,
 } from 'serialize-error';
@@ -56,6 +55,40 @@ export default (
     poolConfiguration.idleTimeout = 1;
   }
 
+  let pgNativeBindingsAreAvailable = false;
+
+  try {
+    /* eslint-disable global-require, import/no-unassigned-import */
+    // $FlowFixMe
+    require('pg-native');
+    /* eslint-enable */
+
+    pgNativeBindingsAreAvailable = true;
+
+    poolLog.debug('found pg-native module');
+  } catch (error) {
+    poolLog.debug('pg-native module is not found');
+  }
+
+  let pg;
+
+  if (clientConfiguration.preferNativeBindings && pgNativeBindingsAreAvailable) {
+    poolLog.info('using native libpq bindings');
+
+    // eslint-disable-next-line global-require
+    pg = require('pg').native;
+  } else if (clientConfiguration.preferNativeBindings && !pgNativeBindingsAreAvailable) {
+    poolLog.info('using JavaScript bindings; pg-native not found');
+
+    // eslint-disable-next-line global-require
+    pg = require('pg');
+  } else {
+    poolLog.info('using JavaScript bindings');
+
+    // eslint-disable-next-line global-require
+    pg = require('pg');
+  }
+
   const pool = new pg.Pool(poolConfiguration);
 
   pool.slonik = {
@@ -74,6 +107,8 @@ export default (
 
   // istanbul ignore next
   pool.on('connect', (client) => {
+    client.connection = client.connection || {};
+
     client.connection.slonik = {
       connectionId: createUlid(),
       transactionDepth: null,

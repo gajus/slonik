@@ -11,6 +11,7 @@ const defaultConfiguration = {
   interceptors: [],
   maximumPoolSize: 10,
   minimumPoolSize: 0,
+  preferNativeBindings: true,
   typeParsers: createTypeParserPreset(),
 };
 
