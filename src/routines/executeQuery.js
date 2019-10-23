@@ -121,7 +121,13 @@ export default async (
 
   try {
     try {
-      result = await executionRoutine(connection, actualQuery.sql, actualQuery.values, executionContext, actualQuery);
+      result = await executionRoutine(
+        connection,
+        actualQuery.sql,
+        actualQuery.values,
+        executionContext,
+        actualQuery
+      );
     } catch (error) {
       // 'Connection terminated' refers to node-postgres error.
       // @see https://github.com/brianc/node-postgres/blob/eb076db5d47a29c19d3212feac26cd7b6d257a95/lib/client.js#L199
