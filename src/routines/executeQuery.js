@@ -13,6 +13,7 @@ import {
   BackendTerminatedError,
   CheckIntegrityConstraintViolationError,
   ForeignKeyIntegrityConstraintViolationError,
+  InvalidInputError,
   NotNullIntegrityConstraintViolationError,
   QueryCancelledError,
   UnexpectedStateError,
@@ -49,6 +50,14 @@ export default async (
 ) => {
   if (connection.connection.slonik.terminated) {
     throw new UnexpectedStateError('Cannot use terminated connection.');
+  }
+
+  if (rawSql.trim() === '') {
+    throw new InvalidInputError('Unexpected SQL input. Query cannot be empty.');
+  }
+
+  if (rawSql.trim() === '$1') {
+    throw new InvalidInputError('Unexpected SQL input. Query cannot be empty. Found only value binding.');
   }
 
   const queryInputTime = process.hrtime.bigint();

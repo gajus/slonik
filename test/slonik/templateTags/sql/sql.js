@@ -5,9 +5,6 @@ import createSqlTag from '../../../../src/factories/createSqlTag';
 import {
   SqlToken,
 } from '../../../../src/tokens';
-import {
-  InvalidInputError,
-} from '../../../../src/errors';
 
 const sql = createSqlTag();
 
@@ -19,24 +16,6 @@ test('creates an object describing a query', (t) => {
     type: SqlToken,
     values: [],
   });
-});
-
-test('throws a descriptive error if query is empty', (t) => {
-  const error = t.throws(() => {
-    sql``;
-  });
-
-  t.assert(error instanceof InvalidInputError);
-  t.assert(error.message === 'Unexpected SQL input. Query cannot be empty.');
-});
-
-test('throws a descriptive error if the entire query is a value binding', (t) => {
-  const error = t.throws(() => {
-    sql`${1}`;
-  });
-
-  t.assert(error instanceof InvalidInputError);
-  t.assert(error.message === 'Unexpected SQL input. Query cannot be empty. Found only value binding.');
 });
 
 test('creates an object describing query value bindings', (t) => {

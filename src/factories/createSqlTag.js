@@ -29,9 +29,6 @@ import {
   SqlToken,
   UnnestToken,
 } from '../tokens';
-import {
-  InvalidInputError,
-} from '../errors';
 import createSqlTokenSqlFragment from './createSqlTokenSqlFragment';
 
 const log = Logger.child({
@@ -78,14 +75,6 @@ export default () => {
 
         throw new TypeError('Unexpected value expression.');
       }
-    }
-
-    if (rawSql.trim() === '') {
-      throw new InvalidInputError('Unexpected SQL input. Query cannot be empty.');
-    }
-
-    if (rawSql.trim() === '$1') {
-      throw new InvalidInputError('Unexpected SQL input. Query cannot be empty. Found only value binding.');
     }
 
     const query = deepFreeze({
