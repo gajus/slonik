@@ -46,7 +46,7 @@ export default async (
   rawSql: string,
   values: $ReadOnlyArray<PrimitiveValueExpressionType>,
   inheritedQueryId?: QueryIdType,
-  executionRoutine: ExecutionRoutineType
+  executionRoutine: ExecutionRoutineType,
 ) => {
   if (connection.connection.slonik.terminated) {
     throw new UnexpectedStateError('Cannot use terminated connection.');
@@ -150,7 +150,7 @@ export default async (
         actualQuery.sql,
         finalValues,
         executionContext,
-        actualQuery
+        actualQuery,
       );
     } catch (error) {
       // 'Connection terminated' refers to node-postgres error.

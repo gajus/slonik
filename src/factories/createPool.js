@@ -22,7 +22,7 @@ import createClientConfiguration from './createClientConfiguration';
  */
 export default (
   connectionUri: string,
-  clientUserConfiguration?: ClientUserConfigurationType
+  clientUserConfiguration?: ClientUserConfigurationType,
 ): DatabasePoolType => {
   const clientConfiguration = createClientConfiguration(clientUserConfiguration);
 

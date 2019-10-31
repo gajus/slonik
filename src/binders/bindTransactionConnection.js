@@ -32,7 +32,7 @@ export default (
   parentLog: LoggerType,
   connection: InternalDatabaseConnectionType,
   clientConfiguration: ClientConfigurationType,
-  transactionDepth: number
+  transactionDepth: number,
 ): DatabaseTransactionConnectionType => {
   const mapInvocation = (fn) => {
     const bound = mapTaggedTemplateLiteralInvocation(fn);
@@ -59,7 +59,7 @@ export default (
         streamQuery.sql,
         streamQuery.values,
         values,
-        columnTypes
+        columnTypes,
       );
     },
     many: mapInvocation(many.bind(null, parentLog, connection, clientConfiguration)),

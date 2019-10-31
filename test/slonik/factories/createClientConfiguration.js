@@ -29,7 +29,7 @@ test('overrides provided properties', (t) => {
     {
       ...defaultConfiguration,
       captureStackTrace: false,
-    }
+    },
   );
 
   t.deepEqual(
@@ -44,7 +44,7 @@ test('overrides provided properties', (t) => {
       interceptors: [
         'foo',
       ],
-    }
+    },
   );
 
   t.deepEqual(
@@ -59,7 +59,7 @@ test('overrides provided properties', (t) => {
       typeParsers: [
         'foo',
       ],
-    }
+    },
   );
 });
 
@@ -71,6 +71,6 @@ test('disables default type parsers', (t) => {
     {
       ...defaultConfiguration,
       typeParsers: [],
-    }
+    },
   );
 });

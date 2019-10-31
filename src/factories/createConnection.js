@@ -37,7 +37,7 @@ const createConnection = async (
   connectionType: ConnectionTypeType,
   connectionHandler: ConnectionHandlerType,
   poolHandler: PoolHandlerType,
-  query?: TaggedTemplateLiteralInvocationType | null = null
+  query?: TaggedTemplateLiteralInvocationType | null = null,
 ) => {
   for (const interceptor of clientConfiguration.interceptors) {
     if (interceptor.beforePoolConnection) {

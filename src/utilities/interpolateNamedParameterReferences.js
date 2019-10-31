@@ -27,7 +27,7 @@ const namedPlaceholderRegex = /[\s,(]:([a-z_]+)/g;
 export default (
   inputSql: string,
   inputValues: NamedParameterValuesType = {},
-  greatestParameterPosition: number
+  greatestParameterPosition: number,
 ) => {
   const resultValues = [];
   const parameterNames = Object.keys(inputValues);

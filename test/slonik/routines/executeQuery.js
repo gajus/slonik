@@ -35,7 +35,7 @@ test('throws a descriptive error if query is empty', async (t) => {
       '',
       [],
       'foo',
-      t.context.executionRoutine
+      t.context.executionRoutine,
     );
   });
 
@@ -52,7 +52,7 @@ test('throws a descriptive error if the entire query is a value binding', async 
       '$1',
       [],
       'foo',
-      t.context.executionRoutine
+      t.context.executionRoutine,
     );
   });
 

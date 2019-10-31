@@ -17,7 +17,7 @@ import isSqlToken from './isSqlToken';
 export default (
   inputSql: string,
   inputValues: PositionalParameterValuesType = [],
-  greatestParameterPosition: number
+  greatestParameterPosition: number,
 ) => {
   const resultValues = [];
 

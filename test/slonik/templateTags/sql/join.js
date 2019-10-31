@@ -83,7 +83,7 @@ test('nests expressions', (t) => {
       sql`(${sql.join([1, 2], sql`, `)})`,
       sql`(${sql.join([3, 4], sql`, `)})`,
     ],
-    sql`, `
+    sql`, `,
   )}`;
 
   t.deepEqual(query, {

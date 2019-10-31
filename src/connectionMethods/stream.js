@@ -66,7 +66,7 @@ const stream: InternalStreamFunctionType = async (connectionLogger, connection, 
 
         streamHandler(transformedStream);
       });
-    }
+    },
   );
 };
 

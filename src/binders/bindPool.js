@@ -20,7 +20,7 @@ import {
 export default (
   parentLog: LoggerType,
   pool: InternalDatabasePoolType,
-  clientConfiguration: ClientConfigurationType
+  clientConfiguration: ClientConfigurationType,
 ): DatabasePoolType => {
   const mapConnection = (targetMethodName: string) => {
     return (query: TaggedTemplateLiteralInvocationType) => {
@@ -39,7 +39,7 @@ export default (
         (newPool) => {
           return newPool[targetMethodName](query);
         },
-        query
+        query,
       );
     };
   };
@@ -58,7 +58,7 @@ export default (
         },
         (newPool) => {
           return newPool.connect(connectionHandler);
-        }
+        },
       );
     },
     copyFromBinary: (copyQuery, values, columnTypes) => {
@@ -73,14 +73,14 @@ export default (
           return boundConnection.copyFromBinary(
             copyQuery,
             values,
-            columnTypes
+            columnTypes,
           );
         },
         (newPool) => {
           return newPool.copyFromBinary(
             copyQuery,
             values,
-            columnTypes
+            columnTypes,
           );
         },
       );
@@ -106,7 +106,7 @@ export default (
         (newPool) => {
           return newPool.stream(streamQuery, streamHandler);
         },
-        streamQuery
+        streamQuery,
       );
     },
     transaction: async (transactionHandler) => {
@@ -120,7 +120,7 @@ export default (
         },
         (newPool) => {
           return newPool.transaction(transactionHandler);
-        }
+        },
       );
     },
   };

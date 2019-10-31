@@ -55,6 +55,8 @@ export default (clientConfiguration: ClientUserConfigurationType = defaultConfig
   const pool = bindPool(
     log,
     internalPool,
+
+    // $FlowFixMe
     {
       // @see https://github.com/facebook/flow/issues/7505
       // $FlowFixMe
@@ -63,7 +65,7 @@ export default (clientConfiguration: ClientUserConfigurationType = defaultConfig
       // $FlowFixMe
       typeParsers: [],
       ...clientConfiguration,
-    }
+    },
   );
 
   return {

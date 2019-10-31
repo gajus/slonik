@@ -44,7 +44,7 @@ export default async (connection: InternalDatabaseConnectionType, typeParsers: $
         return arrayParser
           .create(
             value,
-            typeParser.parse
+            typeParser.parse,
           )
           .parse();
       });

@@ -58,7 +58,7 @@ const copyFromBinary: InternalCopyFromBinaryFunctionType = async (
           resolve({});
         });
       });
-    }
+    },
   );
 };
 

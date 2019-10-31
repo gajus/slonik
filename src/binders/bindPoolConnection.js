@@ -31,7 +31,7 @@ import {
 export default (
   parentLog: LoggerType,
   connection: InternalDatabaseConnectionType,
-  clientConfiguration: ClientConfigurationType
+  clientConfiguration: ClientConfigurationType,
 ): DatabasePoolConnectionType => {
   return {
     any: mapTaggedTemplateLiteralInvocation(any.bind(null, parentLog, connection, clientConfiguration)),
@@ -46,7 +46,7 @@ export default (
         copyQuery.sql,
         copyQuery.values,
         values,
-        columnTypes
+        columnTypes,
       );
     },
     many: mapTaggedTemplateLiteralInvocation(many.bind(null, parentLog, connection, clientConfiguration)),
@@ -65,7 +65,7 @@ export default (
         clientConfiguration,
         streamQuery.sql,
         streamQuery.values,
-        streamHandler
+        streamHandler,
       );
     },
     transaction: async (handler: TransactionFunctionType) => {
@@ -73,7 +73,7 @@ export default (
         parentLog,
         connection,
         clientConfiguration,
-        handler
+        handler,
       );
     },
   };

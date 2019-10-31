@@ -88,7 +88,7 @@ export default () => {
 
   sql.array = (
     values: $ReadOnlyArray<PrimitiveValueExpressionType>,
-    memberType: string | SqlTokenType
+    memberType: string | SqlTokenType,
   ): ArraySqlTokenType => {
     return deepFreeze({
       memberType,
@@ -107,7 +107,7 @@ export default () => {
   };
 
   sql.identifier = (
-    names: $ReadOnlyArray<string>
+    names: $ReadOnlyArray<string>,
   ): IdentifierSqlTokenType => {
     // @todo Replace `type` with a symbol once Flow adds symbol support
     // @see https://github.com/facebook/flow/issues/810
@@ -118,7 +118,7 @@ export default () => {
   };
 
   sql.json = (
-    value: SerializableValueType
+    value: SerializableValueType,
   ): JsonSqlTokenType => {
     return deepFreeze({
       type: JsonToken,
@@ -139,7 +139,7 @@ export default () => {
 
   sql.raw = (
     rawSql: string,
-    values?: $ReadOnlyArray<ValueExpressionType>
+    values?: $ReadOnlyArray<ValueExpressionType>,
   ): SqlSqlTokenType => {
     return deepFreeze({
       sql: rawSql,
@@ -150,7 +150,7 @@ export default () => {
 
   sql.unnest = (
     tuples: $ReadOnlyArray<$ReadOnlyArray<PrimitiveValueExpressionType>>,
-    columnTypes: $ReadOnlyArray<string>
+    columnTypes: $ReadOnlyArray<string>,
   ): UnnestSqlTokenType => {
     return deepFreeze({
       columnTypes,
