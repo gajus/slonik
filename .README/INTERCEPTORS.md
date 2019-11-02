@@ -30,7 +30,7 @@ type InterceptorType = {|
   +afterPoolConnection?: (
     connectionContext: ConnectionContextType,
     connection: DatabasePoolConnectionType
-  ) => MaybePromiseType<void>,
+  ) => MaybePromiseType<null>,
   +afterQueryExecution?: (
     queryContext: QueryContextType,
     query: QueryType,
@@ -42,16 +42,20 @@ type InterceptorType = {|
   +beforePoolConnectionRelease?: (
     connectionContext: ConnectionContextType,
     connection: DatabasePoolConnectionType
-  ) => MaybePromiseType<void>,
+  ) => MaybePromiseType<null>,
   +beforeQueryExecution?: (
     queryContext: QueryContextType,
     query: QueryType
-  ) => MaybePromiseType<QueryResultType<QueryResultRowType>> | MaybePromiseType<void>,
+  ) => MaybePromiseType<QueryResultType<QueryResultRowType>> | MaybePromiseType<null>,
+  +beforeTransformQuery?: (
+    queryContext: QueryContextType,
+    query: QueryType
+  ) => Promise<null>,
   +queryExecutionError?: (
     queryContext: QueryContextType,
     query: QueryType,
     error: SlonikError
-  ) => MaybePromiseType<void>,
+  ) => MaybePromiseType<null>,
   +transformQuery?: (
     queryContext: QueryContextType,
     query: QueryType
@@ -89,6 +93,10 @@ Note: When query is executed using `stream`, then `afterQuery` is called with em
 #### `beforeQueryExecution`
 
 This function can optionally return a direct result of the query which will cause the actual query never to be executed.
+
+#### `beforeTransformQuery`
+
+Executed before `transformQuery`. Use this interceptor to capture the original query (e.g. for logging purposes).
 
 #### `beforePoolConnectionRelease`
 

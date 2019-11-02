@@ -104,6 +104,12 @@ export default async (
   };
 
   for (const interceptor of clientConfiguration.interceptors) {
+    if (interceptor.beforeTransformQuery) {
+      interceptor.beforeTransformQuery(executionContext, actualQuery);
+    }
+  }
+
+  for (const interceptor of clientConfiguration.interceptors) {
     if (interceptor.transformQuery) {
       actualQuery = interceptor.transformQuery(executionContext, actualQuery);
     }
