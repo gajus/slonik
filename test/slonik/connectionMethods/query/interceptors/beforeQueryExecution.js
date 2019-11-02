@@ -58,7 +58,9 @@ test('executes query if "beforeQuery" does not return results', async (t) => {
   const pool = createPool({
     interceptors: [
       {
-        beforeQueryExecution: () => {},
+        beforeQueryExecution: () => {
+          return null;
+        },
       },
     ],
   });
