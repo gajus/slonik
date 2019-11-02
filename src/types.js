@@ -448,7 +448,7 @@ export type InterceptorType = {|
   +afterPoolConnection?: (
     connectionContext: ConnectionContextType,
     connection: DatabasePoolConnectionType
-  ) => MaybePromiseType<void>,
+  ) => MaybePromiseType<null>,
   +afterQueryExecution?: (
     queryContext: QueryContextType,
     query: QueryType,
@@ -460,16 +460,16 @@ export type InterceptorType = {|
   +beforePoolConnectionRelease?: (
     connectionContext: ConnectionContextType,
     connection: DatabasePoolConnectionType
-  ) => MaybePromiseType<void>,
+  ) => MaybePromiseType<null>,
   +beforeQueryExecution?: (
     queryContext: QueryContextType,
     query: QueryType
-  ) => MaybePromiseType<QueryResultType<QueryResultRowType> | void>,
+  ) => MaybePromiseType<QueryResultType<QueryResultRowType> | null>,
   +queryExecutionError?: (
     queryContext: QueryContextType,
     query: QueryType,
     error: SlonikError
-  ) => MaybePromiseType<void>,
+  ) => MaybePromiseType<null>,
   +transformQuery?: (
     queryContext: QueryContextType,
     query: QueryType
