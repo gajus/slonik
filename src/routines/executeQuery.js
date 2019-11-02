@@ -207,7 +207,7 @@ export default async (
 
   for (const interceptor of clientConfiguration.interceptors) {
     if (interceptor.afterQueryExecution) {
-      result = await interceptor.afterQueryExecution(executionContext, actualQuery, result);
+      await interceptor.afterQueryExecution(executionContext, actualQuery, result);
     }
   }
 
@@ -228,6 +228,12 @@ export default async (
           rows,
         };
       }
+    }
+  }
+
+  for (const interceptor of clientConfiguration.interceptors) {
+    if (interceptor.beforeQueryResult) {
+      await interceptor.beforeQueryResult(executionContext, actualQuery, result);
     }
   }
 

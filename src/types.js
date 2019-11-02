@@ -453,7 +453,7 @@ export type InterceptorType = {|
     queryContext: QueryContextType,
     query: QueryType,
     result: QueryResultType<QueryResultRowType>
-  ) => MaybePromiseType<QueryResultType<QueryResultRowType>>,
+  ) => MaybePromiseType<null>,
   +beforePoolConnection?: (
     connectionContext: PoolContextType
   ) => MaybePromiseType<?DatabasePoolType>,
@@ -468,7 +468,7 @@ export type InterceptorType = {|
   +beforeTransformQuery?: (
     queryContext: QueryContextType,
     query: QueryType
-  ) => Promise<null>,
+  ) => MaybePromiseType<null>,
   +queryExecutionError?: (
     queryContext: QueryContextType,
     query: QueryType,

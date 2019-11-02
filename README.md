@@ -735,6 +735,11 @@ type InterceptorType = {|
     queryContext: QueryContextType,
     query: QueryType
   ) => MaybePromiseType<QueryResultType<QueryResultRowType>> | MaybePromiseType<null>,
+  +beforeQueryResult?: (
+    queryContext: QueryContextType,
+    query: QueryType,
+    result: QueryResultType<QueryResultRowType>
+  ) => MaybePromiseType<null>,
   +beforeTransformQuery?: (
     queryContext: QueryContextType,
     query: QueryType
@@ -774,16 +779,21 @@ pool.connect();
 <a name="slonik-interceptors-interceptor-methods-afterqueryexecution"></a>
 #### <code>afterQueryExecution</code>
 
-`afterQueryExecution` must return the result of the query, which will be passed down to the client.
+Executed after query has been executed and before rows were transformed using `transformRow`.
 
-Use `afterQuery` to modify the query result.
-
-Note: When query is executed using `stream`, then `afterQuery` is called with empty result set and does not affect the query result.
+Note: When query is executed using `stream`, then `afterQuery` is called with empty result set.
 
 <a name="slonik-interceptors-interceptor-methods-beforequeryexecution"></a>
 #### <code>beforeQueryExecution</code>
 
 This function can optionally return a direct result of the query which will cause the actual query never to be executed.
+
+<a name="slonik-interceptors-interceptor-methods-beforequeryresult"></a>
+#### <code>beforeQueryResult</code>
+
+Executed just before the result is returned to the client.
+
+Use this method to capture the result that will be returned to the client.
 
 <a name="slonik-interceptors-interceptor-methods-beforetransformquery"></a>
 #### <code>beforeTransformQuery</code>
