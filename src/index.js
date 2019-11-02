@@ -22,6 +22,7 @@ export type {
   QueryContextType,
   QueryResultRowType,
   QueryResultType,
+  QueryType,
   SqlSqlTokenType,
   UnnestSqlTokenType,
   ValueExpressionType,
