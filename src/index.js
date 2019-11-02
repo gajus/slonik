@@ -20,6 +20,7 @@ export type {
   JsonSqlTokenType,
   ListSqlTokenType,
   QueryContextType,
+  QueryResultRowType,
   QueryResultType,
   SqlSqlTokenType,
   UnnestSqlTokenType,
