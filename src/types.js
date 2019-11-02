@@ -56,7 +56,7 @@ type NoticeType = {|
   +where: string,
 |};
 
-type QueryResultType<T> = {|
+export type QueryResultType<T> = {|
   +command: 'DELETE' | 'INSERT' | 'SELECT' | 'UPDATE',
   +fields: $ReadOnlyArray<FieldType>,
   +notices: $ReadOnlyArray<NoticeType>,
