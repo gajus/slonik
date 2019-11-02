@@ -98,6 +98,7 @@ export default async (
     poolId: connection.connection.slonik.poolId,
     queryId,
     queryInputTime,
+    sandbox: {},
     stackTrace,
     transactionId: connection.connection.slonik.transactionId,
   };

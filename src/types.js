@@ -222,12 +222,13 @@ type CallSiteType = {|
 |};
 
 /**
- * @property queryInputTime `process.hrtime.bigint()` for when query was received.
  * @property connectionId Unique connection ID.
  * @property log Instance of Roarr logger with bound query context parameters.
  * @property originalQuery A copy of the query before `transformQuery` middleware.
  * @property poolId Unique connection pool ID.
  * @property queryId Unique query ID.
+ * @property queryInputTime `process.hrtime.bigint()` for when query was received.
+ * @property sandbox Object used by interceptors to assign interceptor-specific, query-specific context.
  * @property transactionId Unique transaction ID.
  */
 export type QueryContextType = {|
@@ -236,8 +237,10 @@ export type QueryContextType = {|
   +originalQuery: QueryType,
   +poolId: string,
   +queryId: QueryIdType,
-  +stackTrace: $ReadOnlyArray<CallSiteType> | null,
   +queryInputTime: number,
+  // eslint-disable-next-line flowtype/no-weak-types
+  +sandbox: Object,
+  +stackTrace: $ReadOnlyArray<CallSiteType> | null,
   +transactionId?: string,
 |};
 
