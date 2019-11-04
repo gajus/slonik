@@ -90,7 +90,6 @@ Note: Using this project does not require TypeScript or Flow. It is a regular ES
         * [`sql.identifier`](#slonik-query-building-sql-identifier)
         * [`sql.json`](#slonik-query-building-sql-json)
         * [`sql.join`](#slonik-query-building-sql-join)
-        * [`sql.raw`](#slonik-query-building-sql-raw)
         * [`sql.unnest`](#slonik-query-building-sql-unnest)
     * [Query methods](#slonik-query-methods)
         * [`any`](#slonik-query-methods-any)
@@ -383,17 +382,6 @@ WHERE foo.b IN ($7, $8)
 
 That is executed with the parameters provided by the user.
 
-Finally, if there comes a day that you _must_ generate a whole or a fragment of a query using string concatenation, then Slonik provides [`sql.raw`](#sqlraw) method. However, even when using `sql.raw`, we derisk the dangers of generating SQL by allowing developer to bind values only to the scope of the fragment that is being generated, e.g.
-
-```js
-sql`
-  SELECT ${sql.raw('$1', ['foo'])}
-`;
-
-```
-
-Allowing to bind values only to the scope of the SQL that is being generated reduces the amount of code that the developer needs to scan in order to be aware of the impact that the generated code can have. Continue reading [Using `sql.raw` to generate dynamic queries](#using-sqlraw-to-generate-dynamic-queries) to learn further about `sql.raw`.
-
 To sum up, Slonik is designed to prevent accidental creation of queries vulnerable to SQL injections.
 
 
@@ -602,7 +590,7 @@ Other differences are primarily in how the equivalent features are imlemented, e
 |---|---|
 |[Custom type formatting](https://github.com/vitaly-t/pg-promise#custom-type-formatting).|Not available in Slonik. The current proposal is to create an interceptor that would have access to the [query fragment constructor](https://github.com/gajus/slonik/issues/21).|
 |[formatting filters](https://github.com/vitaly-t/pg-promise#nested-named-parameters)|Slonik tagged template [value expressions](https://github.com/gajus/slonik#slonik-value-placeholders) to construct query fragments and bind parameter values.|
-|[Query files](https://github.com/vitaly-t/pg-promise#query-files).|Use `sql.raw` to [load query files](https://github.com/gajus/slonik/issues/28).|
+|[Query files](https://github.com/vitaly-t/pg-promise#query-files).|Use [`slonik-sql-tag-raw`](https://github.com/gajus/slonik-sql-tag-raw).|
 |[Tasks](https://github.com/vitaly-t/pg-promise#tasks).|Use [`pool.connect`](https://github.com/gajus/slonik#slonik-usage-create-connection).|
 |Configurable transactions.|Not available in Slonik. Track [this issue](https://github.com/gajus/slonik/issues/30).|
 |Events.|Use [interceptors](https://github.com/gajus/slonik#slonik-interceptors).|
@@ -1139,7 +1127,7 @@ Produces:
 <a name="slonik-query-building-sql-array-sql-array-membertype"></a>
 #### <code>sql.array</code> <code>memberType</code>
 
-If `memberType` is a string (`TypeNameIdentifierType`), then it is treated as a type name identifier and will be quoted using double quotes, i.e. `sql.array([1, 2, 3], 'int4')` is equivalent to `$1::"int4"[]`. The implication is that keywrods that are often used interchangeably with type names are not going to work, e.g. [`int4`](https://github.com/postgres/postgres/blob/69edf4f8802247209e77f69e089799b3d83c13a4/src/include/catalog/pg_type.dat#L74-L78) is a type name identifier and will work. However, [`int`](https://github.com/postgres/postgres/blob/69edf4f8802247209e77f69e089799b3d83c13a4/src/include/parser/kwlist.h#L213) is a keyword and will not work. You can either use type name identifiers or you can construct custom member using `sql.raw`, e.g.
+If `memberType` is a string (`TypeNameIdentifierType`), then it is treated as a type name identifier and will be quoted using double quotes, i.e. `sql.array([1, 2, 3], 'int4')` is equivalent to `$1::"int4"[]`. The implication is that keywrods that are often used interchangeably with type names are not going to work, e.g. [`int4`](https://github.com/postgres/postgres/blob/69edf4f8802247209e77f69e089799b3d83c13a4/src/include/catalog/pg_type.dat#L74-L78) is a type name identifier and will work. However, [`int`](https://github.com/postgres/postgres/blob/69edf4f8802247209e77f69e089799b3d83c13a4/src/include/parser/kwlist.h#L213) is a keyword and will not work. You can either use type name identifiers or you can construct custom member using `sql` tag, e.g.
 
 ```js
 await connection.query(sql`
@@ -1373,88 +1361,6 @@ sql`
 |`undefined`|Throws `InvalidInputError` error.|`undefined`|
 |`null`|`null`|`"null"` (string literal)|
 
-
-
-<a name="slonik-query-building-sql-raw"></a>
-### <code>sql.raw</code>
-
-```js
-(
-  rawSql: string,
-  values?: $ReadOnlyArray<PrimitiveValueExpressionType>
-) => RawSqlTokenType;
-
-```
-
-Danger! Read carefully: There are no known use cases for generating queries using `sql.raw` that aren't covered by nesting bound `sql` expressions or by one of the other existing [query building methods](#slonik-query-building). `sql.raw` exists as a mechanism to execute externally stored _static_ (e.g. queries stored in files).
-
-Raw/ dynamic SQL can be inlined using `sql.raw`, e.g.
-
-```js
-sql`
-  SELECT 1
-  FROM ${sql.raw('"bar"')}
-`;
-
-```
-
-Produces:
-
-```js
-{
-  sql: 'SELECT 1 FROM "bar"',
-  values: []
-}
-
-```
-
-The second parameter of the `sql.raw` can be used to bind [positional parameter](https://www.postgresql.org/docs/current/sql-expressions.html#SQL-EXPRESSIONS-PARAMETERS-POSITIONAL) values, e.g.
-
-```js
-sql`
-  SELECT ${sql.raw('$1', [1])}
-`;
-
-```
-
-Produces:
-
-```js
-{
-  sql: 'SELECT $1',
-  values: [
-    1
-  ]
-}
-
-```
-
-<a name="slonik-query-building-sql-raw-named-parameters"></a>
-#### Named parameters
-
-`sql.raw` supports named parameters, e.g.
-
-```js
-sql`
-  SELECT ${sql.raw(':foo, :bar', {bar: 'BAR', foo: 'FOO'})}
-`;
-
-```
-
-Produces:
-
-```js
-{
-  sql: 'SELECT $1, $2',
-  values: [
-    'FOO',
-    'BAR'
-  ]
-}
-
-```
-
-Named parameters are matched using `/[\s,(]:([a-z_]+)/g` regex.
 
 <a name="slonik-query-building-sql-unnest"></a>
 ### <code>sql.unnest</code>
