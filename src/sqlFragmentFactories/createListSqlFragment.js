@@ -5,9 +5,10 @@ import type {
   ListSqlTokenType,
 } from '../types';
 import {
-  UnexpectedStateError,
+  InvalidInputError,
 } from '../errors';
 import {
+  isPrimitiveValueExpression,
   isSqlToken,
 } from '../utilities';
 import {
@@ -22,21 +23,22 @@ export default (token: ListSqlTokenType, greatestParameterPosition: number): Sql
   let placeholderIndex = greatestParameterPosition;
 
   if (token.members.length === 0) {
-    throw new UnexpectedStateError('Value list must have at least 1 member.');
+    throw new InvalidInputError('Value list must have at least 1 member.');
   }
 
   for (const member of token.members) {
     if (isSqlToken(member)) {
-      // $FlowFixMe
       const sqlFragment = createSqlTokenSqlFragment(member, placeholderIndex);
 
       placeholders.push(sqlFragment.sql);
       placeholderIndex += sqlFragment.values.length;
       values.push(...sqlFragment.values);
-    } else {
+    } else if (isPrimitiveValueExpression(member)) {
       placeholders.push('$' + ++placeholderIndex);
 
       values.push(member);
+    } else {
+      throw new InvalidInputError('Invalid list member type. Must be a SQL token or a primitive value expression.');
     }
   }
 

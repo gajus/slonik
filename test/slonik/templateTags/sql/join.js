@@ -98,6 +98,18 @@ test('nests expressions', (t) => {
   });
 });
 
+test('throws is member is not a SQL token or a primitive value expression', (t) => {
+  t.throws(() => {
+    sql`${sql.join(
+      [
+        // $FlowFixMe
+        () => {},
+      ],
+      sql`, `,
+    )}`;
+  }, 'Invalid list member type. Must be a SQL token or a primitive value expression.');
+});
+
 test('the resulting object is immutable', (t) => {
   const token = sql.join([1, 2, 3], sql`, `);
 
