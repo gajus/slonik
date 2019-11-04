@@ -32,6 +32,15 @@ test('creates an object describing a query with inlined identifiers (specifier)'
   });
 });
 
+test('throws if an identifier name array member type is not a string', (t) => {
+  t.throws(() => {
+    sql.identifier([
+      // $FlowFixMe
+      () => {},
+    ]);
+  }, 'Identifier name array member type must be a string.');
+});
+
 test('the resulting object is immutable', (t) => {
   const token = sql.identifier(['bar', 'baz']);
 
