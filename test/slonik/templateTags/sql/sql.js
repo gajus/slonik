@@ -57,6 +57,13 @@ test('nests sql templates', (t) => {
   });
 });
 
+test('throws if bound an undefined value', (t) => {
+  t.throws(() => {
+    // $FlowFixMe
+    sql`SELECT ${undefined}`;
+  }, 'SQL tag cannot be bound an undefined value.');
+});
+
 test('the resulting object is immutable', (t) => {
   const query = sql`SELECT 1`;
 

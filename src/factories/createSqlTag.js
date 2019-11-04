@@ -29,6 +29,9 @@ import {
   SqlToken,
   UnnestToken,
 } from '../tokens';
+import {
+  InvalidInputError,
+} from '../errors';
 import createSqlTokenSqlFragment from './createSqlTokenSqlFragment';
 
 const log = Logger.child({
@@ -57,7 +60,14 @@ export default () => {
         continue;
       }
 
-      if (isPrimitiveValueExpression(token)) {
+      if (token === undefined) {
+        log.debug({
+          index,
+          values,
+        }, 'bound values');
+
+        throw new InvalidInputError('SQL tag cannot be bound an undefined value.');
+      } else if (isPrimitiveValueExpression(token)) {
         rawSql += '$' + (parameterValues.length + 1);
 
         parameterValues.push(token);
@@ -70,6 +80,7 @@ export default () => {
       } else {
         log.error({
           constructedSql: rawSql,
+          index,
           offendingToken: token,
         }, 'unexpected value expression');
 
