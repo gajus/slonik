@@ -6,17 +6,24 @@ import type {
 } from '../types';
 import {
   escapeIdentifier,
+  isPrimitiveValueExpression,
   isSqlToken,
 } from '../utilities';
 import {
   createSqlTokenSqlFragment,
 } from '../factories';
 import {
-  UnexpectedStateError,
+  InvalidInputError,
 } from '../errors';
 
 export default (token: ArraySqlTokenType, greatestParameterPosition: number): SqlFragmentType => {
   let placeholderIndex = greatestParameterPosition;
+
+  for (const value of token.values) {
+    if (!isPrimitiveValueExpression(value)) {
+      throw new InvalidInputError('Invalid array member type. Must be a primitive value expression.');
+    }
+  }
 
   const values = [
     token.values,
@@ -38,7 +45,7 @@ export default (token: ArraySqlTokenType, greatestParameterPosition: number): Sq
   } else if (typeof token.memberType === 'string') {
     sql += escapeIdentifier(token.memberType) + '[]';
   } else {
-    throw new UnexpectedStateError('Unsupported `memberType`. `memberType` must be a string or SqlToken of "SLONIK_TOKEN_RAW" type.');
+    throw new InvalidInputError('Unsupported `memberType`. `memberType` must be a string or SqlToken of "SLONIK_TOKEN_RAW" type.');
   }
 
   return {

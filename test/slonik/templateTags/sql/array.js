@@ -70,6 +70,13 @@ test('binds a SQL token', (t) => {
   });
 });
 
+test('throws if array member is not a primitive value expression', (t) => {
+  t.throws(() => {
+    // $FlowFixMe
+    sql`SELECT ${sql.array([() => {}], 'int')}`;
+  }, 'Invalid array member type. Must be a primitive value expression.');
+});
+
 test('throws if memberType is not a string or SqlToken of different type than "SLONIK_TOKEN_RAW"', (t) => {
   t.throws(() => {
     // $FlowFixMe
