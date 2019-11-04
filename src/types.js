@@ -244,17 +244,10 @@ export type QueryContextType = {|
   +transactionId?: string,
 |};
 
-export type PositionalParameterValuesType = $ReadOnlyArray<ValueExpressionType>;
-
-export type NamedParameterValuesType = {
-  [key: string]: ValueExpressionType,
-  ...,
-};
-
 export type ArraySqlTokenType = {|
   +memberType: TypeNameIdentifierType | SqlTokenType,
   +type: 'SLONIK_TOKEN_ARRAY',
-  +values: PositionalParameterValuesType,
+  +values: $ReadOnlyArray<ValueExpressionType>,
 |};
 
 export type BinarySqlTokenType = {|
@@ -286,7 +279,7 @@ export type SqlSqlTokenType = {|
 
 export type UnnestSqlTokenType = {|
   +columnTypes: $ReadOnlyArray<string>,
-  +tuples: $ReadOnlyArray<PositionalParameterValuesType>,
+  +tuples: $ReadOnlyArray<$ReadOnlyArray<ValueExpressionType>>,
   +type: 'SLONIK_TOKEN_UNNEST',
 |};
 

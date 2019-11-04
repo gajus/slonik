@@ -40,9 +40,11 @@ export {
   DataIntegrityError,
   ForeignKeyIntegrityConstraintViolationError,
   IntegrityConstraintViolationError,
+  InvalidInputError,
   NotFoundError,
   NotNullIntegrityConstraintViolationError,
   QueryCancelledError,
   SlonikError,
+  UnexpectedStateError,
   UniqueIntegrityConstraintViolationError,
 } from './errors';
