@@ -36,7 +36,6 @@
     "postgres-interval": "^1.2.0",
     "roarr": "^2.14.3",
     "serialize-error": "^5.0.0",
-    "slonik-interceptor-preset": "^1.2.6",
     "through2": "^3.0.1",
     "ulid": "^2.3.0"
   },
@@ -53,13 +52,13 @@
     "babel-plugin-transform-export-default-name": "^2.0.4",
     "coveralls": "^3.0.7",
     "eslint": "^6.6.0",
-    "eslint-config-canonical": "^17.7.0",
+    "eslint-config-canonical": "^17.8.0",
     "flow-bin": "^0.111.1",
     "flow-copy-source": "^2.0.8",
     "gitdown": "^3.1.2",
     "husky": "^3.0.9",
     "nyc": "^14.1.1",
-    "semantic-release": "^15.13.29",
+    "semantic-release": "^15.13.30",
     "sinon": "^7.5.0"
   },
   "engines": {
