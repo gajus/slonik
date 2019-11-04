@@ -247,15 +247,4 @@ WHERE foo.b IN ($7, $8)
 
 That is executed with the parameters provided by the user.
 
-Finally, if there comes a day that you _must_ generate a whole or a fragment of a query using string concatenation, then Slonik provides [`sql.raw`](#sqlraw) method. However, even when using `sql.raw`, we derisk the dangers of generating SQL by allowing developer to bind values only to the scope of the fragment that is being generated, e.g.
-
-```js
-sql`
-  SELECT ${sql.raw('$1', ['foo'])}
-`;
-
-```
-
-Allowing to bind values only to the scope of the SQL that is being generated reduces the amount of code that the developer needs to scan in order to be aware of the impact that the generated code can have. Continue reading [Using `sql.raw` to generate dynamic queries](#using-sqlraw-to-generate-dynamic-queries) to learn further about `sql.raw`.
-
 To sum up, Slonik is designed to prevent accidental creation of queries vulnerable to SQL injections.

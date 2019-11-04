@@ -77,11 +77,11 @@ test('throws if array member is not a primitive value expression', (t) => {
   }, 'Invalid array member type. Must be a primitive value expression.');
 });
 
-test('throws if memberType is not a string or SqlToken of different type than "SLONIK_TOKEN_RAW"', (t) => {
+test('throws if memberType is not a string or SqlToken of different type than "SLONIK_TOKEN_SQL"', (t) => {
   t.throws(() => {
     // $FlowFixMe
     sql`SELECT ${sql.array([1, 2, 3], sql.identifier(['int']))}`;
-  }, 'Unsupported `memberType`. `memberType` must be a string or SqlToken of "SLONIK_TOKEN_RAW" type.');
+  }, 'Unsupported `memberType`. `memberType` must be a string or SqlToken of "SLONIK_TOKEN_SQL" type.');
 });
 
 test('the resulting object is immutable', (t) => {

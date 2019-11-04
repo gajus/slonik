@@ -148,17 +148,6 @@ export default () => {
     });
   };
 
-  sql.raw = (
-    rawSql: string,
-    values?: $ReadOnlyArray<ValueExpressionType>,
-  ): SqlSqlTokenType => {
-    return deepFreeze({
-      sql: rawSql,
-      type: SqlToken,
-      values: values || [],
-    });
-  };
-
   sql.unnest = (
     tuples: $ReadOnlyArray<$ReadOnlyArray<PrimitiveValueExpressionType>>,
     columnTypes: $ReadOnlyArray<string>,

@@ -6,8 +6,6 @@ export {default as createUlid} from './createUlid';
 export {default as deepFreeze} from './deepFreeze';
 export {default as encodeTupleList} from './encodeTupleList';
 export {default as escapeIdentifier} from './escapeIdentifier';
-export {default as interpolateNamedParameterReferences} from './interpolateNamedParameterReferences';
-export {default as interpolatePositionalParameterReferences} from './interpolatePositionalParameterReferences';
 export {default as isPrimitiveValueExpression} from './isPrimitiveValueExpression';
 export {default as isSqlToken} from './isSqlToken';
 export {default as mapTaggedTemplateLiteralInvocation} from './mapTaggedTemplateLiteralInvocation';

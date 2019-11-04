@@ -342,10 +342,6 @@ export type SqlTaggedTemplateType = {|
     members: $ReadOnlyArray<ValueExpressionType>,
     glue: SqlTokenType,
   ) => ListSqlTokenType,
-  raw: (
-    rawSql: string,
-    values?: $ReadOnlyArray<ValueExpressionType>
-  ) => SqlTokenType,
   unnest: (
 
     // Value might be $ReadOnlyArray<$ReadOnlyArray<PrimitiveValueExpressionType>>,

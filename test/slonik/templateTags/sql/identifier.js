@@ -34,10 +34,10 @@ test('creates an object describing a query with inlined identifiers (specifier)'
 
 test('throws if an identifier name array member type is not a string', (t) => {
   t.throws(() => {
-    sql.identifier([
+    sql`${sql.identifier([
       // $FlowFixMe
       () => {},
-    ]);
+    ])}`;
   }, 'Identifier name array member type must be a string.');
 });
 

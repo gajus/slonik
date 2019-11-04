@@ -41,7 +41,7 @@ Produces:
 
 #### `sql.array` `memberType`
 
-If `memberType` is a string (`TypeNameIdentifierType`), then it is treated as a type name identifier and will be quoted using double quotes, i.e. `sql.array([1, 2, 3], 'int4')` is equivalent to `$1::"int4"[]`. The implication is that keywrods that are often used interchangeably with type names are not going to work, e.g. [`int4`](https://github.com/postgres/postgres/blob/69edf4f8802247209e77f69e089799b3d83c13a4/src/include/catalog/pg_type.dat#L74-L78) is a type name identifier and will work. However, [`int`](https://github.com/postgres/postgres/blob/69edf4f8802247209e77f69e089799b3d83c13a4/src/include/parser/kwlist.h#L213) is a keyword and will not work. You can either use type name identifiers or you can construct custom member using `sql.raw`, e.g.
+If `memberType` is a string (`TypeNameIdentifierType`), then it is treated as a type name identifier and will be quoted using double quotes, i.e. `sql.array([1, 2, 3], 'int4')` is equivalent to `$1::"int4"[]`. The implication is that keywrods that are often used interchangeably with type names are not going to work, e.g. [`int4`](https://github.com/postgres/postgres/blob/69edf4f8802247209e77f69e089799b3d83c13a4/src/include/catalog/pg_type.dat#L74-L78) is a type name identifier and will work. However, [`int`](https://github.com/postgres/postgres/blob/69edf4f8802247209e77f69e089799b3d83c13a4/src/include/parser/kwlist.h#L213) is a keyword and will not work. You can either use type name identifiers or you can construct custom member using `sql` tag, e.g.
 
 ```js
 await connection.query(sql`
@@ -268,86 +268,6 @@ sql`
 |`undefined`|Throws `InvalidInputError` error.|`undefined`|
 |`null`|`null`|`"null"` (string literal)|
 
-
-
-### `sql.raw`
-
-```js
-(
-  rawSql: string,
-  values?: $ReadOnlyArray<PrimitiveValueExpressionType>
-) => RawSqlTokenType;
-
-```
-
-Danger! Read carefully: There are no known use cases for generating queries using `sql.raw` that aren't covered by nesting bound `sql` expressions or by one of the other existing [query building methods](#slonik-query-building). `sql.raw` exists as a mechanism to execute externally stored _static_ (e.g. queries stored in files).
-
-Raw/ dynamic SQL can be inlined using `sql.raw`, e.g.
-
-```js
-sql`
-  SELECT 1
-  FROM ${sql.raw('"bar"')}
-`;
-
-```
-
-Produces:
-
-```js
-{
-  sql: 'SELECT 1 FROM "bar"',
-  values: []
-}
-
-```
-
-The second parameter of the `sql.raw` can be used to bind [positional parameter](https://www.postgresql.org/docs/current/sql-expressions.html#SQL-EXPRESSIONS-PARAMETERS-POSITIONAL) values, e.g.
-
-```js
-sql`
-  SELECT ${sql.raw('$1', [1])}
-`;
-
-```
-
-Produces:
-
-```js
-{
-  sql: 'SELECT $1',
-  values: [
-    1
-  ]
-}
-
-```
-
-#### Named parameters
-
-`sql.raw` supports named parameters, e.g.
-
-```js
-sql`
-  SELECT ${sql.raw(':foo, :bar', {bar: 'BAR', foo: 'FOO'})}
-`;
-
-```
-
-Produces:
-
-```js
-{
-  sql: 'SELECT $1, $2',
-  values: [
-    'FOO',
-    'BAR'
-  ]
-}
-
-```
-
-Named parameters are matched using `/[\s,(]:([a-z_]+)/g` regex.
 
 ### `sql.unnest`
 
