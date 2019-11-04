@@ -24,6 +24,7 @@
     "es6-error": "^4.1.1",
     "get-stack-trace": "^2.0.1",
     "inline-loops.macro": "^1.2.2",
+    "is-plain-object": "^3.0.0",
     "iso8601-duration": "^1.2.0",
     "lodash": "^4.17.15",
     "pg": "^7.12.1",
