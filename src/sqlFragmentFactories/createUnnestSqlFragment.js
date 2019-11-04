@@ -7,8 +7,12 @@ import type {
 import {
   countArrayDimensions,
   escapeIdentifier,
+  isPrimitiveValueExpression,
   stripArrayNotation,
 } from '../utilities';
+import {
+  InvalidInputError,
+} from '../errors';
 
 export default (token: UnnestSqlTokenType, greatestParameterPosition: number): SqlFragmentType => {
   const columnTypes = token.columnTypes;
@@ -48,6 +52,10 @@ export default (token: UnnestSqlTokenType, greatestParameterPosition: number): S
     let tupleColumnIndex = 0;
 
     for (const tupleValue of tupleValues) {
+      if (!Array.isArray(tupleValue) && !isPrimitiveValueExpression(tupleValue)) {
+        throw new InvalidInputError('Invalid unnest tuple member type. Must be a primitive value expression.');
+      }
+
       unnestBindings[tupleColumnIndex++].push(tupleValue);
     }
   }
