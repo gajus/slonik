@@ -30,8 +30,12 @@ export type {
 export {
   createPool,
   createSqlTag,
+  createSqlTokenSqlFragment,
   createTypeParserPreset,
 } from './factories';
+export {
+  isSqlToken,
+} from './utilities';
 export * from './factories/typeParsers';
 export {
   BackendTerminatedError,
