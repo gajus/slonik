@@ -11,5 +11,4 @@ export {default as interpolatePositionalParameterReferences} from './interpolate
 export {default as isPrimitiveValueExpression} from './isPrimitiveValueExpression';
 export {default as isSqlToken} from './isSqlToken';
 export {default as mapTaggedTemplateLiteralInvocation} from './mapTaggedTemplateLiteralInvocation';
-export {default as normalizeIdentifier} from './normalizeIdentifier';
 export {default as stripArrayNotation} from './stripArrayNotation';

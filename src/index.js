@@ -28,9 +28,6 @@ export type {
   ValueExpressionType,
 } from './types';
 export {
-  normalizeIdentifier,
-} from './utilities';
-export {
   createPool,
   createSqlTag,
   createTypeParserPreset,
