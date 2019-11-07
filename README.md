@@ -847,44 +847,7 @@ Check out [`slonik-interceptor-preset`](https://github.com/gajus/slonik-intercep
 <a name="slonik-recipes-inserting-large-number-of-rows"></a>
 ### Inserting large number of rows
 
-Slonik provides [`sql.tupleList`](#sqltuplelist) helper function to generate a list of tuples that can be used in the `INSERT` values expression, e.g.
-
-```js
-await connection.query(sql`
-  INSERT INTO (foo, bar, baz)
-  VALUES ${sql.tupleList([
-    [1, 2, 3],
-    [4, 5, 6]
-  ])}
-`);
-
-```
-
-Produces:
-
-```js
-{
-  sql: 'INSERT INTO (foo, bar, baz) VALUES ($1, $2, $3), ($4, $5, $6)',
-  values: [
-    1,
-    2,
-    3,
-    4,
-    5,
-    6
-  ]
-}
-
-```
-
-There are 2 downsides to this approach:
-
-1. The generated SQL is dynamic and will vary depending on the input.
-  * You will not be able to track query stats.
-  * Query parsing time increases with the query size.
-2. There is a maximum number of parameters that can be bound to the statement (65535).
-
-As an alternative, we can use [`sql.unnest`](#sqlunnest) to create a set of rows using `unnest`. Using the `unnest` approach requires only 1 variable per every column; values for each column are passed as an array, e.g.
+Use [`sql.unnest`](#sqlunnest) to create a set of rows using `unnest`. Using the `unnest` approach requires only 1 variable per every column; values for each column are passed as an array, e.g.
 
 ```js
 await connection.query(sql`
