@@ -25,8 +25,9 @@ export default (token: JsonSqlTokenType, greatestParameterPosition: number): Sql
   } else if (token.value === null) {
     value = token.value;
 
+  // @todo Deep check Array.
   // eslint-disable-next-line no-negated-condition
-  } else if (!isPlainObject(token.value)) {
+  } else if (!isPlainObject(token.value) && !Array.isArray(token.value)) {
     throw new InvalidInputError('JSON payload must be a primitive value or a plain object.');
   } else {
     try {

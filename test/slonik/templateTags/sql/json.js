@@ -8,7 +8,7 @@ import {
 
 const sql = createSqlTag();
 
-test('creates a value list', (t) => {
+test('creates a value list (object)', (t) => {
   const query = sql`SELECT ${sql.json({foo: 'bar'})}`;
 
   t.deepEqual(query, {
@@ -16,6 +16,18 @@ test('creates a value list', (t) => {
     type: SqlToken,
     values: [
       '{"foo":"bar"}',
+    ],
+  });
+});
+
+test('creates a value list (array)', (t) => {
+  const query = sql`SELECT ${sql.json([{foo: 'bar'}])}`;
+
+  t.deepEqual(query, {
+    sql: 'SELECT $1',
+    type: SqlToken,
+    values: [
+      '[{"foo":"bar"}]',
     ],
   });
 });
