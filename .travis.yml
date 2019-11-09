@@ -2,8 +2,6 @@ jobs:
   include:
     - node_js: 10
       postgresql: 11
-before_script:
-  - psql -c 'create database test;' -U postgres
 script:
   - npm run build
   - npm run test
