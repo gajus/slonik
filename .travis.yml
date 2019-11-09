@@ -1,11 +1,7 @@
-language: node_js
-node_js:
-  - node
-  - 10
-addons:
-  postgresql: '11'
-services:
-  - postgresql
+jobs:
+  include:
+    - node_js: 10
+      postgresql: 11
 before_script:
   - psql -c 'create database test;' -U postgres
 script:
