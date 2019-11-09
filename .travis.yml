@@ -1,4 +1,6 @@
 language: node_js
+env:
+  - DB=postgres
 jobs:
   include:
     - node_js: 10
