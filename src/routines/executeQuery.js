@@ -11,6 +11,7 @@ import {
 } from 'serialize-error';
 import {
   createQueryId,
+  normaliseQueryValues,
 } from '../utilities';
 import {
   BackendTerminatedError,
@@ -142,25 +143,10 @@ export default async (
 
   try {
     try {
-      let finalValues = actualQuery.values;
-
-      if (connection.native && actualQuery.values) {
-        finalValues = [];
-
-        for (const value of actualQuery.values) {
-          if (Buffer.isBuffer(value)) {
-            // $FlowFixMe
-            finalValues.push('\\x' + value.toString('hex'));
-          } else {
-            finalValues.push(value);
-          }
-        }
-      }
-
       result = await executionRoutine(
         connection,
         actualQuery.sql,
-        finalValues,
+        normaliseQueryValues(actualQuery.values, connection.native),
         executionContext,
         actualQuery,
       );

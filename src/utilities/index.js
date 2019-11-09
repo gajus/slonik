@@ -9,4 +9,5 @@ export {default as escapeIdentifier} from './escapeIdentifier';
 export {default as isPrimitiveValueExpression} from './isPrimitiveValueExpression';
 export {default as isSqlToken} from './isSqlToken';
 export {default as mapTaggedTemplateLiteralInvocation} from './mapTaggedTemplateLiteralInvocation';
+export {default as normaliseQueryValues} from './normaliseQueryValues';
 export {default as stripArrayNotation} from './stripArrayNotation';
