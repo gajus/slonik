@@ -122,6 +122,8 @@ export default async (
       result = await interceptor.beforeQueryExecution(executionContext, actualQuery);
 
       if (result) {
+        log.info('beforeQueryExecution interceptor produced a result; short-circuiting query execution using beforeQueryExecution result');
+
         return result;
       }
     }
