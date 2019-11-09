@@ -1,4 +1,6 @@
 language: node_js
+services:
+  - postgresql
 jobs:
   include:
     - node_js: 10
