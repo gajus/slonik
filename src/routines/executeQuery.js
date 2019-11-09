@@ -164,6 +164,7 @@ export default async (
       }
 
       if (error.code === '57014') {
+        // @todo Rename `QueryCancelledError` to `BackendCancelledError`.
         throw new QueryCancelledError(error);
       }
 

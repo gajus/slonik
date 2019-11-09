@@ -4,6 +4,8 @@ import test, {
   beforeEach,
 } from 'ava';
 import {
+  QueryCancelledError,
+  BackendTerminatedError,
   createPool,
   sql,
 } from '../../src';
@@ -167,4 +169,40 @@ test('returns expected query result object (DELETE)', async (t) => {
       },
     ],
   });
+});
+
+test('cancelled backend produces QueryCancelledError error', async (t) => {
+  const pool = createPool(TEST_DSN);
+
+  const error = await t.throwsAsync(pool.connect(async (connection) => {
+    const connectionPid = await connection.oneFirst(sql`
+      SELECT pg_backend_pid()
+    `);
+
+    setTimeout(() => {
+      pool.query(sql`SELECT pg_cancel_backend(${connectionPid})`);
+    }, 100);
+
+    await connection.query(sql`SELECT pg_sleep(2)`);
+  }));
+
+  t.true(error instanceof QueryCancelledError);
+});
+
+test('terminated backend produces BackendTerminatedError error', async (t) => {
+  const pool = createPool(TEST_DSN);
+
+  const error = await t.throwsAsync(pool.connect(async (connection) => {
+    const connectionPid = await connection.oneFirst(sql`
+      SELECT pg_backend_pid()
+    `);
+
+    setTimeout(() => {
+      pool.query(sql`SELECT pg_terminate_backend(${connectionPid})`);
+    }, 100);
+
+    await connection.query(sql`SELECT pg_sleep(2)`);
+  }));
+
+  t.true(error instanceof BackendTerminatedError);
 });
