@@ -20,6 +20,9 @@ test('overrides result row', async (t) => {
   });
 
   pool.querySpy.returns({
+    command: 'SELECT',
+    fields: [],
+    rowCount: 1,
     rows: [
       {
         foo: 1,
@@ -30,7 +33,10 @@ test('overrides result row', async (t) => {
   const result = await pool.query(sql`SELECT 1`);
 
   t.deepEqual(result, {
+    command: 'SELECT',
+    fields: [],
     notices: [],
+    rowCount: 1,
     rows: [
       {
         foo: 2,

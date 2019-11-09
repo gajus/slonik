@@ -28,6 +28,10 @@ test('executes the query and returns the result', async (t) => {
   const pool = createPool();
 
   pool.querySpy.returns({
+    command: 'SELECT',
+    fields: [],
+    notices: [],
+    rowCount: 1,
     rows: [
       {
         foo: 1,
@@ -38,7 +42,10 @@ test('executes the query and returns the result', async (t) => {
   const result = await pool.query(sql`SELECT 1`);
 
   t.deepEqual(result, {
+    command: 'SELECT',
+    fields: [],
     notices: [],
+    rowCount: 1,
     rows: [
       {
         foo: 1,
@@ -71,6 +78,10 @@ test('adds notices observed during the query execution to the query result objec
   }
 
   resolveQuery({
+    command: 'SELECT',
+    fields: [],
+    notices: [],
+    rowCount: 1,
     rows: [
       {
         foo: 1,
@@ -79,10 +90,13 @@ test('adds notices observed during the query execution to the query result objec
   });
 
   t.deepEqual(await queryResultPromise, {
+    command: 'SELECT',
+    fields: [],
     notices: [
       'foo',
       'bar',
     ],
+    rowCount: 1,
     rows: [
       {
         foo: 1,

@@ -40,7 +40,7 @@ test('returns expected query result object (SELECT)', async (t) => {
     command: 'SELECT',
     fields: [
       {
-        dataTypeID: 23,
+        dataTypeId: 23,
         name: 'name',
       },
     ],
@@ -74,7 +74,7 @@ test('returns expected query result object (INSERT)', async (t) => {
     command: 'INSERT',
     fields: [
       {
-        dataTypeID: 25,
+        dataTypeId: 25,
         name: 'name',
       },
     ],
@@ -117,7 +117,7 @@ test('returns expected query result object (UPDATE)', async (t) => {
     command: 'UPDATE',
     fields: [
       {
-        dataTypeID: 25,
+        dataTypeId: 25,
         name: 'name',
       },
     ],
@@ -158,7 +158,7 @@ test('returns expected query result object (DELETE)', async (t) => {
     command: 'DELETE',
     fields: [
       {
-        dataTypeID: 25,
+        dataTypeId: 25,
         name: 'name',
       },
     ],

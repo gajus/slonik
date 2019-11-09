@@ -1,6 +1,9 @@
 // @flow
 
 import {
+  map,
+} from 'inline-loops.macro';
+import {
   executeQuery,
 } from '../routines';
 import type {
@@ -21,10 +24,15 @@ const query: InternalQueryFunctionType<*> = async (connectionLogger, connection,
 
       return {
         command: result.command,
-        fields: result.fields,
-        notices: result.notices,
-        rowCount: result.rowCount,
-        rows: result.rows,
+        fields: map(result.fields || [], (field) => {
+          return {
+            dataTypeId: field.dataTypeID,
+            name: field.name,
+          };
+        }),
+        notices: result.notices || [],
+        rowCount: result.rowCount || 0,
+        rows: result.rows || [],
       };
     },
   );

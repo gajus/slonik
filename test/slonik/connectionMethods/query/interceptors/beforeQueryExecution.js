@@ -15,8 +15,6 @@ test('short-circuits the query execution', async (t) => {
             command: 'SELECT',
             fields: [],
             notices: [],
-            oid: null,
-            rowAsArray: false,
             rowCount: 1,
             rows: [
               {
@@ -43,8 +41,6 @@ test('short-circuits the query execution', async (t) => {
     command: 'SELECT',
     fields: [],
     notices: [],
-    oid: null,
-    rowAsArray: false,
     rowCount: 1,
     rows: [
       {
@@ -66,6 +62,10 @@ test('executes query if "beforeQuery" does not return results', async (t) => {
   });
 
   pool.querySpy.returns({
+    command: 'SELECT',
+    fields: [],
+    notices: [],
+    rowCount: 1,
     rows: [
       {
         foo: 1,
@@ -76,7 +76,10 @@ test('executes query if "beforeQuery" does not return results', async (t) => {
   const result = await pool.query(sql`SELECT 1`);
 
   t.deepEqual(result, {
+    command: 'SELECT',
+    fields: [],
     notices: [],
+    rowCount: 1,
     rows: [
       {
         foo: 1,

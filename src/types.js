@@ -38,13 +38,8 @@ export type StreamHandlerType = (stream: Readable) => void;
 export type ConnectionTypeType = 'EXPLICIT' | 'IMPLICIT_QUERY' | 'IMPLICIT_TRANSACTION';
 
 export type FieldType = {|
-  +columnID: number,
-  +dataTypeID: number,
-  +dataTypeModifier: number,
-  +dataTypeSize: number,
-  +format: string,
+  +dataTypeId: number,
   +name: string,
-  +tableID: number,
 |};
 
 type NoticeType = {|
