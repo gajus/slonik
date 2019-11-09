@@ -6,9 +6,8 @@ jobs:
         postgresql: '9.6'
 script:
   - npm run build
-  - npm run test
+  - NODE_ENV=test nyc npm run test
   - npm run lint
-  - NODE_ENV=test nyc --silent ava
   - nyc report --reporter=text-lcov | coveralls
   - nyc check-coverage --lines 50
 after_success:
