@@ -47,8 +47,8 @@ export {
   InvalidInputError,
   NotFoundError,
   NotNullIntegrityConstraintViolationError,
-  QueryCancelledError,
   SlonikError,
+  StatementCancelledError,
   UnexpectedStateError,
   UniqueIntegrityConstraintViolationError,
 } from './errors';

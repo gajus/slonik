@@ -122,11 +122,11 @@ if (row) {
 
 `NotNullIntegrityConstraintViolationError` is thrown when PostgreSQL responds with [`not_null_violation`](https://www.postgresql.org/docs/9.4/static/errcodes-appendix.html) (`23502`) error.
 
-### Handling `QueryCancelledError`
+### Handling `StatementCancelledError`
 
-`QueryCancelledError` is thrown when a query is cancelled by the user, i.e. [`pg_cancel_backend`](https://www.postgresql.org/docs/current/functions-admin.html#FUNCTIONS-ADMIN-SIGNAL).
+`StatementCancelledError` is thrown when a query is cancelled by the user (i.e. [`pg_cancel_backend`](https://www.postgresql.org/docs/current/functions-admin.html#FUNCTIONS-ADMIN-SIGNAL)) or in case of a timeout.
 
-It should be safe to use the same connection if the `QueryCancelledError` is handled, e.g.
+It should be safe to use the same connection if `StatementCancelledError` is handled, e.g.
 
 ```js
 await pool.connect(async (connection0) => {
@@ -140,7 +140,7 @@ await pool.connect(async (connection0) => {
     try {
       await connection1.query(sql`SELECT pg_sleep(30)`);
     } catch (error) {
-      if (error instanceof QueryCancelledError) {
+      if (error instanceof StatementCancelledError) {
         // Safe to continue using the same connection.
       } else {
         throw error;

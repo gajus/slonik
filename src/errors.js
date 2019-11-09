@@ -12,12 +12,12 @@ export class UnexpectedStateError extends SlonikError {}
 
 export class ConnectionError extends SlonikError {}
 
-export class QueryCancelledError extends SlonikError {
+export class StatementCancelledError extends SlonikError {
   constructor (error: Error) {
     super();
 
     this.originalError = error;
-    this.message = 'Query has been cancelled.';
+    this.message = 'Statement has been cancelled.';
   }
 }
 

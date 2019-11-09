@@ -19,7 +19,7 @@ import {
   ForeignKeyIntegrityConstraintViolationError,
   InvalidInputError,
   NotNullIntegrityConstraintViolationError,
-  QueryCancelledError,
+  StatementCancelledError,
   UnexpectedStateError,
   UniqueIntegrityConstraintViolationError,
 } from '../errors';
@@ -164,8 +164,7 @@ export default async (
       }
 
       if (error.code === '57014') {
-        // @todo Rename `QueryCancelledError` to `BackendCancelledError`.
-        throw new QueryCancelledError(error);
+        throw new StatementCancelledError(error);
       }
 
       if (error.code === '23502') {
