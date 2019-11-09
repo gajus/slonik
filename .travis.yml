@@ -1,10 +1,8 @@
 language: node_js
-env:
-  - DB=postgres
 jobs:
   include:
     - node_js: 10
-      postgresql: 11
+      postgresql: 10
 script:
   - npm run build
   - npm run test
