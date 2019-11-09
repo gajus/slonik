@@ -111,6 +111,7 @@ export default (
 
     client.connection.slonik = {
       connectionId: createUlid(),
+      terminated: false,
       transactionDepth: null,
     };
 

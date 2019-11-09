@@ -30,6 +30,12 @@ type ConnectionHandlerType = (
 
 type PoolHandlerType = (pool: DatabasePoolType) => Promise<*>;
 
+const terminatePoolConnection = (pool, connection) => {
+  connection.connection.slonik.terminated = true;
+
+  pool._remove(connection);
+};
+
 const createConnection = async (
   parentLog: LoggerType,
   pool: InternalDatabasePoolType,
@@ -95,7 +101,7 @@ const createConnection = async (
       }
     }
   } catch (error) {
-    pool._remove(connection);
+    terminatePoolConnection(pool, connection);
 
     throw error;
   }
@@ -105,7 +111,7 @@ const createConnection = async (
   try {
     result = await connectionHandler(connectionLog, connection, boundConnection, clientConfiguration);
   } catch (error) {
-    pool._remove(connection);
+    terminatePoolConnection(pool, connection);
 
     throw error;
   }
@@ -117,12 +123,28 @@ const createConnection = async (
       }
     }
   } catch (error) {
-    pool._remove(connection);
+    terminatePoolConnection(pool, connection);
 
     throw error;
   }
 
-  await connection.release();
+  // Do not use `connection.release()`:
+  //
+  // It is possible that user might mishandle connection release,
+  // and same connection is going to end up being used by multiple
+  // invocations of `pool.connect`, e.g.
+  //
+  // ```
+  // pool.connect((connection1) => { setTimeout(() => { connection1; }, 1000) });
+  // pool.connect((connection2) => { setTimeout(() => { connection2; }, 1000) });
+  // ```
+  //
+  // In the above scenario, connection1 and connection2 are going to be the same connection.
+  //
+  // `pool._remove(connection)` ensures that we create a new connection for each `pool.connect()`.
+  //
+  // The downside of this approach is that we cannot leverage idle connection pooling.
+  terminatePoolConnection(pool, connection);
 
   return result;
 };
