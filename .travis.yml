@@ -2,6 +2,12 @@ language: node_js
 node_js:
   - node
   - 10
+addons:
+  postgresql: '11'
+services:
+  - postgresql
+before_script:
+  - psql -c 'create database test;' -U postgres
 script:
   - npm run build
   - npm run test
