@@ -49,6 +49,7 @@ export {
   NotNullIntegrityConstraintViolationError,
   SlonikError,
   StatementCancelledError,
+  StatementTimeoutError,
   UnexpectedStateError,
   UniqueIntegrityConstraintViolationError,
 } from './errors';

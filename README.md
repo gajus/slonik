@@ -114,6 +114,7 @@ Note: Using this project does not require TypeScript or Flow. It is a regular ES
         * [Handling `NotFoundError`](#slonik-error-handling-handling-notfounderror)
         * [Handling `NotNullIntegrityConstraintViolationError`](#slonik-error-handling-handling-notnullintegrityconstraintviolationerror)
         * [Handling `StatementCancelledError`](#slonik-error-handling-handling-statementcancellederror)
+        * [Handling `StatementTimeoutError`](#slonik-error-handling-handling-statementtimeouterror)
         * [Handling `UniqueIntegrityConstraintViolationError`](#slonik-error-handling-handling-uniqueintegrityconstraintviolationerror)
     * [Types](#slonik-types)
     * [Debugging](#slonik-debugging)
@@ -1909,6 +1910,11 @@ await pool.connect(async (connection0) => {
 });
 
 ```
+
+<a name="slonik-error-handling-handling-statementtimeouterror"></a>
+### Handling <code>StatementTimeoutError</code>
+
+`StatementTimeoutError` inherits from `StatementCancelledError` and it is called only in case of a timeout.
 
 <a name="slonik-error-handling-handling-uniqueintegrityconstraintviolationerror"></a>
 ### Handling <code>UniqueIntegrityConstraintViolationError</code>

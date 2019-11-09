@@ -20,6 +20,7 @@ import {
   InvalidInputError,
   NotNullIntegrityConstraintViolationError,
   StatementCancelledError,
+  StatementTimeoutError,
   UnexpectedStateError,
   UniqueIntegrityConstraintViolationError,
 } from '../errors';
@@ -161,6 +162,10 @@ export default async (
         connection.connection.slonik.terminated = true;
 
         throw new BackendTerminatedError(error);
+      }
+
+      if (error.code === '57014' && error.message.includes('canceling statement due to statement timeout')) {
+        throw new StatementTimeoutError(error);
       }
 
       if (error.code === '57014') {

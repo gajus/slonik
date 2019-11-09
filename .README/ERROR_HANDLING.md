@@ -151,6 +151,10 @@ await pool.connect(async (connection0) => {
 
 ```
 
+### Handling `StatementTimeoutError`
+
+`StatementTimeoutError` inherits from `StatementCancelledError` and it is called only in case of a timeout.
+
 ### Handling `UniqueIntegrityConstraintViolationError`
 
 `UniqueIntegrityConstraintViolationError` is thrown when PostgreSQL responds with [`unique_violation`](https://www.postgresql.org/docs/9.4/static/errcodes-appendix.html) (`23505`) error.

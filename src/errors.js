@@ -21,6 +21,14 @@ export class StatementCancelledError extends SlonikError {
   }
 }
 
+export class StatementTimeoutError extends StatementCancelledError {
+  constructor (error: Error) {
+    super(error);
+
+    this.message = 'Statement has been cancelled due to a statement_timeout.';
+  }
+}
+
 export class BackendTerminatedError extends SlonikError {
   constructor (error: Error) {
     super();

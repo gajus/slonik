@@ -207,4 +207,17 @@ test('cancelled statement produces StatementCancelledError error', async (t) => 
 
   t.true(error instanceof StatementCancelledError);
 });
+
+test('statement cancelled because of statement_timeout produces StatementTimeoutError error', async (t) => {
+  const pool = createPool(TEST_DSN);
+
+  const error = await t.throwsAsync(pool.connect(async (connection) => {
+    await connection.query(sql`
+      SET statement_timeout=100
+    `);
+
+    await connection.query(sql`SELECT pg_sleep(1)`);
+  }));
+
+  t.true(error instanceof StatementTimeoutError);
 });
