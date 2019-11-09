@@ -1591,8 +1591,6 @@ await connection.query(sql`SELECT foo`);
 //   command: 'SELECT',
 //   fields: [],
 //   notices: [],
-//   oid: null,
-//   rowAsArray: false,
 //   rowCount: 1,
 //   rows: [
 //     {

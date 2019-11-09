@@ -60,8 +60,6 @@ export type QueryResultType<T> = {|
   +command: 'DELETE' | 'INSERT' | 'SELECT' | 'UPDATE',
   +fields: $ReadOnlyArray<FieldType>,
   +notices: $ReadOnlyArray<NoticeType>,
-  +oid: number | null,
-  +rowAsArray: boolean,
   +rowCount: number,
   +rows: $ReadOnlyArray<T>,
 |};
