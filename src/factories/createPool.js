@@ -115,6 +115,12 @@ export default (
       transactionDepth: null,
     };
 
+    client.on('error', (error) => {
+      poolLog.error({
+        error: serializeError(error),
+      }, 'client error');
+    });
+
     client.on('notice', (notice) => {
       poolLog.info({
         notice: {
