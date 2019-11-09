@@ -58,7 +58,7 @@ export default (
   let pgNativeBindingsAreAvailable = false;
 
   try {
-    /* eslint-disable global-require, import/no-unassigned-import */
+    /* eslint-disable global-require, import/no-unassigned-import, import/no-extraneous-dependencies */
     // $FlowFixMe
     require('pg-native');
     /* eslint-enable */
