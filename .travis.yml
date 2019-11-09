@@ -1,10 +1,9 @@
 language: node_js
-services:
-  - postgresql
 jobs:
   include:
-    - node_js: 10
-      postgresql: 10
+    - node_js: '10'
+      addons:
+        postgresql: '9.6'
 script:
   - npm run build
   - npm run test
