@@ -12,6 +12,7 @@ export default (clientUserConfiguration?: ClientConfigurationInputType): ClientC
 
   const configuration = {
     captureStackTrace: true,
+    connectionRetryLimit: 3,
     connectionTimeout: 5000,
     idleTimeout: 5000,
 

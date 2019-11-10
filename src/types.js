@@ -67,6 +67,7 @@ export type InternalDatabaseConnectionType = any;
 
 /**
  * @property captureStackTrace Dictates whether to capture stack trace before executing query. Middlewares access stack trace through query execution context. (Default: true)
+ * @property connectionRetryLimit Number of times to retry establishing a new connection. (Default: 3)
  * @property connectionTimeout Timeout (in milliseconds) after which an error is raised if cannot cannot be established. (Default: 5000)
  * @property idleTimeout Timeout (in milliseconds) after which idle clients are closed. Use 'DISABLE_TIMEOUT' constant to disable the timeout. (Default: 5000)
  * @property interceptors An array of [Slonik interceptors](https://github.com/gajus/slonik#slonik-interceptors).
@@ -77,6 +78,7 @@ export type InternalDatabaseConnectionType = any;
  */
 export type ClientConfigurationInputType = {|
   +captureStackTrace?: boolean,
+  +connectionRetryLimit?: number,
   +connectionTimeout?: number | 'DISABLE_TIMEOUT',
   +idleTimeout?: number | 'DISABLE_TIMEOUT',
   +interceptors?: $ReadOnlyArray<InterceptorType>,
@@ -88,6 +90,7 @@ export type ClientConfigurationInputType = {|
 
 export type ClientConfigurationType = {|
   +captureStackTrace: boolean,
+  +connectionRetryLimit: number,
   +connectionTimeout: number | 'DISABLE_TIMEOUT',
   +idleTimeout: number | 'DISABLE_TIMEOUT',
   +interceptors: $ReadOnlyArray<InterceptorType>,

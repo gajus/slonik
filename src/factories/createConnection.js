@@ -63,11 +63,17 @@ const createConnection = async (
 
   let connection: InternalDatabaseConnectionType;
 
-  try {
-    connection = await pool.connect();
-  } catch (error) {
-    throw new ConnectionError(error.message);
-  }
+  let remainingConnectionRetryLimit = clientConfiguration.connectionRetryLimit;
+
+  do {
+    try {
+      connection = await pool.connect();
+
+      break;
+    } catch (error) {
+      throw new ConnectionError(error.message);
+    }
+  } while (remainingConnectionRetryLimit-- > 1);
 
   if (!pool.typeOverrides) {
     pool.typeOverrides = createTypeOverrides(connection, clientConfiguration.typeParsers);
