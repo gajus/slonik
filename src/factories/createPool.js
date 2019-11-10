@@ -91,6 +91,7 @@ export default (
   const pool = new pg.Pool(poolConfiguration);
 
   pool.slonik = {
+    ended: false,
     poolId,
     typeOverrides: null,
   };

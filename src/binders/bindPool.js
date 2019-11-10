@@ -85,6 +85,41 @@ export default (
         },
       );
     },
+    end: async () => {
+      const terminateIdleClients = () => {
+        const activeConnectionCount = pool.totalCount - pool.idleCount;
+
+        if (activeConnectionCount === 0) {
+          for (const client of pool._clients) {
+            pool._remove(client);
+          }
+        }
+      };
+
+      pool.slonik.ended = true;
+
+      return new Promise((resolve) => {
+        terminateIdleClients();
+
+        pool.on('remove', () => {
+          if (pool.totalCount === 0) {
+            resolve();
+          }
+        });
+
+        if (pool.totalCount === 0) {
+          resolve();
+        }
+      });
+    },
+    getPoolState: () => {
+      return {
+        activeConnectionCount: pool.totalCount - pool.idleCount,
+        ended: pool.slonik.ended,
+        idleConnectionCount: pool.idleCount,
+        waitingClientCount: pool.waitingCount,
+      };
+    },
     many: mapConnection('many'),
     manyFirst: mapConnection('manyFirst'),
     maybeOne: mapConnection('maybeOne'),

@@ -64,6 +64,7 @@ Note: Using this project does not require TypeScript or Flow. It is a regular ES
     * [Documentation](#slonik-documentation)
     * [Usage](#slonik-usage)
         * [Create connection](#slonik-usage-create-connection)
+        * [End connection pool](#slonik-usage-end-connection-pool)
         * [API](#slonik-usage-api)
         * [Default configuration](#slonik-usage-default-configuration)
         * [Using native libpq bindings](#slonik-usage-using-native-libpq-bindings)
@@ -399,7 +400,7 @@ Use `createPool` to create a connection pool, e.g.
 
 ```js
 import {
-  createPool
+  createPool,
 } from 'slonik';
 
 const pool = createPool('postgres://');
@@ -427,6 +428,35 @@ pool.query(sql`SELECT 1`);
 ```
 
 Beware that in the latter example, the connection picked to execute the query is a random connection from the connection pool, i.e. using the latter method (without explicit `connect()`) does not guarantee that multiple queries will refer to the same backend.
+
+<a name="slonik-usage-end-connection-pool"></a>
+### End connection pool
+
+Use `pool.end()` to end idle connections and prevent creation of new connections.
+
+The result of `pool.end()` is a promise that is resolved when all connections are ended.
+
+```js
+import {
+  createPool,
+  sql,
+} from 'slonik';
+
+const pool = createPool('postgres://');
+
+const main = async () => {
+  await pool.query(sql`
+    SELECT 1
+  `);
+
+  await pool.end();
+};
+
+main();
+
+```
+
+Note: `pool.end()` does not terminate active connections/ transactions.
 
 <a name="slonik-usage-api"></a>
 ### API

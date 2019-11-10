@@ -52,6 +52,10 @@ const createConnection = async (
   poolHandler: PoolHandlerType,
   query?: TaggedTemplateLiteralInvocationType | null = null,
 ) => {
+  if (pool.slonik.ended) {
+    throw new UnexpectedStateError('Connection pool shutdown has been already initiated. Cannot create a new connection.');
+  }
+
   for (const interceptor of clientConfiguration.interceptors) {
     if (interceptor.beforePoolConnection) {
       const maybeNewPool = await interceptor.beforePoolConnection({
@@ -158,7 +162,7 @@ const createConnection = async (
     throw error;
   }
 
-  if (connectionType === 'IMPLICIT_QUERY') {
+  if (pool.slonik.ended === false && connectionType === 'IMPLICIT_QUERY') {
     // @todo Abstract into an array of queries that could be configured using `clientConfiguration`.
     await connection.query('DISCARD ALL');
     await connection.release();

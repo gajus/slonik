@@ -145,6 +145,7 @@ export type ConnectionRoutineType = (connection: DatabasePoolConnectionType) => 
 export type DatabasePoolType = {|
   ...$Exact<CommonQueryMethodsType>,
   +connect: (connectionRoutine: ConnectionRoutineType) => Promise<*>,
+  +end: () => Promise<void>,
   +stream: StreamFunctionType,
   +transaction: (handler: TransactionFunctionType) => Promise<*>,
 |};

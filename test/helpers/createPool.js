@@ -43,6 +43,7 @@ export default (clientConfiguration: ClientConfigurationInputType = defaultConfi
       return connection;
     },
     slonik: {
+      ended: false,
       poolId: '1',
     },
   };
