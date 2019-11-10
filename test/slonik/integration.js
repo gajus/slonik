@@ -452,3 +452,137 @@ test('serves waiting requests', async (t) => {
   // are assigned a connection after a preceding request is complete.
   t.true(true);
 });
+
+test('pool.end() resolves when there are no more connections (no connections at start)', async (t) => {
+  const pool = createPool(TEST_DSN);
+
+  t.deepEqual(pool.getPoolState(), {
+    activeConnectionCount: 0,
+    ended: false,
+    idleConnectionCount: 0,
+    waitingClientCount: 0,
+  });
+
+  await pool.end();
+
+  t.deepEqual(pool.getPoolState(), {
+    activeConnectionCount: 0,
+    ended: true,
+    idleConnectionCount: 0,
+    waitingClientCount: 0,
+  });
+});
+
+test('pool.end() resolves when there are no more connections (implicit connection)', async (t) => {
+  const pool = createPool(TEST_DSN);
+
+  t.deepEqual(pool.getPoolState(), {
+    activeConnectionCount: 0,
+    ended: false,
+    idleConnectionCount: 0,
+    waitingClientCount: 0,
+  });
+
+  await pool.query(sql`
+    SELECT 1
+  `);
+
+  t.deepEqual(pool.getPoolState(), {
+    activeConnectionCount: 0,
+    ended: false,
+    idleConnectionCount: 1,
+    waitingClientCount: 0,
+  });
+
+  await pool.end();
+
+  t.deepEqual(pool.getPoolState(), {
+    activeConnectionCount: 0,
+    ended: true,
+    idleConnectionCount: 0,
+    waitingClientCount: 0,
+  });
+});
+
+test('pool.end() resolves when there are no more connections (explicit connection holding pool alive)', async (t) => {
+  const pool = createPool(TEST_DSN);
+
+  t.deepEqual(pool.getPoolState(), {
+    activeConnectionCount: 0,
+    ended: false,
+    idleConnectionCount: 0,
+    waitingClientCount: 0,
+  });
+
+  pool.connect(async () => {
+    await delay(500);
+  });
+
+  await delay(100);
+
+  t.deepEqual(pool.getPoolState(), {
+    activeConnectionCount: 1,
+    ended: false,
+    idleConnectionCount: 0,
+    waitingClientCount: 0,
+  });
+
+  await pool.end();
+
+  t.deepEqual(pool.getPoolState(), {
+    activeConnectionCount: 0,
+    ended: true,
+    idleConnectionCount: 0,
+    waitingClientCount: 0,
+  });
+});
+
+test('pool.end() resolves when there are no more connections (terminates idle connections)', async (t) => {
+  t.timeout(1000);
+
+  const pool = createPool(TEST_DSN, {
+    idleTimeout: 5000,
+    maximumPoolSize: 5,
+  });
+
+  t.deepEqual(pool.getPoolState(), {
+    activeConnectionCount: 0,
+    ended: false,
+    idleConnectionCount: 0,
+    waitingClientCount: 0,
+  });
+
+  await Promise.all([
+    pool.query(sql`
+      SELECT 1
+    `),
+    pool.query(sql`
+      SELECT 1
+    `),
+    pool.query(sql`
+      SELECT 1
+    `),
+    pool.query(sql`
+      SELECT 1
+    `),
+    pool.query(sql`
+      SELECT 1
+    `),
+  ]);
+
+  t.deepEqual(pool.getPoolState(), {
+    activeConnectionCount: 0,
+    ended: false,
+    idleConnectionCount: 5,
+    waitingClientCount: 0,
+  });
+
+  await pool.end();
+
+  t.deepEqual(pool.getPoolState(), {
+    activeConnectionCount: 0,
+    ended: true,
+    idleConnectionCount: 0,
+    waitingClientCount: 0,
+  });
+});

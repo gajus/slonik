@@ -142,10 +142,18 @@ export type DatabasePoolConnectionType = {|
 
 export type ConnectionRoutineType = (connection: DatabasePoolConnectionType) => Promise<*>;
 
+export type PoolStateType = {|
+  +activeConnectionCount: number,
+  +ended: boolean,
+  +idleConnectionCount: number,
+  +waitingClientCount: number,
+|};
+
 export type DatabasePoolType = {|
   ...$Exact<CommonQueryMethodsType>,
   +connect: (connectionRoutine: ConnectionRoutineType) => Promise<*>,
   +end: () => Promise<void>,
+  +getPoolState: () => PoolStateType,
   +stream: StreamFunctionType,
   +transaction: (handler: TransactionFunctionType) => Promise<*>,
 |};

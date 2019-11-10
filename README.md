@@ -65,6 +65,7 @@ Note: Using this project does not require TypeScript or Flow. It is a regular ES
     * [Usage](#slonik-usage)
         * [Create connection](#slonik-usage-create-connection)
         * [End connection pool](#slonik-usage-end-connection-pool)
+        * [Describing the current state of the connection pool](#slonik-usage-describing-the-current-state-of-the-connection-pool)
         * [API](#slonik-usage-api)
         * [Default configuration](#slonik-usage-default-configuration)
         * [Using native libpq bindings](#slonik-usage-using-native-libpq-bindings)
@@ -450,6 +451,67 @@ const main = async () => {
   `);
 
   await pool.end();
+};
+
+main();
+
+```
+
+Note: `pool.end()` does not terminate active connections/ transactions.
+
+<a name="slonik-usage-describing-the-current-state-of-the-connection-pool"></a>
+### Describing the current state of the connection pool
+
+Use `pool.getPoolState()` to find out if pool is alive and how many connections are active and idle, and how many clients are waiting for a connection.
+
+```js
+import {
+  createPool,
+  sql,
+} from 'slonik';
+
+const pool = createPool('postgres://');
+
+const main = async () => {
+  pool.getPoolState();
+
+  // {
+  //   activeConnectionCount: 0,
+  //   ended: false,
+  //   idleConnectionCount: 0,
+  //   waitingClientCount: 0,
+  // }
+
+  await pool.connect(() => {
+    pool.getPoolState();
+
+    // {
+    //   activeConnectionCount: 1,
+    //   ended: false,
+    //   idleConnectionCount: 0,
+    //   waitingClientCount: 0,
+    // }
+  });
+
+  pool.getPoolState();
+
+  // {
+  //   activeConnectionCount: 0,
+  //   ended: false,
+  //   idleConnectionCount: 1,
+  //   waitingClientCount: 0,
+  // }
+
+  await pool.end();
+
+  pool.getPoolState();
+
+  // {
+  //   activeConnectionCount: 0,
+  //   ended: true,
+  //   idleConnectionCount: 0,
+  //   waitingClientCount: 0,
+  // }
 };
 
 main();
