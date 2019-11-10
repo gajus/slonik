@@ -7,6 +7,7 @@ import type {
 export default (): ClientConfigurationType => {
   return {
     captureStackTrace: true,
+    connectionRetryLimit: 3,
     connectionTimeout: 5000,
     idleTimeout: 5000,
     interceptors: [],
