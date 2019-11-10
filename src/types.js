@@ -1,6 +1,6 @@
 // @flow
 
-/* eslint-disable no-use-before-define, import/exports-last, flowtype/require-types-at-top */
+/* eslint-disable no-use-before-define, import/exports-last, flowtype/require-types-at-top, flowtype/require-compound-type-alias */
 
 import type {
   Readable,

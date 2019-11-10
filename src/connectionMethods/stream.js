@@ -1,5 +1,7 @@
 // @flow
 
+/* eslint-disable promise/prefer-await-to-callbacks */
+
 import through from 'through2';
 import {
   executeQuery,

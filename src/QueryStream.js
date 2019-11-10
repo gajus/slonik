@@ -1,6 +1,6 @@
 // @flow
 
-/* eslint-disable fp/no-class, fp/no-this, id-match, flowtype/no-weak-types */
+/* eslint-disable fp/no-class, fp/no-this, id-match, flowtype/no-weak-types, promise/prefer-await-to-callbacks */
 
 import {
   Readable,
