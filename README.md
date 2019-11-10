@@ -1619,12 +1619,7 @@ await connection.stream(sql`SELECT foo`, (stream) => {
     //   fields: [
     //     {
     //       name: 'foo',
-    //       tableID: 0,
-    //       columnID: 0,
-    //       dataTypeID: 23,
-    //       dataTypeSize: 4,
-    //       dataTypeModifier: -1,
-    //       format: 'text'
+    //       dataTypeId: 23,
     //     }
     //   ],
     //   row: {

@@ -6,6 +6,9 @@ import {
   Readable,
 } from 'stream';
 import Cursor from 'pg-cursor';
+import {
+  map,
+} from 'inline-loops.macro';
 
 /**
  * @see https://github.com/brianc/node-pg-query-stream
@@ -104,7 +107,12 @@ export default class QueryStream extends Readable {
       for (const row of rows) {
         // $FlowFixMe
         this.push({
-          fields: result.fields,
+          fields: map(result.fields || [], (field) => {
+            return {
+              dataTypeId: field.dataTypeID,
+              name: field.name,
+            };
+          }),
           row,
         });
       }
