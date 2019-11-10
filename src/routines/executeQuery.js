@@ -21,7 +21,6 @@ import {
   NotNullIntegrityConstraintViolationError,
   StatementCancelledError,
   StatementTimeoutError,
-  UnexpectedStateError,
   UniqueIntegrityConstraintViolationError,
 } from '../errors';
 import type {
@@ -54,7 +53,7 @@ export default async (
   executionRoutine: ExecutionRoutineType,
 ) => {
   if (connection.connection.slonik.terminated) {
-    throw new UnexpectedStateError('Cannot use terminated connection.');
+    throw new BackendTerminatedError(connection.connection.slonik.terminated);
   }
 
   if (rawSql.trim() === '') {
@@ -159,7 +158,7 @@ export default async (
       // 'Connection terminated' refers to node-postgres error.
       // @see https://github.com/brianc/node-postgres/blob/eb076db5d47a29c19d3212feac26cd7b6d257a95/lib/client.js#L199
       if (error.code === '57P01' || error.message === 'Connection terminated') {
-        connection.connection.slonik.terminated = true;
+        connection.connection.slonik.terminated = error;
 
         throw new BackendTerminatedError(error);
       }

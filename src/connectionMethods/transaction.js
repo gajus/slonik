@@ -9,6 +9,9 @@ import {
 import {
   createUlid,
 } from '../utilities';
+import {
+  BackendTerminatedError,
+} from '../errors';
 import type {
   InternalTransactionFunctionType,
 } from '../types';
@@ -30,15 +33,21 @@ const transaction: InternalTransactionFunctionType = async (parentLog, connectio
   try {
     const result = await handler(bindTransactionConnection(log, connection, clientConfiguration, connection.connection.slonik.transactionDepth));
 
+    if (connection.connection.slonik.terminated) {
+      throw new BackendTerminatedError(connection.connection.slonik.terminated);
+    }
+
     await connection.query('COMMIT');
 
     return result;
   } catch (error) {
-    await connection.query('ROLLBACK');
+    if (!connection.connection.slonik.terminated) {
+      await connection.query('ROLLBACK');
 
-    log.error({
-      error: serializeError(error),
-    }, 'rolling back transaction due to an error');
+      log.error({
+        error: serializeError(error),
+      }, 'rolling back transaction due to an error');
+    }
 
     throw error;
   } finally {

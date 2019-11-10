@@ -30,8 +30,10 @@ type ConnectionHandlerType = (
 
 type PoolHandlerType = (pool: DatabasePoolType) => Promise<*>;
 
-const terminatePoolConnection = (pool, connection) => {
-  connection.connection.slonik.terminated = true;
+const terminatePoolConnection = (pool, connection, error) => {
+  if (!connection.connection.slonik.terminated) {
+    connection.connection.slonik.terminated = error;
+  }
 
   pool._remove(connection);
 };
@@ -101,7 +103,7 @@ const createConnection = async (
       }
     }
   } catch (error) {
-    terminatePoolConnection(pool, connection);
+    terminatePoolConnection(pool, connection, error);
 
     throw error;
   }
@@ -111,7 +113,7 @@ const createConnection = async (
   try {
     result = await connectionHandler(connectionLog, connection, boundConnection, clientConfiguration);
   } catch (error) {
-    terminatePoolConnection(pool, connection);
+    terminatePoolConnection(pool, connection, error);
 
     throw error;
   }
@@ -123,7 +125,7 @@ const createConnection = async (
       }
     }
   } catch (error) {
-    terminatePoolConnection(pool, connection);
+    terminatePoolConnection(pool, connection, error);
 
     throw error;
   }
@@ -144,7 +146,7 @@ const createConnection = async (
   // `pool._remove(connection)` ensures that we create a new connection for each `pool.connect()`.
   //
   // The downside of this approach is that we cannot leverage idle connection pooling.
-  terminatePoolConnection(pool, connection);
+  terminatePoolConnection(pool, connection, new ConnectionError('Forced connection recycling.'));
 
   return result;
 };

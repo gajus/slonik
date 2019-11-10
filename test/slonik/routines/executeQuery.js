@@ -14,7 +14,7 @@ const createConnectionStub = () => {
   return {
     connection: {
       slonik: {
-        terminated: false,
+        terminated: null,
       },
     },
   };

@@ -3,6 +3,7 @@
 import test, {
   beforeEach,
 } from 'ava';
+import delay from 'delay';
 import {
   BackendTerminatedError,
   createPool,
@@ -220,4 +221,34 @@ test('statement cancelled because of statement_timeout produces StatementTimeout
   }));
 
   t.true(error instanceof StatementTimeoutError);
+});
+
+test('transaction terminated while in an idle state is rejected (at the next transaction query)', async (t) => {
+  const pool = createPool(TEST_DSN);
+
+  await pool.connect(async (connection) => {
+    await connection.query(sql`SET idle_in_transaction_session_timeout=500`);
+
+    const error = await t.throwsAsync(connection.transaction(async (transaction) => {
+      await delay(1000);
+
+      await transaction.query(sql`SELECT 1`);
+    }));
+
+    t.true(error instanceof BackendTerminatedError);
+  });
+});
+
+test('connection of transaction terminated while in an idle state is rejected (at the end of the transaction)', async (t) => {
+  const pool = createPool(TEST_DSN);
+
+  await pool.connect(async (connection) => {
+    await connection.query(sql`SET idle_in_transaction_session_timeout=500`);
+
+    const error = await t.throwsAsync(connection.transaction(async () => {
+      await delay(1000);
+    }));
+
+    t.true(error instanceof BackendTerminatedError);
+  });
 });

@@ -98,7 +98,7 @@ export default (
 
   // istanbul ignore next
   pool.on('error', (error) => {
-    if (error.client.connection.slonik.terminated !== true) {
+    if (!error.client.connection.slonik.terminated) {
       poolLog.error({
         error: serializeError(error),
       }, 'client connection error');
@@ -111,11 +111,15 @@ export default (
 
     client.connection.slonik = {
       connectionId: createUlid(),
-      terminated: false,
+      terminated: null,
       transactionDepth: null,
     };
 
     client.on('error', (error) => {
+      if (error.message.includes('server closed the connection unexpectedly')) {
+        client.connection.slonik.terminated = error;
+      }
+
       poolLog.error({
         error: serializeError(error),
       }, 'client error');
