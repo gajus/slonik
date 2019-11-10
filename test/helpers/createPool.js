@@ -37,6 +37,7 @@ export default (clientConfiguration: ClientConfigurationInputType = defaultConfi
   };
 
   const internalPool = {
+    _pulseQueue: () => {},
     _remove: () => {},
     connect: () => {
       return connection;

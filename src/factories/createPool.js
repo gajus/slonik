@@ -17,6 +17,54 @@ import Logger from '../Logger';
 import bindPool from '../binders/bindPool';
 import createClientConfiguration from './createClientConfiguration';
 
+const createIdleConnection = (log, pool) => {
+  pool
+    .connect()
+    .then((connection) => {
+      return connection.release();
+    })
+    .catch((error) => {
+      log.error({
+        error: serializeError(error),
+      }, 'connection could not be added to the pool');
+    });
+};
+
+/**
+ * Attempts to keep a minimum of `minimumPoolSize` connections.
+ *
+ * We do not pro-actively create connections (e.g. using setInterval); instead we listen
+ * for when connections are removed and if there are less than `minimumPoolSize` already
+ * started connections, then we create new connections.
+ *
+ * As this process relies on pool being actively used to make new connections, (as opposed to using `setInterval`)
+ * we do not implement an explicit method of killing the connection pooling logic either;
+ * connections are killed after `idleTimeout`.
+ */
+const managePoolSize = (log, pool, minimumPoolSize: number) => {
+  let connectionCount = 0;
+
+  const provision = () => {
+    let missingConnectionCount = Math.max(0, minimumPoolSize - connectionCount);
+
+    while (missingConnectionCount-- > 0) {
+      createIdleConnection(log, pool);
+    }
+  };
+
+  pool.on('connect', () => {
+    connectionCount++;
+
+    provision();
+  });
+
+  pool.on('remove', () => {
+    connectionCount--;
+
+    provision();
+  });
+};
+
 /**
  * @param connectionUri PostgreSQL [Connection URI](https://www.postgresql.org/docs/current/libpq-connect.html#LIBPQ-CONNSTRING).
  */
@@ -37,7 +85,6 @@ export default (
   poolConfiguration.connectionTimeoutMillis = clientConfiguration.connectionTimeout;
   poolConfiguration.idleTimeoutMillis = clientConfiguration.idleTimeout;
   poolConfiguration.max = clientConfiguration.maximumPoolSize;
-  poolConfiguration.min = clientConfiguration.minimumPoolSize;
 
   if (clientConfiguration.connectionTimeout === 'DISABLE_TIMEOUT') {
     poolConfiguration.connectionTimeout = 0;
@@ -90,6 +137,14 @@ export default (
   }
 
   const pool = new pg.Pool(poolConfiguration);
+
+  if (clientConfiguration.minimumPoolSize > 0) {
+    managePoolSize(
+      poolLog,
+      pool,
+      clientConfiguration.minimumPoolSize,
+    );
+  }
 
   pool.slonik = {
     poolId,
