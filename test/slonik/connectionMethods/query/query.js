@@ -70,6 +70,8 @@ test('adds notices observed during the query execution to the query result objec
 
   await delay(100);
 
+  t.is(pool.querySpy.callCount, 1);
+
   pool.connection.emit('notice', 'foo');
   pool.connection.emit('notice', 'bar');
 
@@ -88,6 +90,13 @@ test('adds notices observed during the query execution to the query result objec
       },
     ],
   });
+
+  await delay(100);
+
+  t.is(pool.querySpy.callCount, 2);
+
+  // This is the `DISCORD ALL` query.
+  resolveQuery();
 
   t.deepEqual(await queryResultPromise, {
     command: 'SELECT',
