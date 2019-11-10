@@ -392,7 +392,6 @@ test('explicit connection configuration is persisted', async (t) => {
 test('serves waiting requests', async (t) => {
   const pool = createPool(TEST_DSN, {
     maximumPoolSize: 1,
-    minimumPoolSize: 0,
   });
 
   let index = 100;

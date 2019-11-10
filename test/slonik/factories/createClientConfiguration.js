@@ -11,7 +11,6 @@ const defaultConfiguration = {
   idleTimeout: 5000,
   interceptors: [],
   maximumPoolSize: 10,
-  minimumPoolSize: 0,
   preferNativeBindings: true,
   typeParsers: createTypeParserPreset(),
 };

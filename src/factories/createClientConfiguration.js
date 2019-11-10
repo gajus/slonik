@@ -23,7 +23,6 @@ export default (clientUserConfigurationInput?: ClientConfigurationInputType): Cl
     interceptors: [],
 
     maximumPoolSize: 10,
-    minimumPoolSize: 0,
 
     preferNativeBindings: true,
 
@@ -33,16 +32,8 @@ export default (clientUserConfigurationInput?: ClientConfigurationInputType): Cl
     ...clientUserConfigurationInput,
   };
 
-  if (configuration.minimumPoolSize < 0) {
-    throw new InvalidConfigurationError('minimumPoolSize must be equal to or greater than 0.');
-  }
-
   if (configuration.maximumPoolSize < 1) {
     throw new InvalidConfigurationError('maximumPoolSize must be equal to or greater than 1.');
-  }
-
-  if (configuration.minimumPoolSize > configuration.maximumPoolSize) {
-    throw new InvalidConfigurationError('maximumPoolSize must be equal to or greater than minimumPoolSize.');
   }
 
   if (!configuration.typeParsers || configuration.typeParsers === typeParsers) {
