@@ -354,3 +354,37 @@ test('streams rows', async (t) => {
     },
   ]);
 });
+
+test('implicit connection configuration is reset', async (t) => {
+  const pool = createPool(TEST_DSN, {
+    maximumPoolSize: 1,
+  });
+
+  const originalStatementTimeout = await pool.oneFirst(sql`SHOW statement_timeout`);
+
+  t.not(originalStatementTimeout, '50ms');
+
+  await pool.query(sql`SET statement_timeout=50`);
+
+  const statementTimeout = await pool.oneFirst(sql`SHOW statement_timeout`);
+
+  t.not(statementTimeout, '50ms');
+});
+
+test('explicit connection configuration is persisted', async (t) => {
+  const pool = createPool(TEST_DSN, {
+    maximumPoolSize: 1,
+  });
+
+  await pool.connect(async (connection) => {
+    const originalStatementTimeout = await connection.oneFirst(sql`SHOW statement_timeout`);
+
+    t.not(originalStatementTimeout, '50ms');
+
+    await connection.query(sql`SET statement_timeout=50`);
+
+    const statementTimeout = await connection.oneFirst(sql`SHOW statement_timeout`);
+
+    t.is(statementTimeout, '50ms');
+  });
+});
