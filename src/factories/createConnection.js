@@ -159,6 +159,7 @@ const createConnection = async (
   }
 
   if (connectionType === 'IMPLICIT_QUERY') {
+    // @todo Abstract into an array of queries that could be configured using `clientConfiguration`.
     await connection.query('DISCARD ALL');
     await connection.release();
   } else {
