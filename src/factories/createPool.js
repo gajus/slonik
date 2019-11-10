@@ -10,7 +10,7 @@ import {
   createUlid,
 } from '../utilities';
 import type {
-  ClientUserConfigurationType,
+  ClientConfigurationInputType,
   DatabasePoolType,
 } from '../types';
 import Logger from '../Logger';
@@ -22,9 +22,9 @@ import createClientConfiguration from './createClientConfiguration';
  */
 export default (
   connectionUri: string,
-  clientUserConfiguration?: ClientUserConfigurationType,
+  clientConfigurationInput?: ClientConfigurationInputType,
 ): DatabasePoolType => {
-  const clientConfiguration = createClientConfiguration(clientUserConfiguration);
+  const clientConfiguration = createClientConfiguration(clientConfigurationInput);
 
   const poolId = createUlid();
 

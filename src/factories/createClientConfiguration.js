@@ -1,13 +1,13 @@
 // @flow
 
 import type {
+  ClientConfigurationInputType,
   ClientConfigurationType,
-  ClientUserConfigurationType,
   TypeParserType,
 } from '../types';
 import createTypeParserPreset from './createTypeParserPreset';
 
-export default (clientUserConfiguration?: ClientUserConfigurationType): ClientConfigurationType => {
+export default (clientUserConfiguration?: ClientConfigurationInputType): ClientConfigurationType => {
   const typeParsers: $ReadOnlyArray<TypeParserType> = [];
 
   const configuration = {

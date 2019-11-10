@@ -6,7 +6,7 @@ import EventEmitter from 'events';
 import sinon from 'sinon';
 import bindPool from '../../src/binders/bindPool';
 import type {
-  ClientUserConfigurationType,
+  ClientConfigurationInputType,
 } from '../../src/types';
 import log from './Logger';
 
@@ -15,7 +15,7 @@ const defaultConfiguration = {
   typeParsers: [],
 };
 
-export default (clientConfiguration: ClientUserConfigurationType = defaultConfiguration) => {
+export default (clientConfiguration: ClientConfigurationInputType = defaultConfiguration) => {
   const eventEmitter = new EventEmitter();
 
   const connection = {

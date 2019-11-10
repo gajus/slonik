@@ -75,7 +75,7 @@ export type InternalDatabaseConnectionType = any;
  * @property preferNativeBindings Uses libpq bindings when `pg-native` module is installed. (Default: true)
  * @property typeParsers An array of [Slonik type parsers](https://github.com/gajus/slonik#slonik-type-parsers).
  */
-export type ClientUserConfigurationType = {|
+export type ClientConfigurationInputType = {|
   +captureStackTrace?: boolean,
   +connectionTimeout?: number | 'DISABLE_TIMEOUT',
   +idleTimeout?: number | 'DISABLE_TIMEOUT',
