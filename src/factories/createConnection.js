@@ -1,5 +1,8 @@
 // @flow
 
+import {
+  serializeError,
+} from 'serialize-error';
 import type {
   MaybePromiseType,
   ClientConfigurationType,
@@ -19,6 +22,7 @@ import {
 } from '../binders';
 import {
   ConnectionError,
+  UnexpectedStateError,
 } from '../errors';
 
 type ConnectionHandlerType = (
@@ -65,15 +69,32 @@ const createConnection = async (
 
   let remainingConnectionRetryLimit = clientConfiguration.connectionRetryLimit;
 
-  do {
+  while (true) {
+    remainingConnectionRetryLimit--;
+
     try {
       connection = await pool.connect();
 
       break;
     } catch (error) {
-      throw new ConnectionError(error.message);
+      parentLog.error({
+        error: serializeError(error),
+        remainingConnectionRetryLimit,
+      }, 'cannot establish connection');
+
+      if (remainingConnectionRetryLimit > 1) {
+        parentLog.info('retrying connection');
+
+        continue;
+      } else {
+        throw new ConnectionError(error.message);
+      }
     }
-  } while (remainingConnectionRetryLimit-- > 1);
+  }
+
+  if (!connection) {
+    throw new UnexpectedStateError('Connection handle is not present.');
+  }
 
   if (!pool.typeOverrides) {
     pool.typeOverrides = createTypeOverrides(connection, clientConfiguration.typeParsers);
