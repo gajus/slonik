@@ -158,23 +158,28 @@ const createConnection = async (
     throw error;
   }
 
-  // Do not use `connection.release()`:
-  //
-  // It is possible that user might mishandle connection release,
-  // and same connection is going to end up being used by multiple
-  // invocations of `pool.connect`, e.g.
-  //
-  // ```
-  // pool.connect((connection1) => { setTimeout(() => { connection1; }, 1000) });
-  // pool.connect((connection2) => { setTimeout(() => { connection2; }, 1000) });
-  // ```
-  //
-  // In the above scenario, connection1 and connection2 are going to be the same connection.
-  //
-  // `pool._remove(connection)` ensures that we create a new connection for each `pool.connect()`.
-  //
-  // The downside of this approach is that we cannot leverage idle connection pooling.
-  terminatePoolConnection(pool, connection, new ConnectionError('Forced connection recycling.'));
+  if (connectionType === 'IMPLICIT_QUERY') {
+    await connection.query('DISCARD ALL');
+    await connection.release();
+  } else {
+    // Do not use `connection.release()` for explicit connections:
+    //
+    // It is possible that user might mishandle connection release,
+    // and same connection is going to end up being used by multiple
+    // invocations of `pool.connect`, e.g.
+    //
+    // ```
+    // pool.connect((connection1) => { setTimeout(() => { connection1; }, 1000) });
+    // pool.connect((connection2) => { setTimeout(() => { connection2; }, 1000) });
+    // ```
+    //
+    // In the above scenario, connection1 and connection2 are going to be the same connection.
+    //
+    // `pool._remove(connection)` ensures that we create a new connection for each `pool.connect()`.
+    //
+    // The downside of this approach is that we cannot leverage idle connection pooling.
+    terminatePoolConnection(pool, connection, new ConnectionError('Forced connection termination (explicit connection).'));
+  }
 
   return result;
 };
