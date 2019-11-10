@@ -16,30 +16,36 @@ import {
 const TEST_DSN = 'postgres://localhost/slonik_test';
 
 beforeEach(async () => {
-  await delay(100);
-
   const pool0 = createPool('postgres://', {
-    connectionTimeout: 0,
+    maximumPoolSize: 1,
   });
 
-  await pool0.query(sql`DROP DATABASE IF EXISTS slonik_test`);
-  await pool0.query(sql`CREATE DATABASE slonik_test`);
+  await pool0.connect(async (connection) => {
+    await connection.query(sql`DROP DATABASE IF EXISTS slonik_test`);
+    await connection.query(sql`CREATE DATABASE slonik_test`);
+  });
 
-  const pool1 = createPool(TEST_DSN);
+  await pool0.end();
 
-  await pool1.query(sql`
-    CREATE TABLE person (
-      id SERIAL PRIMARY KEY,
-      name text,
-      payload bytea
-    )
-  `);
+  const pool1 = createPool(TEST_DSN, {
+    maximumPoolSize: 1,
+  });
+
+  await pool1.connect(async (connection) => {
+    await connection.query(sql`
+      CREATE TABLE person (
+        id SERIAL PRIMARY KEY,
+        name text,
+        payload bytea
+      )
+    `);
+  });
+
+  await pool1.end();
 });
 
 test('returns expected query result object (SELECT)', async (t) => {
-  const pool = createPool(TEST_DSN, {
-    connectionTimeout: 0,
-  });
+  const pool = createPool(TEST_DSN);
 
   const result = await pool.query(sql`
     SELECT 1 "name"
@@ -61,12 +67,12 @@ test('returns expected query result object (SELECT)', async (t) => {
       },
     ],
   });
+
+  await pool.end();
 });
 
 test('returns expected query result object (INSERT)', async (t) => {
-  const pool = createPool(TEST_DSN, {
-    connectionTimeout: 0,
-  });
+  const pool = createPool(TEST_DSN);
 
   const result = await pool.query(sql`
     INSERT INTO person
@@ -97,12 +103,12 @@ test('returns expected query result object (INSERT)', async (t) => {
       },
     ],
   });
+
+  await pool.end();
 });
 
 test('returns expected query result object (UPDATE)', async (t) => {
-  const pool = createPool(TEST_DSN, {
-    connectionTimeout: 100,
-  });
+  const pool = createPool(TEST_DSN);
 
   await pool.query(sql`
     INSERT INTO person
@@ -142,12 +148,12 @@ test('returns expected query result object (UPDATE)', async (t) => {
       },
     ],
   });
+
+  await pool.end();
 });
 
 test('returns expected query result object (DELETE)', async (t) => {
-  const pool = createPool(TEST_DSN, {
-    connectionTimeout: 100,
-  });
+  const pool = createPool(TEST_DSN);
 
   await pool.query(sql`
     INSERT INTO person
@@ -185,12 +191,12 @@ test('returns expected query result object (DELETE)', async (t) => {
       },
     ],
   });
+
+  await pool.end();
 });
 
 test('terminated backend produces BackendTerminatedError error', async (t) => {
-  const pool = createPool(TEST_DSN, {
-    connectionTimeout: 100,
-  });
+  const pool = createPool(TEST_DSN);
 
   const error = await t.throwsAsync(pool.connect(async (connection) => {
     const connectionPid = await connection.oneFirst(sql`
@@ -205,12 +211,12 @@ test('terminated backend produces BackendTerminatedError error', async (t) => {
   }));
 
   t.true(error instanceof BackendTerminatedError);
+
+  await pool.end();
 });
 
 test('cancelled statement produces StatementCancelledError error', async (t) => {
-  const pool = createPool(TEST_DSN, {
-    connectionTimeout: 100,
-  });
+  const pool = createPool(TEST_DSN);
 
   const error = await t.throwsAsync(pool.connect(async (connection) => {
     const connectionPid = await connection.oneFirst(sql`
@@ -225,12 +231,12 @@ test('cancelled statement produces StatementCancelledError error', async (t) => 
   }));
 
   t.true(error instanceof StatementCancelledError);
+
+  await pool.end();
 });
 
 test('statement cancelled because of statement_timeout produces StatementTimeoutError error', async (t) => {
-  const pool = createPool(TEST_DSN, {
-    connectionTimeout: 100,
-  });
+  const pool = createPool(TEST_DSN);
 
   const error = await t.throwsAsync(pool.connect(async (connection) => {
     await connection.query(sql`
@@ -241,12 +247,12 @@ test('statement cancelled because of statement_timeout produces StatementTimeout
   }));
 
   t.true(error instanceof StatementTimeoutError);
+
+  await pool.end();
 });
 
 test('transaction terminated while in an idle state is rejected (at the next transaction query)', async (t) => {
-  const pool = createPool(TEST_DSN, {
-    connectionTimeout: 100,
-  });
+  const pool = createPool(TEST_DSN);
 
   await pool.connect(async (connection) => {
     await connection.query(sql`SET idle_in_transaction_session_timeout=500`);
@@ -259,12 +265,12 @@ test('transaction terminated while in an idle state is rejected (at the next tra
 
     t.true(error instanceof BackendTerminatedError);
   });
+
+  await pool.end();
 });
 
 test('connection of transaction terminated while in an idle state is rejected (at the end of the transaction)', async (t) => {
-  const pool = createPool(TEST_DSN, {
-    connectionTimeout: 100,
-  });
+  const pool = createPool(TEST_DSN);
 
   await pool.connect(async (connection) => {
     await connection.query(sql`SET idle_in_transaction_session_timeout=500`);
@@ -275,12 +281,12 @@ test('connection of transaction terminated while in an idle state is rejected (a
 
     t.true(error instanceof BackendTerminatedError);
   });
+
+  await pool.end();
 });
 
 test('throws an error if an attempt is made to make multiple transactions at once using the same connection', async (t) => {
-  const pool = createPool(TEST_DSN, {
-    connectionTimeout: 100,
-  });
+  const pool = createPool(TEST_DSN);
 
   const error = await t.throwsAsync(pool.connect(async (connection) => {
     await Promise.all([
@@ -298,12 +304,12 @@ test('throws an error if an attempt is made to make multiple transactions at onc
 
   t.true(error instanceof UnexpectedStateError);
   t.is(error.message, 'Cannot use the same connection to start a new transaction before completing the last transaction.');
+
+  await pool.end();
 });
 
 test('writes and reads buffers', async (t) => {
-  const pool = createPool(TEST_DSN, {
-    connectionTimeout: 100,
-  });
+  const pool = createPool(TEST_DSN);
 
   const payload = 'foobarbazqux';
 
@@ -324,12 +330,12 @@ test('writes and reads buffers', async (t) => {
   `);
 
   t.is(result.toString(), payload);
+
+  await pool.end();
 });
 
 test('streams rows', async (t) => {
-  const pool = createPool(TEST_DSN, {
-    connectionTimeout: 100,
-  });
+  const pool = createPool(TEST_DSN);
 
   await pool.query(sql`
     INSERT INTO person (name) VALUES ('foo'), ('bar'), ('baz')
@@ -381,11 +387,12 @@ test('streams rows', async (t) => {
       },
     },
   ]);
+
+  await pool.end();
 });
 
 test('implicit connection configuration is reset', async (t) => {
   const pool = createPool(TEST_DSN, {
-    connectionTimeout: 100,
     maximumPoolSize: 1,
   });
 
@@ -398,11 +405,12 @@ test('implicit connection configuration is reset', async (t) => {
   const statementTimeout = await pool.oneFirst(sql`SHOW statement_timeout`);
 
   t.not(statementTimeout, '50ms');
+
+  await pool.end();
 });
 
 test('explicit connection configuration is persisted', async (t) => {
   const pool = createPool(TEST_DSN, {
-    connectionTimeout: 100,
     maximumPoolSize: 1,
   });
 
@@ -417,11 +425,14 @@ test('explicit connection configuration is persisted', async (t) => {
 
     t.is(statementTimeout, '50ms');
   });
+
+  await pool.end();
 });
 
 test('serves waiting requests', async (t) => {
+  t.timeout(1000);
+
   const pool = createPool(TEST_DSN, {
-    connectionTimeout: 100,
     maximumPoolSize: 1,
   });
 
@@ -434,6 +445,8 @@ test('serves waiting requests', async (t) => {
   }
 
   await Promise.all(queue);
+
+  await pool.end();
 
   // We are simply testing to ensure that requests in a queue
   // are assigned a connection after a preceding request is complete.
