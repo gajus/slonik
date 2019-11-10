@@ -134,7 +134,7 @@ export default (
       }, 'notice message');
     });
 
-    poolLog.info({
+    poolLog.debug({
       processId: client.processID,
       stats: {
         idleConnectionCount: pool.idleCount,
@@ -146,7 +146,7 @@ export default (
 
   // istanbul ignore next
   pool.on('acquire', (client) => {
-    poolLog.info({
+    poolLog.debug({
       processId: client.processID,
       stats: {
         idleConnectionCount: pool.idleCount,
@@ -158,7 +158,7 @@ export default (
 
   // istanbul ignore next
   pool.on('remove', (client) => {
-    poolLog.info({
+    poolLog.debug({
       processId: client.processID,
       stats: {
         idleConnectionCount: pool.idleCount,
