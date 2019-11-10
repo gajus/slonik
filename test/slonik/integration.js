@@ -10,6 +10,7 @@ import {
   sql,
   StatementCancelledError,
   StatementTimeoutError,
+  UnexpectedStateError,
 } from '../../src';
 
 const TEST_DSN = 'postgres://localhost/slonik_test';
@@ -251,4 +252,25 @@ test('connection of transaction terminated while in an idle state is rejected (a
 
     t.true(error instanceof BackendTerminatedError);
   });
+});
+
+test('throws an error if an attempt is made to make multiple transactions at once using the same connection', async (t) => {
+  const pool = createPool(TEST_DSN);
+
+  const error = await t.throwsAsync(pool.connect(async (connection) => {
+    await Promise.all([
+      connection.transaction(async () => {
+        await delay(1000);
+      }),
+      connection.transaction(async () => {
+        await delay(1000);
+      }),
+      connection.transaction(async () => {
+        await delay(1000);
+      }),
+    ]);
+  }));
+
+  t.true(error instanceof UnexpectedStateError);
+  t.is(error.message, 'Cannot use the same connection to start a new transaction before completing the last transaction.');
 });

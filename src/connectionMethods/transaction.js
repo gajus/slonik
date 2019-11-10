@@ -11,6 +11,7 @@ import {
 } from '../utilities';
 import {
   BackendTerminatedError,
+  UnexpectedStateError,
 } from '../errors';
 import type {
   InternalTransactionFunctionType,
@@ -18,7 +19,7 @@ import type {
 
 const transaction: InternalTransactionFunctionType = async (parentLog, connection, clientConfiguration, handler) => {
   if (connection.connection.slonik.transactionDepth !== null) {
-    throw new Error('Cannot use the same connection to start a new transaction before completing the last transaction.');
+    throw new UnexpectedStateError('Cannot use the same connection to start a new transaction before completing the last transaction.');
   }
 
   connection.connection.slonik.transactionDepth = 0;
