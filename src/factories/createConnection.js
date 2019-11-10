@@ -40,6 +40,7 @@ const terminatePoolConnection = (pool, connection, error) => {
   }
 
   pool._remove(connection);
+  pool._pulseQueue();
 };
 
 const createConnection = async (

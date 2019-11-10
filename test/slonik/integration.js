@@ -388,3 +388,24 @@ test('explicit connection configuration is persisted', async (t) => {
     t.is(statementTimeout, '50ms');
   });
 });
+
+test('serves waiting requests', async (t) => {
+  const pool = createPool(TEST_DSN, {
+    maximumPoolSize: 1,
+    minimumPoolSize: 0,
+  });
+
+  let index = 100;
+
+  const queue = [];
+
+  while (index--) {
+    queue.push(pool.query(sql`SELECT 1`));
+  }
+
+  await Promise.all(queue);
+
+  // We are simply testing to ensure that requests in a queue
+  // are assigned a connection after a preceding request is complete.
+  t.true(true);
+});
