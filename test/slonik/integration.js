@@ -26,7 +26,8 @@ beforeEach(async () => {
   await pool1.query(sql`
     CREATE TABLE person (
       id SERIAL PRIMARY KEY,
-      name text
+      name text,
+      payload bytea
     )
   `);
 });
@@ -273,4 +274,28 @@ test('throws an error if an attempt is made to make multiple transactions at onc
 
   t.true(error instanceof UnexpectedStateError);
   t.is(error.message, 'Cannot use the same connection to start a new transaction before completing the last transaction.');
+});
+
+test('writes and reads buffers', async (t) => {
+  const pool = createPool(TEST_DSN);
+
+  const payload = 'foobarbazqux';
+
+  await pool.query(sql`
+    INSERT INTO person
+    (
+      payload
+    )
+    VALUES
+    (
+      ${sql.binary(Buffer.from(payload))}
+    )
+  `);
+
+  const result = await pool.oneFirst(sql`
+    SELECT payload
+    FROM person
+  `);
+
+  t.is(payload, result.toString());
 });
