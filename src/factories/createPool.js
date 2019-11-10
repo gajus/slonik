@@ -116,7 +116,7 @@ export default (
     };
 
     client.on('error', (error) => {
-      if (error.message.includes('server closed the connection unexpectedly')) {
+      if (error.message.includes('Connection terminated unexpectedly') || error.message.includes('server closed the connection unexpectedly')) {
         client.connection.slonik.terminated = error;
       }
 
