@@ -1410,14 +1410,6 @@ sql`
 
 ```
 
-<a name="slonik-query-building-sql-join-difference-from-json-stringify-1"></a>
-#### Difference from <code>JSON.stringify</code>
-
-|Input|`sql.json`|`JSON.stringify`|
-|---|---|---|
-|`undefined`|Throws `InvalidInputError` error.|`undefined`|
-|`null`|`null`|`"null"` (string literal)|
-
 
 <a name="slonik-query-building-sql-unnest"></a>
 ### <code>sql.unnest</code>
