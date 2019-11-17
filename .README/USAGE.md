@@ -184,8 +184,10 @@ These type parsers are enabled by default:
 
 |Type name|Implemnetation|
 |---|---|
+|`date`|Produces a literal date as a string (format: YYYY-MM-DD).|
 |`int8`|Produces an integer.|
 |`interval`|Produces interval in seconds (integer).|
+|`numeric`|Produces a float.|
 |`timestamp`|Produces a unix timestamp (in milliseconds).|
 |`timestamptz`|Produces a unix timestamp (in milliseconds).|
 
