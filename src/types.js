@@ -279,6 +279,11 @@ export type SqlSqlTokenType = {|
   +values: $ReadOnlyArray<PrimitiveValueExpressionType>,
 |};
 
+export type TimestampSqlTokenType = {|
+  +milliseconds: number,
+  +type: 'SLONIK_TOKEN_TIMESTAMP',
+|};
+
 export type UnnestSqlTokenType = {|
   +columnTypes: $ReadOnlyArray<string>,
   +tuples: $ReadOnlyArray<$ReadOnlyArray<ValueExpressionType>>,
@@ -294,6 +299,7 @@ export type SqlTokenType =
   JsonSqlTokenType |
   ListSqlTokenType |
   SqlSqlTokenType |
+  TimestampSqlTokenType |
   UnnestSqlTokenType;
 
 export type ValueExpressionType =
@@ -337,6 +343,9 @@ export type SqlTaggedTemplateType = {|
     members: $ReadOnlyArray<ValueExpressionType>,
     glue: SqlTokenType,
   ) => ListSqlTokenType,
+  timestamp: (
+    milliseconds: number,
+  ) => TimestampSqlTokenType,
   unnest: (
 
     // Value might be $ReadOnlyArray<$ReadOnlyArray<PrimitiveValueExpressionType>>,

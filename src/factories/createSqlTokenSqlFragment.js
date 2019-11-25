@@ -7,6 +7,7 @@ import {
   JsonToken,
   ListToken,
   SqlToken,
+  TimestampToken,
   UnnestToken,
 } from '../tokens';
 import {
@@ -16,6 +17,7 @@ import {
   createJsonSqlFragment,
   createListSqlFragment,
   createSqlSqlFragment,
+  createTimestampSqlFragment,
   createUnnestSqlFragment,
 } from '../sqlFragmentFactories';
 import {
@@ -39,6 +41,8 @@ export default (token: SqlTokenType, greatestParameterPosition: number): SqlFrag
     return createListSqlFragment(token, greatestParameterPosition);
   } else if (token.type === SqlToken) {
     return createSqlSqlFragment(token, greatestParameterPosition);
+  } else if (token.type === TimestampToken) {
+    return createTimestampSqlFragment(token, greatestParameterPosition);
   } else if (token.type === UnnestToken) {
     return createUnnestSqlFragment(token, greatestParameterPosition);
   }

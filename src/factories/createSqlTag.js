@@ -11,6 +11,7 @@ import type {
   SqlSqlTokenType,
   SqlTaggedTemplateType,
   SqlTokenType,
+  TimestampSqlTokenType,
   UnnestSqlTokenType,
   ValueExpressionType,
 } from '../types';
@@ -27,6 +28,7 @@ import {
   JsonToken,
   ListToken,
   SqlToken,
+  TimestampToken,
   UnnestToken,
 } from '../tokens';
 import {
@@ -145,6 +147,15 @@ export default () => {
       glue,
       members,
       type: ListToken,
+    });
+  };
+
+  sql.timestamp = (
+    milliseconds: number,
+  ): TimestampSqlTokenType => {
+    return deepFreeze({
+      milliseconds,
+      type: TimestampToken,
     });
   };
 

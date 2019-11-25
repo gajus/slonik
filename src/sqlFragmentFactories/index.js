@@ -6,4 +6,5 @@ export {default as createIdentifierSqlFragment} from './createIdentifierSqlFragm
 export {default as createJsonSqlFragment} from './createJsonSqlFragment';
 export {default as createListSqlFragment} from './createListSqlFragment';
 export {default as createSqlSqlFragment} from './createSqlSqlFragment';
+export {default as createTimestampSqlFragment} from './createTimestampSqlFragment';
 export {default as createUnnestSqlFragment} from './createUnnestSqlFragment';

@@ -8,6 +8,7 @@ import {
   JsonToken,
   ListToken,
   SqlToken,
+  TimestampToken,
   UnnestToken,
 } from '../tokens';
 
@@ -19,6 +20,7 @@ const Tokens = [
   JsonToken,
   ListToken,
   SqlToken,
+  TimestampToken,
   UnnestToken,
 ];
 
