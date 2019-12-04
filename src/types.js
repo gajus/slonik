@@ -166,14 +166,14 @@ export type DatabaseConnectionType =
   $Shape<{
     ...$Exact<DatabasePoolConnectionType>,
     ...$Exact<DatabasePoolType>,
-    ...,
+    ...
   }>;
 
 type QueryResultRowColumnType = string | number | null;
 
 export type QueryResultRowType = {
   +[key: string]: QueryResultRowColumnType,
-  ...,
+  ...
 };
 
 export type QueryType = {|
@@ -302,7 +302,7 @@ export type ValueExpressionType =
 
 export type NamedAssignmentType = {
   +[key: string]: ValueExpressionType,
-  ...,
+  ...
 };
 
 export type TaggedTemplateLiteralInvocationType = {|
