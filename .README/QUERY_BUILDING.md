@@ -144,7 +144,7 @@ Produces:
 
 ```js
 {
-  sql: 'SELECT 1 FROM "bar"."bar"',
+  sql: 'SELECT 1 FROM "bar"."baz"',
   values: []
 }
 
