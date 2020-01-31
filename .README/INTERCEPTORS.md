@@ -142,7 +142,7 @@ Transforms row.
 
 Use `transformRow` to modify the query result.
 
-## Community interceptors
+### Community interceptors
 
 |Name|Description|
 |---|---|

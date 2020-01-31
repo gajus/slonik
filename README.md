@@ -77,7 +77,7 @@ Note: Using this project does not require TypeScript or Flow. It is a regular ES
         * [Built-in type parsers](#slonik-type-parsers-built-in-type-parsers)
     * [Interceptors](#slonik-interceptors)
         * [Interceptor methods](#slonik-interceptors-interceptor-methods)
-    * [Community interceptors](#slonik-community-interceptors)
+        * [Community interceptors](#slonik-interceptors-community-interceptors)
     * [Recipes](#slonik-recipes)
         * [Inserting large number of rows](#slonik-recipes-inserting-large-number-of-rows)
         * [Routing queries to different connections](#slonik-recipes-routing-queries-to-different-connections)
@@ -535,21 +535,25 @@ createPool(
 /**
  * @property captureStackTrace Dictates whether to capture stack trace before executing query. Middlewares access stack trace through query execution context. (Default: true)
  * @property connectionRetryLimit Number of times to retry establishing a new connection. (Default: 3)
- * @property connectionTimeout Timeout (in milliseconds) after which an error is raised if cannot cannot be established. (Default: 5000)
+ * @property connectionTimeout Timeout (in milliseconds) after which an error is raised if connection cannot cannot be established. (Default: 5000)
+ * @property idleInTransactionSessionTimeout Timeout (in milliseconds) after which idle clients are closed. Use 'DISABLE_TIMEOUT' constant to disable the timeout. (Default: 60000)
  * @property idleTimeout Timeout (in milliseconds) after which idle clients are closed. Use 'DISABLE_TIMEOUT' constant to disable the timeout. (Default: 5000)
  * @property interceptors An array of [Slonik interceptors](https://github.com/gajus/slonik#slonik-interceptors).
  * @property maximumPoolSize Do not allow more than this many connections. Use 'DISABLE_TIMEOUT' constant to disable the timeout. (Default: 10)
  * @property preferNativeBindings Uses libpq bindings when `pg-native` module is installed. (Default: true)
+ * @property statementTimeout Timeout (in milliseconds) after which database is instructed to abort the query. Use 'DISABLE_TIMEOUT' constant to disable the timeout. (Default: 60000)
  * @property typeParsers An array of [Slonik type parsers](https://github.com/gajus/slonik#slonik-type-parsers).
  */
 type ClientConfigurationInputType = {|
   +captureStackTrace?: boolean,
   +connectionRetryLimit?: number,
   +connectionTimeout?: number | 'DISABLE_TIMEOUT',
+  +idleInTransactionSessionTimeout?: number | 'DISABLE_TIMEOUT',
   +idleTimeout?: number | 'DISABLE_TIMEOUT',
   +interceptors?: $ReadOnlyArray<InterceptorType>,
   +maximumPoolSize?: number,
   +preferNativeBindings?: boolean,
+  +statementTimeout?: number | 'DISABLE_TIMEOUT',
   +typeParsers?: $ReadOnlyArray<TypeParserType>,
 |};
 
@@ -615,6 +619,20 @@ createPool('postgres://', {
 });
 
 ```
+
+<a name="slonik-usage-default-configuration-default-timeouts"></a>
+#### Default timeouts
+
+There are 4 types of configurable timeouts:
+
+|Configuration|Description|Default|
+|---|---|---|
+|`connectionTimeout`|Timeout (in milliseconds) after which an error is raised if connection cannot cannot be established.|5000|
+|`idleInTransactionSessionTimeout`|Timeout (in milliseconds) after which idle clients are closed. Use 'DISABLE_TIMEOUT' constant to disable the timeout.|60000|
+|`idleTimeout`|Timeout (in milliseconds) after which idle clients are closed. Use 'DISABLE_TIMEOUT' constant to disable the timeout.|5000|
+|`statementTimeout`|Timeout (in milliseconds) after which database is instructed to abort the query. Use 'DISABLE_TIMEOUT' constant to disable the timeout.|60000|
+
+Slonik sets aggressive timeouts by default. These timeouts are designed to provide safe interface to the database. These timeouts might not work for all programs. If your program has long running statements, consider adjusting timeouts just for those statements instead of changing the defaults.
 
 <a name="slonik-usage-using-native-libpq-bindings"></a>
 ### Using native libpq bindings
@@ -923,8 +941,8 @@ Transforms row.
 
 Use `transformRow` to modify the query result.
 
-<a name="slonik-community-interceptors"></a>
-## Community interceptors
+<a name="slonik-interceptors-community-interceptors"></a>
+### Community interceptors
 
 |Name|Description|
 |---|---|

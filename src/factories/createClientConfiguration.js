@@ -17,6 +17,7 @@ export default (clientUserConfigurationInput?: ClientConfigurationInputType): Cl
     captureStackTrace: true,
     connectionRetryLimit: 3,
     connectionTimeout: 5000,
+    idleInTransactionSessionTimeout: 60000,
     idleTimeout: 5000,
 
     // $FlowFixMe
@@ -25,6 +26,7 @@ export default (clientUserConfigurationInput?: ClientConfigurationInputType): Cl
     maximumPoolSize: 10,
 
     preferNativeBindings: true,
+    statementTimeout: 60000,
 
     typeParsers,
 
