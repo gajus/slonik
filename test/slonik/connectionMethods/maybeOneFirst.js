@@ -51,7 +51,9 @@ test('throws an error if more than one row is returned', async (t) => {
     ],
   });
 
-  await t.throwsAsync(pool.maybeOneFirst(sql`SELECT 1`), DataIntegrityError);
+  const error = await t.throwsAsync(pool.maybeOneFirst(sql`SELECT 1`));
+
+  t.true(error instanceof DataIntegrityError);
 });
 
 test('throws an error if more than one column is returned', async (t) => {
@@ -66,5 +68,7 @@ test('throws an error if more than one column is returned', async (t) => {
     ],
   });
 
-  await t.throwsAsync(pool.maybeOneFirst(sql`SELECT 1`), DataIntegrityError);
+  const error = await t.throwsAsync(pool.maybeOneFirst(sql`SELECT 1`));
+
+  t.true(error instanceof DataIntegrityError);
 });

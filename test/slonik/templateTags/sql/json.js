@@ -45,21 +45,25 @@ test('passes null unstringified', (t) => {
 });
 
 test('throws if payload is undefined', (t) => {
-  t.throws(() => {
+  const error = t.throws(() => {
     // $FlowFixMe
     sql`SELECT ${sql.json(undefined)}`;
-  }, 'JSON payload must not be undefined.');
+  });
+
+  t.is(error.message, 'JSON payload must not be undefined.');
 });
 
 test('throws if payload cannot be stringified (non-primitive object)', (t) => {
-  t.throws(() => {
+  const error = t.throws(() => {
     // $FlowFixMe
     sql`SELECT ${sql.json(() => {})}`;
-  }, 'JSON payload must be a primitive value or a plain object.');
+  });
+
+  t.is(error.message, 'JSON payload must be a primitive value or a plain object.');
 });
 
 test('throws if payload cannot be stringified (circular reference)', (t) => {
-  t.throws(() => {
+  const error = t.throws(() => {
     const foo = {};
     const bar = {
       foo,
@@ -68,7 +72,9 @@ test('throws if payload cannot be stringified (circular reference)', (t) => {
 
     // $FlowFixMe
     sql`SELECT ${sql.json(foo)}`;
-  }, 'JSON payload cannot be stringified.');
+  });
+
+  t.is(error.message, 'JSON payload cannot be stringified.');
 });
 
 test('the resulting object is immutable', (t) => {

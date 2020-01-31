@@ -35,7 +35,9 @@ test('throws an error if no rows are returned', async (t) => {
     rows: [],
   });
 
-  await t.throwsAsync(pool.one(sql`SELECT 1`), NotFoundError);
+  const error = await t.throwsAsync(pool.one(sql`SELECT 1`));
+
+  t.true(error instanceof NotFoundError);
 });
 
 test('throws an error if more than one row is returned', async (t) => {
@@ -52,5 +54,7 @@ test('throws an error if more than one row is returned', async (t) => {
     ],
   });
 
-  await t.throwsAsync(pool.one(sql`SELECT 1`), DataIntegrityError);
+  const error = await t.throwsAsync(pool.one(sql`SELECT 1`));
+
+  t.true(error instanceof DataIntegrityError);
 });

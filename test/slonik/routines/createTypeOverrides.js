@@ -53,7 +53,9 @@ test('throws an error if type cannot be found', async (t) => {
     },
   };
 
-  await t.throwsAsync(createTypeOverrides(connection, [
+  const error = await t.throwsAsync(createTypeOverrides(connection, [
     typeParser,
-  ]), 'Database type "int8" not found.');
+  ]));
+
+  t.is(error.message, 'Database type "int8" not found.');
 });

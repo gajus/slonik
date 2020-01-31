@@ -96,22 +96,28 @@ test('recognizes an array of arrays array', (t) => {
 });
 
 test('throws if tuple member is not a primitive value expression', (t) => {
-  t.throws(() => {
+  const error = t.throws(() => {
     // $FlowFixMe
     sql`SELECT * FROM ${sql.unnest([[() => {}, 2, 3], [4, 5]], ['int4', 'int4', 'int4'])}`;
-  }, 'Invalid unnest tuple member type. Must be a primitive value expression.');
+  });
+
+  t.is(error.message, 'Invalid unnest tuple member type. Must be a primitive value expression.');
 });
 
 test('throws if tuple member length varies in a list of tuples', (t) => {
-  t.throws(() => {
+  const error = t.throws(() => {
     sql`SELECT * FROM ${sql.unnest([[1, 2, 3], [4, 5]], ['int4', 'int4', 'int4'])}`;
-  }, 'Each tuple in a list of tuples must have an equal number of members.');
+  });
+
+  t.is(error.message, 'Each tuple in a list of tuples must have an equal number of members.');
 });
 
 test('throws if tuple member length does not match column types length', (t) => {
-  t.throws(() => {
+  const error = t.throws(() => {
     sql`SELECT * FROM ${sql.unnest([[1, 2, 3], [4, 5, 6]], ['int4', 'int4'])}`;
-  }, 'Column types length must match tuple member length.');
+  });
+
+  t.is(error.message, 'Column types length must match tuple member length.');
 });
 
 test('the resulting object is immutable', (t) => {

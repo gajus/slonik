@@ -164,7 +164,9 @@ test('throws an error if an attempt is made to create a new transaction before t
     ]);
   });
 
-  await t.throwsAsync(connection, 'Cannot use the same connection to start a new transaction before completing the last transaction.');
+  const error = await t.throwsAsync(connection);
+
+  t.is(error.message, 'Cannot use the same connection to start a new transaction before completing the last transaction.');
 });
 
 test('throws an error if an attempt is made to execute a query using the parent transaction before the current transaction is completed', async (t) => {
@@ -178,5 +180,7 @@ test('throws an error if an attempt is made to execute a query using the parent 
     });
   });
 
-  await t.throwsAsync(connection, 'Cannot run a query using parent transaction.');
+  const error = await t.throwsAsync(connection);
+
+  t.is(error.message, 'Cannot run a query using parent transaction.');
 });

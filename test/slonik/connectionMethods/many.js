@@ -42,5 +42,7 @@ test('throws an error if no rows are returned', async (t) => {
     rows: [],
   });
 
-  await t.throwsAsync(pool.many(sql`SELECT 1`), NotFoundError);
+  const error = await t.throwsAsync(pool.many(sql`SELECT 1`));
+
+  t.true(error instanceof NotFoundError);
 });

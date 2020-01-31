@@ -32,9 +32,11 @@ test('sql tag invocation with expressions', (t) => {
 });
 
 test('throws an error if invoked with a string', (t) => {
-  t.throws(() => {
+  const error = t.throws(() => {
     // $FlowFixMe
     mapTaggedTemplateLiteralInvocation()('foo');
-  }, 'Query must be constructed using `sql` tagged template literal.');
+  });
+
+  t.is(error.message, 'Query must be constructed using `sql` tagged template literal.');
 });
 

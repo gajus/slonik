@@ -33,12 +33,14 @@ test('creates an object describing a query with inlined identifiers (specifier)'
 });
 
 test('throws if an identifier name array member type is not a string', (t) => {
-  t.throws(() => {
+  const error = t.throws(() => {
     sql`${sql.identifier([
       // $FlowFixMe
       () => {},
     ])}`;
-  }, 'Identifier name array member type must be a string.');
+  });
+
+  t.is(error.message, 'Identifier name array member type must be a string.');
 });
 
 test('the resulting object is immutable', (t) => {
