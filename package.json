@@ -33,7 +33,7 @@
     "pg-cursor": "^2.1.5",
     "pg-types": "^3.0.0",
     "postgres-interval": "^1.2.0",
-    "roarr": "^2.14.6",
+    "roarr": "^2.15.0",
     "serialize-error": "^5.0.0",
     "through2": "^3.0.1",
     "ulid": "^2.3.0"
