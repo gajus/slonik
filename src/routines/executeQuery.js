@@ -21,6 +21,7 @@ import {
   NotNullIntegrityConstraintViolationError,
   StatementCancelledError,
   StatementTimeoutError,
+  UnexpectedStateError,
   UniqueIntegrityConstraintViolationError,
 } from '../errors';
 import type {
@@ -41,6 +42,68 @@ type ExecutionRoutineType = (
   queryContext: QueryContextType,
   query: QueryType
 ) => Promise<*>;
+
+type TransactionQueryType = {|
+  +executionContext: QueryContextType,
+  +executionRoutine: ExecutionRoutineType,
+  +sql: string,
+  +values: $ReadOnlyArray<PrimitiveValueExpressionType>,
+|};
+
+// @see https://www.postgresql.org/docs/current/errcodes-appendix.html
+const TRANSACTION_ROLLBACK_ERROR_PREFIX = '40';
+
+const retryTransaction = async (
+  connectionLogger: LoggerType,
+  connection: InternalDatabaseConnectionType,
+  transactionQueries: $ReadOnlyArray<TransactionQueryType>,
+  retryLimit: number,
+) => {
+  let result;
+  let remainingRetries = retryLimit;
+  let attempt = 0;
+
+  // @todo Provide information about the queries being retried to the logger.
+  while (remainingRetries-- > 0) {
+    attempt++;
+
+    try {
+      // @todo Respect SAVEPOINTs.
+      await connection.query('ROLLBACK');
+      await connection.query('BEGIN');
+
+      for (const transactionQuery of transactionQueries) {
+        connectionLogger.trace({
+          attempt,
+          queryId: transactionQuery.executionContext.queryId,
+        }, 'retrying query');
+
+        result = await transactionQuery.executionRoutine(
+          connection,
+          transactionQuery.sql,
+          normaliseQueryValues(transactionQuery.values, connection.native),
+
+          // @todo Refresh execution context to reflect that the query has been re-tried.
+          // This (probably) requires changing `queryId` and `queryInputTime`.
+          // It should be needed only for the last query (because other queries will not be processed by the middlewares).
+          transactionQuery.executionContext,
+          {
+            sql: transactionQuery.sql,
+            values: transactionQuery.values,
+          },
+        );
+      }
+    } catch (error) {
+      if (error.code.startsWith(TRANSACTION_ROLLBACK_ERROR_PREFIX)) {
+        continue;
+      }
+
+      throw error;
+    }
+  }
+
+  return result;
+};
 
 // eslint-disable-next-line complexity
 export default async (
@@ -143,13 +206,35 @@ export default async (
 
   try {
     try {
-      result = await executionRoutine(
-        connection,
-        actualQuery.sql,
-        normaliseQueryValues(actualQuery.values, connection.native),
-        executionContext,
-        actualQuery,
-      );
+      try {
+        if (connection.connection.slonik.transactionQueries) {
+          connection.connection.slonik.transactionQueries.push({
+            executionContext,
+            executionRoutine,
+            sql: actualQuery.sql,
+            values: actualQuery.values,
+          });
+        }
+
+        result = await executionRoutine(
+          connection,
+          actualQuery.sql,
+          normaliseQueryValues(actualQuery.values, connection.native),
+          executionContext,
+          actualQuery,
+        );
+      } catch (error) {
+        if (error.code.startsWith(TRANSACTION_ROLLBACK_ERROR_PREFIX) && clientConfiguration.transactionRetryLimit > 0) {
+          result = await retryTransaction(
+            connectionLogger,
+            connection,
+            connection.connection.slonik.transactionQueries,
+            clientConfiguration.transactionRetryLimit,
+          );
+        } else {
+          throw error;
+        }
+      }
     } catch (error) {
       log.error({
         error: serializeError(error),
@@ -199,6 +284,10 @@ export default async (
     }
 
     throw error;
+  }
+
+  if (!result) {
+    throw new UnexpectedStateError();
   }
 
   // $FlowFixMe

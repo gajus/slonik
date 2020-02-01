@@ -628,3 +628,82 @@ test('statements are cancelled after `statementTimeout`', async (t) => {
 
   t.true(error instanceof StatementTimeoutError);
 });
+
+test('retries failing transactions (deadlock)', async (t) => {
+  t.timeout(2000);
+
+  const pool = createPool(TEST_DSN);
+
+  const firstPersonId = await pool.oneFirst(sql`
+    INSERT INTO person (name)
+    VALUES ('foo')
+    RETURNING id
+  `);
+
+  const secondPersonId = await pool.oneFirst(sql`
+    INSERT INTO person (name)
+    VALUES ('bar')
+    RETURNING id
+  `);
+
+  let transactionCount = 0;
+
+  let resolveDeadlock;
+
+  const deadlock = new Promise((resolve) => {
+    resolveDeadlock = resolve;
+  });
+
+  const updatePerson = async (firstUpdateId, firstUpdateName, secondUpdateId, secondUpdateName, delayDeadlock) => {
+    await pool.transaction(async (transaction) => {
+      await transaction.query(sql`
+        SET deadlock_timeout='1s'
+      `);
+
+      await transaction.query(sql`
+        UPDATE person
+        SET name = ${firstUpdateName}
+        WHERE id = ${firstUpdateId}
+      `);
+
+      ++transactionCount;
+
+      if (transactionCount === 2) {
+        resolveDeadlock();
+      }
+
+      await delay(delayDeadlock);
+
+      await deadlock;
+
+      await transaction.query(sql`
+        UPDATE person
+        SET name = ${secondUpdateName}
+        WHERE id = ${secondUpdateId}
+      `);
+    });
+  };
+
+  await t.notThrowsAsync(Promise.all([
+    updatePerson(firstPersonId, 'foo 0', secondPersonId, 'foo 1', 50),
+    updatePerson(secondPersonId, 'bar 0', firstPersonId, 'bar 1', 0),
+  ]));
+
+  t.is(
+    await pool.oneFirst(sql`
+      SELECT name
+      FROM person
+      WHERE id = ${firstPersonId}
+    `),
+    'bar 1',
+  );
+
+  t.is(
+    await pool.oneFirst(sql`
+      SELECT name
+      FROM person
+      WHERE id = ${secondPersonId}
+    `),
+    'bar 0',
+  );
+});

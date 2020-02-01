@@ -24,6 +24,7 @@ const transaction: InternalTransactionFunctionType = async (parentLog, connectio
 
   connection.connection.slonik.transactionDepth = 0;
   connection.connection.slonik.transactionId = createUlid();
+  connection.connection.slonik.transactionQueries = [];
 
   await connection.query('START TRANSACTION');
 
@@ -32,7 +33,12 @@ const transaction: InternalTransactionFunctionType = async (parentLog, connectio
   });
 
   try {
-    const result = await handler(bindTransactionConnection(log, connection, clientConfiguration, connection.connection.slonik.transactionDepth));
+    const result = await handler(bindTransactionConnection(
+      log,
+      connection,
+      clientConfiguration,
+      connection.connection.slonik.transactionDepth,
+    ));
 
     if (connection.connection.slonik.terminated) {
       throw new BackendTerminatedError(connection.connection.slonik.terminated);
@@ -54,6 +60,7 @@ const transaction: InternalTransactionFunctionType = async (parentLog, connectio
   } finally {
     connection.connection.slonik.transactionDepth = null;
     connection.connection.slonik.transactionId = null;
+    connection.connection.slonik.transactionQueries = null;
   }
 };
 

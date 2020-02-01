@@ -40,6 +40,7 @@ Note: Using this project does not require TypeScript or Flow. It is a regular ES
 * [Safe transaction handling](#protecting-against-unsafe-transaction-handling).
 * [Safe value interpolation](#protecting-against-unsafe-value-interpolation).
 * [Transaction nesting](#transaction-nesting).
+* [Transaction retrying](#transaction-retrying)
 * Detailed [logging](#slonik-debugging).
 * [Asynchronous stack trace resolution](#capture-stack-trace).
 * [Middlewares](#slonik-interceptors).
@@ -542,6 +543,7 @@ createPool(
  * @property maximumPoolSize Do not allow more than this many connections. Use 'DISABLE_TIMEOUT' constant to disable the timeout. (Default: 10)
  * @property preferNativeBindings Uses libpq bindings when `pg-native` module is installed. (Default: true)
  * @property statementTimeout Timeout (in milliseconds) after which database is instructed to abort the query. Use 'DISABLE_TIMEOUT' constant to disable the timeout. (Default: 60000)
+ * @property transactionRetryLimit Number of times a transaction failing with Transaction Rollback class error is retried. (Default: 5)
  * @property typeParsers An array of [Slonik type parsers](https://github.com/gajus/slonik#slonik-type-parsers).
  */
 type ClientConfigurationInputType = {|
@@ -554,6 +556,7 @@ type ClientConfigurationInputType = {|
   +maximumPoolSize?: number,
   +preferNativeBindings?: boolean,
   +statementTimeout?: number | 'DISABLE_TIMEOUT',
+  +transactionRetryLimit?: number,
   +typeParsers?: $ReadOnlyArray<TypeParserType>,
 |};
 
@@ -1846,6 +1849,15 @@ ROLLBACK TO SAVEPOINT slonik_savepoint_1;
 ROLLBACK;
 
 ```
+
+<a name="slonik-query-methods-transaction-transaction-nesting-1"></a>
+#### Transaction nesting
+
+Transactions that are failing with [Transaction Rollback](https://www.postgresql.org/docs/current/errcodes-appendix.html) class errors are automatically retried.
+
+A failing transaction will be rolled back and all queries up to the failing query will be replayed.
+
+How many times a transaction is retried is controlled using `transactionRetryLimit` configuration (default: 5).
 
 
 <a name="slonik-error-handling"></a>

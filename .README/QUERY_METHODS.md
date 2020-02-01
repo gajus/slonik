@@ -346,3 +346,11 @@ ROLLBACK TO SAVEPOINT slonik_savepoint_1;
 ROLLBACK;
 
 ```
+
+#### Transaction nesting
+
+Transactions that are failing with [Transaction Rollback](https://www.postgresql.org/docs/current/errcodes-appendix.html) class errors are automatically retried.
+
+A failing transaction will be rolled back and all queries up to the failing query will be replayed.
+
+How many times a transaction is retried is controlled using `transactionRetryLimit` configuration (default: 5).

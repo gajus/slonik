@@ -144,6 +144,7 @@ createPool(
  * @property maximumPoolSize Do not allow more than this many connections. Use 'DISABLE_TIMEOUT' constant to disable the timeout. (Default: 10)
  * @property preferNativeBindings Uses libpq bindings when `pg-native` module is installed. (Default: true)
  * @property statementTimeout Timeout (in milliseconds) after which database is instructed to abort the query. Use 'DISABLE_TIMEOUT' constant to disable the timeout. (Default: 60000)
+ * @property transactionRetryLimit Number of times a transaction failing with Transaction Rollback class error is retried. (Default: 5)
  * @property typeParsers An array of [Slonik type parsers](https://github.com/gajus/slonik#slonik-type-parsers).
  */
 type ClientConfigurationInputType = {|
@@ -156,6 +157,7 @@ type ClientConfigurationInputType = {|
   +maximumPoolSize?: number,
   +preferNativeBindings?: boolean,
   +statementTimeout?: number | 'DISABLE_TIMEOUT',
+  +transactionRetryLimit?: number,
   +typeParsers?: $ReadOnlyArray<TypeParserType>,
 |};
 

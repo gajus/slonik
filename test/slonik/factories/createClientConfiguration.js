@@ -14,6 +14,7 @@ const defaultConfiguration = {
   maximumPoolSize: 10,
   preferNativeBindings: true,
   statementTimeout: 60000,
+  transactionRetryLimit: 5,
   typeParsers: createTypeParserPreset(),
 };
 

@@ -27,7 +27,7 @@ export default (clientUserConfigurationInput?: ClientConfigurationInputType): Cl
 
     preferNativeBindings: true,
     statementTimeout: 60000,
-
+    transactionRetryLimit: 5,
     typeParsers,
 
     // $FlowFixMe
