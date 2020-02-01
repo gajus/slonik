@@ -1850,8 +1850,8 @@ ROLLBACK;
 
 ```
 
-<a name="slonik-query-methods-transaction-transaction-nesting-1"></a>
-#### Transaction nesting
+<a name="slonik-query-methods-transaction-transaction-retrying"></a>
+#### Transaction retrying
 
 Transactions that are failing with [Transaction Rollback](https://www.postgresql.org/docs/current/errcodes-appendix.html) class errors are automatically retried.
 

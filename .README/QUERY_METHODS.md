@@ -347,7 +347,7 @@ ROLLBACK;
 
 ```
 
-#### Transaction nesting
+#### Transaction retrying
 
 Transactions that are failing with [Transaction Rollback](https://www.postgresql.org/docs/current/errcodes-appendix.html) class errors are automatically retried.
 
