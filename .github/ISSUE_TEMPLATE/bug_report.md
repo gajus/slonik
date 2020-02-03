@@ -29,4 +29,4 @@ assignees: ''
 
 ## Logs
 
-<-- Capture and include logs https://github.com/gajus/slonik#logging -->
+<!-- Capture and include logs https://github.com/gajus/slonik#logging -->
