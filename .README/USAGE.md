@@ -251,7 +251,7 @@ Slonik only allows to check out a connection for the duration of the promise rou
 
 ```js
 import {
-  createPool
+  createPool,
 } from 'slonik';
 
 const pool = createPool('postgres://localhost');
@@ -271,6 +271,54 @@ result;
 Connection is released back to the pool after the promise produced by the function supplied to `connect()` method is either resolved or rejected.
 
 Read: [Protecting against unsafe connection handling](#protecting-against-unsafe-connection-handling)
+
+## Mocking Slonik
+
+Slonik provides a way to mock queries against the database.
+
+* Use `createMockPool` to create a mock connection.
+* Use `createMockQueryResult` to create a mock query result.
+
+```js
+import {
+  createMockPool,
+  createMockQueryResult,
+} from 'slonik';
+
+type OverridesType = {|
+  +query: (sql: string, values: $ReadOnlyArray<PrimitiveValueExpressionType>,) => Promise<QueryResultType<QueryResultRowType>>,
+|};
+
+createMockPool(overrides: OverridesType): DatabasePoolType;
+createMockQueryResult(rows: $ReadOnlyArray<QueryResultRowType>): QueryResultType<QueryResultRowType>;
+
+```
+
+Example:
+
+```js
+import {
+  createMockPool,
+  createMockQueryResult,
+} from 'slonik';
+
+const pool = createMockPool({
+  query: async () => {
+    return createMockQueryResult([
+      {
+        foo: 'bar',
+      },
+    ]);
+  },
+});
+
+await pool.connect(async (connection) => {
+  const results = await connection.query(sql`
+    SELECT ${'foo'}
+  `);
+});
+
+```
 
 ## How are they different?
 

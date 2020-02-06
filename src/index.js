@@ -28,6 +28,8 @@ export type {
   ValueExpressionType,
 } from './types';
 export {
+  createMockPool,
+  createMockQueryResult,
   createPool,
   createSqlTag,
   createSqlTokenSqlFragment,

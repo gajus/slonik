@@ -39,10 +39,15 @@ const terminatePoolConnection = (pool, connection, error) => {
     connection.connection.slonik.terminated = error;
   }
 
+  if (pool.slonik.mock) {
+    return;
+  }
+
   pool._remove(connection);
   pool._pulseQueue();
 };
 
+// eslint-disable-next-line complexity
 const createConnection = async (
   parentLog: LoggerType,
   pool: InternalDatabasePoolType,
@@ -101,16 +106,18 @@ const createConnection = async (
     throw new UnexpectedStateError('Connection handle is not present.');
   }
 
-  if (!pool.typeOverrides) {
-    pool.typeOverrides = createTypeOverrides(connection, clientConfiguration.typeParsers);
-  }
+  if (!pool.slonik.mock) {
+    if (!pool.typeOverrides) {
+      pool.typeOverrides = createTypeOverrides(connection, clientConfiguration.typeParsers);
+    }
 
-  // eslint-disable-next-line id-match
-  connection._types = await pool.typeOverrides;
-
-  if (connection.native) {
     // eslint-disable-next-line id-match
-    connection.native._types = await pool.typeOverrides;
+    connection._types = await pool.typeOverrides;
+
+    if (connection.native) {
+      // eslint-disable-next-line id-match
+      connection.native._types = await pool.typeOverrides;
+    }
   }
 
   const connectionId = connection.connection.slonik.connectionId;
@@ -162,7 +169,7 @@ const createConnection = async (
     throw error;
   }
 
-  if (pool.slonik.ended === false && connectionType === 'IMPLICIT_QUERY') {
+  if (pool.slonik.mock === false && pool.slonik.ended === false && connectionType === 'IMPLICIT_QUERY') {
     // @todo Abstract into an array of queries that could be configured using `clientConfiguration`.
     await connection.query('DISCARD ALL');
     await connection.release();

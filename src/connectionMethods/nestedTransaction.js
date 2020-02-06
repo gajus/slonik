@@ -16,7 +16,9 @@ import type {
 const nestedTransaction: InternalNestedTransactionFunctionType = async (parentLog, connection, clientConfiguration, handler, transactionDepth) => {
   const newTransactionDepth = transactionDepth + 1;
 
-  await connection.query('SAVEPOINT slonik_savepoint_' + newTransactionDepth);
+  if (connection.connection.slonik.mock === false) {
+    await connection.query('SAVEPOINT slonik_savepoint_' + newTransactionDepth);
+  }
 
   const log = parentLog.child({
     transactionId: createUlid(),
@@ -29,7 +31,9 @@ const nestedTransaction: InternalNestedTransactionFunctionType = async (parentLo
 
     return result;
   } catch (error) {
-    await connection.query('ROLLBACK TO SAVEPOINT slonik_savepoint_' + newTransactionDepth);
+    if (connection.connection.slonik.mock === false) {
+      await connection.query('ROLLBACK TO SAVEPOINT slonik_savepoint_' + newTransactionDepth);
+    }
 
     log.error({
       error: serializeError(error),

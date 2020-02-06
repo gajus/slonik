@@ -108,6 +108,7 @@ export default (
 
   pool.slonik = {
     ended: false,
+    mock: false,
     poolId,
     typeOverrides: null,
   };
@@ -127,6 +128,7 @@ export default (
 
     client.connection.slonik = {
       connectionId: createUlid(),
+      mock: false,
       terminated: null,
       transactionDepth: null,
     };

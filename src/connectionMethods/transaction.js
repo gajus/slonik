@@ -26,7 +26,9 @@ const transaction: InternalTransactionFunctionType = async (parentLog, connectio
   connection.connection.slonik.transactionId = createUlid();
   connection.connection.slonik.transactionQueries = [];
 
-  await connection.query('START TRANSACTION');
+  if (connection.connection.slonik.mock === false) {
+    await connection.query('START TRANSACTION');
+  }
 
   const log = parentLog.child({
     transactionId: connection.connection.slonik.transactionId,
@@ -44,12 +46,16 @@ const transaction: InternalTransactionFunctionType = async (parentLog, connectio
       throw new BackendTerminatedError(connection.connection.slonik.terminated);
     }
 
-    await connection.query('COMMIT');
+    if (connection.connection.slonik.mock === false) {
+      await connection.query('COMMIT');
+    }
 
     return result;
   } catch (error) {
     if (!connection.connection.slonik.terminated) {
-      await connection.query('ROLLBACK');
+      if (connection.connection.slonik.mock === false) {
+        await connection.query('ROLLBACK');
+      }
 
       log.error({
         error: serializeError(error),

@@ -22,6 +22,7 @@ export default (clientConfiguration: ClientConfigurationInputType = defaultConfi
     connection: {
       slonik: {
         connectionId: '1',
+        mock: false,
         poolId: '1',
         transactionDepth: null,
       },
@@ -44,6 +45,7 @@ export default (clientConfiguration: ClientConfigurationInputType = defaultConfi
     },
     slonik: {
       ended: false,
+      mock: false,
       poolId: '1',
     },
   };
