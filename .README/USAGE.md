@@ -272,7 +272,7 @@ Connection is released back to the pool after the promise produced by the functi
 
 Read: [Protecting against unsafe connection handling](#protecting-against-unsafe-connection-handling)
 
-## Mocking Slonik
+### Mocking Slonik
 
 Slonik provides a way to mock queries against the database.
 

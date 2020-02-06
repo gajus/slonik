@@ -72,7 +72,7 @@ Note: Using this project does not require TypeScript or Flow. It is a regular ES
         * [Default configuration](#slonik-usage-default-configuration)
         * [Using native libpq bindings](#slonik-usage-using-native-libpq-bindings)
         * [Checking out a client from the connection pool](#slonik-usage-checking-out-a-client-from-the-connection-pool)
-    * [Mocking Slonik](#slonik-mocking-slonik)
+        * [Mocking Slonik](#slonik-usage-mocking-slonik)
     * [How are they different?](#slonik-how-are-they-different)
         * [`pg` vs `slonik`](#slonik-how-are-they-different-pg-vs-slonik)
         * [`pg-promise` vs `slonik`](#slonik-how-are-they-different-pg-promise-vs-slonik)
@@ -679,8 +679,8 @@ Connection is released back to the pool after the promise produced by the functi
 
 Read: [Protecting against unsafe connection handling](#protecting-against-unsafe-connection-handling)
 
-<a name="slonik-mocking-slonik"></a>
-## Mocking Slonik
+<a name="slonik-usage-mocking-slonik"></a>
+### Mocking Slonik
 
 Slonik provides a way to mock queries against the database.
 
