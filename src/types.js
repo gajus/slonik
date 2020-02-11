@@ -126,7 +126,6 @@ export type QueryCopyFromBinaryFunctionType = (
 type CommonQueryMethodsType = {|
   +any: QueryAnyFunctionType,
   +anyFirst: QueryAnyFirstFunctionType,
-  +copyFromBinary: QueryCopyFromBinaryFunctionType,
   +many: QueryManyFunctionType,
   +manyFirst: QueryManyFirstFunctionType,
   +maybeOne: QueryMaybeOneFunctionType,
@@ -145,6 +144,7 @@ export type TransactionFunctionType = (connection: DatabaseTransactionConnection
 
 export type DatabasePoolConnectionType = {|
   ...$Exact<CommonQueryMethodsType>,
+  +copyFromBinary: QueryCopyFromBinaryFunctionType,
   +stream: StreamFunctionType,
   +transaction: (handler: TransactionFunctionType) => Promise<*>,
 |};
@@ -161,6 +161,7 @@ export type PoolStateType = {|
 export type DatabasePoolType = {|
   ...$Exact<CommonQueryMethodsType>,
   +connect: (connectionRoutine: ConnectionRoutineType) => Promise<*>,
+  +copyFromBinary: QueryCopyFromBinaryFunctionType,
   +end: () => Promise<void>,
   +getPoolState: () => PoolStateType,
   +stream: StreamFunctionType,
