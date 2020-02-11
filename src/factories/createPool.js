@@ -86,12 +86,15 @@ export default (
   }
 
   let pg;
+  let native = false;
 
   if (clientConfiguration.preferNativeBindings && pgNativeBindingsAreAvailable) {
     poolLog.info('using native libpq bindings');
 
     // eslint-disable-next-line global-require
     pg = require('pg').native;
+
+    native = true;
   } else if (clientConfiguration.preferNativeBindings && !pgNativeBindingsAreAvailable) {
     poolLog.info('using JavaScript bindings; pg-native not found');
 
@@ -109,6 +112,7 @@ export default (
   pool.slonik = {
     ended: false,
     mock: false,
+    native,
     poolId,
     typeOverrides: null,
   };
@@ -129,6 +133,7 @@ export default (
     client.connection.slonik = {
       connectionId: createUlid(),
       mock: false,
+      native,
       terminated: null,
       transactionDepth: null,
     };

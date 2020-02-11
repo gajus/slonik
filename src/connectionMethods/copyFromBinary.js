@@ -15,6 +15,9 @@ import type {
 import {
   encodeTupleList,
 } from '../utilities';
+import {
+  UnexpectedStateError,
+} from '../errors';
 
 const bufferToStream = (buffer) => {
   const stream = new Duplex();
@@ -34,6 +37,10 @@ const copyFromBinary: InternalCopyFromBinaryFunctionType = async (
   tupleList,
   columnTypes,
 ) => {
+  if (connection.connection.slonik.native) {
+    throw new UnexpectedStateError('COPY streams do not work with the native driver. Use JavaScript driver.');
+  }
+
   const payloadBuffer = await encodeTupleList(tupleList, columnTypes);
 
   return executeQuery(
