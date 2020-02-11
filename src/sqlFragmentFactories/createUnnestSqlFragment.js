@@ -53,8 +53,6 @@ export default (token: UnnestSqlTokenType, greatestParameterPosition: number): S
 
     for (const tupleValue of tupleValues) {
       if (!Array.isArray(tupleValue) && !isPrimitiveValueExpression(tupleValue) && !Buffer.isBuffer(tupleValue)) {
-        console.log('tupleValue', tupleValue, JSON.stringify(tupleValue));
-
         throw new InvalidInputError('Invalid unnest tuple member type. Must be a primitive value expression.');
       }
 
