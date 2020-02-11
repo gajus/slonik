@@ -23,9 +23,6 @@ import type {
   TaggedTemplateLiteralInvocationType,
   TransactionFunctionType,
 } from '../types';
-import {
-  assertSqlSqlToken,
-} from '../assertions';
 
 export default (
   parentLog: LoggerType,
