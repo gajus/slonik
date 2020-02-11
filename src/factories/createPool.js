@@ -4,9 +4,6 @@ import {
   serializeError,
 } from 'serialize-error';
 import {
-  parse as parseConnectionString,
-} from 'pg-connection-string';
-import {
   createUlid,
 } from '../utilities';
 import type {
@@ -16,6 +13,7 @@ import type {
 import Logger from '../Logger';
 import bindPool from '../binders/bindPool';
 import createClientConfiguration from './createClientConfiguration';
+import createPoolConfiguration from './createPoolConfiguration';
 
 /**
  * @param connectionUri PostgreSQL [Connection URI](https://www.postgresql.org/docs/current/libpq-connect.html#LIBPQ-CONNSTRING).
@@ -32,43 +30,7 @@ export default (
     poolId,
   });
 
-  const poolConfiguration = parseConnectionString(connectionUri);
-
-  poolConfiguration.connectionTimeoutMillis = clientConfiguration.connectionTimeout;
-  // eslint-disable-next-line id-match
-  poolConfiguration.idle_in_transaction_session_timeout = clientConfiguration.idleInTransactionSessionTimeout;
-  poolConfiguration.idleTimeoutMillis = clientConfiguration.idleTimeout;
-  poolConfiguration.max = clientConfiguration.maximumPoolSize;
-  // eslint-disable-next-line id-match
-  poolConfiguration.statement_timeout = clientConfiguration.statementTimeout;
-
-  if (clientConfiguration.connectionTimeout === 'DISABLE_TIMEOUT') {
-    poolConfiguration.connectionTimeout = 0;
-  } else if (clientConfiguration.connectionTimeout === 0) {
-    poolLog.warn('connectionTimeout=0 sets timeout to 0 milliseconds; use connectionTimeout=DISABLE_TIMEOUT to disable timeout');
-
-    poolConfiguration.connectionTimeout = 1;
-  }
-
-  if (clientConfiguration.idleInTransactionSessionTimeout === 'DISABLE_TIMEOUT') {
-    // eslint-disable-next-line id-match
-    poolConfiguration.idle_in_transaction_session_timeout = 0;
-  } else if (clientConfiguration.idleInTransactionSessionTimeout === 0) {
-    poolLog.warn('idleInTransactionSessionTimeout=0 sets timeout to 0 milliseconds; use idleInTransactionSessionTimeout=DISABLE_TIMEOUT to disable timeout');
-
-    // eslint-disable-next-line id-match
-    poolConfiguration.idle_in_transaction_session_timeout = 1;
-  }
-
-  if (clientConfiguration.statementTimeout === 'DISABLE_TIMEOUT') {
-    // eslint-disable-next-line id-match
-    poolConfiguration.statement_timeout = 0;
-  } else if (clientConfiguration.statementTimeout === 0) {
-    poolLog.warn('statementTimeout=0 sets timeout to 0 milliseconds; use statementTimeout=DISABLE_TIMEOUT to disable timeout');
-
-    // eslint-disable-next-line id-match
-    poolConfiguration.statement_timeout = 1;
-  }
+  const poolConfiguration = createPoolConfiguration(connectionUri, clientConfiguration);
 
   let pgNativeBindingsAreAvailable = false;
 
@@ -191,5 +153,9 @@ export default (
     }, 'client connection is closed and removed from the client pool');
   });
 
-  return bindPool(poolLog, pool, clientConfiguration);
+  return bindPool(
+    poolLog,
+    pool,
+    clientConfiguration,
+  );
 };
