@@ -10,6 +10,9 @@ import type {
   InternalStreamFunctionType,
 } from '../types';
 import QueryStream from '../QueryStream';
+import {
+  UnexpectedStateError,
+} from '../errors';
 
 const stream: InternalStreamFunctionType = async (connectionLogger, connection, clientConfiguration, rawSql, values, streamHandler) => {
   return executeQuery(
@@ -20,6 +23,10 @@ const stream: InternalStreamFunctionType = async (connectionLogger, connection, 
     values,
     undefined,
     (finalConnection, finalSql, finalValues, executionContext, actualQuery) => {
+      if (connection.connection.slonik.native) {
+        throw new UnexpectedStateError('Result cursors do not work with the native driver. Use JavaScript driver.');
+      }
+
       const query = new QueryStream(finalSql, finalValues);
 
       const queryStream = finalConnection.query(query);
