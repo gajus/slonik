@@ -13,18 +13,18 @@ jobs:
         - NODE_ENV=test nyc npm run test
         - nyc report --reporter=text-lcov | coveralls
         - nyc check-coverage --lines 50
-    - name: 'Native driver'
-      node_js: '10'
-      addons:
-        postgresql: '9.6'
-      script:
-        - rm -fr ./node_modules
-        - hash -r
-        - npm install
-        - npm install pg-native --no-save
-        - npm run build
-        - NODE_ENV=test nyc npm run test
-        - nyc check-coverage --lines 50
+    # - name: 'Native driver'
+    #   node_js: '10'
+    #   addons:
+    #     postgresql: '9.6'
+    #   script:
+    #     - rm -fr ./node_modules
+    #     - hash -r
+    #     - npm install
+    #     - npm install pg-native --no-save
+    #     - npm run build
+    #     - NODE_ENV=test nyc npm run test
+    #     - nyc check-coverage --lines 50
 after_success:
   - npm run lint
   - NODE_ENV=test nyc npm run test
