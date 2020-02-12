@@ -224,7 +224,7 @@ export default async (
           actualQuery,
         );
       } catch (error) {
-        if (error.code.startsWith(TRANSACTION_ROLLBACK_ERROR_PREFIX) && clientConfiguration.transactionRetryLimit > 0) {
+        if (typeof error.code === 'string' && error.code.startsWith(TRANSACTION_ROLLBACK_ERROR_PREFIX) && clientConfiguration.transactionRetryLimit > 0) {
           result = await retryTransaction(
             connectionLogger,
             connection,

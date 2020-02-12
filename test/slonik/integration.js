@@ -13,6 +13,19 @@ import {
   UnexpectedStateError,
 } from '../../src';
 
+let pgNativeBindingsAreAvailable;
+
+try {
+  /* eslint-disable global-require, import/no-unassigned-import, import/no-extraneous-dependencies */
+  // $FlowFixMe
+  require('pg-native');
+  /* eslint-enable */
+
+  pgNativeBindingsAreAvailable = true;
+} catch (error) {
+  pgNativeBindingsAreAvailable = false;
+}
+
 const TEST_DSN = 'postgres://localhost/slonik_test';
 
 beforeEach(async () => {
@@ -21,6 +34,13 @@ beforeEach(async () => {
   });
 
   await pool0.connect(async (connection) => {
+    await connection.query(sql`
+      SELECT pg_terminate_backend(pid)
+      FROM pg_stat_activity
+      WHERE
+        state = 'active' AND
+        pid != pg_backend_pid()
+    `);
     await connection.query(sql`DROP DATABASE IF EXISTS slonik_test`);
     await connection.query(sql`CREATE DATABASE slonik_test`);
   });
@@ -334,62 +354,82 @@ test('writes and reads buffers', async (t) => {
   await pool.end();
 });
 
-test('streams rows', async (t) => {
-  const pool = createPool(TEST_DSN);
+if (pgNativeBindingsAreAvailable) {
+  test('throws an error stream method is used', async (t) => {
+    const pool = createPool(TEST_DSN);
 
-  await pool.query(sql`
-    INSERT INTO person (name) VALUES ('foo'), ('bar'), ('baz')
-  `);
+    await pool.query(sql`
+      INSERT INTO person (name) VALUES ('foo'), ('bar'), ('baz')
+    `);
 
-  const messages = [];
-
-  await pool.stream(sql`
-    SELECT name
-    FROM person
-  `, (stream) => {
-    stream.on('data', (datum) => {
-      messages.push(datum);
-    });
+    await t.throwsAsync(
+      pool.stream(sql`
+        SELECT name
+        FROM person
+      `, () => {}),
+      {
+        message: 'Result cursors do not work with the native driver. Use JavaScript driver.',
+      },
+    );
   });
+} else {
+  test('streams rows', async (t) => {
+    const pool = createPool(TEST_DSN);
 
-  t.deepEqual(messages, [
-    {
-      fields: [
-        {
-          dataTypeId: 25,
-          name: 'name',
-        },
-      ],
-      row: {
-        name: 'foo',
-      },
-    },
-    {
-      fields: [
-        {
-          dataTypeId: 25,
-          name: 'name',
-        },
-      ],
-      row: {
-        name: 'bar',
-      },
-    },
-    {
-      fields: [
-        {
-          dataTypeId: 25,
-          name: 'name',
-        },
-      ],
-      row: {
-        name: 'baz',
-      },
-    },
-  ]);
+    await pool.query(sql`
+      INSERT INTO person (name) VALUES ('foo'), ('bar'), ('baz')
+    `);
 
-  await pool.end();
-});
+    const messages = [];
+
+    await pool.stream(sql`
+      SELECT name
+      FROM person
+    `, (stream) => {
+      stream.on('data', (datum) => {
+        messages.push(datum);
+      });
+    });
+
+    t.deepEqual(messages, [
+      {
+        fields: [
+          {
+            dataTypeId: 25,
+            name: 'name',
+          },
+        ],
+        row: {
+          name: 'foo',
+        },
+      },
+      {
+        fields: [
+          {
+            dataTypeId: 25,
+            name: 'name',
+          },
+        ],
+        row: {
+          name: 'bar',
+        },
+      },
+      {
+        fields: [
+          {
+            dataTypeId: 25,
+            name: 'name',
+          },
+        ],
+        row: {
+          name: 'baz',
+        },
+      },
+    ]);
+
+    await pool.end();
+  });
+}
 
 test('implicit connection configuration is reset', async (t) => {
   const pool = createPool(TEST_DSN, {
@@ -610,7 +650,7 @@ test('idle transactions are terminated after `idleInTransactionSessionTimeout`',
 });
 
 test('statements are cancelled after `statementTimeout`', async (t) => {
-  t.timeout(10000);
+  t.timeout(5000);
 
   const pool = createPool(TEST_DSN, {
     maximumPoolSize: 5,
