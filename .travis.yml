@@ -2,7 +2,7 @@ language: node_js
 jobs:
   include:
     - name: 'JavaScript driver'
-      node_js: '10'
+      node_js: '13'
       addons:
         postgresql: '9.6'
       script:
@@ -12,7 +12,7 @@ jobs:
         - nyc report --reporter=text-lcov | coveralls
         - nyc check-coverage --lines 50
     - name: 'Native driver'
-      node_js: '10'
+      node_js: '13'
       addons:
         postgresql: '9.6'
       script:
