@@ -2,20 +2,24 @@ language: node_js
 jobs:
   include:
     - name: 'JavaScript driver'
-      node_js: '13'
+      node_js: '10'
       addons:
         postgresql: '9.6'
       script:
+        - rm -fr ./node_modules
         - npm install
         - npm run build
         - NODE_ENV=test nyc npm run test
         - nyc report --reporter=text-lcov | coveralls
         - nyc check-coverage --lines 50
+  allow_failures:
     - name: 'Native driver'
-      node_js: '13'
+      node_js: '10'
       addons:
         postgresql: '9.6'
       script:
+        - rm -fr ./node_modules
+        - npm install
         - npm install pg-native --no-save
         - npm run build
         - NODE_ENV=test nyc npm run test
