@@ -649,25 +649,30 @@ test('idle transactions are terminated after `idleInTransactionSessionTimeout`',
   t.true(error instanceof BackendTerminatedError);
 });
 
-test('statements are cancelled after `statementTimeout`', async (t) => {
-  t.timeout(5000);
+if (pgNativeBindingsAreAvailable) {
+  // Skipping test because of a bug in node-postgres.
+  // @see https://github.com/brianc/node-postgres/issues/2103
+} else {
+  test('statements are cancelled after `statementTimeout`', async (t) => {
+    t.timeout(5000);
 
-  const pool = createPool(TEST_DSN, {
-    maximumPoolSize: 5,
-    statementTimeout: 1000,
+    const pool = createPool(TEST_DSN, {
+      maximumPoolSize: 5,
+      statementTimeout: 1000,
+    });
+
+    t.deepEqual(pool.getPoolState(), {
+      activeConnectionCount: 0,
+      ended: false,
+      idleConnectionCount: 0,
+      waitingClientCount: 0,
+    });
+
+    const error = await t.throwsAsync(pool.query(sql`SELECT pg_sleep(2000)`));
+
+    t.true(error instanceof StatementTimeoutError);
   });
-
-  t.deepEqual(pool.getPoolState(), {
-    activeConnectionCount: 0,
-    ended: false,
-    idleConnectionCount: 0,
-    waitingClientCount: 0,
-  });
-
-  const error = await t.throwsAsync(pool.query(sql`SELECT pg_sleep(2000)`));
-
-  t.true(error instanceof StatementTimeoutError);
-});
+}
 
 test('retries failing transactions (deadlock)', async (t) => {
   t.timeout(2000);
