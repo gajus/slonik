@@ -7,7 +7,7 @@ jobs:
         postgresql: '9.6'
       script:
         - rm -fr ./node_modules
-        - rehash -r
+        - hash -r
         - npm install
         - npm run build
         - NODE_ENV=test nyc npm run test
@@ -20,7 +20,7 @@ jobs:
         postgresql: '9.6'
       script:
         - rm -fr ./node_modules
-        - rehash -r
+        - hash -r
         - npm install
         - npm install pg-native --no-save
         - npm run build
