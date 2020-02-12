@@ -13,7 +13,6 @@ jobs:
         - NODE_ENV=test nyc npm run test
         - nyc report --reporter=text-lcov | coveralls
         - nyc check-coverage --lines 50
-  allow_failures:
     - name: 'Native driver'
       node_js: '10'
       addons:
