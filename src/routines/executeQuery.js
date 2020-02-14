@@ -94,7 +94,7 @@ const retryTransaction = async (
         );
       }
     } catch (error) {
-      if (error.code.startsWith(TRANSACTION_ROLLBACK_ERROR_PREFIX)) {
+      if (typeof error.code === 'string' && error.code.startsWith(TRANSACTION_ROLLBACK_ERROR_PREFIX)) {
         continue;
       }
 
