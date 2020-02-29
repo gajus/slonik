@@ -1,7 +1,9 @@
 // @flow
 
-import Logger from 'roarr';
+import Roarr from 'roarr';
 
-export default Logger.child({
-  package: 'slonik',
+export const getLogger = (logger: typeof Roarr) => (logger || Roarr).child({
+  package: logger?.getContext().package || 'slonik',
 });
+
+export default getLogger();

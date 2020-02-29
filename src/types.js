@@ -90,6 +90,7 @@ export type ClientConfigurationInputType = {|
   +statementTimeout?: number | 'DISABLE_TIMEOUT',
   +transactionRetryLimit?: number,
   +typeParsers?: $ReadOnlyArray<TypeParserType>,
+  +logger?: LoggerType,
 |};
 
 export type ClientConfigurationType = {|
@@ -104,6 +105,7 @@ export type ClientConfigurationType = {|
   +statementTimeout: number | 'DISABLE_TIMEOUT',
   +transactionRetryLimit: number,
   +typeParsers: $ReadOnlyArray<TypeParserType>,
+  +logger: LoggerType,
 |};
 
 export type StreamFunctionType = (

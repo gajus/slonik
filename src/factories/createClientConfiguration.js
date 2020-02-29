@@ -9,6 +9,7 @@ import {
   InvalidConfigurationError,
 } from '../errors';
 import createTypeParserPreset from './createTypeParserPreset';
+import {getLogger} from '../Logger';
 
 export default (clientUserConfigurationInput?: ClientConfigurationInputType): ClientConfigurationType => {
   const typeParsers: $ReadOnlyArray<TypeParserType> = [];
@@ -29,6 +30,7 @@ export default (clientUserConfigurationInput?: ClientConfigurationInputType): Cl
     statementTimeout: 60000,
     transactionRetryLimit: 5,
     typeParsers,
+    logger: getLogger(clientUserConfigurationInput?.logger)
 
     // $FlowFixMe
     ...clientUserConfigurationInput,

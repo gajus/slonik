@@ -10,7 +10,6 @@ import type {
   ClientConfigurationInputType,
   DatabasePoolType,
 } from '../types';
-import Logger from '../Logger';
 import bindPool from '../binders/bindPool';
 import createClientConfiguration from './createClientConfiguration';
 import createPoolConfiguration from './createPoolConfiguration';
@@ -26,7 +25,7 @@ export default (
 
   const poolId = createUlid();
 
-  const poolLog = Logger.child({
+  const poolLog = clientConfiguration.logger.child({
     poolId,
   });
 

@@ -8,10 +8,11 @@ import {
 import type {
   ClientConfigurationType,
 } from '../types';
-import log from '../Logger';
 
 export default (connectionUri: string, clientConfiguration: ClientConfigurationType) => {
   const poolConfiguration = parseConnectionString(connectionUri);
+
+  const log = clientConfiguration.logger;
 
   // @see https://node-postgres.com/api/pool
   poolConfiguration.connectionTimeoutMillis = clientConfiguration.connectionTimeout;
