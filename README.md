@@ -2137,6 +2137,31 @@ By default, Slonik logs only connection events, e.g. when connection is created,
 
 Query-level logging can be added using [`slonik-interceptor-query-logging`](https://github.com/gajus/slonik-interceptor-query-logging) interceptor.
 
+To include application-specific log context, pass in a `roarr` instance to the `createPool` parameters. You can also use `withLogContext` on an existing pool. For example in an http server request handler:
+
+```js
+import roarr from 'roarr';
+import { createPool, sql } from 'slonik';
+
+const appLogger = roarr.child({
+  appName: 'my-app',
+  appVersion: 'v1.2.3',
+});
+
+const pool = createPool(process.env.POSTGRES_CONNECTION_STRING, {
+  logger: appLogger,
+});
+
+export const handler = async (req, res) => {
+  const slonik = pool.withLogContext({
+    requestId: req.headers['x-request-id'],
+  });
+
+  const results = await slonik.any(sql`SELECT ...`);
+  res.status(200).send(results);
+};
+```
+
 <a name="slonik-debugging-capture-stack-trace"></a>
 ### Capture stack trace
 
