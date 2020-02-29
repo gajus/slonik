@@ -54,6 +54,8 @@ export const createPoolInternal = (clientConfiguration: ClientConfigurationInput
 export default (clientConfiguration: ClientConfigurationInputType = defaultConfiguration) => {
   const internalPool = createPoolInternal(clientConfiguration);
 
+  const connection = internalPool.connect();
+
   const connectSpy = sinon.spy(internalPool, 'connect');
   const endSpy = sinon.spy(connection, 'end');
   const querySpy = sinon.stub(connection, 'query').returns({});
