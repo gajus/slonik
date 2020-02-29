@@ -16,6 +16,7 @@ import {
 import {
   assertSqlSqlToken,
 } from '../assertions';
+import {bindPool} from '.';
 
 export default (
   parentLog: LoggerType,
@@ -158,5 +159,6 @@ export default (
         },
       );
     },
+    withLogContext: (context) => bindPool(parentLog.child(context), pool, clientConfiguration)
   };
 };

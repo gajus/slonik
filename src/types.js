@@ -168,6 +168,7 @@ export type DatabasePoolType = {|
   +getPoolState: () => PoolStateType,
   +stream: StreamFunctionType,
   +transaction: (handler: TransactionFunctionType) => Promise<*>,
+  +withLogContext: (context: object) => DatabasePoolType,
 |};
 
 /**
