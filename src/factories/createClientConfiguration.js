@@ -30,7 +30,7 @@ export default (clientUserConfigurationInput?: ClientConfigurationInputType): Cl
     statementTimeout: 60000,
     transactionRetryLimit: 5,
     typeParsers,
-    logger: getLogger(clientUserConfigurationInput?.logger)
+    logger: getLogger(clientUserConfigurationInput?.logger),
 
     // $FlowFixMe
     ...clientUserConfigurationInput,
