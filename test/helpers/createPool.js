@@ -15,7 +15,7 @@ const defaultConfiguration = {
   typeParsers: [],
 };
 
-export default (clientConfiguration: ClientConfigurationInputType = defaultConfiguration) => {
+export const createPoolInternal = (clientConfiguration: ClientConfigurationInputType = defaultConfiguration) => {
   const eventEmitter = new EventEmitter();
 
   const connection = {
@@ -37,7 +37,7 @@ export default (clientConfiguration: ClientConfigurationInputType = defaultConfi
     release: () => {},
   };
 
-  const internalPool = {
+  return {
     _pulseQueue: () => {},
     _remove: () => {},
     connect: () => {
@@ -49,6 +49,10 @@ export default (clientConfiguration: ClientConfigurationInputType = defaultConfi
       poolId: '1',
     },
   };
+};
+
+export default (clientConfiguration: ClientConfigurationInputType = defaultConfiguration) => {
+  const internalPool = createPoolInternal(clientConfiguration);
 
   const connectSpy = sinon.spy(internalPool, 'connect');
   const endSpy = sinon.spy(connection, 'end');
