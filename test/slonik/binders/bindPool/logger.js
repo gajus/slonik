@@ -1,5 +1,5 @@
 import test from 'ava';
-import { createPoolInternal } from '../../../helpers/createPool';
+import createPool from '../../../helpers/createPool';
 import { inspect } from 'util';
 
 test('withLogContext returns a new pool', async (t) => {

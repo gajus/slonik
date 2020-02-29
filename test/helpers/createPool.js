@@ -15,7 +15,7 @@ const defaultConfiguration = {
   typeParsers: [],
 };
 
-export const createPoolInternal = (clientConfiguration: ClientConfigurationInputType = defaultConfiguration) => {
+export default (clientConfiguration: ClientConfigurationInputType = defaultConfiguration) => {
   const eventEmitter = new EventEmitter();
 
   const connection = {
@@ -37,7 +37,7 @@ export const createPoolInternal = (clientConfiguration: ClientConfigurationInput
     release: () => {},
   };
 
-  return {
+  const internalPool = {
     _pulseQueue: () => {},
     _remove: () => {},
     connect: () => {
@@ -49,12 +49,6 @@ export const createPoolInternal = (clientConfiguration: ClientConfigurationInput
       poolId: '1',
     },
   };
-};
-
-export default (clientConfiguration: ClientConfigurationInputType = defaultConfiguration) => {
-  const internalPool = createPoolInternal(clientConfiguration);
-
-  const connection = internalPool.connect();
 
   const connectSpy = sinon.spy(internalPool, 'connect');
   const endSpy = sinon.spy(connection, 'end');
@@ -78,8 +72,7 @@ export default (clientConfiguration: ClientConfigurationInputType = defaultConfi
     },
   );
 
-  return {
-    ...pool,
+  const helpers = {
     connection,
     connectSpy,
     endSpy,
@@ -87,4 +80,9 @@ export default (clientConfiguration: ClientConfigurationInputType = defaultConfi
     releaseSpy,
     removeSpy,
   };
+
+  Object.keys(helpers).forEach(prop => {
+    Object.defineProperty(pool, prop, { value: helpers[prop], enumerable: false });
+  });
+  return pool;
 };
