@@ -16,9 +16,8 @@ import {
 import {
   assertSqlSqlToken,
 } from '../assertions';
-import {bindPool} from '.';
 
-export default (
+const bindPool = (
   parentLog: LoggerType,
   pool: InternalDatabasePoolType,
   clientConfiguration: ClientConfigurationType,
@@ -162,3 +161,5 @@ export default (
     withLogContext: (context) => bindPool(parentLog.child(context), pool, clientConfiguration)
   };
 };
+
+export default bindPool;
