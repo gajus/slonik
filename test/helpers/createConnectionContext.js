@@ -8,6 +8,8 @@ export default (): ConnectionContextType => {
   // $FlowFixMe
   return {
     connectionId: '1',
+
+    // $FlowFixMe
     log: {
       getContext: () => {
         return {

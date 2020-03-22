@@ -22,7 +22,8 @@ export default (
   pool: InternalDatabasePoolType,
   clientConfiguration: ClientConfigurationType,
 ): DatabasePoolType => {
-  const mapConnection = (targetMethodName: string) => {
+  // eslint-disable-next-line flowtype/no-weak-types
+  const mapConnection = (targetMethodName: string): any => {
     return (query: TaggedTemplateLiteralInvocationType) => {
       if (typeof query === 'string') {
         throw new TypeError('Query must be constructed using `sql` tagged template literal.');
