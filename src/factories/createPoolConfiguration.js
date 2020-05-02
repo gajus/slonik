@@ -26,9 +26,11 @@ export default (connectionUri: string, clientConfiguration: ClientConfigurationT
     poolConfiguration.connectionTimeoutMillis = 1;
   }
 
-  poolConfiguration.ssl = {
-    rejectUnauthorized: false,
-  };
+  if (poolConfiguration.ssl) {
+    poolConfiguration.ssl = {
+      rejectUnauthorized: false,
+    };
+  }
 
   // Temporary disabled.
   // There appears to be a bug in node-postgres.
