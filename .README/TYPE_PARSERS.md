@@ -40,7 +40,7 @@ Read: [Default type parsers](#default-type-parsers).
 
 ### Built-in type parsers
 
-|Type name|Implemnetation|Factory function name|
+|Type name|Implementation|Factory function name|
 |---|---|---|
 |`date`|Produces a literal date as a string (format: YYYY-MM-DD).|`createDateTypeParser`|
 |`int8`|Produces an integer.|`createBigintTypeParser`|

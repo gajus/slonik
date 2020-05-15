@@ -592,7 +592,7 @@ Check out [`slonik-interceptor-preset`](https://github.com/gajus/slonik-intercep
 
 These type parsers are enabled by default:
 
-|Type name|Implemnetation|
+|Type name|Implementation|
 |---|---|
 |`date`|Produces a literal date as a string (format: YYYY-MM-DD).|
 |`int8`|Produces an integer.|
@@ -812,7 +812,7 @@ Read: [Default type parsers](#default-type-parsers).
 <a name="slonik-type-parsers-built-in-type-parsers"></a>
 ### Built-in type parsers
 
-|Type name|Implemnetation|Factory function name|
+|Type name|Implementation|Factory function name|
 |---|---|---|
 |`date`|Produces a literal date as a string (format: YYYY-MM-DD).|`createDateTypeParser`|
 |`int8`|Produces an integer.|`createBigintTypeParser`|
@@ -1108,7 +1108,7 @@ import {
 
 ```
 
-Sometiems it may be desirable to construct a custom instance of `sql` tag. In those cases, you can use the `createSqlTag` factory, e.g.
+Sometimes it may be desirable to construct a custom instance of `sql` tag. In those cases, you can use the `createSqlTag` factory, e.g.
 
 ```js
 import {
