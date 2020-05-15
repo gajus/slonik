@@ -188,7 +188,7 @@ Check out [`slonik-interceptor-preset`](https://github.com/gajus/slonik-intercep
 
 These type parsers are enabled by default:
 
-|Type name|Implemnetation|
+|Type name|Implementation|
 |---|---|
 |`date`|Produces a literal date as a string (format: YYYY-MM-DD).|
 |`int8`|Produces an integer.|
