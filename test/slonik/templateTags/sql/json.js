@@ -44,6 +44,42 @@ test('passes null unstringified', (t) => {
   });
 });
 
+test('JSON encodes string values', (t) => {
+  const query = sql`SELECT ${sql.json('example string')}`;
+
+  t.deepEqual(query, {
+    sql: 'SELECT $1',
+    type: SqlToken,
+    values: [
+      '"example string"',
+    ],
+  });
+});
+
+test('JSON encodes numeric values', (t) => {
+  const query = sql`SELECT ${sql.json(1234)}`;
+
+  t.deepEqual(query, {
+    sql: 'SELECT $1',
+    type: SqlToken,
+    values: [
+      '1234',
+    ],
+  });
+});
+
+test('JSON encodes boolean values', (t) => {
+  const query = sql`SELECT ${sql.json(true)}`;
+
+  t.deepEqual(query, {
+    sql: 'SELECT $1',
+    type: SqlToken,
+    values: [
+      'true',
+    ],
+  });
+});
+
 test('throws if payload is undefined', (t) => {
   const error = t.throws(() => {
     // $FlowFixMe
