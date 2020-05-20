@@ -1258,7 +1258,7 @@ Produces:
 <a name="slonik-query-building-sql-array-sql-array-membertype"></a>
 #### <code>sql.array</code> <code>memberType</code>
 
-If `memberType` is a string (`TypeNameIdentifierType`), then it is treated as a type name identifier and will be quoted using double quotes, i.e. `sql.array([1, 2, 3], 'int4')` is equivalent to `$1::"int4"[]`. The implication is that keywrods that are often used interchangeably with type names are not going to work, e.g. [`int4`](https://github.com/postgres/postgres/blob/69edf4f8802247209e77f69e089799b3d83c13a4/src/include/catalog/pg_type.dat#L74-L78) is a type name identifier and will work. However, [`int`](https://github.com/postgres/postgres/blob/69edf4f8802247209e77f69e089799b3d83c13a4/src/include/parser/kwlist.h#L213) is a keyword and will not work. You can either use type name identifiers or you can construct custom member using `sql` tag, e.g.
+If `memberType` is a string (`TypeNameIdentifierType`), then it is treated as a type name identifier and will be quoted using double quotes, i.e. `sql.array([1, 2, 3], 'int4')` is equivalent to `$1::"int4"[]`. The implication is that keywords that are often used interchangeably with type names are not going to work, e.g. [`int4`](https://github.com/postgres/postgres/blob/69edf4f8802247209e77f69e089799b3d83c13a4/src/include/catalog/pg_type.dat#L74-L78) is a type name identifier and will work. However, [`int`](https://github.com/postgres/postgres/blob/69edf4f8802247209e77f69e089799b3d83c13a4/src/include/parser/kwlist.h#L213) is a keyword and will not work. You can either use type name identifiers or you can construct custom member using `sql` tag, e.g.
 
 ```js
 await connection.query(sql`
@@ -1788,7 +1788,7 @@ await connection.stream(sql`SELECT foo`, (stream) => {
 
 ```
 
-Note: Implemneted using [`pg-query-stream`](https://github.com/brianc/node-pg-query-stream).
+Note: Implemented using [`pg-query-stream`](https://github.com/brianc/node-pg-query-stream).
 
 <a name="slonik-query-methods-transaction"></a>
 ### <code>transaction</code>
@@ -1936,9 +1936,9 @@ try {
 
 When error originates from `node-postgres`, the original error is available under `originalError` property.
 
-This propery is exposed for debugging purposes only. Do not use it for conditional checks – it can change.
+This property is exposed for debugging purposes only. Do not use it for conditional checks – it can change.
 
-If you require to extract meta-data about a specific type of error (e.g. contraint violation name), raise a GitHub issue describing your use case.
+If you require to extract meta-data about a specific type of error (e.g. constraint violation name), raise a GitHub issue describing your use case.
 
 <a name="slonik-error-handling-handling-backendterminatederror"></a>
 ### Handling <code>BackendTerminatedError</code>
