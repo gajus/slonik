@@ -22,7 +22,7 @@ try {
   /* eslint-enable */
 
   pgNativeBindingsAreAvailable = true;
-} catch (error) {
+} catch {
   pgNativeBindingsAreAvailable = false;
 }
 

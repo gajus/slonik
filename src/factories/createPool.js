@@ -43,7 +43,7 @@ export default (
     pgNativeBindingsAreAvailable = true;
 
     poolLog.debug('found pg-native module');
-  } catch (error) {
+  } catch {
     poolLog.debug('pg-native module is not found');
   }
 

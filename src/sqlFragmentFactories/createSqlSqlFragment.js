@@ -15,7 +15,7 @@ export default (token: SqlSqlTokenType, greatestParameterPosition: number): SqlF
   let greatestMatchedParameterPosition = 0;
 
   sql += token.sql.replace(/\$(\d+)/g, (match, g1) => {
-    const parameterPosition = parseInt(g1, 10);
+    const parameterPosition = Number.parseInt(g1, 10);
 
     if (parameterPosition > greatestMatchedParameterPosition) {
       greatestMatchedParameterPosition = parameterPosition;

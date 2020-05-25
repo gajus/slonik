@@ -176,7 +176,7 @@ test.skip('57P01 error causes the connection to be rejected (EXPLICIT connection
   const error = await t.throwsAsync(pool.connect(async (connection) => {
     try {
       await connection.query(sql`SELECT 1`);
-    } catch (error_) {
+    } catch {
       //
     }
 
