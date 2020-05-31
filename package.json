@@ -61,7 +61,7 @@
     "sinon": "^9.0.2"
   },
   "engines": {
-    "node": ">=8.0"
+    "node": ">=10.0"
   },
   "husky": {
     "hooks": {
