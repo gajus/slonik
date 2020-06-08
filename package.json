@@ -31,6 +31,7 @@
     "pg-copy-streams-binary": "^1.2.1",
     "pg-cursor": "^2.2.1",
     "pg-types": "^3.0.0",
+    "postgres-array": "^2.0.0",
     "postgres-interval": "^1.2.0",
     "roarr": "^2.15.3",
     "serialize-error": "^7.0.1",

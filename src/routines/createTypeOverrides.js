@@ -1,8 +1,8 @@
 // @flow
 
 import {
-  arrayParser,
-} from 'pg-types';
+  parse as parseArray,
+} from 'postgres-array';
 import TypeOverrides from 'pg/lib/type-overrides';
 import type {
   InternalDatabaseConnectionType,
@@ -40,13 +40,11 @@ export default async (connection: InternalDatabaseConnectionType, typeParsers: $
     });
 
     if (postgresType.typarray) {
-      typeOverrides.setTypeParser(postgresType.typarray, (value) => {
-        return arrayParser
-          .create(
-            value,
-            typeParser.parse,
-          )
-          .parse();
+      typeOverrides.setTypeParser(postgresType.typarray, (arrayValue) => {
+        return parseArray(arrayValue)
+          .map((value) => {
+            return typeParser.parse(value);
+          });
       });
     }
   }

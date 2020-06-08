@@ -56,6 +56,7 @@ beforeEach(async () => {
       CREATE TABLE person (
         id SERIAL PRIMARY KEY,
         name text,
+        birth_date date,
         payload bytea
       )
     `);
@@ -748,4 +749,56 @@ test('retries failing transactions (deadlock)', async (t) => {
     `),
     'bar 0',
   );
+});
+
+test('does not throw an error if running a query with array_agg on dates', async (t) => {
+  const pool = createPool(TEST_DSN);
+
+  await pool.query(sql`
+    INSERT INTO person
+    (
+      name,
+      birth_date
+    )
+    VALUES
+      ('foo', '2020-01-01'),
+      ('foo', '2020-01-02'),
+      ('bar', '2020-01-03')
+  `);
+
+  const result = await pool.query(sql`
+    SELECT
+      p1.name,
+      array_agg(p1.birth_date) birth_dates
+    FROM person p1
+    GROUP BY p1.name
+  `);
+
+  t.deepEqual(result, {
+    command: 'SELECT',
+    fields: [
+      {
+        dataTypeId: 25,
+        name: 'name',
+      },
+      {
+        dataTypeId: 1182,
+        name: 'birth_dates',
+      },
+    ],
+    notices: [],
+    rowCount: 2,
+    rows: [
+      {
+        birth_dates: ['2020-01-03'],
+        name: 'bar',
+      },
+      {
+        birth_dates: ['2020-01-01', '2020-01-02'],
+        name: 'foo',
+      },
+    ],
+  });
+
+  await pool.end();
 });
