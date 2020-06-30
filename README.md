@@ -1067,13 +1067,13 @@ Inserting data this way ensures that the query is stable and reduces the amount 
 If connection is initiated by a query (as opposed to a obtained explicitly using `pool#connect()`), then `beforePoolConnection` interceptor can be used to change the pool that will be used to execute the query, e.g.
 
 ```js
-const slavePool = createPool('postgres://slave');
-const masterPool = createPool('postgres://master', {
+const replicaPool = createPool('postgres://replica');
+const primaryPool = createPool('postgres://primary', {
   interceptors: [
     {
       beforePoolConnection: (connectionContext, pool) => {
         if (connectionContext.query && connectionContext.query.sql.includes('SELECT')) {
-          return slavePool;
+          return replicaPool;
         }
 
         return pool;
@@ -1082,11 +1082,11 @@ const masterPool = createPool('postgres://master', {
   ]
 });
 
-// This query will use `postgres://slave` connection.
-masterPool.query(sql`SELECT 1`);
+// This query will use `postgres://replica` connection.
+primaryPool.query(sql`SELECT 1`);
 
-// This query will use `postgres://master` connection.
-masterPool.query(sql`UPDATE 1`);
+// This query will use `postgres://primary` connection.
+primaryPool.query(sql`UPDATE 1`);
 
 ```
 
