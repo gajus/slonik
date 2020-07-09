@@ -430,6 +430,77 @@ if (pgNativeBindingsAreAvailable) {
 
     await pool.end();
   });
+  test('applies type parsers to streamed rows', async (t) => {
+    const pool = createPool(TEST_DSN, {
+      typeParsers: [
+        {
+          name: 'date',
+          parse: (value) => {
+            return value === null ? value : new Date(value).getFullYear();
+          },
+        },
+      ],
+    });
+
+    await pool.query(sql`
+      INSERT INTO person
+        (name, birth_date)
+      VALUES
+        ('foo', '1990-01-01'),
+        ('bar', '1991-01-01'),
+        ('baz', '1992-01-01')
+    `);
+
+    const messages = [];
+
+    await pool.stream(sql`
+      SELECT birth_date
+      FROM person
+      ORDER BY birth_date ASC
+    `, (stream) => {
+      stream.on('data', (datum) => {
+        messages.push(datum);
+      });
+    });
+
+    t.deepEqual(messages, [
+      {
+        fields: [
+          {
+            dataTypeId: 1082,
+            name: 'birth_date',
+          },
+        ],
+        row: {
+          birth_date: 1990,
+        },
+      },
+      {
+        fields: [
+          {
+            dataTypeId: 1082,
+            name: 'birth_date',
+          },
+        ],
+        row: {
+          birth_date: 1991,
+        },
+      },
+      {
+        fields: [
+          {
+            dataTypeId: 1082,
+            name: 'birth_date',
+          },
+        ],
+        row: {
+          birth_date: 1992,
+        },
+      },
+    ]);
+
+    await pool.end();
+  });
 }
 
 test('implicit connection configuration is reset', async (t) => {
