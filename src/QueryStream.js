@@ -39,11 +39,15 @@ export default class QueryStream extends Readable {
 
   // $FlowFixMe
   constructor (text, values, options) {
+    const {rowMode, types, ...rest} = options;
     super({
       objectMode: true,
-      ...options,
+      ...rest,
     });
-    this.cursor = new Cursor(text, values);
+    this.cursor = new Cursor(text, values, {
+      rowMode,
+      types,
+    });
     this._reading = false;
     this._closed = false;
     this.batchSize = (options || {}).batchSize || 100;
