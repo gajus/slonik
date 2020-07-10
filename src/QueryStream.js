@@ -6,6 +6,7 @@ import {
   Readable,
 } from 'stream';
 import Cursor from 'pg-cursor';
+import Result from 'pg/lib/result';
 import {
   map,
 } from 'inline-loops.macro';
@@ -18,6 +19,8 @@ export default class QueryStream extends Readable {
   _reading: boolean;
 
   _closed: boolean;
+
+  _result: Result;
 
   cursor: Cursor;
 
@@ -39,15 +42,11 @@ export default class QueryStream extends Readable {
 
   // $FlowFixMe
   constructor (text, values, options) {
-    const {rowMode, types, ...rest} = options;
     super({
       objectMode: true,
-      ...rest,
+      ...options,
     });
-    this.cursor = new Cursor(text, values, {
-      rowMode,
-      types,
-    });
+    this.cursor = new Cursor(text, values);
     this._reading = false;
     this._closed = false;
     this.batchSize = (options || {}).batchSize || 100;
@@ -59,6 +58,9 @@ export default class QueryStream extends Readable {
     this.handleCommandComplete = this.cursor.handleCommandComplete.bind(this.cursor);
     this.handleReadyForQuery = this.cursor.handleReadyForQuery.bind(this.cursor);
     this.handleError = this.cursor.handleError.bind(this.cursor);
+
+    // pg client sets types via _result property
+    this._result = this.cursor._result;
   }
 
   submit (connection: Object) {
