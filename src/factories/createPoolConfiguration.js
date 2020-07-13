@@ -29,6 +29,7 @@ export default (connectionUri: string, clientConfiguration: ClientConfigurationT
   if (poolConfiguration.ssl) {
     poolConfiguration.ssl = {
       rejectUnauthorized: false,
+      ...poolConfiguration.ssl,
     };
   }
 
