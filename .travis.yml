@@ -11,10 +11,9 @@ jobs:
       script:
         - psql --version
         - pg_isready
-        # - rm -fr ./node_modules
-        # - hash -r
+        - cat /etc/postgresql/12/main/postgresql.conf
+        - cat /etc/postgresql/12/main/pg_hba.conf
         - npm install
-        # - npm run build
         - ava --verbose test/slonik/integration.js
         # - nyc report --reporter=text-lcov | coveralls
         # - nyc check-coverage --lines 50
