@@ -35,11 +35,11 @@ beforeEach(async (t) => {
   const TEST_DATABASE_NAME = 'slonik_test_' + testId;
 
   t.context = {
-    dsn: 'postgres://localhost/' + TEST_DATABASE_NAME,
+    dsn: 'postgresql://postgres@localhost/' + TEST_DATABASE_NAME,
     testDatabaseName: TEST_DATABASE_NAME,
   };
 
-  const pool0 = createPool('postgres://', {
+  const pool0 = createPool('postgresql://postgres@localhost', {
     maximumPoolSize: 1,
   });
 
@@ -76,7 +76,7 @@ beforeEach(async (t) => {
 });
 
 afterEach(async (t) => {
-  const pool = createPool('postgres://', {
+  const pool = createPool('postgresql://postgres@localhost', {
     maximumPoolSize: 1,
   });
 

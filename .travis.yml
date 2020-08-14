@@ -11,7 +11,6 @@ jobs:
       script:
         - psql --version
         - pg_isready
-        - ls -lah /etc/postgresql/12
         - rm -fr ./node_modules
         - hash -r
         - npm install
