@@ -11,8 +11,7 @@ jobs:
       script:
         - psql --version
         - pg_isready
-        - cat /etc/postgresql/12/main/postgresql.conf
-        - cat /etc/postgresql/12/main/pg_hba.conf
+        - sudo cp /etc/postgresql/10/main/pg_hba.conf /etc/postgresql/12/main/pg_hba.conf
         - npm install
         - ava --verbose test/slonik/integration.js
         # - nyc report --reporter=text-lcov | coveralls
