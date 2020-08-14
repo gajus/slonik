@@ -5,6 +5,10 @@ jobs:
       node_js: "10"
       addons:
         postgresql: "12"
+        apt:
+          packages:
+            - postgresql-12
+            - postgresql-client-12
       script:
         - rm -fr ./node_modules
         - hash -r
