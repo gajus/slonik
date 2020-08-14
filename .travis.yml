@@ -1,10 +1,10 @@
 language: node_js
 jobs:
   include:
-    - name: 'JavaScript driver'
-      node_js: '10'
+    - name: "JavaScript driver"
+      node_js: "10"
       addons:
-        postgresql: '9.6'
+        postgresql: "12"
       script:
         - rm -fr ./node_modules
         - hash -r
