@@ -38,8 +38,8 @@ beforeEach(async () => {
       SELECT pg_terminate_backend(pid)
       FROM pg_stat_activity
       WHERE
-        state = 'active' AND
-        pid != pg_backend_pid()
+        pid != pg_backend_pid() AND
+        datname = 'slonik_test'
     `);
     await connection.query(sql`DROP DATABASE IF EXISTS slonik_test`);
     await connection.query(sql`CREATE DATABASE slonik_test`);
