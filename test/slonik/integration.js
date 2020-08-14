@@ -436,7 +436,7 @@ if (pgNativeBindingsAreAvailable) {
         {
           name: 'date',
           parse: (value) => {
-            return value === null ? value : new Date(value).getFullYear();
+            return value === null ? value : new Date(value + ' 00:00').getFullYear();
           },
         },
       ],
