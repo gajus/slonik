@@ -11,19 +11,19 @@ jobs:
       script:
         - psql --version
         - pg_isready
-        - rm -fr ./node_modules
-        - hash -r
+        # - rm -fr ./node_modules
+        # - hash -r
         - npm install
-        - npm run build
-        - npm run test
-        - nyc report --reporter=text-lcov | coveralls
-        - nyc check-coverage --lines 50
-after_success:
-  - npm run lint
-  - NODE_ENV=test nyc npm run test
-  - nyc report --reporter=text-lcov | coveralls
-  - npm run build
-  - semantic-release
+        # - npm run build
+        - ava --verbose test/slonik/integration.js
+        # - nyc report --reporter=text-lcov | coveralls
+        # - nyc check-coverage --lines 50
+# after_success:
+#   - npm run lint
+#   - NODE_ENV=test nyc npm run test
+#   - nyc report --reporter=text-lcov | coveralls
+#   - npm run build
+#   - semantic-release
 notifications:
   email: false
 sudo: false
