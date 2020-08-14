@@ -1,6 +1,7 @@
 // @flow
 
 import test, {
+  afterEach,
   beforeEach,
 } from 'ava';
 import delay from 'delay';
@@ -26,9 +27,18 @@ try {
   pgNativeBindingsAreAvailable = false;
 }
 
-const TEST_DSN = 'postgres://localhost/slonik_test';
+let testId = 0;
 
-beforeEach(async () => {
+beforeEach(async (t) => {
+  ++testId;
+
+  const TEST_DATABASE_NAME = 'slonik_test_' + testId;
+
+  t.context = {
+    dsn: 'postgres://localhost/' + TEST_DATABASE_NAME,
+    testDatabaseName: TEST_DATABASE_NAME,
+  };
+
   const pool0 = createPool('postgres://', {
     maximumPoolSize: 1,
   });
@@ -41,13 +51,13 @@ beforeEach(async () => {
         pid != pg_backend_pid() AND
         datname = 'slonik_test'
     `);
-    await connection.query(sql`DROP DATABASE IF EXISTS slonik_test`);
-    await connection.query(sql`CREATE DATABASE slonik_test`);
+    await connection.query(sql`DROP DATABASE IF EXISTS ${sql.identifier([TEST_DATABASE_NAME])}`);
+    await connection.query(sql`CREATE DATABASE ${sql.identifier([TEST_DATABASE_NAME])}`);
   });
 
   await pool0.end();
 
-  const pool1 = createPool(TEST_DSN, {
+  const pool1 = createPool(t.context.dsn, {
     maximumPoolSize: 1,
   });
 
@@ -65,8 +75,27 @@ beforeEach(async () => {
   await pool1.end();
 });
 
+afterEach(async (t) => {
+  const pool = createPool('postgres://', {
+    maximumPoolSize: 1,
+  });
+
+  await pool.connect(async (connection) => {
+    await connection.query(sql`
+      SELECT pg_terminate_backend(pid)
+      FROM pg_stat_activity
+      WHERE
+        pid != pg_backend_pid() AND
+        datname = 'slonik_test'
+    `);
+    await connection.query(sql`DROP DATABASE IF EXISTS ${sql.identifier([t.context.testDatabaseName])}`);
+  });
+
+  await pool.end();
+});
+
 test('returns expected query result object (SELECT)', async (t) => {
-  const pool = createPool(TEST_DSN);
+  const pool = createPool(t.context.dsn);
 
   const result = await pool.query(sql`
     SELECT 1 "name"
@@ -93,7 +122,7 @@ test('returns expected query result object (SELECT)', async (t) => {
 });
 
 test('returns expected query result object (INSERT)', async (t) => {
-  const pool = createPool(TEST_DSN);
+  const pool = createPool(t.context.dsn);
 
   const result = await pool.query(sql`
     INSERT INTO person
@@ -129,7 +158,7 @@ test('returns expected query result object (INSERT)', async (t) => {
 });
 
 test('returns expected query result object (UPDATE)', async (t) => {
-  const pool = createPool(TEST_DSN);
+  const pool = createPool(t.context.dsn);
 
   await pool.query(sql`
     INSERT INTO person
@@ -174,7 +203,7 @@ test('returns expected query result object (UPDATE)', async (t) => {
 });
 
 test('returns expected query result object (DELETE)', async (t) => {
-  const pool = createPool(TEST_DSN);
+  const pool = createPool(t.context.dsn);
 
   await pool.query(sql`
     INSERT INTO person
@@ -217,7 +246,7 @@ test('returns expected query result object (DELETE)', async (t) => {
 });
 
 test('terminated backend produces BackendTerminatedError error', async (t) => {
-  const pool = createPool(TEST_DSN);
+  const pool = createPool(t.context.dsn);
 
   const error = await t.throwsAsync(pool.connect(async (connection) => {
     const connectionPid = await connection.oneFirst(sql`
@@ -237,7 +266,7 @@ test('terminated backend produces BackendTerminatedError error', async (t) => {
 });
 
 test('cancelled statement produces StatementCancelledError error', async (t) => {
-  const pool = createPool(TEST_DSN);
+  const pool = createPool(t.context.dsn);
 
   const error = await t.throwsAsync(pool.connect(async (connection) => {
     const connectionPid = await connection.oneFirst(sql`
@@ -257,7 +286,7 @@ test('cancelled statement produces StatementCancelledError error', async (t) => 
 });
 
 test('statement cancelled because of statement_timeout produces StatementTimeoutError error', async (t) => {
-  const pool = createPool(TEST_DSN);
+  const pool = createPool(t.context.dsn);
 
   const error = await t.throwsAsync(pool.connect(async (connection) => {
     await connection.query(sql`
@@ -273,7 +302,7 @@ test('statement cancelled because of statement_timeout produces StatementTimeout
 });
 
 test('transaction terminated while in an idle state is rejected (at the next transaction query)', async (t) => {
-  const pool = createPool(TEST_DSN);
+  const pool = createPool(t.context.dsn);
 
   await pool.connect(async (connection) => {
     await connection.query(sql`SET idle_in_transaction_session_timeout=500`);
@@ -291,7 +320,7 @@ test('transaction terminated while in an idle state is rejected (at the next tra
 });
 
 test('connection of transaction terminated while in an idle state is rejected (at the end of the transaction)', async (t) => {
-  const pool = createPool(TEST_DSN);
+  const pool = createPool(t.context.dsn);
 
   await pool.connect(async (connection) => {
     await connection.query(sql`SET idle_in_transaction_session_timeout=500`);
@@ -307,7 +336,7 @@ test('connection of transaction terminated while in an idle state is rejected (a
 });
 
 test('throws an error if an attempt is made to make multiple transactions at once using the same connection', async (t) => {
-  const pool = createPool(TEST_DSN);
+  const pool = createPool(t.context.dsn);
 
   const error = await t.throwsAsync(pool.connect(async (connection) => {
     await Promise.all([
@@ -330,7 +359,7 @@ test('throws an error if an attempt is made to make multiple transactions at onc
 });
 
 test('writes and reads buffers', async (t) => {
-  const pool = createPool(TEST_DSN);
+  const pool = createPool(t.context.dsn);
 
   const payload = 'foobarbazqux';
 
@@ -357,7 +386,7 @@ test('writes and reads buffers', async (t) => {
 
 if (pgNativeBindingsAreAvailable) {
   test('throws an error stream method is used', async (t) => {
-    const pool = createPool(TEST_DSN);
+    const pool = createPool(t.context.dsn);
 
     await pool.query(sql`
       INSERT INTO person (name) VALUES ('foo'), ('bar'), ('baz')
@@ -375,7 +404,7 @@ if (pgNativeBindingsAreAvailable) {
   });
 } else {
   test('streams rows', async (t) => {
-    const pool = createPool(TEST_DSN);
+    const pool = createPool(t.context.dsn);
 
     await pool.query(sql`
       INSERT INTO person (name) VALUES ('foo'), ('bar'), ('baz')
@@ -431,7 +460,7 @@ if (pgNativeBindingsAreAvailable) {
     await pool.end();
   });
   test('applies type parsers to streamed rows', async (t) => {
-    const pool = createPool(TEST_DSN, {
+    const pool = createPool(t.context.dsn, {
       typeParsers: [
         {
           name: 'date',
@@ -504,7 +533,7 @@ if (pgNativeBindingsAreAvailable) {
 }
 
 test('implicit connection configuration is reset', async (t) => {
-  const pool = createPool(TEST_DSN, {
+  const pool = createPool(t.context.dsn, {
     maximumPoolSize: 1,
   });
 
@@ -522,7 +551,7 @@ test('implicit connection configuration is reset', async (t) => {
 });
 
 test('explicit connection configuration is persisted', async (t) => {
-  const pool = createPool(TEST_DSN, {
+  const pool = createPool(t.context.dsn, {
     maximumPoolSize: 1,
   });
 
@@ -544,7 +573,7 @@ test('explicit connection configuration is persisted', async (t) => {
 test('serves waiting requests', async (t) => {
   t.timeout(1000);
 
-  const pool = createPool(TEST_DSN, {
+  const pool = createPool(t.context.dsn, {
     maximumPoolSize: 1,
   });
 
@@ -566,7 +595,7 @@ test('serves waiting requests', async (t) => {
 });
 
 test('pool.end() resolves when there are no more connections (no connections at start)', async (t) => {
-  const pool = createPool(TEST_DSN);
+  const pool = createPool(t.context.dsn);
 
   t.deepEqual(pool.getPoolState(), {
     activeConnectionCount: 0,
@@ -586,7 +615,7 @@ test('pool.end() resolves when there are no more connections (no connections at 
 });
 
 test('pool.end() resolves when there are no more connections (implicit connection)', async (t) => {
-  const pool = createPool(TEST_DSN);
+  const pool = createPool(t.context.dsn);
 
   t.deepEqual(pool.getPoolState(), {
     activeConnectionCount: 0,
@@ -617,7 +646,7 @@ test('pool.end() resolves when there are no more connections (implicit connectio
 });
 
 test('pool.end() resolves when there are no more connections (explicit connection holding pool alive)', async (t) => {
-  const pool = createPool(TEST_DSN);
+  const pool = createPool(t.context.dsn);
 
   t.deepEqual(pool.getPoolState(), {
     activeConnectionCount: 0,
@@ -652,7 +681,7 @@ test('pool.end() resolves when there are no more connections (explicit connectio
 test('pool.end() resolves when there are no more connections (terminates idle connections)', async (t) => {
   t.timeout(1000);
 
-  const pool = createPool(TEST_DSN, {
+  const pool = createPool(t.context.dsn, {
     idleTimeout: 5000,
     maximumPoolSize: 5,
   });
@@ -702,7 +731,7 @@ test('pool.end() resolves when there are no more connections (terminates idle co
 test.skip('idle transactions are terminated after `idleInTransactionSessionTimeout`', async (t) => {
   t.timeout(10000);
 
-  const pool = createPool(TEST_DSN, {
+  const pool = createPool(t.context.dsn, {
     idleInTransactionSessionTimeout: 1000,
     maximumPoolSize: 5,
   });
@@ -726,7 +755,7 @@ test.skip('idle transactions are terminated after `idleInTransactionSessionTimeo
 test.skip('statements are cancelled after `statementTimeout`', async (t) => {
   t.timeout(5000);
 
-  const pool = createPool(TEST_DSN, {
+  const pool = createPool(t.context.dsn, {
     maximumPoolSize: 5,
     statementTimeout: 1000,
   });
@@ -746,7 +775,7 @@ test.skip('statements are cancelled after `statementTimeout`', async (t) => {
 test('retries failing transactions (deadlock)', async (t) => {
   t.timeout(2000);
 
-  const pool = createPool(TEST_DSN);
+  const pool = createPool(t.context.dsn);
 
   const firstPersonId = await pool.oneFirst(sql`
     INSERT INTO person (name)
@@ -823,7 +852,7 @@ test('retries failing transactions (deadlock)', async (t) => {
 });
 
 test('does not throw an error if running a query with array_agg on dates', async (t) => {
-  const pool = createPool(TEST_DSN);
+  const pool = createPool(t.context.dsn);
 
   await pool.query(sql`
     INSERT INTO person
