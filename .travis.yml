@@ -3,6 +3,8 @@ jobs:
   include:
     - name: "JavaScript driver"
       node_js: "10"
+      services:
+        - postgresql
       addons:
         postgresql: "12"
         apt:
