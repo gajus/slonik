@@ -1,9 +1,6 @@
 // @flow
 
 import {
-  mapTaggedTemplateLiteralInvocation,
-} from '../utilities';
-import {
   any,
   anyFirst,
   many,
@@ -23,6 +20,9 @@ import type {
   TaggedTemplateLiteralInvocationType,
   TransactionFunctionType,
 } from '../types';
+import {
+  mapTaggedTemplateLiteralInvocation,
+} from '../utilities';
 
 export default (
   parentLog: LoggerType,

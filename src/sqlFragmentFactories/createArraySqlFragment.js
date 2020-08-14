@@ -1,5 +1,11 @@
 // @flow
 
+import {
+  InvalidInputError,
+} from '../errors';
+import {
+  createSqlTokenSqlFragment,
+} from '../factories';
 import type {
   ArraySqlTokenType,
   SqlFragmentType,
@@ -9,12 +15,6 @@ import {
   isPrimitiveValueExpression,
   isSqlToken,
 } from '../utilities';
-import {
-  createSqlTokenSqlFragment,
-} from '../factories';
-import {
-  InvalidInputError,
-} from '../errors';
 
 export default (token: ArraySqlTokenType, greatestParameterPosition: number): SqlFragmentType => {
   let placeholderIndex = greatestParameterPosition;

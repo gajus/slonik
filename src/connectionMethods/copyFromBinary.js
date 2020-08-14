@@ -7,6 +7,9 @@ import {
   from,
 } from 'pg-copy-streams';
 import {
+  UnexpectedStateError,
+} from '../errors';
+import {
   executeQuery,
 } from '../routines';
 import type {
@@ -15,9 +18,6 @@ import type {
 import {
   encodeTupleList,
 } from '../utilities';
-import {
-  UnexpectedStateError,
-} from '../errors';
 
 const bufferToStream = (buffer) => {
   const stream = new Duplex();

@@ -5,11 +5,11 @@
 import {
   Readable,
 } from 'stream';
-import Cursor from 'pg-cursor';
-import Result from 'pg/lib/result';
 import {
   map,
 } from 'inline-loops.macro';
+import Cursor from 'pg-cursor';
+import Result from 'pg/lib/result';
 
 /**
  * @see https://github.com/brianc/node-pg-query-stream

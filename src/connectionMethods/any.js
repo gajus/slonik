@@ -1,11 +1,11 @@
 // @flow
 
-import {
-  createQueryId,
-} from '../utilities';
 import type {
   InternalQueryAnyFunctionType,
 } from '../types';
+import {
+  createQueryId,
+} from '../utilities';
 import query from './query';
 
 /**

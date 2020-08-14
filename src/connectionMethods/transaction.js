@@ -7,15 +7,15 @@ import {
   bindTransactionConnection,
 } from '../binders';
 import {
-  createUlid,
-} from '../utilities';
-import {
   BackendTerminatedError,
   UnexpectedStateError,
 } from '../errors';
 import type {
   InternalTransactionFunctionType,
 } from '../types';
+import {
+  createUlid,
+} from '../utilities';
 
 const transaction: InternalTransactionFunctionType = async (parentLog, connection, clientConfiguration, handler) => {
   if (connection.connection.slonik.transactionDepth !== null) {

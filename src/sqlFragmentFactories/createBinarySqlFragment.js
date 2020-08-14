@@ -1,12 +1,12 @@
 // @flow
 
+import {
+  InvalidInputError,
+} from '../errors';
 import type {
   BinarySqlTokenType,
   SqlFragmentType,
 } from '../types';
-import {
-  InvalidInputError,
-} from '../errors';
 
 export default (token: BinarySqlTokenType, greatestParameterPosition: number): SqlFragmentType => {
   if (!Buffer.isBuffer(token.data)) {

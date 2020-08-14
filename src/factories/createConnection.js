@@ -3,6 +3,16 @@
 import {
   serializeError,
 } from 'serialize-error';
+import {
+  bindPoolConnection,
+} from '../binders';
+import {
+  ConnectionError,
+  UnexpectedStateError,
+} from '../errors';
+import {
+  createTypeOverrides,
+} from '../routines';
 import type {
   MaybePromiseType,
   ClientConfigurationType,
@@ -14,16 +24,6 @@ import type {
   LoggerType,
   TaggedTemplateLiteralInvocationType,
 } from '../types';
-import {
-  createTypeOverrides,
-} from '../routines';
-import {
-  bindPoolConnection,
-} from '../binders';
-import {
-  ConnectionError,
-  UnexpectedStateError,
-} from '../errors';
 
 type ConnectionHandlerType = (
   connectionLog: LoggerType,

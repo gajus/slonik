@@ -1,17 +1,17 @@
 // @flow
 
+import isPlainObject from 'is-plain-object';
 import {
   serializeError,
 } from 'serialize-error';
-import isPlainObject from 'is-plain-object';
+import Logger from '../Logger';
+import {
+  InvalidInputError,
+} from '../errors';
 import type {
   JsonSqlTokenType,
   SqlFragmentType,
 } from '../types';
-import {
-  InvalidInputError,
-} from '../errors';
-import Logger from '../Logger';
 
 const log = Logger.child({
   namespace: 'createJsonSqlFragment',

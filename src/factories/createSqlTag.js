@@ -1,5 +1,18 @@
 // @flow
 
+import Logger from '../Logger';
+import {
+  InvalidInputError,
+} from '../errors';
+import {
+  ArrayToken,
+  BinaryToken,
+  IdentifierToken,
+  JsonToken,
+  ListToken,
+  SqlToken,
+  UnnestToken,
+} from '../tokens';
 import type {
   ArraySqlTokenType,
   BinarySqlTokenType,
@@ -19,19 +32,6 @@ import {
   isPrimitiveValueExpression,
   isSqlToken,
 } from '../utilities';
-import Logger from '../Logger';
-import {
-  ArrayToken,
-  BinaryToken,
-  IdentifierToken,
-  JsonToken,
-  ListToken,
-  SqlToken,
-  UnnestToken,
-} from '../tokens';
-import {
-  InvalidInputError,
-} from '../errors';
 import createSqlTokenSqlFragment from './createSqlTokenSqlFragment';
 
 const log = Logger.child({

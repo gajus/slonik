@@ -4,14 +4,14 @@ import {
   map,
 } from 'inline-loops.macro';
 import {
-  createQueryId,
-} from '../utilities';
-import {
   DataIntegrityError,
 } from '../errors';
 import type {
   InternalQueryManyFirstFunctionType,
 } from '../types';
+import {
+  createQueryId,
+} from '../utilities';
 import many from './many';
 
 const manyFirst: InternalQueryManyFirstFunctionType = async (log, connection, clientConfigurationType, rawSql, values, inheritedQueryId) => {

@@ -3,15 +3,15 @@
 import {
   serializeError,
 } from 'serialize-error';
-import {
-  createUlid,
-} from '../utilities';
+import Logger from '../Logger';
+import bindPool from '../binders/bindPool';
 import type {
   ClientConfigurationInputType,
   DatabasePoolType,
 } from '../types';
-import Logger from '../Logger';
-import bindPool from '../binders/bindPool';
+import {
+  createUlid,
+} from '../utilities';
 import createClientConfiguration from './createClientConfiguration';
 import createPoolConfiguration from './createPoolConfiguration';
 

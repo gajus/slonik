@@ -1,14 +1,14 @@
 // @flow
 
 import {
-  createQueryId,
-} from '../utilities';
-import {
   NotFoundError,
 } from '../errors';
 import type {
   InternalQueryManyFunctionType,
 } from '../types';
+import {
+  createQueryId,
+} from '../utilities';
 import query from './query';
 
 /**

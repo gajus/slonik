@@ -1,18 +1,14 @@
 // @flow
 
 import {
-  map,
-} from 'inline-loops.macro';
-import {
   getStackTrace,
 } from 'get-stack-trace';
 import {
+  map,
+} from 'inline-loops.macro';
+import {
   serializeError,
 } from 'serialize-error';
-import {
-  createQueryId,
-  normaliseQueryValues,
-} from '../utilities';
 import {
   BackendTerminatedError,
   CheckIntegrityConstraintViolationError,
@@ -34,6 +30,10 @@ import type {
   QueryResultRowType,
   QueryType,
 } from '../types';
+import {
+  createQueryId,
+  normaliseQueryValues,
+} from '../utilities';
 
 type ExecutionRoutineType = (
   connection: InternalDatabaseConnectionType,

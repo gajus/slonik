@@ -3,16 +3,16 @@
 /* eslint-disable promise/prefer-await-to-callbacks */
 
 import through from 'through2';
+import QueryStream from '../QueryStream';
+import {
+  UnexpectedStateError,
+} from '../errors';
 import {
   executeQuery,
 } from '../routines';
 import type {
   InternalStreamFunctionType,
 } from '../types';
-import QueryStream from '../QueryStream';
-import {
-  UnexpectedStateError,
-} from '../errors';
 
 const stream: InternalStreamFunctionType = async (connectionLogger, connection, clientConfiguration, rawSql, values, streamHandler) => {
   return executeQuery(

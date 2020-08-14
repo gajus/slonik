@@ -5,10 +5,10 @@
 import {
   parse as parseConnectionString,
 } from 'pg-connection-string';
+import log from '../Logger';
 import type {
   ClientConfigurationType,
 } from '../types';
-import log from '../Logger';
 
 export default (connectionUri: string, clientConfiguration: ClientConfigurationType) => {
   const poolConfiguration = parseConnectionString(connectionUri);

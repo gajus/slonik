@@ -1,9 +1,9 @@
 // @flow
 
+import TypeOverrides from 'pg/lib/type-overrides';
 import {
   parse as parseArray,
 } from 'postgres-array';
-import TypeOverrides from 'pg/lib/type-overrides';
 import type {
   InternalDatabaseConnectionType,
   TypeParserType,

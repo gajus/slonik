@@ -1,8 +1,7 @@
 // @flow
 
-import {
-  createUlid,
-} from '../utilities';
+import Logger from '../Logger';
+import bindPool from '../binders/bindPool';
 import type {
   ClientConfigurationInputType,
   DatabasePoolType,
@@ -10,8 +9,9 @@ import type {
   QueryResultRowType,
   QueryResultType,
 } from '../types';
-import Logger from '../Logger';
-import bindPool from '../binders/bindPool';
+import {
+  createUlid,
+} from '../utilities';
 import createClientConfiguration from './createClientConfiguration';
 
 type OverridesType = {|

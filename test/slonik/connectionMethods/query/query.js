@@ -3,8 +3,6 @@
 import test from 'ava';
 import delay from 'delay';
 import sinon from 'sinon';
-import createPool from '../../../helpers/createPool';
-import createSqlTag from '../../../../src/factories/createSqlTag';
 import {
   BackendTerminatedError,
   CheckIntegrityConstraintViolationError,
@@ -12,6 +10,8 @@ import {
   NotNullIntegrityConstraintViolationError,
   UniqueIntegrityConstraintViolationError,
 } from '../../../../src/errors';
+import createSqlTag from '../../../../src/factories/createSqlTag';
+import createPool from '../../../helpers/createPool';
 
 const sql = createSqlTag();
 

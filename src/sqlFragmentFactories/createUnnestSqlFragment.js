@@ -1,5 +1,8 @@
 // @flow
 
+import {
+  InvalidInputError,
+} from '../errors';
 import type {
   SqlFragmentType,
   UnnestSqlTokenType,
@@ -10,9 +13,6 @@ import {
   isPrimitiveValueExpression,
   stripArrayNotation,
 } from '../utilities';
-import {
-  InvalidInputError,
-} from '../errors';
 
 export default (token: UnnestSqlTokenType, greatestParameterPosition: number): SqlFragmentType => {
   const columnTypes = token.columnTypes;

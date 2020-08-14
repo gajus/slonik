@@ -1,20 +1,20 @@
 // @flow
 
+import {
+  InvalidInputError,
+} from '../errors';
+import {
+  createPrimitiveValueExpressions,
+  createSqlTokenSqlFragment,
+} from '../factories';
 import type {
   SqlFragmentType,
   ListSqlTokenType,
 } from '../types';
 import {
-  InvalidInputError,
-} from '../errors';
-import {
   isPrimitiveValueExpression,
   isSqlToken,
 } from '../utilities';
-import {
-  createPrimitiveValueExpressions,
-  createSqlTokenSqlFragment,
-} from '../factories';
 
 export default (token: ListSqlTokenType, greatestParameterPosition: number): SqlFragmentType => {
   const values = [];

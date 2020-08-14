@@ -1,5 +1,8 @@
 // @flow
 
+import {
+  InvalidInputError,
+} from '../errors';
 import type {
   IdentifierSqlTokenType,
   SqlFragmentType,
@@ -7,9 +10,6 @@ import type {
 import {
   escapeIdentifier,
 } from '../utilities';
-import {
-  InvalidInputError,
-} from '../errors';
 
 export default (token: IdentifierSqlTokenType): SqlFragmentType => {
   const sql = token.names

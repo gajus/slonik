@@ -1,5 +1,14 @@
 // @flow
 
+import {
+  assertSqlSqlToken,
+} from '../assertions';
+import {
+  transaction,
+} from '../connectionMethods';
+import {
+  createConnection,
+} from '../factories';
 import type {
   ClientConfigurationType,
   DatabasePoolType,
@@ -7,15 +16,6 @@ import type {
   LoggerType,
   TaggedTemplateLiteralInvocationType,
 } from '../types';
-import {
-  createConnection,
-} from '../factories';
-import {
-  transaction,
-} from '../connectionMethods';
-import {
-  assertSqlSqlToken,
-} from '../assertions';
 
 export default (
   parentLog: LoggerType,

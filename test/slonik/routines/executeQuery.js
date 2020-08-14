@@ -1,13 +1,13 @@
 // @flow
 
-import Roarr from 'roarr';
 import test, {
   beforeEach,
 } from 'ava';
-import executeQuery from '../../../src/routines/executeQuery';
+import Roarr from 'roarr';
 import {
   InvalidInputError,
 } from '../../../src/errors';
+import executeQuery from '../../../src/routines/executeQuery';
 import createClientConfiguration from '../../helpers/createClientConfiguration';
 
 const createConnectionStub = () => {

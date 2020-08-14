@@ -1,10 +1,10 @@
 // @flow
 
-import parseInterval from 'postgres-interval';
 import {
   parse as parseIsoDuration,
   toSeconds as durationToSeconds,
 } from 'iso8601-duration';
+import parseInterval from 'postgres-interval';
 import type {
   TypeParserType,
 } from '../../types';

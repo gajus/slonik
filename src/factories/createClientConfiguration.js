@@ -1,13 +1,13 @@
 // @flow
 
+import {
+  InvalidConfigurationError,
+} from '../errors';
 import type {
   ClientConfigurationInputType,
   ClientConfigurationType,
   TypeParserType,
 } from '../types';
-import {
-  InvalidConfigurationError,
-} from '../errors';
 import createTypeParserPreset from './createTypeParserPreset';
 
 export default (clientUserConfigurationInput?: ClientConfigurationInputType): ClientConfigurationType => {

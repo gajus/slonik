@@ -1,12 +1,12 @@
 // @flow
 
+import {
+  UnexpectedStateError,
+} from '../errors';
 import type {
   SqlSqlTokenType,
   SqlFragmentType,
 } from '../types';
-import {
-  UnexpectedStateError,
-} from '../errors';
 
 export default (token: SqlSqlTokenType, greatestParameterPosition: number): SqlFragmentType => {
   let sql = '';

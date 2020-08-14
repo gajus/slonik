@@ -1,14 +1,8 @@
 // @flow
 
 import {
-  ArrayToken,
-  BinaryToken,
-  IdentifierToken,
-  JsonToken,
-  ListToken,
-  SqlToken,
-  UnnestToken,
-} from '../tokens';
+  UnexpectedStateError,
+} from '../errors';
 import {
   createArraySqlFragment,
   createBinarySqlFragment,
@@ -19,8 +13,14 @@ import {
   createUnnestSqlFragment,
 } from '../sqlFragmentFactories';
 import {
-  UnexpectedStateError,
-} from '../errors';
+  ArrayToken,
+  BinaryToken,
+  IdentifierToken,
+  JsonToken,
+  ListToken,
+  SqlToken,
+  UnnestToken,
+} from '../tokens';
 import type {
   SqlTokenType,
   SqlFragmentType,

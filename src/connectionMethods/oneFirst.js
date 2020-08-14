@@ -1,14 +1,14 @@
 // @flow
 
 import {
-  createQueryId,
-} from '../utilities';
-import {
   UnexpectedStateError,
 } from '../errors';
 import type {
   InternalQueryOneFirstFunctionType,
 } from '../types';
+import {
+  createQueryId,
+} from '../utilities';
 import one from './one';
 
 /**

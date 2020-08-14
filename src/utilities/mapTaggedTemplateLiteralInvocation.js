@@ -1,11 +1,11 @@
 // @flow
 
-import type {
-  TaggedTemplateLiteralInvocationType,
-} from '../types';
 import {
   SqlToken,
 } from '../tokens';
+import type {
+  TaggedTemplateLiteralInvocationType,
+} from '../types';
 
 export default (targetMethod: *) => {
   return (query: TaggedTemplateLiteralInvocationType) => {

@@ -1,14 +1,14 @@
 // @flow
 
 import {
-  createQueryId,
-} from '../utilities';
-import {
   DataIntegrityError,
 } from '../errors';
 import type {
   InternalQueryMaybeOneFunctionType,
 } from '../types';
+import {
+  createQueryId,
+} from '../utilities';
 import query from './query';
 
 /**

@@ -1,15 +1,8 @@
 // @flow
 
 import {
-  mapTaggedTemplateLiteralInvocation,
-} from '../utilities';
-import type {
-  ClientConfigurationType,
-  DatabasePoolConnectionType,
-  InternalDatabaseConnectionType,
-  LoggerType,
-  TransactionFunctionType,
-} from '../types';
+  assertSqlSqlToken,
+} from '../assertions';
 import {
   any,
   anyFirst,
@@ -24,9 +17,16 @@ import {
   stream,
   transaction,
 } from '../connectionMethods';
+import type {
+  ClientConfigurationType,
+  DatabasePoolConnectionType,
+  InternalDatabaseConnectionType,
+  LoggerType,
+  TransactionFunctionType,
+} from '../types';
 import {
-  assertSqlSqlToken,
-} from '../assertions';
+  mapTaggedTemplateLiteralInvocation,
+} from '../utilities';
 
 export default (
   parentLog: LoggerType,
