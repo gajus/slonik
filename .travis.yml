@@ -14,7 +14,7 @@ jobs:
             - postgresql-client-12
       env:
         global:
-          - PGPORT=5432
+          - PGPORT=5434
       script:
         - ls -lah /etc/postgresql/
         - psql --version
