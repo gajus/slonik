@@ -748,6 +748,8 @@ test.skip('idle transactions are terminated after `idleInTransactionSessionTimeo
   }));
 
   t.true(error instanceof BackendTerminatedError);
+
+  await pool.end();
 });
 
 // Skipping test because of a bug in node-postgres.
@@ -770,6 +772,8 @@ test.skip('statements are cancelled after `statementTimeout`', async (t) => {
   const error = await t.throwsAsync(pool.query(sql`SELECT pg_sleep(2000)`));
 
   t.true(error instanceof StatementTimeoutError);
+
+  await pool.end();
 });
 
 test('retries failing transactions (deadlock)', async (t) => {
@@ -849,6 +853,8 @@ test('retries failing transactions (deadlock)', async (t) => {
     `),
     'bar 0',
   );
+
+  await pool.end();
 });
 
 test('does not throw an error if running a query with array_agg on dates', async (t) => {
