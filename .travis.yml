@@ -11,13 +11,13 @@ jobs:
       script:
         - psql --version
         - pg_isready
-        - sudo cat /etc/postgresql/12/main/pg_hba.conf
-        - ls -lah /etc/postgresql/
-        - sudo cp /etc/postgresql/9.6/main/pg_hba.conf /etc/postgresql/12/main/pg_hba.conf
-        - sudo pg_ctlcluster 12 main restart
-        - sh -c 'until pg_isready -p 5432; do sleep 0.1; done'
-        - npm install
-        - ava --verbose test/slonik/integration.js
+        - psql 'postgres://127.0.0.1'
+        # - sudo sed -i '/^host\s*all/ s/md5/trust/' /etc/postgresql/12/main/pg_hba.conf
+        # - sudo cp /etc/postgresql/9.6/main/pg_hba.conf /etc/postgresql/12/main/pg_hba.conf
+        # - sudo pg_ctlcluster 12 main restart
+        # - sh -c 'until pg_isready -p 5432; do sleep 0.1; done'
+        # - npm install
+        # - ava --verbose test/slonik/integration.js
         # - nyc report --reporter=text-lcov | coveralls
         # - nyc check-coverage --lines 50
 # after_success:
