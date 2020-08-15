@@ -9,10 +9,8 @@ jobs:
       addons:
         postgresql: "12"
       script:
-        - psql --version
-        - pg_isready
-        - rm -fr ./node_modules
-        - hash -r
+        - sudo sed -i '/^host\s*all/ s/md5/trust/' /etc/postgresql/12/main/pg_hba.conf
+        - sudo pg_ctlcluster 12 main restart
         - npm install
         - npm run build
         - npm run test
