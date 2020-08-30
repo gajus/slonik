@@ -9,7 +9,8 @@ import {
   map,
 } from 'inline-loops.macro';
 import Cursor from 'pg-cursor';
-import Result from 'pg/lib/result';
+
+// import Result from 'pg/lib/result';
 
 /**
  * @see https://github.com/brianc/node-pg-query-stream
@@ -20,9 +21,14 @@ export default class QueryStream extends Readable {
 
   _closed: boolean;
 
-  _result: Result;
+  // _result: Result;
+  // cursor: Cursor;
 
-  cursor: Cursor;
+  _result: any;
+
+  cursor: any;
+
+  cursor: any;
 
   batchSize: number;
 

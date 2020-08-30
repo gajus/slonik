@@ -9,7 +9,8 @@ import type {
   TypeParserType,
 } from '../types';
 
-export default async (connection: InternalDatabaseConnectionType, typeParsers: $ReadOnlyArray<TypeParserType>): TypeOverrides => {
+// eslint-disable-next-line flowtype/no-weak-types
+export default async (connection: InternalDatabaseConnectionType, typeParsers: $ReadOnlyArray<TypeParserType>): any => {
   const typeOverrides = new TypeOverrides();
 
   if (typeParsers.length === 0) {
