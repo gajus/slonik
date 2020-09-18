@@ -776,7 +776,7 @@ test.skip('statements are cancelled after `statementTimeout`', async (t) => {
   await pool.end();
 });
 
-test('retries failing transactions (deadlock)', async (t) => {
+test.serial('retries failing transactions (deadlock)', async (t) => {
   t.timeout(2000);
 
   const pool = createPool(t.context.dsn);
