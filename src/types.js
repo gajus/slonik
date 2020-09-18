@@ -126,6 +126,7 @@ export type QueryCopyFromBinaryFunctionType = (
 type CommonQueryMethodsType = {|
   +any: QueryAnyFunctionType,
   +anyFirst: QueryAnyFirstFunctionType,
+  +exists: QueryExistsFunctionType,
   +many: QueryManyFunctionType,
   +manyFirst: QueryManyFirstFunctionType,
   +maybeOne: QueryMaybeOneFunctionType,
@@ -369,6 +370,7 @@ export type InternalQueryMethodType<R> = (
 
 export type InternalQueryAnyFirstFunctionType = InternalQueryMethodType<$ReadOnlyArray<QueryResultRowColumnType>>;
 export type InternalQueryAnyFunctionType = InternalQueryMethodType<$ReadOnlyArray<QueryResultRowType>>;
+export type InternalQueryExistsFunctionType = InternalQueryMethodType<boolean>;
 export type InternalQueryFunctionType<T: QueryResultRowType> = InternalQueryMethodType<QueryResultType<T>>;
 export type InternalQueryManyFirstFunctionType = InternalQueryMethodType<$ReadOnlyArray<QueryResultRowColumnType>>;
 export type InternalQueryManyFunctionType = InternalQueryMethodType<$ReadOnlyArray<QueryResultRowType>>;
@@ -437,6 +439,7 @@ type ExternalQueryResultRowType = Object;
 
 export type QueryAnyFirstFunctionType = QueryMethodType<$ReadOnlyArray<ExternalQueryResultRowColumnType>>;
 export type QueryAnyFunctionType = QueryMethodType<$ReadOnlyArray<ExternalQueryResultRowType>>;
+export type QueryExistsFunctionType = QueryMethodType<boolean>;
 export type QueryFunctionType = QueryMethodType<ExternalQueryResultRowType>;
 export type QueryManyFirstFunctionType = QueryMethodType<$ReadOnlyArray<ExternalQueryResultRowColumnType>>;
 export type QueryManyFunctionType = QueryMethodType<$ReadOnlyArray<ExternalQueryResultRowType>>;

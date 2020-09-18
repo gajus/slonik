@@ -26,6 +26,30 @@ const fooValues = await connection.anyFirst(sql`SELECT foo`);
 
 ```
 
+### `exists`
+
+Returns a boolean value indicating whether query produces results.
+
+The query that is passed to this function is wrapped in `SELECT exists()` prior to it getting executed, i.e.
+
+```js
+pool.exists(sql`
+  SELECT LIMIT 1
+`)
+
+```
+
+is equivalent to:
+
+```js
+pool.oneFirst(sql`
+  SELECT exists(
+    SELECT LIMIT 1
+  )
+`)
+
+```
+
 ### `copyFromBinary`
 
 ```js

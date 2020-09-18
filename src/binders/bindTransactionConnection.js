@@ -3,6 +3,7 @@
 import {
   any,
   anyFirst,
+  exists,
   many,
   manyFirst,
   maybeOne,
@@ -45,6 +46,7 @@ export default (
   return {
     any: mapInvocation(any.bind(null, parentLog, connection, clientConfiguration)),
     anyFirst: mapInvocation(anyFirst.bind(null, parentLog, connection, clientConfiguration)),
+    exists: mapInvocation(exists.bind(null, parentLog, connection, clientConfiguration)),
     many: mapInvocation(many.bind(null, parentLog, connection, clientConfiguration)),
     manyFirst: mapInvocation(manyFirst.bind(null, parentLog, connection, clientConfiguration)),
     maybeOne: mapInvocation(maybeOne.bind(null, parentLog, connection, clientConfiguration)),

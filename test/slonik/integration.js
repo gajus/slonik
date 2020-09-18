@@ -908,3 +908,27 @@ test('does not throw an error if running a query with array_agg on dates', async
 
   await pool.end();
 });
+
+test('returns true if returns rows', async (t) => {
+  const pool = createPool(t.context.dsn);
+
+  t.true(
+    await pool.exists(sql`
+      SELECT LIMIT 1
+    `),
+  );
+
+  await pool.end();
+});
+
+test('returns false if returns rows', async (t) => {
+  const pool = createPool(t.context.dsn);
+
+  t.false(
+    await pool.exists(sql`
+      SELECT LIMIT 0
+    `),
+  );
+
+  await pool.end();
+});

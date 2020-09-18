@@ -99,6 +99,7 @@ Note: Using this project does not require TypeScript or Flow. It is a regular ES
     * [Query methods](#slonik-query-methods)
         * [`any`](#slonik-query-methods-any)
         * [`anyFirst`](#slonik-query-methods-anyfirst)
+        * [`exists`](#slonik-query-methods-exists)
         * [`copyFromBinary`](#slonik-query-methods-copyfrombinary)
         * [`many`](#slonik-query-methods-many)
         * [`manyFirst`](#slonik-query-methods-manyfirst)
@@ -1566,6 +1567,31 @@ const fooValues = await connection.anyFirst(sql`SELECT foo`);
 
 ```
 
+<a name="slonik-query-methods-exists"></a>
+### <code>exists</code>
+
+Returns a boolean value indicating whether query produces results.
+
+The query that is passed to this function is wrapped in `SELECT exists()` prior to it getting executed, i.e.
+
+```js
+pool.exists(sql`
+  SELECT LIMIT 1
+`)
+
+```
+
+is equivalent to:
+
+```js
+pool.oneFirst(sql`
+  SELECT exists(
+    SELECT LIMIT 1
+  )
+`)
+
+```
+
 <a name="slonik-query-methods-copyfrombinary"></a>
 ### <code>copyFromBinary</code>
 
@@ -1788,7 +1814,7 @@ await connection.stream(sql`SELECT foo`, (stream) => {
 
 ```
 
-Note: Implemented using [`pg-query-stream`](https://github.com/brianc/node-pg-query-stream).
+Note: Implemneted using [`pg-query-stream`](https://github.com/brianc/node-pg-query-stream).
 
 <a name="slonik-query-methods-transaction"></a>
 ### <code>transaction</code>
@@ -1936,9 +1962,9 @@ try {
 
 When error originates from `node-postgres`, the original error is available under `originalError` property.
 
-This property is exposed for debugging purposes only. Do not use it for conditional checks – it can change.
+This propery is exposed for debugging purposes only. Do not use it for conditional checks – it can change.
 
-If you require to extract meta-data about a specific type of error (e.g. constraint violation name), raise a GitHub issue describing your use case.
+If you require to extract meta-data about a specific type of error (e.g. contraint violation name), raise a GitHub issue describing your use case.
 
 <a name="slonik-error-handling-handling-backendterminatederror"></a>
 ### Handling <code>BackendTerminatedError</code>

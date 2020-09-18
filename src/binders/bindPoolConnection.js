@@ -7,6 +7,7 @@ import {
   any,
   anyFirst,
   copyFromBinary,
+  exists,
   many,
   manyFirst,
   maybeOne,
@@ -49,6 +50,7 @@ export default (
         columnTypes,
       );
     },
+    exists: mapTaggedTemplateLiteralInvocation(exists.bind(null, parentLog, connection, clientConfiguration)),
     many: mapTaggedTemplateLiteralInvocation(many.bind(null, parentLog, connection, clientConfiguration)),
     manyFirst: mapTaggedTemplateLiteralInvocation(manyFirst.bind(null, parentLog, connection, clientConfiguration)),
     maybeOne: mapTaggedTemplateLiteralInvocation(maybeOne.bind(null, parentLog, connection, clientConfiguration)),

@@ -113,6 +113,7 @@ export default (
         }
       });
     },
+    exists: mapConnection('exists'),
     getPoolState: () => {
       return {
         activeConnectionCount: pool.totalCount - pool.idleCount,

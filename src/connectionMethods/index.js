@@ -7,6 +7,9 @@ export {
   default as anyFirst,
 } from './anyFirst';
 export {
+  default as exists,
+} from './exists';
+export {
   default as copyFromBinary,
 } from './copyFromBinary';
 export {
