@@ -932,3 +932,67 @@ test('returns false if returns rows', async (t) => {
 
   await pool.end();
 });
+
+test('returns expected query result object (NOTICE)', async (t) => {
+  const pool = createPool(t.context.dsn);
+
+  await pool.query(sql`
+      CREATE OR REPLACE FUNCTION test_notice
+        (
+          v_test INTEGER
+        ) RETURNS BOOLEAN
+        LANGUAGE plpgsql
+      AS
+      $$
+      BEGIN
+
+        RAISE NOTICE '1. TEST NOTICE [%]',v_test;
+        RAISE NOTICE '2. TEST NOTICE [%]',v_test;
+        RAISE NOTICE '3. TEST NOTICE [%]',v_test;
+        RAISE LOG '4. TEST LOG [%]',v_test;
+        RAISE NOTICE '5. TEST NOTICE [%]',v_test;
+
+        RETURN TRUE;
+      END;
+      $$;
+  `);
+
+  const result = await pool.query(sql`SELECT * FROM test_notice(${10});`);
+  t.assert(result.notices.length === 4);
+
+  await pool.end();
+});
+
+test('throw error with notices', async (t) => {
+  const pool = createPool(t.context.dsn);
+
+  await pool.query(sql`
+      CREATE OR REPLACE FUNCTION error_notice
+        (
+          v_test INTEGER
+        ) RETURNS BOOLEAN
+        LANGUAGE plpgsql
+      AS
+      $$
+      BEGIN
+
+        RAISE NOTICE '1. TEST NOTICE [%]',v_test;
+        RAISE NOTICE '2. TEST NOTICE [%]',v_test;
+        RAISE NOTICE '3. TEST NOTICE [%]',v_test;
+        RAISE WARNING '4. TEST LOG [%]',v_test;
+        RAISE NOTICE '5. TEST NOTICE [%]',v_test;
+        RAISE EXCEPTION 'THIS IS AN ERROR';
+      END;
+      $$;
+  `);
+
+  try {
+    await pool.query(sql`SELECT * FROM error_notice(${10});`);
+  } catch (error) {
+    if (error && error.notices) {
+      t.assert(error.notices.length = 5);
+    }
+  }
+
+  await pool.end();
+});

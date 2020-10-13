@@ -272,6 +272,9 @@ export default async (
         throw new CheckIntegrityConstraintViolationError(error, error.constraint);
       }
 
+      // $FlowFixMe
+      error.notices = notices;
+
       throw error;
     } finally {
       connection.off('notice', noticeListener);
@@ -279,10 +282,12 @@ export default async (
   } catch (error) {
     for (const interceptor of clientConfiguration.interceptors) {
       if (interceptor.queryExecutionError) {
-        await interceptor.queryExecutionError(executionContext, actualQuery, error);
+        await interceptor.queryExecutionError(executionContext, actualQuery, error, notices);
       }
     }
 
+    // $FlowFixMe
+    error.notices = notices;
     throw error;
   }
 
