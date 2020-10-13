@@ -481,7 +481,8 @@ export type InterceptorType = {|
   +queryExecutionError?: (
     queryContext: QueryContextType,
     query: QueryType,
-    error: SlonikError
+    error: SlonikError,
+    notices: $ReadOnlyArray<NoticeType>
   ) => MaybePromiseType<null>,
   +transformQuery?: (
     queryContext: QueryContextType,
