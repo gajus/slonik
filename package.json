@@ -15,7 +15,8 @@
     ],
     "require": [
       "@babel/register"
-    ]
+    ],
+    "timeout": "30s"
   },
   "dependencies": {
     "concat-stream": "^2.0.0",
