@@ -4,3 +4,5 @@
 [untyped]
 .*/node_modules/pg-cursor/.*
 .*/node_modules/pg/.*
+[options]
+types_first=false

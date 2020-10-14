@@ -1,6 +1,8 @@
 // @flow
 
-import isPlainObject from 'is-plain-object';
+import {
+  isPlainObject,
+} from 'is-plain-object';
 import {
   serializeError,
 } from 'serialize-error';
