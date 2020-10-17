@@ -115,7 +115,7 @@
     "addbreaks-export": "find src test -type f -name '*.ts' -exec sed -i 's~export {~export { //breakme\\n~g' {} \\;",
     "addbreaks-import": "find src test -type f -name '*.ts' -exec sed -i 's~import {~import { //breakme\\n~g' {} \\;",
     "import-type-annotate": "find src test -type f -name '*.js' -exec sed -i 's~import type {~import type {\\n//import_type~g' {} \\;",
-    "import-type-unannotate": "find src test -type f -name '*.ts' -exec sed -i 's~import { //import_type~import type {~g' {} \\;",
+    "import-type-unannotate": "find src test -type f -name '*.ts' -exec sed -i 's~import { //import_type~import type { //breakme~g' {} \\;",
     "fix-spaces": "find src test -type f -name '*.ts' -exec sed -i 's~ constructor ~ constructor~g' {} \\;",
     "removebreaks": "find src test -type f -name '*.ts' -exec sh -c 'A=$(cat {} | grep -v breakme) && echo \"// @flow\n\n$A\" > {}' \\;",
     "type-check": "tsc -p .",
