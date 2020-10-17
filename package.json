@@ -47,6 +47,8 @@
     "@babel/plugin-transform-flow-strip-types": "^7.10.4",
     "@babel/preset-env": "^7.11.5",
     "@babel/register": "^7.11.5",
+    "@typescript-eslint/eslint-plugin": "2.26.0",
+    "@typescript-eslint/parser": "2.26.0",
     "ava": "^3.13.0",
     "babel-plugin-istanbul": "^6.0.0",
     "babel-plugin-macros": "^2.8.0",
@@ -105,6 +107,10 @@
     "url": "https://github.com/gajus/slonik"
   },
   "scripts": {
+    "preconvert": "git diff --exit-code",
+    "convert": " flow-to-ts 'src/index.js' --write --delete-source --inline-utility-types",
+    "postconvert": "npm run addbreaks && (eslint src/index.ts --fix || echo meh) && npx prettier 'src/index.ts' --write && npm run removebreaks",
+    "addbreaks": "",
     "type-check": "tsc -p .",
     "compile": "tsc -p tsconfig.lib.json",
     "build": "rm -fr ./dist && NODE_ENV=production babel ./src --out-dir ./dist --copy-files --source-maps && flow-copy-source src dist",
