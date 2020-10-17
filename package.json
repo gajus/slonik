@@ -6,6 +6,10 @@
   },
   "ava": {
     "babel": {
+      "extensions": [
+        "js",
+        "ts"
+      ],
       "compileAsTests": [
         "test/helpers/**/*"
       ]
@@ -14,7 +18,7 @@
       "test/slonik/**/*"
     ],
     "require": [
-      "@babel/register"
+      "ts-node/register/transpile-only"
     ],
     "timeout": "30s"
   },
@@ -45,6 +49,7 @@
     "@babel/cli": "^7.11.6",
     "@babel/core": "^7.11.6",
     "@babel/plugin-transform-flow-strip-types": "^7.10.4",
+    "@babel/plugin-transform-typescript": "^7.12.1",
     "@babel/preset-env": "^7.11.5",
     "@babel/register": "^7.11.5",
     "@typescript-eslint/eslint-plugin": "2.26.0",
@@ -63,6 +68,7 @@
     "nyc": "^15.1.0",
     "semantic-release": "^17.2.1",
     "sinon": "^9.2.0",
+    "ts-node": "^9.0.0",
     "typescript": "^4.0.3"
   },
   "engines": {

@@ -4,7 +4,9 @@
     "noEmit": true,
     "sourceMap": true,
     "declaration": true,
-    "esModuleInterop": true
+    "esModuleInterop": true,
+    "target": "esnext",
+    "module": "commonjs"
   },
   "exclude": ["node_modules", "dist", "coverage", ".nyc_output", ".git"]
 }
