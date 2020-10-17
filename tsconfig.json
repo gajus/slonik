@@ -1,0 +1,9 @@
+{
+  "compilerOptions": {
+    "rootDir": ".",
+    "noEmit": true,
+    "sourceMap": true,
+    "declaration": true
+  },
+  "exclude": ["node_modules", "dist", "coverage", ".nyc_output", ".git"]
+}

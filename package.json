@@ -60,7 +60,8 @@
     "husky": "^4.3.0",
     "nyc": "^15.1.0",
     "semantic-release": "^17.2.1",
-    "sinon": "^9.2.0"
+    "sinon": "^9.2.0",
+    "typescript": "^4.0.3"
   },
   "engines": {
     "node": ">=10.0"
@@ -104,6 +105,8 @@
     "url": "https://github.com/gajus/slonik"
   },
   "scripts": {
+    "type-check": "tsc -p .",
+    "compile": "tsc -p tsconfig.lib.json",
     "build": "rm -fr ./dist && NODE_ENV=production babel ./src --out-dir ./dist --copy-files --source-maps && flow-copy-source src dist",
     "create-readme": "gitdown ./.README/README.md --output-file ./README.md",
     "lint": "eslint ./src ./test && flow",
