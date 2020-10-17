@@ -36,7 +36,7 @@ export default (
 
   try {
     /* eslint-disable global-require, import/no-unassigned-import, import/no-extraneous-dependencies */
-    // $FlowFixMe
+    // @ts-ignore
     require('pg-native');
     /* eslint-enable */
 

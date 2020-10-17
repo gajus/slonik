@@ -61,7 +61,7 @@ const copyFromBinary: InternalCopyFromBinaryFunctionType = async (
         });
 
         copyFromBinaryStream.on('end', () => {
-          // $FlowFixMe
+          // @ts-ignore
           resolve({});
         });
       });

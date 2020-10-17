@@ -3,6 +3,7 @@
 /* eslint-disable id-match */
 
 import {
+  ConnectionOptions,
   parse as parseConnectionString,
 } from 'pg-connection-string';
 import log from '../Logger';
@@ -11,7 +12,8 @@ import type {
 } from '../types';
 
 export default (connectionUri: string, clientConfiguration: ClientConfigurationType) => {
-  const poolConfiguration = parseConnectionString(connectionUri);
+  // todo: make this not any. A few properties which don't exist on the interface are being set below
+  const poolConfiguration: any = parseConnectionString(connectionUri);
 
   // @see https://node-postgres.com/api/pool
   poolConfiguration.connectionTimeoutMillis = clientConfiguration.connectionTimeout;
@@ -56,5 +58,5 @@ export default (connectionUri: string, clientConfiguration: ClientConfigurationT
   //   poolConfiguration.statement_timeout = 1;
   // }
 
-  return poolConfiguration;
+  return poolConfiguration as ConnectionOptions;
 };

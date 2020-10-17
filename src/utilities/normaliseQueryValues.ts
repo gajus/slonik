@@ -16,7 +16,7 @@ export default (
       // @see https://github.com/brianc/node-postgres/issues/980
       // @see https://github.com/brianc/node-pg-native/issues/83
       if (Buffer.isBuffer(value)) {
-        // $FlowFixMe
+        // @ts-ignore
         finalValues.push('\\x' + value.toString('hex'));
       } else {
         finalValues.push(value);

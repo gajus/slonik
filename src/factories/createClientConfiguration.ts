@@ -11,7 +11,7 @@ import type {
 import createTypeParserPreset from './createTypeParserPreset';
 
 export default (clientUserConfigurationInput?: ClientConfigurationInputType): ClientConfigurationType => {
-  const typeParsers: $ReadOnlyArray<TypeParserType> = [];
+  const typeParsers: readonly TypeParserType[] = [];
 
   const configuration = {
     captureStackTrace: true,
@@ -20,7 +20,7 @@ export default (clientUserConfigurationInput?: ClientConfigurationInputType): Cl
     idleInTransactionSessionTimeout: 60000,
     idleTimeout: 5000,
 
-    // $FlowFixMe
+    // @ts-ignore
     interceptors: [],
 
     maximumPoolSize: 10,
@@ -30,7 +30,7 @@ export default (clientUserConfigurationInput?: ClientConfigurationInputType): Cl
     transactionRetryLimit: 5,
     typeParsers,
 
-    // $FlowFixMe
+    // @ts-ignore
     ...clientUserConfigurationInput,
   };
 
@@ -39,7 +39,7 @@ export default (clientUserConfigurationInput?: ClientConfigurationInputType): Cl
   }
 
   if (!configuration.typeParsers || configuration.typeParsers === typeParsers) {
-    // $FlowFixMe
+    // @ts-ignore
     configuration.typeParsers = createTypeParserPreset();
   }
 

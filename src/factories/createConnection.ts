@@ -30,9 +30,9 @@ type ConnectionHandlerType = (
   connection: InternalDatabaseConnectionType,
   boundConnection: DatabasePoolConnectionType,
   clientConfiguration: ClientConfigurationType
-) => MaybePromiseType<*>;
+) => MaybePromiseType<any>;
 
-type PoolHandlerType = (pool: DatabasePoolType) => Promise<*>;
+type PoolHandlerType = (pool: DatabasePoolType) => Promise<any>;
 
 const terminatePoolConnection = (pool, connection, error) => {
   if (!connection.connection.slonik.terminated) {
@@ -55,7 +55,7 @@ const createConnection = async (
   connectionType: ConnectionTypeType,
   connectionHandler: ConnectionHandlerType,
   poolHandler: PoolHandlerType,
-  query?: TaggedTemplateLiteralInvocationType | null = null,
+  query: TaggedTemplateLiteralInvocationType | null = null,
 ) => {
   if (pool.slonik.ended) {
     throw new UnexpectedStateError('Connection pool shutdown has been already initiated. Cannot create a new connection.');

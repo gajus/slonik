@@ -57,7 +57,7 @@ export default (
         };
       }
 
-      // $FlowFixMe
+      // @ts-ignore
       tupleStream.push(payload);
     }
 

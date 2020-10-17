@@ -63,13 +63,13 @@ const stream: InternalStreamFunctionType = async (connectionLogger, connection, 
         }));
 
         transformedStream.on('end', () => {
-          // $FlowFixMe
+          // @ts-ignore
           resolve({});
         });
 
         // Invoked if stream is destroyed using transformedStream.destroy().
         transformedStream.on('close', () => {
-          // $FlowFixMe
+          // @ts-ignore
           resolve({});
         });
 

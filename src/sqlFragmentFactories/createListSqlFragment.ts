@@ -43,7 +43,7 @@ export default (token: ListSqlTokenType, greatestParameterPosition: number): Sql
   }
 
   return {
-    // $FlowFixMe
+    // @ts-ignore
     sql: placeholders.join(token.glue.sql),
     values: createPrimitiveValueExpressions(values),
   };

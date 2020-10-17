@@ -40,7 +40,7 @@ const log = Logger.child({
 
 export default () => {
   /* eslint-disable complexity */
-  // $FlowFixMe
+  // @ts-ignore
   const sql: SqlTaggedTemplateType = (
     parts: ReadonlyArray<string>,
     ...values: ReadonlyArray<ValueExpressionType>
@@ -75,7 +75,7 @@ export default () => {
 
         parameterValues.push(token);
       } else if (isSqlToken(token)) {
-        // $FlowFixMe
+        // @ts-ignore
         const sqlFragment = createSqlTokenSqlFragment(token, parameterValues.length);
 
         rawSql += sqlFragment.sql;

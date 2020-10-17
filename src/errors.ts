@@ -4,7 +4,9 @@
 
 import ExtendableError from 'es6-error';
 
-export class SlonikError extends ExtendableError {}
+export class SlonikError extends ExtendableError {
+  originalError: Error
+}
 
 export class InvalidConfigurationError extends SlonikError {}
 

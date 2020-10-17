@@ -114,7 +114,7 @@ export default async (
   rawSql: string,
   values: ReadonlyArray<PrimitiveValueExpressionType>,
   inheritedQueryId?: QueryIdType,
-  executionRoutine: ExecutionRoutineType,
+  executionRoutine?: ExecutionRoutineType,
 ) => {
   if (connection.connection.slonik.terminated) {
     throw new BackendTerminatedError(connection.connection.slonik.terminated);
@@ -282,7 +282,7 @@ export default async (
         throw new CheckIntegrityConstraintViolationError(error, error.constraint);
       }
 
-      // $FlowFixMe
+      // @ts-ignore
       error.notices = notices;
 
       throw error;
@@ -296,7 +296,7 @@ export default async (
       }
     }
 
-    // $FlowFixMe
+    // @ts-ignore
     error.notices = notices;
     throw error;
   }
@@ -305,7 +305,7 @@ export default async (
     throw new UnexpectedStateError();
   }
 
-  // $FlowFixMe
+  // @ts-ignore
   result.notices = notices;
 
   for (const interceptor of clientConfiguration.interceptors) {

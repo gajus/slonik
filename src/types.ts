@@ -116,16 +116,16 @@ export type ClientConfigurationType = {
 
 export type StreamFunctionType = (
   sql: TaggedTemplateLiteralInvocationType,
-  streamHandler: // $FlowFixMe
+  streamHandler: // @ts-ignore
   StreamHandlerType,
-) => Promise<null>;
+) => Promise<null | object>; // bindPoolConnection returns an object
 
 export type QueryCopyFromBinaryFunctionType = (
   streamQuery: TaggedTemplateLiteralInvocationType, // eslint-disable-next-line flowtype/no-weak-types
   tupleList: ReadonlyArray<ReadonlyArray<any>>,
-  columnTypes: // $FlowFixMe
+  columnTypes: // @ts-ignore
   ReadonlyArray<TypeNameIdentifierType>,
-) => Promise<null>;
+) => Promise<null | object>; // bindPoolConnection returns an object
 
 type CommonQueryMethodsType = {
   readonly any: QueryAnyFunctionType;
@@ -140,13 +140,13 @@ type CommonQueryMethodsType = {
   readonly query: QueryFunctionType;
 };
 
-export type DatabaseTransactionConnectionType = $Exact<CommonQueryMethodsType> & {
+export type DatabaseTransactionConnectionType = CommonQueryMethodsType & {
   readonly transaction: (handler: TransactionFunctionType) => Promise<any>;
 };
 
 export type TransactionFunctionType = (connection: DatabaseTransactionConnectionType) => Promise<any>;
 
-export type DatabasePoolConnectionType = $Exact<CommonQueryMethodsType> & {
+export type DatabasePoolConnectionType = CommonQueryMethodsType & {
   readonly copyFromBinary: QueryCopyFromBinaryFunctionType;
   readonly stream: StreamFunctionType;
   readonly transaction: (handler: TransactionFunctionType) => Promise<any>;
@@ -161,7 +161,7 @@ export type PoolStateType = {
   readonly waitingClientCount: number;
 };
 
-export type DatabasePoolType = $Exact<CommonQueryMethodsType> & {
+export type DatabasePoolType = CommonQueryMethodsType & {
   readonly connect: (connectionRoutine: ConnectionRoutineType) => Promise<any>;
   readonly copyFromBinary: QueryCopyFromBinaryFunctionType;
   readonly end: () => Promise<void>;
@@ -174,7 +174,7 @@ export type DatabasePoolType = $Exact<CommonQueryMethodsType> & {
  * This appears to be the only sane way to have a generic database connection type
  * that can be refined, i.e. DatabaseConnectionType => DatabasePoolType.
  */
-export type DatabaseConnectionType = Partial<$Exact<DatabasePoolConnectionType> & $Exact<DatabasePoolType>>;
+export type DatabaseConnectionType = Partial<DatabasePoolConnectionType & DatabasePoolType>;
 
 type QueryResultRowColumnType = string | number | null;
 
@@ -245,7 +245,7 @@ export type QueryContextType = {
   readonly originalQuery: QueryType;
   readonly poolId: string;
   readonly queryId: QueryIdType;
-  readonly queryInputTime: number;
+  readonly queryInputTime: number | bigint;
   // eslint-disable-next-line flowtype/no-weak-types
   readonly sandbox: Object;
   readonly stackTrace: ReadonlyArray<CallSiteType> | null;

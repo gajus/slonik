@@ -10,8 +10,9 @@ import type {
   InternalQueryFunctionType,
 } from '../types';
 
-const query: InternalQueryFunctionType<*> = async (connectionLogger, connection, clientConfiguration, rawSql, values, inheritedQueryId) => {
-  // $FlowFixMe
+// todo: make not any
+const query: InternalQueryFunctionType<any> = async (connectionLogger, connection, clientConfiguration, rawSql, values, inheritedQueryId) => {
+  // @ts-ignore
   return executeQuery(
     connectionLogger,
     connection,

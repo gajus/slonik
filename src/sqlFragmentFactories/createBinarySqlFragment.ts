@@ -16,7 +16,7 @@ export default (token: BinarySqlTokenType, greatestParameterPosition: number): S
   return {
     sql: '$' + (greatestParameterPosition + 1),
     values: [
-      // $FlowFixMe
+      // @ts-ignore
       token.data,
     ],
   };

@@ -32,11 +32,12 @@ export default (token: ArraySqlTokenType, greatestParameterPosition: number): Sq
   let sql = '$' + placeholderIndex + '::';
 
   if (isSqlToken(token.memberType) && token.memberType.type === 'SLONIK_TOKEN_SQL') {
-    // $FlowFixMe
+    // @ts-ignore
     const sqlFragment = createSqlTokenSqlFragment(token.memberType, placeholderIndex);
 
     placeholderIndex += sqlFragment.values.length;
 
+    // @ts-ignore (is this right?)
     values.push(...sqlFragment.values);
 
     sql += sqlFragment.sql;
@@ -51,7 +52,7 @@ export default (token: ArraySqlTokenType, greatestParameterPosition: number): Sq
   return {
     sql,
 
-    // $FlowFixMe
+    // @ts-ignore (is this right?)
     values,
   };
 };

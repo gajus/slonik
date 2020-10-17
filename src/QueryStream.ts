@@ -28,8 +28,6 @@ export default class QueryStream extends Readable {
 
   cursor: any;
 
-  cursor: any;
-
   batchSize: number;
 
   handleRowDescription: Function;
@@ -38,16 +36,14 @@ export default class QueryStream extends Readable {
 
   handleDataRow: Function;
 
-  handlePortalSuspended: Function;
-
   handleCommandComplete: Function;
 
   handleReadyForQuery: Function;
 
   handleError: Function;
 
-  // $FlowFixMe
-  constructor (text, values, options) {
+  // @ts-ignore
+  constructor (text, values, options?) {
     super({
       objectMode: true,
       ...options,
@@ -83,7 +79,7 @@ export default class QueryStream extends Readable {
     this.cursor.close(callback || close);
   }
 
-  // $FlowFixMe
+  // @ts-ignore
   _read (size: number) {
     if (this._reading || this._closed) {
       return;
@@ -117,7 +113,7 @@ export default class QueryStream extends Readable {
       this._reading = false;
 
       for (const row of rows) {
-        // $FlowFixMe
+        // @ts-ignore
         this.push({
           fields: map(result.fields || [], (field) => {
             return {

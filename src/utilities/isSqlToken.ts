@@ -20,9 +20,9 @@ const Tokens = [
   ListToken,
   SqlToken,
   UnnestToken,
-];
+] as const;
 
-export default (subject: any) => {
+export default (subject: any): subject is typeof Tokens[number] => {
   if (typeof subject !== 'object' || subject === null) {
     return false;
   }
