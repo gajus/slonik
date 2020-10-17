@@ -12,10 +12,8 @@ import type {
 } from '../types';
 
 export default (
-
-  // eslint-disable-next-line flowtype/no-weak-types
-  tupleList: $ReadOnlyArray<$ReadOnlyArray<any>>,
-  columnTypes: $ReadOnlyArray<TypeNameIdentifierType>,
+  tupleList: ReadonlyArray<ReadonlyArray<any>>,
+  columnTypes: ReadonlyArray<TypeNameIdentifierType>,
 ): Promise<Buffer> => {
   return new Promise((resolve, reject) => {
     const concatStream = createConcatStream((payloadBuffer) => {

@@ -42,8 +42,8 @@ export default () => {
   /* eslint-disable complexity */
   // $FlowFixMe
   const sql: SqlTaggedTemplateType = (
-    parts: $ReadOnlyArray<string>,
-    ...values: $ReadOnlyArray<ValueExpressionType>
+    parts: ReadonlyArray<string>,
+    ...values: ReadonlyArray<ValueExpressionType>
   ): SqlSqlTokenType => {
     let rawSql = '';
 
@@ -61,10 +61,13 @@ export default () => {
       }
 
       if (token === undefined) {
-        log.debug({
-          index,
-          values,
-        }, 'bound values');
+        log.debug(
+          {
+            index,
+            values,
+          },
+          'bound values',
+        );
 
         throw new InvalidInputError('SQL tag cannot be bound an undefined value.');
       } else if (isPrimitiveValueExpression(token)) {
@@ -78,11 +81,14 @@ export default () => {
         rawSql += sqlFragment.sql;
         parameterValues.push(...sqlFragment.values);
       } else {
-        log.error({
-          constructedSql: rawSql,
-          index,
-          offendingToken: token,
-        }, 'unexpected value expression');
+        log.error(
+          {
+            constructedSql: rawSql,
+            index,
+            offendingToken: token,
+          },
+          'unexpected value expression',
+        );
 
         throw new TypeError('Unexpected value expression.');
       }
@@ -98,7 +104,7 @@ export default () => {
   };
 
   sql.array = (
-    values: $ReadOnlyArray<PrimitiveValueExpressionType>,
+    values: ReadonlyArray<PrimitiveValueExpressionType>,
     memberType: string | SqlTokenType,
   ): ArraySqlTokenType => {
     return deepFreeze({
@@ -108,18 +114,14 @@ export default () => {
     });
   };
 
-  sql.binary = (
-    data: Buffer,
-  ): BinarySqlTokenType => {
+  sql.binary = (data: Buffer): BinarySqlTokenType => {
     return deepFreeze({
       data,
       type: BinaryToken,
     });
   };
 
-  sql.identifier = (
-    names: $ReadOnlyArray<string>,
-  ): IdentifierSqlTokenType => {
+  sql.identifier = (names: ReadonlyArray<string>): IdentifierSqlTokenType => {
     // @todo Replace `type` with a symbol once Flow adds symbol support
     // @see https://github.com/facebook/flow/issues/810
     return deepFreeze({
@@ -128,19 +130,14 @@ export default () => {
     });
   };
 
-  sql.json = (
-    value: SerializableValueType,
-  ): JsonSqlTokenType => {
+  sql.json = (value: SerializableValueType): JsonSqlTokenType => {
     return deepFreeze({
       type: JsonToken,
       value,
     });
   };
 
-  sql.join = (
-    members: $ReadOnlyArray<ValueExpressionType>,
-    glue: SqlTokenType,
-  ): ListSqlTokenType => {
+  sql.join = (members: ReadonlyArray<ValueExpressionType>, glue: SqlTokenType): ListSqlTokenType => {
     return deepFreeze({
       glue,
       members,
@@ -149,8 +146,8 @@ export default () => {
   };
 
   sql.unnest = (
-    tuples: $ReadOnlyArray<$ReadOnlyArray<PrimitiveValueExpressionType>>,
-    columnTypes: $ReadOnlyArray<string>,
+    tuples: ReadonlyArray<ReadonlyArray<PrimitiveValueExpressionType>>,
+    columnTypes: ReadonlyArray<string>,
   ): UnnestSqlTokenType => {
     return deepFreeze({
       columnTypes,

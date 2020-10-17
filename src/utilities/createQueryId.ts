@@ -7,5 +7,5 @@ import createUlid from './createUlid';
 
 export default (): QueryIdType => {
   // eslint-disable-next-line no-extra-parens, flowtype/no-weak-types
-  return (createUlid(): any);
+  return createUlid() as any;
 };

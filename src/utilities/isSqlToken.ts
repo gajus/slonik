@@ -22,7 +22,7 @@ const Tokens = [
   UnnestToken,
 ];
 
-export default (subject: *) => {
+export default (subject: any) => {
   if (typeof subject !== 'object' || subject === null) {
     return false;
   }

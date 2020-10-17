@@ -4,7 +4,10 @@ import type {
   PrimitiveValueExpressionType,
 } from '../types';
 
-export default (queryValues: $ReadOnlyArray<PrimitiveValueExpressionType>, native: boolean): $ReadOnlyArray<PrimitiveValueExpressionType> => {
+export default (
+  queryValues: ReadonlyArray<PrimitiveValueExpressionType>,
+  native: boolean,
+): ReadonlyArray<PrimitiveValueExpressionType> => {
   if (native && queryValues) {
     const finalValues = [];
 

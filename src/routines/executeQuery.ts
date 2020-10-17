@@ -38,17 +38,17 @@ import {
 type ExecutionRoutineType = (
   connection: InternalDatabaseConnectionType,
   sql: string,
-  values: $ReadOnlyArray<PrimitiveValueExpressionType>,
+  values: ReadonlyArray<PrimitiveValueExpressionType>,
   queryContext: QueryContextType,
-  query: QueryType
-) => Promise<*>;
+  query: QueryType,
+) => Promise<any>;
 
-type TransactionQueryType = {|
-  +executionContext: QueryContextType,
-  +executionRoutine: ExecutionRoutineType,
-  +sql: string,
-  +values: $ReadOnlyArray<PrimitiveValueExpressionType>,
-|};
+type TransactionQueryType = {
+  readonly executionContext: QueryContextType;
+  readonly executionRoutine: ExecutionRoutineType;
+  readonly sql: string;
+  readonly values: ReadonlyArray<PrimitiveValueExpressionType>;
+};
 
 // @see https://www.postgresql.org/docs/current/errcodes-appendix.html
 const TRANSACTION_ROLLBACK_ERROR_PREFIX = '40';
@@ -56,7 +56,7 @@ const TRANSACTION_ROLLBACK_ERROR_PREFIX = '40';
 const retryTransaction = async (
   connectionLogger: LoggerType,
   connection: InternalDatabaseConnectionType,
-  transactionQueries: $ReadOnlyArray<TransactionQueryType>,
+  transactionQueries: ReadonlyArray<TransactionQueryType>,
   retryLimit: number,
 ) => {
   let result;
@@ -73,17 +73,18 @@ const retryTransaction = async (
       await connection.query('BEGIN');
 
       for (const transactionQuery of transactionQueries) {
-        connectionLogger.trace({
-          attempt,
-          queryId: transactionQuery.executionContext.queryId,
-        }, 'retrying query');
+        connectionLogger.trace(
+          {
+            attempt,
+            queryId: transactionQuery.executionContext.queryId,
+          },
+          'retrying query',
+        );
 
         result = await transactionQuery.executionRoutine(
           connection,
           transactionQuery.sql,
-          normaliseQueryValues(transactionQuery.values, connection.native),
-
-          // @todo Refresh execution context to reflect that the query has been re-tried.
+          normaliseQueryValues(transactionQuery.values, connection.native), // @todo Refresh execution context to reflect that the query has been re-tried.
           // This (probably) requires changing `queryId` and `queryInputTime`.
           // It should be needed only for the last query (because other queries will not be processed by the middlewares).
           transactionQuery.executionContext,
@@ -111,7 +112,7 @@ export default async (
   connection: InternalDatabaseConnectionType,
   clientConfiguration: ClientConfigurationType,
   rawSql: string,
-  values: $ReadOnlyArray<PrimitiveValueExpressionType>,
+  values: ReadonlyArray<PrimitiveValueExpressionType>,
   inheritedQueryId?: QueryIdType,
   executionRoutine: ExecutionRoutineType,
 ) => {
@@ -189,7 +190,9 @@ export default async (
       result = await interceptor.beforeQueryExecution(executionContext, actualQuery);
 
       if (result) {
-        log.info('beforeQueryExecution interceptor produced a result; short-circuiting query execution using beforeQueryExecution result');
+        log.info(
+          'beforeQueryExecution interceptor produced a result; short-circuiting query execution using beforeQueryExecution result',
+        );
 
         return result;
       }
@@ -224,7 +227,11 @@ export default async (
           actualQuery,
         );
       } catch (error) {
-        if (typeof error.code === 'string' && error.code.startsWith(TRANSACTION_ROLLBACK_ERROR_PREFIX) && clientConfiguration.transactionRetryLimit > 0) {
+        if (
+          typeof error.code === 'string' &&
+          error.code.startsWith(TRANSACTION_ROLLBACK_ERROR_PREFIX) &&
+          clientConfiguration.transactionRetryLimit > 0
+        ) {
           result = await retryTransaction(
             connectionLogger,
             connection,
@@ -236,9 +243,12 @@ export default async (
         }
       }
     } catch (error) {
-      log.error({
-        error: serializeError(error),
-      }, 'execution routine produced an error');
+      log.error(
+        {
+          error: serializeError(error),
+        },
+        'execution routine produced an error',
+      );
 
       // 'Connection terminated' refers to node-postgres error.
       // @see https://github.com/brianc/node-postgres/blob/eb076db5d47a29c19d3212feac26cd7b6d257a95/lib/client.js#L199
@@ -312,7 +322,7 @@ export default async (
         const fields = result.fields;
 
         // eslint-disable-next-line no-loop-func
-        const rows: $ReadOnlyArray<QueryResultRowType> = map(result.rows, (row) => {
+        const rows: ReadonlyArray<QueryResultRowType> = map(result.rows, (row) => {
           return transformRow(executionContext, actualQuery, row, fields);
         });
 

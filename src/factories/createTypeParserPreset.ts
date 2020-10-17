@@ -12,7 +12,7 @@ import {
   createTimestampWithTimeZoneTypeParser,
 } from './typeParsers';
 
-export default (): $ReadOnlyArray<TypeParserType> => {
+export default (): ReadonlyArray<TypeParserType> => {
   return [
     createBigintTypeParser(),
     createDateTypeParser(),

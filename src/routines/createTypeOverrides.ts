@@ -10,7 +10,7 @@ import type {
 } from '../types';
 
 // eslint-disable-next-line flowtype/no-weak-types
-export default async (connection: InternalDatabaseConnectionType, typeParsers: $ReadOnlyArray<TypeParserType>): any => {
+export default async (connection: InternalDatabaseConnectionType, typeParsers: ReadonlyArray<TypeParserType>): any => {
   const typeOverrides = new TypeOverrides();
 
   if (typeParsers.length === 0) {
@@ -22,9 +22,7 @@ export default async (connection: InternalDatabaseConnectionType, typeParsers: $
   });
 
   const postgresTypes = (
-    await connection.query('SELECT oid, typarray, typname FROM pg_type WHERE typname = ANY($1::text[])', [
-      typeNames,
-    ])
+    await connection.query('SELECT oid, typarray, typname FROM pg_type WHERE typname = ANY($1::text[])', [typeNames])
   ).rows;
 
   for (const typeParser of typeParsers) {
@@ -42,10 +40,9 @@ export default async (connection: InternalDatabaseConnectionType, typeParsers: $
 
     if (postgresType.typarray) {
       typeOverrides.setTypeParser(postgresType.typarray, (arrayValue) => {
-        return parseArray(arrayValue)
-          .map((value) => {
-            return typeParser.parse(value);
-          });
+        return parseArray(arrayValue).map((value) => {
+          return typeParser.parse(value);
+        });
       });
     }
   }

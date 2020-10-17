@@ -5,7 +5,7 @@ import type {
   QueryResultType,
 } from '../types';
 
-export default (rows: $ReadOnlyArray<QueryResultRowType>): QueryResultType<QueryResultRowType> => {
+export default (rows: ReadonlyArray<QueryResultRowType>): QueryResultType<QueryResultRowType> => {
   return {
     command: 'SELECT',
     fields: [],

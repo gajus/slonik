@@ -14,9 +14,12 @@ import {
 } from '../utilities';
 import createClientConfiguration from './createClientConfiguration';
 
-type OverridesType = {|
-  +query: (sql: string, values: $ReadOnlyArray<PrimitiveValueExpressionType>,) => Promise<QueryResultType<QueryResultRowType>>,
-|};
+type OverridesType = {
+  readonly query: (
+    sql: string,
+    values: ReadonlyArray<PrimitiveValueExpressionType>,
+  ) => Promise<QueryResultType<QueryResultRowType>>;
+};
 
 export default (
   overrides: OverridesType,

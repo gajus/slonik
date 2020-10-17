@@ -74,14 +74,14 @@ export default (
           return boundConnection.copyFromBinary(
             copyQuery,
             values,
-            columnTypes,
+            columnTypes
           );
         },
         (newPool) => {
           return newPool.copyFromBinary(
             copyQuery,
             values,
-            columnTypes,
+            columnTypes
           );
         },
       );
