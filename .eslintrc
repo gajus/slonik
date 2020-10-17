@@ -8,8 +8,14 @@
     "object-curly-newline": [
       2,
       {
-        "ImportDeclaration": { "multiline": true },
-        "ExportDeclaration": "always"
+        "ExportDeclaration": {
+          "minProperties": 1,
+          "multiline": true
+        },
+        "ImportDeclaration": {
+          "minProperties": 1,
+          "multiline": true
+        }
       }
     ],
     "import/no-cycle": 0,
