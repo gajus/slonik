@@ -18,7 +18,7 @@
       "test/slonik/**/*"
     ],
     "require": [
-      "ts-node/register/transpile-only"
+      "./br"
     ],
     "timeout": "30s"
   },
