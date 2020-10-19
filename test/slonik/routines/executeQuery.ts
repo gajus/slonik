@@ -1,7 +1,9 @@
 // @flow
 
-import test, {
-  beforeEach,
+import anyTest, {
+  beforeEach as anyBeforeEach,
+  BeforeInterface,
+  TestInterface,
 } from 'ava';
 import Roarr from 'roarr';
 import {
@@ -9,6 +11,9 @@ import {
 } from '../../../src/errors';
 import executeQuery from '../../../src/routines/executeQuery';
 import createClientConfiguration from '../../helpers/createClientConfiguration';
+
+const test = anyTest as TestInterface<any>;
+const beforeEach = anyBeforeEach as BeforeInterface<any>;
 
 const createConnectionStub = () => {
   return {

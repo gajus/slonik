@@ -59,7 +59,7 @@ test('nests sql templates', (t) => {
 
 test('throws if bound an undefined value', (t) => {
   const error = t.throws(() => {
-    // $FlowFixMe
+    // @ts-ignore
     sql`SELECT ${undefined}`;
   });
 
@@ -70,7 +70,7 @@ test('the resulting object is immutable', (t) => {
   const query = sql`SELECT 1`;
 
   t.throws(() => {
-    // $FlowFixMe
+    // @ts-ignore
     query.sql = 'SELECT 2';
   });
 });

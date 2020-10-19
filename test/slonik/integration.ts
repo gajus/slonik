@@ -1,8 +1,11 @@
 // @flow
 
-import test, {
-  afterEach,
-  beforeEach,
+import anyTest, {
+  afterEach as anyAfterEach,
+  AfterInterface,
+  beforeEach as anyBeforeEach,
+  BeforeInterface,
+  TestInterface,
 } from 'ava';
 import delay from 'delay';
 import {
@@ -14,11 +17,15 @@ import {
   UnexpectedStateError,
 } from '../../src';
 
+const test = anyTest as TestInterface<any>;
+const beforeEach = anyBeforeEach as BeforeInterface<any>;
+const afterEach = anyAfterEach as AfterInterface<any>;
+
 let pgNativeBindingsAreAvailable;
 
 try {
   /* eslint-disable global-require, import/no-unassigned-import, import/no-extraneous-dependencies */
-  // $FlowFixMe
+  // @ts-ignore
   require('pg-native');
   /* eslint-enable */
 
@@ -374,7 +381,7 @@ test('writes and reads buffers', async (t) => {
     )
   `);
 
-  const result = await pool.oneFirst(sql`
+  const result: string = await pool.oneFirst(sql`
     SELECT payload
     FROM person
   `);

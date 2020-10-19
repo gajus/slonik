@@ -5,11 +5,11 @@ import type {
 } from '../../src/types';
 
 export default (): QueryContextType => {
-  // $FlowFixMe
+  // @ts-ignore
   return {
     connectionId: '1',
 
-    // $FlowFixMe
+    // @ts-ignore
     log: {
       getContext: () => {
         return {

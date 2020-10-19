@@ -18,7 +18,7 @@ const sql = createSqlTag();
 const createErrorWithCode = (code: string) => {
   const error = new Error('foo');
 
-  // $FlowFixMe
+  // @ts-ignore
   error.code = code;
 
   return error;
@@ -104,7 +104,7 @@ test('adds notices observed during the query execution to the query result objec
     notices: [
       'foo',
       'bar',
-    ],
+    ] as any[],
     rowCount: 1,
     rows: [
       {

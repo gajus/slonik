@@ -38,13 +38,14 @@ test('overrides provided properties', (t) => {
   t.deepEqual(
     createClientConfiguration({
       interceptors: [
-        // $FlowFixMe
+        // @ts-ignore
         'foo',
       ],
     }),
     {
       ...defaultConfiguration,
       interceptors: [
+        // @ts-ignore
         'foo',
       ],
     },
@@ -53,13 +54,14 @@ test('overrides provided properties', (t) => {
   t.deepEqual(
     createClientConfiguration({
       typeParsers: [
-        // $FlowFixMe
+        // @ts-ignore
         'foo',
       ],
     }),
     {
       ...defaultConfiguration,
       typeParsers: [
+        // @ts-ignore
         'foo',
       ],
     },

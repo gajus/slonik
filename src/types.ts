@@ -417,7 +417,7 @@ type ExternalQueryResultRowType = Object;
 export interface TaggedTemplateLiteralInvocationType<Result = QueryResultRowType> {
   sql: string;
   type: 'SLONIK_TOKEN_SQL';
-  values: ValueExpressionType[];
+  values: readonly PrimitiveValueExpressionType[];
 }
 
 export type QueryMethodType<RowType, Result> = (

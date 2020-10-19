@@ -35,7 +35,7 @@ test('creates an object describing a query with inlined identifiers (specifier)'
 test('throws if an identifier name array member type is not a string', (t) => {
   const error = t.throws(() => {
     sql`${sql.identifier([
-      // $FlowFixMe
+      // @ts-ignore
       () => {},
     ])}`;
   });
@@ -47,7 +47,7 @@ test('the resulting object is immutable', (t) => {
   const token = sql.identifier(['bar', 'baz']);
 
   t.throws(() => {
-    // $FlowFixMe
+    // @ts-ignore
     token.foo = 'bar';
   });
 });

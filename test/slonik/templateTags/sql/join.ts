@@ -102,7 +102,7 @@ test('throws is member is not a SQL token or a primitive value expression', (t) 
   const error = t.throws(() => {
     sql`${sql.join(
       [
-        // $FlowFixMe
+        // @ts-ignore
         () => {},
       ],
       sql`, `,
@@ -116,7 +116,7 @@ test('the resulting object is immutable', (t) => {
   const token = sql.join([1, 2, 3], sql`, `);
 
   t.throws(() => {
-    // $FlowFixMe
+    // @ts-ignore
     token.foo = 'bar';
   });
 });

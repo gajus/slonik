@@ -16,6 +16,7 @@ const defaultConfiguration = {
 };
 
 export default (clientConfiguration: ClientConfigurationInputType = defaultConfiguration) => {
+  // @ts-expect-error
   const eventEmitter = new EventEmitter();
 
   const connection = {
@@ -60,13 +61,13 @@ export default (clientConfiguration: ClientConfigurationInputType = defaultConfi
     log,
     internalPool,
 
-    // $FlowFixMe
+    // @ts-ignore
     {
       // @see https://github.com/facebook/flow/issues/7505
-      // $FlowFixMe
+      // @ts-ignore
       interceptors: [],
 
-      // $FlowFixMe
+      // @ts-ignore
       typeParsers: [],
       ...clientConfiguration,
     },

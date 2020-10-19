@@ -72,7 +72,7 @@ test('binds a SQL token', (t) => {
 
 test('throws if array member is not a primitive value expression', (t) => {
   const error = t.throws(() => {
-    // $FlowFixMe
+    // @ts-ignore
     sql`SELECT ${sql.array([() => {}], 'int')}`;
   });
 
@@ -81,7 +81,7 @@ test('throws if array member is not a primitive value expression', (t) => {
 
 test('throws if memberType is not a string or SqlToken of different type than "SLONIK_TOKEN_SQL"', (t) => {
   const error = t.throws(() => {
-    // $FlowFixMe
+    // @ts-ignore
     sql`SELECT ${sql.array([1, 2, 3], sql.identifier(['int']))}`;
   });
 
@@ -92,7 +92,7 @@ test('the resulting object is immutable', (t) => {
   const token = sql.array([1, 2, 3], 'int4');
 
   t.throws(() => {
-    // $FlowFixMe
+    // @ts-ignore
     token.foo = 'bar';
   });
 });
