@@ -33,7 +33,7 @@ export type SerializableValueType =
   | boolean
   | null
   | {
-      readonly [key: string]: SerializableValueType;
+      [key: string]: SerializableValueType;
     }
   | ReadonlyArray<SerializableValueType>;
 
@@ -313,16 +313,17 @@ export type NamedAssignmentType = {
   readonly [key: string]: ValueExpressionType;
 };
 
-export type TaggedTemplateLiteralInvocationType = {
-  readonly sql: string;
-  readonly type: 'SLONIK_TOKEN_SQL';
-  readonly values: ReadonlyArray<PrimitiveValueExpressionType>;
-};
+// export type TaggedTemplateLiteralInvocationType = {
+//   readonly sql: string;
+//   readonly type: 'SLONIK_TOKEN_SQL';
+//   readonly values: ReadonlyArray<PrimitiveValueExpressionType>;
+// };
 
 /**
  * see https://twitter.com/kuizinas/status/914139352908943360
  */
 export type SqlTaggedTemplateType = {
+  <T = QueryResultRowType>(template: TemplateStringsArray, ...vals: ValueExpressionType[]): SqlSqlTokenType;
   array: (
     values: ReadonlyArray<PrimitiveValueExpressionType>,
     memberType: TypeNameIdentifierType | SqlTokenType,
@@ -398,7 +399,7 @@ export type InternalNestedTransactionFunctionType = (
   transactionDepth: number,
 ) => Promise<any>;
 
-type QueryMethodType<R> = (sql: TaggedTemplateLiteralInvocationType) => Promise<R>;
+// type QueryMethodType<R> = (sql: TaggedTemplateLiteralInvocationType) => Promise<R>;
 
 // @todo Figure out a reasonable column type that user can specific further.
 // Using `QueryResultRowType` and `QueryResultRowColumnType` is not an option
@@ -413,16 +414,28 @@ type ExternalQueryResultRowColumnType = any;
 // eslint-disable-next-line flowtype/no-weak-types
 type ExternalQueryResultRowType = Object;
 
-export type QueryAnyFirstFunctionType = QueryMethodType<ReadonlyArray<ExternalQueryResultRowColumnType>>;
-export type QueryAnyFunctionType = QueryMethodType<ReadonlyArray<ExternalQueryResultRowType>>;
-export type QueryExistsFunctionType = QueryMethodType<boolean>;
-export type QueryFunctionType = QueryMethodType<ExternalQueryResultRowType>;
-export type QueryManyFirstFunctionType = QueryMethodType<ReadonlyArray<ExternalQueryResultRowColumnType>>;
-export type QueryManyFunctionType = QueryMethodType<ReadonlyArray<ExternalQueryResultRowType>>;
-export type QueryMaybeOneFirstFunctionType = QueryMethodType<ExternalQueryResultRowColumnType>;
-export type QueryMaybeOneFunctionType = QueryMethodType<ExternalQueryResultRowType | null>;
-export type QueryOneFirstFunctionType = QueryMethodType<ExternalQueryResultRowColumnType>;
-export type QueryOneFunctionType = QueryMethodType<ExternalQueryResultRowType>;
+export interface TaggedTemplateLiteralInvocationType<Result = QueryResultRowType> {
+  sql: string;
+  type: 'SLONIK_TOKEN_SQL';
+  values: ValueExpressionType[];
+}
+
+export type QueryMethodType<RowType, Result> = (
+  sql: TaggedTemplateLiteralInvocationType<RowType>,
+  values?: PrimitiveValueExpressionType[],
+) => Promise<Result>;
+export type QueryMethodParams<T> = Parameters<QueryMethodType<T, never>>;
+
+export type QueryAnyFirstFunctionType = <T>(...args: QueryMethodParams<T>) => Promise<Array<T[keyof T]>>;
+export type QueryAnyFunctionType = <T>(...args: QueryMethodParams<T>) => Promise<T[]>;
+export type QueryExistsFunctionType = (...args: QueryMethodParams<any>) => Promise<boolean>;
+export type QueryFunctionType = <T>(...args: QueryMethodParams<T>) => Promise<QueryResultType<T>>;
+export type QueryManyFirstFunctionType = QueryAnyFirstFunctionType;
+export type QueryManyFunctionType = QueryAnyFunctionType;
+export type QueryMaybeOneFirstFunctionType = <T>(...args: QueryMethodParams<T>) => Promise<T[keyof T] | null>;
+export type QueryMaybeOneFunctionType = <T>(...args: QueryMethodParams<T>) => Promise<T | null>;
+export type QueryOneFirstFunctionType = <T>(...args: QueryMethodParams<T>) => Promise<T[keyof T]>;
+export type QueryOneFunctionType = <T>(...args: QueryMethodParams<T>) => Promise<T>;
 
 export type InterceptorType = {
   readonly afterPoolConnection?: (
