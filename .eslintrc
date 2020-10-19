@@ -1,10 +1,35 @@
 {
+  "parser": "@typescript-eslint/parser",
+  "parserOptions": {"ecmaVersion": 2018, "sourceType": "module"},
   "extends": [
-    "canonical",
-    "canonical/flowtype"
+    "canonical"
   ],
+  "plugins": [
+    "@typescript-eslint/eslint-plugin"
+  ],
+  "ignorePatterns": ["dist", "node_modules", "coverage"],
   "root": true,
   "rules": {
+    "@typescript-eslint/no-explicit-any": 1,
+    "linebreak-style": 0,
+    // https://github.com/typescript-eslint/typescript-eslint/issues/1624#issuecomment-589731039
+    "import/no-unresolved": 0,
+    "no-unused-vars": 0,
+    "@typescript-eslint/no-unused-vars": 1,
+    "require-await": 0,
+    "object-curly-newline": [
+      2,
+      {
+        "ExportDeclaration": {
+          "minProperties": 1,
+          "multiline": true
+        },
+        "ImportDeclaration": {
+          "minProperties": 1,
+          "multiline": true
+        }
+      }
+    ],
     "import/no-cycle": 0,
     "no-continue": 0,
     "no-restricted-syntax": 0,

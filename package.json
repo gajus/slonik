@@ -6,6 +6,10 @@
   },
   "ava": {
     "babel": {
+      "extensions": [
+        "js",
+        "ts"
+      ],
       "compileAsTests": [
         "test/helpers/**/*"
       ]
@@ -14,7 +18,7 @@
       "test/slonik/**/*"
     ],
     "require": [
-      "@babel/register"
+      "./ts-register"
     ],
     "timeout": "30s"
   },
@@ -44,23 +48,26 @@
     "@ava/babel": "^1.0.1",
     "@babel/cli": "^7.11.6",
     "@babel/core": "^7.11.6",
-    "@babel/plugin-transform-flow-strip-types": "^7.10.4",
+    "@babel/plugin-transform-typescript": "^7.12.1",
     "@babel/preset-env": "^7.11.5",
     "@babel/register": "^7.11.5",
+    "@typescript-eslint/eslint-plugin": "2.26.0",
+    "@typescript-eslint/parser": "2.26.0",
     "ava": "^3.13.0",
     "babel-plugin-istanbul": "^6.0.0",
     "babel-plugin-macros": "^2.8.0",
-    "babel-plugin-transform-export-default-name": "^2.0.4",
+    "babel-plugin-transform-export-default-name": "^2.1.0",
     "coveralls": "^3.1.0",
     "eslint": "^7.11.0",
     "eslint-config-canonical": "^24.1.1",
-    "flow-bin": "^0.135.0",
-    "flow-copy-source": "^2.0.9",
+    "expect-type": "^0.8.0",
     "gitdown": "^3.1.3",
     "husky": "^4.3.0",
     "nyc": "^15.1.0",
+    "patch-package": "^6.2.2",
     "semantic-release": "^17.2.1",
-    "sinon": "^9.2.0"
+    "sinon": "^9.2.0",
+    "typescript": "^4.0.3"
   },
   "engines": {
     "node": ">=10.0"
@@ -78,15 +85,16 @@
   ],
   "license": "BSD-3-Clause",
   "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
   "name": "slonik",
   "nyc": {
     "all": true,
     "exclude": [
       "src/bin",
-      "src/queries/*.js"
+      "src/queries/*.ts"
     ],
     "include": [
-      "src/**/*.js"
+      "src/**/*.ts"
     ],
     "instrument": false,
     "reporter": [
@@ -94,7 +102,7 @@
       "text-summary"
     ],
     "require": [
-      "@babel/register"
+      "./ts-register"
     ],
     "silent": true,
     "sourceMap": false
@@ -104,10 +112,12 @@
     "url": "https://github.com/gajus/slonik"
   },
   "scripts": {
-    "build": "rm -fr ./dist && NODE_ENV=production babel ./src --out-dir ./dist --copy-files --source-maps && flow-copy-source src dist",
+    "build": "rm -fr ./dist && NODE_ENV=production babel ./src --out-dir ./dist --extensions '.ts' --copy-files --source-maps && tsc -p tsconfig.lib.json",
     "create-readme": "gitdown ./.README/README.md --output-file ./README.md",
-    "lint": "eslint ./src ./test && flow",
-    "test": "NODE_ENV=test nyc ava --verbose"
+    "eslint": "eslint --ext '.ts' --max-warnings 0",
+    "lint": "npm run eslint ./src ./test  && tsc -p .",
+    "test": "NODE_ENV=test nyc ava --verbose",
+    "prepare": "patch-package"
   },
   "version": "5.0.0"
 }

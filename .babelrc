@@ -9,7 +9,7 @@
   "plugins": [
     "transform-export-default-name",
     "macros",
-    "@babel/transform-flow-strip-types"
+    "@babel/plugin-transform-typescript"
   ],
   "presets": [
     [

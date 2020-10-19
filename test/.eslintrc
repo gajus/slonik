@@ -3,7 +3,7 @@
   "rules": {
     "filenames/match-regex": 0,
     "flowtype/no-flow-fix-me-comments": 0,
-    "flowtype/no-weak-types": 0,
+    "@typescript-eslint/no-explicit-any": 0,
     "id-length": 0,
     "max-nested-callbacks": 0,
     "require-await": 0
