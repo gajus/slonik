@@ -71,10 +71,18 @@ export default (
         clientConfiguration,
         'IMPLICIT_QUERY',
         (connectionLog, connection, boundConnection) => {
-          return boundConnection.copyFromBinary(copyQuery, values, columnTypes);
+          return boundConnection.copyFromBinary(
+            copyQuery,
+            values,
+            columnTypes,
+          );
         },
         (newPool) => {
-          return newPool.copyFromBinary(copyQuery, values, columnTypes);
+          return newPool.copyFromBinary(
+            copyQuery,
+            values,
+            columnTypes,
+          );
         },
       );
     },

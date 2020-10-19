@@ -25,7 +25,9 @@ export default (token: ArraySqlTokenType, greatestParameterPosition: number): Sq
     }
   }
 
-  const values = [token.values];
+  const values = [
+    token.values,
+  ];
 
   placeholderIndex++;
 
@@ -44,15 +46,13 @@ export default (token: ArraySqlTokenType, greatestParameterPosition: number): Sq
   } else if (typeof token.memberType === 'string') {
     sql += escapeIdentifier(token.memberType) + '[]';
   } else {
-    throw new InvalidInputError(
-      'Unsupported `memberType`. `memberType` must be a string or SqlToken of "SLONIK_TOKEN_SQL" type.',
-    );
+    throw new InvalidInputError('Unsupported `memberType`. `memberType` must be a string or SqlToken of "SLONIK_TOKEN_SQL" type.');
   }
 
   return {
     sql,
 
-    // @ts-ignore (is this right?)
+    // @ts-ignore
     values,
   };
 };

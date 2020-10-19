@@ -22,7 +22,9 @@ export default async (connection: InternalDatabaseConnectionType, typeParsers: R
   });
 
   const postgresTypes = (
-    await connection.query('SELECT oid, typarray, typname FROM pg_type WHERE typname = ANY($1::text[])', [typeNames])
+    await connection.query('SELECT oid, typarray, typname FROM pg_type WHERE typname = ANY($1::text[])', [
+      typeNames,
+    ])
   ).rows;
 
   for (const typeParser of typeParsers) {
@@ -40,9 +42,10 @@ export default async (connection: InternalDatabaseConnectionType, typeParsers: R
 
     if (postgresType.typarray) {
       typeOverrides.setTypeParser(postgresType.typarray, (arrayValue) => {
-        return parseArray(arrayValue).map((value) => {
-          return typeParser.parse(value);
-        });
+        return parseArray(arrayValue)
+          .map((value) => {
+            return typeParser.parse(value);
+          });
       });
     }
   }

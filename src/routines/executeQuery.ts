@@ -73,13 +73,10 @@ const retryTransaction = async (
       await connection.query('BEGIN');
 
       for (const transactionQuery of transactionQueries) {
-        connectionLogger.trace(
-          {
-            attempt,
-            queryId: transactionQuery.executionContext.queryId,
-          },
-          'retrying query',
-        );
+        connectionLogger.trace({
+          attempt,
+          queryId: transactionQuery.executionContext.queryId,
+        }, 'retrying query');
 
         result = await transactionQuery.executionRoutine(
           connection,
@@ -193,9 +190,7 @@ export default async (
       result = await interceptor.beforeQueryExecution(executionContext, actualQuery);
 
       if (result) {
-        log.info(
-          'beforeQueryExecution interceptor produced a result; short-circuiting query execution using beforeQueryExecution result',
-        );
+        log.info('beforeQueryExecution interceptor produced a result; short-circuiting query execution using beforeQueryExecution result');
 
         return result;
       }
@@ -230,11 +225,7 @@ export default async (
           actualQuery,
         );
       } catch (error) {
-        if (
-          typeof error.code === 'string' &&
-          error.code.startsWith(TRANSACTION_ROLLBACK_ERROR_PREFIX) &&
-          clientConfiguration.transactionRetryLimit > 0
-        ) {
+        if (typeof error.code === 'string' && error.code.startsWith(TRANSACTION_ROLLBACK_ERROR_PREFIX) && clientConfiguration.transactionRetryLimit > 0) {
           result = await retryTransaction(
             connectionLogger,
             connection,
@@ -246,12 +237,9 @@ export default async (
         }
       }
     } catch (error) {
-      log.error(
-        {
-          error: serializeError(error),
-        },
-        'execution routine produced an error',
-      );
+      log.error({
+        error: serializeError(error),
+      }, 'execution routine produced an error');
 
       // 'Connection terminated' refers to node-postgres error.
       // @see https://github.com/brianc/node-postgres/blob/eb076db5d47a29c19d3212feac26cd7b6d257a95/lib/client.js#L199
