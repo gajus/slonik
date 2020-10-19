@@ -22,7 +22,7 @@ test('executes a mock query (pool.query)', async (t) => {
     },
   };
 
-  const query = sinon.spy(overrides, 'query');
+  const query: sinon.SinonSpy = sinon.spy(overrides, 'query');
 
   const pool = createMockPool(overrides);
 
@@ -58,7 +58,7 @@ test('create a mock pool and executes a mock query (pool.connect)', async (t) =>
     },
   };
 
-  const query = sinon.spy(overrides, 'query');
+  const query: sinon.SinonSpy = sinon.spy(overrides, 'query');
 
   const pool = createMockPool(overrides);
 
@@ -94,7 +94,7 @@ test('executes a mock transaction', async (t) => {
     },
   };
 
-  const query = sinon.spy(overrides, 'query');
+  const query: sinon.SinonSpy = sinon.spy(overrides, 'query');
 
   const pool = createMockPool(overrides);
 
@@ -124,7 +124,7 @@ test('executes a mock transaction (nested)', async (t) => {
     },
   };
 
-  const query = sinon.spy(overrides, 'query');
+  const query: sinon.SinonSpy = sinon.spy(overrides, 'query');
 
   const pool = createMockPool(overrides);
 

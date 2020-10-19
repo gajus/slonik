@@ -7,7 +7,7 @@ import createPool from '../../../helpers/createPool';
 
 const sql = createSqlTag();
 
-const getQueries = (spy) => {
+const getQueries = (spy: sinon.SinonSpy) => {
   return spy.getCalls().map((call) => {
     return call.args[0];
   });

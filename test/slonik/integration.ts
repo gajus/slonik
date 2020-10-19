@@ -417,7 +417,7 @@ if (pgNativeBindingsAreAvailable) {
       INSERT INTO person (name) VALUES ('foo'), ('bar'), ('baz')
     `);
 
-    const messages = [];
+    const messages: object[] = [];
 
     await pool.stream(sql`
       SELECT name
@@ -487,7 +487,7 @@ if (pgNativeBindingsAreAvailable) {
         ('baz', '1992-01-01')
     `);
 
-    const messages = [];
+    const messages: object[] = [];
 
     await pool.stream(sql`
       SELECT birth_date
@@ -802,13 +802,13 @@ test.serial('retries failing transactions (deadlock)', async (t) => {
 
   let transactionCount = 0;
 
-  let resolveDeadlock;
+  let resolveDeadlock: any;
 
   const deadlock = new Promise((resolve) => {
     resolveDeadlock = resolve;
   });
 
-  const updatePerson = async (firstUpdateId, firstUpdateName, secondUpdateId, secondUpdateName, delayDeadlock) => {
+  const updatePerson: (...args: any) => any = async (firstUpdateId, firstUpdateName, secondUpdateId, secondUpdateName, delayDeadlock) => {
     await pool.transaction(async (transaction) => {
       await transaction.query(sql`
         SET deadlock_timeout='1s'

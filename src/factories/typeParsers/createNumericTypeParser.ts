@@ -4,7 +4,7 @@ import type {
   TypeParserType,
 } from '../../types';
 
-const numericParser = (value) => {
+const numericParser = <T>(value: T) => {
   return Number.parseFloat(value);
 };
 

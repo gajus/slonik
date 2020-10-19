@@ -39,5 +39,14 @@
         "allowTaggedTemplates": true
       }
     ]
-  }
+  },
+  "overrides": [
+    {
+      "files": "*.d.ts",
+      "rules": {
+        "filenames/match-regex": 0,
+        "import/unambiguous": 0
+      }
+    }
+  ]
 }
