@@ -1,6 +1,5 @@
 // @flow
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-export default (maybe: any): boolean => {
+export default (maybe: unknown): maybe is string | number | boolean | null => {
   return typeof maybe === 'string' || typeof maybe === 'number' || typeof maybe === 'boolean' || maybe === null;
 };
