@@ -51,7 +51,6 @@
     "@babel/plugin-transform-typescript": "^7.12.1",
     "@babel/preset-env": "^7.11.5",
     "@babel/register": "^7.11.5",
-    "@types/slonik": "^22.1.4",
     "@typescript-eslint/eslint-plugin": "2.26.0",
     "@typescript-eslint/parser": "2.26.0",
     "ava": "^3.13.0",
