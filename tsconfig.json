@@ -7,8 +7,7 @@
     "esModuleInterop": true,
     "target": "esnext",
     "module": "commonjs",
-    "noImplicitAny": true,
-    "strictNullChecks": true
+    "strict": true
   },
   "exclude": ["node_modules", "dist", "coverage", ".nyc_output", ".git"]
 }
