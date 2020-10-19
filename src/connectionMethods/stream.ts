@@ -2,6 +2,7 @@
 
 /* eslint-disable promise/prefer-await-to-callbacks */
 
+import type Stream from 'stream';
 import through from 'through2';
 import QueryStream from '../QueryStream';
 import {
@@ -11,6 +12,7 @@ import {
   executeQuery,
 } from '../routines';
 import type {
+  InterceptorType,
   InternalStreamFunctionType,
 } from '../types';
 
@@ -29,9 +31,9 @@ const stream: InternalStreamFunctionType = async (connectionLogger, connection, 
 
       const query = new QueryStream(finalSql, finalValues);
 
-      const queryStream: any = finalConnection.query(query);
+      const queryStream: Stream = finalConnection.query(query);
 
-      const rowTransformers: any[] = [];
+      const rowTransformers: NonNullable<InterceptorType['transformRow']>[] = [];
 
       for (const interceptor of clientConfiguration.interceptors) {
         if (interceptor.transformRow) {
