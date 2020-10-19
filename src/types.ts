@@ -2,10 +2,10 @@
 
 /* eslint-disable no-use-before-define, import/exports-last, flowtype/require-types-at-top, flowtype/require-compound-type-alias */
 
-import type {
+import {
   Readable,
 } from 'stream';
-import type {
+import {
   LoggerType,
 } from 'roarr';
 import {

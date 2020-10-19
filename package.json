@@ -87,6 +87,7 @@
   ],
   "license": "BSD-3-Clause",
   "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
   "name": "slonik",
   "nyc": {
     "all": true,
@@ -126,7 +127,7 @@
     "removebreaks": "find src test -type f -name '*.ts' -exec sh -c 'A=$(cat {} | grep -v breakme) && echo \"// @flow\n\n$A\" > {}' \\;",
     "type-check": "tsc -p .",
     "compile": "tsc -p tsconfig.lib.json",
-    "build": "rm -fr ./dist && NODE_ENV=production babel ./src --out-dir ./dist --copy-files --source-maps && flow-copy-source src dist",
+    "build": "rm -fr ./dist && NODE_ENV=production babel ./src --out-dir ./dist --extensions '.ts' --copy-files --source-maps && tsc -p tsconfig.lib.json",
     "create-readme": "gitdown ./.README/README.md --output-file ./README.md",
     "lint": "eslint ./src ./test && flow",
     "test": "NODE_ENV=test nyc ava --verbose"
