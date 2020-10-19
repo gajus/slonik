@@ -93,10 +93,10 @@
     "all": true,
     "exclude": [
       "src/bin",
-      "src/queries/*.js"
+      "src/queries/*.ts"
     ],
     "include": [
-      "src/**/*.js"
+      "src/**/*.ts"
     ],
     "instrument": false,
     "reporter": [
@@ -104,7 +104,7 @@
       "text-summary"
     ],
     "require": [
-      "@babel/register"
+      "./ts-register"
     ],
     "silent": true,
     "sourceMap": false
