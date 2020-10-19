@@ -7,6 +7,7 @@
   "plugins": [
     "@typescript-eslint/eslint-plugin"
   ],
+  "ignorePatterns": ["dist", "node_modules", "coverage"],
   "root": true,
   "rules": {
     "@typescript-eslint/no-explicit-any": 1,
