@@ -1,0 +1,37 @@
+diff --git a/node_modules/babel-plugin-transform-export-default-name/dist/deriveName.js b/node_modules/babel-plugin-transform-export-default-name/dist/deriveName.js
+index ac87c8d..ce26b68 100644
+--- a/node_modules/babel-plugin-transform-export-default-name/dist/deriveName.js
++++ b/node_modules/babel-plugin-transform-export-default-name/dist/deriveName.js
+@@ -23,7 +23,7 @@ exports.default = (state, scope) => {
+ 
+   var name = filename;
+ 
+-  name = _path2.default.basename(name, '.js');
++  name = _path2.default.parse(name).name;
+ 
+   if (name === 'index') {
+     name = _path2.default.basename(_path2.default.dirname(filename));
+diff --git a/node_modules/babel-plugin-transform-export-default-name/dist/index.js b/node_modules/babel-plugin-transform-export-default-name/dist/index.js
+index 916116c..5f948f0 100644
+--- a/node_modules/babel-plugin-transform-export-default-name/dist/index.js
++++ b/node_modules/babel-plugin-transform-export-default-name/dist/index.js
+@@ -16,7 +16,10 @@ exports.default = (_ref) => {
+   var replace = (path, name, replacement) => {
+     var id = t.identifier(name);
+ 
+-    path.replaceWithMultiple([t.variableDeclaration('const', [t.variableDeclarator(id, replacement)]), t.exportDefaultDeclaration(id)]);
++    // https://github.com/gajus/babel-plugin-transform-export-default-name/pull/16
++    const [varDeclPath, ...rest] = path.replaceWithMultiple([t.variableDeclaration('const', [t.variableDeclarator(id, replacement)]), t.exportDefaultDeclaration(id)]);
++
++    path.scope.registerDeclaration(varDeclPath)
+   };
+ 
+   return {
+@@ -61,6 +64,7 @@ exports.default = (_ref) => {
+         }
+ 
+         if (t.isClassDeclaration(declaration)) {
++          console.log('class dec', 222)
+           var _declarationReplacement3 = t.classExpression(null, declaration.superClass, declaration.body, declaration.decorators || []);
+ 
+           replace(path, name, _declarationReplacement3);

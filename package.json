@@ -18,7 +18,7 @@
       "test/slonik/**/*"
     ],
     "require": [
-      "./br"
+      "./ts-register"
     ],
     "timeout": "30s"
   },
