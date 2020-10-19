@@ -12,7 +12,7 @@ import type {
 } from '../types';
 
 export default (
-  tupleList: ReadonlyArray<ReadonlyArray<any>>,
+  tupleList: ReadonlyArray<ReadonlyArray<unknown>>,
   columnTypes: ReadonlyArray<TypeNameIdentifierType>,
 ): Promise<Buffer> => {
   return new Promise((resolve, reject) => {

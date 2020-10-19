@@ -29,7 +29,13 @@ export default (token: UnnestSqlTokenType, greatestParameterPosition: number): S
   while (columnIndex < columnTypes.length) {
     const columnType = columnTypes[columnIndex];
 
-    unnestSqlTokens.push('$' + ++placeholderIndex + '::' + escapeIdentifier(stripArrayNotation(columnType)) + '[]'.repeat(countArrayDimensions(columnType) + 1));
+    unnestSqlTokens.push(
+      '$' +
+      ++placeholderIndex +
+      '::' +
+      escapeIdentifier(stripArrayNotation(columnType)) +
+      '[]'.repeat(countArrayDimensions(columnType) + 1),
+    );
 
     unnestBindings[columnIndex] = [];
 

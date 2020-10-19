@@ -41,7 +41,7 @@ type ExecutionRoutineType = (
   values: ReadonlyArray<PrimitiveValueExpressionType>,
   queryContext: QueryContextType,
   query: QueryType,
-) => Promise<any>;
+) => Promise<unknown>;
 
 type TransactionQueryType = {
   readonly executionContext: QueryContextType;
@@ -84,7 +84,10 @@ const retryTransaction = async (
         result = await transactionQuery.executionRoutine(
           connection,
           transactionQuery.sql,
-          normaliseQueryValues(transactionQuery.values, connection.native), // @todo Refresh execution context to reflect that the query has been re-tried.
+
+          // @todo Refresh execution context to reflect that the query has been re-tried.
+          normaliseQueryValues(transactionQuery.values, connection.native),
+
           // This (probably) requires changing `queryId` and `queryInputTime`.
           // It should be needed only for the last query (because other queries will not be processed by the middlewares).
           transactionQuery.executionContext,

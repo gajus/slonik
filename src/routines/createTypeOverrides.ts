@@ -9,7 +9,7 @@ import type {
   TypeParserType,
 } from '../types';
 
-// eslint-disable-next-line flowtype/no-weak-types
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export default async (connection: InternalDatabaseConnectionType, typeParsers: ReadonlyArray<TypeParserType>): Promise<any> => {
   const typeOverrides = new TypeOverrides();
 

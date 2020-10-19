@@ -1,6 +1,6 @@
 // @flow
 
-/* eslint-disable flowtype/no-weak-types */
+/* eslint-disable @typescript-eslint/no-explicit-any */
 
 import test from 'ava';
 import {

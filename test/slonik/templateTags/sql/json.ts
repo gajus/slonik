@@ -100,11 +100,11 @@ test('throws if payload cannot be stringified (non-primitive object)', (t) => {
 
 test('throws if payload cannot be stringified (circular reference)', (t) => {
   const error = t.throws(() => {
-    const foo = {};
+    const foo: any = {};
     const bar = {
       foo,
     };
-    Object.assign(foo, { bar });
+    foo.bar = bar;
 
     // @ts-ignore
     sql`SELECT ${sql.json(foo)}`;

@@ -1,6 +1,11 @@
+/* eslint-disable lines-around-comment */
+/* eslint-disable @typescript-eslint/no-explicit-any */
+/* eslint-disable line-comment-position */
+/* eslint-disable no-inline-comments */
+/* eslint-disable max-len */
 // @flow
 
-/* eslint-disable no-use-before-define, import/exports-last, flowtype/require-types-at-top, flowtype/require-compound-type-alias */
+/* eslint-disable no-use-before-define, import/exports-last */
 
 import {
   Readable,
@@ -67,10 +72,10 @@ export type QueryResultType<T> = {
   readonly rows: ReadonlyArray<T>;
 };
 
-// eslint-disable-next-line flowtype/no-weak-types
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export type InternalDatabasePoolType = any;
 
-// eslint-disable-next-line flowtype/no-weak-types
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export type InternalDatabaseConnectionType = any;
 
 /**
@@ -121,7 +126,7 @@ export type StreamFunctionType = (
 ) => Promise<null | object>; // bindPoolConnection returns an object
 
 export type QueryCopyFromBinaryFunctionType = (
-  streamQuery: TaggedTemplateLiteralInvocationType, // eslint-disable-next-line flowtype/no-weak-types
+  streamQuery: TaggedTemplateLiteralInvocationType, // eslint-disable-next-line @typescript-eslint/no-explicit-any
   tupleList: ReadonlyArray<ReadonlyArray<any>>,
   columnTypes: // @ts-ignore
   ReadonlyArray<TypeNameIdentifierType>,
@@ -246,7 +251,7 @@ export type QueryContextType = {
   readonly poolId: string;
   readonly queryId: QueryIdType;
   readonly queryInputTime: number | bigint;
-  // eslint-disable-next-line flowtype/no-weak-types
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   readonly sandbox: Object;
   readonly stackTrace: ReadonlyArray<CallSiteType> | null;
   readonly transactionId?: string;
@@ -336,7 +341,7 @@ export type SqlTaggedTemplateType = {
     // Value might be $ReadOnlyArray<$ReadOnlyArray<PrimitiveValueExpressionType>>,
     // or it can be infinitely nested array, e.g.
     // https://github.com/gajus/slonik/issues/44
-    // eslint-disable-next-line flowtype/no-weak-types
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     tuples: ReadonlyArray<ReadonlyArray<any>>,
     columnTypes: ReadonlyArray<string>,
   ) => UnnestSqlTokenType;
@@ -367,9 +372,9 @@ export type InternalCopyFromBinaryFunctionType = (
   connection: InternalDatabaseConnectionType,
   clientConfiguration: ClientConfigurationType,
   sql: string,
-  boundValues: ReadonlyArray<PrimitiveValueExpressionType>, // eslint-disable-next-line flowtype/no-weak-types
+  boundValues: ReadonlyArray<PrimitiveValueExpressionType>, // eslint-disable-next-line @typescript-eslint/no-explicit-any
   tupleList: ReadonlyArray<ReadonlyArray<any>>,
-  columnTypes: // eslint-disable-next-line flowtype/no-weak-types
+  columnTypes: // eslint-disable-next-line @typescript-eslint/no-explicit-any
   ReadonlyArray<TypeNameIdentifierType>,
 ) => Promise<Object>;
 
@@ -380,7 +385,7 @@ export type InternalStreamFunctionType = (
   sql: string,
   values: ReadonlyArray<PrimitiveValueExpressionType>,
   streamHandler: StreamHandlerType,
-  uid?: // eslint-disable-next-line flowtype/no-weak-types
+  uid?: // eslint-disable-next-line @typescript-eslint/no-explicit-any
   QueryIdType,
 ) => Promise<Object>;
 
@@ -408,10 +413,10 @@ export type InternalNestedTransactionFunctionType = (
 // QueryResultRowColumnType type allows `string | number | null`.
 // Therefore, we can only safely assume the shape of the result, e.g. collection vs object.
 
-// eslint-disable-next-line flowtype/no-weak-types
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 type ExternalQueryResultRowColumnType = any;
 
-// eslint-disable-next-line flowtype/no-weak-types
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 type ExternalQueryResultRowType = Object;
 
 export interface TaggedTemplateLiteralInvocationType<Result = QueryResultRowType> {
@@ -426,16 +431,18 @@ export type QueryMethodType<RowType, Result> = (
 ) => Promise<Result>;
 export type QueryMethodParams<T> = Parameters<QueryMethodType<T, never>>;
 
-export type QueryAnyFirstFunctionType = <T>(...args: QueryMethodParams<T>) => Promise<Array<T[keyof T]>>;
-export type QueryAnyFunctionType = <T>(...args: QueryMethodParams<T>) => Promise<T[]>;
+export type DefaultQueryMethodType = Record<string, any>
+
+export type QueryAnyFirstFunctionType = <T = DefaultQueryMethodType>(...args: QueryMethodParams<T>) => Promise<Array<T[keyof T]>>;
+export type QueryAnyFunctionType = <T = DefaultQueryMethodType>(...args: QueryMethodParams<T>) => Promise<T[]>;
 export type QueryExistsFunctionType = (...args: QueryMethodParams<any>) => Promise<boolean>;
-export type QueryFunctionType = <T>(...args: QueryMethodParams<T>) => Promise<QueryResultType<T>>;
+export type QueryFunctionType = <T = DefaultQueryMethodType>(...args: QueryMethodParams<T>) => Promise<QueryResultType<T>>;
 export type QueryManyFirstFunctionType = QueryAnyFirstFunctionType;
 export type QueryManyFunctionType = QueryAnyFunctionType;
-export type QueryMaybeOneFirstFunctionType = <T>(...args: QueryMethodParams<T>) => Promise<T[keyof T] | null>;
-export type QueryMaybeOneFunctionType = <T>(...args: QueryMethodParams<T>) => Promise<T | null>;
-export type QueryOneFirstFunctionType = <T>(...args: QueryMethodParams<T>) => Promise<T[keyof T]>;
-export type QueryOneFunctionType = <T>(...args: QueryMethodParams<T>) => Promise<T>;
+export type QueryMaybeOneFirstFunctionType = <T = DefaultQueryMethodType>(...args: QueryMethodParams<T>) => Promise<T[keyof T] | null>;
+export type QueryMaybeOneFunctionType = <T = DefaultQueryMethodType>(...args: QueryMethodParams<T>) => Promise<T | null>;
+export type QueryOneFirstFunctionType = <T = DefaultQueryMethodType>(...args: QueryMethodParams<T>) => Promise<T[keyof T]>;
+export type QueryOneFunctionType = <T = DefaultQueryMethodType>(...args: QueryMethodParams<T>) => Promise<T>;
 
 export type InterceptorType = {
   readonly afterPoolConnection?: (

@@ -2,9 +2,20 @@
   "parser": "@typescript-eslint/parser",
   "parserOptions": {"ecmaVersion": 2018, "sourceType": "module"},
   "extends": [
+    "canonical"
+  ],
+  "plugins": [
+    "@typescript-eslint/eslint-plugin"
   ],
   "root": true,
   "rules": {
+    "@typescript-eslint/no-explicit-any": 1,
+    "linebreak-style": 0,
+    // https://github.com/typescript-eslint/typescript-eslint/issues/1624#issuecomment-589731039
+    "import/no-unresolved": 0,
+    "no-unused-vars": 0,
+    "@typescript-eslint/no-unused-vars": 1,
+    "require-await": 0,
     "object-curly-newline": [
       2,
       {

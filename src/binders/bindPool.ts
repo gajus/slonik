@@ -22,7 +22,7 @@ export default (
   pool: InternalDatabasePoolType,
   clientConfiguration: ClientConfigurationType,
 ): DatabasePoolType => {
-  // eslint-disable-next-line flowtype/no-weak-types
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const mapConnection = (targetMethodName: string): any => {
     return (query: TaggedTemplateLiteralInvocationType) => {
       if (typeof query === 'string') {
@@ -71,18 +71,10 @@ export default (
         clientConfiguration,
         'IMPLICIT_QUERY',
         (connectionLog, connection, boundConnection) => {
-          return boundConnection.copyFromBinary(
-            copyQuery,
-            values,
-            columnTypes
-          );
+          return boundConnection.copyFromBinary(copyQuery, values, columnTypes);
         },
         (newPool) => {
-          return newPool.copyFromBinary(
-            copyQuery,
-            values,
-            columnTypes
-          );
+          return newPool.copyFromBinary(copyQuery, values, columnTypes);
         },
       );
     },

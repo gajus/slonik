@@ -12,7 +12,8 @@ import type {
 } from '../types';
 
 export default (connectionUri: string, clientConfiguration: ClientConfigurationType) => {
-  // todo: make this not any. A few properties which don't exist on the interface are being set below
+  // @todo: make this not any. A few properties which don't exist on the interface are being set below
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const poolConfiguration: any = parseConnectionString(connectionUri);
 
   // @see https://node-postgres.com/api/pool

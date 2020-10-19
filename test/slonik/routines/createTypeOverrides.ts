@@ -21,7 +21,7 @@ test('uses typname to retrieve pg_type oid', async (t) => {
   const typeParser = {
     name: 'int8',
 
-    // eslint-disable-next-line no-unused-vars
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     parse: (value) => {
       return null;
     },
@@ -47,7 +47,7 @@ test('throws an error if type cannot be found', async (t) => {
   const typeParser = {
     name: 'int8',
 
-    // eslint-disable-next-line no-unused-vars
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     parse: (value) => {
       return null;
     },

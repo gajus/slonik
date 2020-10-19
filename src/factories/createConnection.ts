@@ -30,9 +30,9 @@ type ConnectionHandlerType = (
   connection: InternalDatabaseConnectionType,
   boundConnection: DatabasePoolConnectionType,
   clientConfiguration: ClientConfigurationType
-) => MaybePromiseType<any>;
+) => MaybePromiseType<unknown>;
 
-type PoolHandlerType = (pool: DatabasePoolType) => Promise<any>;
+type PoolHandlerType = (pool: DatabasePoolType) => Promise<unknown>;
 
 const terminatePoolConnection = (pool, connection, error) => {
   if (!connection.connection.slonik.terminated) {
@@ -79,6 +79,7 @@ const createConnection = async (
 
   let remainingConnectionRetryLimit = clientConfiguration.connectionRetryLimit;
 
+  // eslint-disable-next-line no-constant-condition
   while (true) {
     remainingConnectionRetryLimit--;
 

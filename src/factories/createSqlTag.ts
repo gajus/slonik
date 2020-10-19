@@ -44,6 +44,7 @@ export default () => {
   const sql: SqlTaggedTemplateType = (
     parts: ReadonlyArray<string>,
     ...values: ReadonlyArray<ValueExpressionType>
+  // eslint-disable-next-line unicorn/consistent-function-scoping
   ): SqlSqlTokenType => {
     let rawSql = '';
 

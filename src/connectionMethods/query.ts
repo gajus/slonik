@@ -8,10 +8,10 @@ import {
 } from '../routines';
 import type {
   InternalQueryFunctionType,
+  QueryResultRowType,
 } from '../types';
 
-// todo: make not any
-const query: InternalQueryFunctionType<any> = async (connectionLogger, connection, clientConfiguration, rawSql, values, inheritedQueryId) => {
+const query: InternalQueryFunctionType<QueryResultRowType> = async (connectionLogger, connection, clientConfiguration, rawSql, values, inheritedQueryId) => {
   // @ts-ignore
   return executeQuery(
     connectionLogger,

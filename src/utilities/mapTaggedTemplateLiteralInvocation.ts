@@ -7,6 +7,7 @@ import type {
   TaggedTemplateLiteralInvocationType,
 } from '../types';
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export default (targetMethod: any) => {
   return (query: TaggedTemplateLiteralInvocationType) => {
     if (query.type !== SqlToken) {

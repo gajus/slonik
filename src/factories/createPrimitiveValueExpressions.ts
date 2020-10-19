@@ -12,7 +12,7 @@ const log = Logger.child({
   namespace: 'createPrimitiveValueExpressions',
 });
 
-export default (values: ReadonlyArray<any>): ReadonlyArray<PrimitiveValueExpressionType> => {
+export default (values: ReadonlyArray<unknown>): ReadonlyArray<PrimitiveValueExpressionType> => {
   const primitiveValueExpressions = [];
 
   for (const value of values) {
