@@ -79,14 +79,11 @@ export default () => {
         rawSql += sqlFragment.sql;
         parameterValues.push(...sqlFragment.values);
       } else {
-        log.error(
-          {
-            constructedSql: rawSql,
-            index,
-            offendingToken: token,
-          },
-          'unexpected value expression',
-        );
+        log.error({
+          constructedSql: rawSql,
+          index,
+          offendingToken: token,
+        }, 'unexpected value expression');
 
         throw new TypeError('Unexpected value expression.');
       }
