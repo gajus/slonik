@@ -117,8 +117,8 @@
     "create-readme": "gitdown ./.README/README.md --output-file ./README.md",
     "eslint": "eslint --ext '.ts' --max-warnings 0",
     "lint": "npm run eslint ./src ./test  && tsc -p .",
-    "postinstall": "patch-package",
-    "test": "NODE_ENV=test nyc ava --verbose"
+    "test": "NODE_ENV=test nyc ava --verbose",
+    "prepare": "patch-package"
   },
   "version": "5.0.0"
 }
