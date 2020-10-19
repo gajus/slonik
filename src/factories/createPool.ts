@@ -77,7 +77,8 @@ export default (
   type ModifiedPool = Omit<pgTypes.Pool, 'on'> & EventEmitter & {
     slonik?: {};
   }
-  const pool: ModifiedPool = new pg.Pool(poolConfiguration as unknown as pgTypes.PoolConfig);
+  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+  const pool: ModifiedPool = new pg!.Pool(poolConfiguration as unknown as pgTypes.PoolConfig);
 
   pool.slonik = {
     ended: false,

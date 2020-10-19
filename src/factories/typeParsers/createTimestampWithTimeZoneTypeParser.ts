@@ -4,7 +4,7 @@ import type {
   TypeParserType,
 } from '../../types';
 
-const timestampParser = <T>(value: T) => {
+const timestampParser = (value: string | null) => {
   return value === null ? value : Date.parse(value);
 };
 
