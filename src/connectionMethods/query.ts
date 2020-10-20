@@ -1,13 +1,15 @@
 // @flow
 
 import {
-  map,
-} from 'inline-loops.macro';
+  QueryResult,
+} from 'pg';
 import {
   executeQuery,
 } from '../routines';
 import type {
   InternalQueryMethods,
+  NoticeType,
+  QueryResultType,
 } from '../types';
 
 const query: InternalQueryMethods['query'] = async (connectionLogger, connection, clientConfiguration, rawSql, values, inheritedQueryId) => {
@@ -19,11 +21,11 @@ const query: InternalQueryMethods['query'] = async (connectionLogger, connection
     values,
     inheritedQueryId,
     async (finalConnection, finalSql, finalValues) => {
-      const result = await finalConnection.query(finalSql, finalValues);
+      const result: QueryResult & {notices?: NoticeType[]} = await finalConnection.query(finalSql, finalValues);
 
       return {
-        command: result.command,
-        fields: map(result.fields || [], (field) => {
+        command: result.command as QueryResultType<{}>['command'],
+        fields: (result.fields || []).map((field) => {
           return {
             dataTypeId: field.dataTypeID,
             name: field.name,

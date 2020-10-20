@@ -1,8 +1,0 @@
-[ignore]
-.*/node_modules/.*/test/.*
-<PROJECT_ROOT>/dist/.*
-[untyped]
-.*/node_modules/pg-cursor/.*
-.*/node_modules/pg/.*
-[options]
-types_first=false
