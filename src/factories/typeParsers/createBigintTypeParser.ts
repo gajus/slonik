@@ -9,7 +9,7 @@ const bigintParser = (value: string) => {
   return Number.parseInt(value, 10);
 };
 
-export default (): TypeParserType => {
+export const createBigintTypeParser = (): TypeParserType => {
   return {
     name: 'int8',
     parse: bigintParser,

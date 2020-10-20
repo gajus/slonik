@@ -2,7 +2,9 @@
 
 import test from 'ava';
 import sinon from 'sinon';
-import createPool from '../../../../helpers/createPool';
+import {
+  createPool,
+} from '../../../../helpers/createPool';
 
 test('`beforePoolConnection` is called before `connect`', async (t) => {
   const beforePoolConnection = sinon.stub();

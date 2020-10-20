@@ -2,7 +2,9 @@
 
 import test from 'ava';
 import sinon from 'sinon';
-import createSqlTag from '../../../src/factories/createSqlTag';
+import {
+  createSqlTag,
+} from '../../../src/factories/createSqlTag';
 import {
   mapTaggedTemplateLiteralInvocation,
 } from '../../../src/utilities';
@@ -39,4 +41,3 @@ test('throws an error if invoked with a string', (t) => {
 
   t.is(error.message, 'Query must be constructed using `sql` tagged template literal.');
 });
-

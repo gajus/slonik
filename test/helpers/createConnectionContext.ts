@@ -4,7 +4,7 @@ import type {
   ConnectionContextType,
 } from '../../src/types';
 
-export default (): ConnectionContextType => {
+export const createConnectionContext = (): ConnectionContextType => {
   // @ts-ignore
   return {
     connectionId: '1',

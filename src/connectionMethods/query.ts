@@ -12,7 +12,7 @@ import type {
   QueryResultType,
 } from '../types';
 
-const query: InternalQueryMethods['query'] = async (connectionLogger, connection, clientConfiguration, rawSql, values, inheritedQueryId) => {
+export const query: InternalQueryMethods['query'] = async (connectionLogger, connection, clientConfiguration, rawSql, values, inheritedQueryId) => {
   return executeQuery(
     connectionLogger,
     connection,
@@ -38,5 +38,3 @@ const query: InternalQueryMethods['query'] = async (connectionLogger, connection
     },
   );
 };
-
-export default query;

@@ -1,23 +1,23 @@
 // @flow
 
 export {
-  default as createArraySqlFragment,
+  createArraySqlFragment,
 } from './createArraySqlFragment';
 export {
-  default as createBinarySqlFragment,
+  createBinarySqlFragment,
 } from './createBinarySqlFragment';
 export {
-  default as createIdentifierSqlFragment,
+  createIdentifierSqlFragment,
 } from './createIdentifierSqlFragment';
 export {
-  default as createJsonSqlFragment,
+  createJsonSqlFragment,
 } from './createJsonSqlFragment';
 export {
-  default as createListSqlFragment,
+  createListSqlFragment,
 } from './createListSqlFragment';
 export {
-  default as createSqlSqlFragment,
+  createSqlSqlFragment,
 } from './createSqlSqlFragment';
 export {
-  default as createUnnestSqlFragment,
+  createUnnestSqlFragment,
 } from './createUnnestSqlFragment';

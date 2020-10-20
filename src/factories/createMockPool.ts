@@ -1,7 +1,11 @@
 // @flow
 
-import Logger from '../Logger';
-import bindPool from '../binders/bindPool';
+import {
+  Logger,
+} from '../Logger';
+import {
+  bindPool,
+} from '../binders/bindPool';
 import type {
   ClientConfigurationInputType,
   DatabasePoolType,
@@ -12,13 +16,15 @@ import type {
 import {
   createUlid,
 } from '../utilities';
-import createClientConfiguration from './createClientConfiguration';
+import {
+  createClientConfiguration,
+} from './createClientConfiguration';
 
 type OverridesType = {
   readonly query: (sql: string, values: ReadonlyArray<PrimitiveValueExpressionType>) => Promise<QueryResultType<QueryResultRowType>>;
 };
 
-export default (
+export const createMockPool = (
   overrides: OverridesType,
   clientConfigurationInput?: ClientConfigurationInputType,
 ): DatabasePoolType => {

@@ -4,7 +4,7 @@ import type {
   QueryContextType,
 } from '../../src/types';
 
-export default (): QueryContextType => {
+export const createQueryContext = (): QueryContextType => {
   // @ts-ignore
   return {
     connectionId: '1',

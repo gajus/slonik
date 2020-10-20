@@ -1,7 +1,9 @@
 // @flow
 
 import test from 'ava';
-import countArrayDimensions from '../../../src/utilities/countArrayDimensions';
+import {
+  countArrayDimensions,
+} from '../../../src/utilities/countArrayDimensions';
 
 test('returns the number of array dimensions', (t) => {
   t.assert(countArrayDimensions('foo') === 0);

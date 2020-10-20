@@ -1,11 +1,11 @@
 // @flow
 
 export {
-  default as bindPool,
+  bindPool,
 } from './bindPool';
 export {
-  default as bindPoolConnection,
+  bindPoolConnection,
 } from './bindPoolConnection';
 export {
-  default as bindTransactionConnection,
+  bindTransactionConnection,
 } from './bindTransactionConnection';

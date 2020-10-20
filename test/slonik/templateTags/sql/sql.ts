@@ -1,7 +1,9 @@
 // @flow
 
 import test from 'ava';
-import createSqlTag from '../../../../src/factories/createSqlTag';
+import {
+  createSqlTag,
+} from '../../../../src/factories/createSqlTag';
 import {
   SqlToken,
 } from '../../../../src/tokens';

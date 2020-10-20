@@ -13,7 +13,7 @@ const intervalParser = (value: string) => {
   return value === null ? value : durationToSeconds(parseIsoDuration(parseInterval(value).toISOString()));
 };
 
-export default (): TypeParserType => {
+export const createIntervalTypeParser = (): TypeParserType => {
   return {
     name: 'interval',
     parse: intervalParser,

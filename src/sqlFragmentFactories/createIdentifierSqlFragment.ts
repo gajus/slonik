@@ -11,7 +11,7 @@ import {
   escapeIdentifier,
 } from '../utilities';
 
-export default (token: IdentifierSqlTokenType): SqlFragmentType => {
+export const createIdentifierSqlFragment = (token: IdentifierSqlTokenType): SqlFragmentType => {
   const sql = token.names
     .map((identifierName) => {
       if (typeof identifierName !== 'string') {

@@ -9,9 +9,11 @@ import type {
 import {
   createQueryId,
 } from '../utilities';
-import any from './any';
+import {
+  any,
+} from './any';
 
-const anyFirst: InternalQueryMethods['anyFirst'] = async (log, connection, clientConfigurationType, rawSql, values, inheritedQueryId) => {
+export const anyFirst: InternalQueryMethods['anyFirst'] = async (log, connection, clientConfigurationType, rawSql, values, inheritedQueryId) => {
   const queryId = inheritedQueryId || createQueryId();
 
   const rows = await any(log, connection, clientConfigurationType, rawSql, values, queryId);
@@ -38,5 +40,3 @@ const anyFirst: InternalQueryMethods['anyFirst'] = async (log, connection, clien
     return row[firstColumnName];
   });
 };
-
-export default anyFirst;

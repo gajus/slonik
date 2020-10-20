@@ -8,8 +8,12 @@ import type pgTypes from 'pg';
 import {
   serializeError,
 } from 'serialize-error';
-import Logger from '../Logger';
-import bindPool from '../binders/bindPool';
+import {
+  Logger,
+} from '../Logger';
+import {
+  bindPool,
+} from '../binders/bindPool';
 import type {
   ClientConfigurationInputType,
   DatabasePoolType,
@@ -17,13 +21,17 @@ import type {
 import {
   createUlid,
 } from '../utilities';
-import createClientConfiguration from './createClientConfiguration';
-import createPoolConfiguration from './createPoolConfiguration';
+import {
+  createClientConfiguration,
+} from './createClientConfiguration';
+import {
+  createPoolConfiguration,
+} from './createPoolConfiguration';
 
 /**
  * @param connectionUri PostgreSQL [Connection URI](https://www.postgresql.org/docs/current/libpq-connect.html#LIBPQ-CONNSTRING).
  */
-export default (
+export const createPool = (
   connectionUri: string,
   clientConfigurationInput?: ClientConfigurationInputType,
 ): DatabasePoolType => {

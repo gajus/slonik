@@ -11,7 +11,7 @@ import type {
   TypeNameIdentifierType,
 } from '../types';
 
-export default (
+export const encodeTupleList = (
   tupleList: ReadonlyArray<ReadonlyArray<unknown>>,
   columnTypes: ReadonlyArray<TypeNameIdentifierType>,
 ): Promise<Buffer> => {

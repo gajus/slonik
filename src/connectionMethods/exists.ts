@@ -9,9 +9,11 @@ import type {
 import {
   createQueryId,
 } from '../utilities';
-import query from './query';
+import {
+  query,
+} from './query';
 
-const exists: InternalQueryMethods['exists'] = async (log, connection, clientConfiguration, rawSql, values, inheritedQueryId) => {
+export const exists: InternalQueryMethods['exists'] = async (log, connection, clientConfiguration, rawSql, values, inheritedQueryId) => {
   const queryId = inheritedQueryId || createQueryId();
 
   const {
@@ -28,5 +30,3 @@ const exists: InternalQueryMethods['exists'] = async (log, connection, clientCon
 
   return Boolean((rows[0] as Record<string, unknown>).exists);
 };
-
-export default exists;

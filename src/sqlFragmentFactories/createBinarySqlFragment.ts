@@ -8,7 +8,7 @@ import type {
   SqlFragmentType,
 } from '../types';
 
-export default (token: BinarySqlTokenType, greatestParameterPosition: number): SqlFragmentType => {
+export const createBinarySqlFragment = (token: BinarySqlTokenType, greatestParameterPosition: number): SqlFragmentType => {
   if (!Buffer.isBuffer(token.data)) {
     throw new InvalidInputError('Binary value must be a buffer.');
   }

@@ -9,8 +9,12 @@ import Roarr from 'roarr';
 import {
   InvalidInputError,
 } from '../../../src/errors';
-import executeQuery from '../../../src/routines/executeQuery';
-import createClientConfiguration from '../../helpers/createClientConfiguration';
+import {
+  executeQuery,
+} from '../../../src/routines/executeQuery';
+import {
+  createClientConfiguration,
+} from '../../helpers/createClientConfiguration';
 
 const test = anyTest as TestInterface<any>;
 const beforeEach = anyBeforeEach as BeforeInterface<any>;

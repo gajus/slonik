@@ -6,12 +6,14 @@ import type {
 import {
   createQueryId,
 } from '../utilities';
-import query from './query';
+import {
+  query,
+} from './query';
 
 /**
  * Makes a query and expects any number of results.
  */
-const any: InternalQueryMethods['any'] = async (log, connection, clientConfiguration, rawSql, values, inheritedQueryId) => {
+export const any: InternalQueryMethods['any'] = async (log, connection, clientConfiguration, rawSql, values, inheritedQueryId) => {
   const queryId = inheritedQueryId || createQueryId();
 
   const {
@@ -20,5 +22,3 @@ const any: InternalQueryMethods['any'] = async (log, connection, clientConfigura
 
   return rows;
 };
-
-export default any;

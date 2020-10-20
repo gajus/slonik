@@ -7,8 +7,12 @@ import {
   DataIntegrityError,
   NotFoundError,
 } from '../../../src/errors';
-import createSqlTag from '../../../src/factories/createSqlTag';
-import createPool from '../../helpers/createPool';
+import {
+  createSqlTag,
+} from '../../../src/factories/createSqlTag';
+import {
+  createPool,
+} from '../../helpers/createPool';
 
 const sql = createSqlTag();
 

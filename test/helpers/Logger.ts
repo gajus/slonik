@@ -1,8 +1,8 @@
 // @flow
 
-import Logger from 'roarr';
+import roarr from 'roarr';
 
-export default Logger.child({
+export const Logger = roarr.child({
   connectionId: '1',
   poolId: '1',
 });

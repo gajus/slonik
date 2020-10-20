@@ -9,7 +9,9 @@ import type {
 import {
   createQueryId,
 } from '../utilities';
-import one from './one';
+import {
+  one,
+} from './one';
 
 /**
  * Makes a query and expects exactly one result.
@@ -18,7 +20,7 @@ import one from './one';
  * @throws NotFoundError If query returns no rows.
  * @throws DataIntegrityError If query returns multiple rows.
  */
-const oneFirst: InternalQueryMethods['oneFirst'] = async (log, connection, clientConfiguration, rawSql, values, inheritedQueryId) => {
+export const oneFirst: InternalQueryMethods['oneFirst'] = async (log, connection, clientConfiguration, rawSql, values, inheritedQueryId) => {
   const queryId = inheritedQueryId || createQueryId();
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -36,5 +38,3 @@ const oneFirst: InternalQueryMethods['oneFirst'] = async (log, connection, clien
 
   return row[keys[0]];
 };
-
-export default oneFirst;

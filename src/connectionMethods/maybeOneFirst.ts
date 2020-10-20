@@ -9,7 +9,9 @@ import type {
 import {
   createQueryId,
 } from '../utilities';
-import maybeOne from './maybeOne';
+import {
+  maybeOne,
+} from './maybeOne';
 
 /**
  * Makes a query and expects exactly one result.
@@ -17,7 +19,7 @@ import maybeOne from './maybeOne';
  *
  * @throws DataIntegrityError If query returns multiple rows.
  */
-const maybeOneFirst: InternalQueryMethods['maybeOneFirst'] = async (log, connection, clientConfiguration, rawSql, values, inheritedQueryId) => {
+export const maybeOneFirst: InternalQueryMethods['maybeOneFirst'] = async (log, connection, clientConfiguration, rawSql, values, inheritedQueryId) => {
   const queryId = inheritedQueryId || createQueryId();
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -39,5 +41,3 @@ const maybeOneFirst: InternalQueryMethods['maybeOneFirst'] = async (log, connect
 
   return row[keys[0]];
 };
-
-export default maybeOneFirst;

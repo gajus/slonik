@@ -14,7 +14,7 @@ import {
   stripArrayNotation,
 } from '../utilities';
 
-export default (token: UnnestSqlTokenType, greatestParameterPosition: number): SqlFragmentType => {
+export const createUnnestSqlFragment = (token: UnnestSqlTokenType, greatestParameterPosition: number): SqlFragmentType => {
   const columnTypes = token.columnTypes;
 
   const values = [];

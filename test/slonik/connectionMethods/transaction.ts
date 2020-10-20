@@ -1,7 +1,9 @@
 // @flow
 
 import test from 'ava';
-import createPool from '../../helpers/createPool';
+import {
+  createPool,
+} from '../../helpers/createPool';
 
 test('commits successful transaction', async (t) => {
   const pool = createPool();

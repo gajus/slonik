@@ -4,18 +4,22 @@
 
 import EventEmitter from 'events';
 import sinon from 'sinon';
-import bindPool from '../../src/binders/bindPool';
+import {
+  bindPool,
+} from '../../src/binders/bindPool';
 import type {
   ClientConfigurationInputType,
 } from '../../src/types';
-import log from './Logger';
+import {
+  Logger as log,
+} from './Logger';
 
 const defaultConfiguration = {
   interceptors: [],
   typeParsers: [],
 };
 
-export default (clientConfiguration: ClientConfigurationInputType = defaultConfiguration) => {
+export const createPool = (clientConfiguration: ClientConfigurationInputType = defaultConfiguration) => {
   // @ts-expect-error
   const eventEmitter = new EventEmitter();
 

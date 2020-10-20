@@ -4,7 +4,9 @@
 
 import type Stream from 'stream';
 import through from 'through2';
-import QueryStream from '../QueryStream';
+import {
+  QueryStream,
+} from '../QueryStream';
 import {
   UnexpectedStateError,
 } from '../errors';
@@ -16,7 +18,7 @@ import type {
   InternalStreamFunctionType,
 } from '../types';
 
-const stream: InternalStreamFunctionType = async (connectionLogger, connection, clientConfiguration, rawSql, values, streamHandler) => {
+export const stream: InternalStreamFunctionType = async (connectionLogger, connection, clientConfiguration, rawSql, values, streamHandler) => {
   return executeQuery(
     connectionLogger,
     connection,
@@ -81,5 +83,3 @@ const stream: InternalStreamFunctionType = async (connectionLogger, connection, 
     },
   );
 };
-
-export default stream;
