@@ -1,3 +1,4 @@
+/* eslint-disable import/no-namespace */
 /* eslint-disable lines-around-comment */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable line-comment-position */
@@ -16,6 +17,7 @@ import {
 import {
   SlonikError,
 } from './errors';
+import * as tokens from './tokens';
 
 export {
   LoggerType,
@@ -257,41 +259,41 @@ export type QueryContextType = {
 
 export type ArraySqlTokenType = {
   readonly memberType: TypeNameIdentifierType | SqlTokenType;
-  readonly type: 'SLONIK_TOKEN_ARRAY';
+  readonly type: typeof tokens.ArrayToken;
   readonly values: ReadonlyArray<ValueExpressionType>;
 };
 
 export type BinarySqlTokenType = {
   readonly data: Buffer;
-  readonly type: 'SLONIK_TOKEN_BINARY';
+  readonly type: typeof tokens.BinaryToken;
 };
 
 export type IdentifierSqlTokenType = {
   readonly names: ReadonlyArray<string>;
-  readonly type: 'SLONIK_TOKEN_IDENTIFIER';
+  readonly type: typeof tokens.IdentifierToken;
 };
 
 export type ListSqlTokenType = {
   readonly glue: SqlTokenType;
   readonly members: ReadonlyArray<SqlTokenType>;
-  readonly type: 'SLONIK_TOKEN_LIST';
+  readonly type: typeof tokens.ListToken;
 };
 
 export type JsonSqlTokenType = {
   readonly value: SerializableValueType;
-  readonly type: 'SLONIK_TOKEN_JSON';
+  readonly type: typeof tokens.JsonToken;
 };
 
 export type SqlSqlTokenType = {
   readonly sql: string;
-  readonly type: 'SLONIK_TOKEN_SQL';
+  readonly type: typeof tokens.SqlToken;
   readonly values: ReadonlyArray<PrimitiveValueExpressionType>;
 };
 
 export type UnnestSqlTokenType = {
   readonly columnTypes: ReadonlyArray<string>;
   readonly tuples: ReadonlyArray<ReadonlyArray<ValueExpressionType>>;
-  readonly type: 'SLONIK_TOKEN_UNNEST';
+  readonly type: typeof tokens.UnnestToken;
 };
 
 export type PrimitiveValueExpressionType =
