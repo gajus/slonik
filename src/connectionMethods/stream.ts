@@ -68,13 +68,13 @@ export const stream: InternalStreamFunctionType = async (connectionLogger, conne
         }));
 
         transformedStream.on('end', () => {
-          // @ts-ignore
+          // @ts-expect-error
           resolve({});
         });
 
         // Invoked if stream is destroyed using transformedStream.destroy().
         transformedStream.on('close', () => {
-          // @ts-ignore
+          // @ts-expect-error
           resolve({});
         });
 

@@ -8,6 +8,6 @@ import {
 } from './createUlid';
 
 export const createQueryId = (): QueryIdType => {
-  // eslint-disable-next-line no-extra-parens, @typescript-eslint/no-explicit-any
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   return createUlid() as any;
 };

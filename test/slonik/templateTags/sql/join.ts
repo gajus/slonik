@@ -104,7 +104,7 @@ test('throws is member is not a SQL token or a primitive value expression', (t) 
   const error = t.throws(() => {
     sql`${sql.join(
       [
-        // @ts-ignore
+        // @ts-expect-error
         () => {},
       ],
       sql`, `,
@@ -118,7 +118,7 @@ test('the resulting object is immutable', (t) => {
   const token = sql.join([1, 2, 3], sql`, `);
 
   t.throws(() => {
-    // @ts-ignore
+    // @ts-expect-error
     token.foo = 'bar';
   });
 });

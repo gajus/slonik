@@ -5,11 +5,10 @@ import type {
 } from '../../src/types';
 
 export const createConnectionContext = (): ConnectionContextType => {
-  // @ts-ignore
   return {
     connectionId: '1',
 
-    // @ts-ignore
+    // @ts-expect-error
     log: {
       getContext: () => {
         return {

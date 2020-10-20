@@ -112,7 +112,6 @@ test('if `beforePoolConnection` returns pool object, then the returned pool obje
     interceptors: [
       {
         beforePoolConnection: () => {
-          // @ts-ignore
           return pool0;
         },
       },
@@ -137,7 +136,6 @@ test('if `beforePoolConnection` returns pool object, then the returned pool obje
     interceptors: [
       {
         beforePoolConnection: () => {
-          // @ts-ignore
           return pool0;
         },
       },
@@ -164,7 +162,6 @@ test('if `beforePoolConnection` returns pool object, then the returned pool obje
     interceptors: [
       {
         beforePoolConnection: () => {
-          // @ts-ignore
           return pool0;
         },
       },

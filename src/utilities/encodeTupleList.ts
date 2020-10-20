@@ -57,7 +57,6 @@ export const encodeTupleList = (
         };
       }
 
-      // @ts-ignore
       tupleStream.push(payload);
     }
 

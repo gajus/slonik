@@ -43,7 +43,7 @@ export const createListSqlFragment = (token: ListSqlTokenType, greatestParameter
   }
 
   return {
-    // @ts-ignore
+    // @ts-expect-error
     sql: placeholders.join(token.glue.sql),
     values: createPrimitiveValueExpressions(values),
   };

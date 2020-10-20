@@ -34,12 +34,11 @@ export const createArraySqlFragment = (token: ArraySqlTokenType, greatestParamet
   let sql = '$' + placeholderIndex + '::';
 
   if (isSqlToken(token.memberType) && token.memberType.type === 'SLONIK_TOKEN_SQL') {
-    // @ts-ignore
     const sqlFragment = createSqlTokenSqlFragment(token.memberType, placeholderIndex);
 
     placeholderIndex += sqlFragment.values.length;
 
-    // @ts-ignore (is this right?)
+    // @ts-expect-error (is this right?)
     values.push(...sqlFragment.values);
 
     sql += sqlFragment.sql;
@@ -52,7 +51,7 @@ export const createArraySqlFragment = (token: ArraySqlTokenType, greatestParamet
   return {
     sql,
 
-    // @ts-ignore
+    // @ts-expect-error
     values,
   };
 };

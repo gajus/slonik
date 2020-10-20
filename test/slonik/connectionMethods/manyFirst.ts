@@ -1,7 +1,3 @@
-// @flow
-
-/* eslint-disable @typescript-eslint/no-explicit-any */
-
 import test from 'ava';
 import {
   DataIntegrityError,

@@ -25,7 +25,6 @@ let pgNativeBindingsAreAvailable;
 
 try {
   /* eslint-disable global-require, import/no-unassigned-import, import/no-extraneous-dependencies */
-  // @ts-ignore
   require('pg-native');
   /* eslint-enable */
 

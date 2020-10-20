@@ -22,7 +22,6 @@ export const createClientConfiguration = (clientUserConfigurationInput?: ClientC
     idleInTransactionSessionTimeout: 60000,
     idleTimeout: 5000,
 
-    // @ts-ignore
     interceptors: [],
 
     maximumPoolSize: 10,
@@ -32,7 +31,6 @@ export const createClientConfiguration = (clientUserConfigurationInput?: ClientC
     transactionRetryLimit: 5,
     typeParsers,
 
-    // @ts-ignore
     ...clientUserConfigurationInput,
   };
 
@@ -41,7 +39,6 @@ export const createClientConfiguration = (clientUserConfigurationInput?: ClientC
   }
 
   if (!configuration.typeParsers || configuration.typeParsers === typeParsers) {
-    // @ts-ignore
     configuration.typeParsers = createTypeParserPreset();
   }
 

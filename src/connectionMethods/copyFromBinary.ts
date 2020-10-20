@@ -61,7 +61,7 @@ export const copyFromBinary: InternalCopyFromBinaryFunctionType = async (
         });
 
         copyFromBinaryStream.on('end', () => {
-          // @ts-ignore
+          // @ts-expect-error
           resolve({});
         });
       });

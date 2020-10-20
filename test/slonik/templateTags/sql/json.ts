@@ -84,7 +84,7 @@ test('JSON encodes boolean values', (t) => {
 
 test('throws if payload is undefined', (t) => {
   const error = t.throws(() => {
-    // @ts-ignore
+    // @ts-expect-error
     sql`SELECT ${sql.json(undefined)}`;
   });
 
@@ -93,7 +93,7 @@ test('throws if payload is undefined', (t) => {
 
 test('throws if payload cannot be stringified (non-primitive object)', (t) => {
   const error = t.throws(() => {
-    // @ts-ignore
+    // @ts-expect-error
     sql`SELECT ${sql.json(() => {})}`;
   });
 
@@ -108,7 +108,6 @@ test('throws if payload cannot be stringified (circular reference)', (t) => {
     };
     foo.bar = bar;
 
-    // @ts-ignore
     sql`SELECT ${sql.json(foo)}`;
   });
 
@@ -121,7 +120,7 @@ test('the resulting object is immutable', (t) => {
   });
 
   t.throws(() => {
-    // @ts-ignore
+    // @ts-expect-error
     token.foo = 'bar';
   });
 });

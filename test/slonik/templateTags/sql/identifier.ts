@@ -37,7 +37,7 @@ test('creates an object describing a query with inlined identifiers (specifier)'
 test('throws if an identifier name array member type is not a string', (t) => {
   const error = t.throws(() => {
     sql`${sql.identifier([
-      // @ts-ignore
+      // @ts-expect-error
       () => {},
     ])}`;
   });
@@ -49,7 +49,7 @@ test('the resulting object is immutable', (t) => {
   const token = sql.identifier(['bar', 'baz']);
 
   t.throws(() => {
-    // @ts-ignore
+    // @ts-expect-error
     token.foo = 'bar';
   });
 });

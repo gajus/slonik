@@ -42,14 +42,14 @@ test('overrides provided properties', (t) => {
   t.deepEqual(
     createClientConfiguration({
       interceptors: [
-        // @ts-ignore
+        // @ts-expect-error
         'foo',
       ],
     }),
     {
       ...defaultConfiguration,
       interceptors: [
-        // @ts-ignore
+        // @ts-expect-error
         'foo',
       ],
     },
@@ -58,14 +58,14 @@ test('overrides provided properties', (t) => {
   t.deepEqual(
     createClientConfiguration({
       typeParsers: [
-        // @ts-ignore
+        // @ts-expect-error
         'foo',
       ],
     }),
     {
       ...defaultConfiguration,
       typeParsers: [
-        // @ts-ignore
+        // @ts-expect-error
         'foo',
       ],
     },

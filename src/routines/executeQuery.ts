@@ -276,7 +276,6 @@ export const executeQuery = async (
         throw new CheckIntegrityConstraintViolationError(error, error.constraint);
       }
 
-      // @ts-ignore
       error.notices = notices;
 
       throw error;
@@ -290,7 +289,6 @@ export const executeQuery = async (
       }
     }
 
-    // @ts-ignore
     error.notices = notices;
     throw error;
   }
@@ -299,7 +297,7 @@ export const executeQuery = async (
     throw new UnexpectedStateError();
   }
 
-  // @ts-ignore
+  // @ts-expect-error
   result.notices = notices;
 
   for (const interceptor of clientConfiguration.interceptors) {
