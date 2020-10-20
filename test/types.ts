@@ -5,6 +5,9 @@ import {
   createPool,
   sql,
 } from '../src';
+import {
+  PrimitiveValueExpressionType,
+} from '../src/types';
 
 // this is never actually run - it's purely a type-level "test" to ensure the typings don't regress.
 export default async () => {
@@ -26,34 +29,43 @@ export default async () => {
   expectTypeOf(typedQuery).toMatchTypeOf<{rows: readonly Row[]}>();
 
   const one = await client.one(sql`select true`);
-  expectTypeOf(one).toEqualTypeOf<Record<string, any>>();
+  expectTypeOf(one).toEqualTypeOf<Record<string, PrimitiveValueExpressionType>>();
 
   const oneTyped = await client.one<Row>(sql`select true`);
   expectTypeOf(oneTyped).toEqualTypeOf<Row>();
 
   const oneFirst = await client.oneFirst(sql`select true`);
-  expectTypeOf(oneFirst).toBeAny();
+  expectTypeOf(oneFirst).toEqualTypeOf<PrimitiveValueExpressionType>();
 
-  const oneFirstTyped = await client.oneFirst<Row>(sql`select true`);
-  expectTypeOf(oneFirstTyped).toEqualTypeOf<string | boolean>();
+  const oneFirstTyped = await client.oneFirst<boolean>(sql`select true`);
+  expectTypeOf(oneFirstTyped).toEqualTypeOf<boolean>();
+
+  const oneFirstTypedQuery = await client.oneFirst(sql<Row>`select true`);
+  expectTypeOf(oneFirstTypedQuery).toEqualTypeOf<string | boolean>();
 
   const maybeOneFirst = await client.maybeOneFirst(sql`select true`);
-  expectTypeOf(maybeOneFirst).toBeAny();
+  expectTypeOf(maybeOneFirst).toEqualTypeOf<PrimitiveValueExpressionType>();
 
-  const maybeOneFirstTyped = await client.maybeOneFirst<Row>(sql`select true`);
-  expectTypeOf(maybeOneFirstTyped).toEqualTypeOf<string | boolean | null>();
+  const maybeOneFirstTyped = await client.maybeOneFirst<boolean>(sql`select true`);
+  expectTypeOf(maybeOneFirstTyped).toEqualTypeOf<boolean | null>();
+
+  const maybeOneFirstTypedQuery = await client.maybeOneFirst(sql<Row>`select true`);
+  expectTypeOf(maybeOneFirstTypedQuery).toEqualTypeOf<string | boolean | null>();
 
   const many = await client.many(sql`select true`);
-  expectTypeOf(many).toEqualTypeOf<Record<string, any>[]>();
+  expectTypeOf(many).toEqualTypeOf<readonly Record<string, PrimitiveValueExpressionType>[]>();
 
   const manyTyped = await client.many<Row>(sql`select true`);
-  expectTypeOf(manyTyped).toEqualTypeOf<Row[]>();
+  expectTypeOf(manyTyped).toEqualTypeOf<readonly Row[]>();
 
   const manyFirst = await client.manyFirst(sql`select true`);
-  expectTypeOf(manyFirst).toEqualTypeOf<any[]>();
+  expectTypeOf(manyFirst).toEqualTypeOf<PrimitiveValueExpressionType[]>();
 
-  const manyFirstTyped = await client.manyFirst<Row>(sql`select true`);
-  expectTypeOf(manyFirstTyped).toEqualTypeOf<Array<string | boolean>>();
+  const manyFirstTyped = await client.manyFirst<boolean>(sql`select true`);
+  expectTypeOf(manyFirstTyped).toEqualTypeOf<boolean[]>();
+
+  const manyFirstTypedQuery = await client.manyFirst(sql<Row>`select true`);
+  expectTypeOf(manyFirstTypedQuery).toEqualTypeOf<Array<string | boolean>>();
 
   expectTypeOf(client.any).toEqualTypeOf(client.many);
   expectTypeOf(client.anyFirst).toEqualTypeOf(client.manyFirst);

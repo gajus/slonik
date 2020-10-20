@@ -158,7 +158,6 @@ Among the primary reasons for developing Slonik, was the motivation to reduce th
 Suppose the requirement is to write a method that retrieves a resource ID given values defining (what we assume to be) a unique constraint. If we did not have the aforementioned convenience methods available, then it would need to be written as:
 
 ```js
-// @flow
 import {
   sql
 } from 'slonik';
@@ -166,10 +165,10 @@ import type {
   DatabaseConnectionType
 } from 'slonik';
 
-opaque type DatabaseRecordIdType = number;
+type DatabaseRecordType = { id: number };
 
-const getFooIdByBar = async (connection: DatabaseConnectionType, bar: string): Promise<DatabaseRecordIdType> => {
-  const fooResult = await connection.query(sql`
+const getFooIdByBar = async (connection: DatabaseConnectionType, bar: string): Promise<number> => {
+  const fooResult = await connection.query<DatabaseRecordType>(sql`
     SELECT id
     FROM foo
     WHERE bar = ${bar}
@@ -192,7 +191,7 @@ const getFooIdByBar = async (connection: DatabaseConnectionType, bar: string): P
 
 ```js
 const getFooIdByBar = (connection: DatabaseConnectionType, bar: string): Promise<DatabaseRecordIdType> => {
-  return connection.oneFirst(sql`
+  return connection.oneFirst<number>(sql`
     SELECT id
     FROM foo
     WHERE bar = ${bar}
@@ -2114,9 +2113,9 @@ await pool.connect(async (connection0) => {
 <a name="slonik-types"></a>
 ## Types
 
-This package is using [Flow](https://flow.org/) types.
+This package is using [TypeScript](https://typescriptlang.org/) types.
 
-Refer to [`./src/types.js`](./src/types.js).
+Refer to [`./src/types.ts`](./src/types.ts).
 
 The public interface exports the following types:
 
@@ -2127,8 +2126,6 @@ The public interface exports the following types:
 Use these types to annotate `connection` instance in your code base, e.g.
 
 ```js
-// @flow
-
 import type {
   DatabaseConnectionType
 } from 'slonik';

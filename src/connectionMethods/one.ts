@@ -5,7 +5,7 @@ import {
   NotFoundError,
 } from '../errors';
 import type {
-  InternalQueryOneFunctionType,
+  InternalQueryMethods,
 } from '../types';
 import {
   createQueryId,
@@ -18,7 +18,7 @@ import query from './query';
  * @throws NotFoundError If query returns no rows.
  * @throws DataIntegrityError If query returns multiple rows.
  */
-const one: InternalQueryOneFunctionType = async (log, connection, clientConfiguration, rawSql, values, inheritedQueryId) => {
+const one: InternalQueryMethods['one'] = async (log, connection, clientConfiguration, rawSql, values, inheritedQueryId) => {
   const queryId = inheritedQueryId || createQueryId();
 
   const {

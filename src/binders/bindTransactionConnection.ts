@@ -19,7 +19,6 @@ import type {
   InternalDatabaseConnectionType,
   LoggerType,
   TaggedTemplateLiteralInvocationType,
-  TransactionFunctionType,
 } from '../types';
 import {
   mapTaggedTemplateLiteralInvocation,
@@ -34,7 +33,7 @@ export default (
   const mapInvocation = (fn: Parameters<typeof mapTaggedTemplateLiteralInvocation>[0]) => {
     const bound = mapTaggedTemplateLiteralInvocation(fn);
 
-    return (taggedQuery: TaggedTemplateLiteralInvocationType) => {
+    return <T>(taggedQuery: TaggedTemplateLiteralInvocationType<T>) => {
       if (transactionDepth !== connection.connection.slonik.transactionDepth) {
         return Promise.reject(new Error('Cannot run a query using parent transaction.'));
       }
@@ -54,7 +53,7 @@ export default (
     one: mapInvocation(one.bind(null, parentLog, connection, clientConfiguration)),
     oneFirst: mapInvocation(oneFirst.bind(null, parentLog, connection, clientConfiguration)),
     query: mapInvocation(query.bind(null, parentLog, connection, clientConfiguration)),
-    transaction: (handler: TransactionFunctionType) => {
+    transaction: (handler) => {
       return nestedTransaction(parentLog, connection, clientConfiguration, handler, transactionDepth);
     },
   };

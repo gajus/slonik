@@ -23,7 +23,6 @@ import type {
   DatabasePoolConnectionType,
   InternalDatabaseConnectionType,
   LoggerType,
-  TransactionFunctionType,
 } from '../types';
 import {
   mapTaggedTemplateLiteralInvocation,
@@ -70,7 +69,7 @@ export default (
         streamHandler,
       );
     },
-    transaction: async (handler: TransactionFunctionType) => {
+    transaction: async (handler) => {
       return transaction(
         parentLog,
         connection,

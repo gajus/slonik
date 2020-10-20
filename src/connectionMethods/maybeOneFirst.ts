@@ -4,7 +4,7 @@ import {
   DataIntegrityError,
 } from '../errors';
 import type {
-  InternalQueryMaybeOneFirstFunctionType,
+  InternalQueryMethods,
 } from '../types';
 import {
   createQueryId,
@@ -17,10 +17,11 @@ import maybeOne from './maybeOne';
  *
  * @throws DataIntegrityError If query returns multiple rows.
  */
-const maybeOneFirst: InternalQueryMaybeOneFirstFunctionType = async (log, connection, clientConfiguration, rawSql, values, inheritedQueryId) => {
+const maybeOneFirst: InternalQueryMethods['maybeOneFirst'] = async (log, connection, clientConfiguration, rawSql, values, inheritedQueryId) => {
   const queryId = inheritedQueryId || createQueryId();
 
-  const row = await maybeOne(log, connection, clientConfiguration, rawSql, values, queryId);
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const row: any = await maybeOne(log, connection, clientConfiguration, rawSql, values, queryId);
 
   if (!row) {
     return null;
