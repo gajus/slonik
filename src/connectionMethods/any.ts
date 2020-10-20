@@ -1,7 +1,7 @@
 // @flow
 
 import type {
-  InternalQueryAnyFunctionType,
+  InternalQueryMethods,
 } from '../types';
 import {
   createQueryId,
@@ -11,7 +11,7 @@ import query from './query';
 /**
  * Makes a query and expects any number of results.
  */
-const any: InternalQueryAnyFunctionType = async (log, connection, clientConfiguration, rawSql, values, inheritedQueryId) => {
+const any: InternalQueryMethods['any'] = async (log, connection, clientConfiguration, rawSql, values, inheritedQueryId) => {
   const queryId = inheritedQueryId || createQueryId();
 
   const {

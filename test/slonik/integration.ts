@@ -381,7 +381,7 @@ test('writes and reads buffers', async (t) => {
     )
   `);
 
-  const result: string = await pool.oneFirst(sql`
+  const result = await pool.oneFirst<{ payload: Buffer }>(sql`
     SELECT payload
     FROM person
   `);

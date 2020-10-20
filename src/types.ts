@@ -126,7 +126,8 @@ export type StreamFunctionType = (
 ) => Promise<null | object>; // bindPoolConnection returns an object
 
 export type QueryCopyFromBinaryFunctionType = (
-  streamQuery: TaggedTemplateLiteralInvocationType, // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  streamQuery: TaggedTemplateLiteralInvocationType,
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   tupleList: ReadonlyArray<ReadonlyArray<any>>,
   columnTypes: // @ts-ignore
   ReadonlyArray<TypeNameIdentifierType>,
@@ -146,18 +147,18 @@ type CommonQueryMethodsType = {
 };
 
 export type DatabaseTransactionConnectionType = CommonQueryMethodsType & {
-  readonly transaction: (handler: TransactionFunctionType) => Promise<any>;
+  readonly transaction: <T>(handler: TransactionFunctionType<T>) => Promise<T>;
 };
 
-export type TransactionFunctionType = (connection: DatabaseTransactionConnectionType) => Promise<any>;
+export type TransactionFunctionType<T> = (connection: DatabaseTransactionConnectionType) => Promise<T>;
 
 export type DatabasePoolConnectionType = CommonQueryMethodsType & {
   readonly copyFromBinary: QueryCopyFromBinaryFunctionType;
   readonly stream: StreamFunctionType;
-  readonly transaction: (handler: TransactionFunctionType) => Promise<any>;
+  readonly transaction: <T>(handler: TransactionFunctionType<T>) => Promise<T>;
 };
 
-export type ConnectionRoutineType = (connection: DatabasePoolConnectionType) => Promise<any>;
+export type ConnectionRoutineType<T> = (connection: DatabasePoolConnectionType) => Promise<T>;
 
 export type PoolStateType = {
   readonly activeConnectionCount: number;
@@ -167,12 +168,12 @@ export type PoolStateType = {
 };
 
 export type DatabasePoolType = CommonQueryMethodsType & {
-  readonly connect: (connectionRoutine: ConnectionRoutineType) => Promise<any>;
+  readonly connect: <T>(connectionRoutine: ConnectionRoutineType<T>) => Promise<T>;
   readonly copyFromBinary: QueryCopyFromBinaryFunctionType;
   readonly end: () => Promise<void>;
   readonly getPoolState: () => PoolStateType;
   readonly stream: StreamFunctionType;
-  readonly transaction: (handler: TransactionFunctionType) => Promise<any>;
+  readonly transaction: <T>(handler: TransactionFunctionType<T>) => Promise<T>;
 };
 
 /**
@@ -181,11 +182,9 @@ export type DatabasePoolType = CommonQueryMethodsType & {
  */
 export type DatabaseConnectionType = Partial<DatabasePoolConnectionType & DatabasePoolType>;
 
-type QueryResultRowColumnType = string | number | null;
+export type QueryResultRowColumnType = PrimitiveValueExpressionType;
 
-export type QueryResultRowType = {
-  readonly [key: string]: QueryResultRowColumnType;
-};
+export type QueryResultRowType = Record<string, QueryResultRowColumnType>;
 
 export type QueryType = {
   readonly sql: string;
@@ -200,9 +199,9 @@ export type SqlFragmentType = {
 /**
  * @property name Value of "pg_type"."typname" (e.g. "int8", "timestamp", "timestamptz").
  */
-export type TypeParserType = {
+export type TypeParserType<T = unknown> = {
   readonly name: string;
-  readonly parse: (value: string) => any;
+  readonly parse: (value: string) => T;
 };
 
 /**
@@ -251,8 +250,7 @@ export type QueryContextType = {
   readonly poolId: string;
   readonly queryId: QueryIdType;
   readonly queryInputTime: number | bigint;
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  readonly sandbox: Object;
+  readonly sandbox: Record<string, unknown>;
   readonly stackTrace: ReadonlyArray<CallSiteType> | null;
   readonly transactionId?: string;
 };
@@ -318,17 +316,11 @@ export type NamedAssignmentType = {
   readonly [key: string]: ValueExpressionType;
 };
 
-// export type TaggedTemplateLiteralInvocationType = {
-//   readonly sql: string;
-//   readonly type: 'SLONIK_TOKEN_SQL';
-//   readonly values: ReadonlyArray<PrimitiveValueExpressionType>;
-// };
-
 /**
  * see https://twitter.com/kuizinas/status/914139352908943360
  */
 export type SqlTaggedTemplateType = {
-  <T = QueryResultRowType>(template: TemplateStringsArray, ...vals: ValueExpressionType[]): SqlSqlTokenType;
+  <T = QueryResultRowType>(template: TemplateStringsArray, ...vals: ValueExpressionType[]): TaggedTemplateLiteralInvocationType<T>;
   array: (
     values: ReadonlyArray<PrimitiveValueExpressionType>,
     memberType: TypeNameIdentifierType | SqlTokenType,
@@ -354,18 +346,11 @@ export type InternalQueryMethodType<R> = (
   sql: string,
   values: ReadonlyArray<PrimitiveValueExpressionType>,
   uid?: QueryIdType,
-) => Promise<R>;
+) => R;
 
-export type InternalQueryAnyFirstFunctionType = InternalQueryMethodType<ReadonlyArray<QueryResultRowColumnType>>;
-export type InternalQueryAnyFunctionType = InternalQueryMethodType<ReadonlyArray<QueryResultRowType>>;
-export type InternalQueryExistsFunctionType = InternalQueryMethodType<boolean>;
-export type InternalQueryFunctionType<T extends QueryResultRowType> = InternalQueryMethodType<QueryResultType<T>>;
-export type InternalQueryManyFirstFunctionType = InternalQueryMethodType<ReadonlyArray<QueryResultRowColumnType>>;
-export type InternalQueryManyFunctionType = InternalQueryMethodType<ReadonlyArray<QueryResultRowType>>;
-export type InternalQueryMaybeOneFirstFunctionType = InternalQueryMethodType<QueryResultRowColumnType | null>;
-export type InternalQueryMaybeOneFunctionType = InternalQueryMethodType<QueryResultRowType | null>;
-export type InternalQueryOneFirstFunctionType = InternalQueryMethodType<QueryResultRowColumnType>;
-export type InternalQueryOneFunctionType = InternalQueryMethodType<QueryResultRowType>;
+export type InternalQueryMethods = {
+  [K in keyof CommonQueryMethodsType]: InternalQueryMethodType<ReturnType<CommonQueryMethodsType[K]>>
+}
 
 export type InternalCopyFromBinaryFunctionType = (
   log: LoggerType,
@@ -393,36 +378,22 @@ export type InternalTransactionFunctionType = (
   log: LoggerType,
   connection: InternalDatabaseConnectionType,
   clientConfiguration: ClientConfigurationType,
-  handler: TransactionFunctionType,
+  handler: TransactionFunctionType<any>,
 ) => Promise<any>;
 
 export type InternalNestedTransactionFunctionType = (
   log: LoggerType,
   connection: InternalDatabaseConnectionType,
   clientConfiguration: ClientConfigurationType,
-  handler: TransactionFunctionType,
+  handler: TransactionFunctionType<any>,
   transactionDepth: number,
 ) => Promise<any>;
 
-// type QueryMethodType<R> = (sql: TaggedTemplateLiteralInvocationType) => Promise<R>;
+type ExternalQueryResultRowType = Record<string, QueryResultRowColumnType>;
 
-// @todo Figure out a reasonable column type that user can specific further.
-// Using `QueryResultRowType` and `QueryResultRowColumnType` is not an option
-// because all cases where user specifies expected type cause an error, e.g.
-// `let fooId: number = await oneFirst()` would produce an error since
-// QueryResultRowColumnType type allows `string | number | null`.
-// Therefore, we can only safely assume the shape of the result, e.g. collection vs object.
-
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-type ExternalQueryResultRowColumnType = any;
-
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-type ExternalQueryResultRowType = Object;
-
-export interface TaggedTemplateLiteralInvocationType<Result = QueryResultRowType> {
-  sql: string;
-  type: 'SLONIK_TOKEN_SQL';
-  values: readonly PrimitiveValueExpressionType[];
+export interface TaggedTemplateLiteralInvocationType<Result = QueryResultRowType> extends SqlSqlTokenType {
+  /** compile-time only property */
+  _result?: Result;
 }
 
 export type QueryMethodType<RowType, Result> = (
@@ -431,18 +402,16 @@ export type QueryMethodType<RowType, Result> = (
 ) => Promise<Result>;
 export type QueryMethodParams<T> = Parameters<QueryMethodType<T, never>>;
 
-export type DefaultQueryMethodType = Record<string, any>
-
-export type QueryAnyFirstFunctionType = <T = DefaultQueryMethodType>(...args: QueryMethodParams<T>) => Promise<Array<T[keyof T]>>;
-export type QueryAnyFunctionType = <T = DefaultQueryMethodType>(...args: QueryMethodParams<T>) => Promise<T[]>;
+export type QueryAnyFirstFunctionType = <T = ExternalQueryResultRowType>(...args: QueryMethodParams<T>) => Promise<Array<T[keyof T]>>;
+export type QueryAnyFunctionType = <T = ExternalQueryResultRowType>(...args: QueryMethodParams<T>) => Promise<readonly T[]>;
 export type QueryExistsFunctionType = (...args: QueryMethodParams<any>) => Promise<boolean>;
-export type QueryFunctionType = <T = DefaultQueryMethodType>(...args: QueryMethodParams<T>) => Promise<QueryResultType<T>>;
+export type QueryFunctionType = <T = ExternalQueryResultRowType>(...args: QueryMethodParams<T>) => Promise<QueryResultType<T>>;
 export type QueryManyFirstFunctionType = QueryAnyFirstFunctionType;
 export type QueryManyFunctionType = QueryAnyFunctionType;
-export type QueryMaybeOneFirstFunctionType = <T = DefaultQueryMethodType>(...args: QueryMethodParams<T>) => Promise<T[keyof T] | null>;
-export type QueryMaybeOneFunctionType = <T = DefaultQueryMethodType>(...args: QueryMethodParams<T>) => Promise<T | null>;
-export type QueryOneFirstFunctionType = <T = DefaultQueryMethodType>(...args: QueryMethodParams<T>) => Promise<T[keyof T]>;
-export type QueryOneFunctionType = <T = DefaultQueryMethodType>(...args: QueryMethodParams<T>) => Promise<T>;
+export type QueryMaybeOneFirstFunctionType = <T = ExternalQueryResultRowType>(...args: QueryMethodParams<T>) => Promise<T[keyof T] | null>;
+export type QueryMaybeOneFunctionType = <T = ExternalQueryResultRowType>(...args: QueryMethodParams<T>) => Promise<T | null>;
+export type QueryOneFirstFunctionType = <T = ExternalQueryResultRowType>(...args: QueryMethodParams<T>) => Promise<T[keyof T]>;
+export type QueryOneFunctionType = <T = ExternalQueryResultRowType>(...args: QueryMethodParams<T>) => Promise<T>;
 
 export type InterceptorType = {
   readonly afterPoolConnection?: (

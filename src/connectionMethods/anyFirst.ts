@@ -7,14 +7,14 @@ import {
   DataIntegrityError,
 } from '../errors';
 import type {
-  InternalQueryAnyFirstFunctionType,
+  InternalQueryMethods,
 } from '../types';
 import {
   createQueryId,
 } from '../utilities';
 import any from './any';
 
-const anyFirst: InternalQueryAnyFirstFunctionType = async (log, connection, clientConfigurationType, rawSql, values, inheritedQueryId) => {
+const anyFirst: InternalQueryMethods['anyFirst'] = async (log, connection, clientConfigurationType, rawSql, values, inheritedQueryId) => {
   const queryId = inheritedQueryId || createQueryId();
 
   const rows = await any(log, connection, clientConfigurationType, rawSql, values, queryId);
@@ -25,7 +25,7 @@ const anyFirst: InternalQueryAnyFirstFunctionType = async (log, connection, clie
 
   const firstRow = rows[0];
 
-  const keys = Object.keys(firstRow);
+  const keys = Object.keys(firstRow as object);
 
   if (keys.length !== 1) {
     log.error({

@@ -4,7 +4,7 @@ import {
   UnexpectedStateError,
 } from '../errors';
 import type {
-  InternalQueryOneFirstFunctionType,
+  InternalQueryMethods,
 } from '../types';
 import {
   createQueryId,
@@ -18,10 +18,11 @@ import one from './one';
  * @throws NotFoundError If query returns no rows.
  * @throws DataIntegrityError If query returns multiple rows.
  */
-const oneFirst: InternalQueryOneFirstFunctionType = async (log, connection, clientConfiguration, rawSql, values, inheritedQueryId) => {
+const oneFirst: InternalQueryMethods['oneFirst'] = async (log, connection, clientConfiguration, rawSql, values, inheritedQueryId) => {
   const queryId = inheritedQueryId || createQueryId();
 
-  const row = await one(log, connection, clientConfiguration, rawSql, values, queryId);
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const row: any = await one(log, connection, clientConfiguration, rawSql, values, queryId);
 
   const keys = Object.keys(row);
 

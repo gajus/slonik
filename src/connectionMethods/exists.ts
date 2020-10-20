@@ -4,14 +4,14 @@ import {
   DataIntegrityError,
 } from '../errors';
 import type {
-  InternalQueryExistsFunctionType,
+  InternalQueryMethods,
 } from '../types';
 import {
   createQueryId,
 } from '../utilities';
 import query from './query';
 
-const exists: InternalQueryExistsFunctionType = async (log, connection, clientConfiguration, rawSql, values, inheritedQueryId) => {
+const exists: InternalQueryMethods['exists'] = async (log, connection, clientConfiguration, rawSql, values, inheritedQueryId) => {
   const queryId = inheritedQueryId || createQueryId();
 
   const {
@@ -26,7 +26,7 @@ const exists: InternalQueryExistsFunctionType = async (log, connection, clientCo
     throw new DataIntegrityError();
   }
 
-  return Boolean(rows[0].exists);
+  return Boolean((rows[0] as Record<string, unknown>).exists);
 };
 
 export default exists;
