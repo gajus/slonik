@@ -20,6 +20,7 @@ import type {
   JsonSqlTokenType,
   ListSqlTokenType,
   PrimitiveValueExpressionType,
+  QueryResultRowType,
   SerializableValueType,
   SqlSqlTokenType,
   SqlTaggedTemplateType,
@@ -38,10 +39,10 @@ const log = Logger.child({
   namespace: 'sql',
 });
 
-export default () => {
+export default <T = QueryResultRowType>() => {
   /* eslint-disable complexity */
   // @ts-ignore
-  const sql: SqlTaggedTemplateType = (
+  const sql: SqlTaggedTemplateType<T> = (
     parts: ReadonlyArray<string>,
     ...values: ReadonlyArray<ValueExpressionType>
   // eslint-disable-next-line unicorn/consistent-function-scoping

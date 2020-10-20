@@ -320,8 +320,8 @@ export type NamedAssignmentType = {
 /**
  * see https://twitter.com/kuizinas/status/914139352908943360
  */
-export type SqlTaggedTemplateType = {
-  <T = QueryResultRowType>(template: TemplateStringsArray, ...vals: ValueExpressionType[]): TaggedTemplateLiteralInvocationType<T>;
+export type SqlTaggedTemplateType<T = QueryResultRowType> = {
+  <U = T>(template: TemplateStringsArray, ...vals: ValueExpressionType[]): TaggedTemplateLiteralInvocationType<U>;
   array: (
     values: ReadonlyArray<PrimitiveValueExpressionType>,
     memberType: TypeNameIdentifierType | SqlTokenType,
