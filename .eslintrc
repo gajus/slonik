@@ -15,6 +15,7 @@
     "linebreak-style": 0,
     // https://github.com/typescript-eslint/typescript-eslint/issues/1624#issuecomment-589731039
     "import/no-unresolved": 0,
+    "import/no-default-export": 1,
     "no-extra-parens": 0,
     "no-unused-vars": 0,
     "@typescript-eslint/no-unused-vars": 1,
@@ -47,6 +48,7 @@
       "files": "*.d.ts",
       "rules": {
         "filenames/match-regex": 0,
+        "import/no-default-export": 0,
         "import/unambiguous": 0
       }
     }
