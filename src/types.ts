@@ -1,6 +1,5 @@
 /* eslint-disable import/no-namespace */
 /* eslint-disable lines-around-comment */
-/* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable line-comment-position */
 /* eslint-disable no-inline-comments */
 /* eslint-disable max-len */
@@ -376,20 +375,20 @@ export type InternalStreamFunctionType = (
   QueryIdType,
 ) => Promise<Object>;
 
-export type InternalTransactionFunctionType = (
+export type InternalTransactionFunctionType = <T>(
   log: LoggerType,
   connection: InternalDatabaseConnectionType,
   clientConfiguration: ClientConfigurationType,
-  handler: TransactionFunctionType<any>,
-) => Promise<any>;
+  handler: TransactionFunctionType<T>,
+) => Promise<T>;
 
-export type InternalNestedTransactionFunctionType = (
+export type InternalNestedTransactionFunctionType = <T>(
   log: LoggerType,
   connection: InternalDatabaseConnectionType,
   clientConfiguration: ClientConfigurationType,
-  handler: TransactionFunctionType<any>,
+  handler: TransactionFunctionType<T>,
   transactionDepth: number,
-) => Promise<any>;
+) => Promise<T>;
 
 type ExternalQueryResultRowType = Record<string, QueryResultRowColumnType>;
 
@@ -406,7 +405,7 @@ export type QueryMethodParams<T> = Parameters<QueryMethodType<T, never>>;
 
 export type QueryAnyFirstFunctionType = <T = ExternalQueryResultRowType>(...args: QueryMethodParams<T>) => Promise<Array<T[keyof T]>>;
 export type QueryAnyFunctionType = <T = ExternalQueryResultRowType>(...args: QueryMethodParams<T>) => Promise<readonly T[]>;
-export type QueryExistsFunctionType = (...args: QueryMethodParams<any>) => Promise<boolean>;
+export type QueryExistsFunctionType = (...args: QueryMethodParams<unknown>) => Promise<boolean>;
 export type QueryFunctionType = <T = ExternalQueryResultRowType>(...args: QueryMethodParams<T>) => Promise<QueryResultType<T>>;
 export type QueryManyFirstFunctionType = QueryAnyFirstFunctionType;
 export type QueryManyFunctionType = QueryAnyFunctionType;
