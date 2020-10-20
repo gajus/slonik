@@ -2,8 +2,12 @@
 
 import test from 'ava';
 import sinon from 'sinon';
-import createSqlTag from '../../../../../src/factories/createSqlTag';
-import createPool from '../../../../helpers/createPool';
+import {
+  createSqlTag,
+} from '../../../../../src/factories/createSqlTag';
+import {
+  createPool,
+} from '../../../../helpers/createPool';
 
 const sql = createSqlTag();
 

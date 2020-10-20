@@ -1,20 +1,20 @@
 // @flow
 
 export {
-  default as createBigintTypeParser,
+  createBigintTypeParser,
 } from './createBigintTypeParser';
 export {
-  default as createDateTypeParser,
+  createDateTypeParser,
 } from './createDateTypeParser';
 export {
-  default as createIntervalTypeParser,
+  createIntervalTypeParser,
 } from './createIntervalTypeParser';
 export {
-  default as createNumericTypeParser,
+  createNumericTypeParser,
 } from './createNumericTypeParser';
 export {
-  default as createTimestampTypeParser,
+  createTimestampTypeParser,
 } from './createTimestampTypeParser';
 export {
-  default as createTimestampWithTimeZoneTypeParser,
+  createTimestampWithTimeZoneTypeParser,
 } from './createTimestampWithTimeZoneTypeParser';

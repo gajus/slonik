@@ -23,7 +23,7 @@ const Tokens = [
 ] as const;
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-export default (subject: any): subject is typeof Tokens[number] => {
+export const isSqlToken = (subject: any): subject is typeof Tokens[number] => {
   if (typeof subject !== 'object' || subject === null) {
     return false;
   }

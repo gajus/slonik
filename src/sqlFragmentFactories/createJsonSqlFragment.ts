@@ -6,7 +6,9 @@ import {
 import {
   serializeError,
 } from 'serialize-error';
-import Logger from '../Logger';
+import {
+  Logger,
+} from '../Logger';
 import {
   InvalidInputError,
 } from '../errors';
@@ -19,7 +21,7 @@ const log = Logger.child({
   namespace: 'createJsonSqlFragment',
 });
 
-export default (token: JsonSqlTokenType, greatestParameterPosition: number): SqlFragmentType => {
+export const createJsonSqlFragment = (token: JsonSqlTokenType, greatestParameterPosition: number): SqlFragmentType => {
   let value;
 
   if (token.value === undefined) {

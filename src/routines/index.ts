@@ -1,8 +1,8 @@
 // @flow
 
 export {
-  default as executeQuery,
+  executeQuery,
 } from './executeQuery';
 export {
-  default as createTypeOverrides,
+  createTypeOverrides,
 } from './createTypeOverrides';

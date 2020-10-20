@@ -6,8 +6,12 @@ import {
   DataIntegrityError,
   sql,
 } from '../../../src';
-import createMockPool from '../../../src/factories/createMockPool';
-import createMockQueryResult from '../../../src/factories/createMockQueryResult';
+import {
+  createMockPool,
+} from '../../../src/factories/createMockPool';
+import {
+  createMockQueryResult,
+} from '../../../src/factories/createMockQueryResult';
 
 test('executes a mock query (pool.query)', async (t) => {
   t.plan(4);

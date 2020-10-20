@@ -10,7 +10,9 @@ import type {
 import {
   createQueryId,
 } from '../utilities';
-import query from './query';
+import {
+  query,
+} from './query';
 
 /**
  * Makes a query and expects exactly one result.
@@ -18,7 +20,7 @@ import query from './query';
  * @throws NotFoundError If query returns no rows.
  * @throws DataIntegrityError If query returns multiple rows.
  */
-const one: InternalQueryMethods['one'] = async (log, connection, clientConfiguration, rawSql, values, inheritedQueryId) => {
+export const one: InternalQueryMethods['one'] = async (log, connection, clientConfiguration, rawSql, values, inheritedQueryId) => {
   const queryId = inheritedQueryId || createQueryId();
 
   const {
@@ -43,5 +45,3 @@ const one: InternalQueryMethods['one'] = async (log, connection, clientConfigura
 
   return rows[0];
 };
-
-export default one;

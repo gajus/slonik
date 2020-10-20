@@ -9,14 +9,16 @@ import type {
 import {
   createQueryId,
 } from '../utilities';
-import query from './query';
+import {
+  query,
+} from './query';
 
 /**
  * Makes a query and expects exactly one result.
  *
  * @throws DataIntegrityError If query returns multiple rows.
  */
-const maybeOne: InternalQueryMethods['maybeOne'] = async (log, connection, clientConfiguration, rawSql, values, inheritedQueryId) => {
+export const maybeOne: InternalQueryMethods['maybeOne'] = async (log, connection, clientConfiguration, rawSql, values, inheritedQueryId) => {
   const queryId = inheritedQueryId || createQueryId();
 
   const {
@@ -37,5 +39,3 @@ const maybeOne: InternalQueryMethods['maybeOne'] = async (log, connection, clien
 
   return rows[0];
 };
-
-export default maybeOne;

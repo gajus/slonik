@@ -1,6 +1,6 @@
 // @flow
 
-export default (identifierName: string): number => {
+export const countArrayDimensions = (identifierName: string): number => {
   let tail = identifierName.trim();
   let arrayDimensionCount = 0;
 

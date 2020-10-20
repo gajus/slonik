@@ -8,7 +8,7 @@ import type {
   SqlFragmentType,
 } from '../types';
 
-export default (token: SqlSqlTokenType, greatestParameterPosition: number): SqlFragmentType => {
+export const createSqlSqlFragment = (token: SqlSqlTokenType, greatestParameterPosition: number): SqlFragmentType => {
   let sql = '';
 
   let leastMatchedParameterPosition = Infinity;

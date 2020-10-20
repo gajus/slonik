@@ -9,14 +9,16 @@ import type {
 import {
   createQueryId,
 } from '../utilities';
-import query from './query';
+import {
+  query,
+} from './query';
 
 /**
  * Makes a query and expects at least 1 result.
  *
  * @throws NotFoundError If query returns no rows.
  */
-const many: InternalQueryMethods['many'] = async (log, connection, clientConfiguration, rawSql, values, inheritedQueryId) => {
+export const many: InternalQueryMethods['many'] = async (log, connection, clientConfiguration, rawSql, values, inheritedQueryId) => {
   const queryId = inheritedQueryId || createQueryId();
 
   const {
@@ -33,5 +35,3 @@ const many: InternalQueryMethods['many'] = async (log, connection, clientConfigu
 
   return rows;
 };
-
-export default many;

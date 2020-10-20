@@ -1,7 +1,7 @@
 // @flow
 
-import Logger from 'roarr';
+import roarr from 'roarr';
 
-export default Logger.child({
+export const Logger = roarr.child({
   package: 'slonik',
 });

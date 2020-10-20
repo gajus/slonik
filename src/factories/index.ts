@@ -1,26 +1,26 @@
 // @flow
 
 export {
-  default as createConnection,
+  createConnection,
 } from './createConnection';
 export {
-  default as createMockPool,
+  createMockPool,
 } from './createMockPool';
 export {
-  default as createMockQueryResult,
+  createMockQueryResult,
 } from './createMockQueryResult';
 export {
-  default as createPool,
+  createPool,
 } from './createPool';
 export {
-  default as createPrimitiveValueExpressions,
+  createPrimitiveValueExpressions,
 } from './createPrimitiveValueExpressions';
 export {
-  default as createSqlTag,
+  createSqlTag,
 } from './createSqlTag';
 export {
-  default as createSqlTokenSqlFragment,
+  createSqlTokenSqlFragment,
 } from './createSqlTokenSqlFragment';
 export {
-  default as createTypeParserPreset,
+  createTypeParserPreset,
 } from './createTypeParserPreset';

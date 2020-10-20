@@ -10,7 +10,7 @@ import type {
 } from '../types';
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-export default async (connection: InternalDatabaseConnectionType, typeParsers: ReadonlyArray<TypeParserType>): Promise<any> => {
+export const createTypeOverrides = async (connection: InternalDatabaseConnectionType, typeParsers: ReadonlyArray<TypeParserType>): Promise<any> => {
   const typeOverrides = new TypeOverrides();
 
   if (typeParsers.length === 0) {

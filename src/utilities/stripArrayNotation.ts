@@ -1,6 +1,6 @@
 // @flow
 
-export default (identifierName: string): string => {
+export const stripArrayNotation = (identifierName: string): string => {
   let tail = identifierName.trim();
 
   while (tail.endsWith('[]')) {

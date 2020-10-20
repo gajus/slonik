@@ -1,6 +1,8 @@
 // @flow
 
-import Logger from '../Logger';
+import {
+  Logger,
+} from '../Logger';
 import {
   InvalidInputError,
 } from '../errors';
@@ -33,13 +35,15 @@ import {
   isPrimitiveValueExpression,
   isSqlToken,
 } from '../utilities';
-import createSqlTokenSqlFragment from './createSqlTokenSqlFragment';
+import {
+  createSqlTokenSqlFragment,
+} from './createSqlTokenSqlFragment';
 
 const log = Logger.child({
   namespace: 'sql',
 });
 
-export default <T = QueryResultRowType>() => {
+export const createSqlTag = <T = QueryResultRowType>() => {
   /* eslint-disable complexity */
   // @ts-ignore
   const sql: SqlTaggedTemplateType<T> = (

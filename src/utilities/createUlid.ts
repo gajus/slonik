@@ -7,6 +7,6 @@ import {
 
 const ulid = ulidFactory(detectPrng(true));
 
-export default (): string => {
+export const createUlid = (): string => {
   return ulid();
 };

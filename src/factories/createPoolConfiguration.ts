@@ -6,12 +6,14 @@ import {
   ConnectionOptions,
   parse as parseConnectionString,
 } from 'pg-connection-string';
-import log from '../Logger';
+import {
+  Logger as log,
+} from '../Logger';
 import type {
   ClientConfigurationType,
 } from '../types';
 
-export default (connectionUri: string, clientConfiguration: ClientConfigurationType) => {
+export const createPoolConfiguration = (connectionUri: string, clientConfiguration: ClientConfigurationType) => {
   // @todo: make this not any. A few properties which don't exist on the interface are being set below
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const poolConfiguration: any = parseConnectionString(connectionUri);

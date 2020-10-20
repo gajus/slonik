@@ -16,7 +16,7 @@ import Cursor from 'pg-cursor';
  * @see https://github.com/brianc/node-pg-query-stream
  * @see https://github.com/brianc/node-pg-query-stream/issues/51
  */
-export default class QueryStream extends Readable {
+export class QueryStream extends Readable {
   _reading: boolean;
 
   _closed: boolean;

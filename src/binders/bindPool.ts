@@ -17,7 +17,7 @@ import type {
   TaggedTemplateLiteralInvocationType,
 } from '../types';
 
-export default (
+export const bindPool = (
   parentLog: LoggerType,
   pool: InternalDatabasePoolType,
   clientConfiguration: ClientConfigurationType,

@@ -8,9 +8,11 @@ import type {
   ClientConfigurationType,
   TypeParserType,
 } from '../types';
-import createTypeParserPreset from './createTypeParserPreset';
+import {
+  createTypeParserPreset,
+} from './createTypeParserPreset';
 
-export default (clientUserConfigurationInput?: ClientConfigurationInputType): ClientConfigurationType => {
+export const createClientConfiguration = (clientUserConfigurationInput?: ClientConfigurationInputType): ClientConfigurationType => {
   const typeParsers: readonly TypeParserType[] = [];
 
   const configuration = {

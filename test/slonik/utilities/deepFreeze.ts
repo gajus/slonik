@@ -1,7 +1,9 @@
 // @flow
 
 import test from 'ava';
-import deepFreeze from '../../../src/utilities/deepFreeze';
+import {
+  deepFreeze,
+} from '../../../src/utilities/deepFreeze';
 
 test('ignores primitives', (t) => {
   t.is(deepFreeze('foo'), 'foo');

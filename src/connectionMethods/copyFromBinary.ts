@@ -28,7 +28,7 @@ const bufferToStream = (buffer: Buffer) => {
   return stream;
 };
 
-const copyFromBinary: InternalCopyFromBinaryFunctionType = async (
+export const copyFromBinary: InternalCopyFromBinaryFunctionType = async (
   connectionLogger,
   connection,
   clientConfiguration,
@@ -68,5 +68,3 @@ const copyFromBinary: InternalCopyFromBinaryFunctionType = async (
     },
   );
 };
-
-export default copyFromBinary;

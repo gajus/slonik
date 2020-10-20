@@ -49,7 +49,7 @@ const terminatePoolConnection = (pool: any, connection: any, error: any) => {
 };
 
 // eslint-disable-next-line complexity
-const createConnection = async (
+export const createConnection = async (
   parentLog: LoggerType,
   pool: InternalDatabasePoolType,
   clientConfiguration: ClientConfigurationType,
@@ -198,5 +198,3 @@ const createConnection = async (
 
   return result;
 };
-
-export default createConnection;

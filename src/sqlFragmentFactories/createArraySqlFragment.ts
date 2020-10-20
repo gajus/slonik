@@ -16,7 +16,7 @@ import {
   isSqlToken,
 } from '../utilities';
 
-export default (token: ArraySqlTokenType, greatestParameterPosition: number): SqlFragmentType => {
+export const createArraySqlFragment = (token: ArraySqlTokenType, greatestParameterPosition: number): SqlFragmentType => {
   let placeholderIndex = greatestParameterPosition;
 
   for (const value of token.values) {

@@ -5,7 +5,7 @@ import type {
   QueryResultType,
 } from '../types';
 
-export default (rows: ReadonlyArray<QueryResultRowType>): QueryResultType<QueryResultRowType> => {
+export const createMockQueryResult = (rows: ReadonlyArray<QueryResultRowType>): QueryResultType<QueryResultRowType> => {
   return {
     command: 'SELECT',
     fields: [],

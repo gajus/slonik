@@ -17,7 +17,7 @@ import {
   createUlid,
 } from '../utilities';
 
-const transaction: InternalTransactionFunctionType = async (parentLog, connection, clientConfiguration, handler) => {
+export const transaction: InternalTransactionFunctionType = async (parentLog, connection, clientConfiguration, handler) => {
   if (connection.connection.slonik.transactionDepth !== null) {
     throw new UnexpectedStateError('Cannot use the same connection to start a new transaction before completing the last transaction.');
   }
@@ -69,5 +69,3 @@ const transaction: InternalTransactionFunctionType = async (parentLog, connectio
     connection.connection.slonik.transactionQueries = null;
   }
 };
-
-export default transaction;

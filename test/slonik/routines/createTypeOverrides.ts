@@ -1,7 +1,9 @@
 // @flow
 
 import test from 'ava';
-import createTypeOverrides from '../../../src/routines/createTypeOverrides';
+import {
+  createTypeOverrides,
+} from '../../../src/routines/createTypeOverrides';
 
 test('uses typname to retrieve pg_type oid', async (t) => {
   const connection = {

@@ -13,7 +13,7 @@ import {
   createUlid,
 } from '../utilities';
 
-const nestedTransaction: InternalNestedTransactionFunctionType = async (parentLog, connection, clientConfiguration, handler, transactionDepth) => {
+export const nestedTransaction: InternalNestedTransactionFunctionType = async (parentLog, connection, clientConfiguration, handler, transactionDepth) => {
   const newTransactionDepth = transactionDepth + 1;
 
   if (connection.connection.slonik.mock === false) {
@@ -44,5 +44,3 @@ const nestedTransaction: InternalNestedTransactionFunctionType = async (parentLo
     connection.connection.slonik.transactionDepth = newTransactionDepth - 1;
   }
 };
-
-export default nestedTransaction;

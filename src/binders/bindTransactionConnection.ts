@@ -24,7 +24,7 @@ import {
   mapTaggedTemplateLiteralInvocation,
 } from '../utilities';
 
-export default (
+export const bindTransactionConnection = (
   parentLog: LoggerType,
   connection: InternalDatabaseConnectionType,
   clientConfiguration: ClientConfigurationType,

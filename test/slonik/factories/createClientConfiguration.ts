@@ -1,8 +1,12 @@
 // @flow
 
 import test from 'ava';
-import createClientConfiguration from '../../../src/factories/createClientConfiguration';
-import createTypeParserPreset from '../../../src/factories/createTypeParserPreset';
+import {
+  createClientConfiguration,
+} from '../../../src/factories/createClientConfiguration';
+import {
+  createTypeParserPreset,
+} from '../../../src/factories/createTypeParserPreset';
 
 const defaultConfiguration = {
   captureStackTrace: true,

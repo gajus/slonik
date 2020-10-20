@@ -15,7 +15,7 @@ const isSubjectFreezable = (subject: any): boolean => {
  * @see https://github.com/substack/deep-freeze/pull/9
  */
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-const deepFreeze = (subject: any) => {
+export const deepFreeze = (subject: any) => {
   if (!isSubjectFreezable(subject)) {
     return subject;
   }
@@ -30,5 +30,3 @@ const deepFreeze = (subject: any) => {
 
   return subject;
 };
-
-export default deepFreeze;

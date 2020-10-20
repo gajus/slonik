@@ -109,7 +109,7 @@ const retryTransaction = async (
 };
 
 // eslint-disable-next-line complexity
-export default async (
+export const executeQuery = async (
   connectionLogger: LoggerType,
   connection: InternalDatabaseConnectionType,
   clientConfiguration: ClientConfigurationType,

@@ -8,7 +8,7 @@ const dateParser = (value: string) => {
   return value;
 };
 
-export default (): TypeParserType => {
+export const createDateTypeParser = (): TypeParserType => {
   return {
     name: 'date',
     parse: dateParser,

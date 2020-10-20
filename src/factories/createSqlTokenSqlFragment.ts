@@ -26,7 +26,7 @@ import type {
   SqlFragmentType,
 } from '../types';
 
-export default (token: SqlTokenType, greatestParameterPosition: number): SqlFragmentType => {
+export const createSqlTokenSqlFragment = (token: SqlTokenType, greatestParameterPosition: number): SqlFragmentType => {
   if (token.type === ArrayToken) {
     return createArraySqlFragment(token, greatestParameterPosition);
   } else if (token.type === BinaryToken) {

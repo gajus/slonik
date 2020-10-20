@@ -10,7 +10,7 @@ import {
 } from '../src/types';
 
 // this is never actually run - it's purely a type-level "test" to ensure the typings don't regress.
-export default async () => {
+export const types = async () => {
   const client = createPool('');
 
   const query = await client.query(sql`select true`);

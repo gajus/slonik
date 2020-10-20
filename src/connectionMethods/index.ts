@@ -1,44 +1,44 @@
 // @flow
 
 export {
-  default as any,
+  any,
 } from './any';
 export {
-  default as anyFirst,
+  anyFirst,
 } from './anyFirst';
 export {
-  default as exists,
+  exists,
 } from './exists';
 export {
-  default as copyFromBinary,
+  copyFromBinary,
 } from './copyFromBinary';
 export {
-  default as many,
+  many,
 } from './many';
 export {
-  default as manyFirst,
+  manyFirst,
 } from './manyFirst';
 export {
-  default as maybeOne,
+  maybeOne,
 } from './maybeOne';
 export {
-  default as maybeOneFirst,
+  maybeOneFirst,
 } from './maybeOneFirst';
 export {
-  default as nestedTransaction,
+  nestedTransaction,
 } from './nestedTransaction';
 export {
-  default as one,
+  one,
 } from './one';
 export {
-  default as oneFirst,
+  oneFirst,
 } from './oneFirst';
 export {
-  default as query,
+  query,
 } from './query';
 export {
-  default as stream,
+  stream,
 } from './stream';
 export {
-  default as transaction,
+  transaction,
 } from './transaction';

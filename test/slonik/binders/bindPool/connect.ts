@@ -2,8 +2,12 @@
 // @flow
 
 import test from 'ava';
-import createSqlTag from '../../../../src/factories/createSqlTag';
-import createPool from '../../../helpers/createPool';
+import {
+  createSqlTag,
+} from '../../../../src/factories/createSqlTag';
+import {
+  createPool,
+} from '../../../helpers/createPool';
 
 const sql = createSqlTag();
 

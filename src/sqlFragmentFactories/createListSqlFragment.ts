@@ -16,7 +16,7 @@ import {
   isSqlToken,
 } from '../utilities';
 
-export default (token: ListSqlTokenType, greatestParameterPosition: number): SqlFragmentType => {
+export const createListSqlFragment = (token: ListSqlTokenType, greatestParameterPosition: number): SqlFragmentType => {
   const values = [];
   const placeholders = [];
 

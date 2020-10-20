@@ -1,35 +1,35 @@
 // @flow
 
 export {
-  default as countArrayDimensions,
+  countArrayDimensions,
 } from './countArrayDimensions';
 export {
-  default as createQueryId,
+  createQueryId,
 } from './createQueryId';
 export {
-  default as createUlid,
+  createUlid,
 } from './createUlid';
 export {
-  default as deepFreeze,
+  deepFreeze,
 } from './deepFreeze';
 export {
-  default as encodeTupleList,
+  encodeTupleList,
 } from './encodeTupleList';
 export {
-  default as escapeIdentifier,
+  escapeIdentifier,
 } from './escapeIdentifier';
 export {
-  default as isPrimitiveValueExpression,
+  isPrimitiveValueExpression,
 } from './isPrimitiveValueExpression';
 export {
-  default as isSqlToken,
+  isSqlToken,
 } from './isSqlToken';
 export {
-  default as mapTaggedTemplateLiteralInvocation,
+  mapTaggedTemplateLiteralInvocation,
 } from './mapTaggedTemplateLiteralInvocation';
 export {
-  default as normaliseQueryValues,
+  normaliseQueryValues,
 } from './normaliseQueryValues';
 export {
-  default as stripArrayNotation,
+  stripArrayNotation,
 } from './stripArrayNotation';

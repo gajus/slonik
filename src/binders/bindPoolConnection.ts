@@ -28,7 +28,7 @@ import {
   mapTaggedTemplateLiteralInvocation,
 } from '../utilities';
 
-export default (
+export const bindPoolConnection = (
   parentLog: LoggerType,
   connection: InternalDatabaseConnectionType,
   clientConfiguration: ClientConfigurationType,
