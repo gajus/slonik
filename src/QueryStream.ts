@@ -6,8 +6,8 @@ import {
   Readable,
 } from 'stream';
 import {
-  map,
-} from 'inline-loops.macro';
+  QueryResult,
+} from 'pg';
 import Cursor from 'pg-cursor';
 
 // import Result from 'pg/lib/result';
@@ -86,7 +86,7 @@ export default class QueryStream extends Readable {
     }
     this._reading = true;
     const readAmount = Math.max(size, this.batchSize);
-    this.cursor.read(readAmount, (error: Error, rows: unknown[], result: any) => {
+    this.cursor.read(readAmount, (error: Error, rows: unknown[], result: QueryResult) => {
       if (this._closed) {
         return;
       }
@@ -115,7 +115,7 @@ export default class QueryStream extends Readable {
       for (const row of rows) {
         // @ts-ignore
         this.push({
-          fields: map(result.fields || [], (field) => {
+          fields: (result.fields || []).map((field) => {
             return {
               dataTypeId: field.dataTypeID,
               name: field.name,

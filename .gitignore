@@ -3,11 +3,9 @@ dist
 node_modules
 *.log
 .*
-!.babelrc
 !.editorconfig
 !.eslintignore
 !.eslintrc
-!.flowconfig
 !.gitignore
 !.npmignore
 !.travis.yml

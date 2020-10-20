@@ -4,9 +4,6 @@ import {
   getStackTrace,
 } from 'get-stack-trace';
 import {
-  map,
-} from 'inline-loops.macro';
-import {
   serializeError,
 } from 'serialize-error';
 import {
@@ -140,7 +137,7 @@ export default async (
   if (clientConfiguration.captureStackTrace) {
     const callSites = await getStackTrace();
 
-    stackTrace = map(callSites, (callSite) => {
+    stackTrace = callSites.map((callSite) => {
       return {
         columnNumber: callSite.columnNumber,
         fileName: callSite.fileName,
@@ -319,7 +316,7 @@ export default async (
         const fields = result.fields;
 
         // eslint-disable-next-line no-loop-func
-        const rows: ReadonlyArray<QueryResultRowType> = map(result.rows, (row) => {
+        const rows: ReadonlyArray<QueryResultRowType> = result.rows.map((row) => {
           return transformRow(executionContext, actualQuery, row, fields);
         });
 

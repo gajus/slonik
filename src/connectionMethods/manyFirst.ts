@@ -1,9 +1,6 @@
 // @flow
 
 import {
-  map,
-} from 'inline-loops.macro';
-import {
   DataIntegrityError,
 } from '../errors';
 import type {
@@ -39,7 +36,7 @@ const manyFirst: InternalQueryMethods['manyFirst'] = async (log, connection, cli
 
   const firstColumnName = keys[0];
 
-  return map(rows, (row) => {
+  return (rows as Record<string, unknown>[]).map((row) => {
     return row[firstColumnName];
   });
 };
