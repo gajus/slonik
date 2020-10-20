@@ -191,7 +191,7 @@ const getFooIdByBar = async (connection: DatabaseConnectionType, bar: string): P
 
 ```js
 const getFooIdByBar = (connection: DatabaseConnectionType, bar: string): Promise<DatabaseRecordIdType> => {
-  return connection.oneFirst<DatabaseRecordType>(sql`
+  return connection.oneFirst<number>(sql`
     SELECT id
     FROM foo
     WHERE bar = ${bar}
