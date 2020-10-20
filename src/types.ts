@@ -55,7 +55,7 @@ export type FieldType = {
   readonly name: string;
 };
 
-type NoticeType = {
+export type NoticeType = {
   readonly code: string;
   readonly length: number;
   readonly message: string;

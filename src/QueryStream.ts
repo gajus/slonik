@@ -86,7 +86,7 @@ export default class QueryStream extends Readable {
     }
     this._reading = true;
     const readAmount = Math.max(size, this.batchSize);
-    this.cursor.read(readAmount, (error, rows, result) => {
+    this.cursor.read(readAmount, (error: Error, rows: unknown[], result: any) => {
       if (this._closed) {
         return;
       }

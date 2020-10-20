@@ -1,5 +1,10 @@
 // @flow
 
+// eslint-disable-next-line fp/no-events
+import type {
+  EventEmitter,
+} from 'events';
+import type pgTypes from 'pg';
 import {
   serializeError,
 } from 'serialize-error';
@@ -47,7 +52,7 @@ export default (
     poolLog.debug('pg-native module is not found');
   }
 
-  let pg;
+  let pg: typeof pgTypes.native;
   let native = false;
 
   if (clientConfiguration.preferNativeBindings && pgNativeBindingsAreAvailable) {
@@ -69,7 +74,11 @@ export default (
     pg = require('pg');
   }
 
-  const pool = new pg.Pool(poolConfiguration);
+  type ModifiedPool = Omit<pgTypes.Pool, 'on'> & EventEmitter & {
+    slonik?: {};
+  }
+  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+  const pool: ModifiedPool = new pg!.Pool(poolConfiguration as unknown as pgTypes.PoolConfig);
 
   pool.slonik = {
     ended: false,
@@ -89,7 +98,8 @@ export default (
   });
 
   // istanbul ignore next
-  pool.on('connect', (client) => {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  pool.on('connect', (client: EventEmitter & {connection: any; processID: string}) => {
     client.connection = client.connection || {};
 
     client.connection.slonik = {

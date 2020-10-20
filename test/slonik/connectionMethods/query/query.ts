@@ -57,7 +57,7 @@ test('executes the query and returns the result', async (t) => {
 test('adds notices observed during the query execution to the query result object', async (t) => {
   const pool = createPool();
 
-  let resolveQuery;
+  let resolveQuery: any;
 
   pool.querySpy.reset();
   pool.querySpy.callsFake(() => {

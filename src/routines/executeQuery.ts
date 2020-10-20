@@ -24,10 +24,12 @@ import type {
   ClientConfigurationType,
   InternalDatabaseConnectionType,
   LoggerType,
+  NoticeType,
   PrimitiveValueExpressionType,
   QueryContextType,
   QueryIdType,
   QueryResultRowType,
+  QueryResultType,
   QueryType,
 } from '../types';
 import {
@@ -35,13 +37,15 @@ import {
   normaliseQueryValues,
 } from '../utilities';
 
+type GenericQueryResult = QueryResultType<QueryResultRowType>;
+
 type ExecutionRoutineType = (
   connection: InternalDatabaseConnectionType,
   sql: string,
   values: ReadonlyArray<PrimitiveValueExpressionType>,
   queryContext: QueryContextType,
   query: QueryType,
-) => Promise<unknown>;
+) => Promise<GenericQueryResult>;
 
 type TransactionQueryType = {
   readonly executionContext: QueryContextType;
@@ -59,7 +63,7 @@ const retryTransaction = async (
   transactionQueries: ReadonlyArray<TransactionQueryType>,
   retryLimit: number,
 ) => {
-  let result;
+  let result: GenericQueryResult;
   let remainingRetries = retryLimit;
   let attempt = 0;
 
@@ -103,7 +107,8 @@ const retryTransaction = async (
     }
   }
 
-  return result;
+  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+  return result!;
 };
 
 // eslint-disable-next-line complexity
@@ -183,7 +188,7 @@ export default async (
     }
   }
 
-  let result;
+  let result: GenericQueryResult | null;
 
   for (const interceptor of clientConfiguration.interceptors) {
     if (interceptor.beforeQueryExecution) {
@@ -197,9 +202,9 @@ export default async (
     }
   }
 
-  const notices = [];
+  const notices: NoticeType[] = [];
 
-  const noticeListener = (notice) => {
+  const noticeListener = (notice: NoticeType) => {
     notices.push(notice);
   };
 
@@ -217,6 +222,7 @@ export default async (
           });
         }
 
+        // @ts-expect-error
         result = await executionRoutine(
           connection,
           actualQuery.sql,

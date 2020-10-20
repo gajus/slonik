@@ -29,7 +29,7 @@ export default (
     tupleStream
       .pipe(encode)
       .pipe(concatStream)
-      .on('error', (error) => {
+      .on('error', (error: Error) => {
         reject(error);
       });
 

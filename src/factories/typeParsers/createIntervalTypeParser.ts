@@ -9,7 +9,7 @@ import type {
   TypeParserType,
 } from '../../types';
 
-const intervalParser = (value) => {
+const intervalParser = (value: string) => {
   return value === null ? value : durationToSeconds(parseIsoDuration(parseInterval(value).toISOString()));
 };
 

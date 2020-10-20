@@ -21,7 +21,8 @@ export default async (connection: InternalDatabaseConnectionType, typeParsers: R
     return typeParser.name;
   });
 
-  const postgresTypes = (
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const postgresTypes: any[] = (
     await connection.query('SELECT oid, typarray, typname FROM pg_type WHERE typname = ANY($1::text[])', [
       typeNames,
     ])

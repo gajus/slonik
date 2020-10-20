@@ -62,6 +62,7 @@ export default (token: UnnestSqlTokenType, greatestParameterPosition: number): S
         throw new InvalidInputError('Invalid unnest tuple member type. Must be a primitive value expression.');
       }
 
+      // @ts-expect-error
       unnestBindings[tupleColumnIndex++].push(tupleValue);
     }
   }

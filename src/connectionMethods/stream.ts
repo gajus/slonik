@@ -2,6 +2,7 @@
 
 /* eslint-disable promise/prefer-await-to-callbacks */
 
+import type Stream from 'stream';
 import through from 'through2';
 import QueryStream from '../QueryStream';
 import {
@@ -11,6 +12,7 @@ import {
   executeQuery,
 } from '../routines';
 import type {
+  InterceptorType,
   InternalStreamFunctionType,
 } from '../types';
 
@@ -29,9 +31,9 @@ const stream: InternalStreamFunctionType = async (connectionLogger, connection, 
 
       const query = new QueryStream(finalSql, finalValues);
 
-      const queryStream = finalConnection.query(query);
+      const queryStream: Stream = finalConnection.query(query);
 
-      const rowTransformers = [];
+      const rowTransformers: NonNullable<InterceptorType['transformRow']>[] = [];
 
       for (const interceptor of clientConfiguration.interceptors) {
         if (interceptor.transformRow) {
@@ -40,11 +42,12 @@ const stream: InternalStreamFunctionType = async (connectionLogger, connection, 
       }
 
       return new Promise((resolve, reject) => {
-        queryStream.on('error', (error) => {
+        queryStream.on('error', (error: Error) => {
           reject(error);
         });
 
-        const transformedStream = queryStream.pipe(through.obj(function (datum, enc, callback) {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const transformedStream = queryStream.pipe(through.obj(function (datum: any, enc: any, callback: any) {
           let finalRow = datum.row;
 
           if (rowTransformers.length) {

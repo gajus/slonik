@@ -19,7 +19,7 @@ import {
   encodeTupleList,
 } from '../utilities';
 
-const bufferToStream = (buffer) => {
+const bufferToStream = (buffer: Buffer) => {
   const stream = new Duplex();
 
   stream.push(buffer);
@@ -56,7 +56,7 @@ const copyFromBinary: InternalCopyFromBinaryFunctionType = async (
       bufferToStream(payloadBuffer).pipe(copyFromBinaryStream);
 
       return new Promise((resolve, reject) => {
-        copyFromBinaryStream.on('error', (error) => {
+        copyFromBinaryStream.on('error', (error: Error) => {
           reject(error);
         });
 

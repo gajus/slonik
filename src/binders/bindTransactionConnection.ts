@@ -31,7 +31,7 @@ export default (
   clientConfiguration: ClientConfigurationType,
   transactionDepth: number,
 ): DatabaseTransactionConnectionType => {
-  const mapInvocation = (fn) => {
+  const mapInvocation = (fn: Parameters<typeof mapTaggedTemplateLiteralInvocation>[0]) => {
     const bound = mapTaggedTemplateLiteralInvocation(fn);
 
     return (taggedQuery: TaggedTemplateLiteralInvocationType) => {

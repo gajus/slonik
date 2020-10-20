@@ -34,7 +34,8 @@ type ConnectionHandlerType = (
 
 type PoolHandlerType = (pool: DatabasePoolType) => Promise<unknown>;
 
-const terminatePoolConnection = (pool, connection, error) => {
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const terminatePoolConnection = (pool: any, connection: any, error: any) => {
   if (!connection.connection.slonik.terminated) {
     connection.connection.slonik.terminated = error;
   }
@@ -56,7 +57,8 @@ const createConnection = async (
   connectionHandler: ConnectionHandlerType,
   poolHandler: PoolHandlerType,
   query: TaggedTemplateLiteralInvocationType | null = null,
-) => {
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+): Promise<any> => {
   if (pool.slonik.ended) {
     throw new UnexpectedStateError('Connection pool shutdown has been already initiated. Cannot create a new connection.');
   }

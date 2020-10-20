@@ -51,11 +51,11 @@ export default (clientConfiguration: ClientConfigurationInputType = defaultConfi
     },
   };
 
-  const connectSpy = sinon.spy(internalPool, 'connect');
-  const endSpy = sinon.spy(connection, 'end');
-  const querySpy = sinon.stub(connection, 'query').returns({});
-  const releaseSpy = sinon.spy(connection, 'release');
-  const removeSpy = sinon.spy(internalPool, '_remove');
+  const connectSpy: sinon.SinonSpy = sinon.spy(internalPool, 'connect');
+  const endSpy: sinon.SinonSpy = sinon.spy(connection, 'end');
+  const querySpy: sinon.SinonStub = sinon.stub(connection, 'query').returns({});
+  const releaseSpy: sinon.SinonSpy = sinon.spy(connection, 'release');
+  const removeSpy: sinon.SinonSpy = sinon.spy(internalPool, '_remove');
 
   const pool = bindPool(
     log,
