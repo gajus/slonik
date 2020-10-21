@@ -1,5 +1,3 @@
-// @flow
-
 import {
   Readable,
 } from 'stream';
@@ -57,7 +55,6 @@ export const encodeTupleList = (
         };
       }
 
-      // @ts-ignore
       tupleStream.push(payload);
     }
 

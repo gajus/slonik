@@ -1,5 +1,3 @@
-// @flow
-
 import test from 'ava';
 import delay from 'delay';
 import sinon from 'sinon';
@@ -22,7 +20,7 @@ const sql = createSqlTag();
 const createErrorWithCode = (code: string) => {
   const error = new Error('foo');
 
-  // @ts-ignore
+  // @ts-expect-error
   error.code = code;
 
   return error;

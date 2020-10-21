@@ -21,7 +21,7 @@ after_success:
   - NODE_ENV=test nyc npm run test
   - nyc report --reporter=text-lcov | coveralls
   - npm run build
-  # - semantic-release
+  - semantic-release
 notifications:
   email: false
 sudo: false

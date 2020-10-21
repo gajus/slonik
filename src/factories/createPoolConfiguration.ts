@@ -1,5 +1,3 @@
-// @flow
-
 /* eslint-disable id-match */
 
 import {

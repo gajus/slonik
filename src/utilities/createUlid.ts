@@ -1,5 +1,3 @@
-// @flow
-
 import {
   factory as ulidFactory,
   detectPrng,

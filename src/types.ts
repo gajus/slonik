@@ -3,7 +3,6 @@
 /* eslint-disable line-comment-position */
 /* eslint-disable no-inline-comments */
 /* eslint-disable max-len */
-// @flow
 
 /* eslint-disable no-use-before-define, import/exports-last */
 
@@ -122,16 +121,14 @@ export type ClientConfigurationType = {
 
 export type StreamFunctionType = (
   sql: TaggedTemplateLiteralInvocationType,
-  streamHandler: // @ts-ignore
-  StreamHandlerType,
+  streamHandler: StreamHandlerType,
 ) => Promise<null | object>; // bindPoolConnection returns an object
 
 export type QueryCopyFromBinaryFunctionType = (
   streamQuery: TaggedTemplateLiteralInvocationType,
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   tupleList: ReadonlyArray<ReadonlyArray<any>>,
-  columnTypes: // @ts-ignore
-  ReadonlyArray<TypeNameIdentifierType>,
+  columnTypes: ReadonlyArray<TypeNameIdentifierType>,
 ) => Promise<null | object>; // bindPoolConnection returns an object
 
 type CommonQueryMethodsType = {
@@ -360,8 +357,7 @@ export type InternalCopyFromBinaryFunctionType = (
   sql: string,
   boundValues: ReadonlyArray<PrimitiveValueExpressionType>, // eslint-disable-next-line @typescript-eslint/no-explicit-any
   tupleList: ReadonlyArray<ReadonlyArray<any>>,
-  columnTypes: // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  ReadonlyArray<TypeNameIdentifierType>,
+  columnTypes: ReadonlyArray<TypeNameIdentifierType>,
 ) => Promise<Object>;
 
 export type InternalStreamFunctionType = (
@@ -371,8 +367,7 @@ export type InternalStreamFunctionType = (
   sql: string,
   values: ReadonlyArray<PrimitiveValueExpressionType>,
   streamHandler: StreamHandlerType,
-  uid?: // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  QueryIdType,
+  uid?: QueryIdType,
 ) => Promise<Object>;
 
 export type InternalTransactionFunctionType = <T>(

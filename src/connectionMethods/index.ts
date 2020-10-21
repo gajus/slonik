@@ -1,5 +1,3 @@
-// @flow
-
 export {
   any,
 } from './any';

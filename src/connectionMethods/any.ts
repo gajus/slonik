@@ -1,5 +1,3 @@
-// @flow
-
 import type {
   InternalQueryMethods,
 } from '../types';

@@ -1,5 +1,3 @@
-// @flow
-
 export {
   createConnection,
 } from './createConnection';

@@ -1,5 +1,3 @@
-// @flow
-
 import {
   serializeError,
 } from 'serialize-error';

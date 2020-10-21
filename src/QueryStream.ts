@@ -1,5 +1,3 @@
-// @flow
-
 /* eslint-disable fp/no-class, fp/no-this, id-match, @typescript-eslint/no-explicit-any, promise/prefer-await-to-callbacks */
 
 import {
@@ -42,7 +40,7 @@ export class QueryStream extends Readable {
 
   handleError: Function;
 
-  // @ts-ignore
+  // @ts-expect-error
   constructor (text, values, options?) {
     super({
       objectMode: true,
@@ -72,6 +70,7 @@ export class QueryStream extends Readable {
   close (callback: Function) {
     this._closed = true;
 
+    // eslint-disable-next-line unicorn/consistent-function-scoping
     const close = () => {
       this.emit('close');
     };
@@ -79,7 +78,6 @@ export class QueryStream extends Readable {
     this.cursor.close(callback || close);
   }
 
-  // @ts-ignore
   _read (size: number) {
     if (this._reading || this._closed) {
       return;
@@ -113,7 +111,6 @@ export class QueryStream extends Readable {
       this._reading = false;
 
       for (const row of rows) {
-        // @ts-ignore
         this.push({
           fields: (result.fields || []).map((field) => {
             return {

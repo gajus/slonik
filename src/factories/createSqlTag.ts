@@ -1,5 +1,3 @@
-// @flow
-
 import {
   Logger,
 } from '../Logger';
@@ -45,7 +43,6 @@ const log = Logger.child({
 
 export const createSqlTag = <T = QueryResultRowType>() => {
   /* eslint-disable complexity */
-  // @ts-ignore
   const sql: SqlTaggedTemplateType<T> = (
     parts: ReadonlyArray<string>,
     ...values: ReadonlyArray<ValueExpressionType>
@@ -78,7 +75,7 @@ export const createSqlTag = <T = QueryResultRowType>() => {
 
         parameterValues.push(token);
       } else if (isSqlToken(token)) {
-        // @ts-ignore
+        // @ts-expect-error
         const sqlFragment = createSqlTokenSqlFragment(token, parameterValues.length);
 
         rawSql += sqlFragment.sql;

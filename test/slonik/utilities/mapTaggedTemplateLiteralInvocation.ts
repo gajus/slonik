@@ -1,5 +1,3 @@
-// @flow
-
 import test from 'ava';
 import sinon from 'sinon';
 import {
@@ -35,7 +33,7 @@ test('sql tag invocation with expressions', (t) => {
 
 test('throws an error if invoked with a string', (t) => {
   const error = t.throws(() => {
-    // @ts-ignore
+    // @ts-expect-error
     mapTaggedTemplateLiteralInvocation()('foo');
   });
 

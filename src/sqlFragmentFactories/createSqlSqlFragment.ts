@@ -1,5 +1,3 @@
-// @flow
-
 import {
   UnexpectedStateError,
 } from '../errors';

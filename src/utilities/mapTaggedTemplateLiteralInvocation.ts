@@ -1,5 +1,3 @@
-// @flow
-
 import {
   SqlToken,
 } from '../tokens';

@@ -526,7 +526,7 @@ Note: `pool.end()` does not terminate active connections/ transactions.
 <a name="slonik-usage-api"></a>
 ### API
 
-```js
+```typescript
 /**
  * @param connectionUri PostgreSQL [Connection URI](https://www.postgresql.org/docs/current/libpq-connect.html#LIBPQ-CONNSTRING).
  */
@@ -548,20 +548,19 @@ createPool(
  * @property transactionRetryLimit Number of times a transaction failing with Transaction Rollback class error is retried. (Default: 5)
  * @property typeParsers An array of [Slonik type parsers](https://github.com/gajus/slonik#slonik-type-parsers).
  */
-type ClientConfigurationInputType = {|
-  +captureStackTrace?: boolean,
-  +connectionRetryLimit?: number,
-  +connectionTimeout?: number | 'DISABLE_TIMEOUT',
-  +idleInTransactionSessionTimeout?: number | 'DISABLE_TIMEOUT',
-  +idleTimeout?: number | 'DISABLE_TIMEOUT',
-  +interceptors?: $ReadOnlyArray<InterceptorType>,
-  +maximumPoolSize?: number,
-  +preferNativeBindings?: boolean,
-  +statementTimeout?: number | 'DISABLE_TIMEOUT',
-  +transactionRetryLimit?: number,
-  +typeParsers?: $ReadOnlyArray<TypeParserType>,
-|};
-
+export type ClientConfigurationInputType = {
+  captureStackTrace?: boolean;
+  connectionRetryLimit?: number;
+  connectionTimeout?: number | 'DISABLE_TIMEOUT';
+  idleInTransactionSessionTimeout?: number | 'DISABLE_TIMEOUT';
+  idleTimeout?: number | 'DISABLE_TIMEOUT';
+  interceptors?: ReadonlyArray<InterceptorType>;
+  maximumPoolSize?: number;
+  preferNativeBindings?: boolean;
+  statementTimeout?: number | 'DISABLE_TIMEOUT';
+  transactionRetryLimit?: number;
+  typeParsers?: ReadonlyArray<TypeParserType>;
+};
 ```
 
 Example:

@@ -1,5 +1,3 @@
-// @flow
-
 import test from 'ava';
 import {
   createSqlTag,
@@ -99,7 +97,6 @@ test('recognizes an array of arrays array', (t) => {
 
 test('throws if tuple member is not a primitive value expression', (t) => {
   const error = t.throws(() => {
-    // @ts-ignore
     sql`SELECT * FROM ${sql.unnest([[() => {}, 2, 3], [4, 5]], ['int4', 'int4', 'int4'])}`;
   });
 
@@ -126,7 +123,7 @@ test('the resulting object is immutable', (t) => {
   const token = sql.unnest([[1, 2, 3], [4, 5, 6]], ['int4', 'int4', 'int4']);
 
   t.throws(() => {
-    // @ts-ignore
+    // @ts-expect-error
     token.foo = 'bar';
   });
 });

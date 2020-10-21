@@ -1,5 +1,3 @@
-// @flow
-
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const isSubjectFreezable = (subject: any): boolean => {
   return Boolean(

@@ -1,5 +1,3 @@
-// @flow
-
 import {
   InvalidInputError,
 } from '../errors';
@@ -16,7 +14,7 @@ export const createBinarySqlFragment = (token: BinarySqlTokenType, greatestParam
   return {
     sql: '$' + (greatestParameterPosition + 1),
     values: [
-      // @ts-ignore
+      // @ts-expect-error
       token.data,
     ],
   };
