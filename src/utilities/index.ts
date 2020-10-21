@@ -1,5 +1,3 @@
-// @flow
-
 export {
   countArrayDimensions,
 } from './countArrayDimensions';

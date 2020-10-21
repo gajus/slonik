@@ -1,5 +1,3 @@
-// @flow
-
 export {
   createArraySqlFragment,
 } from './createArraySqlFragment';

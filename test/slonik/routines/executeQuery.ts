@@ -1,5 +1,3 @@
-// @flow
-
 import anyTest, {
   beforeEach as anyBeforeEach,
   BeforeInterface,

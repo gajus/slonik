@@ -1,5 +1,3 @@
-// @flow
-
 import {
   Readable,
 } from 'stream';

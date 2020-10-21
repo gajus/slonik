@@ -1,5 +1,3 @@
-// @flow
-
 import type {
   QueryContextType,
 } from '../../src/types';

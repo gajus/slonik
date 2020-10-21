@@ -1,5 +1,3 @@
-// @flow
-
 export const stripArrayNotation = (identifierName: string): string => {
   let tail = identifierName.trim();
 

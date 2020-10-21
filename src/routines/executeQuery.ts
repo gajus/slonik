@@ -1,5 +1,3 @@
-// @flow
-
 import {
   getStackTrace,
 } from 'get-stack-trace';

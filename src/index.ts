@@ -1,5 +1,3 @@
-// @flow
-
 import {
   createSqlTag,
 } from './factories';

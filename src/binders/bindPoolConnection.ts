@@ -1,5 +1,3 @@
-// @flow
-
 import {
   assertSqlSqlToken,
 } from '../assertions';

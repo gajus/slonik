@@ -1,5 +1,3 @@
-// @flow
-
 import TypeOverrides from 'pg/lib/type-overrides';
 import {
   parse as parseArray,

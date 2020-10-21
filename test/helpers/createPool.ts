@@ -1,5 +1,3 @@
-// @flow
-
 /* eslint-disable fp/no-events */
 
 import EventEmitter from 'events';

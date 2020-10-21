@@ -1,5 +1,3 @@
-// @flow
-
 import type {
   ClientConfigurationType,
 } from '../../src/types';

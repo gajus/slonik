@@ -1,5 +1,3 @@
-// @flow
-
 import {
   parse as parseIsoDuration,
   toSeconds as durationToSeconds,

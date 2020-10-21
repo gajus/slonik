@@ -1,5 +1,3 @@
-// @flow
-
 export {
   createBigintTypeParser,
 } from './createBigintTypeParser';

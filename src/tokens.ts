@@ -1,5 +1,3 @@
-// @flow
-
 export const ArrayToken = 'SLONIK_TOKEN_ARRAY';
 export const BinaryToken = 'SLONIK_TOKEN_BINARY';
 export const ComparisonPredicateToken = 'SLONIK_TOKEN_COMPARISON_PREDICATE';

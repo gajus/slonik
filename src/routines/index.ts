@@ -1,5 +1,3 @@
-// @flow
-
 export {
   executeQuery,
 } from './executeQuery';

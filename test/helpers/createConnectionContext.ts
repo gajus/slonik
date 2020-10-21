@@ -1,5 +1,3 @@
-// @flow
-
 import type {
   ConnectionContextType,
 } from '../../src/types';

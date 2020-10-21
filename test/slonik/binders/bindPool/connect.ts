@@ -1,5 +1,4 @@
 /* eslint-disable ava/max-asserts */
-// @flow
 
 import test from 'ava';
 import {

@@ -1,5 +1,3 @@
-// @flow
-
 import type {
   QueryIdType,
 } from '../types';

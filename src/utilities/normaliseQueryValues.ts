@@ -1,5 +1,3 @@
-// @flow
-
 import type {
   PrimitiveValueExpressionType,
 } from '../types';

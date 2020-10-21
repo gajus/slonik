@@ -1,5 +1,3 @@
-// @flow
-
 export {
   bindPool,
 } from './bindPool';

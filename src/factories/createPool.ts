@@ -1,5 +1,3 @@
-// @flow
-
 // eslint-disable-next-line fp/no-events
 import type {
   EventEmitter,

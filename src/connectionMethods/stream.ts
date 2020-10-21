@@ -1,5 +1,3 @@
-// @flow
-
 /* eslint-disable promise/prefer-await-to-callbacks */
 
 import type Stream from 'stream';

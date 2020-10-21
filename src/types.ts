@@ -3,7 +3,6 @@
 /* eslint-disable line-comment-position */
 /* eslint-disable no-inline-comments */
 /* eslint-disable max-len */
-// @flow
 
 /* eslint-disable no-use-before-define, import/exports-last */
 
