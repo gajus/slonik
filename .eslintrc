@@ -13,6 +13,7 @@
     "@typescript-eslint/no-explicit-any": 1,
     "@typescript-eslint/no-non-null-assertion": 1,
     "@typescript-eslint/prefer-ts-expect-error": 1,
+    "unicorn/prevent-abbreviations": 0,
     "no-undef": 0,
     "linebreak-style": 0,
     // https://github.com/typescript-eslint/typescript-eslint/issues/1624#issuecomment-589731039

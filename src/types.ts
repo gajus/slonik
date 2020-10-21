@@ -396,18 +396,18 @@ export type QueryMethodType<RowType, Result> = (
   sql: TaggedTemplateLiteralInvocationType<RowType>,
   values?: PrimitiveValueExpressionType[],
 ) => Promise<Result>;
-export type QueryMethodParameters<T> = Parameters<QueryMethodType<T, never>>;
+export type QueryMethodParams<T> = Parameters<QueryMethodType<T, never>>;
 
-export type QueryAnyFirstFunctionType = <T = QueryResultRowColumnType, Row = Record<string, T>>(...args: QueryMethodParameters<Row>) => Promise<Array<Row[keyof Row]>>;
-export type QueryAnyFunctionType = <T = ExternalQueryResultRowType>(...args: QueryMethodParameters<T>) => Promise<readonly T[]>;
-export type QueryExistsFunctionType = (...args: QueryMethodParameters<unknown>) => Promise<boolean>;
-export type QueryFunctionType = <T = ExternalQueryResultRowType>(...args: QueryMethodParameters<T>) => Promise<QueryResultType<T>>;
+export type QueryAnyFirstFunctionType = <T = QueryResultRowColumnType, Row = Record<string, T>>(...args: QueryMethodParams<Row>) => Promise<Array<Row[keyof Row]>>;
+export type QueryAnyFunctionType = <T = ExternalQueryResultRowType>(...args: QueryMethodParams<T>) => Promise<readonly T[]>;
+export type QueryExistsFunctionType = (...args: QueryMethodParams<unknown>) => Promise<boolean>;
+export type QueryFunctionType = <T = ExternalQueryResultRowType>(...args: QueryMethodParams<T>) => Promise<QueryResultType<T>>;
 export type QueryManyFirstFunctionType = QueryAnyFirstFunctionType;
 export type QueryManyFunctionType = QueryAnyFunctionType;
-export type QueryMaybeOneFirstFunctionType = <T = QueryResultRowColumnType, Row = Record<string, T>>(...args: QueryMethodParameters<Row>) => Promise<Row[keyof Row] | null>;
-export type QueryMaybeOneFunctionType = <T = ExternalQueryResultRowType>(...args: QueryMethodParameters<T>) => Promise<T | null>;
-export type QueryOneFirstFunctionType = <T = QueryResultRowColumnType, Row = Record<string, T>>(...args: QueryMethodParameters<Row>) => Promise<Row[keyof Row]>;
-export type QueryOneFunctionType = <T = ExternalQueryResultRowType>(...args: QueryMethodParameters<T>) => Promise<T>;
+export type QueryMaybeOneFirstFunctionType = <T = QueryResultRowColumnType, Row = Record<string, T>>(...args: QueryMethodParams<Row>) => Promise<Row[keyof Row] | null>;
+export type QueryMaybeOneFunctionType = <T = ExternalQueryResultRowType>(...args: QueryMethodParams<T>) => Promise<T | null>;
+export type QueryOneFirstFunctionType = <T = QueryResultRowColumnType, Row = Record<string, T>>(...args: QueryMethodParams<Row>) => Promise<Row[keyof Row]>;
+export type QueryOneFunctionType = <T = ExternalQueryResultRowType>(...args: QueryMethodParams<T>) => Promise<T>;
 
 export type InterceptorType = {
   readonly afterPoolConnection?: (
