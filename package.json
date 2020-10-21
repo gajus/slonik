@@ -109,5 +109,5 @@
     "lint": "npm run eslint ./src ./test && npm run type-check",
     "test": "NODE_ENV=test nyc ava --verbose"
   },
-  "version": "5.0.0"
+  "version": "0.0.0-development"
 }
