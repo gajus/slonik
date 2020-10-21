@@ -19,7 +19,6 @@ Among the primary reasons for developing Slonik, was the motivation to reduce th
 Suppose the requirement is to write a method that retrieves a resource ID given values defining (what we assume to be) a unique constraint. If we did not have the aforementioned convenience methods available, then it would need to be written as:
 
 ```js
-// @flow
 import {
   sql
 } from 'slonik';

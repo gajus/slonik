@@ -65,9 +65,7 @@ export const createPool = (clientConfiguration: ClientConfigurationInputType = d
 
     // @ts-expect-error
     {
-      // @see https://github.com/facebook/flow/issues/7505
       interceptors: [],
-
       typeParsers: [],
       ...clientConfiguration,
     },

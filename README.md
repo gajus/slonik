@@ -30,7 +30,7 @@ If you value my work and want to see Slonik and [many other of my](https://githu
 
 Read: [Stop using Knex.js](https://medium.com/@gajus/bf410349856c)
 
-Note: Using this project does not require TypeScript or Flow. It is a regular ES6 module. Ignore the type definitions used in the documentation if you do not use a type system.
+Note: Using this project does not require TypeScript. It is a regular ES6 module. Ignore the type definitions used in the documentation if you do not use a type system.
 
 <a name="slonik-features"></a>
 ## Features
@@ -165,10 +165,10 @@ import type {
   DatabaseConnectionType
 } from 'slonik';
 
-type DatabaseRecordType = { id: number };
+opaque type DatabaseRecordIdType = number;
 
-const getFooIdByBar = async (connection: DatabaseConnectionType, bar: string): Promise<number> => {
-  const fooResult = await connection.query<DatabaseRecordType>(sql`
+const getFooIdByBar = async (connection: DatabaseConnectionType, bar: string): Promise<DatabaseRecordIdType> => {
+  const fooResult = await connection.query(sql`
     SELECT id
     FROM foo
     WHERE bar = ${bar}
@@ -191,7 +191,7 @@ const getFooIdByBar = async (connection: DatabaseConnectionType, bar: string): P
 
 ```js
 const getFooIdByBar = (connection: DatabaseConnectionType, bar: string): Promise<DatabaseRecordIdType> => {
-  return connection.oneFirst<number>(sql`
+  return connection.oneFirst(sql`
     SELECT id
     FROM foo
     WHERE bar = ${bar}
@@ -526,7 +526,7 @@ Note: `pool.end()` does not terminate active connections/ transactions.
 <a name="slonik-usage-api"></a>
 ### API
 
-```typescript
+```js
 /**
  * @param connectionUri PostgreSQL [Connection URI](https://www.postgresql.org/docs/current/libpq-connect.html#LIBPQ-CONNSTRING).
  */
@@ -548,19 +548,20 @@ createPool(
  * @property transactionRetryLimit Number of times a transaction failing with Transaction Rollback class error is retried. (Default: 5)
  * @property typeParsers An array of [Slonik type parsers](https://github.com/gajus/slonik#slonik-type-parsers).
  */
-export type ClientConfigurationInputType = {
-  captureStackTrace?: boolean;
-  connectionRetryLimit?: number;
-  connectionTimeout?: number | 'DISABLE_TIMEOUT';
-  idleInTransactionSessionTimeout?: number | 'DISABLE_TIMEOUT';
-  idleTimeout?: number | 'DISABLE_TIMEOUT';
-  interceptors?: ReadonlyArray<InterceptorType>;
-  maximumPoolSize?: number;
-  preferNativeBindings?: boolean;
-  statementTimeout?: number | 'DISABLE_TIMEOUT';
-  transactionRetryLimit?: number;
-  typeParsers?: ReadonlyArray<TypeParserType>;
-};
+type ClientConfigurationInputType = {|
+  +captureStackTrace?: boolean,
+  +connectionRetryLimit?: number,
+  +connectionTimeout?: number | 'DISABLE_TIMEOUT',
+  +idleInTransactionSessionTimeout?: number | 'DISABLE_TIMEOUT',
+  +idleTimeout?: number | 'DISABLE_TIMEOUT',
+  +interceptors?: $ReadOnlyArray<InterceptorType>,
+  +maximumPoolSize?: number,
+  +preferNativeBindings?: boolean,
+  +statementTimeout?: number | 'DISABLE_TIMEOUT',
+  +transactionRetryLimit?: number,
+  +typeParsers?: $ReadOnlyArray<TypeParserType>,
+|};
+
 ```
 
 Example:
@@ -2112,9 +2113,9 @@ await pool.connect(async (connection0) => {
 <a name="slonik-types"></a>
 ## Types
 
-This package is using [TypeScript](https://typescriptlang.org/) types.
+This package is using [TypeScript](http://typescriptlang.org/) types.
 
-Refer to [`./src/types.ts`](./src/types.ts).
+Refer to [`./src/types.js`](./src/types.js).
 
 The public interface exports the following types:
 

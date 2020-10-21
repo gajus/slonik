@@ -27,7 +27,7 @@ If you value my work and want to see Slonik and [many other of my](https://githu
 
 Read: [Stop using Knex.js](https://medium.com/@gajus/bf410349856c)
 
-Note: Using this project does not require TypeScript or Flow. It is a regular ES6 module. Ignore the type definitions used in the documentation if you do not use a type system.
+Note: Using this project does not require TypeScript. It is a regular ES6 module. Ignore the type definitions used in the documentation if you do not use a type system.
 
 ## Features
 
