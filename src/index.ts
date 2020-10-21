@@ -7,6 +7,8 @@ export const sql = createSqlTag();
 export type {
   ArraySqlTokenType,
   BinarySqlTokenType,
+  ClientConfigurationInputType,
+  ClientConfigurationType,
   ConnectionTypeType,
   DatabaseConnectionType,
   DatabasePoolConnectionType,
@@ -25,6 +27,7 @@ export type {
   QueryType,
   SqlSqlTokenType,
   SqlTaggedTemplateType,
+  TaggedTemplateLiteralInvocationType,
   TypeParserType,
   UnnestSqlTokenType,
   ValueExpressionType,
