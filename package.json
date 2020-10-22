@@ -17,6 +17,7 @@
     "timeout": "30s"
   },
   "dependencies": {
+    "@types/roarr": "^2.14.2",
     "concat-stream": "^2.0.0",
     "delay": "^4.4.0",
     "es6-error": "^4.1.1",
@@ -41,7 +42,6 @@
     "@types/concat-stream": "^1.6.0",
     "@types/pg": "^7.14.5",
     "@types/pg-copy-streams": "^1.2.1",
-    "@types/roarr": "^2.14.2",
     "@types/sinon": "^9.0.8",
     "@types/through2": "^2.0.36",
     "@typescript-eslint/eslint-plugin": "^4.5.0",
