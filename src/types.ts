@@ -30,7 +30,8 @@ export type TypeNameIdentifierType =
   | 'int4'
   | 'json'
   | 'text'
-  | 'timestamptz';
+  | 'timestamptz'
+  | 'uuid';
 
 export type SerializableValueType =
   | string
