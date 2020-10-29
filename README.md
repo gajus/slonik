@@ -1019,7 +1019,7 @@ Use [`sql.unnest`](#sqlunnest) to create a set of rows using `unnest`. Using the
 
 ```js
 await connection.query(sql`
-  INSERT INTO (foo, bar, baz)
+  INSERT INTO foo (bar, baz, qux)
   SELECT *
   FROM ${sql.unnest(
     [
@@ -1040,7 +1040,7 @@ Produces:
 
 ```js
 {
-  sql: 'INSERT INTO (foo, bar, baz) SELECT * FROM unnest($1::int4[], $2::int4[], $2::int4[])',
+  sql: 'INSERT INTO foo (bar, baz, qux) SELECT * FROM unnest($1::int4[], $2::int4[], $2::int4[])',
   values: [
     [
       1,
