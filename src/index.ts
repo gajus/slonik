@@ -9,6 +9,7 @@ export type {
   BinarySqlTokenType,
   ClientConfigurationInputType,
   ClientConfigurationType,
+  CommonQueryMethodsType,
   ConnectionTypeType,
   DatabaseConnectionType,
   DatabasePoolConnectionType,

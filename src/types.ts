@@ -132,7 +132,7 @@ export type QueryCopyFromBinaryFunctionType = (
   columnTypes: ReadonlyArray<TypeNameIdentifierType>,
 ) => Promise<null | object>; // bindPoolConnection returns an object
 
-type CommonQueryMethodsType = {
+export type CommonQueryMethodsType = {
   readonly any: QueryAnyFunctionType;
   readonly anyFirst: QueryAnyFirstFunctionType;
   readonly exists: QueryExistsFunctionType;

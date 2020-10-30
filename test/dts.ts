@@ -408,3 +408,8 @@ const samplesFromDocs = async () => {
 
   // end samples from readme
 };
+
+const exportedTypes = () => {
+  // make sure CommonQueryMethodsType is exported by package
+  expectTypeOf<import('../src').CommonQueryMethodsType>().toHaveProperty('any').toBeCallableWith(sql`select 1`);
+};
