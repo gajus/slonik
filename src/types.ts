@@ -39,7 +39,7 @@ export type SerializableValueType =
   | boolean
   | null
   | {
-      [key: string]: SerializableValueType;
+      [key: string]: SerializableValueType | undefined;
     }
   | ReadonlyArray<SerializableValueType>;
 

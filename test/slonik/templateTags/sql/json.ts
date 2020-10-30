@@ -122,3 +122,18 @@ test('the resulting object is immutable', (t) => {
     token.foo = 'bar';
   });
 });
+
+test('Object types with optional properties are allowed', (t) => {
+  type TypeWithOptionalProperty = { foo: string; opt?: string };
+  const testValue: TypeWithOptionalProperty = {foo: 'bar'};
+
+  const query = sql`SELECT ${sql.json(testValue)}`;
+
+  t.deepEqual(query, {
+    sql: 'SELECT $1',
+    type: SqlToken,
+    values: [
+      '{"foo":"bar"}',
+    ],
+  });
+});
