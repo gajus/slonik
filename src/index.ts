@@ -28,6 +28,7 @@ export type {
   QueryType,
   SqlSqlTokenType,
   SqlTaggedTemplateType,
+  SqlTokenType,
   TaggedTemplateLiteralInvocationType,
   TypeParserType,
   UnnestSqlTokenType,
