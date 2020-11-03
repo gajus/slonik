@@ -1,5 +1,7 @@
 language: node_js
+os: linux
 dist: focal
+arch: amd64
 jobs:
   include:
     - name: JavaScript driver
@@ -12,6 +14,9 @@ jobs:
           packages:
             - postgresql-12
             - postgresql-client-12
+      env:
+        global:
+          - PGPORT=5432
       script:
         - sudo pg_ctlcluster 12 main restart
         - npm install
