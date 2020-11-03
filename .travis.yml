@@ -32,4 +32,3 @@ after_success:
   - semantic-release
 notifications:
   email: false
-sudo: false
