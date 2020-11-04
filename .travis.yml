@@ -16,9 +16,9 @@ jobs:
             - postgresql-client-12
       env:
         global:
+          - PGVERSION=12
           - PGPORT=5432
       script:
-        - sudo pg_ctlcluster 12 main restart
         - npm install
         - npm run build
         - npm run test
@@ -32,3 +32,7 @@ after_success:
   - semantic-release
 notifications:
   email: false
+before_install:
+  - sudo cp /etc/postgresql/{9.6,$PGVERSION}/main/pg_hba.conf;
+  - sudo service postgresql restart $PGVERSION;
+  - until pg_isready -p 5433; do echo 'Waiting for the DB to be up...'; sleep 1; done;
