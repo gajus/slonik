@@ -575,7 +575,7 @@ test('explicit connection configuration is persisted', async (t) => {
 });
 
 test('serves waiting requests', async (t) => {
-  t.timeout(1000);
+  t.timeout(10000);
 
   const pool = createPool(t.context.dsn, {
     maximumPoolSize: 1,
