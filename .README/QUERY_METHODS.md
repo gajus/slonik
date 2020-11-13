@@ -260,7 +260,7 @@ await connection.stream(sql`SELECT foo`, (stream) => {
 
 ```
 
-Note: Implemneted using [`pg-query-stream`](https://github.com/brianc/node-pg-query-stream).
+Note: Implemented using [`pg-query-stream`](https://github.com/brianc/node-pg-query-stream).
 
 ### `transaction`
 
