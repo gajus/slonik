@@ -26,7 +26,7 @@ import type {
   DatabaseConnectionType
 } from 'slonik';
 
-opaque type DatabaseRecordIdType = number;
+type DatabaseRecordIdType = number;
 
 const getFooIdByBar = async (connection: DatabaseConnectionType, bar: string): Promise<DatabaseRecordIdType> => {
   const fooResult = await connection.query(sql`
