@@ -30,6 +30,7 @@ export type {
   SqlTaggedTemplateType,
   SqlTokenType,
   TaggedTemplateLiteralInvocationType,
+  TypeNameIdentifierType,
   TypeParserType,
   UnnestSqlTokenType,
   ValueExpressionType,
