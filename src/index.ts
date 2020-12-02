@@ -34,6 +34,7 @@ export type {
   TypeParserType,
   UnnestSqlTokenType,
   ValueExpressionType,
+  SerializableValueType,
 } from './types';
 export {
   createMockPool,
