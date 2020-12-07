@@ -997,6 +997,23 @@ test('throw error with notices', async (t) => {
       t.assert(error.notices.length = 5);
     }
   }
+  await pool.end();
+});
+
+test('error messages include original pg error', async (t) => {
+  const pool = createPool(t.context.dsn);
+  const createPerson123 = sql`insert into person(id) values (123)`;
+
+  await pool.query(createPerson123);
+
+  const error = await t.throwsAsync(async () => {
+    return pool.query(createPerson123);
+  });
+
+  t.regex(
+    error.message,
+    /^Query violates a unique integrity constraint. duplicate key value violates unique constraint "person_pkey"$/,
+  );
 
   await pool.end();
 });
