@@ -1017,7 +1017,8 @@ test('error messages include original pg error', async (t) => {
 
   t.is(
     error.message,
-    // @ts-ignore
+
+    // @ts-expect-error
     'Query violates a unique integrity constraint. ' + error?.originalError?.message,
   );
 
