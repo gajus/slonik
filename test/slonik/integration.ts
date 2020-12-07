@@ -1002,12 +1002,17 @@ test('throw error with notices', async (t) => {
 
 test('error messages include original pg error', async (t) => {
   const pool = createPool(t.context.dsn);
-  const createPerson123 = sql`insert into person(id) values (123)`;
 
-  await pool.query(createPerson123);
+  await pool.query(sql`
+    INSERT INTO person (id)
+    VALUES (1)
+  `);
 
   const error = await t.throwsAsync(async () => {
-    return pool.query(createPerson123);
+    return pool.query(sql`
+      INSERT INTO person (id)
+      VALUES (1)
+    `);
   });
 
   t.regex(
