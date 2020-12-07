@@ -997,6 +997,30 @@ test('throw error with notices', async (t) => {
       t.assert(error.notices.length = 5);
     }
   }
+  await pool.end();
+});
+
+test('error messages include original pg error', async (t) => {
+  const pool = createPool(t.context.dsn);
+
+  await pool.query(sql`
+    INSERT INTO person (id)
+    VALUES (1)
+  `);
+
+  const error = await t.throwsAsync(async () => {
+    return pool.query(sql`
+      INSERT INTO person (id)
+      VALUES (1)
+    `);
+  });
+
+  t.is(
+    error.message,
+
+    // @ts-expect-error
+    'Query violates a unique integrity constraint. ' + error?.originalError?.message,
+  );
 
   await pool.end();
 });
