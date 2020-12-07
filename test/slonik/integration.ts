@@ -1015,9 +1015,10 @@ test('error messages include original pg error', async (t) => {
     `);
   });
 
-  t.regex(
+  t.is(
     error.message,
-    /^Query violates a unique integrity constraint. duplicate key value violates unique constraint "person_pkey"$/,
+    // @ts-ignore
+    'Query violates a unique integrity constraint. ' + error?.originalError?.message,
   );
 
   await pool.end();
