@@ -171,8 +171,6 @@ export const createConnection = async (
   }
 
   if (pool.slonik.mock === false && pool.slonik.ended === false && connectionType === 'IMPLICIT_QUERY') {
-    // @todo Abstract into an array of queries that could be configured using `clientConfiguration`.
-    await connection.query('DISCARD ALL');
     await connection.release();
   } else {
     // Do not use `connection.release()` for explicit connections:
