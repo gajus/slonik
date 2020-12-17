@@ -46,6 +46,7 @@ export {
 } from './factories';
 export {
   isSqlToken,
+  isSqlTokenType,
 } from './utilities';
 export * from './factories/typeParsers';
 export {

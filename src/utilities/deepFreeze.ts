@@ -1,3 +1,10 @@
+import {
+  JsonToken,
+} from '../tokens';
+import {
+  isSqlTokenType,
+} from './isSqlTokenType';
+
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const isSubjectFreezable = (subject: any): boolean => {
   return Boolean(
@@ -5,6 +12,8 @@ const isSubjectFreezable = (subject: any): boolean => {
     (typeof subject === 'object' ||
     typeof subject === 'function') &&
     subject.constructor !== Buffer &&
+    (!isSqlTokenType(subject) ||
+    subject.type !== JsonToken) &&
     !Object.isFrozen(subject),
   );
 };

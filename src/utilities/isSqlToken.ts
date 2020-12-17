@@ -22,9 +22,5 @@ const Tokens = [
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export const isSqlToken = (subject: any): subject is typeof Tokens[number] => {
-  if (typeof subject !== 'object' || subject === null) {
-    return false;
-  }
-
-  return Tokens.includes(subject.type);
+  return Tokens.includes(subject);
 };

@@ -23,6 +23,9 @@ export {
   isSqlToken,
 } from './isSqlToken';
 export {
+  isSqlTokenType,
+} from './isSqlTokenType';
+export {
   mapTaggedTemplateLiteralInvocation,
 } from './mapTaggedTemplateLiteralInvocation';
 export {
