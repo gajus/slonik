@@ -31,7 +31,7 @@ import type {
 import {
   deepFreeze,
   isPrimitiveValueExpression,
-  isSqlTokenType,
+  isSqlToken,
 } from '../utilities';
 import {
   createSqlTokenSqlFragment,
@@ -74,7 +74,8 @@ export const createSqlTag = <T = QueryResultRowType>() => {
         rawSql += '$' + (parameterValues.length + 1);
 
         parameterValues.push(token);
-      } else if (isSqlTokenType(token)) {
+      } else if (isSqlToken(token)) {
+        // @ts-expect-error
         const sqlFragment = createSqlTokenSqlFragment(token, parameterValues.length);
 
         rawSql += sqlFragment.sql;

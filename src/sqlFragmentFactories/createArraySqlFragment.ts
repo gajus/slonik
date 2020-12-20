@@ -11,7 +11,7 @@ import type {
 import {
   escapeIdentifier,
   isPrimitiveValueExpression,
-  isSqlTokenType,
+  isSqlToken,
 } from '../utilities';
 
 export const createArraySqlFragment = (token: ArraySqlTokenType, greatestParameterPosition: number): SqlFragmentType => {
@@ -31,7 +31,7 @@ export const createArraySqlFragment = (token: ArraySqlTokenType, greatestParamet
 
   let sql = '$' + placeholderIndex + '::';
 
-  if (isSqlTokenType(token.memberType) && token.memberType.type === 'SLONIK_TOKEN_SQL') {
+  if (isSqlToken(token.memberType) && token.memberType.type === 'SLONIK_TOKEN_SQL') {
     const sqlFragment = createSqlTokenSqlFragment(token.memberType, placeholderIndex);
 
     placeholderIndex += sqlFragment.values.length;

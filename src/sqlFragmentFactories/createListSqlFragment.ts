@@ -11,7 +11,7 @@ import type {
 } from '../types';
 import {
   isPrimitiveValueExpression,
-  isSqlTokenType,
+  isSqlToken,
 } from '../utilities';
 
 export const createListSqlFragment = (token: ListSqlTokenType, greatestParameterPosition: number): SqlFragmentType => {
@@ -25,7 +25,7 @@ export const createListSqlFragment = (token: ListSqlTokenType, greatestParameter
   }
 
   for (const member of token.members) {
-    if (isSqlTokenType(member)) {
+    if (isSqlToken(member)) {
       const sqlFragment = createSqlTokenSqlFragment(member, placeholderIndex);
 
       placeholders.push(sqlFragment.sql);

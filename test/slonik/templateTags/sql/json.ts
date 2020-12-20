@@ -112,6 +112,17 @@ test('throws if payload cannot be stringified (circular reference)', (t) => {
   t.is(error.message, 'JSON payload cannot be stringified.');
 });
 
+test('the resulting object is immutable', (t) => {
+  const token = sql.json({
+    foo: 'bar',
+  });
+
+  t.throws(() => {
+    // @ts-expect-error
+    token.foo = 'bar';
+  });
+});
+
 test('Object types with optional properties are allowed', (t) => {
   type TypeWithOptionalProperty = { foo: string; opt?: string };
   const testValue: TypeWithOptionalProperty = {foo: 'bar'};

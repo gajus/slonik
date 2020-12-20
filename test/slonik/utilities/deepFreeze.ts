@@ -1,8 +1,5 @@
 import test from 'ava';
 import {
-  JsonSqlTokenType,
-} from '../../../src';
-import {
   deepFreeze,
 } from '../../../src/utilities/deepFreeze';
 
@@ -53,13 +50,4 @@ test('does not attempt to freeze a Buffer (deep)', (t) => {
   };
 
   t.false(Object.isFrozen(deepFreeze(foo).bar));
-});
-
-test('does not attempt to freeze a json sql tag', (t) => {
-  const jsonTag: JsonSqlTokenType = {
-    type: 'SLONIK_TOKEN_JSON',
-    value: {a: 2},
-  };
-
-  t.false(Object.isFrozen(deepFreeze(jsonTag)));
 });
