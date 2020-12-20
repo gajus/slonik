@@ -42,12 +42,3 @@ test('throws if an identifier name array member type is not a string', (t) => {
 
   t.is(error.message, 'Identifier name array member type must be a string.');
 });
-
-test('the resulting object is immutable', (t) => {
-  const token = sql.identifier(['bar', 'baz']);
-
-  t.throws(() => {
-    // @ts-expect-error
-    token.foo = 'bar';
-  });
-});

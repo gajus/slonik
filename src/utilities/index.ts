@@ -8,9 +8,6 @@ export {
   createUlid,
 } from './createUlid';
 export {
-  deepFreeze,
-} from './deepFreeze';
-export {
   encodeTupleList,
 } from './encodeTupleList';
 export {
