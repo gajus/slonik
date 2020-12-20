@@ -86,12 +86,3 @@ test('throws if memberType is not a string or SqlToken of different type than "S
 
   t.is(error.message, 'Unsupported `memberType`. `memberType` must be a string or SqlToken of "SLONIK_TOKEN_SQL" type.');
 });
-
-test('the resulting object is immutable', (t) => {
-  const token = sql.array([1, 2, 3], 'int4');
-
-  t.throws(() => {
-    // @ts-expect-error
-    token.foo = 'bar';
-  });
-});
