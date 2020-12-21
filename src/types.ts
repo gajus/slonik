@@ -173,6 +173,7 @@ export type DatabasePoolType = CommonQueryMethodsType & {
   readonly getPoolState: () => PoolStateType;
   readonly stream: StreamFunctionType;
   readonly transaction: <T>(handler: TransactionFunctionType<T>) => Promise<T>;
+  readonly configuration: ClientConfigurationType;
 };
 
 /**
