@@ -30,6 +30,8 @@ import {
   createTypeParserPreset,
   sql,
   QueryResultType,
+  ClientConfigurationType,
+  ClientConfigurationInputType,
 } from '../src';
 
 const VALUE = 'foo';
@@ -38,6 +40,9 @@ const connection = createPool('postgres://');
 
 const poolTypes = () => {
   const pool = createPool('postgres://localhost');
+
+  expectTypeOf<ClientConfigurationType>().toMatchTypeOf<ClientConfigurationInputType>();
+  expectTypeOf<Partial<ClientConfigurationType>>().toEqualTypeOf<ClientConfigurationInputType>();
 
   const promise = pool.connect(async (conn) => {
     const result = await conn.query(sql`SELECT 1`);
