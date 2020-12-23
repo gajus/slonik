@@ -31,6 +31,7 @@ import {
   sql,
   QueryResultType,
   ClientConfigurationType,
+  ClientConfigurationInputType,
 } from '../src';
 
 const VALUE = 'foo';
@@ -39,6 +40,9 @@ const connection = createPool('postgres://');
 
 const poolTypes = () => {
   const pool = createPool('postgres://localhost');
+
+  expectTypeOf<ClientConfigurationType>().toMatchTypeOf<ClientConfigurationInputType>();
+  expectTypeOf<Partial<ClientConfigurationType>>().toEqualTypeOf<ClientConfigurationInputType>();
 
   expectTypeOf(pool).toHaveProperty('configuration').toEqualTypeOf<ClientConfigurationType>();
 
