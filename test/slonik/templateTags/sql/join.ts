@@ -111,12 +111,3 @@ test('throws is member is not a SQL token or a primitive value expression', (t) 
 
   t.is(error.message, 'Invalid list member type. Must be a SQL token or a primitive value expression.');
 });
-
-test('the resulting object is immutable', (t) => {
-  const token = sql.join([1, 2, 3], sql`, `);
-
-  t.throws(() => {
-    // @ts-expect-error
-    token.foo = 'bar';
-  });
-});

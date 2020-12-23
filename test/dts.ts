@@ -44,6 +44,8 @@ const poolTypes = () => {
   expectTypeOf<ClientConfigurationType>().toMatchTypeOf<ClientConfigurationInputType>();
   expectTypeOf<Partial<ClientConfigurationType>>().toEqualTypeOf<ClientConfigurationInputType>();
 
+  expectTypeOf(pool).toHaveProperty('configuration').toEqualTypeOf<ClientConfigurationType>();
+
   const promise = pool.connect(async (conn) => {
     const result = await conn.query(sql`SELECT 1`);
 

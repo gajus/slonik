@@ -159,6 +159,7 @@ export type DatabasePoolType = CommonQueryMethodsType & {
   readonly getPoolState: () => PoolStateType;
   readonly stream: StreamFunctionType;
   readonly transaction: <T>(handler: TransactionFunctionType<T>) => Promise<T>;
+  readonly configuration: ClientConfigurationType;
 };
 
 /**
@@ -241,7 +242,7 @@ export type QueryContextType = {
 };
 
 export type ArraySqlTokenType = {
-  readonly memberType: TypeNameIdentifierType | SqlTokenType;
+  readonly memberType: TypeNameIdentifierType | string | SqlTokenType;
   readonly type: typeof tokens.ArrayToken;
   readonly values: ReadonlyArray<ValueExpressionType>;
 };
@@ -258,7 +259,7 @@ export type IdentifierSqlTokenType = {
 
 export type ListSqlTokenType = {
   readonly glue: SqlTokenType;
-  readonly members: ReadonlyArray<SqlTokenType>;
+  readonly members: ReadonlyArray<ValueExpressionType>;
   readonly type: typeof tokens.ListToken;
 };
 

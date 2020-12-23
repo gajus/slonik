@@ -25,11 +25,11 @@ import type {
   SqlSqlTokenType,
   SqlTaggedTemplateType,
   SqlTokenType,
+  TypeNameIdentifierType,
   UnnestSqlTokenType,
   ValueExpressionType,
 } from '../types';
 import {
-  deepFreeze,
   isPrimitiveValueExpression,
   isSqlToken,
 } from '../utilities';
@@ -75,7 +75,6 @@ export const createSqlTag = <T = QueryResultRowType>() => {
 
         parameterValues.push(token);
       } else if (isSqlToken(token)) {
-        // @ts-expect-error
         const sqlFragment = createSqlTokenSqlFragment(token, parameterValues.length);
 
         rawSql += sqlFragment.sql;
@@ -91,10 +90,16 @@ export const createSqlTag = <T = QueryResultRowType>() => {
       }
     }
 
-    const query = deepFreeze({
+    const query: SqlTokenType = {
       sql: rawSql,
       type: SqlToken,
       values: parameterValues,
+    };
+
+    Object.defineProperty(query, 'sql', {
+      configurable: false,
+      enumerable: true,
+      writable: false,
     });
 
     return query;
@@ -102,22 +107,22 @@ export const createSqlTag = <T = QueryResultRowType>() => {
 
   sql.array = (
     values: ReadonlyArray<PrimitiveValueExpressionType>,
-    memberType: string | SqlTokenType,
+    memberType: TypeNameIdentifierType | string | SqlTokenType,
   ): ArraySqlTokenType => {
-    return deepFreeze({
+    return {
       memberType,
       type: ArrayToken,
       values,
-    });
+    };
   };
 
   sql.binary = (
     data: Buffer,
   ): BinarySqlTokenType => {
-    return deepFreeze({
+    return {
       data,
       type: BinaryToken,
-    });
+    };
   };
 
   sql.identifier = (
@@ -125,41 +130,41 @@ export const createSqlTag = <T = QueryResultRowType>() => {
   ): IdentifierSqlTokenType => {
     // @todo Replace `type` with a symbol once Flow adds symbol support
     // @see https://github.com/facebook/flow/issues/810
-    return deepFreeze({
+    return {
       names,
       type: IdentifierToken,
-    });
+    };
   };
 
   sql.json = (
     value: SerializableValueType,
   ): JsonSqlTokenType => {
-    return deepFreeze({
+    return {
       type: JsonToken,
       value,
-    });
+    };
   };
 
   sql.join = (
     members: ReadonlyArray<ValueExpressionType>,
     glue: SqlTokenType,
   ): ListSqlTokenType => {
-    return deepFreeze({
+    return {
       glue,
       members,
       type: ListToken,
-    });
+    };
   };
 
   sql.unnest = (
     tuples: ReadonlyArray<ReadonlyArray<PrimitiveValueExpressionType>>,
     columnTypes: ReadonlyArray<string>,
   ): UnnestSqlTokenType => {
-    return deepFreeze({
+    return {
       columnTypes,
       tuples,
       type: UnnestToken,
-    });
+    };
   };
 
   return sql;

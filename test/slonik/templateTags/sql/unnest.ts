@@ -118,12 +118,3 @@ test('throws if tuple member length does not match column types length', (t) => 
 
   t.is(error.message, 'Column types length must match tuple member length.');
 });
-
-test('the resulting object is immutable', (t) => {
-  const token = sql.unnest([[1, 2, 3], [4, 5, 6]], ['int4', 'int4', 'int4']);
-
-  t.throws(() => {
-    // @ts-expect-error
-    token.foo = 'bar';
-  });
-});

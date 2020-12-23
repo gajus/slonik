@@ -8,6 +8,9 @@ import {
   SqlToken,
   UnnestToken,
 } from '../tokens';
+import {
+  SqlTokenType,
+} from '../types';
 
 const Tokens = [
   ArrayToken,
@@ -21,7 +24,7 @@ const Tokens = [
 ] as const;
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-export const isSqlToken = (subject: any): subject is typeof Tokens[number] => {
+export const isSqlToken = (subject: any): subject is SqlTokenType => {
   if (typeof subject !== 'object' || subject === null) {
     return false;
   }
