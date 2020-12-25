@@ -48,6 +48,7 @@ export const bindPool = (
   return {
     any: mapConnection('any'),
     anyFirst: mapConnection('anyFirst'),
+    configuration: clientConfiguration,
     connect: (connectionHandler) => {
       return createConnection(
         parentLog,

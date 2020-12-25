@@ -66,7 +66,7 @@ test('throws if bound an undefined value', (t) => {
   t.is(error.message, 'SQL tag cannot be bound an undefined value.');
 });
 
-test('the resulting object is immutable', (t) => {
+test('the sql property is immutable', (t) => {
   const query = sql`SELECT 1`;
 
   t.throws(() => {

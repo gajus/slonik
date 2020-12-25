@@ -79,46 +79,32 @@ export type InternalDatabasePoolType = any;
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export type InternalDatabaseConnectionType = any;
 
-/**
- * @property captureStackTrace Dictates whether to capture stack trace before executing query. Middlewares access stack trace through query execution context. (Default: true)
- * @property connectionRetryLimit Number of times to retry establishing a new connection. (Default: 3)
- * @property connectionTimeout Timeout (in milliseconds) after which an error is raised if connection cannot cannot be established. (Default: 5000)
- * @property idleInTransactionSessionTimeout Timeout (in milliseconds) after which idle clients are closed. Use 'DISABLE_TIMEOUT' constant to disable the timeout. (Default: 60000)
- * @property idleTimeout Timeout (in milliseconds) after which idle clients are closed. Use 'DISABLE_TIMEOUT' constant to disable the timeout. (Default: 5000)
- * @property interceptors An array of [Slonik interceptors](https://github.com/gajus/slonik#slonik-interceptors).
- * @property maximumPoolSize Do not allow more than this many connections. Use 'DISABLE_TIMEOUT' constant to disable the timeout. (Default: 10)
- * @property preferNativeBindings Uses libpq bindings when `pg-native` module is installed. (Default: true)
- * @property statementTimeout Timeout (in milliseconds) after which database is instructed to abort the query. Use 'DISABLE_TIMEOUT' constant to disable the timeout. (Default: 60000)
- * @property transactionRetryLimit Number of times a transaction failing with Transaction Rollback class error is retried. (Default: 5)
- * @property typeParsers An array of [Slonik type parsers](https://github.com/gajus/slonik#slonik-type-parsers).
- */
-export type ClientConfigurationInputType = {
-  readonly captureStackTrace?: boolean;
-  readonly connectionRetryLimit?: number;
-  readonly connectionTimeout?: number | 'DISABLE_TIMEOUT';
-  readonly idleInTransactionSessionTimeout?: number | 'DISABLE_TIMEOUT';
-  readonly idleTimeout?: number | 'DISABLE_TIMEOUT';
-  readonly interceptors?: ReadonlyArray<InterceptorType>;
-  readonly maximumPoolSize?: number;
-  readonly preferNativeBindings?: boolean;
-  readonly statementTimeout?: number | 'DISABLE_TIMEOUT';
-  readonly transactionRetryLimit?: number;
-  readonly typeParsers?: ReadonlyArray<TypeParserType>;
-};
-
 export type ClientConfigurationType = {
+  /** Dictates whether to capture stack trace before executing query. Middlewares access stack trace through query execution context. (Default: true) */
   readonly captureStackTrace: boolean;
+  /** Number of times to retry establishing a new connection. (Default: 3) */
   readonly connectionRetryLimit: number;
+  /** Timeout (in milliseconds) after which an error is raised if connection cannot cannot be established. (Default: 5000) */
   readonly connectionTimeout: number | 'DISABLE_TIMEOUT';
+  /** Timeout (in milliseconds) after which idle clients are closed. Use 'DISABLE_TIMEOUT' constant to disable the timeout. (Default: 60000) */
   readonly idleInTransactionSessionTimeout: number | 'DISABLE_TIMEOUT';
+  /** Timeout (in milliseconds) after which idle clients are closed. Use 'DISABLE_TIMEOUT' constant to disable the timeout. (Default: 5000) */
   readonly idleTimeout: number | 'DISABLE_TIMEOUT';
+  /** An array of [Slonik interceptors](https://github.com/gajus/slonik#slonik-interceptors). */
   readonly interceptors: ReadonlyArray<InterceptorType>;
+  /** Do not allow more than this many connections. Use 'DISABLE_TIMEOUT' constant to disable the timeout. (Default: 10) */
   readonly maximumPoolSize: number;
+  /** Uses libpq bindings when `pg-native` module is installed. (Default: true) */
   readonly preferNativeBindings: boolean;
+  /** Timeout (in milliseconds) after which database is instructed to abort the query. Use 'DISABLE_TIMEOUT' constant to disable the timeout. (Default: 60000) */
   readonly statementTimeout: number | 'DISABLE_TIMEOUT';
+  /** Number of times a transaction failing with Transaction Rollback class error is retried. (Default: 5) */
   readonly transactionRetryLimit: number;
+  /** An array of [Slonik type parsers](https://github.com/gajus/slonik#slonik-type-parsers). */
   readonly typeParsers: ReadonlyArray<TypeParserType>;
 };
+
+export type ClientConfigurationInputType = Partial<ClientConfigurationType>;
 
 export type StreamFunctionType = (
   sql: TaggedTemplateLiteralInvocationType,
@@ -173,6 +159,7 @@ export type DatabasePoolType = CommonQueryMethodsType & {
   readonly getPoolState: () => PoolStateType;
   readonly stream: StreamFunctionType;
   readonly transaction: <T>(handler: TransactionFunctionType<T>) => Promise<T>;
+  readonly configuration: ClientConfigurationType;
 };
 
 /**
@@ -255,7 +242,7 @@ export type QueryContextType = {
 };
 
 export type ArraySqlTokenType = {
-  readonly memberType: TypeNameIdentifierType | SqlTokenType;
+  readonly memberType: TypeNameIdentifierType | string | SqlTokenType;
   readonly type: typeof tokens.ArrayToken;
   readonly values: ReadonlyArray<ValueExpressionType>;
 };
@@ -272,7 +259,7 @@ export type IdentifierSqlTokenType = {
 
 export type ListSqlTokenType = {
   readonly glue: SqlTokenType;
-  readonly members: ReadonlyArray<SqlTokenType>;
+  readonly members: ReadonlyArray<ValueExpressionType>;
   readonly type: typeof tokens.ListToken;
 };
 
