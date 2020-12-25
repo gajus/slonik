@@ -11,12 +11,12 @@ import type {
   ClientConfigurationType,
   DatabasePoolType,
   InternalDatabasePoolType,
-  LoggerType,
+  Logger,
   TaggedTemplateLiteralInvocationType,
 } from '../types';
 
 export const bindPool = (
-  parentLog: LoggerType,
+  parentLog: Logger,
   pool: InternalDatabasePoolType,
   clientConfiguration: ClientConfigurationType,
 ): DatabasePoolType => {

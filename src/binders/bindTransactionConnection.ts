@@ -15,7 +15,7 @@ import type {
   ClientConfigurationType,
   DatabaseTransactionConnectionType,
   InternalDatabaseConnectionType,
-  LoggerType,
+  Logger,
   TaggedTemplateLiteralInvocationType,
 } from '../types';
 import {
@@ -23,7 +23,7 @@ import {
 } from '../utilities';
 
 export const bindTransactionConnection = (
-  parentLog: LoggerType,
+  parentLog: Logger,
   connection: InternalDatabaseConnectionType,
   clientConfiguration: ClientConfigurationType,
   transactionDepth: number,

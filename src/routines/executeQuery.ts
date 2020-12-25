@@ -18,7 +18,7 @@ import {
 import type {
   ClientConfigurationType,
   InternalDatabaseConnectionType,
-  LoggerType,
+  Logger,
   NoticeType,
   PrimitiveValueExpressionType,
   QueryContextType,
@@ -53,7 +53,7 @@ type TransactionQueryType = {
 const TRANSACTION_ROLLBACK_ERROR_PREFIX = '40';
 
 const retryTransaction = async (
-  connectionLogger: LoggerType,
+  connectionLogger: Logger,
   connection: InternalDatabaseConnectionType,
   transactionQueries: ReadonlyArray<TransactionQueryType>,
   retryLimit: number,
@@ -108,7 +108,7 @@ const retryTransaction = async (
 
 // eslint-disable-next-line complexity
 export const executeQuery = async (
-  connectionLogger: LoggerType,
+  connectionLogger: Logger,
   connection: InternalDatabaseConnectionType,
   clientConfiguration: ClientConfigurationType,
   rawSql: string,

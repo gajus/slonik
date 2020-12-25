@@ -10,7 +10,7 @@ import {
   Readable,
 } from 'stream';
 import {
-  LoggerType,
+  Logger,
 } from 'roarr';
 import {
   SlonikError,
@@ -18,7 +18,7 @@ import {
 import * as tokens from './tokens';
 
 export {
-  LoggerType,
+  Logger,
 };
 
 export type TypeNameIdentifierType =
@@ -209,7 +209,7 @@ export type TypeParserType<T = unknown> = {
  * @property query The query that is initiating the connection.
  */
 export type PoolContextType = {
-  readonly log: LoggerType;
+  readonly log: Logger;
   readonly poolId: string;
   readonly query: TaggedTemplateLiteralInvocationType | null;
 };
@@ -222,7 +222,7 @@ export type PoolContextType = {
 export type ConnectionContextType = {
   readonly connectionId: string;
   readonly connectionType: ConnectionTypeType;
-  readonly log: LoggerType;
+  readonly log: Logger;
   readonly poolId: string;
 };
 
@@ -244,7 +244,7 @@ type CallSiteType = {
  */
 export type QueryContextType = {
   readonly connectionId: string;
-  readonly log: LoggerType;
+  readonly log: Logger;
   readonly originalQuery: QueryType;
   readonly poolId: string;
   readonly queryId: QueryIdType;
@@ -339,7 +339,7 @@ export type SqlTaggedTemplateType<T = QueryResultRowType> = {
 };
 
 export type InternalQueryMethodType<R> = (
-  log: LoggerType,
+  log: Logger,
   connection: InternalDatabaseConnectionType,
   clientConfiguration: ClientConfigurationType,
   sql: string,
@@ -352,7 +352,7 @@ export type InternalQueryMethods = {
 }
 
 export type InternalCopyFromBinaryFunctionType = (
-  log: LoggerType,
+  log: Logger,
   connection: InternalDatabaseConnectionType,
   clientConfiguration: ClientConfigurationType,
   sql: string,
@@ -362,7 +362,7 @@ export type InternalCopyFromBinaryFunctionType = (
 ) => Promise<Object>;
 
 export type InternalStreamFunctionType = (
-  log: LoggerType,
+  log: Logger,
   connection: InternalDatabaseConnectionType,
   clientConfiguration: ClientConfigurationType,
   sql: string,
@@ -372,14 +372,14 @@ export type InternalStreamFunctionType = (
 ) => Promise<Object>;
 
 export type InternalTransactionFunctionType = <T>(
-  log: LoggerType,
+  log: Logger,
   connection: InternalDatabaseConnectionType,
   clientConfiguration: ClientConfigurationType,
   handler: TransactionFunctionType<T>,
 ) => Promise<T>;
 
 export type InternalNestedTransactionFunctionType = <T>(
-  log: LoggerType,
+  log: Logger,
   connection: InternalDatabaseConnectionType,
   clientConfiguration: ClientConfigurationType,
   handler: TransactionFunctionType<T>,

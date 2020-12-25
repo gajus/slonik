@@ -19,12 +19,12 @@ import type {
   DatabasePoolConnectionType,
   InternalDatabaseConnectionType,
   InternalDatabasePoolType,
-  LoggerType,
+  Logger,
   TaggedTemplateLiteralInvocationType,
 } from '../types';
 
 type ConnectionHandlerType = (
-  connectionLog: LoggerType,
+  connectionLog: Logger,
   connection: InternalDatabaseConnectionType,
   boundConnection: DatabasePoolConnectionType,
   clientConfiguration: ClientConfigurationType
@@ -48,7 +48,7 @@ const terminatePoolConnection = (pool: any, connection: any, error: any) => {
 
 // eslint-disable-next-line complexity
 export const createConnection = async (
-  parentLog: LoggerType,
+  parentLog: Logger,
   pool: InternalDatabasePoolType,
   clientConfiguration: ClientConfigurationType,
   connectionType: ConnectionTypeType,

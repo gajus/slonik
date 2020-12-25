@@ -20,14 +20,14 @@ import type {
   ClientConfigurationType,
   DatabasePoolConnectionType,
   InternalDatabaseConnectionType,
-  LoggerType,
+  Logger,
 } from '../types';
 import {
   mapTaggedTemplateLiteralInvocation,
 } from '../utilities';
 
 export const bindPoolConnection = (
-  parentLog: LoggerType,
+  parentLog: Logger,
   connection: InternalDatabaseConnectionType,
   clientConfiguration: ClientConfigurationType,
 ): DatabasePoolConnectionType => {
