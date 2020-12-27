@@ -302,11 +302,9 @@ export type NamedAssignmentType = {
   readonly [key: string]: ValueExpressionType;
 };
 
-/**
- * see https://twitter.com/kuizinas/status/914139352908943360
- */
-export type SqlTaggedTemplateType<T = QueryResultRowType> = {
-  <U = T>(template: TemplateStringsArray, ...vals: ValueExpressionType[]): TaggedTemplateLiteralInvocationType<U>;
+
+export type SqlTaggedTemplateType = {
+  (template: TemplateStringsArray, ...vals: ValueExpressionType[]): TaggedTemplateLiteralInvocationType;
   array: (
     values: ReadonlyArray<PrimitiveValueExpressionType>,
     memberType: TypeNameIdentifierType | SqlTokenType,
@@ -375,13 +373,10 @@ export type InternalNestedTransactionFunctionType = <T>(
 
 type ExternalQueryResultRowType = Record<string, QueryResultRowColumnType>;
 
-export interface TaggedTemplateLiteralInvocationType<Result = QueryResultRowType> extends SqlSqlTokenType {
-  /** compile-time only property */
-  _result?: Result;
-}
+export type TaggedTemplateLiteralInvocationType = SqlSqlTokenType;
 
 export type QueryMethodType<RowType, Result> = (
-  sql: TaggedTemplateLiteralInvocationType<RowType>,
+  sql: TaggedTemplateLiteralInvocationType,
   values?: PrimitiveValueExpressionType[],
 ) => Promise<Result>;
 export type QueryMethodParams<T> = Parameters<QueryMethodType<T, never>>;

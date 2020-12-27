@@ -31,7 +31,7 @@ export const bindTransactionConnection = (
   const mapInvocation = (fn: Parameters<typeof mapTaggedTemplateLiteralInvocation>[0]) => {
     const bound = mapTaggedTemplateLiteralInvocation(fn);
 
-    return <T>(taggedQuery: TaggedTemplateLiteralInvocationType<T>) => {
+    return (taggedQuery: TaggedTemplateLiteralInvocationType) => {
       if (transactionDepth !== connection.connection.slonik.transactionDepth) {
         return Promise.reject(new Error('Cannot run a query using parent transaction.'));
       }

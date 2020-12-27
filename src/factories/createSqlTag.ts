@@ -43,7 +43,7 @@ const log = Logger.child({
 
 export const createSqlTag = <T = QueryResultRowType>() => {
   /* eslint-disable complexity */
-  const sql: SqlTaggedTemplateType<T> = (
+  const sql: SqlTaggedTemplateType = (
     parts: ReadonlyArray<string>,
     ...values: ReadonlyArray<ValueExpressionType>
   // eslint-disable-next-line unicorn/consistent-function-scoping
