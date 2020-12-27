@@ -17,7 +17,7 @@ import type {
   DatabasePoolType,
 } from '../types';
 import {
-  createUlid,
+  createUid,
 } from '../utilities';
 import {
   createClientConfiguration,
@@ -35,7 +35,7 @@ export const createPool = (
 ): DatabasePoolType => {
   const clientConfiguration = createClientConfiguration(clientConfigurationInput);
 
-  const poolId = createUlid();
+  const poolId = createUid();
 
   const poolLog = Logger.child({
     poolId,
@@ -108,7 +108,7 @@ export const createPool = (
     client.connection = client.connection || {};
 
     client.connection.slonik = {
-      connectionId: createUlid(),
+      connectionId: createUid(),
       mock: false,
       native,
       terminated: null,

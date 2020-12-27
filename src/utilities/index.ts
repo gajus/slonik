@@ -5,8 +5,8 @@ export {
   createQueryId,
 } from './createQueryId';
 export {
-  createUlid,
-} from './createUlid';
+  createUid,
+} from './createUid';
 export {
   encodeTupleList,
 } from './encodeTupleList';

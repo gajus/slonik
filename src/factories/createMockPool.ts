@@ -12,7 +12,7 @@ import type {
   QueryResultType,
 } from '../types';
 import {
-  createUlid,
+  createUid,
 } from '../utilities';
 import {
   createClientConfiguration,
@@ -28,7 +28,7 @@ export const createMockPool = (
 ): DatabasePoolType => {
   const clientConfiguration = createClientConfiguration(clientConfigurationInput);
 
-  const poolId = createUlid();
+  const poolId = createUid();
 
   const poolLog = Logger.child({
     poolId,
@@ -39,7 +39,7 @@ export const createMockPool = (
       const connection = {
         connection: {
           slonik: {
-            connectionId: createUlid(),
+            connectionId: createUid(),
             mock: true,
             terminated: null,
             transactionDepth: null,

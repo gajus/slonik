@@ -8,7 +8,7 @@ import type {
   InternalNestedTransactionFunctionType,
 } from '../types';
 import {
-  createUlid,
+  createUid,
 } from '../utilities';
 
 export const nestedTransaction: InternalNestedTransactionFunctionType = async (parentLog, connection, clientConfiguration, handler, transactionDepth) => {
@@ -19,7 +19,7 @@ export const nestedTransaction: InternalNestedTransactionFunctionType = async (p
   }
 
   const log = parentLog.child({
-    transactionId: createUlid(),
+    transactionId: createUid(),
   });
 
   try {

@@ -12,7 +12,7 @@ import type {
   InternalTransactionFunctionType,
 } from '../types';
 import {
-  createUlid,
+  createUid,
 } from '../utilities';
 
 export const transaction: InternalTransactionFunctionType = async (parentLog, connection, clientConfiguration, handler) => {
@@ -21,7 +21,7 @@ export const transaction: InternalTransactionFunctionType = async (parentLog, co
   }
 
   connection.connection.slonik.transactionDepth = 0;
-  connection.connection.slonik.transactionId = createUlid();
+  connection.connection.slonik.transactionId = createUid();
   connection.connection.slonik.transactionQueries = [];
 
   if (connection.connection.slonik.mock === false) {
