@@ -142,9 +142,9 @@ const poolTypes = () => {
 
     expectTypeOf(await pool.any(getFooBarQuery(10))).toEqualTypeOf<readonly FooBar[]>();
 
-    expectTypeOf(await pool.anyFirst(getFooQuery(10))).toEqualTypeOf<string[]>();
+    expectTypeOf(await pool.anyFirst(getFooQuery(10))).toEqualTypeOf<readonly string[]>();
 
-    expectTypeOf(await pool.anyFirst(getFooBarQuery(10))).toEqualTypeOf<Array<string | number>>();
+    expectTypeOf(await pool.anyFirst(getFooBarQuery(10))).toEqualTypeOf<ReadonlyArray<string | number>>();
   };
 
   createPool('postgres://localhost', {

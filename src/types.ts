@@ -302,8 +302,8 @@ export type NamedAssignmentType = {
   readonly [key: string]: ValueExpressionType;
 };
 
-export type SqlTaggedTemplateType = {
-  (template: TemplateStringsArray, ...vals: ValueExpressionType[]): TaggedTemplateLiteralInvocationType;
+export type SqlTaggedTemplateType<T = QueryResultRowType> = {
+  <U = T>(template: TemplateStringsArray, ...values: ValueExpressionType[]): TaggedTemplateLiteralInvocationType<U>;
   array: (
     values: ReadonlyArray<PrimitiveValueExpressionType>,
     memberType: TypeNameIdentifierType | SqlTokenType,
@@ -368,40 +368,46 @@ export type InternalNestedTransactionFunctionType = <T>(
 
 type ExternalQueryResultRowType = Record<string, QueryResultRowColumnType>;
 
-export type TaggedTemplateLiteralInvocationType = SqlSqlTokenType;
+export interface TaggedTemplateLiteralInvocationType<Result = QueryResultRowType> extends SqlSqlTokenType {}
 
-export type QueryAnyFirstFunctionType = <T = QueryResultRowColumnType>(
-  sql: TaggedTemplateLiteralInvocationType,
+export type QueryAnyFirstFunctionType = <T = QueryResultRowColumnType, Row = Record<string, T>>(
+  sql: TaggedTemplateLiteralInvocationType<Row>,
   values?: PrimitiveValueExpressionType[],
-) => Promise<readonly T[]>;
+) => Promise<ReadonlyArray<Row[keyof Row]>>;
 export type QueryAnyFunctionType = <T = ExternalQueryResultRowType>(
-  sql: TaggedTemplateLiteralInvocationType,
+  sql: TaggedTemplateLiteralInvocationType<T>,
   values?: PrimitiveValueExpressionType[],
-) => Promise<readonly T[]>;
+) => Promise<ReadonlyArray<T>>;
 export type QueryExistsFunctionType = (
   sql: TaggedTemplateLiteralInvocationType,
   values?: PrimitiveValueExpressionType[],
 ) => Promise<boolean>;
 export type QueryFunctionType = <T = ExternalQueryResultRowType>(
-  sql: TaggedTemplateLiteralInvocationType,
+  sql: TaggedTemplateLiteralInvocationType<T>,
   values?: PrimitiveValueExpressionType[],
 ) => Promise<QueryResultType<T>>;
-export type QueryManyFirstFunctionType = QueryAnyFirstFunctionType;
-export type QueryManyFunctionType = QueryAnyFunctionType;
-export type QueryMaybeOneFirstFunctionType = <T = QueryResultRowColumnType>(
-  sql: TaggedTemplateLiteralInvocationType,
+export type QueryManyFirstFunctionType = <T = QueryResultRowColumnType, Row = Record<string, T>>(
+  sql: TaggedTemplateLiteralInvocationType<Row>,
   values?: PrimitiveValueExpressionType[],
-) => Promise<T | null>;
+) => Promise<ReadonlyArray<Row[keyof Row]>>;
+export type QueryManyFunctionType = <T = ExternalQueryResultRowType>(
+  sql: TaggedTemplateLiteralInvocationType<T>,
+  values?: PrimitiveValueExpressionType[],
+) => Promise<ReadonlyArray<T>>;
+export type QueryMaybeOneFirstFunctionType = <T = QueryResultRowColumnType, Row = Record<string, T>>(
+  sql: TaggedTemplateLiteralInvocationType<Row>,
+  values?: PrimitiveValueExpressionType[],
+) => Promise<Row[keyof Row] | null>;
 export type QueryMaybeOneFunctionType = <T = ExternalQueryResultRowType>(
-  sql: TaggedTemplateLiteralInvocationType,
+  sql: TaggedTemplateLiteralInvocationType<T>,
   values?: PrimitiveValueExpressionType[],
 ) => Promise<T | null>;
-export type QueryOneFirstFunctionType = <T = QueryResultRowColumnType>(
-  sql: TaggedTemplateLiteralInvocationType,
+export type QueryOneFirstFunctionType = <T = QueryResultRowColumnType, Row = Record<string, T>>(
+  sql: TaggedTemplateLiteralInvocationType<Row>,
   values?: PrimitiveValueExpressionType[],
-) => Promise<T>;
+) => Promise<Row[keyof Row]>;
 export type QueryOneFunctionType = <T = ExternalQueryResultRowType>(
-  sql: TaggedTemplateLiteralInvocationType,
+  sql: TaggedTemplateLiteralInvocationType<T>,
   values?: PrimitiveValueExpressionType[],
 ) => Promise<T>;
 
