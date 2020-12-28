@@ -24,7 +24,7 @@ export const manyFirst: InternalQueryMethodType<any> = async (log, connection, c
     throw new DataIntegrityError();
   }
 
-  const keys = Object.keys(rows[0] as object);
+  const keys = Object.keys(rows[0] as Record<string, unknown>);
 
   if (keys.length !== 1) {
     log.error({

@@ -63,7 +63,7 @@ export const createPool = (
   if (clientConfiguration.preferNativeBindings && pgNativeBindingsAreAvailable) {
     poolLog.info('using native libpq bindings');
 
-    // eslint-disable-next-line global-require
+    // eslint-disable-next-line global-require, @typescript-eslint/no-var-requires
     pg = require('pg').native;
 
     native = true;
@@ -80,7 +80,7 @@ export const createPool = (
   }
 
   type ModifiedPool = Omit<pgTypes.Pool, 'on'> & EventEmitter & {
-    slonik?: {};
+    slonik?: unknown;
   }
   // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
   const pool: ModifiedPool = new pg!.Pool(poolConfiguration as unknown as pgTypes.PoolConfig);

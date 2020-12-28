@@ -22,7 +22,7 @@ export const anyFirst: InternalQueryMethodType<any> = async (log, connection, cl
 
   const firstRow = rows[0];
 
-  const keys = Object.keys(firstRow as object);
+  const keys = Object.keys(firstRow as Record<string, unknown>);
 
   if (keys.length !== 1) {
     log.error({

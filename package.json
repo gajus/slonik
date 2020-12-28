@@ -43,7 +43,6 @@
     "@types/pg-copy-streams": "^1.2.1",
     "@types/sinon": "^9.0.10",
     "@types/through2": "^2.0.36",
-    "@typescript-eslint/eslint-plugin": "^4.11.0",
     "@typescript-eslint/parser": "^4.11.0",
     "ava": "^3.14.0",
     "coveralls": "^3.1.0",

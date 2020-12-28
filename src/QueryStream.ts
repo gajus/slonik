@@ -1,8 +1,9 @@
+/* eslint-disable @typescript-eslint/ban-types */
+/* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable fp/no-class */
-/* fp/no-this */
-/* id-match */
-/* @typescript-eslint/no-explicit-any */
-/* promise/prefer-await-to-callbacks */
+/* eslint-disable fp/no-this */
+/* eslint-disable id-match */
+/* eslint-disable promise/prefer-await-to-callbacks */
 
 import {
   Readable,

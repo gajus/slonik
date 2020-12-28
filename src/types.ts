@@ -109,14 +109,14 @@ export type ClientConfigurationInputType = Partial<ClientConfigurationType>;
 export type StreamFunctionType = (
   sql: TaggedTemplateLiteralInvocationType,
   streamHandler: StreamHandlerType,
-) => Promise<null | object>; // bindPoolConnection returns an object
+) => Promise<null | Record<string, unknown>>; // bindPoolConnection returns an object
 
 export type QueryCopyFromBinaryFunctionType = (
   streamQuery: TaggedTemplateLiteralInvocationType,
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   tupleList: ReadonlyArray<ReadonlyArray<any>>,
   columnTypes: ReadonlyArray<TypeNameIdentifierType>,
-) => Promise<null | object>; // bindPoolConnection returns an object
+) => Promise<null | Record<string, unknown>>; // bindPoolConnection returns an object
 
 export type CommonQueryMethodsType = {
   readonly any: QueryAnyFunctionType;
@@ -339,7 +339,7 @@ export type InternalCopyFromBinaryFunctionType = (
   boundValues: ReadonlyArray<PrimitiveValueExpressionType>, // eslint-disable-next-line @typescript-eslint/no-explicit-any
   tupleList: ReadonlyArray<ReadonlyArray<any>>,
   columnTypes: ReadonlyArray<TypeNameIdentifierType>,
-) => Promise<Object>;
+) => Promise<Record<string, unknown>>;
 
 export type InternalStreamFunctionType = (
   log: Logger,
@@ -349,7 +349,7 @@ export type InternalStreamFunctionType = (
   values: ReadonlyArray<PrimitiveValueExpressionType>,
   streamHandler: StreamHandlerType,
   uid?: QueryIdType,
-) => Promise<Object>;
+) => Promise<Record<string, unknown>>;
 
 export type InternalTransactionFunctionType = <T>(
   log: Logger,
@@ -368,6 +368,7 @@ export type InternalNestedTransactionFunctionType = <T>(
 
 type ExternalQueryResultRowType = Record<string, QueryResultRowColumnType>;
 
+// eslint-disable-next-line @typescript-eslint/no-empty-interface
 export interface TaggedTemplateLiteralInvocationType<Result = QueryResultRowType> extends SqlSqlTokenType {}
 
 export type QueryAnyFirstFunctionType = <T = QueryResultRowColumnType, Row = Record<string, T>>(

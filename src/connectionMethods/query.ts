@@ -22,7 +22,7 @@ export const query: InternalQueryMethodType<any> = async (connectionLogger, conn
       const result: QueryResult & {notices?: NoticeType[]} = await finalConnection.query(finalSql, finalValues);
 
       return {
-        command: result.command as QueryResultType<{}>['command'],
+        command: result.command as QueryResultType<unknown>['command'],
         fields: (result.fields || []).map((field) => {
           return {
             dataTypeId: field.dataTypeID,

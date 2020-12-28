@@ -414,7 +414,7 @@ if (pgNativeBindingsAreAvailable) {
       INSERT INTO person (name) VALUES ('foo'), ('bar'), ('baz')
     `);
 
-    const messages: object[] = [];
+    const messages: Record<string, unknown>[] = [];
 
     await pool.stream(sql`
       SELECT name
@@ -484,7 +484,7 @@ if (pgNativeBindingsAreAvailable) {
         ('baz', '1992-01-01')
     `);
 
-    const messages: object[] = [];
+    const messages: Record<string, unknown>[] = [];
 
     await pool.stream(sql`
       SELECT birth_date

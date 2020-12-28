@@ -164,7 +164,7 @@ test('57P01 error causes the connection to be rejected (IMPLICIT_QUERY connectio
 });
 
 // @todo https://github.com/gajus/slonik/issues/39
-// eslint-disable-next-line ava/no-skip-test
+// eslint-disable-next-line ava/no-skip-test, import/no-named-as-default-member
 test.skip('57P01 error causes the connection to be rejected (EXPLICIT connection)', async (t) => {
   const pool = createPool();
 
