@@ -30,7 +30,7 @@ export const bindTransactionConnection = (
 ): DatabaseTransactionConnectionType => {
   const assertTransactionDepth = () => {
     if (transactionDepth !== connection.connection.slonik.transactionDepth) {
-      return Promise.reject(new Error('Cannot run a query using parent transaction.'));
+      throw new Error('Cannot run a query using parent transaction.');
     }
   };
 
