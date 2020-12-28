@@ -10,6 +10,10 @@
 
 Results show operations per second (greater is better).
 
+## Note about the results
+
+[`pg-promise`](https://github.com/vitaly-t/pg-promise) and Slonik are both based on [`pg`](https://www.npmjs.com/pg). Therefore, with a few exceptions, they cannot perform better than the underlying driver. What these results show is that all abstractions perform about the same, and that the bottleneck is always the query execution time.
+
 ## Run benchmark
 
 ```bash
