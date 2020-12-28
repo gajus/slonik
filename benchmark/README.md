@@ -10,6 +10,17 @@
 
 Results show operations per second (greater is better).
 
+System used to run benchmarks:
+
+> System:
+>   OS: macOS 10.15.6
+>   CPU: (16) x64 Intel(R) Core(TM) i9-9980HK CPU @ 2.40GHz
+>   Memory: 64.00 GB
+> Binaries:
+>   Node: 15.2.1
+
+<!-- Use https://npmjs.com/envinfo to generate the system information. -->
+
 ## Note about the results
 
 [`pg-promise`](https://github.com/vitaly-t/pg-promise) and Slonik are both based on [`pg`](https://github.com/brianc/node-postgres). Therefore, with a few exceptions, they cannot perform better than the underlying driver. What these results show is that all abstractions perform about the same, and that the bottleneck is always the query execution time.
