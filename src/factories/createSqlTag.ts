@@ -42,11 +42,9 @@ const log = Logger.child({
 });
 
 export const createSqlTag = <T = QueryResultRowType>() => {
-  /* eslint-disable complexity */
   const sql: SqlTaggedTemplateType = (
     parts: ReadonlyArray<string>,
     ...values: ReadonlyArray<ValueExpressionType>
-  // eslint-disable-next-line unicorn/consistent-function-scoping
   ): SqlSqlTokenType => {
     let rawSql = '';
 
@@ -128,8 +126,6 @@ export const createSqlTag = <T = QueryResultRowType>() => {
   sql.identifier = (
     names: ReadonlyArray<string>,
   ): IdentifierSqlTokenType => {
-    // @todo Replace `type` with a symbol once Flow adds symbol support
-    // @see https://github.com/facebook/flow/issues/810
     return {
       names,
       type: IdentifierToken,
