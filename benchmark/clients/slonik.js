@@ -12,6 +12,7 @@ const pool = createPool('postgres://', {
 
 module.exports = {
   name: 'slonik',
+  url: 'https://github.com/gajus/slonik',
   tests: {
     select: () => {
       return pool.query(sql`select 1 as x`);

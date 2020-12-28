@@ -6,6 +6,7 @@ const db = pg()({
 
 module.exports = {
   name: 'pg-promise',
+  url: 'https://github.com/vitaly-t/pg-promise',
   tests: {
     select: () => {
       return db.query('select 1 as x');

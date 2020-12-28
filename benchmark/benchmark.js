@@ -60,7 +60,7 @@ const tests = [
 
   for (const client of clients) {
     const row = [
-      client.name,
+      '[`' + client.name + '`](' + client.url + ')',
     ];
 
     for (const test of tests) {

@@ -6,6 +6,7 @@ const db = new pg.Pool({
 
 module.exports = {
   name: 'pg',
+  url: 'https://github.com/brianc/node-postgres',
   tests: {
     select: () => {
       return db.query('select 1 as x');
