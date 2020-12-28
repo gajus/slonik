@@ -6,7 +6,7 @@
 |-|-|-|-|-|
 |[`pg`](https://github.com/brianc/node-postgres)|4,640|4,667|2,101|1,649|
 |[`pg-promise`](https://github.com/vitaly-t/pg-promise)|4,687|4,945|2,796|1,721|
-|[`pg-promise`](https://github.com/gajus/slonik)|4,716|4,381|2,516|1,708|
+|[`slonik`](https://github.com/gajus/slonik)|4,716|4,381|2,516|1,708|
 
 Results show operations per second (greater is better).
 
