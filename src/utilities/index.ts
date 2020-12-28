@@ -20,9 +20,6 @@ export {
   isSqlToken,
 } from './isSqlToken';
 export {
-  mapTaggedTemplateLiteralInvocation,
-} from './mapTaggedTemplateLiteralInvocation';
-export {
   normaliseQueryValues,
 } from './normaliseQueryValues';
 export {

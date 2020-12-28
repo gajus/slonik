@@ -302,7 +302,6 @@ export type NamedAssignmentType = {
   readonly [key: string]: ValueExpressionType;
 };
 
-
 export type SqlTaggedTemplateType = {
   (template: TemplateStringsArray, ...vals: ValueExpressionType[]): TaggedTemplateLiteralInvocationType;
   array: (
@@ -331,10 +330,6 @@ export type InternalQueryMethodType<R> = (
   values: ReadonlyArray<PrimitiveValueExpressionType>,
   uid?: QueryIdType,
 ) => R;
-
-export type InternalQueryMethods = {
-  [K in keyof CommonQueryMethodsType]: InternalQueryMethodType<ReturnType<CommonQueryMethodsType[K]>>
-}
 
 export type InternalCopyFromBinaryFunctionType = (
   log: Logger,

@@ -1,4 +1,7 @@
 import {
+  assertSqlSqlToken,
+} from '../assertions';
+import {
   any,
   anyFirst,
   exists,
@@ -9,7 +12,7 @@ import {
   nestedTransaction,
   one,
   oneFirst,
-  query,
+  query as queryMethod,
 } from '../connectionMethods';
 import type {
   ClientConfigurationType,
@@ -18,9 +21,6 @@ import type {
   Logger,
   TaggedTemplateLiteralInvocationType,
 } from '../types';
-import {
-  mapTaggedTemplateLiteralInvocation,
-} from '../utilities';
 
 export const bindTransactionConnection = (
   parentLog: Logger,
@@ -28,31 +28,143 @@ export const bindTransactionConnection = (
   clientConfiguration: ClientConfigurationType,
   transactionDepth: number,
 ): DatabaseTransactionConnectionType => {
-  const mapInvocation = (fn: Parameters<typeof mapTaggedTemplateLiteralInvocation>[0]) => {
-    const bound = mapTaggedTemplateLiteralInvocation(fn);
-
-    return (taggedQuery: TaggedTemplateLiteralInvocationType) => {
-      if (transactionDepth !== connection.connection.slonik.transactionDepth) {
-        return Promise.reject(new Error('Cannot run a query using parent transaction.'));
-      }
-
-      return bound(taggedQuery);
-    };
+  const assertTransactionDepth = () => {
+    if (transactionDepth !== connection.connection.slonik.transactionDepth) {
+      return Promise.reject(new Error('Cannot run a query using parent transaction.'));
+    }
   };
 
   return {
-    any: mapInvocation(any.bind(null, parentLog, connection, clientConfiguration)),
-    anyFirst: mapInvocation(anyFirst.bind(null, parentLog, connection, clientConfiguration)),
-    exists: mapInvocation(exists.bind(null, parentLog, connection, clientConfiguration)),
-    many: mapInvocation(many.bind(null, parentLog, connection, clientConfiguration)),
-    manyFirst: mapInvocation(manyFirst.bind(null, parentLog, connection, clientConfiguration)),
-    maybeOne: mapInvocation(maybeOne.bind(null, parentLog, connection, clientConfiguration)),
-    maybeOneFirst: mapInvocation(maybeOneFirst.bind(null, parentLog, connection, clientConfiguration)),
-    one: mapInvocation(one.bind(null, parentLog, connection, clientConfiguration)),
-    oneFirst: mapInvocation(oneFirst.bind(null, parentLog, connection, clientConfiguration)),
-    query: mapInvocation(query.bind(null, parentLog, connection, clientConfiguration)),
+    any: (query) => {
+      assertSqlSqlToken(query);
+      assertTransactionDepth();
+
+      return any(
+        parentLog,
+        connection,
+        clientConfiguration,
+        query.sql,
+        query.values,
+      );
+    },
+    anyFirst: (query) => {
+      assertSqlSqlToken(query);
+      assertTransactionDepth();
+
+      return anyFirst(
+        parentLog,
+        connection,
+        clientConfiguration,
+        query.sql,
+        query.values,
+      );
+    },
+    exists: (query) => {
+      assertSqlSqlToken(query);
+      assertTransactionDepth();
+
+      return exists(
+        parentLog,
+        connection,
+        clientConfiguration,
+        query.sql,
+        query.values,
+      );
+    },
+    many: (query) => {
+      assertSqlSqlToken(query);
+      assertTransactionDepth();
+
+      return many(
+        parentLog,
+        connection,
+        clientConfiguration,
+        query.sql,
+        query.values,
+      );
+    },
+    manyFirst: (query) => {
+      assertSqlSqlToken(query);
+      assertTransactionDepth();
+
+      return manyFirst(
+        parentLog,
+        connection,
+        clientConfiguration,
+        query.sql,
+        query.values,
+      );
+    },
+    maybeOne: (query) => {
+      assertSqlSqlToken(query);
+      assertTransactionDepth();
+
+      return maybeOne(
+        parentLog,
+        connection,
+        clientConfiguration,
+        query.sql,
+        query.values,
+      );
+    },
+    maybeOneFirst: (query) => {
+      assertSqlSqlToken(query);
+      assertTransactionDepth();
+
+      return maybeOneFirst(
+        parentLog,
+        connection,
+        clientConfiguration,
+        query.sql,
+        query.values,
+      );
+    },
+    one: (query) => {
+      assertSqlSqlToken(query);
+      assertTransactionDepth();
+
+      return one(
+        parentLog,
+        connection,
+        clientConfiguration,
+        query.sql,
+        query.values,
+      );
+    },
+    oneFirst: (query) => {
+      assertSqlSqlToken(query);
+      assertTransactionDepth();
+
+      return oneFirst(
+        parentLog,
+        connection,
+        clientConfiguration,
+        query.sql,
+        query.values,
+      );
+    },
+    query: (query) => {
+      assertSqlSqlToken(query);
+      assertTransactionDepth();
+
+      return queryMethod(
+        parentLog,
+        connection,
+        clientConfiguration,
+        query.sql,
+        query.values,
+      );
+    },
     transaction: (handler) => {
-      return nestedTransaction(parentLog, connection, clientConfiguration, handler, transactionDepth);
+      assertTransactionDepth();
+
+      return nestedTransaction(
+        parentLog,
+        connection,
+        clientConfiguration,
+        handler,
+        transactionDepth,
+      );
     },
   };
 };

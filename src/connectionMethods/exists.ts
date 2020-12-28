@@ -2,7 +2,7 @@ import {
   DataIntegrityError,
 } from '../errors';
 import type {
-  InternalQueryMethods,
+  InternalQueryMethodType,
 } from '../types';
 import {
   createQueryId,
@@ -11,7 +11,7 @@ import {
   query,
 } from './query';
 
-export const exists: InternalQueryMethods['exists'] = async (log, connection, clientConfiguration, rawSql, values, inheritedQueryId) => {
+export const exists: InternalQueryMethodType<Promise<boolean>> = async (log, connection, clientConfiguration, rawSql, values, inheritedQueryId) => {
   const queryId = inheritedQueryId || createQueryId();
 
   const {

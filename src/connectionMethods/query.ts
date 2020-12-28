@@ -5,12 +5,12 @@ import {
   executeQuery,
 } from '../routines';
 import type {
-  InternalQueryMethods,
+  InternalQueryMethodType,
   NoticeType,
   QueryResultType,
 } from '../types';
 
-export const query: InternalQueryMethods['query'] = async (connectionLogger, connection, clientConfiguration, rawSql, values, inheritedQueryId) => {
+export const query: InternalQueryMethodType<any> = async (connectionLogger, connection, clientConfiguration, rawSql, values, inheritedQueryId) => {
   return executeQuery(
     connectionLogger,
     connection,

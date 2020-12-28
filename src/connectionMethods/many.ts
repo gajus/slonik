@@ -2,7 +2,7 @@ import {
   NotFoundError,
 } from '../errors';
 import type {
-  InternalQueryMethods,
+  InternalQueryMethodType,
 } from '../types';
 import {
   createQueryId,
@@ -16,7 +16,7 @@ import {
  *
  * @throws NotFoundError If query returns no rows.
  */
-export const many: InternalQueryMethods['many'] = async (log, connection, clientConfiguration, rawSql, values, inheritedQueryId) => {
+export const many: InternalQueryMethodType<any> = async (log, connection, clientConfiguration, rawSql, values, inheritedQueryId) => {
   const queryId = inheritedQueryId || createQueryId();
 
   const {

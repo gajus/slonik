@@ -2,7 +2,7 @@ import {
   DataIntegrityError,
 } from '../errors';
 import type {
-  InternalQueryMethods,
+  InternalQueryMethodType,
 } from '../types';
 import {
   createQueryId,
@@ -11,7 +11,7 @@ import {
   many,
 } from './many';
 
-export const manyFirst: InternalQueryMethods['manyFirst'] = async (log, connection, clientConfigurationType, rawSql, values, inheritedQueryId) => {
+export const manyFirst: InternalQueryMethodType<any> = async (log, connection, clientConfigurationType, rawSql, values, inheritedQueryId) => {
   const queryId = inheritedQueryId || createQueryId();
 
   const rows = await many(log, connection, clientConfigurationType, rawSql, values, queryId);

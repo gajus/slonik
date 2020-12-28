@@ -2,7 +2,7 @@ import {
   UnexpectedStateError,
 } from '../errors';
 import type {
-  InternalQueryMethods,
+  InternalQueryMethodType,
 } from '../types';
 import {
   createQueryId,
@@ -18,7 +18,7 @@ import {
  * @throws NotFoundError If query returns no rows.
  * @throws DataIntegrityError If query returns multiple rows.
  */
-export const oneFirst: InternalQueryMethods['oneFirst'] = async (log, connection, clientConfiguration, rawSql, values, inheritedQueryId) => {
+export const oneFirst: InternalQueryMethodType<any> = async (log, connection, clientConfiguration, rawSql, values, inheritedQueryId) => {
   const queryId = inheritedQueryId || createQueryId();
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any

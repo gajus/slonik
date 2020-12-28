@@ -12,7 +12,7 @@ import {
   maybeOneFirst,
   one,
   oneFirst,
-  query,
+  query as queryMethod,
   stream,
   transaction,
 } from '../connectionMethods';
@@ -22,9 +22,6 @@ import type {
   InternalDatabaseConnectionType,
   Logger,
 } from '../types';
-import {
-  mapTaggedTemplateLiteralInvocation,
-} from '../utilities';
 
 export const bindPoolConnection = (
   parentLog: Logger,
@@ -32,42 +29,142 @@ export const bindPoolConnection = (
   clientConfiguration: ClientConfigurationType,
 ): DatabasePoolConnectionType => {
   return {
-    any: mapTaggedTemplateLiteralInvocation(any.bind(null, parentLog, connection, clientConfiguration)),
-    anyFirst: mapTaggedTemplateLiteralInvocation(anyFirst.bind(null, parentLog, connection, clientConfiguration)),
-    copyFromBinary: async (copyQuery, values, columnTypes) => {
-      assertSqlSqlToken(copyQuery);
+    any: (query) => {
+      assertSqlSqlToken(query);
+
+      return any(
+        parentLog,
+        connection,
+        clientConfiguration,
+        query.sql,
+        query.values,
+      );
+    },
+    anyFirst: (query) => {
+      assertSqlSqlToken(query);
+
+      return anyFirst(
+        parentLog,
+        connection,
+        clientConfiguration,
+        query.sql,
+        query.values,
+      );
+    },
+    copyFromBinary: (query, values, columnTypes) => {
+      assertSqlSqlToken(query);
 
       return copyFromBinary(
         parentLog,
         connection,
         clientConfiguration,
-        copyQuery.sql,
-        copyQuery.values,
+        query.sql,
+        query.values,
         values,
         columnTypes,
       );
     },
-    exists: mapTaggedTemplateLiteralInvocation(exists.bind(null, parentLog, connection, clientConfiguration)),
-    many: mapTaggedTemplateLiteralInvocation(many.bind(null, parentLog, connection, clientConfiguration)),
-    manyFirst: mapTaggedTemplateLiteralInvocation(manyFirst.bind(null, parentLog, connection, clientConfiguration)),
-    maybeOne: mapTaggedTemplateLiteralInvocation(maybeOne.bind(null, parentLog, connection, clientConfiguration)),
-    maybeOneFirst: mapTaggedTemplateLiteralInvocation(maybeOneFirst.bind(null, parentLog, connection, clientConfiguration)),
-    one: mapTaggedTemplateLiteralInvocation(one.bind(null, parentLog, connection, clientConfiguration)),
-    oneFirst: mapTaggedTemplateLiteralInvocation(oneFirst.bind(null, parentLog, connection, clientConfiguration)),
-    query: mapTaggedTemplateLiteralInvocation(query.bind(null, parentLog, connection, clientConfiguration)),
-    stream: async (streamQuery, streamHandler) => {
-      assertSqlSqlToken(streamQuery);
+    exists: (query) => {
+      assertSqlSqlToken(query);
+
+      return exists(
+        parentLog,
+        connection,
+        clientConfiguration,
+        query.sql,
+        query.values,
+      );
+    },
+    many: (query) => {
+      assertSqlSqlToken(query);
+
+      return many(
+        parentLog,
+        connection,
+        clientConfiguration,
+        query.sql,
+        query.values,
+      );
+    },
+    manyFirst: (query) => {
+      assertSqlSqlToken(query);
+
+      return manyFirst(
+        parentLog,
+        connection,
+        clientConfiguration,
+        query.sql,
+        query.values,
+      );
+    },
+    maybeOne: (query) => {
+      assertSqlSqlToken(query);
+
+      return maybeOne(
+        parentLog,
+        connection,
+        clientConfiguration,
+        query.sql,
+        query.values,
+      );
+    },
+    maybeOneFirst: (query) => {
+      assertSqlSqlToken(query);
+
+      return maybeOneFirst(
+        parentLog,
+        connection,
+        clientConfiguration,
+        query.sql,
+        query.values,
+      );
+    },
+    one: (query) => {
+      assertSqlSqlToken(query);
+
+      return one(
+        parentLog,
+        connection,
+        clientConfiguration,
+        query.sql,
+        query.values,
+      );
+    },
+    oneFirst: (query) => {
+      assertSqlSqlToken(query);
+
+      return oneFirst(
+        parentLog,
+        connection,
+        clientConfiguration,
+        query.sql,
+        query.values,
+      );
+    },
+    query: (query) => {
+      assertSqlSqlToken(query);
+
+      return queryMethod(
+        parentLog,
+        connection,
+        clientConfiguration,
+        query.sql,
+        query.values,
+      );
+    },
+    stream: (query, streamHandler) => {
+      assertSqlSqlToken(query);
 
       return stream(
         parentLog,
         connection,
         clientConfiguration,
-        streamQuery.sql,
-        streamQuery.values,
+        query.sql,
+        query.values,
         streamHandler,
       );
     },
-    transaction: async (handler) => {
+    transaction: (handler) => {
       return transaction(
         parentLog,
         connection,
