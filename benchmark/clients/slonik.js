@@ -14,7 +14,7 @@ module.exports = {
   name: 'slonik',
   tests: {
     select: () => {
-      return pool.query(sql`select 1  as x`);
+      return pool.query(sql`select 1 as x`);
     },
     select_arg: () => {
       return pool.query(sql`select ${1} as x`);
@@ -27,7 +27,7 @@ module.exports = {
       ${null} as null,
       ${false}::bool as boolean,
       ${Buffer.from('bar').toString()}::bytea as bytea,
-      ${JSON.stringify([{foo: 'bar'}, {bar: 'baz'}])}::jsonb as json
+      ${sql.json(JSON.stringify([{ foo: 'bar' }, { bar: 'baz' }]))}::jsonb as json
     `);
     },
     select_where: () => {
