@@ -3,7 +3,7 @@
     "benny": "^3.6.15",
     "pg": "^8.5.1",
     "pg-promise": "^10.8.6",
-    "slonik": "^23.5.0"
+    "slonik": "^23.5.1"
   },
   "scripts": {
     "benchmark": "node benchmark.js"
