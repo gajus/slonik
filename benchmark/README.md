@@ -3,7 +3,7 @@
 ## Results
 
 |**client**|**select**|**select_arg**|**select_args**|**select_where**|
-|-|-|-|-|
+|-|-|-|-|-|
 |[`pg`](https://github.com/brianc/node-postgres)|11,097|10,807|5,171|2,892|
 |[`pg-promise`](https://github.com/vitaly-t/pg-promise)|10,964|11,466|5,903|3,408|
 |[`slonik`](https://github.com/gajus/slonik)|11,411|9,318|5,459|2,769|

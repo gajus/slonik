@@ -24,7 +24,7 @@ const tests = [
         return '**' + test + '**';
       })
       .join('|') + '|',
-    '|' + tests
+    '|-|' + tests
       .map(() => {
         return '-';
       })
