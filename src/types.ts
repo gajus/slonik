@@ -28,6 +28,7 @@ export type TypeNameIdentifierType =
   | 'float8'
   | 'int2'
   | 'int4'
+  | 'int8'
   | 'json'
   | 'text'
   | 'timestamptz'
