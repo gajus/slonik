@@ -1,4 +1,4 @@
-import {
+import type {
   QueryResult,
 } from 'pg';
 import {
@@ -19,7 +19,7 @@ export const query: InternalQueryMethodType<any> = async (connectionLogger, conn
     values,
     inheritedQueryId,
     async (finalConnection, finalSql, finalValues) => {
-      const result: QueryResult & {notices?: NoticeType[]} = await finalConnection.query(finalSql, finalValues);
+      const result: QueryResult & {notices?: NoticeType[], } = await finalConnection.query(finalSql, finalValues);
 
       return {
         command: result.command as QueryResultType<unknown>['command'],
@@ -29,7 +29,7 @@ export const query: InternalQueryMethodType<any> = async (connectionLogger, conn
             name: field.name,
           };
         }),
-        notices: result.notices || [],
+        notices: result.notices ?? [],
         rowCount: result.rowCount || 0,
         rows: result.rows || [],
       };

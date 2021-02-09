@@ -33,7 +33,7 @@ export const stream: InternalStreamFunctionType = async (connectionLogger, conne
 
       const queryStream: Stream = finalConnection.query(query);
 
-      const rowTransformers: NonNullable<InterceptorType['transformRow']>[] = [];
+      const rowTransformers: Array<NonNullable<InterceptorType['transformRow']>> = [];
 
       for (const interceptor of clientConfiguration.interceptors) {
         if (interceptor.transformRow) {
@@ -46,7 +46,6 @@ export const stream: InternalStreamFunctionType = async (connectionLogger, conne
           reject(error);
         });
 
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const transformedStream = queryStream.pipe(through.obj(function (datum: any, enc: any, callback: any) {
           let finalRow = datum.row;
 

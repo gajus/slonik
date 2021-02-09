@@ -20,7 +20,6 @@ export const bindPool = (
   pool: InternalDatabasePoolType,
   clientConfiguration: ClientConfigurationType,
 ): DatabasePoolType => {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const mapConnection = (targetMethodName: string): any => {
     return (query: TaggedTemplateLiteralInvocationType) => {
       if (typeof query === 'string') {
@@ -33,11 +32,9 @@ export const bindPool = (
         clientConfiguration,
         'IMPLICIT_QUERY',
         (connectionLog, connection, boundConnection) => {
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any
           return (boundConnection as any)[targetMethodName](query);
         },
         (newPool) => {
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any
           return (newPool as any)[targetMethodName](query);
         },
         query,

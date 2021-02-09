@@ -9,7 +9,7 @@ import type {
 export const createSqlSqlFragment = (token: SqlSqlTokenType, greatestParameterPosition: number): SqlFragmentType => {
   let sql = '';
 
-  let leastMatchedParameterPosition = Infinity;
+  let leastMatchedParameterPosition = Number.POSITIVE_INFINITY;
   let greatestMatchedParameterPosition = 0;
 
   sql += token.sql.replace(/\$(\d+)/g, (match, g1) => {
@@ -30,7 +30,7 @@ export const createSqlSqlFragment = (token: SqlSqlTokenType, greatestParameterPo
     throw new UnexpectedStateError('The greatest parameter position is greater than the number of parameter values.');
   }
 
-  if (leastMatchedParameterPosition !== Infinity && leastMatchedParameterPosition !== 1) {
+  if (leastMatchedParameterPosition !== Number.POSITIVE_INFINITY && leastMatchedParameterPosition !== 1) {
     throw new UnexpectedStateError('Parameter position must start at 1.');
   }
 

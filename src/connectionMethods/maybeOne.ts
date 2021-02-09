@@ -17,7 +17,7 @@ import {
  * @throws DataIntegrityError If query returns multiple rows.
  */
 export const maybeOne: InternalQueryMethodType<any> = async (log, connection, clientConfiguration, rawSql, values, inheritedQueryId) => {
-  const queryId = inheritedQueryId || createQueryId();
+  const queryId = inheritedQueryId ?? createQueryId();
 
   const {
     rows,

@@ -7,7 +7,7 @@
     "rootDir": ".",
     "sourceMap": true,
     "strict": true,
-    "target": "esnext"
+    "target": "es2018"
   },
   "exclude": [
     "node_modules",
@@ -15,5 +15,9 @@
     "coverage",
     ".nyc_output",
     ".git"
+  ],
+  "include": [
+    "src",
+    "test"
   ]
 }

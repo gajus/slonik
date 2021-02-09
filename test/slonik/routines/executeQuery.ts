@@ -1,7 +1,9 @@
-import anyTest, {
-  beforeEach as anyBeforeEach,
+import type {
   BeforeInterface,
   TestInterface,
+} from 'ava';
+import anyTest, {
+  beforeEach as anyBeforeEach,
 } from 'ava';
 import Roarr from 'roarr';
 import {

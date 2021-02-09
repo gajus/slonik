@@ -10,36 +10,36 @@ import {
   createPool,
   sql,
 } from '../src';
-import {
+import type {
   PrimitiveValueExpressionType,
   QueryResultType,
 } from '../src/types';
 
-export const queryMethod = async () => {
+export const queryMethod = async (): Promise<void> => {
   const client = createPool('');
 
   const query = await client.query(sql``);
 
   expectTypeOf(query).toMatchTypeOf<{
-    readonly command: 'DELETE' | 'INSERT' | 'SELECT' | 'UPDATE';
-    readonly fields: ReadonlyArray<{ dataTypeId: number; name: string }>;
-    readonly notices: ReadonlyArray<{ code: string; message: string }>;
-    readonly rowCount: number;
-    readonly rows: ReadonlyArray<unknown>;
+    readonly command: 'DELETE' | 'INSERT' | 'SELECT' | 'UPDATE',
+    readonly fields: ReadonlyArray<{ dataTypeId: number, name: string, }>,
+    readonly notices: ReadonlyArray<{ code: string, message: string, }>,
+    readonly rowCount: number,
+    readonly rows: readonly unknown[],
   }>();
 };
 
-export const queryMethods = async () => {
+export const queryMethods = async (): Promise<void> => {
   const client = createPool('');
 
   type Row = {
-    foo: string;
-    bar: boolean;
+    foo: string,
+    bar: boolean,
   };
 
   // any
   const any = await client.any(sql``);
-  expectTypeOf(any).toEqualTypeOf<readonly Record<string, PrimitiveValueExpressionType>[]>();
+  expectTypeOf(any).toEqualTypeOf<ReadonlyArray<Record<string, PrimitiveValueExpressionType>>>();
 
   const anyTyped = await client.any<Row>(sql``);
   expectTypeOf(anyTyped).toEqualTypeOf<readonly Row[]>();
@@ -55,11 +55,11 @@ export const queryMethods = async () => {
   expectTypeOf(anyFirstTyped).toEqualTypeOf<readonly boolean[]>();
 
   const anyFirstTypedQuery = await client.anyFirst(sql<Row>``);
-  expectTypeOf(anyFirstTypedQuery).toEqualTypeOf<ReadonlyArray<string | boolean>>();
+  expectTypeOf(anyFirstTypedQuery).toEqualTypeOf<ReadonlyArray<boolean | string>>();
 
   // many
   const many = await client.many(sql``);
-  expectTypeOf(many).toEqualTypeOf<readonly Record<string, PrimitiveValueExpressionType>[]>();
+  expectTypeOf(many).toEqualTypeOf<ReadonlyArray<Record<string, PrimitiveValueExpressionType>>>();
 
   const manyTyped = await client.many<Row>(sql``);
   expectTypeOf(manyTyped).toEqualTypeOf<readonly Row[]>();
@@ -75,7 +75,7 @@ export const queryMethods = async () => {
   expectTypeOf(manyFirstTyped).toEqualTypeOf<readonly boolean[]>();
 
   const manyFirstTypedQuery = await client.manyFirst(sql<Row>``);
-  expectTypeOf(manyFirstTypedQuery).toEqualTypeOf<ReadonlyArray<string | boolean>>();
+  expectTypeOf(manyFirstTypedQuery).toEqualTypeOf<ReadonlyArray<boolean | string>>();
 
   // maybeOne
   const maybeOne = await client.maybeOne(sql``);
@@ -95,7 +95,7 @@ export const queryMethods = async () => {
   expectTypeOf(maybeOneFirstTyped).toEqualTypeOf<boolean | null>();
 
   const maybeOneFirstTypedQuery = await client.maybeOneFirst(sql<Row>``);
-  expectTypeOf(maybeOneFirstTypedQuery).toEqualTypeOf<string | boolean | null>();
+  expectTypeOf(maybeOneFirstTypedQuery).toEqualTypeOf<boolean | string | null>();
 
   // one
   const one = await client.one(sql``);
@@ -115,15 +115,15 @@ export const queryMethods = async () => {
   expectTypeOf(oneFirstTyped).toEqualTypeOf<boolean>();
 
   const oneFirstTypedQuery = await client.oneFirst(sql<Row>``);
-  expectTypeOf(oneFirstTypedQuery).toEqualTypeOf<string | boolean>();
+  expectTypeOf(oneFirstTypedQuery).toEqualTypeOf<boolean | string>();
 
   // query
   const query = await client.query(sql``);
   expectTypeOf(query).toMatchTypeOf<QueryResultType<Record<string, PrimitiveValueExpressionType>>>();
 
   const queryTyped = await client.query<Row>(sql``);
-  expectTypeOf(queryTyped).toMatchTypeOf<{rows: readonly Row[]}>();
+  expectTypeOf(queryTyped).toMatchTypeOf<{rows: readonly Row[], }>();
 
   const queryTypedQuery = await client.query(sql<Row>``);
-  expectTypeOf(queryTypedQuery).toMatchTypeOf<{ rows: readonly Row[] }>();
+  expectTypeOf(queryTypedQuery).toMatchTypeOf<{ rows: readonly Row[], }>();
 };

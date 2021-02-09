@@ -1,7 +1,7 @@
-/* eslint-disable id-match */
-
-import {
+import type {
   ConnectionOptions,
+} from 'pg-connection-string';
+import {
   parse as parseConnectionString,
 } from 'pg-connection-string';
 import {
@@ -11,9 +11,8 @@ import type {
   ClientConfigurationType,
 } from '../types';
 
-export const createPoolConfiguration = (connectionUri: string, clientConfiguration: ClientConfigurationType) => {
+export const createPoolConfiguration = (connectionUri: string, clientConfiguration: ClientConfigurationType): ConnectionOptions => {
   // @todo: make this not any. A few properties which don't exist on the interface are being set below
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const poolConfiguration: any = parseConnectionString(connectionUri);
 
   // @see https://node-postgres.com/api/pool

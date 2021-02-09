@@ -8,7 +8,7 @@ import {
   SqlToken,
   UnnestToken,
 } from '../tokens';
-import {
+import type {
   SqlTokenType,
 } from '../types';
 
@@ -23,7 +23,7 @@ const Tokens = [
   UnnestToken,
 ] as const;
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
+// eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
 export const isSqlToken = (subject: any): subject is SqlTokenType => {
   if (typeof subject !== 'object' || subject === null) {
     return false;

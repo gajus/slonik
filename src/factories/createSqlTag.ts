@@ -41,10 +41,10 @@ const log = Logger.child({
   namespace: 'sql',
 });
 
-export const createSqlTag = <T = QueryResultRowType>() => {
+export const createSqlTag = <T = QueryResultRowType>(): SqlTaggedTemplateType<T> => {
   const sql: SqlTaggedTemplateType = (
-    parts: ReadonlyArray<string>,
-    ...values: ReadonlyArray<ValueExpressionType>
+    parts: readonly string[],
+    ...values: readonly ValueExpressionType[]
   ): SqlSqlTokenType => {
     let rawSql = '';
 
@@ -104,8 +104,8 @@ export const createSqlTag = <T = QueryResultRowType>() => {
   };
 
   sql.array = (
-    values: ReadonlyArray<PrimitiveValueExpressionType>,
-    memberType: TypeNameIdentifierType | string | SqlTokenType,
+    values: readonly PrimitiveValueExpressionType[],
+    memberType: SqlTokenType | TypeNameIdentifierType | string,
   ): ArraySqlTokenType => {
     return {
       memberType,
@@ -124,7 +124,7 @@ export const createSqlTag = <T = QueryResultRowType>() => {
   };
 
   sql.identifier = (
-    names: ReadonlyArray<string>,
+    names: readonly string[],
   ): IdentifierSqlTokenType => {
     return {
       names,
@@ -142,7 +142,7 @@ export const createSqlTag = <T = QueryResultRowType>() => {
   };
 
   sql.join = (
-    members: ReadonlyArray<ValueExpressionType>,
+    members: readonly ValueExpressionType[],
     glue: SqlTokenType,
   ): ListSqlTokenType => {
     return {
@@ -153,8 +153,8 @@ export const createSqlTag = <T = QueryResultRowType>() => {
   };
 
   sql.unnest = (
-    tuples: ReadonlyArray<ReadonlyArray<PrimitiveValueExpressionType>>,
-    columnTypes: ReadonlyArray<string>,
+    tuples: ReadonlyArray<readonly PrimitiveValueExpressionType[]>,
+    columnTypes: readonly string[],
   ): UnnestSqlTokenType => {
     return {
       columnTypes,

@@ -1,5 +1,5 @@
-coverage
-dist
+/coverage
+/dist
 node_modules
 *.log
 .*

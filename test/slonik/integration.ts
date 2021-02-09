@@ -1,9 +1,11 @@
-import anyTest, {
-  afterEach as anyAfterEach,
+import type {
   AfterInterface,
-  beforeEach as anyBeforeEach,
   BeforeInterface,
   TestInterface,
+} from 'ava';
+import anyTest, {
+  afterEach as anyAfterEach,
+  beforeEach as anyBeforeEach,
 } from 'ava';
 import delay from 'delay';
 import {
@@ -22,7 +24,7 @@ const afterEach = anyAfterEach as AfterInterface<any>;
 let pgNativeBindingsAreAvailable;
 
 try {
-  /* eslint-disable global-require, import/no-unassigned-import, import/no-extraneous-dependencies */
+  /* eslint-disable @typescript-eslint/no-require-imports, import/no-unassigned-import */
   require('pg-native');
   /* eslint-enable */
 
@@ -378,11 +380,12 @@ test('writes and reads buffers', async (t) => {
     )
   `);
 
-  const result = await pool.oneFirst<{ payload: Buffer }>(sql`
+  const result = await pool.oneFirst<{ payload: Buffer, }>(sql`
     SELECT payload
     FROM person
   `);
 
+  // eslint-disable-next-line @typescript-eslint/no-base-to-string
   t.is(result.toString(), payload);
 
   await pool.end();
@@ -414,7 +417,7 @@ if (pgNativeBindingsAreAvailable) {
       INSERT INTO person (name) VALUES ('foo'), ('bar'), ('baz')
     `);
 
-    const messages: Record<string, unknown>[] = [];
+    const messages: Array<Record<string, unknown>> = [];
 
     await pool.stream(sql`
       SELECT name
@@ -484,7 +487,7 @@ if (pgNativeBindingsAreAvailable) {
         ('baz', '1992-01-01')
     `);
 
-    const messages: Record<string, unknown>[] = [];
+    const messages: Array<Record<string, unknown>> = [];
 
     await pool.stream(sql`
       SELECT birth_date
@@ -975,7 +978,7 @@ test('throw error with notices', async (t) => {
   try {
     await pool.query(sql`SELECT * FROM error_notice(${10});`);
   } catch (error) {
-    if (error && error.notices) {
+    if (error?.notices) {
       t.assert(error.notices.length = 5);
     }
   }

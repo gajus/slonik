@@ -3,9 +3,9 @@ import type {
 } from '../types';
 
 export const normaliseQueryValues = (
-  queryValues: ReadonlyArray<PrimitiveValueExpressionType>,
+  queryValues: readonly PrimitiveValueExpressionType[],
   native: boolean,
-): ReadonlyArray<PrimitiveValueExpressionType> => {
+): readonly PrimitiveValueExpressionType[] => {
   if (native && queryValues) {
     const finalValues = [];
 

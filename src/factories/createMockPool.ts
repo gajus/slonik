@@ -19,7 +19,7 @@ import {
 } from './createClientConfiguration';
 
 type OverridesType = {
-  readonly query: (sql: string, values: ReadonlyArray<PrimitiveValueExpressionType>) => Promise<QueryResultType<QueryResultRowType>>;
+  readonly query: (sql: string, values: readonly PrimitiveValueExpressionType[]) => Promise<QueryResultType<QueryResultRowType>>,
 };
 
 export const createMockPool = (

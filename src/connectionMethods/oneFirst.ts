@@ -19,10 +19,16 @@ import {
  * @throws DataIntegrityError If query returns multiple rows.
  */
 export const oneFirst: InternalQueryMethodType<any> = async (log, connection, clientConfiguration, rawSql, values, inheritedQueryId) => {
-  const queryId = inheritedQueryId || createQueryId();
+  const queryId = inheritedQueryId ?? createQueryId();
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const row: any = await one(log, connection, clientConfiguration, rawSql, values, queryId);
+  const row: any = await one(
+    log,
+    connection,
+    clientConfiguration,
+    rawSql,
+    values,
+    queryId,
+  );
 
   const keys = Object.keys(row);
 

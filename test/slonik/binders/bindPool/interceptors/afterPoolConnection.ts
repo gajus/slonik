@@ -14,9 +14,7 @@ test('`afterPoolConnection` is called after `connect`', async (t) => {
 
   const pool = createPool({
     interceptors: [
-      {
-
-      },
+      {},
     ],
   });
 

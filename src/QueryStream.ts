@@ -1,5 +1,5 @@
-/* eslint-disable @typescript-eslint/ban-types */
-/* eslint-disable @typescript-eslint/no-explicit-any */
+/* eslint-disable @typescript-eslint/explicit-member-accessibility */
+/* eslint-disable @typescript-eslint/explicit-module-boundary-types */
 /* eslint-disable fp/no-class */
 /* eslint-disable fp/no-this */
 /* eslint-disable id-match */
@@ -8,12 +8,10 @@
 import {
   Readable,
 } from 'stream';
-import {
+import type {
   QueryResult,
 } from 'pg';
 import Cursor from 'pg-cursor';
-
-// import Result from 'pg/lib/result';
 
 /**
  * @see https://github.com/brianc/node-pg-query-stream
@@ -23,9 +21,6 @@ export class QueryStream extends Readable {
   _reading: boolean;
 
   _closed: boolean;
-
-  // _result: Result;
-  // cursor: Cursor;
 
   _result: any;
 

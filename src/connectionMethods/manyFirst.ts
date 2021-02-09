@@ -12,7 +12,7 @@ import {
 } from './many';
 
 export const manyFirst: InternalQueryMethodType<any> = async (log, connection, clientConfigurationType, rawSql, values, inheritedQueryId) => {
-  const queryId = inheritedQueryId || createQueryId();
+  const queryId = inheritedQueryId ?? createQueryId();
 
   const rows = await many(log, connection, clientConfigurationType, rawSql, values, queryId);
 
@@ -36,7 +36,7 @@ export const manyFirst: InternalQueryMethodType<any> = async (log, connection, c
 
   const firstColumnName = keys[0];
 
-  return (rows as Record<string, unknown>[]).map((row) => {
+  return (rows as Array<Record<string, unknown>>).map((row) => {
     return row[firstColumnName];
   });
 };

@@ -12,7 +12,7 @@ import {
 } from './query';
 
 export const exists: InternalQueryMethodType<Promise<boolean>> = async (log, connection, clientConfiguration, rawSql, values, inheritedQueryId) => {
-  const queryId = inheritedQueryId || createQueryId();
+  const queryId = inheritedQueryId ?? createQueryId();
 
   const {
     rows,

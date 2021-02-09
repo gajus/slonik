@@ -10,8 +10,8 @@ import type {
 } from '../types';
 
 export const encodeTupleList = (
-  tupleList: ReadonlyArray<ReadonlyArray<unknown>>,
-  columnTypes: ReadonlyArray<TypeNameIdentifierType>,
+  tupleList: ReadonlyArray<readonly unknown[]>,
+  columnTypes: readonly TypeNameIdentifierType[],
 ): Promise<Buffer> => {
   return new Promise((resolve, reject) => {
     const concatStream = createConcatStream((payloadBuffer) => {

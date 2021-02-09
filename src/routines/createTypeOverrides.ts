@@ -7,8 +7,7 @@ import type {
   TypeParserType,
 } from '../types';
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-export const createTypeOverrides = async (connection: InternalDatabaseConnectionType, typeParsers: ReadonlyArray<TypeParserType>): Promise<any> => {
+export const createTypeOverrides = async (connection: InternalDatabaseConnectionType, typeParsers: readonly TypeParserType[]): Promise<any> => {
   const typeOverrides = new TypeOverrides();
 
   if (typeParsers.length === 0) {
@@ -19,7 +18,6 @@ export const createTypeOverrides = async (connection: InternalDatabaseConnection
     return typeParser.name;
   });
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const postgresTypes: any[] = (
     await connection.query('SELECT oid, typarray, typname FROM pg_type WHERE typname = ANY($1::text[])', [
       typeNames,

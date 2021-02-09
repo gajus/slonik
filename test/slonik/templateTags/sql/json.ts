@@ -113,7 +113,7 @@ test('throws if payload cannot be stringified (circular reference)', (t) => {
 });
 
 test('Object types with optional properties are allowed', (t) => {
-  type TypeWithOptionalProperty = { foo: string; opt?: string };
+  type TypeWithOptionalProperty = { foo: string, opt?: string, };
   const testValue: TypeWithOptionalProperty = {foo: 'bar'};
 
   const query = sql`SELECT ${sql.json(testValue)}`;

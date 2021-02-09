@@ -37,16 +37,16 @@ type GenericQueryResult = QueryResultType<QueryResultRowType>;
 type ExecutionRoutineType = (
   connection: InternalDatabaseConnectionType,
   sql: string,
-  values: ReadonlyArray<PrimitiveValueExpressionType>,
+  values: readonly PrimitiveValueExpressionType[],
   queryContext: QueryContextType,
   query: QueryType,
 ) => Promise<GenericQueryResult>;
 
 type TransactionQueryType = {
-  readonly executionContext: QueryContextType;
-  readonly executionRoutine: ExecutionRoutineType;
-  readonly sql: string;
-  readonly values: ReadonlyArray<PrimitiveValueExpressionType>;
+  readonly executionContext: QueryContextType,
+  readonly executionRoutine: ExecutionRoutineType,
+  readonly sql: string,
+  readonly values: readonly PrimitiveValueExpressionType[],
 };
 
 // @see https://www.postgresql.org/docs/current/errcodes-appendix.html
@@ -55,7 +55,7 @@ const TRANSACTION_ROLLBACK_ERROR_PREFIX = '40';
 const retryTransaction = async (
   connectionLogger: Logger,
   connection: InternalDatabaseConnectionType,
-  transactionQueries: ReadonlyArray<TransactionQueryType>,
+  transactionQueries: readonly TransactionQueryType[],
   retryLimit: number,
 ) => {
   let result: GenericQueryResult;
@@ -112,10 +112,10 @@ export const executeQuery = async (
   connection: InternalDatabaseConnectionType,
   clientConfiguration: ClientConfigurationType,
   rawSql: string,
-  values: ReadonlyArray<PrimitiveValueExpressionType>,
+  values: readonly PrimitiveValueExpressionType[],
   inheritedQueryId?: QueryIdType,
   executionRoutine?: ExecutionRoutineType,
-) => {
+): Promise<QueryResultType<Record<string, PrimitiveValueExpressionType>>> => {
   if (connection.connection.slonik.terminated) {
     throw new BackendTerminatedError(connection.connection.slonik.terminated);
   }
@@ -144,7 +144,7 @@ export const executeQuery = async (
     });
   }
 
-  const queryId = inheritedQueryId || createQueryId();
+  const queryId = inheritedQueryId ?? createQueryId();
 
   const log = connectionLogger.child({
     queryId,
@@ -311,8 +311,7 @@ export const executeQuery = async (
         const transformRow = interceptor.transformRow;
         const fields = result.fields;
 
-        // eslint-disable-next-line no-loop-func
-        const rows: ReadonlyArray<QueryResultRowType> = result.rows.map((row) => {
+        const rows: readonly QueryResultRowType[] = result.rows.map((row) => {
           return transformRow(executionContext, actualQuery, row, fields);
         });
 

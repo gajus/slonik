@@ -18,6 +18,9 @@
       }
     }
   ],
+  "parserOptions": {
+    "project": "./tsconfig.json"
+  },
   "root": true,
   "rules": {
     "@typescript-eslint/ban-ts-comment": 0,

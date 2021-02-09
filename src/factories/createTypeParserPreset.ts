@@ -10,7 +10,7 @@ import {
   createTimestampWithTimeZoneTypeParser,
 } from './typeParsers';
 
-export const createTypeParserPreset = (): ReadonlyArray<TypeParserType> => {
+export const createTypeParserPreset = (): readonly TypeParserType[] => {
   return [
     createBigintTypeParser(),
     createDateTypeParser(),

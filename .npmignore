@@ -1,5 +1,5 @@
-test
-coverage
+/test
+/coverage
 .*
 *.log
 !.flowconfig

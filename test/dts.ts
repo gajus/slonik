@@ -1,37 +1,38 @@
-/* eslint-disable unicorn/prevent-abbreviations */
-/* eslint-disable no-unused-expressions */
 /* eslint-disable no-new */
 /* eslint-disable unicorn/consistent-function-scoping */
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import {
   expectTypeOf,
 } from 'expect-type';
+import type {
+  ClientConfigurationInputType,
+  ClientConfigurationType,
+  CommonQueryMethodsType,
+  IdentifierNormalizerType,
+  InterceptorType,
+  QueryContextType,
+  QueryResultRowColumnType,
+  QueryResultType,
+  SqlTaggedTemplateType,
+  TypeParserType,
+} from '../src';
 import {
   CheckIntegrityConstraintViolationError,
   DataIntegrityError,
   ForeignKeyIntegrityConstraintViolationError,
-  IdentifierNormalizerType,
   IntegrityConstraintViolationError,
-  InterceptorType,
   InvalidConfigurationError,
   NotFoundError,
   NotNullIntegrityConstraintViolationError,
-  QueryContextType,
-  QueryResultRowColumnType,
   SlonikError,
-  SqlTaggedTemplateType,
   StatementCancelledError,
   StatementTimeoutError,
-  TypeParserType,
   UniqueIntegrityConstraintViolationError, createBigintTypeParser, createPool,
   createSqlTag,
   createTimestampTypeParser,
   createTimestampWithTimeZoneTypeParser,
   createTypeParserPreset,
   sql,
-  QueryResultType,
-  ClientConfigurationType,
-  ClientConfigurationInputType,
 } from '../src';
 
 const VALUE = 'foo';
@@ -46,43 +47,43 @@ const poolTypes = () => {
 
   expectTypeOf(pool).toHaveProperty('configuration').toEqualTypeOf<ClientConfigurationType>();
 
-  const promise = pool.connect(async (conn) => {
-    const result = await conn.query(sql`SELECT 1`);
+  const promise = pool.connect(async (poolConnection) => {
+    const result = await poolConnection.query(sql`SELECT 1`);
 
     expectTypeOf(result).toEqualTypeOf<QueryResultType<Record<string, QueryResultRowColumnType>>>();
 
     expectTypeOf(result.rows[0]).toEqualTypeOf<Record<string, QueryResultRowColumnType>>();
 
-    conn.query(sql`
-        SELECT 1
-        FROM foo
-        WHERE bar = ${'baz'}
+    poolConnection.query(sql`
+      SELECT 1
+      FROM foo
+      WHERE bar = ${'baz'}
     `);
 
     // Query methods
-    await conn.any(sql`SELECT foo`);
-    await conn.anyFirst(sql`SELECT foo`);
-    await conn.exists(sql`SELECT foo`);
-    await conn.many(sql`SELECT foo`);
-    await conn.manyFirst(sql`SELECT foo`);
-    await conn.maybeOne(sql`SELECT foo`);
-    await conn.maybeOneFirst(sql`SELECT foo`);
-    await conn.one(sql`SELECT foo`);
-    await conn.oneFirst(sql`SELECT foo`);
+    await poolConnection.any(sql`SELECT foo`);
+    await poolConnection.anyFirst(sql`SELECT foo`);
+    await poolConnection.exists(sql`SELECT foo`);
+    await poolConnection.many(sql`SELECT foo`);
+    await poolConnection.manyFirst(sql`SELECT foo`);
+    await poolConnection.maybeOne(sql`SELECT foo`);
+    await poolConnection.maybeOneFirst(sql`SELECT foo`);
+    await poolConnection.one(sql`SELECT foo`);
+    await poolConnection.oneFirst(sql`SELECT foo`);
 
     // Disallow raw strings
     // @ts-expect-error
-    await conn.query('SELECT foo');
+    await poolConnection.query('SELECT foo');
 
-    const transaction1 = await conn.transaction(async (transactionConnection) => {
+    const transaction1 = await poolConnection.transaction(async (transactionConnection) => {
       await transactionConnection.query(sql`INSERT INTO foo (bar) VALUES ('baz')`);
       await transactionConnection.query(sql`INSERT INTO qux (quux) VALUES ('corge')`);
 
       return {transactionResult: 'foo'};
     });
-    expectTypeOf(transaction1).toEqualTypeOf<{transactionResult: string}>();
+    expectTypeOf(transaction1).toEqualTypeOf<{transactionResult: string, }>();
 
-    const transaction2 = await conn.transaction(async (t1) => {
+    const transaction2 = await poolConnection.transaction(async (t1) => {
       await t1.query(sql`INSERT INTO foo (bar) VALUES ('baz')`);
 
       return t1.transaction((t2) => {
@@ -91,7 +92,8 @@ const poolTypes = () => {
     });
     expectTypeOf(transaction2).toEqualTypeOf<QueryResultType<Record<string, QueryResultRowColumnType>>>();
 
-    const transaction3 = await conn.transaction(async (t1) => {
+    // eslint-disable-next-line @typescript-eslint/no-confusing-void-expression
+    const transaction3 = await poolConnection.transaction(async (t1): Promise<void> => {
       await t1.query(sql`INSERT INTO foo (bar) VALUES ('baz')`);
 
       try {
@@ -104,22 +106,24 @@ const poolTypes = () => {
         /* empty */
       }
     });
+
+    // eslint-disable-next-line @typescript-eslint/no-invalid-void-type
     expectTypeOf(transaction3).toEqualTypeOf<void>();
 
     return {connectResult: 'foo'};
   });
 
-  expectTypeOf(promise).resolves.toEqualTypeOf<{ connectResult: string }>();
+  expectTypeOf(promise).resolves.toEqualTypeOf<{ connectResult: string, }>();
 
   pool.query(sql`SELECT * FROM table WHERE name = '${VALUE}'`);
 
   const typedQuery = async () => {
-    interface Foo {
-        foo: string;
-    }
-    interface FooBar extends Foo {
-        bar: number;
-    }
+    type Foo = {
+      foo: string,
+    };
+    type FooBar = Foo & {
+      bar: number,
+    };
     const getFooQuery = (limit: number) => {
       return sql<Foo>`select foo from foobartable limit ${limit}`;
     };
@@ -144,7 +148,7 @@ const poolTypes = () => {
 
     expectTypeOf(await pool.anyFirst(getFooQuery(10))).toEqualTypeOf<readonly string[]>();
 
-    expectTypeOf(await pool.anyFirst(getFooBarQuery(10))).toEqualTypeOf<ReadonlyArray<string | number>>();
+    expectTypeOf(await pool.anyFirst(getFooBarQuery(10))).toEqualTypeOf<ReadonlyArray<number | string>>();
   };
 
   createPool('postgres://localhost', {
@@ -416,7 +420,7 @@ const samplesFromDocs = async () => {
   // end samples from readme
 };
 
-const exportedTypes = () => {
+const exportedTypes = (): void => {
   // make sure CommonQueryMethodsType is exported by package
-  expectTypeOf<import('../src').CommonQueryMethodsType>().toHaveProperty('any').toBeCallableWith(sql`select 1`);
+  expectTypeOf<CommonQueryMethodsType>().toHaveProperty('any').toBeCallableWith(sql`select 1`);
 };

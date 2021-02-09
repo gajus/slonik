@@ -46,7 +46,7 @@ export const createPool = (
   let pgNativeBindingsAreAvailable = false;
 
   try {
-    /* eslint-disable global-require, import/no-unassigned-import, import/no-extraneous-dependencies */
+    /* eslint-disable @typescript-eslint/no-require-imports, import/no-unassigned-import */
     require('pg-native');
     /* eslint-enable */
 
@@ -63,25 +63,25 @@ export const createPool = (
   if (clientConfiguration.preferNativeBindings && pgNativeBindingsAreAvailable) {
     poolLog.info('using native libpq bindings');
 
-    // eslint-disable-next-line global-require, @typescript-eslint/no-var-requires
+    // eslint-disable-next-line @typescript-eslint/no-require-imports, @typescript-eslint/no-var-requires
     pg = require('pg').native;
 
     native = true;
   } else if (clientConfiguration.preferNativeBindings && !pgNativeBindingsAreAvailable) {
     poolLog.info('using JavaScript bindings; pg-native not found');
 
-    // eslint-disable-next-line global-require
+    // eslint-disable-next-line @typescript-eslint/no-require-imports
     pg = require('pg');
   } else {
     poolLog.info('using JavaScript bindings');
 
-    // eslint-disable-next-line global-require
+    // eslint-disable-next-line @typescript-eslint/no-require-imports
     pg = require('pg');
   }
 
-  type ModifiedPool = Omit<pgTypes.Pool, 'on'> & EventEmitter & {
-    slonik?: unknown;
-  }
+  type ModifiedPool = EventEmitter & Omit<pgTypes.Pool, 'on'> & {
+    slonik?: unknown,
+  };
   // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
   const pool: ModifiedPool = new pg!.Pool(poolConfiguration as unknown as pgTypes.PoolConfig);
 
@@ -103,8 +103,7 @@ export const createPool = (
   });
 
   // istanbul ignore next
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  pool.on('connect', (client: EventEmitter & {connection: any; processID: string}) => {
+  pool.on('connect', (client: EventEmitter & {connection: any, processID: string, }) => {
     client.connection = client.connection || {};
 
     client.connection.slonik = {

@@ -12,7 +12,7 @@ import {
  * Makes a query and expects any number of results.
  */
 export const any: InternalQueryMethodType<any> = async (log, connection, clientConfiguration, rawSql, values, inheritedQueryId) => {
-  const queryId = inheritedQueryId || createQueryId();
+  const queryId = inheritedQueryId ?? createQueryId();
 
   const {
     rows,
