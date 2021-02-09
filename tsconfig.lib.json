@@ -2,8 +2,7 @@
   "compilerOptions": {
     "declaration": true,
     "noEmit": false,
-    "outDir": "dist",
-    "rootDir": "src"
+    "outDir": "dist"
   },
   "extends": "./tsconfig.json",
   "include": [
