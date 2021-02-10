@@ -12,6 +12,7 @@ import {
   nestedTransaction,
   one,
   oneFirst,
+  stream,
   query as queryMethod,
 } from '../connectionMethods';
 import type {
@@ -153,6 +154,19 @@ export const bindTransactionConnection = (
         clientConfiguration,
         query.sql,
         query.values,
+      );
+    },
+    stream: (query, streamHandler) => {
+      assertSqlSqlToken(query);
+      assertTransactionDepth();
+
+      return stream(
+        parentLog,
+        connection,
+        clientConfiguration,
+        query.sql,
+        query.values,
+        streamHandler,
       );
     },
     transaction: (handler) => {

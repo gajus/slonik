@@ -537,6 +537,64 @@ if (pgNativeBindingsAreAvailable) {
 
     await pool.end();
   });
+  test('streams over a transaction', async (t) => {
+    const pool = createPool(t.context.dsn);
+
+    await pool.query(sql`
+      INSERT INTO person (name) VALUES ('foo'), ('bar'), ('baz')
+    `);
+
+    const messages: Array<Record<string, unknown>> = [];
+
+    await pool.transaction(async (trxn) => {
+      await trxn.stream(sql`
+        SELECT name
+        FROM person
+      `, (stream) => {
+        stream.on('data', (datum) => {
+          messages.push(datum);
+        });
+      });
+    });
+
+    t.deepEqual(messages, [
+      {
+        fields: [
+          {
+            dataTypeId: 25,
+            name: 'name',
+          },
+        ],
+        row: {
+          name: 'foo',
+        },
+      },
+      {
+        fields: [
+          {
+            dataTypeId: 25,
+            name: 'name',
+          },
+        ],
+        row: {
+          name: 'bar',
+        },
+      },
+      {
+        fields: [
+          {
+            dataTypeId: 25,
+            name: 'name',
+          },
+        ],
+        row: {
+          name: 'baz',
+        },
+      },
+    ]);
+
+    await pool.end();
+  });
 }
 
 test('explicit connection configuration is persisted', async (t) => {
