@@ -123,6 +123,7 @@ export type CommonQueryMethodsType = {
 };
 
 export type DatabaseTransactionConnectionType = CommonQueryMethodsType & {
+  readonly stream: StreamFunctionType,
   readonly transaction: <T>(handler: TransactionFunctionType<T>) => Promise<T>,
 };
 
