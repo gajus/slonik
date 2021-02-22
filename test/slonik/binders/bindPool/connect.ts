@@ -146,8 +146,8 @@ test('if `beforePoolConnection` returns pool object, then the returned pool obje
   });
 
   t.assert(pool0.connectSpy.callCount === 1);
-  t.assert(pool0.releaseSpy.callCount === 0);
-  t.assert(pool0.removeSpy.callCount === 1);
+  t.assert(pool0.releaseSpy.callCount === 1);
+  t.assert(pool0.removeSpy.callCount === 0);
 
   t.assert(pool1.connectSpy.callCount === 0);
   t.assert(pool1.releaseSpy.callCount === 0);
