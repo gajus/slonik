@@ -23,7 +23,7 @@ export const createSqlSqlFragment = (token: SqlSqlTokenType, greatestParameterPo
       leastMatchedParameterPosition = parameterPosition;
     }
 
-    return '$' + (parameterPosition + greatestParameterPosition);
+    return '$' + String(parameterPosition + greatestParameterPosition);
   });
 
   if (greatestMatchedParameterPosition > token.values.length) {

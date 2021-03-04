@@ -1,5 +1,4 @@
 /* eslint-disable @typescript-eslint/explicit-member-accessibility */
-/* eslint-disable @typescript-eslint/explicit-module-boundary-types */
 /* eslint-disable fp/no-class */
 /* eslint-disable fp/no-this */
 /* eslint-disable id-match */

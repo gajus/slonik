@@ -38,7 +38,7 @@ let testId = 0;
 beforeEach(async (t) => {
   ++testId;
 
-  const TEST_DATABASE_NAME = 'slonik_test_' + testId;
+  const TEST_DATABASE_NAME = 'slonik_test_' + String(testId);
 
   t.context = {
     dsn: 'postgresql://postgres@localhost/' + TEST_DATABASE_NAME,
@@ -1062,7 +1062,7 @@ test('error messages include original pg error', async (t) => {
     error.message,
 
     // @ts-expect-error
-    'Query violates a unique integrity constraint. ' + error?.originalError?.message,
+    'Query violates a unique integrity constraint. ' + String(error?.originalError?.message),
   );
 
   await pool.end();

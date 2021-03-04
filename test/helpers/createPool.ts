@@ -18,7 +18,6 @@ const defaultConfiguration = {
   typeParsers: [],
 };
 
-// eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
 export const createPool = (clientConfiguration: ClientConfigurationInputType = defaultConfiguration) => {
   const eventEmitter = new EventEmitter();
 

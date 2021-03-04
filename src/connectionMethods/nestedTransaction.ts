@@ -15,7 +15,7 @@ export const nestedTransaction: InternalNestedTransactionFunctionType = async (p
   const newTransactionDepth = transactionDepth + 1;
 
   if (connection.connection.slonik.mock === false) {
-    await connection.query('SAVEPOINT slonik_savepoint_' + newTransactionDepth);
+    await connection.query('SAVEPOINT slonik_savepoint_' + String(newTransactionDepth));
   }
 
   const log = parentLog.child({
@@ -30,7 +30,7 @@ export const nestedTransaction: InternalNestedTransactionFunctionType = async (p
     return result;
   } catch (error) {
     if (connection.connection.slonik.mock === false) {
-      await connection.query('ROLLBACK TO SAVEPOINT slonik_savepoint_' + newTransactionDepth);
+      await connection.query('ROLLBACK TO SAVEPOINT slonik_savepoint_' + String(newTransactionDepth));
     }
 
     log.error({

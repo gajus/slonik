@@ -29,7 +29,7 @@ export const createUnnestSqlFragment = (token: UnnestSqlTokenType, greatestParam
 
     unnestSqlTokens.push(
       '$' +
-      ++placeholderIndex +
+      String(++placeholderIndex) +
       '::' +
       escapeIdentifier(stripArrayNotation(columnType)) +
       '[]'.repeat(countArrayDimensions(columnType) + 1),
