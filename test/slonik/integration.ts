@@ -260,7 +260,7 @@ test('terminated backend produces BackendTerminatedError error', async (t) => {
     `);
 
     setTimeout(() => {
-      pool.query(sql`SELECT pg_terminate_backend(${connectionPid})`);
+      void pool.query(sql`SELECT pg_terminate_backend(${connectionPid})`);
     }, 100);
 
     await connection.query(sql`SELECT pg_sleep(2)`);
@@ -280,7 +280,7 @@ test('cancelled statement produces StatementCancelledError error', async (t) => 
     `);
 
     setTimeout(() => {
-      pool.query(sql`SELECT pg_cancel_backend(${connectionPid})`);
+      void pool.query(sql`SELECT pg_cancel_backend(${connectionPid})`);
     }, 100);
 
     await connection.query(sql`SELECT pg_sleep(2)`);
@@ -702,7 +702,7 @@ test('pool.end() resolves when there are no more connections (explicit connectio
     waitingClientCount: 0,
   });
 
-  pool.connect(async () => {
+  void pool.connect(async () => {
     await delay(500);
   });
 

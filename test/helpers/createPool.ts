@@ -7,7 +7,6 @@ import {
 } from '../../src/binders/bindPool';
 import type {
   ClientConfigurationInputType,
-  DatabasePoolType,
 } from '../../src/types';
 import {
   Logger as log,

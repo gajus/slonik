@@ -173,7 +173,10 @@ export const executeQuery = async (
 
   for (const interceptor of clientConfiguration.interceptors) {
     if (interceptor.beforeTransformQuery) {
-      interceptor.beforeTransformQuery(executionContext, actualQuery);
+      await interceptor.beforeTransformQuery(
+        executionContext,
+        actualQuery,
+      );
     }
   }
 
