@@ -26,6 +26,34 @@ const createErrorWithCode = (code: string) => {
   return error;
 };
 
+test('ends connection after promise is resolved (explicit connection)', async (t) => {
+  const eventHandler = sinon.spy();
+
+  process.on('warning', eventHandler);
+
+  const pool = createPool();
+
+  await pool.connect(async (connection) => {
+    let queryCount = 20;
+
+    const queries = [];
+
+    while (queryCount-- > 0) {
+      queries.push(
+        connection.query(sql`SELECT 1`),
+      );
+    }
+
+    await Promise.all(queries);
+  });
+
+  // Not entirely clear why delay is needed here,
+  // but event is not emitted straight after the transaction completes.
+  await delay(100);
+
+  t.false(eventHandler.called);
+});
+
 test('executes the query and returns the result', async (t) => {
   const pool = createPool();
 
