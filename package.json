@@ -31,29 +31,29 @@
     "pg-cursor": "^2.5.2",
     "postgres-array": "^3.0.1",
     "postgres-interval": "^3.0.0",
-    "roarr": "^4.0.11",
+    "roarr": "^4.2.0",
     "serialize-error": "^8.0.1",
     "through2": "^4.0.2"
   },
   "description": "A PostgreSQL client with strict types, detailed logging and assertions.",
   "devDependencies": {
     "@types/concat-stream": "^1.6.0",
-    "@types/pg": "^7.14.9",
+    "@types/pg": "^7.14.10",
     "@types/pg-copy-streams": "^1.2.1",
     "@types/sinon": "^9.0.10",
     "@types/through2": "^2.0.36",
     "ava": "^3.15.0",
     "coveralls": "^3.1.0",
-    "eslint": "^7.19.0",
-    "eslint-config-canonical": "^25.8.15",
+    "eslint": "^7.21.0",
+    "eslint-config-canonical": "^25.9.0",
     "expect-type": "^0.11.0",
-    "gitdown": "^3.1.3",
+    "gitdown": "^3.1.4",
     "husky": "^4.3.6",
     "nyc": "^15.1.0",
-    "semantic-release": "^17.3.8",
+    "semantic-release": "^17.4.1",
     "sinon": "^9.2.4",
     "ts-node": "^9.1.1",
-    "typescript": "^4.1.3"
+    "typescript": "^4.2.2"
   },
   "engines": {
     "node": ">=10.0"

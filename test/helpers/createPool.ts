@@ -20,7 +20,6 @@ const defaultConfiguration = {
 
 // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
 export const createPool = (clientConfiguration: ClientConfigurationInputType = defaultConfiguration) => {
-  // @ts-expect-error
   const eventEmitter = new EventEmitter();
 
   const connection = {
