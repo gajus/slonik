@@ -18,6 +18,8 @@ const defaultConfiguration = {
 };
 
 export const createPool = (clientConfiguration: ClientConfigurationInputType = defaultConfiguration) => {
+  // eslint-disable-next-line @typescript-eslint/prefer-ts-expect-error
+  // @ts-ignore
   const eventEmitter = new EventEmitter();
 
   const connection = {
