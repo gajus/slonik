@@ -158,3 +158,7 @@ await pool.connect(async (connection0) => {
 ### Handling `UniqueIntegrityConstraintViolationError`
 
 `UniqueIntegrityConstraintViolationError` is thrown when PostgreSQL responds with [`unique_violation`](https://www.postgresql.org/docs/9.4/static/errcodes-appendix.html) (`23505`) error.
+
+### Handling `TupleMovedToAnotherPartitionError`
+
+`TupleMovedToAnotherPartitionError` is thrown when [`affecting tuple moved into different partition`](https://github.com/postgres/postgres/commit/f16241bef7cc271bff60e23de2f827a10e50dde8).

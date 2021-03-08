@@ -42,6 +42,12 @@ export class BackendTerminatedError extends WrappedPGError {
   }
 }
 
+export class TupleMovedToAnotherPartitionError extends WrappedPGError {
+  public constructor (error: Error, message = 'Tuple moved to another partition due to concurrent update.') {
+    super(error, message);
+  }
+}
+
 export class NotFoundError extends SlonikError {
   public constructor () {
     super('Resource not found.');

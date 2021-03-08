@@ -3,6 +3,7 @@ import delay from 'delay';
 import sinon from 'sinon';
 import {
   BackendTerminatedError,
+  TupleMovedToAnotherPartitionError,
   CheckIntegrityConstraintViolationError,
   ForeignKeyIntegrityConstraintViolationError,
   NotNullIntegrityConstraintViolationError,
@@ -161,6 +162,16 @@ test('57P01 error causes the connection to be rejected (IMPLICIT_QUERY connectio
   const error = await t.throwsAsync(pool.query(sql`SELECT 1`));
 
   t.true(error instanceof BackendTerminatedError);
+});
+
+test('tuple to be locked was already moved to another partition due to concurrent update error handling', async (t) => {
+  const pool = createPool();
+
+  pool.querySpy.rejects(new Error('tuple to be locked was already moved to another partition due to concurrent update'));
+
+  const error = await t.throwsAsync(pool.query(sql`SELECT 1`));
+
+  t.true(error instanceof TupleMovedToAnotherPartitionError);
 });
 
 // @todo https://github.com/gajus/slonik/issues/39

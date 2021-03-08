@@ -14,6 +14,7 @@ import {
   StatementTimeoutError,
   UnexpectedStateError,
   UniqueIntegrityConstraintViolationError,
+  TupleMovedToAnotherPartitionError
 } from '../errors';
 import type {
   ClientConfigurationType,
@@ -256,6 +257,10 @@ export const executeQuery = async (
 
       if (error.code === '57014') {
         throw new StatementCancelledError(error);
+      }
+
+      if (error.message === 'tuple to be locked was already moved to another partition due to concurrent update') {
+        throw new TupleMovedToAnotherPartitionError(error);
       }
 
       if (error.code === '23502') {
