@@ -64,5 +64,5 @@ export {
   StatementTimeoutError,
   UnexpectedStateError,
   UniqueIntegrityConstraintViolationError,
-  TupleMovedToAnotherPartitionError
+  TupleMovedToAnotherPartitionError,
 } from './errors';

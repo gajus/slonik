@@ -15,7 +15,7 @@ import {
   StatementTimeoutError,
   UnexpectedStateError,
   UniqueIntegrityConstraintViolationError,
-  TupleMovedToAnotherPartitionError
+  TupleMovedToAnotherPartitionError,
 } from '../errors';
 import type {
   ClientConfigurationType,
