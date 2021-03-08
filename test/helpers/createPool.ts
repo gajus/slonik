@@ -7,7 +7,6 @@ import {
 } from '../../src/binders/bindPool';
 import type {
   ClientConfigurationInputType,
-  DatabasePoolType,
 } from '../../src/types';
 import {
   Logger as log,
@@ -18,9 +17,9 @@ const defaultConfiguration = {
   typeParsers: [],
 };
 
-// eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
 export const createPool = (clientConfiguration: ClientConfigurationInputType = defaultConfiguration) => {
-  // @ts-expect-error
+  // eslint-disable-next-line @typescript-eslint/prefer-ts-expect-error
+  // @ts-ignore
   const eventEmitter = new EventEmitter();
 
   const connection = {

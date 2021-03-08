@@ -32,7 +32,7 @@ export const createListSqlFragment = (token: ListSqlTokenType, greatestParameter
       placeholderIndex += sqlFragment.values.length;
       values.push(...sqlFragment.values);
     } else if (isPrimitiveValueExpression(member)) {
-      placeholders.push('$' + ++placeholderIndex);
+      placeholders.push('$' + String(++placeholderIndex));
 
       values.push(member);
     } else {

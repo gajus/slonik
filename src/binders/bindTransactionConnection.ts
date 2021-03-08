@@ -20,7 +20,6 @@ import type {
   DatabaseTransactionConnectionType,
   InternalDatabaseConnectionType,
   Logger,
-  TaggedTemplateLiteralInvocationType,
 } from '../types';
 
 export const bindTransactionConnection = (

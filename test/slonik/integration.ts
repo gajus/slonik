@@ -38,7 +38,7 @@ let testId = 0;
 beforeEach(async (t) => {
   ++testId;
 
-  const TEST_DATABASE_NAME = 'slonik_test_' + testId;
+  const TEST_DATABASE_NAME = 'slonik_test_' + String(testId);
 
   t.context = {
     dsn: 'postgresql://postgres@localhost/' + TEST_DATABASE_NAME,
@@ -260,7 +260,7 @@ test('terminated backend produces BackendTerminatedError error', async (t) => {
     `);
 
     setTimeout(() => {
-      pool.query(sql`SELECT pg_terminate_backend(${connectionPid})`);
+      void pool.query(sql`SELECT pg_terminate_backend(${connectionPid})`);
     }, 100);
 
     await connection.query(sql`SELECT pg_sleep(2)`);
@@ -280,7 +280,7 @@ test('cancelled statement produces StatementCancelledError error', async (t) => 
     `);
 
     setTimeout(() => {
-      pool.query(sql`SELECT pg_cancel_backend(${connectionPid})`);
+      void pool.query(sql`SELECT pg_cancel_backend(${connectionPid})`);
     }, 100);
 
     await connection.query(sql`SELECT pg_sleep(2)`);
@@ -702,7 +702,7 @@ test('pool.end() resolves when there are no more connections (explicit connectio
     waitingClientCount: 0,
   });
 
-  pool.connect(async () => {
+  void pool.connect(async () => {
     await delay(500);
   });
 
@@ -1062,7 +1062,7 @@ test('error messages include original pg error', async (t) => {
     error.message,
 
     // @ts-expect-error
-    'Query violates a unique integrity constraint. ' + error?.originalError?.message,
+    'Query violates a unique integrity constraint. ' + String(error?.originalError?.message),
   );
 
   await pool.end();

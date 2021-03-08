@@ -41,127 +41,127 @@ const log = Logger.child({
   namespace: 'sql',
 });
 
-export const createSqlTag = <T = QueryResultRowType>(): SqlTaggedTemplateType<T> => {
-  const sql: SqlTaggedTemplateType = (
-    parts: readonly string[],
-    ...values: readonly ValueExpressionType[]
-  ): SqlSqlTokenType => {
-    let rawSql = '';
+const sql: SqlTaggedTemplateType = (
+  parts: readonly string[],
+  ...values: readonly ValueExpressionType[]
+): SqlSqlTokenType => {
+  let rawSql = '';
 
-    const parameterValues = [];
+  const parameterValues = [];
 
-    let index = 0;
+  let index = 0;
 
-    for (const part of parts) {
-      const token = values[index++];
+  for (const part of parts) {
+    const token = values[index++];
 
-      rawSql += part;
+    rawSql += part;
 
-      if (index >= parts.length) {
-        continue;
-      }
-
-      if (token === undefined) {
-        log.debug({
-          index,
-          values,
-        }, 'bound values');
-
-        throw new InvalidInputError('SQL tag cannot be bound an undefined value.');
-      } else if (isPrimitiveValueExpression(token)) {
-        rawSql += '$' + (parameterValues.length + 1);
-
-        parameterValues.push(token);
-      } else if (isSqlToken(token)) {
-        const sqlFragment = createSqlTokenSqlFragment(token, parameterValues.length);
-
-        rawSql += sqlFragment.sql;
-        parameterValues.push(...sqlFragment.values);
-      } else {
-        log.error({
-          constructedSql: rawSql,
-          index,
-          offendingToken: token,
-        }, 'unexpected value expression');
-
-        throw new TypeError('Unexpected value expression.');
-      }
+    if (index >= parts.length) {
+      continue;
     }
 
-    const query: SqlTokenType = {
-      sql: rawSql,
-      type: SqlToken,
-      values: parameterValues,
-    };
+    if (token === undefined) {
+      log.debug({
+        index,
+        values,
+      }, 'bound values');
 
-    Object.defineProperty(query, 'sql', {
-      configurable: false,
-      enumerable: true,
-      writable: false,
-    });
+      throw new InvalidInputError('SQL tag cannot be bound an undefined value.');
+    } else if (isPrimitiveValueExpression(token)) {
+      rawSql += '$' + String(parameterValues.length + 1);
 
-    return query;
+      parameterValues.push(token);
+    } else if (isSqlToken(token)) {
+      const sqlFragment = createSqlTokenSqlFragment(token, parameterValues.length);
+
+      rawSql += sqlFragment.sql;
+      parameterValues.push(...sqlFragment.values);
+    } else {
+      log.error({
+        constructedSql: rawSql,
+        index,
+        offendingToken: token,
+      }, 'unexpected value expression');
+
+      throw new TypeError('Unexpected value expression.');
+    }
+  }
+
+  const query: SqlTokenType = {
+    sql: rawSql,
+    type: SqlToken,
+    values: parameterValues,
   };
 
-  sql.array = (
-    values: readonly PrimitiveValueExpressionType[],
-    memberType: SqlTokenType | TypeNameIdentifierType | string,
-  ): ArraySqlTokenType => {
-    return {
-      memberType,
-      type: ArrayToken,
-      values,
-    };
-  };
+  Object.defineProperty(query, 'sql', {
+    configurable: false,
+    enumerable: true,
+    writable: false,
+  });
 
-  sql.binary = (
-    data: Buffer,
-  ): BinarySqlTokenType => {
-    return {
-      data,
-      type: BinaryToken,
-    };
-  };
+  return query;
+};
 
-  sql.identifier = (
-    names: readonly string[],
-  ): IdentifierSqlTokenType => {
-    return {
-      names,
-      type: IdentifierToken,
-    };
+sql.array = (
+  values: readonly PrimitiveValueExpressionType[],
+  memberType: SqlTokenType | TypeNameIdentifierType | string,
+): ArraySqlTokenType => {
+  return {
+    memberType,
+    type: ArrayToken,
+    values,
   };
+};
 
-  sql.json = (
-    value: SerializableValueType,
-  ): JsonSqlTokenType => {
-    return {
-      type: JsonToken,
-      value,
-    };
+sql.binary = (
+  data: Buffer,
+): BinarySqlTokenType => {
+  return {
+    data,
+    type: BinaryToken,
   };
+};
 
-  sql.join = (
-    members: readonly ValueExpressionType[],
-    glue: SqlTokenType,
-  ): ListSqlTokenType => {
-    return {
-      glue,
-      members,
-      type: ListToken,
-    };
+sql.identifier = (
+  names: readonly string[],
+): IdentifierSqlTokenType => {
+  return {
+    names,
+    type: IdentifierToken,
   };
+};
 
-  sql.unnest = (
-    tuples: ReadonlyArray<readonly PrimitiveValueExpressionType[]>,
-    columnTypes: readonly string[],
-  ): UnnestSqlTokenType => {
-    return {
-      columnTypes,
-      tuples,
-      type: UnnestToken,
-    };
+sql.json = (
+  value: SerializableValueType,
+): JsonSqlTokenType => {
+  return {
+    type: JsonToken,
+    value,
   };
+};
 
+sql.join = (
+  members: readonly ValueExpressionType[],
+  glue: SqlTokenType,
+): ListSqlTokenType => {
+  return {
+    glue,
+    members,
+    type: ListToken,
+  };
+};
+
+sql.unnest = (
+  tuples: ReadonlyArray<readonly PrimitiveValueExpressionType[]>,
+  columnTypes: readonly string[],
+): UnnestSqlTokenType => {
+  return {
+    columnTypes,
+    tuples,
+    type: UnnestToken,
+  };
+};
+
+export const createSqlTag = <T = QueryResultRowType>(): SqlTaggedTemplateType<T> => {
   return sql;
 };

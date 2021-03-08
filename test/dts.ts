@@ -54,7 +54,7 @@ const poolTypes = () => {
 
     expectTypeOf(result.rows[0]).toEqualTypeOf<Record<string, QueryResultRowColumnType>>();
 
-    poolConnection.query(sql`
+    void poolConnection.query(sql`
       SELECT 1
       FROM foo
       WHERE bar = ${'baz'}
@@ -115,7 +115,7 @@ const poolTypes = () => {
 
   expectTypeOf(promise).resolves.toEqualTypeOf<{ connectResult: string, }>();
 
-  pool.query(sql`SELECT * FROM table WHERE name = '${VALUE}'`);
+  void pool.query(sql`SELECT * FROM table WHERE name = '${VALUE}'`);
 
   const typedQuery = async () => {
     type Foo = {
@@ -201,7 +201,7 @@ const interceptorTypes = () => {
     interceptors,
   });
 
-  conn.any(sql`
+  void conn.any(sql`
     SELECT
         id,
         full_name

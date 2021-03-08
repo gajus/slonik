@@ -1,6 +1,7 @@
 import {
   getStackTrace,
 } from 'get-stack-trace';
+import Deferred from 'promise-deferred';
 import {
   serializeError,
 } from 'serialize-error';
@@ -174,7 +175,10 @@ export const executeQuery = async (
 
   for (const interceptor of clientConfiguration.interceptors) {
     if (interceptor.beforeTransformQuery) {
-      interceptor.beforeTransformQuery(executionContext, actualQuery);
+      await interceptor.beforeTransformQuery(
+        executionContext,
+        actualQuery,
+      );
     }
   }
 
@@ -203,6 +207,14 @@ export const executeQuery = async (
   const noticeListener = (notice: NoticeType) => {
     notices.push(notice);
   };
+
+  const activeQuery = new Deferred();
+
+  const blockingPromise = connection.connection.slonik.activeQuery?.promise ?? null;
+
+  connection.connection.slonik.activeQuery = activeQuery;
+
+  await blockingPromise;
 
   connection.on('notice', noticeListener);
 
@@ -284,6 +296,8 @@ export const executeQuery = async (
       throw error;
     } finally {
       connection.off('notice', noticeListener);
+
+      activeQuery.resolve();
     }
   } catch (error) {
     for (const interceptor of clientConfiguration.interceptors) {
