@@ -1,6 +1,9 @@
+// eslint-disable-next-line import/order
 import {
   getStackTrace,
 } from 'get-stack-trace';
+
+// @ts-expect-error
 import Deferred from 'promise-deferred';
 import {
   serializeError,
