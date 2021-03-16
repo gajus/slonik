@@ -15,6 +15,7 @@ import {
   StatementCancelledError,
   StatementTimeoutError,
   UnexpectedStateError,
+  TupleMovedToAnotherPartitionError,
 } from '../../src';
 
 const test = anyTest as TestInterface<any>;
@@ -1064,6 +1065,40 @@ test('error messages include original pg error', async (t) => {
     // @ts-expect-error
     'Query violates a unique integrity constraint. ' + String(error?.originalError?.message),
   );
+
+  await pool.end();
+});
+
+test('Tuple moved to another partition due to concurrent update error handled', async (t) => {
+  const pool = createPool(t.context.dsn, {
+    transactionRetryLimit: 0
+  });
+
+  await pool.connect(async (connection) => {
+    await connection.query(sql`
+      CREATE TABLE foo (a int, b text) PARTITION BY LIST(a);
+      CREATE TABLE foo1 PARTITION OF foo FOR VALUES IN (1);
+      CREATE TABLE foo2 PARTITION OF foo FOR VALUES IN (2);
+      INSERT INTO foo VALUES (1, 'ABC');
+    `);
+  });
+  await pool.connect(async (connection1) => {
+    await pool.connect(async (connection2) => {
+      await connection1.query(sql`BEGIN`);
+      await connection2.query(sql`BEGIN`);
+      await connection1.query(sql`UPDATE foo SET a = 2 WHERE a = 1`);
+      connection2.query(sql`UPDATE foo SET b = 'XYZ'`).catch(error => {
+        t.is(
+          error.message,
+          // @ts-expect-error
+          'Tuple moved to another partition due to concurrent update. ' + String(error?.originalError?.message),
+        );
+        t.true(error instanceof TupleMovedToAnotherPartitionError);
+      });
+      await connection1.query(sql`COMMIT`);
+      await connection2.query(sql`COMMIT`);
+    });
+  });
 
   await pool.end();
 });
