@@ -1071,7 +1071,7 @@ test('error messages include original pg error', async (t) => {
 
 test('Tuple moved to another partition due to concurrent update error handled', async (t) => {
   const pool = createPool(t.context.dsn, {
-    transactionRetryLimit: 0
+    transactionRetryLimit: 0,
   });
 
   await pool.connect(async (connection) => {
@@ -1087,10 +1087,9 @@ test('Tuple moved to another partition due to concurrent update error handled', 
       await connection1.query(sql`BEGIN`);
       await connection2.query(sql`BEGIN`);
       await connection1.query(sql`UPDATE foo SET a = 2 WHERE a = 1`);
-      connection2.query(sql`UPDATE foo SET b = 'XYZ'`).catch(error => {
+      connection2.query(sql`UPDATE foo SET b = 'XYZ'`).catch((error) => {
         t.is(
           error.message,
-          // @ts-expect-error
           'Tuple moved to another partition due to concurrent update. ' + String(error?.originalError?.message),
         );
         t.true(error instanceof TupleMovedToAnotherPartitionError);
