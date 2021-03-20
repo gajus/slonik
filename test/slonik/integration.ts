@@ -1094,6 +1094,8 @@ test('Tuple moved to another partition due to concurrent update error handled', 
         );
         t.true(error instanceof TupleMovedToAnotherPartitionError);
       });
+      // Ensures that query is processed before concurrent commit is called.
+      await delay(1000);
       await connection1.query(sql`COMMIT`);
       await connection2.query(sql`COMMIT`);
     });
