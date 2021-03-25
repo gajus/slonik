@@ -105,7 +105,7 @@ export type StreamFunctionType = (
 
 export type QueryCopyFromBinaryFunctionType = (
   streamQuery: TaggedTemplateLiteralInvocationType,
-  tupleList: ReadonlyArray<any[]>,
+  tupleList: readonly any[][],
   columnTypes: TypeNameIdentifierType[],
 ) => Promise<Record<string, unknown> | null>; // bindPoolConnection returns an object
 
@@ -268,7 +268,7 @@ export type SqlSqlTokenType = {
 
 export type UnnestSqlTokenType = {
   readonly columnTypes: string[],
-  readonly tuples: Array<ValueExpressionType[]>,
+  readonly tuples: ValueExpressionType[][],
   readonly type: typeof tokens.UnnestToken,
 };
 
