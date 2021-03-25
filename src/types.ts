@@ -64,7 +64,7 @@ export type QueryResultType<T> = {
   readonly fields: readonly FieldType[],
   readonly notices: readonly NoticeType[],
   readonly rowCount: number,
-  readonly rows: readonly T[],
+  readonly rows: T[],
 };
 
 export type InternalDatabasePoolType = any;
@@ -83,7 +83,7 @@ export type ClientConfigurationType = {
   /** Timeout (in milliseconds) after which idle clients are closed. Use 'DISABLE_TIMEOUT' constant to disable the timeout. (Default: 5000) */
   readonly idleTimeout: number | 'DISABLE_TIMEOUT',
   /** An array of [Slonik interceptors](https://github.com/gajus/slonik#slonik-interceptors). */
-  readonly interceptors: readonly InterceptorType[],
+  readonly interceptors: InterceptorType[],
   /** Do not allow more than this many connections. Use 'DISABLE_TIMEOUT' constant to disable the timeout. (Default: 10) */
   readonly maximumPoolSize: number,
   /** Uses libpq bindings when `pg-native` module is installed. (Default: true) */
@@ -93,7 +93,7 @@ export type ClientConfigurationType = {
   /** Number of times a transaction failing with Transaction Rollback class error is retried. (Default: 5) */
   readonly transactionRetryLimit: number,
   /** An array of [Slonik type parsers](https://github.com/gajus/slonik#slonik-type-parsers). */
-  readonly typeParsers: readonly TypeParserType[],
+  readonly typeParsers: TypeParserType[],
 };
 
 export type ClientConfigurationInputType = Partial<ClientConfigurationType>;
@@ -105,8 +105,8 @@ export type StreamFunctionType = (
 
 export type QueryCopyFromBinaryFunctionType = (
   streamQuery: TaggedTemplateLiteralInvocationType,
-  tupleList: ReadonlyArray<readonly any[]>,
-  columnTypes: readonly TypeNameIdentifierType[],
+  tupleList: ReadonlyArray<any[]>,
+  columnTypes: TypeNameIdentifierType[],
 ) => Promise<Record<string, unknown> | null>; // bindPoolConnection returns an object
 
 export type CommonQueryMethodsType = {
@@ -166,12 +166,12 @@ export type QueryResultRowType = Record<string, QueryResultRowColumnType>;
 
 export type QueryType = {
   readonly sql: string,
-  readonly values: readonly PrimitiveValueExpressionType[],
+  readonly values: PrimitiveValueExpressionType[],
 };
 
 export type SqlFragmentType = {
   readonly sql: string,
-  readonly values: readonly PrimitiveValueExpressionType[],
+  readonly values: PrimitiveValueExpressionType[],
 };
 
 /**
@@ -229,14 +229,14 @@ export type QueryContextType = {
   readonly queryId: QueryIdType,
   readonly queryInputTime: bigint | number,
   readonly sandbox: Record<string, unknown>,
-  readonly stackTrace: readonly CallSiteType[] | null,
+  readonly stackTrace: CallSiteType[] | null,
   readonly transactionId?: string,
 };
 
 export type ArraySqlTokenType = {
   readonly memberType: SqlTokenType | TypeNameIdentifierType | string,
   readonly type: typeof tokens.ArrayToken,
-  readonly values: readonly ValueExpressionType[],
+  readonly values: ValueExpressionType[],
 };
 
 export type BinarySqlTokenType = {
@@ -245,13 +245,13 @@ export type BinarySqlTokenType = {
 };
 
 export type IdentifierSqlTokenType = {
-  readonly names: readonly string[],
+  readonly names: string[],
   readonly type: typeof tokens.IdentifierToken,
 };
 
 export type ListSqlTokenType = {
   readonly glue: SqlTokenType,
-  readonly members: readonly ValueExpressionType[],
+  readonly members: ValueExpressionType[],
   readonly type: typeof tokens.ListToken,
 };
 
@@ -263,12 +263,12 @@ export type JsonSqlTokenType = {
 export type SqlSqlTokenType = {
   readonly sql: string,
   readonly type: typeof tokens.SqlToken,
-  readonly values: readonly PrimitiveValueExpressionType[],
+  readonly values: PrimitiveValueExpressionType[],
 };
 
 export type UnnestSqlTokenType = {
-  readonly columnTypes: readonly string[],
-  readonly tuples: ReadonlyArray<readonly ValueExpressionType[]>,
+  readonly columnTypes: string[],
+  readonly tuples: Array<ValueExpressionType[]>,
   readonly type: typeof tokens.UnnestToken,
 };
 
@@ -301,7 +301,7 @@ export type SqlTaggedTemplateType<T = QueryResultRowType> = {
   json: (value: SerializableValueType) => JsonSqlTokenType,
   join: (members: readonly ValueExpressionType[], glue: SqlTokenType) => ListSqlTokenType,
   unnest: (
-    // Value might be $ReadOnlyArray<$ReadOnlyArray<PrimitiveValueExpressionType>>,
+    // Value might be ReadOnlyArray<ReadOnlyArray<PrimitiveValueExpressionType>>,
     // or it can be infinitely nested array, e.g.
     // https://github.com/gajus/slonik/issues/44
     tuples: ReadonlyArray<readonly any[]>,
@@ -361,11 +361,11 @@ export interface TaggedTemplateLiteralInvocationType<Result = QueryResultRowType
 export type QueryAnyFirstFunctionType = <T = QueryResultRowColumnType, Row = Record<string, T>>(
   sql: TaggedTemplateLiteralInvocationType<Row>,
   values?: PrimitiveValueExpressionType[],
-) => Promise<ReadonlyArray<Row[keyof Row]>>;
+) => Promise<Array<Row[keyof Row]>>;
 export type QueryAnyFunctionType = <T = ExternalQueryResultRowType>(
   sql: TaggedTemplateLiteralInvocationType<T>,
   values?: PrimitiveValueExpressionType[],
-) => Promise<readonly T[]>;
+) => Promise<T[]>;
 export type QueryExistsFunctionType = (
   sql: TaggedTemplateLiteralInvocationType,
   values?: PrimitiveValueExpressionType[],
@@ -377,11 +377,11 @@ export type QueryFunctionType = <T = ExternalQueryResultRowType>(
 export type QueryManyFirstFunctionType = <T = QueryResultRowColumnType, Row = Record<string, T>>(
   sql: TaggedTemplateLiteralInvocationType<Row>,
   values?: PrimitiveValueExpressionType[],
-) => Promise<ReadonlyArray<Row[keyof Row]>>;
+) => Promise<Array<Row[keyof Row]>>;
 export type QueryManyFunctionType = <T = ExternalQueryResultRowType>(
   sql: TaggedTemplateLiteralInvocationType<T>,
   values?: PrimitiveValueExpressionType[],
-) => Promise<readonly T[]>;
+) => Promise<T[]>;
 export type QueryMaybeOneFirstFunctionType = <T = QueryResultRowColumnType, Row = Record<string, T>>(
   sql: TaggedTemplateLiteralInvocationType<Row>,
   values?: PrimitiveValueExpressionType[],
