@@ -190,6 +190,7 @@ const interceptorTypes = () => {
         expectTypeOf(queryContext.sandbox.foo).toBeUnknown();
 
         // @ts-expect-error
+        // eslint-disable-next-line @typescript-eslint/restrict-plus-operands
         const foo = queryContext.sandbox + 1;
 
         return null;
