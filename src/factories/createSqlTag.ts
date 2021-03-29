@@ -162,6 +162,6 @@ sql.unnest = (
   };
 };
 
-export const createSqlTag = <T = QueryResultRowType>(): SqlTaggedTemplateType<T> => {
+export const createSqlTag = <T extends QueryResultRowType = QueryResultRowType>(): SqlTaggedTemplateType<T> => {
   return sql;
 };

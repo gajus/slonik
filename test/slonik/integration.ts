@@ -381,12 +381,11 @@ test('writes and reads buffers', async (t) => {
     )
   `);
 
-  const result = await pool.oneFirst<{ payload: Buffer, }>(sql`
+  const result = await pool.oneFirst<Buffer>(sql`
     SELECT payload
     FROM person
   `);
 
-  // eslint-disable-next-line @typescript-eslint/no-base-to-string
   t.is(result.toString(), payload);
 
   await pool.end();
