@@ -333,7 +333,7 @@ export const executeQuery = async (
         const transformRow = interceptor.transformRow;
         const fields = result.fields;
 
-        const rows: readonly QueryResultRowType[] = result.rows.map((row) => {
+        const rows: QueryResultRowType[] = result.rows.map((row) => {
           return transformRow(executionContext, actualQuery, row, fields);
         });
 

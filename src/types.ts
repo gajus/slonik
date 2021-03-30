@@ -61,10 +61,10 @@ export type NoticeType = {
 
 export type QueryResultType<T> = {
   readonly command: 'DELETE' | 'INSERT' | 'SELECT' | 'UPDATE',
-  readonly fields: readonly FieldType[],
-  readonly notices: readonly NoticeType[],
+  readonly fields: FieldType[],
+  readonly notices: NoticeType[],
   readonly rowCount: number,
-  readonly rows: readonly T[],
+  readonly rows: T[],
 };
 
 export type InternalDatabasePoolType = any;
@@ -361,11 +361,11 @@ export interface TaggedTemplateLiteralInvocationType<Result extends QueryResultR
 export type QueryAnyFirstFunctionType = <T extends QueryResultRowColumnType = QueryResultRowColumnType, Row extends Record<string, T> = Record<string, T>>(
   sql: TaggedTemplateLiteralInvocationType<Row>,
   values?: PrimitiveValueExpressionType[],
-) => Promise<ReadonlyArray<Row[keyof Row]>>;
+) => Promise<Array<Row[keyof Row]>>;
 export type QueryAnyFunctionType = <T extends ExternalQueryResultRowType = ExternalQueryResultRowType>(
   sql: TaggedTemplateLiteralInvocationType<T>,
   values?: PrimitiveValueExpressionType[],
-) => Promise<readonly T[]>;
+) => Promise<T[]>;
 export type QueryExistsFunctionType = (
   sql: TaggedTemplateLiteralInvocationType,
   values?: PrimitiveValueExpressionType[],
@@ -377,11 +377,11 @@ export type QueryFunctionType = <T extends ExternalQueryResultRowType = External
 export type QueryManyFirstFunctionType = <T extends QueryResultRowColumnType = QueryResultRowColumnType, Row extends Record<string, T> = Record<string, T>>(
   sql: TaggedTemplateLiteralInvocationType<Row>,
   values?: PrimitiveValueExpressionType[],
-) => Promise<ReadonlyArray<Row[keyof Row]>>;
+) => Promise<Array<Row[keyof Row]>>;
 export type QueryManyFunctionType = <T extends ExternalQueryResultRowType = ExternalQueryResultRowType>(
   sql: TaggedTemplateLiteralInvocationType<T>,
   values?: PrimitiveValueExpressionType[],
-) => Promise<readonly T[]>;
+) => Promise<T[]>;
 export type QueryMaybeOneFirstFunctionType = <T extends QueryResultRowColumnType = QueryResultRowColumnType, Row extends Record<string, T> = Record<string, T>>(
   sql: TaggedTemplateLiteralInvocationType<Row>,
   values?: PrimitiveValueExpressionType[],

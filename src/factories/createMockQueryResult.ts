@@ -3,7 +3,7 @@ import type {
   QueryResultType,
 } from '../types';
 
-export const createMockQueryResult = (rows: readonly QueryResultRowType[]): QueryResultType<QueryResultRowType> => {
+export const createMockQueryResult = (rows: QueryResultRowType[]): QueryResultType<QueryResultRowType> => {
   return {
     command: 'SELECT',
     fields: [],
