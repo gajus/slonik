@@ -14,7 +14,6 @@ export const createBinarySqlFragment = (token: BinarySqlTokenType, greatestParam
   return {
     sql: '$' + String(greatestParameterPosition + 1),
     values: [
-      // @ts-expect-error
       token.data,
     ],
   };
