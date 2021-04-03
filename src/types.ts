@@ -273,7 +273,7 @@ export type UnnestSqlTokenType = {
 };
 
 export type PrimitiveValueExpressionType =
-  Buffer | boolean | number | string | object | readonly PrimitiveValueExpressionType[] | null;
+  Buffer | boolean | number | object | string | readonly PrimitiveValueExpressionType[] | null;
 
 export type SqlTokenType =
   | ArraySqlTokenType
