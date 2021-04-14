@@ -1,4 +1,10 @@
-import test from 'ava';
+import type {
+  TestInterface,
+} from 'ava';
+import anyTest from 'ava';
+import {
+  ROARR,
+} from 'roarr';
 import {
   createSqlTag,
 } from '../../../../src/factories/createSqlTag';
@@ -6,7 +12,19 @@ import {
   SqlToken,
 } from '../../../../src/tokens';
 
+const test = anyTest as TestInterface<{
+  logs: unknown[],
+}>;
+
 const sql = createSqlTag();
+
+test.beforeEach((t) => {
+  t.context.logs = [];
+
+  ROARR.write = (message) => {
+    t.context.logs.push(JSON.parse(message));
+  };
+});
 
 test('creates an object describing a query', (t) => {
   const query = sql`SELECT 1`;
@@ -64,6 +82,24 @@ test('throws if bound an undefined value', (t) => {
   });
 
   t.is(error.message, 'SQL tag cannot be bound an undefined value.');
+});
+
+test.serial('logs all bound values if one is undefined', (t) => {
+  t.throws(() => {
+    // @ts-expect-error
+    sql`SELECT ${undefined}`;
+  });
+
+  const targetMessage = t.context.logs.find((message: any) => {
+    return message.message === 'bound values';
+  }) as any;
+
+  t.truthy(targetMessage);
+
+  t.deepEqual(targetMessage.context.parts, [
+    'SELECT ',
+    '',
+  ]);
 });
 
 test('the sql property is immutable', (t) => {

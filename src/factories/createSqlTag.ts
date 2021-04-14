@@ -63,6 +63,7 @@ const sql: SqlTaggedTemplateType = (
     if (token === undefined) {
       log.debug({
         index,
+        parts,
         values,
       }, 'bound values');
 
