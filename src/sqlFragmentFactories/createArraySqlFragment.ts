@@ -48,8 +48,6 @@ export const createArraySqlFragment = (token: ArraySqlTokenType, greatestParamet
 
   return {
     sql,
-
-    // @ts-expect-error
     values,
   };
 };
