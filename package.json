@@ -102,7 +102,7 @@
     "create-readme": "gitdown ./.README/README.md --output-file ./README.md",
     "eslint": "eslint --ext '.ts'",
     "lint": "npm run eslint ./src ./test && npm run type-check",
-    "test": "NODE_ENV=test nyc ava --verbose",
+    "test": "ROARR_LOG=true NODE_ENV=test nyc ava --verbose",
     "type-check": "tsc -p ."
   },
   "types": "./dist/src/index.d.ts",
