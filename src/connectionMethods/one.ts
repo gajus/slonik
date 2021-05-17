@@ -2,15 +2,15 @@ import {
   DataIntegrityError,
   NotFoundError,
 } from '../errors';
-import type {
-  InternalQueryMethodType,
-} from '../types';
 import {
   createQueryId,
 } from '../utilities';
 import {
   query,
 } from './query';
+import type {
+  InternalQueryMethodType,
+} from '../types';
 
 /**
  * Makes a query and expects exactly one result.

@@ -10,12 +10,12 @@ import {
 import {
   executeQuery,
 } from '../routines';
-import type {
-  InternalCopyFromBinaryFunctionType,
-} from '../types';
 import {
   encodeTupleList,
 } from '../utilities';
+import type {
+  InternalCopyFromBinaryFunctionType,
+} from '../types';
 
 const bufferToStream = (buffer: Buffer) => {
   const stream = new Duplex();

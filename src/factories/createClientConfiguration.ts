@@ -1,14 +1,14 @@
 import {
   InvalidConfigurationError,
 } from '../errors';
+import {
+  createTypeParserPreset,
+} from './createTypeParserPreset';
 import type {
   ClientConfigurationInputType,
   ClientConfigurationType,
   TypeParserType,
 } from '../types';
-import {
-  createTypeParserPreset,
-} from './createTypeParserPreset';
 
 export const createClientConfiguration = (clientUserConfigurationInput?: ClientConfigurationInputType): ClientConfigurationType => {
   const typeParsers: readonly TypeParserType[] = [];

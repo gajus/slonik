@@ -13,6 +13,13 @@ import {
   SqlToken,
   UnnestToken,
 } from '../tokens';
+import {
+  isPrimitiveValueExpression,
+  isSqlToken,
+} from '../utilities';
+import {
+  createSqlTokenSqlFragment,
+} from './createSqlTokenSqlFragment';
 import type {
   ArraySqlTokenType,
   BinarySqlTokenType,
@@ -29,13 +36,6 @@ import type {
   UnnestSqlTokenType,
   ValueExpressionType,
 } from '../types';
-import {
-  isPrimitiveValueExpression,
-  isSqlToken,
-} from '../utilities';
-import {
-  createSqlTokenSqlFragment,
-} from './createSqlTokenSqlFragment';
 
 const log = Logger.child({
   namespace: 'sql',

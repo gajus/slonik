@@ -1,13 +1,13 @@
 import {
   InvalidInputError,
 } from '../errors';
+import {
+  escapeIdentifier,
+} from '../utilities';
 import type {
   IdentifierSqlTokenType,
   SqlFragmentType,
 } from '../types';
-import {
-  escapeIdentifier,
-} from '../utilities';
 
 export const createIdentifierSqlFragment = (token: IdentifierSqlTokenType): SqlFragmentType => {
   const sql = token.names

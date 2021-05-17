@@ -4,9 +4,6 @@
 /* eslint-disable no-inline-comments */
 /* eslint-disable max-len */
 
-import type {
-  Readable,
-} from 'stream';
 import {
   Logger,
 } from 'roarr';
@@ -14,6 +11,9 @@ import type {
   SlonikError,
 } from './errors';
 import type * as tokens from './tokens';
+import type {
+  Readable,
+} from 'stream';
 
 export {
   Logger,

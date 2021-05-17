@@ -4,15 +4,15 @@ import {
 import {
   createSqlTokenSqlFragment,
 } from '../factories';
-import type {
-  ArraySqlTokenType,
-  SqlFragmentType,
-} from '../types';
 import {
   escapeIdentifier,
   isPrimitiveValueExpression,
   isSqlToken,
 } from '../utilities';
+import type {
+  ArraySqlTokenType,
+  SqlFragmentType,
+} from '../types';
 
 export const createArraySqlFragment = (token: ArraySqlTokenType, greatestParameterPosition: number): SqlFragmentType => {
   let placeholderIndex = greatestParameterPosition;

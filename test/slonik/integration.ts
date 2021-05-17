@@ -1,8 +1,3 @@
-import type {
-  AfterInterface,
-  BeforeInterface,
-  TestInterface,
-} from 'ava';
 import anyTest, {
   afterEach as anyAfterEach,
   beforeEach as anyBeforeEach,
@@ -17,6 +12,11 @@ import {
   UnexpectedStateError,
   TupleMovedToAnotherPartitionError,
 } from '../../src';
+import type {
+  AfterInterface,
+  BeforeInterface,
+  TestInterface,
+} from 'ava';
 
 const test = anyTest as TestInterface<any>;
 const beforeEach = anyBeforeEach as BeforeInterface<any>;

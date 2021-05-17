@@ -4,18 +4,6 @@
 import {
   expectTypeOf,
 } from 'expect-type';
-import type {
-  ClientConfigurationInputType,
-  ClientConfigurationType,
-  CommonQueryMethodsType,
-  IdentifierNormalizerType,
-  InterceptorType,
-  QueryContextType,
-  QueryResultRowColumnType,
-  QueryResultType,
-  SqlTaggedTemplateType,
-  TypeParserType,
-} from '../src';
 import {
   CheckIntegrityConstraintViolationError,
   DataIntegrityError,
@@ -33,6 +21,18 @@ import {
   createTimestampWithTimeZoneTypeParser,
   createTypeParserPreset,
   sql,
+} from '../src';
+import type {
+  ClientConfigurationInputType,
+  ClientConfigurationType,
+  CommonQueryMethodsType,
+  IdentifierNormalizerType,
+  InterceptorType,
+  QueryContextType,
+  QueryResultRowColumnType,
+  QueryResultType,
+  SqlTaggedTemplateType,
+  TypeParserType,
 } from '../src';
 
 const VALUE = 'foo';

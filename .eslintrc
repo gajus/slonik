@@ -29,6 +29,7 @@
     "@typescript-eslint/no-non-null-assertion": 1,
     "@typescript-eslint/no-unused-vars": 1,
     "@typescript-eslint/prefer-ts-expect-error": 1,
+    "fp/no-events": 0,
     "import/no-cycle": 0,
     "import/no-default-export": 1,
     "import/no-unresolved": 0,

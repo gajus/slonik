@@ -1,6 +1,3 @@
-import type {
-  TestInterface,
-} from 'ava';
 import anyTest from 'ava';
 import {
   ROARR,
@@ -11,6 +8,9 @@ import {
 import {
   SqlToken,
 } from '../../../../src/tokens';
+import type {
+  TestInterface,
+} from 'ava';
 
 const test = anyTest as TestInterface<{
   logs: unknown[],

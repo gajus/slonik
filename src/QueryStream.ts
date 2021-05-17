@@ -7,10 +7,10 @@
 import {
   Readable,
 } from 'stream';
+import Cursor from 'pg-cursor';
 import type {
   QueryResult,
 } from 'pg';
-import Cursor from 'pg-cursor';
 
 /**
  * @see https://github.com/brianc/node-pg-query-stream

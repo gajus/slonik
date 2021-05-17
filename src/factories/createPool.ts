@@ -1,8 +1,3 @@
-// eslint-disable-next-line fp/no-events
-import type {
-  EventEmitter,
-} from 'events';
-import type pgTypes from 'pg';
 import {
   serializeError,
 } from 'serialize-error';
@@ -12,10 +7,6 @@ import {
 import {
   bindPool,
 } from '../binders/bindPool';
-import type {
-  ClientConfigurationInputType,
-  DatabasePoolType,
-} from '../types';
 import {
   createUid,
 } from '../utilities';
@@ -25,6 +16,14 @@ import {
 import {
   createPoolConfiguration,
 } from './createPoolConfiguration';
+import type {
+  ClientConfigurationInputType,
+  DatabasePoolType,
+} from '../types';
+import type {
+  EventEmitter,
+} from 'events';
+import type pgTypes from 'pg';
 
 /**
  * @param connectionUri PostgreSQL [Connection URI](https://www.postgresql.org/docs/current/libpq-connect.html#LIBPQ-CONNSTRING).

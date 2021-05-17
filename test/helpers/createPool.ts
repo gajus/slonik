@@ -1,16 +1,14 @@
-/* eslint-disable fp/no-events */
-
 import EventEmitter from 'events';
 import sinon from 'sinon';
 import {
   bindPool,
 } from '../../src/binders/bindPool';
-import type {
-  ClientConfigurationInputType,
-} from '../../src/types';
 import {
   Logger as log,
 } from './Logger';
+import type {
+  ClientConfigurationInputType,
+} from '../../src/types';
 
 const defaultConfiguration = {
   interceptors: [],
