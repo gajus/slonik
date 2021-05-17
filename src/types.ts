@@ -290,8 +290,11 @@ export type NamedAssignmentType = {
   readonly [key: string]: ValueExpressionType,
 };
 
-export type SqlTaggedTemplateType<T extends QueryResultRowType = QueryResultRowType> = {
-  <U extends QueryResultRowType = T>(template: TemplateStringsArray, ...values: ValueExpressionType[]): TaggedTemplateLiteralInvocationType<U>,
+// @todo may want to think how to make this extendable.
+type UserQueryResultRowType = Record<string, any>;
+
+export type SqlTaggedTemplateType<T extends UserQueryResultRowType = QueryResultRowType> = {
+  <U extends UserQueryResultRowType = T>(template: TemplateStringsArray, ...values: ValueExpressionType[]): TaggedTemplateLiteralInvocationType<U>,
   array: (
     values: readonly PrimitiveValueExpressionType[],
     memberType: SqlTokenType | TypeNameIdentifierType,
@@ -356,7 +359,7 @@ export type InternalNestedTransactionFunctionType = <T>(
 type ExternalQueryResultRowType = Record<string, QueryResultRowColumnType>;
 
 // eslint-disable-next-line @typescript-eslint/no-empty-interface, @typescript-eslint/consistent-type-definitions, @typescript-eslint/no-unused-vars
-export interface TaggedTemplateLiteralInvocationType<Result extends QueryResultRowType = QueryResultRowType> extends SqlSqlTokenType { }
+export interface TaggedTemplateLiteralInvocationType<Result extends UserQueryResultRowType = QueryResultRowType> extends SqlSqlTokenType { }
 
 export type QueryAnyFirstFunctionType = <T extends QueryResultRowColumnType = QueryResultRowColumnType, Row extends Record<string, T> = Record<string, T>>(
   sql: TaggedTemplateLiteralInvocationType<Row>,
