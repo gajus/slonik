@@ -128,6 +128,35 @@ test('returns expected query result object (SELECT)', async (t) => {
   await pool.end();
 });
 
+test('returns expected query result object (array bytea)', async (t) => {
+  const pool = createPool(t.context.dsn);
+
+  const result = await pool.query(sql`
+    SELECT ${sql.array([Buffer.from('foo')], 'bytea')} "names"
+  `);
+
+  t.deepEqual(result, {
+    command: 'SELECT',
+    fields: [
+      {
+        dataTypeId: 1001,
+        name: 'names',
+      },
+    ],
+    notices: [],
+    rowCount: 1,
+    rows: [
+      {
+        names: [
+          Buffer.from('foo'),
+        ],
+      },
+    ],
+  });
+
+  await pool.end();
+});
+
 test('returns expected query result object (INSERT)', async (t) => {
   const pool = createPool(t.context.dsn);
 

@@ -36,6 +36,20 @@ test('binds an array with multiple values', (t) => {
   });
 });
 
+test('binds an array with bytea values', (t) => {
+  const query = sql`SELECT ${sql.array([Buffer.from('foo')], 'bytea')}`;
+
+  t.deepEqual(query, {
+    sql: 'SELECT $1::"bytea"[]',
+    type: SqlToken,
+    values: [
+      [
+        Buffer.from('foo'),
+      ],
+    ],
+  });
+});
+
 test('offsets positional parameter indexes', (t) => {
   const query = sql`SELECT ${1}, ${sql.array([1, 2, 3], 'int4')}, ${3}`;
 

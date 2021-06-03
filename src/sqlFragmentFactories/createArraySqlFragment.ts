@@ -18,6 +18,14 @@ export const createArraySqlFragment = (token: ArraySqlTokenType, greatestParamet
   let placeholderIndex = greatestParameterPosition;
 
   for (const value of token.values) {
+    if (token.memberType === 'bytea') {
+      if (Buffer.isBuffer(value)) {
+        continue;
+      } else {
+        throw new InvalidInputError('Invalid array member type. Non-buffer value bound to bytea type.');
+      }
+    }
+
     if (!isPrimitiveValueExpression(value)) {
       throw new InvalidInputError('Invalid array member type. Must be a primitive value expression.');
     }
