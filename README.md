@@ -21,17 +21,20 @@ A [battle-tested](#battle-tested) PostgreSQL client with strict types, detailed 
 > [Contra](https://contra.com/) is a rapidly growing professional network for freelancers. They are making it easier for talent to be discovered and for companies to hire project-based talent. You will be their first dedicated Database Engineer/DBA > hire. Your role will be to establish best practices for the company, implement it, and (over time) build the data engineering team. It is an opportunity to solve a massively complex and interesting problem at an organization > that is defining the future of work. If you ever wanted to work on a rocketship, this is as close as it gets. :rocket:
 >
 > Check out their latest product video:
+>
 > https://www.youtube.com/watch?v=y2zns9j3OJQ
-?
+>
 > The role:
 > * Lead PostgreSQL Database Engineer/DBA
 > * 100% remote
 > * 130-160k + equity
 >
 > Details about the company, the role, the technology stack and interview process:
+>
 > https://weworkremotely.com/remote-jobs/contra-lead-database-engineer-dba
 >
 > Apply:
+>
 > https://contra-ambassadors.typeform.com/to/ChcKQbBz#source=slonik
 
 <a name="slonik-sponsors"></a>
