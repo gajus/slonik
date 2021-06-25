@@ -126,4 +126,22 @@ export const queryMethods = async (): Promise<void> => {
 
   const queryTypedQuery = await client.query(sql<Row>``);
   expectTypeOf(queryTypedQuery).toMatchTypeOf<{ rows: readonly Row[], }>();
+
+  type RowWithJSONB = {
+    foo: {
+      bar: number,
+    },
+  };
+
+  const jsonbSql = sql<RowWithJSONB>`select 123`;
+
+  expectTypeOf(await client.query(jsonbSql)).toEqualTypeOf<QueryResultType<RowWithJSONB>>();
+  expectTypeOf(await client.one(jsonbSql)).toEqualTypeOf<RowWithJSONB>();
+  expectTypeOf(await client.maybeOne(jsonbSql)).toEqualTypeOf<RowWithJSONB | null>();
+  expectTypeOf(await client.any(jsonbSql)).toEqualTypeOf<readonly RowWithJSONB[]>();
+  expectTypeOf(await client.many(jsonbSql)).toEqualTypeOf<readonly RowWithJSONB[]>();
+  expectTypeOf(await client.oneFirst(jsonbSql)).toEqualTypeOf<{ bar: number, }>();
+  expectTypeOf(await client.maybeOneFirst(jsonbSql)).toEqualTypeOf<{ bar: number, } | null>();
+  expectTypeOf(await client.manyFirst(jsonbSql)).toEqualTypeOf<ReadonlyArray<{ bar: number, }>>();
+  expectTypeOf(await client.anyFirst(jsonbSql)).toEqualTypeOf<ReadonlyArray<{ bar: number, }>>();
 };
