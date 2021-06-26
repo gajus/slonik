@@ -359,7 +359,7 @@ export type InternalNestedTransactionFunctionType = <T>(
 // eslint-disable-next-line @typescript-eslint/no-empty-interface, @typescript-eslint/consistent-type-definitions, @typescript-eslint/no-unused-vars
 export interface TaggedTemplateLiteralInvocationType<Result extends UserQueryResultRowType = QueryResultRowType> extends SqlSqlTokenType { }
 
-export type QueryAnyFirstFunctionType = <T, Row extends Record<string, T> = Record<string, T>>(
+export type QueryAnyFirstFunctionType = <T, Row = Record<string, T>>(
   sql: TaggedTemplateLiteralInvocationType<Row>,
   values?: PrimitiveValueExpressionType[],
 ) => Promise<ReadonlyArray<Row[keyof Row]>>;
@@ -375,7 +375,7 @@ export type QueryFunctionType = <T>(
   sql: TaggedTemplateLiteralInvocationType<T>,
   values?: PrimitiveValueExpressionType[],
 ) => Promise<QueryResultType<T>>;
-export type QueryManyFirstFunctionType = <T, Row extends Record<string, T> = Record<string, T>>(
+export type QueryManyFirstFunctionType = <T, Row = Record<string, T>>(
   sql: TaggedTemplateLiteralInvocationType<Row>,
   values?: PrimitiveValueExpressionType[],
 ) => Promise<ReadonlyArray<Row[keyof Row]>>;
@@ -383,7 +383,7 @@ export type QueryManyFunctionType = <T>(
   sql: TaggedTemplateLiteralInvocationType<T>,
   values?: PrimitiveValueExpressionType[],
 ) => Promise<readonly T[]>;
-export type QueryMaybeOneFirstFunctionType = <T, Row extends Record<string, T> = Record<string, T>>(
+export type QueryMaybeOneFirstFunctionType = <T, Row = Record<string, T>>(
   sql: TaggedTemplateLiteralInvocationType<Row>,
   values?: PrimitiveValueExpressionType[],
 ) => Promise<Row[keyof Row] | null>;
@@ -391,7 +391,7 @@ export type QueryMaybeOneFunctionType = <T>(
   sql: TaggedTemplateLiteralInvocationType<T>,
   values?: PrimitiveValueExpressionType[],
 ) => Promise<T | null>;
-export type QueryOneFirstFunctionType = <T, Row extends Record<string, T> = Record<string, T>>(
+export type QueryOneFirstFunctionType = <T, Row = Record<string, T>>(
   sql: TaggedTemplateLiteralInvocationType<Row>,
   values?: PrimitiveValueExpressionType[],
 ) => Promise<Row[keyof Row]>;
