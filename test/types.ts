@@ -133,7 +133,7 @@ export const queryMethods = async (): Promise<void> => {
     },
   };
 
-  const jsonbSql = sql<RowWithJSONB>`select '{"bar": 123}'::jsonb`;
+  const jsonbSql = sql<RowWithJSONB>`select '{"bar": 123}'::jsonb as foo`;
 
   expectTypeOf(await client.query(jsonbSql)).toEqualTypeOf<QueryResultType<RowWithJSONB>>();
   expectTypeOf(await client.one(jsonbSql)).toEqualTypeOf<RowWithJSONB>();
