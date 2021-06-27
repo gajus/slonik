@@ -133,7 +133,7 @@ export const queryMethods = async (): Promise<void> => {
     },
   };
 
-  const jsonbSql = sql<RowWithJSONB>`select 123`;
+  const jsonbSql = sql<RowWithJSONB>`select '{"bar": 123}'::jsonb as foo`;
 
   expectTypeOf(await client.query(jsonbSql)).toEqualTypeOf<QueryResultType<RowWithJSONB>>();
   expectTypeOf(await client.one(jsonbSql)).toEqualTypeOf<RowWithJSONB>();
@@ -144,4 +144,22 @@ export const queryMethods = async (): Promise<void> => {
   expectTypeOf(await client.maybeOneFirst(jsonbSql)).toEqualTypeOf<{ bar: number, } | null>();
   expectTypeOf(await client.manyFirst(jsonbSql)).toEqualTypeOf<ReadonlyArray<{ bar: number, }>>();
   expectTypeOf(await client.anyFirst(jsonbSql)).toEqualTypeOf<ReadonlyArray<{ bar: number, }>>();
+
+  // `interface` can behave slightly differently from `type` when it comes to type inference
+  // eslint-disable-next-line @typescript-eslint/consistent-type-definitions
+  interface IRow {
+    foo: string | null;
+  }
+
+  const nullableSql = sql<IRow>`select 'abc' as foo`;
+
+  expectTypeOf(await client.query(nullableSql)).toEqualTypeOf<QueryResultType<IRow>>();
+  expectTypeOf(await client.one(nullableSql)).toEqualTypeOf<IRow>();
+  expectTypeOf(await client.maybeOne(nullableSql)).toEqualTypeOf<IRow | null>();
+  expectTypeOf(await client.any(nullableSql)).toEqualTypeOf<readonly IRow[]>();
+  expectTypeOf(await client.many(nullableSql)).toEqualTypeOf<readonly IRow[]>();
+  expectTypeOf(await client.oneFirst(nullableSql)).toEqualTypeOf<string | null>();
+  expectTypeOf(await client.maybeOneFirst(nullableSql)).toEqualTypeOf<string | null>();
+  expectTypeOf(await client.manyFirst(nullableSql)).toEqualTypeOf<ReadonlyArray<string | null>>();
+  expectTypeOf(await client.anyFirst(nullableSql)).toEqualTypeOf<ReadonlyArray<string | null>>();
 };
