@@ -266,6 +266,10 @@ export const executeQuery = async (
         throw new BackendTerminatedError(error);
       }
 
+      if (error.code === '22P02') {
+        throw new InvalidInputError(error);
+      }
+
       if (error.code === '57014' && error.message.includes('canceling statement due to statement timeout')) {
         throw new StatementTimeoutError(error);
       }

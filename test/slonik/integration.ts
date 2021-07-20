@@ -6,11 +6,12 @@ import delay from 'delay';
 import {
   BackendTerminatedError,
   createPool,
+  InvalidInputError,
   sql,
   StatementCancelledError,
   StatementTimeoutError,
-  UnexpectedStateError,
   TupleMovedToAnotherPartitionError,
+  UnexpectedStateError,
 } from '../../src';
 import type {
   AfterInterface,
@@ -1131,4 +1132,18 @@ test('Tuple moved to another partition due to concurrent update error handled', 
   });
 
   await pool.end();
+});
+
+test('throws InvalidInputError in case of invalid bound value', async (t) => {
+  const pool = createPool(t.context.dsn);
+
+  await pool.query(sql`
+    CREATE TABLE invalid_input_error_test (
+      id uuid NOT NULL PRIMARY KEY DEFAULT '00000000-0000-0000-0000-000000000000'
+    );
+  `);
+
+  const error = await t.throwsAsync(pool.query(sql`SELECT * FROM invalid_input_error_test where id = '1';`));
+
+  t.true(error instanceof InvalidInputError);
 });
