@@ -61,7 +61,7 @@ createTimestampTypeParser();
 // {
 //   name: 'timestamp',
 //   parse: (value) => {
-//     return value === null ? value : Date.parse(value);
+//     return value === null ? value : Date.parse(value + ' UTC');
 //   }
 // }
 
