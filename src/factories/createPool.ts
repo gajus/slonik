@@ -1,3 +1,4 @@
+import pgClient from 'pg';
 import {
   serializeError,
 } from 'serialize-error';
@@ -42,40 +43,12 @@ export const createPool = (
 
   const poolConfiguration = createPoolConfiguration(connectionUri, clientConfiguration);
 
-  let pgNativeBindingsAreAvailable = false;
-
-  try {
-    /* eslint-disable @typescript-eslint/no-require-imports, import/no-unassigned-import */
-    require('pg-native');
-    /* eslint-enable */
-
-    pgNativeBindingsAreAvailable = true;
-
-    poolLog.debug('found pg-native module');
-  } catch {
-    poolLog.debug('pg-native module is not found');
-  }
-
   let pg: typeof pgTypes.native;
-  let native = false;
 
-  if (clientConfiguration.preferNativeBindings && pgNativeBindingsAreAvailable) {
-    poolLog.info('using native libpq bindings');
-
-    // eslint-disable-next-line @typescript-eslint/no-require-imports, @typescript-eslint/no-var-requires
-    pg = require('pg').native;
-
-    native = true;
-  } else if (clientConfiguration.preferNativeBindings && !pgNativeBindingsAreAvailable) {
-    poolLog.warn('using JavaScript bindings; pg-native not found');
-
-    // eslint-disable-next-line @typescript-eslint/no-require-imports
-    pg = require('pg');
+  if (clientConfiguration.pgClient) {
+    pg = clientConfiguration.pgClient;
   } else {
-    poolLog.info('using JavaScript bindings');
-
-    // eslint-disable-next-line @typescript-eslint/no-require-imports
-    pg = require('pg');
+    pg = pgClient;
   }
 
   type ModifiedPool = EventEmitter & Omit<pgTypes.Pool, 'on'> & {
@@ -87,7 +60,6 @@ export const createPool = (
   pool.slonik = {
     ended: false,
     mock: false,
-    native,
     poolId,
     typeOverrides: null,
   };
@@ -108,7 +80,6 @@ export const createPool = (
     client.connection.slonik = {
       connectionId: createUid(),
       mock: false,
-      native,
       terminated: null,
       transactionDepth: null,
     };

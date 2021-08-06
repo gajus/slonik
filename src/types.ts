@@ -11,6 +11,7 @@ import type {
   SlonikError,
 } from './errors';
 import type * as tokens from './tokens';
+import type pgTypes from 'pg';
 import type {
   Readable,
 } from 'stream';
@@ -86,8 +87,8 @@ export type ClientConfigurationType = {
   readonly interceptors: readonly InterceptorType[],
   /** Do not allow more than this many connections. Use 'DISABLE_TIMEOUT' constant to disable the timeout. (Default: 10) */
   readonly maximumPoolSize: number,
-  /** Uses libpq bindings when `pg-native` module is installed. (Default: true) */
-  readonly preferNativeBindings: boolean,
+  /** Override the underlying PostgreSQL driver. **/
+  readonly pgClient?: typeof pgTypes.native,
   /** Timeout (in milliseconds) after which database is instructed to abort the query. Use 'DISABLE_TIMEOUT' constant to disable the timeout. (Default: 60000) */
   readonly statementTimeout: number | 'DISABLE_TIMEOUT',
   /** Number of times a transaction failing with Transaction Rollback class error is retried. (Default: 5) */

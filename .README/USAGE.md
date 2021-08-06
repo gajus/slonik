@@ -142,7 +142,7 @@ createPool(
  * @property idleTimeout Timeout (in milliseconds) after which idle clients are closed. Use 'DISABLE_TIMEOUT' constant to disable the timeout. (Default: 5000)
  * @property interceptors An array of [Slonik interceptors](https://github.com/gajus/slonik#slonik-interceptors).
  * @property maximumPoolSize Do not allow more than this many connections. Use 'DISABLE_TIMEOUT' constant to disable the timeout. (Default: 10)
- * @property preferNativeBindings Uses libpq bindings when `pg-native` module is installed. (Default: true)
+ * @property pgClient Override the underlying PostgreSQL client.
  * @property statementTimeout Timeout (in milliseconds) after which database is instructed to abort the query. Use 'DISABLE_TIMEOUT' constant to disable the timeout. (Default: 60000)
  * @property transactionRetryLimit Number of times a transaction failing with Transaction Rollback class error is retried. (Default: 5)
  * @property typeParsers An array of [Slonik type parsers](https://github.com/gajus/slonik#slonik-type-parsers).
@@ -155,7 +155,7 @@ type ClientConfigurationInputType = {
   idleTimeout?: number | 'DISABLE_TIMEOUT',
   interceptors?: InterceptorType[],
   maximumPoolSize?: number,
-  preferNativeBindings?: boolean,
+  pgClient?: typeof require('pg').native,
   statementTimeout?: number | 'DISABLE_TIMEOUT',
   transactionRetryLimit?: number,
   typeParsers?: TypeParserType[],
@@ -233,17 +233,6 @@ There are 4 types of configurable timeouts:
 |`statementTimeout`|Timeout (in milliseconds) after which database is instructed to abort the query. Use 'DISABLE_TIMEOUT' constant to disable the timeout.|60000|
 
 Slonik sets aggressive timeouts by default. These timeouts are designed to provide safe interface to the database. These timeouts might not work for all programs. If your program has long running statements, consider adjusting timeouts just for those statements instead of changing the defaults.
-
-### Using native libpq bindings
-
-In order to use native [libpq](https://www.npmjs.com/package/libpq) PostgreSQL bindings install `pg-native`.
-
-```bash
-$ npm install pg-native
-
-```
-
-By default, Slonik uses native bindings when `pg-native` is installed. To use JavaScript bindings when `pg-native` is installed, configure `preferNativeBindings: false`.
 
 ### Checking out a client from the connection pool
 

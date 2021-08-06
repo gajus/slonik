@@ -11,7 +11,6 @@ export const createClientConfiguration = (): ClientConfigurationType => {
     idleTimeout: 5000,
     interceptors: [],
     maximumPoolSize: 10,
-    preferNativeBindings: true,
     statementTimeout: 60000,
     transactionRetryLimit: 5,
     typeParsers: [],

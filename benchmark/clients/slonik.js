@@ -7,7 +7,6 @@ const pool = createPool('postgres://', {
   captureStackTrace: false,
   connectionTimeout: 30 * 1000,
   maximumPoolSize: 4,
-  preferNativeBindings: false,
 });
 
 module.exports = {
