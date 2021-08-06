@@ -650,8 +650,8 @@ export const createIntegrationTests = (
 
     const pool = createPool(t.context.dsn, {
       maximumPoolSize: 5,
-      statementTimeout: 1000,
       pgClient,
+      statementTimeout: 1000,
     });
 
     t.deepEqual(pool.getPoolState(), {
