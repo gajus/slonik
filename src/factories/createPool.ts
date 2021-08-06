@@ -67,7 +67,7 @@ export const createPool = (
 
     native = true;
   } else if (clientConfiguration.preferNativeBindings && !pgNativeBindingsAreAvailable) {
-    poolLog.info('using JavaScript bindings; pg-native not found');
+    poolLog.warn('using JavaScript bindings; pg-native not found');
 
     // eslint-disable-next-line @typescript-eslint/no-require-imports
     pg = require('pg');
