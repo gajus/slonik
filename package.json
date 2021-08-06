@@ -18,7 +18,6 @@
   },
   "dependencies": {
     "concat-stream": "^2.0.0",
-    "delay": "^5.0.0",
     "es6-error": "^4.1.1",
     "get-stack-trace": "^2.1.1",
     "hyperid": "^2.3.1",
@@ -41,6 +40,7 @@
   "devDependencies": {
     "@types/concat-stream": "^1.6.1",
     "@types/pg": "^8.6.1",
+    "delay": "^5.0.0",
     "@types/pg-copy-streams": "^1.2.1",
     "@types/sinon": "^10.0.2",
     "@types/through2": "^2.0.36",
