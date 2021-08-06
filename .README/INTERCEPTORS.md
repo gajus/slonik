@@ -26,8 +26,8 @@ Read: [Default interceptors](#default-interceptors).
 Interceptor is an object that implements methods that can change the behaviour of the database client at different stages of the connection life-cycle
 
 ```js
-type InterceptorType = {|
   +afterPoolConnection?: (
+type InterceptorType = {
     connectionContext: ConnectionContextType,
     connection: DatabasePoolConnectionType
   ) => MaybePromiseType<null>,
@@ -71,7 +71,7 @@ type InterceptorType = {|
     row: QueryResultRowType,
     fields: FieldType[],
   ) => QueryResultRowType
-|};
+};
 
 ```
 

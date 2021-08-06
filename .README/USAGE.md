@@ -147,7 +147,6 @@ createPool(
  * @property transactionRetryLimit Number of times a transaction failing with Transaction Rollback class error is retried. (Default: 5)
  * @property typeParsers An array of [Slonik type parsers](https://github.com/gajus/slonik#slonik-type-parsers).
  */
-type ClientConfigurationInputType = {|
   +captureStackTrace?: boolean,
   +connectionRetryLimit?: number,
   +connectionTimeout?: number | 'DISABLE_TIMEOUT',
@@ -157,9 +156,10 @@ type ClientConfigurationInputType = {|
   +preferNativeBindings?: boolean,
   +statementTimeout?: number | 'DISABLE_TIMEOUT',
   +transactionRetryLimit?: number,
-|};
   +interceptors?: InterceptorType[],
   +typeParsers?: TypeParserType[],
+type ClientConfigurationInputType = {
+};
 
 ```
 
@@ -285,9 +285,9 @@ import {
   createMockQueryResult,
 } from 'slonik';
 
-type OverridesType = {|
   +query: (sql: string, values: PrimitiveValueExpressionType[],) => Promise<QueryResultType<QueryResultRowType>>,
-|};
+type OverridesType =
+};
 
 createMockPool(overrides: OverridesType): DatabasePoolType;
 createMockQueryResult(rows: QueryResultRowType[]): QueryResultType<QueryResultRowType>;
