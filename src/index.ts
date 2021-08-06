@@ -21,6 +21,7 @@ export type {
   InterceptorType,
   JsonSqlTokenType,
   ListSqlTokenType,
+  MockPoolOverridesType,
   PgClientType,
   QueryContextType,
   QueryResultRowColumnType,

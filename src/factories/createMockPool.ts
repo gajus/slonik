@@ -13,17 +13,14 @@ import {
 import type {
   ClientConfigurationInputType,
   DatabasePoolType,
+  MockPoolOverridesType,
   PrimitiveValueExpressionType,
   QueryResultRowType,
   QueryResultType,
 } from '../types';
 
-type OverridesType = {
-  readonly query: (sql: string, values: readonly PrimitiveValueExpressionType[]) => Promise<QueryResultType<QueryResultRowType>>,
-};
-
 export const createMockPool = (
-  overrides: OverridesType,
+  overrides: MockPoolOverridesType,
   clientConfigurationInput?: ClientConfigurationInputType,
 ): DatabasePoolType => {
   const clientConfiguration = createClientConfiguration(clientConfigurationInput);

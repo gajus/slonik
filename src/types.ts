@@ -446,3 +446,7 @@ export type InterceptorType = {
 };
 
 export type IdentifierNormalizerType = (identifierName: string) => string;
+
+export type MockPoolOverridesType = {
+  readonly query: (sql: string, values: readonly PrimitiveValueExpressionType[]) => Promise<QueryResultType<QueryResultRowType>>,
+};
