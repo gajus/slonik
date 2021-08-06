@@ -981,6 +981,13 @@ Use this method to capture the result that will be returned to the client.
 
 Executed before `transformQuery`. Use this interceptor to capture the original query (e.g. for logging purposes).
 
+<a name="slonik-interceptors-interceptor-methods-beforepoolconnection"></a>
+#### <code>beforePoolConnection</code>
+
+Executed before connection is created.
+
+This function can optionally return a pool to another database, causing a connection to be made to the new pool.
+
 <a name="slonik-interceptors-interceptor-methods-beforepoolconnectionrelease"></a>
 #### <code>beforePoolConnectionRelease</code>
 
