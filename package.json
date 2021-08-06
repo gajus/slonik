@@ -29,6 +29,7 @@
     "pg-copy-streams": "^5.1.1",
     "pg-copy-streams-binary": "^2.0.1",
     "pg-cursor": "^2.7.0",
+    "pg-minify": "^1.6.2",
     "postgres-array": "^3.0.1",
     "postgres-interval": "^3.0.0",
     "promise-deferred": "^2.0.3",

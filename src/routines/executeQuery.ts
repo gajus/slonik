@@ -23,6 +23,7 @@ import {
 import {
   createQueryId,
   normaliseQueryValues,
+  removeCommentedOutBindings,
 } from '../utilities';
 import type {
   ClientConfigurationType,
@@ -190,6 +191,8 @@ export const executeQuery = async (
       actualQuery = interceptor.transformQuery(executionContext, actualQuery);
     }
   }
+
+  actualQuery = removeCommentedOutBindings(actualQuery);
 
   let result: GenericQueryResult | null;
 

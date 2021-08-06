@@ -23,5 +23,8 @@ export {
   normaliseQueryValues,
 } from './normaliseQueryValues';
 export {
+  removeCommentedOutBindings,
+} from './removeCommentedOutBindings';
+export {
   stripArrayNotation,
 } from './stripArrayNotation';
