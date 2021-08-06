@@ -568,24 +568,24 @@ createPool(
  * @property idleTimeout Timeout (in milliseconds) after which idle clients are closed. Use 'DISABLE_TIMEOUT' constant to disable the timeout. (Default: 5000)
  * @property interceptors An array of [Slonik interceptors](https://github.com/gajus/slonik#slonik-interceptors).
  * @property maximumPoolSize Do not allow more than this many connections. Use 'DISABLE_TIMEOUT' constant to disable the timeout. (Default: 10)
- * @property preferNativeBindings Uses libpq bindings when `pg-native` module is installed. (Default: true)
+ * @property pgClient Override the underlying PostgreSQL client.
  * @property statementTimeout Timeout (in milliseconds) after which database is instructed to abort the query. Use 'DISABLE_TIMEOUT' constant to disable the timeout. (Default: 60000)
  * @property transactionRetryLimit Number of times a transaction failing with Transaction Rollback class error is retried. (Default: 5)
  * @property typeParsers An array of [Slonik type parsers](https://github.com/gajus/slonik#slonik-type-parsers).
  */
-type ClientConfigurationInputType = {|
-  +captureStackTrace?: boolean,
-  +connectionRetryLimit?: number,
-  +connectionTimeout?: number | 'DISABLE_TIMEOUT',
-  +idleInTransactionSessionTimeout?: number | 'DISABLE_TIMEOUT',
-  +idleTimeout?: number | 'DISABLE_TIMEOUT',
-  +interceptors?: $ReadOnlyArray<InterceptorType>,
-  +maximumPoolSize?: number,
-  +preferNativeBindings?: boolean,
-  +statementTimeout?: number | 'DISABLE_TIMEOUT',
-  +transactionRetryLimit?: number,
-  +typeParsers?: $ReadOnlyArray<TypeParserType>,
-|};
+type ClientConfigurationInputType = {
+  captureStackTrace?: boolean,
+  connectionRetryLimit?: number,
+  connectionTimeout?: number | 'DISABLE_TIMEOUT',
+  idleInTransactionSessionTimeout?: number | 'DISABLE_TIMEOUT',
+  idleTimeout?: number | 'DISABLE_TIMEOUT',
+  interceptors?: InterceptorType[],
+  maximumPoolSize?: number,
+  pgClient?: PgClientType,
+  statementTimeout?: number | 'DISABLE_TIMEOUT',
+  transactionRetryLimit?: number,
+  typeParsers?: TypeParserType[],
+};
 
 ```
 
@@ -667,14 +667,30 @@ Slonik sets aggressive timeouts by default. These timeouts are designed to provi
 <a name="slonik-usage-using-native-libpq-bindings"></a>
 ### Using native libpq bindings
 
-In order to use native [libpq](https://www.npmjs.com/package/libpq) PostgreSQL bindings install `pg-native`.
+In order to use native [libpq](https://www.npmjs.com/package/libpq) PostgreSQL bindings install `pg-native` and configure `pgClient`, e.g.
 
-```bash
-$ npm install pg-native
+```js
+// You have to have pg-native installed for this to work.
+// `native` is intentionally imported from 'pg' and not 'pg-native'.
+import {
+  native as pgClient,
+} from 'pg';
+import {
+  createPool,
+} from 'slonik';
+
+const pool = createPool('postgres://', {
+  pgClient,
+});
 
 ```
 
-By default, Slonik uses native bindings when `pg-native` is installed. To use JavaScript bindings when `pg-native` is installed, configure `preferNativeBindings: false`.
+<a name="slonik-usage-using-native-libpq-bindings-known-limitations-of-using-pg-native-with-slonik"></a>
+#### Known limitations of using pg-native with Slonik
+
+* notice logs are not captured in `notices` query result property (`notice` event is never fired on connection instance).
+* cannot combine multiple commands into a single statement (pg-native limitation [#88](https://github.com/brianc/node-pg-native/issues/88))
+* does not support streams.
 
 <a name="slonik-usage-checking-out-a-client-from-the-connection-pool"></a>
 ### Checking out a client from the connection pool
@@ -718,12 +734,12 @@ import {
   createMockQueryResult,
 } from 'slonik';
 
-type OverridesType = {|
-  +query: (sql: string, values: $ReadOnlyArray<PrimitiveValueExpressionType>,) => Promise<QueryResultType<QueryResultRowType>>,
-|};
+type OverridesType =
+  query: (sql: string, values: PrimitiveValueExpressionType[],) => Promise<QueryResultType<QueryResultRowType>>,
+};
 
 createMockPool(overrides: OverridesType): DatabasePoolType;
-createMockQueryResult(rows: $ReadOnlyArray<QueryResultRowType>): QueryResultType<QueryResultRowType>;
+createMockQueryResult(rows: QueryResultRowType[]): QueryResultType<QueryResultRowType>;
 
 ```
 
@@ -799,10 +815,10 @@ Work on `pg-promise` began [Wed Mar 4 02:00:34 2015](https://github.com/vitaly-t
 Type parsers describe how to parse PostgreSQL types.
 
 ```js
-type TypeParserType = {|
-  +name: string,
-  +parse: (value: string) => *
-|};
+type TypeParserType = {
+  name: string,
+  parse: (value: string) => *
+};
 
 ```
 
@@ -895,52 +911,52 @@ Read: [Default interceptors](#default-interceptors).
 Interceptor is an object that implements methods that can change the behaviour of the database client at different stages of the connection life-cycle
 
 ```js
-type InterceptorType = {|
-  +afterPoolConnection?: (
+type InterceptorType = {
+  afterPoolConnection?: (
     connectionContext: ConnectionContextType,
     connection: DatabasePoolConnectionType
   ) => MaybePromiseType<null>,
-  +afterQueryExecution?: (
+  afterQueryExecution?: (
     queryContext: QueryContextType,
     query: QueryType,
     result: QueryResultType<QueryResultRowType>
   ) => MaybePromiseType<QueryResultType<QueryResultRowType>>,
-  +beforePoolConnection?: (
+  beforePoolConnection?: (
     connectionContext: ConnectionContextType
   ) => MaybePromiseType<?DatabasePoolType>,
-  +beforePoolConnectionRelease?: (
+  beforePoolConnectionRelease?: (
     connectionContext: ConnectionContextType,
     connection: DatabasePoolConnectionType
   ) => MaybePromiseType<null>,
-  +beforeQueryExecution?: (
+  beforeQueryExecution?: (
     queryContext: QueryContextType,
     query: QueryType
   ) => MaybePromiseType<QueryResultType<QueryResultRowType>> | MaybePromiseType<null>,
-  +beforeQueryResult?: (
+  beforeQueryResult?: (
     queryContext: QueryContextType,
     query: QueryType,
     result: QueryResultType<QueryResultRowType>
   ) => MaybePromiseType<null>,
-  +beforeTransformQuery?: (
+  beforeTransformQuery?: (
     queryContext: QueryContextType,
     query: QueryType
   ) => Promise<null>,
-  +queryExecutionError?: (
+  queryExecutionError?: (
     queryContext: QueryContextType,
     query: QueryType,
     error: SlonikError
   ) => MaybePromiseType<null>,
-  +transformQuery?: (
+  transformQuery?: (
     queryContext: QueryContextType,
     query: QueryType
   ) => QueryType,
-  +transformRow?: (
+  transformRow?: (
     queryContext: QueryContextType,
     query: QueryType,
     row: QueryResultRowType,
-    fields: $ReadOnlyArray<FieldType>
+    fields: FieldType[],
   ) => QueryResultRowType
-|};
+};
 
 ```
 
@@ -1249,7 +1265,7 @@ If this is your first time using Slonik, read [Dynamically generating SQL querie
 
 ```js
 (
-  values: $ReadOnlyArray<PrimitiveValueExpressionType>,
+  values: PrimitiveValueExpressionType[],
   memberType: TypeNameIdentifierType | SqlTokenType
 ) => ArraySqlTokenType;
 
@@ -1370,7 +1386,7 @@ Produces:
 
 ```js
 (
-  names: $ReadOnlyArray<string>
+  names: string[],
 ) => IdentifierSqlTokenType;
 
 ```
@@ -1439,7 +1455,7 @@ Produces:
 
 ```js
 (
-  members: $ReadOnlyArray<SqlTokenType>,
+  members: SqlTokenType[],
   glue: SqlTokenType
 ) => ListSqlTokenType;
 
@@ -1515,8 +1531,8 @@ sql`
 
 ```js
 (
-  tuples: $ReadOnlyArray<$ReadOnlyArray<PrimitiveValueExpressionType>>,
-  columnTypes: $ReadOnlyArray<string>
+  tuples: PrimitiveValueExpressionType[][],
+  columnTypes: string[]
 ): UnnestSqlTokenType;
 
 ```
@@ -1622,8 +1638,8 @@ pool.oneFirst(sql`
 ```js
 (
   streamQuery: TaggedTemplateLiteralInvocationType,
-  tupleList: $ReadOnlyArray<$ReadOnlyArray<any>>,
-  columnTypes: $ReadOnlyArray<TypeNameIdentifierType>
+  tupleList: any[][],
+  columnTypes: TypeNameIdentifierType[],
 ) => Promise<null>;
 
 ```
