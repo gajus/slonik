@@ -55,8 +55,8 @@ pool.oneFirst(sql`
 ```js
 (
   streamQuery: TaggedTemplateLiteralInvocationType,
-  tupleList: $ReadOnlyArray<$ReadOnlyArray<any>>,
-  columnTypes: $ReadOnlyArray<TypeNameIdentifierType>
+  tupleList: any[][],
+  columnTypes: TypeNameIdentifierType[],
 ) => Promise<null>;
 
 ```

@@ -8,7 +8,7 @@ If this is your first time using Slonik, read [Dynamically generating SQL querie
 
 ```js
 (
-  values: $ReadOnlyArray<PrimitiveValueExpressionType>,
+  values: PrimitiveValueExpressionType[],
   memberType: TypeNameIdentifierType | SqlTokenType
 ) => ArraySqlTokenType;
 
@@ -125,7 +125,7 @@ Produces:
 
 ```js
 (
-  names: $ReadOnlyArray<string>
+  names: string[],
 ) => IdentifierSqlTokenType;
 
 ```
@@ -191,7 +191,7 @@ Produces:
 
 ```js
 (
-  members: $ReadOnlyArray<SqlTokenType>,
+  members: SqlTokenType[],
   glue: SqlTokenType
 ) => ListSqlTokenType;
 
@@ -266,8 +266,8 @@ sql`
 
 ```js
 (
-  tuples: $ReadOnlyArray<$ReadOnlyArray<PrimitiveValueExpressionType>>,
-  columnTypes: $ReadOnlyArray<string>
+  tuples: PrimitiveValueExpressionType[][],
+  columnTypes: string[]
 ): UnnestSqlTokenType;
 
 ```

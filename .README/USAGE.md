@@ -153,13 +153,13 @@ type ClientConfigurationInputType = {|
   +connectionTimeout?: number | 'DISABLE_TIMEOUT',
   +idleInTransactionSessionTimeout?: number | 'DISABLE_TIMEOUT',
   +idleTimeout?: number | 'DISABLE_TIMEOUT',
-  +interceptors?: $ReadOnlyArray<InterceptorType>,
   +maximumPoolSize?: number,
   +preferNativeBindings?: boolean,
   +statementTimeout?: number | 'DISABLE_TIMEOUT',
   +transactionRetryLimit?: number,
-  +typeParsers?: $ReadOnlyArray<TypeParserType>,
 |};
+  +interceptors?: InterceptorType[],
+  +typeParsers?: TypeParserType[],
 
 ```
 
@@ -286,11 +286,11 @@ import {
 } from 'slonik';
 
 type OverridesType = {|
-  +query: (sql: string, values: $ReadOnlyArray<PrimitiveValueExpressionType>,) => Promise<QueryResultType<QueryResultRowType>>,
+  +query: (sql: string, values: PrimitiveValueExpressionType[],) => Promise<QueryResultType<QueryResultRowType>>,
 |};
 
 createMockPool(overrides: OverridesType): DatabasePoolType;
-createMockQueryResult(rows: $ReadOnlyArray<QueryResultRowType>): QueryResultType<QueryResultRowType>;
+createMockQueryResult(rows: QueryResultRowType[]): QueryResultType<QueryResultRowType>;
 
 ```
 
