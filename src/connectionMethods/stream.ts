@@ -25,7 +25,7 @@ export const stream: InternalStreamFunctionType = async (connectionLogger, conne
     values,
     undefined,
     (finalConnection, finalSql, finalValues, executionContext, actualQuery) => {
-      if (connection.connection.slonik.native) {
+      if (connection.native) {
         throw new UnexpectedStateError('Result cursors do not work with the native driver. Use JavaScript driver.');
       }
 

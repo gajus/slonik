@@ -51,6 +51,7 @@
     "gitdown": "^3.1.4",
     "husky": "^4.3.6",
     "nyc": "^15.1.0",
+    "pg-native": "^3.0.0",
     "semantic-release": "^17.4.4",
     "sinon": "^11.1.2",
     "ts-node": "^10.1.0",
@@ -102,7 +103,7 @@
     "create-readme": "gitdown ./.README/README.md --output-file ./README.md",
     "eslint": "eslint --ext '.ts'",
     "lint": "npm run eslint ./src ./test && npm run type-check",
-    "test": "ROARR_LOG=true NODE_ENV=test nyc ava --verbose",
+    "test": "ROARR_LOG=true NODE_ENV=test nyc ava --verbose --serial",
     "type-check": "tsc -p ."
   },
   "types": "./dist/src/index.d.ts",

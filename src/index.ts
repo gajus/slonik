@@ -21,11 +21,13 @@ export type {
   InterceptorType,
   JsonSqlTokenType,
   ListSqlTokenType,
+  PgClientType,
   QueryContextType,
   QueryResultRowColumnType,
   QueryResultRowType,
   QueryResultType,
   QueryType,
+  SerializableValueType,
   SqlSqlTokenType,
   SqlTaggedTemplateType,
   SqlTokenType,
@@ -34,7 +36,6 @@ export type {
   TypeParserType,
   UnnestSqlTokenType,
   ValueExpressionType,
-  SerializableValueType,
 } from './types';
 export {
   createMockPool,

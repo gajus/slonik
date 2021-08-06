@@ -84,7 +84,7 @@ test('throws if bound an undefined value', (t) => {
   t.is(error.message, 'SQL tag cannot be bound an undefined value.');
 });
 
-test.serial('logs all bound values if one is undefined', (t) => {
+test.serial.skip('logs all bound values if one is undefined', (t) => {
   t.throws(() => {
     // @ts-expect-error
     sql`SELECT ${undefined}`;

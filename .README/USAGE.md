@@ -234,6 +234,32 @@ There are 4 types of configurable timeouts:
 
 Slonik sets aggressive timeouts by default. These timeouts are designed to provide safe interface to the database. These timeouts might not work for all programs. If your program has long running statements, consider adjusting timeouts just for those statements instead of changing the defaults.
 
+### Using native libpq bindings
+
+In order to use native [libpq](https://www.npmjs.com/package/libpq) PostgreSQL bindings install `pg-native` and configure `pgClient`, e.g.
+
+```js
+// You have to have pg-native installed for this to work.
+// `native` is intentionally imported from 'pg' and not 'pg-native'.
+import {
+  native as pgClient,
+} from 'pg';
+import {
+  createPool,
+} from 'slonik';
+
+const pool = createPool('postgres://', {
+  pgClient,
+});
+
+```
+
+#### Known limitations of using pg-native with Slonik
+
+* notice logs are not captured in `notices` query result property (`notice` event is never fired on connection instance).
+* cannot combine multiple commands into a single statement (pg-native limitation [#88](https://github.com/brianc/node-pg-native/issues/88))
+* does not support streams.
+
 ### Checking out a client from the connection pool
 
 Slonik only allows to check out a connection for the duration of the promise routine supplied to the `pool#connect()` method.
