@@ -155,7 +155,7 @@ type ClientConfigurationInputType = {
   idleTimeout?: number | 'DISABLE_TIMEOUT',
   interceptors?: InterceptorType[],
   maximumPoolSize?: number,
-  pgClient?: typeof require('pg').native,
+  pgClient?: PgClientType,
   statementTimeout?: number | 'DISABLE_TIMEOUT',
   transactionRetryLimit?: number,
   typeParsers?: TypeParserType[],

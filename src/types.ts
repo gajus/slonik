@@ -20,6 +20,8 @@ export {
   Logger,
 };
 
+export type PgClientType = typeof pgTypes.native;
+
 export type TypeNameIdentifierType =
   | 'bool'
   | 'bytea'
@@ -88,7 +90,7 @@ export type ClientConfigurationType = {
   /** Do not allow more than this many connections. Use 'DISABLE_TIMEOUT' constant to disable the timeout. (Default: 10) */
   readonly maximumPoolSize: number,
   /** Override the underlying PostgreSQL driver. **/
-  readonly pgClient?: typeof pgTypes.native,
+  readonly pgClient?: PgClientType,
   /** Timeout (in milliseconds) after which database is instructed to abort the query. Use 'DISABLE_TIMEOUT' constant to disable the timeout. (Default: 60000) */
   readonly statementTimeout: number | 'DISABLE_TIMEOUT',
   /** Number of times a transaction failing with Transaction Rollback class error is retried. (Default: 5) */
