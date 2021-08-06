@@ -3,9 +3,9 @@
 Type parsers describe how to parse PostgreSQL types.
 
 ```js
-  +name: string,
-  +parse: (value: string) => *
 type TypeParserType = {
+  name: string,
+  parse: (value: string) => *
 };
 
 ```

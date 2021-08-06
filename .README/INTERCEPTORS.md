@@ -26,46 +26,46 @@ Read: [Default interceptors](#default-interceptors).
 Interceptor is an object that implements methods that can change the behaviour of the database client at different stages of the connection life-cycle
 
 ```js
-  +afterPoolConnection?: (
 type InterceptorType = {
+  afterPoolConnection?: (
     connectionContext: ConnectionContextType,
     connection: DatabasePoolConnectionType
   ) => MaybePromiseType<null>,
-  +afterQueryExecution?: (
+  afterQueryExecution?: (
     queryContext: QueryContextType,
     query: QueryType,
     result: QueryResultType<QueryResultRowType>
   ) => MaybePromiseType<QueryResultType<QueryResultRowType>>,
-  +beforePoolConnection?: (
+  beforePoolConnection?: (
     connectionContext: ConnectionContextType
   ) => MaybePromiseType<?DatabasePoolType>,
-  +beforePoolConnectionRelease?: (
+  beforePoolConnectionRelease?: (
     connectionContext: ConnectionContextType,
     connection: DatabasePoolConnectionType
   ) => MaybePromiseType<null>,
-  +beforeQueryExecution?: (
+  beforeQueryExecution?: (
     queryContext: QueryContextType,
     query: QueryType
   ) => MaybePromiseType<QueryResultType<QueryResultRowType>> | MaybePromiseType<null>,
-  +beforeQueryResult?: (
+  beforeQueryResult?: (
     queryContext: QueryContextType,
     query: QueryType,
     result: QueryResultType<QueryResultRowType>
   ) => MaybePromiseType<null>,
-  +beforeTransformQuery?: (
+  beforeTransformQuery?: (
     queryContext: QueryContextType,
     query: QueryType
   ) => Promise<null>,
-  +queryExecutionError?: (
+  queryExecutionError?: (
     queryContext: QueryContextType,
     query: QueryType,
     error: SlonikError
   ) => MaybePromiseType<null>,
-  +transformQuery?: (
+  transformQuery?: (
     queryContext: QueryContextType,
     query: QueryType
   ) => QueryType,
-  +transformRow?: (
+  transformRow?: (
     queryContext: QueryContextType,
     query: QueryType,
     row: QueryResultRowType,
