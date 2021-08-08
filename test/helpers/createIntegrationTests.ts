@@ -338,7 +338,7 @@ export const createIntegrationTests = (
     await pool.end();
   });
 
-  test('transaction terminated while in an idle state is rejected (at the next transaction query)', async (t) => {
+  test.skip('transaction terminated while in an idle state is rejected (at the next transaction query)', async (t) => {
     const pool = createPool(t.context.dsn, {
       pgClient,
     });
@@ -358,7 +358,7 @@ export const createIntegrationTests = (
     await pool.end();
   });
 
-  test('connection of transaction terminated while in an idle state is rejected (at the end of the transaction)', async (t) => {
+  test.skip('connection of transaction terminated while in an idle state is rejected (at the end of the transaction)', async (t) => {
     const pool = createPool(t.context.dsn, {
       pgClient,
     });
