@@ -1,15 +1,15 @@
 import {
   parse as parseConnectionString,
 } from 'pg-connection-string';
+import type {
+  ConnectionOptions,
+} from 'pg-connection-string';
 import {
   Logger as log,
 } from '../Logger';
 import type {
   ClientConfigurationType,
 } from '../types';
-import type {
-  ConnectionOptions,
-} from 'pg-connection-string';
 
 export const createPoolConfiguration = (connectionUri: string, clientConfiguration: ClientConfigurationType): ConnectionOptions => {
   // @todo: make this not any. A few properties which don't exist on the interface are being set below

@@ -5,14 +5,14 @@ import {
   createPrimitiveValueExpressions,
   createSqlTokenSqlFragment,
 } from '../factories';
-import {
-  isPrimitiveValueExpression,
-  isSqlToken,
-} from '../utilities';
 import type {
   SqlFragmentType,
   ListSqlTokenType,
 } from '../types';
+import {
+  isPrimitiveValueExpression,
+  isSqlToken,
+} from '../utilities';
 
 export const createListSqlFragment = (token: ListSqlTokenType, greatestParameterPosition: number): SqlFragmentType => {
   const values = [];

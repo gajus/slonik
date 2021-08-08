@@ -1,5 +1,6 @@
 /* eslint-disable promise/prefer-await-to-callbacks */
 
+import type Stream from 'stream';
 import through from 'through2';
 import {
   QueryStream,
@@ -14,7 +15,6 @@ import type {
   InterceptorType,
   InternalStreamFunctionType,
 } from '../types';
-import type Stream from 'stream';
 
 export const stream: InternalStreamFunctionType = async (connectionLogger, connection, clientConfiguration, rawSql, values, streamHandler) => {
   return executeQuery(

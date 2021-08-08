@@ -4,12 +4,6 @@ import {
 import {
   bindPool,
 } from '../binders/bindPool';
-import {
-  createUid,
-} from '../utilities';
-import {
-  createClientConfiguration,
-} from './createClientConfiguration';
 import type {
   ClientConfigurationInputType,
   DatabasePoolType,
@@ -18,6 +12,12 @@ import type {
   QueryResultRowType,
   QueryResultType,
 } from '../types';
+import {
+  createUid,
+} from '../utilities';
+import {
+  createClientConfiguration,
+} from './createClientConfiguration';
 
 export const createMockPool = (
   overrides: MockPoolOverridesType,

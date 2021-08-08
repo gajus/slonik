@@ -3,12 +3,12 @@ import sinon from 'sinon';
 import {
   bindPool,
 } from '../../src/binders/bindPool';
-import {
-  Logger as log,
-} from './Logger';
 import type {
   ClientConfigurationInputType,
 } from '../../src/types';
+import {
+  Logger as log,
+} from './Logger';
 
 const defaultConfiguration = {
   interceptors: [],

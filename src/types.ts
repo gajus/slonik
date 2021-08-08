@@ -4,6 +4,10 @@
 /* eslint-disable no-inline-comments */
 /* eslint-disable max-len */
 
+import type {
+  Readable,
+} from 'stream';
+import type pgTypes from 'pg';
 import {
   Logger,
 } from 'roarr';
@@ -11,10 +15,6 @@ import type {
   SlonikError,
 } from './errors';
 import type * as tokens from './tokens';
-import type pgTypes from 'pg';
-import type {
-  Readable,
-} from 'stream';
 
 export {
   Logger,

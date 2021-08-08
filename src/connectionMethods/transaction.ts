@@ -8,12 +8,12 @@ import {
   BackendTerminatedError,
   UnexpectedStateError,
 } from '../errors';
-import {
-  createUid,
-} from '../utilities';
 import type {
   InternalTransactionFunctionType,
 } from '../types';
+import {
+  createUid,
+} from '../utilities';
 
 export const transaction: InternalTransactionFunctionType = async (parentLog, connection, clientConfiguration, handler) => {
   if (connection.connection.slonik.transactionDepth !== null) {

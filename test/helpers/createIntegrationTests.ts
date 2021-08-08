@@ -2,6 +2,11 @@ import anyTest, {
   afterEach as anyAfterEach,
   beforeEach as anyBeforeEach,
 } from 'ava';
+import type {
+  AfterInterface,
+  BeforeInterface,
+  TestInterface,
+} from 'ava';
 import delay from 'delay';
 import {
   BackendTerminatedError,
@@ -16,11 +21,6 @@ import {
 import type {
   PgClientType,
 } from '../../src';
-import type {
-  AfterInterface,
-  BeforeInterface,
-  TestInterface,
-} from 'ava';
 
 type TestContextType = {
   dsn: string,

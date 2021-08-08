@@ -1,6 +1,10 @@
 import anyTest, {
   beforeEach as anyBeforeEach,
 } from 'ava';
+import type {
+  BeforeInterface,
+  TestInterface,
+} from 'ava';
 import Roarr from 'roarr';
 import {
   InvalidInputError,
@@ -11,10 +15,6 @@ import {
 import {
   createClientConfiguration,
 } from '../../helpers/createClientConfiguration';
-import type {
-  BeforeInterface,
-  TestInterface,
-} from 'ava';
 
 const test = anyTest as TestInterface<any>;
 const beforeEach = anyBeforeEach as BeforeInterface<any>;

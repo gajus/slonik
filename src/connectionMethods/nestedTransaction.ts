@@ -4,12 +4,12 @@ import {
 import {
   bindTransactionConnection,
 } from '../binders';
-import {
-  createUid,
-} from '../utilities';
 import type {
   InternalNestedTransactionFunctionType,
 } from '../types';
+import {
+  createUid,
+} from '../utilities';
 
 export const nestedTransaction: InternalNestedTransactionFunctionType = async (parentLog, connection, clientConfiguration, handler, transactionDepth) => {
   const newTransactionDepth = transactionDepth + 1;

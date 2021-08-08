@@ -1,16 +1,16 @@
 import {
   InvalidInputError,
 } from '../errors';
+import type {
+  SqlFragmentType,
+  UnnestSqlTokenType,
+} from '../types';
 import {
   countArrayDimensions,
   escapeIdentifier,
   isPrimitiveValueExpression,
   stripArrayNotation,
 } from '../utilities';
-import type {
-  SqlFragmentType,
-  UnnestSqlTokenType,
-} from '../types';
 
 export const createUnnestSqlFragment = (token: UnnestSqlTokenType, greatestParameterPosition: number): SqlFragmentType => {
   const columnTypes = token.columnTypes;

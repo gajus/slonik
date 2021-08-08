@@ -1,15 +1,15 @@
 import {
   DataIntegrityError,
 } from '../errors';
+import type {
+  InternalQueryMethodType,
+} from '../types';
 import {
   createQueryId,
 } from '../utilities';
 import {
   query,
 } from './query';
-import type {
-  InternalQueryMethodType,
-} from '../types';
 
 export const exists: InternalQueryMethodType<Promise<boolean>> = async (log, connection, clientConfiguration, rawSql, values, inheritedQueryId) => {
   const queryId = inheritedQueryId ?? createQueryId();

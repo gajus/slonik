@@ -20,11 +20,6 @@ import {
   UniqueIntegrityConstraintViolationError,
   TupleMovedToAnotherPartitionError,
 } from '../errors';
-import {
-  createQueryId,
-  normaliseQueryValues,
-  removeCommentedOutBindings,
-} from '../utilities';
 import type {
   ClientConfigurationType,
   InternalDatabaseConnectionType,
@@ -37,6 +32,11 @@ import type {
   QueryResultType,
   QueryType,
 } from '../types';
+import {
+  createQueryId,
+  normaliseQueryValues,
+  removeCommentedOutBindings,
+} from '../utilities';
 
 type GenericQueryResult = QueryResultType<QueryResultRowType>;
 
