@@ -32,6 +32,7 @@
     "fp/no-events": 0,
     "import/no-cycle": 0,
     "import/no-default-export": 1,
+    "import/no-named-as-default-member": 0,
     "import/no-unresolved": 0,
     "linebreak-style": 0,
     "no-continue": 0,
