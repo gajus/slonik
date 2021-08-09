@@ -5,7 +5,7 @@ arch: amd64
 jobs:
   include:
     - name: JavaScript driver
-      node_js: 14
+      node_js: 16
       services:
         - postgresql
       addons:
