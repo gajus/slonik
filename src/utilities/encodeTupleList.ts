@@ -3,7 +3,7 @@ import {
 } from 'stream';
 import createConcatStream from 'concat-stream';
 import {
-  deparser as createEncoder,
+  rowWriter as createEncoder,
 } from 'pg-copy-streams-binary';
 import type {
   TypeNameIdentifierType,
