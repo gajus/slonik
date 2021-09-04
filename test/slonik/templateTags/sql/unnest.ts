@@ -95,6 +95,25 @@ test('recognizes an array of arrays array', (t) => {
   });
 });
 
+test('recognizes sql.identifier-like column types', (t) => {
+  const query = sql`SELECT bar, baz FROM ${sql.unnest([[1, 3], [2, 4]], [['foo', 'level'], ['foo', 'score']])} AS foo(bar, baz)`;
+
+  t.deepEqual(query, {
+    sql: 'SELECT bar, baz FROM unnest($1::"foo"."level"[], $2::"foo"."score"[]) AS foo(bar, baz)',
+    type: SqlToken,
+    values: [
+      [
+        1,
+        2,
+      ],
+      [
+        3,
+        4,
+      ],
+    ],
+  });
+});
+
 test('throws if tuple member is not a primitive value expression', (t) => {
   const error = t.throws(() => {
     sql`SELECT * FROM ${sql.unnest([[() => {}, 2, 3], [4, 5]], ['int4', 'int4', 'int4'])}`;
