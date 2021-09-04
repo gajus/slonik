@@ -269,8 +269,10 @@ export type SqlSqlTokenType = {
   readonly values: readonly PrimitiveValueExpressionType[],
 };
 
+export type UnnestSqlColumnType = string | readonly string[];
+
 export type UnnestSqlTokenType = {
-  readonly columnTypes: readonly string[],
+  readonly columnTypes: readonly UnnestSqlColumnType[],
   readonly tuples: ReadonlyArray<readonly ValueExpressionType[]>,
   readonly type: typeof tokens.UnnestToken,
 };
@@ -311,7 +313,7 @@ export type SqlTaggedTemplateType<T extends UserQueryResultRowType = QueryResult
     // or it can be infinitely nested array, e.g.
     // https://github.com/gajus/slonik/issues/44
     tuples: ReadonlyArray<readonly any[]>,
-    columnTypes: readonly string[],
+    columnTypes: readonly UnnestSqlColumnType[],
   ) => UnnestSqlTokenType,
 };
 
