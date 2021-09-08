@@ -26,6 +26,7 @@ import type {
   SqlTaggedTemplateType,
   SqlTokenType,
   TypeNameIdentifierType,
+  UnnestSqlColumnType,
   UnnestSqlTokenType,
   ValueExpressionType,
 } from '../types';
@@ -154,7 +155,7 @@ sql.join = (
 
 sql.unnest = (
   tuples: ReadonlyArray<readonly PrimitiveValueExpressionType[]>,
-  columnTypes: readonly string[],
+  columnTypes: readonly UnnestSqlColumnType[],
 ): UnnestSqlTokenType => {
   return {
     columnTypes,

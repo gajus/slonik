@@ -1514,7 +1514,7 @@ sql`
 ```js
 (
   tuples: PrimitiveValueExpressionType[][],
-  columnTypes: string[]
+  columnTypes: (string | string[])[]
 ): UnnestSqlTokenType;
 
 ```
@@ -1557,6 +1557,44 @@ Produces:
 
 ```
 
+if `columnType` type is `string[][]`, it will act similar as [`sql.identifier`](#sqlidentifier), e.g.
+
+
+```js
+await connection.query(sql`
+  SELECT bar, baz
+  FROM ${sql.unnest(
+    [
+      [1, 3],
+      [2, 4]
+    ],
+    [
+      ['foo', 'level'],
+      ['foo', 'score']
+    ]
+  )} AS foo(bar, baz)
+`);
+
+```
+
+Produces:
+
+```js
+{
+  sql: 'SELECT bar, baz FROM unnest($1::"foo"."level"[], $2::"foo"."score"[]) AS foo(bar, baz)',
+  values: [
+    [
+      1,
+      2
+    ],
+    [
+      3,
+      4
+    ]
+  ]
+}
+
+```
 
 <a name="slonik-query-methods"></a>
 ## Query methods
