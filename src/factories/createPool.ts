@@ -43,7 +43,7 @@ export const createPool = (
 
   const poolConfiguration = createPoolConfiguration(connectionUri, clientConfiguration);
 
-  let pg: typeof pgTypes.native;
+  let pg: Exclude<typeof pgTypes.native, null>;
 
   if (clientConfiguration.pgClient) {
     pg = clientConfiguration.pgClient;
@@ -54,8 +54,8 @@ export const createPool = (
   type ModifiedPool = EventEmitter & Omit<pgTypes.Pool, 'on'> & {
     slonik?: unknown,
   };
-  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-  const pool: ModifiedPool = new pg!.Pool(poolConfiguration as unknown as pgTypes.PoolConfig);
+
+  const pool: ModifiedPool = new pg.Pool(poolConfiguration as unknown as pgTypes.PoolConfig);
 
   pool.slonik = {
     ended: false,
