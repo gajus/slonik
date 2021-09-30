@@ -3,8 +3,7 @@ import type {
 } from '../../types';
 
 const bigintParser = (value: string) => {
-  // @todo Use bigint when value is greater than Number.MAX_SAFE_INTEGER.
-  return Number.parseInt(value, 10);
+  return BigInt(value);
 };
 
 export const createBigintTypeParser = (): TypeParserType => {
