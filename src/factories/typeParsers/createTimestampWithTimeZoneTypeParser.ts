@@ -3,7 +3,7 @@ import type {
 } from '../../types';
 
 const timestampParser = (value: string | null) => {
-  return value === null ? value : Date.parse(value + ' UTC');
+  return value === null ? value : Date.parse(value);
 };
 
 export const createTimestampWithTimeZoneTypeParser = (): TypeParserType => {
