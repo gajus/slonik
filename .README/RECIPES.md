@@ -73,5 +73,16 @@ masterPool.query(sql`SELECT 1`);
 
 // This query will use `postgres://master` connection.
 masterPool.query(sql`UPDATE 1`);
+```
 
+### Building a dynamic query
+
+To build a query dynamically, assemble the dynamic portions of the query inside of a `sql` tag. You can then combine those clauses inside of other `sql`tags to be used to execute queries.
+
+For example:
+
+```js
+const field1 = 1;
+const field2Clause = someValue ? sql` and field2=${someValue}` : sql``;
+const finalQuery = sql`SELECT * FROM table WHERE field1=${field1}${field2Clause}`;
 ```
