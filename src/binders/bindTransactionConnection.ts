@@ -168,7 +168,7 @@ export const bindTransactionConnection = (
         streamHandler,
       );
     },
-    transaction: (handler) => {
+    transaction: (handler, transactionRetryLimit) => {
       assertTransactionDepth();
 
       return nestedTransaction(
@@ -177,6 +177,7 @@ export const bindTransactionConnection = (
         clientConfiguration,
         handler,
         transactionDepth,
+        transactionRetryLimit,
       );
     },
   };

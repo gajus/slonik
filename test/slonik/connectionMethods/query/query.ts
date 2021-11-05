@@ -12,19 +12,13 @@ import {
   createSqlTag,
 } from '../../../../src/factories/createSqlTag';
 import {
+  createErrorWithCode,
+} from '../../../helpers/createErrorWithCode';
+import {
   createPool,
 } from '../../../helpers/createPool';
 
 const sql = createSqlTag();
-
-const createErrorWithCode = (code: string) => {
-  const error = new Error('foo');
-
-  // @ts-expect-error
-  error.code = code;
-
-  return error;
-};
 
 test('ends connection after promise is resolved (explicit connection)', async (t) => {
   const eventHandler = sinon.spy();

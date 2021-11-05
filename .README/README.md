@@ -37,6 +37,7 @@ Note: Using this project does not require TypeScript. It is a regular ES6 module
 * [Safe value interpolation](#protecting-against-unsafe-value-interpolation).
 * [Transaction nesting](#transaction-nesting).
 * [Transaction retrying](#transaction-retrying)
+* [Query retrying](#query-retrying)
 * Detailed [logging](#slonik-debugging).
 * [Asynchronous stack trace resolution](#capture-stack-trace).
 * [Middlewares](#slonik-interceptors).

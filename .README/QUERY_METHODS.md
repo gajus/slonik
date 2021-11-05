@@ -375,6 +375,12 @@ ROLLBACK;
 
 Transactions that are failing with [Transaction Rollback](https://www.postgresql.org/docs/current/errcodes-appendix.html) class errors are automatically retried.
 
-A failing transaction will be rolled back and all queries up to the failing query will be replayed.
+A failing transaction will be rolled back and the callback function passed to the transaction method call will be executed again. Nested transactions are also retried until the retry limit is reached. If the nested transaction keeps failing with a [Transaction Rollback](https://www.postgresql.org/docs/current/errcodes-appendix.html) error, then the parent transaction will be retried until the retry limit is reached.
 
-How many times a transaction is retried is controlled using `transactionRetryLimit` configuration (default: 5).
+How many times a transaction is retried is controlled using `transactionRetryLimit` configuration (default: 5) and the `transactionRetryLimit` parameter of the `transaction` method (default: undefined). If a `transactionRetryLimit` is given to the method call then it is used otherwise the `transactionRetryLimit` configuration is used.
+
+#### Query retrying
+
+A single query (not part of a transaction) failing with a [Transaction Rollback](https://www.postgresql.org/docs/current/errcodes-appendix.html) class error is automatically retried.
+
+How many times it is retried is controlled by using the `queryRetryLimit` configuration (default: 5).
