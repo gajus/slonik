@@ -4,7 +4,7 @@ import {
 } from '../../../src/utilities';
 
 test('escapes SQL identifiers', (t) => {
-  t.assert(escapeIdentifier('foo') === '"foo"');
-  t.assert(escapeIdentifier('foo bar') === '"foo bar"');
-  t.assert(escapeIdentifier('"foo"') === '"""foo"""');
+  t.is(escapeIdentifier('foo'), '"foo"');
+  t.is(escapeIdentifier('foo bar'), '"foo bar"');
+  t.is(escapeIdentifier('"foo"'), '"""foo"""');
 });

@@ -75,3 +75,22 @@ masterPool.query(sql`SELECT 1`);
 masterPool.query(sql`UPDATE 1`);
 
 ```
+
+### Building Utility Statements
+
+Parameter symbols only work in optimizable SQL commands (SELECT, INSERT, UPDATE, DELETE, and certain commands containing one of these). In other statement types (generically called utility statements, e.g. ALTER, CREATE, DROP and SET), you must insert values textually even if they are just data values.
+
+In the context of Slonik, if you are building utility statements you must use query building methods that interpolate values directly into queries:
+
+* [`sql.identifier`](#slonik-query-building-sql-identifier) – for identifiers.
+* [`sql.literalValue`](#slonik-query-building-sql-literalvalue) – for values.
+
+Example:
+
+```js
+await connection.query(sql`
+  CREATE USER ${sql.identifier(['foo'])}
+  WITH PASSWORD ${sql.literalValue('bar')}
+`);
+
+```

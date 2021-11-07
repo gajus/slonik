@@ -308,6 +308,7 @@ export type SqlTaggedTemplateType<T extends UserQueryResultRowType = QueryResult
   identifier: (names: readonly string[]) => IdentifierSqlTokenType,
   json: (value: SerializableValueType) => JsonSqlTokenType,
   join: (members: readonly ValueExpressionType[], glue: SqlTokenType) => ListSqlTokenType,
+  literalValue: (value: string) => SqlSqlTokenType,
   unnest: (
     // Value might be $ReadOnlyArray<$ReadOnlyArray<PrimitiveValueExpressionType>>,
     // or it can be infinitely nested array, e.g.

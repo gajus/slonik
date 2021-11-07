@@ -14,6 +14,9 @@ export {
   escapeIdentifier,
 } from './escapeIdentifier';
 export {
+  escapeLiteralValue,
+} from './escapeLiteralValue';
+export {
   isPrimitiveValueExpression,
 } from './isPrimitiveValueExpression';
 export {

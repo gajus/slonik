@@ -83,6 +83,7 @@ Note: Using this project does not require TypeScript. It is a regular ES6 module
     * [Recipes](#slonik-recipes)
         * [Inserting large number of rows](#slonik-recipes-inserting-large-number-of-rows)
         * [Routing queries to different connections](#slonik-recipes-routing-queries-to-different-connections)
+        * [Building Utility Statements](#slonik-recipes-building-utility-statements)
     * [`sql` tag](#slonik-sql-tag)
     * [Value placeholders](#slonik-value-placeholders)
         * [Tagged template literals](#slonik-value-placeholders-tagged-template-literals)
@@ -94,6 +95,7 @@ Note: Using this project does not require TypeScript. It is a regular ES6 module
         * [`sql.identifier`](#slonik-query-building-sql-identifier)
         * [`sql.json`](#slonik-query-building-sql-json)
         * [`sql.join`](#slonik-query-building-sql-join)
+        * [`sql.literalValue`](#slonik-query-building-sql-literalvalue)
         * [`sql.unnest`](#slonik-query-building-sql-unnest)
     * [Query methods](#slonik-query-methods)
         * [`any`](#slonik-query-methods-any)
@@ -1113,6 +1115,26 @@ masterPool.query(sql`UPDATE 1`);
 
 ```
 
+<a name="slonik-recipes-building-utility-statements"></a>
+### Building Utility Statements
+
+Parameter symbols only work in optimizable SQL commands (SELECT, INSERT, UPDATE, DELETE, and certain commands containing one of these). In other statement types (generically called utility statements, e.g. ALTER, CREATE, DROP and SET), you must insert values textually even if they are just data values.
+
+In the context of Slonik, if you are building utility statements you must use query building methods that interpolate values directly into queries:
+
+* [`sql.identifier`](#slonik-query-building-sql-identifier) – for identifiers.
+* [`sql.literalValue`](#slonik-query-building-sql-literalvalue) – for values.
+
+Example:
+
+```js
+await connection.query(sql`
+  CREATE USER ${sql.identifier(['foo'])}
+  WITH PASSWORD ${sql.literalValue('bar')}
+`);
+
+```
+
 
 <a name="slonik-sql-tag"></a>
 ## <code>sql</code> tag
@@ -1507,6 +1529,35 @@ sql`
 
 ```
 
+<a name="slonik-query-building-sql-literalvalue"></a>
+### <code>sql.literalValue</code>
+
+> ⚠️ Do not use. This method interpolates values as literals and it must be used only for [building utility statements](#slonik-recipes-building-utility-statements). You are most likely looking for [value placeholders](#slonik-value-placeholders).
+
+```js
+(
+  value: string,
+) => SqlSqlTokenType;
+
+```
+
+Escapes and interpolates a literal value into a query.
+
+```js
+await connection.query(sql`
+  CREATE USER "foo" WITH PASSWORD ${sql.literalValue('bar')}
+`);
+
+```
+
+Produces:
+
+```js
+{
+  sql: 'CREATE USER "foo" WITH PASSWORD \'bar\''
+}
+
+```
 
 <a name="slonik-query-building-sql-unnest"></a>
 ### <code>sql.unnest</code>
@@ -1595,6 +1646,7 @@ Produces:
 }
 
 ```
+
 
 <a name="slonik-query-methods"></a>
 ## Query methods
