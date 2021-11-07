@@ -144,14 +144,14 @@ export const bindPool = (
         streamQuery,
       );
     },
-    transaction: async (transactionHandler) => {
+    transaction: async (transactionHandler, transactionRetryLimit) => {
       return createConnection(
         parentLog,
         pool,
         clientConfiguration,
         'IMPLICIT_TRANSACTION',
         (connectionLog, connection) => {
-          return transaction(connectionLog, connection, clientConfiguration, transactionHandler);
+          return transaction(connectionLog, connection, clientConfiguration, transactionHandler, transactionRetryLimit);
         },
         (newPool) => {
           return newPool.transaction(transactionHandler);

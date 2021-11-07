@@ -9,6 +9,9 @@ import {
   serializeError,
 } from 'serialize-error';
 import {
+  TRANSACTION_ROLLBACK_ERROR_PREFIX,
+} from '../constants';
+import {
   BackendTerminatedError,
   CheckIntegrityConstraintViolationError,
   ForeignKeyIntegrityConstraintViolationError,
@@ -55,13 +58,10 @@ type TransactionQueryType = {
   readonly values: readonly PrimitiveValueExpressionType[],
 };
 
-// @see https://www.postgresql.org/docs/current/errcodes-appendix.html
-const TRANSACTION_ROLLBACK_ERROR_PREFIX = '40';
-
-const retryTransaction = async (
+const retryQuery = async (
   connectionLogger: Logger,
   connection: InternalDatabaseConnectionType,
-  transactionQueries: readonly TransactionQueryType[],
+  query: TransactionQueryType,
   retryLimit: number,
 ) => {
   let result: GenericQueryResult;
@@ -73,34 +73,31 @@ const retryTransaction = async (
     attempt++;
 
     try {
-      // @todo Respect SAVEPOINTs.
-      await connection.query('ROLLBACK');
-      await connection.query('BEGIN');
+      connectionLogger.trace({
+        attempt,
+        queryId: query.executionContext.queryId,
+      }, 'retrying query');
 
-      for (const transactionQuery of transactionQueries) {
-        connectionLogger.trace({
-          attempt,
-          queryId: transactionQuery.executionContext.queryId,
-        }, 'retrying query');
+      result = await query.executionRoutine(
+        connection,
+        query.sql,
 
-        result = await transactionQuery.executionRoutine(
-          connection,
-          transactionQuery.sql,
+        // @todo Refresh execution context to reflect that the query has been re-tried.
+        normaliseQueryValues(query.values, connection.native),
 
-          // @todo Refresh execution context to reflect that the query has been re-tried.
-          normaliseQueryValues(transactionQuery.values, connection.native),
+        // This (probably) requires changing `queryId` and `queryInputTime`.
+        // It should be needed only for the last query (because other queries will not be processed by the middlewares).
+        query.executionContext,
+        {
+          sql: query.sql,
+          values: query.values,
+        },
+      );
 
-          // This (probably) requires changing `queryId` and `queryInputTime`.
-          // It should be needed only for the last query (because other queries will not be processed by the middlewares).
-          transactionQuery.executionContext,
-          {
-            sql: transactionQuery.sql,
-            values: transactionQuery.values,
-          },
-        );
-      }
+      // If the attempt succeeded break out of the loop
+      break;
     } catch (error) {
-      if (typeof error.code === 'string' && error.code.startsWith(TRANSACTION_ROLLBACK_ERROR_PREFIX)) {
+      if (typeof error.code === 'string' && error.code.startsWith(TRANSACTION_ROLLBACK_ERROR_PREFIX) && remainingRetries > 0) {
         continue;
       }
 
@@ -119,8 +116,8 @@ export const executeQuery = async (
   clientConfiguration: ClientConfigurationType,
   rawSql: string,
   values: readonly PrimitiveValueExpressionType[],
-  inheritedQueryId?: QueryIdType,
-  executionRoutine?: ExecutionRoutineType,
+  inheritedQueryId: QueryIdType | undefined,
+  executionRoutine: ExecutionRoutineType,
 ): Promise<QueryResultType<Record<string, PrimitiveValueExpressionType>>> => {
   if (connection.connection.slonik.terminated) {
     throw new BackendTerminatedError(connection.connection.slonik.terminated);
@@ -224,19 +221,16 @@ export const executeQuery = async (
 
   connection.on('notice', noticeListener);
 
+  const queryWithContext = {
+    executionContext,
+    executionRoutine,
+    sql: actualQuery.sql,
+    values: actualQuery.values,
+  };
+
   try {
     try {
       try {
-        if (connection.connection.slonik.transactionQueries) {
-          connection.connection.slonik.transactionQueries.push({
-            executionContext,
-            executionRoutine,
-            sql: actualQuery.sql,
-            values: actualQuery.values,
-          });
-        }
-
-        // @ts-expect-error
         result = await executionRoutine(
           connection,
           actualQuery.sql,
@@ -245,12 +239,17 @@ export const executeQuery = async (
           actualQuery,
         );
       } catch (error) {
-        if (typeof error.code === 'string' && error.code.startsWith(TRANSACTION_ROLLBACK_ERROR_PREFIX) && clientConfiguration.transactionRetryLimit > 0) {
-          result = await retryTransaction(
+        const shouldRetry = typeof error.code === 'string' &&
+          error.code.startsWith(TRANSACTION_ROLLBACK_ERROR_PREFIX) &&
+          clientConfiguration.queryRetryLimit > 0;
+
+        // Transactions errors in queries that are part of a transaction are handled by the transaction/nestedTransaction functions
+        if (shouldRetry && !connection.connection.slonik.transactionId) {
+          result = await retryQuery(
             connectionLogger,
             connection,
-            connection.connection.slonik.transactionQueries,
-            clientConfiguration.transactionRetryLimit,
+            queryWithContext,
+            clientConfiguration.queryRetryLimit,
           );
         } else {
           throw error;

@@ -41,6 +41,7 @@ Note: Using this project does not require TypeScript. It is a regular ES6 module
 * [Safe value interpolation](#protecting-against-unsafe-value-interpolation).
 * [Transaction nesting](#transaction-nesting).
 * [Transaction retrying](#transaction-retrying)
+* [Query retrying](#query-retrying)
 * Detailed [logging](#slonik-debugging).
 * [Asynchronous stack trace resolution](#capture-stack-trace).
 * [Middlewares](#slonik-interceptors).
@@ -548,6 +549,7 @@ createPool(
  * @property pgClient Override the underlying PostgreSQL client.
  * @property statementTimeout Timeout (in milliseconds) after which database is instructed to abort the query. Use 'DISABLE_TIMEOUT' constant to disable the timeout. (Default: 60000)
  * @property transactionRetryLimit Number of times a transaction failing with Transaction Rollback class error is retried. (Default: 5)
+ * @property queryRetryLimit Number of times a query failing with Transaction Rollback class error, that doesn't belong to a transaction, is retried. (Default: 5)
  * @property typeParsers An array of [Slonik type parsers](https://github.com/gajus/slonik#slonik-type-parsers).
  */
 type ClientConfigurationInputType = {
@@ -561,6 +563,7 @@ type ClientConfigurationInputType = {
   pgClient?: PgClientType,
   statementTimeout?: number | 'DISABLE_TIMEOUT',
   transactionRetryLimit?: number,
+  queryRetryLimit?: number,
   typeParsers?: TypeParserType[],
 };
 
@@ -2044,9 +2047,16 @@ ROLLBACK;
 
 Transactions that are failing with [Transaction Rollback](https://www.postgresql.org/docs/current/errcodes-appendix.html) class errors are automatically retried.
 
-A failing transaction will be rolled back and all queries up to the failing query will be replayed.
+A failing transaction will be rolled back and the callback function passed to the transaction method call will be executed again. Nested transactions are also retried until the retry limit is reached. If the nested transaction keeps failing with a [Transaction Rollback](https://www.postgresql.org/docs/current/errcodes-appendix.html) error, then the parent transaction will be retried until the retry limit is reached.
 
-How many times a transaction is retried is controlled using `transactionRetryLimit` configuration (default: 5).
+How many times a transaction is retried is controlled using `transactionRetryLimit` configuration (default: 5) and the `transactionRetryLimit` parameter of the `transaction` method (default: undefined). If a `transactionRetryLimit` is given to the method call then it is used otherwise the `transactionRetryLimit` configuration is used.
+
+<a name="slonik-query-methods-transaction-query-retrying"></a>
+#### Query retrying
+
+A single query (not part of a transaction) failing with a [Transaction Rollback](https://www.postgresql.org/docs/current/errcodes-appendix.html) class error is automatically retried.
+
+How many times it is retried is controlled by using the `queryRetryLimit` configuration (default: 5).
 
 
 <a name="slonik-error-handling"></a>

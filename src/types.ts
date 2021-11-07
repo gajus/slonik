@@ -95,6 +95,8 @@ export type ClientConfigurationType = {
   readonly statementTimeout: number | 'DISABLE_TIMEOUT',
   /** Number of times a transaction failing with Transaction Rollback class error is retried. (Default: 5) */
   readonly transactionRetryLimit: number,
+  /** Number of times a query failing with Transaction Rollback class error, that doesn't belong to a transaction, is retried. (Default: 5) */
+  readonly queryRetryLimit: number,
   /** An array of [Slonik type parsers](https://github.com/gajus/slonik#slonik-type-parsers). */
   readonly typeParsers: readonly TypeParserType[],
 };
@@ -127,7 +129,7 @@ export type CommonQueryMethodsType = {
 
 export type DatabaseTransactionConnectionType = CommonQueryMethodsType & {
   readonly stream: StreamFunctionType,
-  readonly transaction: <T>(handler: TransactionFunctionType<T>) => Promise<T>,
+  readonly transaction: <T>(handler: TransactionFunctionType<T>, transactionRetryLimit?: number) => Promise<T>,
 };
 
 export type TransactionFunctionType<T> = (connection: DatabaseTransactionConnectionType) => Promise<T>;
@@ -135,7 +137,7 @@ export type TransactionFunctionType<T> = (connection: DatabaseTransactionConnect
 export type DatabasePoolConnectionType = CommonQueryMethodsType & {
   readonly copyFromBinary: QueryCopyFromBinaryFunctionType,
   readonly stream: StreamFunctionType,
-  readonly transaction: <T>(handler: TransactionFunctionType<T>) => Promise<T>,
+  readonly transaction: <T>(handler: TransactionFunctionType<T>, transactionRetryLimit?: number) => Promise<T>,
 };
 
 export type ConnectionRoutineType<T> = (connection: DatabasePoolConnectionType) => Promise<T>;
@@ -153,7 +155,7 @@ export type DatabasePoolType = CommonQueryMethodsType & {
   readonly end: () => Promise<void>,
   readonly getPoolState: () => PoolStateType,
   readonly stream: StreamFunctionType,
-  readonly transaction: <T>(handler: TransactionFunctionType<T>) => Promise<T>,
+  readonly transaction: <T>(handler: TransactionFunctionType<T>, transactionRetryLimit?: number) => Promise<T>,
   readonly configuration: ClientConfigurationType,
 };
 
@@ -352,6 +354,7 @@ export type InternalTransactionFunctionType = <T>(
   connection: InternalDatabaseConnectionType,
   clientConfiguration: ClientConfigurationType,
   handler: TransactionFunctionType<T>,
+  transactionRetryLimit?: number,
 ) => Promise<T>;
 
 export type InternalNestedTransactionFunctionType = <T>(
@@ -360,6 +363,7 @@ export type InternalNestedTransactionFunctionType = <T>(
   clientConfiguration: ClientConfigurationType,
   handler: TransactionFunctionType<T>,
   transactionDepth: number,
+  transactionRetryLimit?: number,
 ) => Promise<T>;
 
 // eslint-disable-next-line @typescript-eslint/no-empty-interface, @typescript-eslint/consistent-type-definitions, @typescript-eslint/no-unused-vars

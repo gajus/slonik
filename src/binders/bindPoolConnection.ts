@@ -164,12 +164,13 @@ export const bindPoolConnection = (
         streamHandler,
       );
     },
-    transaction: (handler) => {
+    transaction: (handler, transactionRetryLimit) => {
       return transaction(
         parentLog,
         connection,
         clientConfiguration,
         handler,
+        transactionRetryLimit,
       );
     },
   };

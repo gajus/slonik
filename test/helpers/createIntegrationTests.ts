@@ -927,7 +927,7 @@ export const createIntegrationTests = (
   test('Tuple moved to another partition due to concurrent update error handled', async (t) => {
     const pool = createPool(t.context.dsn, {
       pgClient,
-      transactionRetryLimit: 0,
+      queryRetryLimit: 0,
     });
 
     await pool.connect(async (connection) => {
