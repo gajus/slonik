@@ -261,6 +261,34 @@ sql`
 
 ```
 
+### `sql.literalValue`
+
+> ⚠️ Do not use. This method interpolates values as literals and it must be used only for [building utility statements](#slonik-recipes-building-utility-statements). You are most likely looking for [value placeholders](#slonik-value-placeholders).
+
+```js
+(
+  value: string,
+) => SqlSqlTokenType;
+
+```
+
+Escapes and interpolates a literal value into a query.
+
+```js
+await connection.query(sql`
+  CREATE USER "foo" WITH PASSWORD ${sql.literalValue('bar')}
+`);
+
+```
+
+Produces:
+
+```js
+{
+  sql: 'CREATE USER "foo" WITH PASSWORD \'bar\''
+}
+
+```
 
 ### `sql.unnest`
 

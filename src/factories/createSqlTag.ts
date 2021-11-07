@@ -31,6 +31,7 @@ import type {
   ValueExpressionType,
 } from '../types';
 import {
+  escapeLiteralValue,
   isPrimitiveValueExpression,
   isSqlToken,
 } from '../utilities';
@@ -150,6 +151,16 @@ sql.join = (
     glue,
     members,
     type: ListToken,
+  };
+};
+
+sql.literalValue = (
+  value: string,
+): SqlSqlTokenType => {
+  return {
+    sql: escapeLiteralValue(value),
+    type: SqlToken,
+    values: [],
   };
 };
 
