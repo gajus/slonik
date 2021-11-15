@@ -24,7 +24,6 @@
     "is-plain-object": "^5.0.0",
     "iso8601-duration": "^1.3.0",
     "pg": "^8.7.1",
-    "pg-connection-string": "^2.5.0",
     "pg-copy-streams": "^5.1.1",
     "pg-copy-streams-binary": "^2.0.1",
     "pg-cursor": "^2.7.1",
@@ -32,7 +31,7 @@
     "postgres-array": "^3.0.1",
     "postgres-interval": "^3.0.0",
     "promise-deferred": "^2.0.3",
-    "roarr": "^7.0.3",
+    "roarr": "^7.7.0",
     "serialize-error": "^8.1.0",
     "through2": "^4.0.2"
   },
@@ -41,9 +40,9 @@
     "@types/concat-stream": "^1.6.1",
     "@types/pg": "^8.6.1",
     "@types/pg-copy-streams": "^1.2.1",
-    "@types/sinon": "^10.0.2",
+    "@types/sinon": "^10.0.6",
     "@types/through2": "^2.0.36",
-    "ava": "^3.15.0",
+    "ava": "^4.0.0-rc.1",
     "coveralls": "^3.1.1",
     "delay": "^5.0.0",
     "eslint": "^7.32.0",
@@ -55,8 +54,8 @@
     "pg-native": "^3.0.0",
     "semantic-release": "^17.4.4",
     "sinon": "^11.1.2",
-    "ts-node": "^10.2.0",
-    "typescript": "^4.3.5"
+    "ts-node": "^10.4.0",
+    "typescript": "^4.4.4"
   },
   "engines": {
     "node": ">=10.0"

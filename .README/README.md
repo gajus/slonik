@@ -70,6 +70,8 @@ Note: Using this project does not require TypeScript. It is a regular ES6 module
 
 {"gitdown": "include", "file": "./QUERY_METHODS.md"}
 
+{"gitdown": "include", "file": "./UTILITIES.md"}
+
 {"gitdown": "include", "file": "./ERROR_HANDLING.md"}
 
 {"gitdown": "include", "file": "./TYPES.md"}
@@ -96,3 +98,13 @@ For more information, refer to the [JavaScript Tagged Template Literal Grammar E
 
 The [`vscode-sql-template-literal` extension](https://marketplace.visualstudio.com/items?itemName=forbeslindesay.vscode-sql-template-literal) provides syntax highlighting for VS Code:
 ![Syntax highlighting in VS Code](./.README/vscode-syntax-highlighting.png)
+
+## Development
+
+Running Slonik tests requires having a local PostgreSQL instance.
+
+The easiest way to setup a temporary instance for testing is using Docker, e.g.
+
+```bash
+docker run --rm -it -e POSTGRES_HOST_AUTH_METHOD=trust -p 5432 postgres
+```

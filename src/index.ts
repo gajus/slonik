@@ -10,6 +10,7 @@ export type {
   ClientConfigurationInputType,
   ClientConfigurationType,
   CommonQueryMethodsType,
+  ConnectionOptions,
   ConnectionTypeType,
   DatabaseConnectionType,
   DatabasePoolConnectionType,
@@ -48,6 +49,8 @@ export {
 } from './factories';
 export {
   isSqlToken,
+  parseDsn,
+  stringifyDsn,
 } from './utilities';
 export * from './factories/typeParsers';
 export {

@@ -205,6 +205,5 @@ test.skip('57P01 error causes the connection to be rejected (EXPLICIT connection
   }));
 
   t.true(error instanceof BackendTerminatedError);
-
-  t.assert(spy.called === false);
+  t.true(spy.called);
 });

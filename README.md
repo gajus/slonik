@@ -65,6 +65,7 @@ Note: Using this project does not require TypeScript. It is a regular ES6 module
         * [Protecting against unsafe value interpolation](#slonik-about-slonik-protecting-against-unsafe-value-interpolation)
     * [Documentation](#slonik-documentation)
     * [Usage](#slonik-usage)
+        * [Connection URI](#slonik-usage-connection-uri)
         * [Create connection](#slonik-usage-create-connection)
         * [End connection pool](#slonik-usage-end-connection-pool)
         * [Describing the current state of the connection pool](#slonik-usage-describing-the-current-state-of-the-connection-pool)
@@ -112,6 +113,9 @@ Note: Using this project does not require TypeScript. It is a regular ES6 module
         * [`query`](#slonik-query-methods-query)
         * [`stream`](#slonik-query-methods-stream)
         * [`transaction`](#slonik-query-methods-transaction)
+    * [Utilities](#slonik-utilities)
+        * [`parseDsn`](#slonik-utilities-parsedsn)
+        * [`stringifyDsn`](#slonik-utilities-stringifydsn)
     * [Error handling](#slonik-error-handling)
         * [Original `node-postgres` error](#slonik-error-handling-original-node-postgres-error)
         * [Handling `BackendTerminatedError`](#slonik-error-handling-handling-backendterminatederror)
@@ -132,6 +136,7 @@ Note: Using this project does not require TypeScript. It is a regular ES6 module
     * [Syntax Highlighting](#slonik-syntax-highlighting)
         * [Atom Syntax Highlighting Plugin](#slonik-syntax-highlighting-atom-syntax-highlighting-plugin)
         * [VS Code Syntax Highlighting Extension](#slonik-syntax-highlighting-vs-code-syntax-highlighting-extension)
+    * [Development](#slonik-development)
 
 
 <a name="slonik-about-slonik"></a>
@@ -400,6 +405,38 @@ To sum up, Slonik is designed to prevent accidental creation of queries vulnerab
 <a name="slonik-usage"></a>
 ## Usage
 
+<a name="slonik-usage-connection-uri"></a>
+### Connection URI
+
+Slonik client is configured using a custom connection URI (DSN).
+
+```json
+postgresql://[user[:password]@][host[:port]][/database name][?name=value[&...]]
+```
+
+Supported parameters:
+
+|Name|Meaning|Default|
+|---|---|---|
+|`application_name`|[`application_name`](https://www.postgresql.org/docs/current/libpq-connect.html#LIBPQ-CONNECT-APPLICATION-NAME)||
+|`sslmode`|[`sslmode`](https://www.postgresql.org/docs/current/libpq-connect.html#LIBPQ-CONNECT-SSLMODE) (supported values: `disable`, `no-verify`, `require`)|`disable`|
+
+Note that unless listed above, other [libpq parameters](https://www.postgresql.org/docs/current/libpq-connect.html#LIBPQ-PARAMKEYWORDS) are not supported.
+
+Examples of valid DSNs:
+
+```json
+postgresql://
+postgresql://localhost
+postgresql://localhost:5432
+postgresql://localhost/foo
+postgresql://foo@localhost
+postgresql://foo:bar@localhost
+postgresql://foo@localhost/bar?application_name=baz
+```
+
+Other configurations are available through the [`clientConfiguration` parameter](https://github.com/gajus/slonik#api).
+
 <a name="slonik-usage-create-connection"></a>
 ### Create connection
 
@@ -547,9 +584,10 @@ createPool(
  * @property interceptors An array of [Slonik interceptors](https://github.com/gajus/slonik#slonik-interceptors).
  * @property maximumPoolSize Do not allow more than this many connections. Use 'DISABLE_TIMEOUT' constant to disable the timeout. (Default: 10)
  * @property pgClient Override the underlying PostgreSQL client.
+ * @property queryRetryLimit Number of times a query failing with Transaction Rollback class error, that doesn't belong to a transaction, is retried. (Default: 5)
+ * @property ssl [tls.connect options](https://nodejs.org/api/tls.html#tlsconnectoptions-callback)
  * @property statementTimeout Timeout (in milliseconds) after which database is instructed to abort the query. Use 'DISABLE_TIMEOUT' constant to disable the timeout. (Default: 60000)
  * @property transactionRetryLimit Number of times a transaction failing with Transaction Rollback class error is retried. (Default: 5)
- * @property queryRetryLimit Number of times a query failing with Transaction Rollback class error, that doesn't belong to a transaction, is retried. (Default: 5)
  * @property typeParsers An array of [Slonik type parsers](https://github.com/gajus/slonik#slonik-type-parsers).
  */
 type ClientConfigurationInputType = {
@@ -561,9 +599,10 @@ type ClientConfigurationInputType = {
   interceptors?: InterceptorType[],
   maximumPoolSize?: number,
   pgClient?: PgClientType,
+  queryRetryLimit?: number,
+  ssl?: Parameters<tls.connect>[0],
   statementTimeout?: number | 'DISABLE_TIMEOUT',
   transactionRetryLimit?: number,
-  queryRetryLimit?: number,
   typeParsers?: TypeParserType[],
 };
 
@@ -2059,6 +2098,50 @@ A single query (not part of a transaction) failing with a [Transaction Rollback]
 How many times it is retried is controlled by using the `queryRetryLimit` configuration (default: 5).
 
 
+<a name="slonik-utilities"></a>
+## Utilities
+
+<a name="slonik-utilities-parsedsn"></a>
+### <code>parseDsn</code>
+
+```ts
+(
+  dsn: string,
+) => ConnectionOptions;
+```
+
+Parses DSN to `ConnectionOptions` type.
+
+Example:
+
+```ts
+import {
+  parseDsn,
+} from 'slonik';
+
+parseDsn('postgresql://foo@localhost/bar?connect_timeout=10&application_name=baz');
+```
+
+<a name="slonik-utilities-stringifydsn"></a>
+### <code>stringifyDsn</code>
+
+```ts
+(
+  connectionOptions: ConnectionOptions,
+) => string;
+```
+
+Stringifies `ConnectionOptions` to a DSN.
+
+```ts
+import {
+  stringifyDsn,
+} from 'slonik';
+
+stringifyDsn('postgresql://foo@localhost/bar?connect_timeout=10&application_name=baz');
+```
+
+
 <a name="slonik-error-handling"></a>
 ## Error handling
 
@@ -2355,3 +2438,14 @@ For more information, refer to the [JavaScript Tagged Template Literal Grammar E
 
 The [`vscode-sql-template-literal` extension](https://marketplace.visualstudio.com/items?itemName=forbeslindesay.vscode-sql-template-literal) provides syntax highlighting for VS Code:
 ![Syntax highlighting in VS Code](./.README/vscode-syntax-highlighting.png)
+
+<a name="slonik-development"></a>
+## Development
+
+Running Slonik tests requires having a local PostgreSQL instance.
+
+The easiest way to setup a temporary instance for testing is using Docker, e.g.
+
+```bash
+docker run --rm -it -e POSTGRES_HOST_AUTH_METHOD=trust -p 5432 postgres
+```

@@ -20,8 +20,8 @@ export const createPrimitiveValueExpressions = (values: readonly unknown[]): rea
       primitiveValueExpressions.push(value);
     } else {
       log.warn({
-        value,
-        values,
+        value: JSON.parse(JSON.stringify(value)),
+        values: JSON.parse(JSON.stringify(values)),
       }, 'unexpected value expression');
 
       throw new UnexpectedStateError('Unexpected value expression.');

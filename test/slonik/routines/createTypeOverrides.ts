@@ -55,5 +55,5 @@ test('throws an error if type cannot be found', async (t) => {
     typeParser,
   ]));
 
-  t.is(error.message, 'Database type "int8" not found.');
+  t.is(error?.message, 'Database type "int8" not found.');
 });

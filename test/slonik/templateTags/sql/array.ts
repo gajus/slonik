@@ -90,7 +90,7 @@ test('throws if array member is not a primitive value expression', (t) => {
     sql`SELECT ${sql.array([() => {}], 'int')}`;
   });
 
-  t.is(error.message, 'Invalid array member type. Must be a primitive value expression.');
+  t.is(error?.message, 'Invalid array member type. Must be a primitive value expression.');
 });
 
 test('throws if memberType is not a string or SqlToken of different type than "SLONIK_TOKEN_SQL"', (t) => {
@@ -98,5 +98,5 @@ test('throws if memberType is not a string or SqlToken of different type than "S
     sql`SELECT ${sql.array([1, 2, 3], sql.identifier(['int']))}`;
   });
 
-  t.is(error.message, 'Unsupported `memberType`. `memberType` must be a string or SqlToken of "SLONIK_TOKEN_SQL" type.');
+  t.is(error?.message, 'Unsupported `memberType`. `memberType` must be a string or SqlToken of "SLONIK_TOKEN_SQL" type.');
 });

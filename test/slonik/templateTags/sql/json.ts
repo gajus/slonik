@@ -86,7 +86,7 @@ test('throws if payload is undefined', (t) => {
     sql`SELECT ${sql.json(undefined)}`;
   });
 
-  t.is(error.message, 'JSON payload must not be undefined.');
+  t.is(error?.message, 'JSON payload must not be undefined.');
 });
 
 test('throws if payload cannot be stringified (non-primitive object)', (t) => {
@@ -95,7 +95,7 @@ test('throws if payload cannot be stringified (non-primitive object)', (t) => {
     sql`SELECT ${sql.json(() => {})}`;
   });
 
-  t.is(error.message, 'JSON payload must be a primitive value or a plain object.');
+  t.is(error?.message, 'JSON payload must be a primitive value or a plain object.');
 });
 
 test('throws if payload cannot be stringified (circular reference)', (t) => {
@@ -109,7 +109,7 @@ test('throws if payload cannot be stringified (circular reference)', (t) => {
     sql`SELECT ${sql.json(foo)}`;
   });
 
-  t.is(error.message, 'JSON payload cannot be stringified.');
+  t.is(error?.message, 'JSON payload cannot be stringified.');
 });
 
 test('Object types with optional properties are allowed', (t) => {

@@ -1,43 +1,26 @@
+import test from 'ava';
 import {
   native as pgClient,
 } from 'pg';
-import {
-  createPool,
-  sql,
-} from '../../../src';
 import {
   createTestRunner,
   createIntegrationTests,
 } from '../../helpers/createIntegrationTests';
 
 const {
-  test,
-} = createTestRunner(
-  pgClient,
-  'pg_native',
-);
+  TEST_NATIVE_DRIVER,
+} = process.env;
 
-createIntegrationTests(
-  test,
-  pgClient,
-);
-
-test('throws an error stream method is used', async (t) => {
-  const pool = createPool(t.context.dsn, {
+if (TEST_NATIVE_DRIVER === 'true') {
+  const testRunner = createTestRunner(
     pgClient,
-  });
-
-  await pool.query(sql`
-    INSERT INTO person (name) VALUES ('foo'), ('bar'), ('baz')
-  `);
-
-  await t.throwsAsync(
-    pool.stream(sql`
-      SELECT name
-      FROM person
-    `, () => {}),
-    {
-      message: 'Result cursors do not work with the native driver. Use JavaScript driver.',
-    },
+    'pg_native',
   );
-});
+
+  createIntegrationTests(
+    testRunner.test,
+    pgClient,
+  );
+} else {
+  test.todo('pg-native integration tests are disabled; configure TEST_NATIVE_DRIVER=true to enable them');
+}

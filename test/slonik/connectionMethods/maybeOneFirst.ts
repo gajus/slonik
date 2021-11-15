@@ -36,7 +36,7 @@ test('returns null if no results', async (t) => {
 
   const result = await pool.maybeOneFirst(sql`SELECT 1`);
 
-  t.assert(result === null);
+  t.is(result, null);
 });
 
 test('throws an error if more than one row is returned', async (t) => {

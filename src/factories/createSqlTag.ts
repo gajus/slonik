@@ -65,8 +65,8 @@ const sql: SqlTaggedTemplateType = (
     if (token === undefined) {
       log.debug({
         index,
-        parts,
-        values,
+        parts: JSON.parse(JSON.stringify(parts)),
+        values: JSON.parse(JSON.stringify(values)),
       }, 'bound values');
 
       throw new InvalidInputError('SQL tag cannot be bound an undefined value.');
@@ -83,7 +83,7 @@ const sql: SqlTaggedTemplateType = (
       log.error({
         constructedSql: rawSql,
         index,
-        offendingToken: token,
+        offendingToken: JSON.parse(JSON.stringify(token)),
       }, 'unexpected value expression');
 
       throw new TypeError('Unexpected value expression.');

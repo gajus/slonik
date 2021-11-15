@@ -1,9 +1,6 @@
-import anyTest, {
-  beforeEach as anyBeforeEach,
-} from 'ava';
+import anyTest from 'ava';
 import type {
-  BeforeInterface,
-  TestInterface,
+  TestFn,
 } from 'ava';
 import {
   Roarr,
@@ -22,8 +19,8 @@ import {
   createErrorWithCode,
 } from '../../helpers/createErrorWithCode';
 
-const test = anyTest as TestInterface<any>;
-const beforeEach = anyBeforeEach as BeforeInterface<any>;
+const test = anyTest as TestFn<any>;
+const beforeEach = test.beforeEach;
 
 const createConnectionStub = () => {
   return {
@@ -56,8 +53,8 @@ test('throws a descriptive error if query is empty', async (t) => {
     );
   });
 
-  t.assert(error instanceof InvalidInputError);
-  t.assert(error.message === 'Unexpected SQL input. Query cannot be empty.');
+  t.true(error instanceof InvalidInputError);
+  t.is(error?.message, 'Unexpected SQL input. Query cannot be empty.');
 });
 
 test('throws a descriptive error if the entire query is a value binding', async (t) => {
@@ -73,8 +70,8 @@ test('throws a descriptive error if the entire query is a value binding', async 
     );
   });
 
-  t.assert(error instanceof InvalidInputError);
-  t.assert(error.message === 'Unexpected SQL input. Query cannot be empty. Found only value binding.');
+  t.true(error instanceof InvalidInputError);
+  t.is(error?.message, 'Unexpected SQL input. Query cannot be empty. Found only value binding.');
 });
 
 test('retries an implicit query that failed due to a transaction error', async (t) => {
@@ -105,7 +102,7 @@ test('retries an implicit query that failed due to a transaction error', async (
     executionRoutineStub,
   );
 
-  t.assert(executionRoutineStub.callCount === 2);
+  t.is(executionRoutineStub.callCount, 2);
   t.deepEqual(result, {
     command: 'SELECT',
     fields: [],
@@ -129,7 +126,7 @@ test('returns the thrown transaction error if the retry limit is reached', async
 
   const clientConfiguration = createClientConfiguration();
 
-  const error: Error & {code: string, } = await t.throwsAsync(executeQuery(
+  const error: any = await t.throwsAsync(executeQuery(
     t.context.logger,
     t.context.connection,
     {
@@ -142,9 +139,9 @@ test('returns the thrown transaction error if the retry limit is reached', async
     executionRoutineStub,
   ));
 
-  t.assert(executionRoutineStub.callCount === 2);
-  t.assert(error instanceof Error);
-  t.assert(error.code === '40P01');
+  t.is(executionRoutineStub.callCount, 2);
+  t.true(error instanceof Error);
+  t.is(error.code, '40P01');
 });
 
 test('transaction errors are not handled if the function was called by a transaction', async (t) => {
@@ -157,7 +154,7 @@ test('transaction errors are not handled if the function was called by a transac
 
   const clientConfiguration = createClientConfiguration();
 
-  const error: Error & {code: string, } = await t.throwsAsync(executeQuery(
+  const error: any = await t.throwsAsync(executeQuery(
     t.context.logger,
     t.context.connection,
     {
@@ -170,7 +167,7 @@ test('transaction errors are not handled if the function was called by a transac
     executionRoutineStub,
   ));
 
-  t.assert(executionRoutineStub.callCount === 1);
-  t.assert(error instanceof Error);
-  t.assert(error.code === '40P01');
+  t.is(executionRoutineStub.callCount, 1);
+  t.true(error instanceof Error);
+  t.is(error.code, '40P01');
 });

@@ -15,8 +15,8 @@ test('commits successful transaction', async (t) => {
 
   await pool.transaction(async () => {});
 
-  t.assert(pool.querySpy.getCall(0).args[0] === 'START TRANSACTION');
-  t.assert(pool.querySpy.getCall(1).args[0] === 'COMMIT');
+  t.is(pool.querySpy.getCall(0).args[0], 'START TRANSACTION');
+  t.is(pool.querySpy.getCall(1).args[0], 'COMMIT');
 });
 
 test('rollbacks unsuccessful transaction', async (t) => {
@@ -26,8 +26,8 @@ test('rollbacks unsuccessful transaction', async (t) => {
     return Promise.reject(new Error('foo'));
   }));
 
-  t.assert(pool.querySpy.getCall(0).args[0] === 'START TRANSACTION');
-  t.assert(pool.querySpy.getCall(1).args[0] === 'ROLLBACK');
+  t.is(pool.querySpy.getCall(0).args[0], 'START TRANSACTION');
+  t.is(pool.querySpy.getCall(1).args[0], 'ROLLBACK');
 });
 
 test('retries a transaction that failed due to a transaction error', async (t) => {
@@ -51,7 +51,7 @@ test('retries a transaction that failed due to a transaction error', async (t) =
 
   const result = await pool.transaction(handlerStub);
 
-  t.assert(handlerStub.callCount === 2);
+  t.is(handlerStub.callCount, 2);
   t.deepEqual(result, {
     command: 'SELECT',
     fields: [],
@@ -86,10 +86,10 @@ test('commits successful transaction with retries', async (t) => {
 
   await pool.transaction(handlerStub);
 
-  t.assert(pool.querySpy.getCall(0).args[0] === 'START TRANSACTION');
-  t.assert(pool.querySpy.getCall(1).args[0] === 'ROLLBACK');
-  t.assert(pool.querySpy.getCall(2).args[0] === 'START TRANSACTION');
-  t.assert(pool.querySpy.getCall(3).args[0] === 'COMMIT');
+  t.is(pool.querySpy.getCall(0).args[0], 'START TRANSACTION');
+  t.is(pool.querySpy.getCall(1).args[0], 'ROLLBACK');
+  t.is(pool.querySpy.getCall(2).args[0], 'START TRANSACTION');
+  t.is(pool.querySpy.getCall(3).args[0], 'COMMIT');
 });
 
 test('returns the thrown transaction error if the retry limit is reached', async (t) => {
@@ -101,12 +101,12 @@ test('returns the thrown transaction error if the retry limit is reached', async
     .onSecondCall()
     .rejects(createErrorWithCode('40P01'));
 
-  const error: Error & {code: string, } = await t.throwsAsync(pool.transaction(handlerStub, 1));
+  const error: any = await t.throwsAsync(pool.transaction(handlerStub, 1));
 
-  t.assert(handlerStub.callCount === 2);
+  t.is(handlerStub.callCount, 2);
 
-  t.assert(error instanceof Error);
-  t.assert(error.code === '40P01');
+  t.true(error instanceof Error);
+  t.is(error.code, '40P01');
 });
 
 test('rollbacks unsuccessful transaction with retries', async (t) => {
@@ -120,8 +120,8 @@ test('rollbacks unsuccessful transaction with retries', async (t) => {
 
   await t.throwsAsync(pool.transaction(handlerStub, 1));
 
-  t.assert(pool.querySpy.getCall(0).args[0] === 'START TRANSACTION');
-  t.assert(pool.querySpy.getCall(1).args[0] === 'ROLLBACK');
-  t.assert(pool.querySpy.getCall(2).args[0] === 'START TRANSACTION');
-  t.assert(pool.querySpy.getCall(3).args[0] === 'ROLLBACK');
+  t.is(pool.querySpy.getCall(0).args[0], 'START TRANSACTION');
+  t.is(pool.querySpy.getCall(1).args[0], 'ROLLBACK');
+  t.is(pool.querySpy.getCall(2).args[0], 'START TRANSACTION');
+  t.is(pool.querySpy.getCall(3).args[0], 'ROLLBACK');
 });

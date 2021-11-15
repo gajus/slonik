@@ -1,5 +1,36 @@
 ## Usage
 
+### Connection URI
+
+Slonik client is configured using a custom connection URI (DSN).
+
+```json
+postgresql://[user[:password]@][host[:port]][/database name][?name=value[&...]]
+```
+
+Supported parameters:
+
+|Name|Meaning|Default|
+|---|---|---|
+|`application_name`|[`application_name`](https://www.postgresql.org/docs/current/libpq-connect.html#LIBPQ-CONNECT-APPLICATION-NAME)||
+|`sslmode`|[`sslmode`](https://www.postgresql.org/docs/current/libpq-connect.html#LIBPQ-CONNECT-SSLMODE) (supported values: `disable`, `no-verify`, `require`)|`disable`|
+
+Note that unless listed above, other [libpq parameters](https://www.postgresql.org/docs/current/libpq-connect.html#LIBPQ-PARAMKEYWORDS) are not supported.
+
+Examples of valid DSNs:
+
+```json
+postgresql://
+postgresql://localhost
+postgresql://localhost:5432
+postgresql://localhost/foo
+postgresql://foo@localhost
+postgresql://foo:bar@localhost
+postgresql://foo@localhost/bar?application_name=baz
+```
+
+Other configurations are available through the [`clientConfiguration` parameter](https://github.com/gajus/slonik#api).
+
 ### Create connection
 
 Use `createPool` to create a connection pool, e.g.
@@ -143,9 +174,10 @@ createPool(
  * @property interceptors An array of [Slonik interceptors](https://github.com/gajus/slonik#slonik-interceptors).
  * @property maximumPoolSize Do not allow more than this many connections. Use 'DISABLE_TIMEOUT' constant to disable the timeout. (Default: 10)
  * @property pgClient Override the underlying PostgreSQL client.
+ * @property queryRetryLimit Number of times a query failing with Transaction Rollback class error, that doesn't belong to a transaction, is retried. (Default: 5)
+ * @property ssl [tls.connect options](https://nodejs.org/api/tls.html#tlsconnectoptions-callback)
  * @property statementTimeout Timeout (in milliseconds) after which database is instructed to abort the query. Use 'DISABLE_TIMEOUT' constant to disable the timeout. (Default: 60000)
  * @property transactionRetryLimit Number of times a transaction failing with Transaction Rollback class error is retried. (Default: 5)
- * @property queryRetryLimit Number of times a query failing with Transaction Rollback class error, that doesn't belong to a transaction, is retried. (Default: 5)
  * @property typeParsers An array of [Slonik type parsers](https://github.com/gajus/slonik#slonik-type-parsers).
  */
 type ClientConfigurationInputType = {
@@ -157,9 +189,10 @@ type ClientConfigurationInputType = {
   interceptors?: InterceptorType[],
   maximumPoolSize?: number,
   pgClient?: PgClientType,
+  queryRetryLimit?: number,
+  ssl?: Parameters<tls.connect>[0],
   statementTimeout?: number | 'DISABLE_TIMEOUT',
   transactionRetryLimit?: number,
-  queryRetryLimit?: number,
   typeParsers?: TypeParserType[],
 };
 

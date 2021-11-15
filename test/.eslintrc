@@ -1,8 +1,14 @@
 {
-  "extends": "canonical/ava",
+  "extends": [
+    "canonical/ava"
+  ],
   "rules": {
     "@typescript-eslint/no-explicit-any": 0,
     "@typescript-eslint/no-unused-expressions": 0,
+    "ava/no-identical-title": 0,
+    "ava/no-unknown-modifiers": 0,
+    "ava/test-title": 0,
+    "ava/use-t": 0,
     "ava/use-test": 0,
     "filenames/match-regex": 0,
     "flowtype/no-flow-fix-me-comments": 0,

@@ -7,6 +7,9 @@
 import type {
   Readable,
 } from 'stream';
+import type {
+  ConnectionOptions as TlsConnectionOptions,
+} from 'tls';
 import type pgTypes from 'pg';
 import {
   Logger,
@@ -18,6 +21,19 @@ import type * as tokens from './tokens';
 
 export {
   Logger,
+};
+
+/**
+ * @see https://www.postgresql.org/docs/current/libpq-connect.html#LIBPQ-PARAMKEYWORDS
+ */
+export type ConnectionOptions = {
+  applicationName?: string,
+  databaseName?: string,
+  host?: string,
+  password?: string,
+  port?: number,
+  username?: string,
+  sslMode?: 'disable' | 'no-verify' | 'require',
 };
 
 export type PgClientType = typeof pgTypes.native;
@@ -95,6 +111,8 @@ export type ClientConfigurationType = {
   readonly statementTimeout: number | 'DISABLE_TIMEOUT',
   /** Number of times a transaction failing with Transaction Rollback class error is retried. (Default: 5) */
   readonly transactionRetryLimit: number,
+  /** tls.connect options **/
+  readonly ssl?: TlsConnectionOptions,
   /** Number of times a query failing with Transaction Rollback class error, that doesn't belong to a transaction, is retried. (Default: 5) */
   readonly queryRetryLimit: number,
   /** An array of [Slonik type parsers](https://github.com/gajus/slonik#slonik-type-parsers). */

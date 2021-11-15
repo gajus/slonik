@@ -1,11 +1,6 @@
-import anyTest, {
-  afterEach as anyAfterEach,
-  beforeEach as anyBeforeEach,
-} from 'ava';
+import anyTest from 'ava';
 import type {
-  AfterInterface,
-  BeforeInterface,
-  TestInterface,
+  TestFn,
 } from 'ava';
 import delay from 'delay';
 import {
@@ -30,9 +25,9 @@ type TestContextType = {
 export const createTestRunner = (pgClient: PgClientType, name: string) => {
   let testId = 0;
 
-  const test = anyTest as TestInterface<TestContextType>;
-  const beforeEach = anyBeforeEach as BeforeInterface<TestContextType>;
-  const afterEach = anyAfterEach as AfterInterface<TestContextType>;
+  const test = anyTest as TestFn<TestContextType>;
+  const beforeEach = test.beforeEach;
+  const afterEach = test.afterEach;
 
   beforeEach(async (t) => {
     ++testId;
@@ -112,7 +107,7 @@ export const createTestRunner = (pgClient: PgClientType, name: string) => {
 };
 
 export const createIntegrationTests = (
-  test: TestInterface<TestContextType>,
+  test: TestFn<TestContextType>,
   pgClient: PgClientType,
 ) => {
   test('returns expected query result object (array bytea)', async (t) => {
@@ -396,7 +391,7 @@ export const createIntegrationTests = (
     }));
 
     t.true(error instanceof UnexpectedStateError);
-    t.is(error.message, 'Cannot use the same connection to start a new transaction before completing the last transaction.');
+    t.is(error?.message, 'Cannot use the same connection to start a new transaction before completing the last transaction.');
 
     await pool.end();
   });
@@ -889,9 +884,9 @@ export const createIntegrationTests = (
 
     try {
       await pool.query(sql`SELECT * FROM error_notice(${10});`);
-    } catch (error) {
+    } catch (error: any) {
       if (error?.notices) {
-        t.assert(error.notices.length = 5);
+        t.is(error.notices.length, 5);
       }
     }
     await pool.end();
@@ -915,7 +910,7 @@ export const createIntegrationTests = (
     });
 
     t.is(
-      error.message,
+      error?.message,
 
       // @ts-expect-error
       'Query violates a unique integrity constraint. ' + String(error?.originalError?.message),

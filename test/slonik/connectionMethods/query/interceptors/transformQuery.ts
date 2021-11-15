@@ -24,5 +24,5 @@ test('transforms query', async (t) => {
 
   await pool.query(sql`SELECT 1`);
 
-  t.assert(pool.querySpy.firstCall.args[0] === 'SELECT 2');
+  t.is(pool.querySpy.firstCall.args[0], 'SELECT 2');
 });

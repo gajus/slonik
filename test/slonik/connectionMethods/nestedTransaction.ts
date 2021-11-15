@@ -17,8 +17,8 @@ test('creates a savepoint', async (t) => {
     return transactionConnection.transaction(async () => {});
   });
 
-  t.assert(pool.querySpy.getCall(0).args[0] === 'START TRANSACTION');
-  t.assert(pool.querySpy.getCall(1).args[0] === 'SAVEPOINT slonik_savepoint_1');
+  t.is(pool.querySpy.getCall(0).args[0], 'START TRANSACTION');
+  t.is(pool.querySpy.getCall(1).args[0], 'SAVEPOINT slonik_savepoint_1');
 });
 
 test('rollbacks unsuccessful nested transaction', async (t) => {
@@ -30,8 +30,8 @@ test('rollbacks unsuccessful nested transaction', async (t) => {
     });
   }));
 
-  t.assert(pool.querySpy.getCall(1).args[0] === 'SAVEPOINT slonik_savepoint_1');
-  t.assert(pool.querySpy.getCall(2).args[0] === 'ROLLBACK TO SAVEPOINT slonik_savepoint_1');
+  t.is(pool.querySpy.getCall(1).args[0], 'SAVEPOINT slonik_savepoint_1');
+  t.is(pool.querySpy.getCall(2).args[0], 'ROLLBACK TO SAVEPOINT slonik_savepoint_1');
 });
 
 test('retries a nested transaction that failed due to a transaction error', async (t) => {
@@ -57,7 +57,7 @@ test('retries a nested transaction that failed due to a transaction error', asyn
     return transactionConnection.transaction(handlerStub);
   });
 
-  t.assert(handlerStub.callCount === 2);
+  t.is(handlerStub.callCount, 2);
   t.deepEqual(result, {
     command: 'SELECT',
     fields: [],
@@ -94,10 +94,10 @@ test('commits successful transaction with retries', async (t) => {
     return transactionConnection.transaction(handlerStub);
   });
 
-  t.assert(pool.querySpy.getCall(1).args[0] === 'SAVEPOINT slonik_savepoint_1');
-  t.assert(pool.querySpy.getCall(2).args[0] === 'ROLLBACK TO SAVEPOINT slonik_savepoint_1');
-  t.assert(pool.querySpy.getCall(3).args[0] === 'SAVEPOINT slonik_savepoint_1');
-  t.assert(pool.querySpy.getCall(4).args[0] === 'COMMIT');
+  t.is(pool.querySpy.getCall(1).args[0], 'SAVEPOINT slonik_savepoint_1');
+  t.is(pool.querySpy.getCall(2).args[0], 'ROLLBACK TO SAVEPOINT slonik_savepoint_1');
+  t.is(pool.querySpy.getCall(3).args[0], 'SAVEPOINT slonik_savepoint_1');
+  t.is(pool.querySpy.getCall(4).args[0], 'COMMIT');
 });
 
 test('returns the thrown transaction error if the retry limit is reached', async (t) => {
@@ -111,14 +111,14 @@ test('returns the thrown transaction error if the retry limit is reached', async
     .onSecondCall()
     .rejects(createErrorWithCode('40P01'));
 
-  const error: Error & {code: string, } = await t.throwsAsync(pool.transaction(async (transactionConnection) => {
+  const error: any = await t.throwsAsync(pool.transaction(async (transactionConnection) => {
     return transactionConnection.transaction(handlerStub, 1);
   }, 0));
 
-  t.assert(handlerStub.callCount === 2);
+  t.is(handlerStub.callCount, 2);
 
-  t.assert(error instanceof Error);
-  t.assert(error.code === '40P01');
+  t.true(error instanceof Error);
+  t.is(error.code, '40P01');
 });
 
 test('rollbacks unsuccessful nested transaction with retries', async (t) => {
@@ -134,8 +134,8 @@ test('rollbacks unsuccessful nested transaction with retries', async (t) => {
     return transactionConnection.transaction(handlerStub, 1);
   }, 0));
 
-  t.assert(pool.querySpy.getCall(1).args[0] === 'SAVEPOINT slonik_savepoint_1');
-  t.assert(pool.querySpy.getCall(2).args[0] === 'ROLLBACK TO SAVEPOINT slonik_savepoint_1');
-  t.assert(pool.querySpy.getCall(3).args[0] === 'SAVEPOINT slonik_savepoint_1');
-  t.assert(pool.querySpy.getCall(4).args[0] === 'ROLLBACK TO SAVEPOINT slonik_savepoint_1');
+  t.is(pool.querySpy.getCall(1).args[0], 'SAVEPOINT slonik_savepoint_1');
+  t.is(pool.querySpy.getCall(2).args[0], 'ROLLBACK TO SAVEPOINT slonik_savepoint_1');
+  t.is(pool.querySpy.getCall(3).args[0], 'SAVEPOINT slonik_savepoint_1');
+  t.is(pool.querySpy.getCall(4).args[0], 'ROLLBACK TO SAVEPOINT slonik_savepoint_1');
 });

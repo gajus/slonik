@@ -9,7 +9,7 @@ jobs:
       services:
         - postgresql
       addons:
-        postgresql: 12
+        postgresql: "12"
         apt:
           packages:
             - postgresql-12

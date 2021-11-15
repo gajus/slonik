@@ -1,6 +1,6 @@
 import anyTest from 'ava';
 import type {
-  TestInterface,
+  TestFn,
 } from 'ava';
 import {
   ROARR,
@@ -12,7 +12,7 @@ import {
   SqlToken,
 } from '../../../../src/tokens';
 
-const test = anyTest as TestInterface<{
+const test = anyTest as TestFn<{
   logs: unknown[],
 }>;
 
@@ -81,7 +81,7 @@ test('throws if bound an undefined value', (t) => {
     sql`SELECT ${undefined}`;
   });
 
-  t.is(error.message, 'SQL tag cannot be bound an undefined value.');
+  t.is(error?.message, 'SQL tag cannot be bound an undefined value.');
 });
 
 test.serial.skip('logs all bound values if one is undefined', (t) => {

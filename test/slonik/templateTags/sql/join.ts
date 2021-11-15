@@ -109,5 +109,5 @@ test('throws is member is not a SQL token or a primitive value expression', (t) 
     )}`;
   });
 
-  t.is(error.message, 'Invalid list member type. Must be a SQL token or a primitive value expression.');
+  t.is(error?.message, 'Invalid list member type. Must be a SQL token or a primitive value expression.');
 });

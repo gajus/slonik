@@ -55,7 +55,7 @@ export const createPool = (
     slonik?: unknown,
   };
 
-  const pool: ModifiedPool = new pg.Pool(poolConfiguration as unknown as pgTypes.PoolConfig);
+  const pool: ModifiedPool = new pg.Pool(poolConfiguration);
 
   pool.slonik = {
     ended: false,

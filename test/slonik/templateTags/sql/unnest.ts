@@ -119,7 +119,7 @@ test('throws if tuple member is not a primitive value expression', (t) => {
     sql`SELECT * FROM ${sql.unnest([[() => {}, 2, 3], [4, 5]], ['int4', 'int4', 'int4'])}`;
   });
 
-  t.is(error.message, 'Invalid unnest tuple member type. Must be a primitive value expression.');
+  t.is(error?.message, 'Invalid unnest tuple member type. Must be a primitive value expression.');
 });
 
 test('throws if tuple member length varies in a list of tuples', (t) => {
@@ -127,7 +127,7 @@ test('throws if tuple member length varies in a list of tuples', (t) => {
     sql`SELECT * FROM ${sql.unnest([[1, 2, 3], [4, 5]], ['int4', 'int4', 'int4'])}`;
   });
 
-  t.is(error.message, 'Each tuple in a list of tuples must have an equal number of members.');
+  t.is(error?.message, 'Each tuple in a list of tuples must have an equal number of members.');
 });
 
 test('throws if tuple member length does not match column types length', (t) => {
@@ -135,5 +135,5 @@ test('throws if tuple member length does not match column types length', (t) => 
     sql`SELECT * FROM ${sql.unnest([[1, 2, 3], [4, 5, 6]], ['int4', 'int4'])}`;
   });
 
-  t.is(error.message, 'Column types length must match tuple member length.');
+  t.is(error?.message, 'Column types length must match tuple member length.');
 });

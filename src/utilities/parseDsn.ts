@@ -1,0 +1,65 @@
+import {
+  URL,
+} from 'url';
+import {
+  Logger,
+} from '../Logger';
+import type {
+  ConnectionOptions,
+} from '../types';
+
+const log = Logger.child({
+  namespace: 'parseDsn',
+});
+
+export const parseDsn = (dsn: string): ConnectionOptions => {
+  if (dsn.trim() === '') {
+    return {};
+  }
+
+  const url = new URL(dsn);
+
+  const connectionOptions: ConnectionOptions = {};
+
+  if (url.host) {
+    connectionOptions.host = url.hostname;
+  }
+
+  if (url.port) {
+    connectionOptions.port = Number(url.port);
+  }
+
+  if (url.pathname && url.pathname !== '/') {
+    connectionOptions.databaseName = url.pathname.split('/')[1];
+  }
+
+  if (url.username) {
+    connectionOptions.username = url.username;
+  }
+
+  if (url.password) {
+    connectionOptions.password = url.password;
+  }
+
+  const {
+    application_name: applicationName,
+    sslmode: sslMode,
+    ...unsupportedOptions
+  } = Object.fromEntries(url.searchParams);
+
+  if (Object.keys(unsupportedOptions).length > 0) {
+    log.warn({
+      unsupportedOptions,
+    }, 'unsupported DSN parameters');
+  }
+
+  if (applicationName) {
+    connectionOptions.applicationName = applicationName;
+  }
+
+  if (sslMode) {
+    connectionOptions.sslMode = sslMode as ConnectionOptions['sslMode'];
+  }
+
+  return connectionOptions;
+};

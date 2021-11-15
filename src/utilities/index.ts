@@ -26,8 +26,14 @@ export {
   normaliseQueryValues,
 } from './normaliseQueryValues';
 export {
+  parseDsn,
+} from './parseDsn';
+export {
   removeCommentedOutBindings,
 } from './removeCommentedOutBindings';
+export {
+  stringifyDsn,
+} from './stringifyDsn';
 export {
   stripArrayNotation,
 } from './stripArrayNotation';
