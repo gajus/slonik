@@ -98,6 +98,22 @@ test('nests expressions', (t) => {
   });
 });
 
+test('binary join expressions', (t) => {
+  const data = Buffer.from('1f', 'hex');
+  const query = sql`SELECT (${
+    sql.join(['a', sql.binary(data)], sql`, `)
+  })`;
+
+  t.deepEqual(query, {
+    sql: 'SELECT ($1, $2)',
+    type: SqlToken,
+    values: [
+      'a',
+      data,
+    ],
+  });
+});
+
 test('throws is member is not a SQL token or a primitive value expression', (t) => {
   const error = t.throws(() => {
     sql`${sql.join(
