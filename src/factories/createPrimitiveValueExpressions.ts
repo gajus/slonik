@@ -16,7 +16,13 @@ export const createPrimitiveValueExpressions = (values: readonly unknown[]): rea
   const primitiveValueExpressions = [];
 
   for (const value of values) {
-    if (Array.isArray(value) || typeof value === 'string' || typeof value === 'number' || typeof value === 'boolean' || value === null) {
+    if (Array.isArray(value) ||
+        Buffer.isBuffer(value) ||
+        typeof value === 'string' ||
+        typeof value === 'number' ||
+        typeof value === 'boolean' ||
+        value === null
+    ) {
       primitiveValueExpressions.push(value);
     } else {
       log.warn({
