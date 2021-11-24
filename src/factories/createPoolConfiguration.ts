@@ -29,23 +29,20 @@ export const createPoolConfiguration = (dsn: string, clientConfiguration: Client
   if (connectionOptions.sslMode === 'disable') {
     poolConfiguration.ssl = false;
   } else if (connectionOptions.sslMode === 'require') {
-    
     if (clientConfiguration.ssl) {
       poolConfiguration.ssl = {
         ...clientConfiguration.ssl,
         rejectUnauthorized: true,
-      }
+      };
     } else {
       poolConfiguration.ssl = true;
     }
-
   } else if (connectionOptions.sslMode === 'no-verify') {
-
     if (clientConfiguration.ssl) {
       poolConfiguration.ssl = {
         ...clientConfiguration.ssl,
         rejectUnauthorized: false,
-      }
+      };
     } else {
       poolConfiguration.ssl = {
         rejectUnauthorized: false,
