@@ -26,7 +26,9 @@ export const createPoolConfiguration = (dsn: string, clientConfiguration: Client
     user: connectionOptions.username,
   };
 
-  if (connectionOptions.sslMode === 'disable') {
+  if (clientConfiguration.ssl) {
+    poolConfiguration.ssl = clientConfiguration.ssl;
+  } else if (connectionOptions.sslMode === 'disable') {
     poolConfiguration.ssl = false;
   } else if (connectionOptions.sslMode === 'require') {
     poolConfiguration.ssl = true;
