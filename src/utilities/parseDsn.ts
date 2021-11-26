@@ -30,15 +30,15 @@ export const parseDsn = (dsn: string): ConnectionOptions => {
   }
 
   if (url.pathname && url.pathname !== '/') {
-    connectionOptions.databaseName = url.pathname.split('/')[1];
+    connectionOptions.databaseName = decodeURIComponent(url.pathname.split('/')[1]);
   }
 
   if (url.username) {
-    connectionOptions.username = url.username;
+    connectionOptions.username = decodeURIComponent(url.username);
   }
 
   if (url.password) {
-    connectionOptions.password = url.password;
+    connectionOptions.password = decodeURIComponent(url.password);
   }
 
   const {

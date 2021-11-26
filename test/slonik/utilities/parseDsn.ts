@@ -36,3 +36,9 @@ test('postgresql://localhost/?&application_name=baz', testParse, {
   applicationName: 'baz',
   host: 'localhost',
 });
+test('postgresql://fo%2Fo:b%2Far@localhost/ba%2Fz', testParse, {
+  databaseName: 'ba/z',
+  host: 'localhost',
+  password: 'b/ar',
+  username: 'fo/o',
+});
