@@ -24,13 +24,13 @@ export const stringifyDsn = (connectionOptions: ConnectionOptions): string => {
 
   if (username) {
     tokens.push(
-      username,
+      encodeURIComponent(username),
     );
 
     if (password) {
       tokens.push(
         ':',
-        password,
+        encodeURIComponent(password),
       );
     }
 
@@ -49,7 +49,7 @@ export const stringifyDsn = (connectionOptions: ConnectionOptions): string => {
   if (databaseName) {
     tokens.push(
       '/',
-      databaseName,
+      encodeURIComponent(databaseName),
     );
   }
 
