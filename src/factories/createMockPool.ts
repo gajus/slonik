@@ -6,7 +6,6 @@ import {
 } from '../binders/bindPool';
 import {
   poolStateMap,
-  poolClientStateMap,
 } from '../state';
 import type {
   ClientConfigurationInputType,

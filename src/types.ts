@@ -330,6 +330,7 @@ export type NamedAssignmentType = {
 };
 
 // @todo may want to think how to make this extendable.
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 type UserQueryResultRowType = Record<string, any>;
 
 export type SqlTaggedTemplateType<T extends UserQueryResultRowType = QueryResultRowType> = {

@@ -12,8 +12,6 @@ import {
 } from '../binders/bindPool';
 import {
   poolStateMap,
-  poolClientStateMap,
-  getPoolClientState,
 } from '../state';
 import type {
   ClientConfigurationInputType,
@@ -65,7 +63,7 @@ export const createPool = (
     typeOverrides: null,
   });
 
-  // istanbul ignore next
+  // @todo There are no tests for this
   // pool.on('error', (error) => {
   //   // @todo how to replicate
   //   if (!error.client.connection.slonik.terminated) {
@@ -77,21 +75,8 @@ export const createPool = (
 
   // istanbul ignore next
   pool.on('connect', (client) => {
-    // const clientState = getPoolClientState(client);
-
-    // if (!clientState) {
-    //   poolClientStateMap.set(client, {
-    //     connectionId: createUid(),
-    //     mock: false,
-    //     poolId,
-    //     terminated: null,
-    //     transactionDepth: null,
-    //     transactionId: null,
-    //   });
-
-    // }
-
     client.on('error', (error) => {
+      // @todo There are no tests for this
       // if (
       //   error.message.includes('Connection terminated unexpectedly') ||
       //   error.message.includes('server closed the connection unexpectedly')
