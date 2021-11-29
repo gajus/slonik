@@ -11,7 +11,7 @@ import {
   any,
 } from './any';
 
-export const anyFirst: InternalQueryMethodType<any> = async (log, connection, clientConfigurationType, rawSql, values, inheritedQueryId) => {
+export const anyFirst: InternalQueryMethodType = async (log, connection, clientConfigurationType, rawSql, values, inheritedQueryId) => {
   const queryId = inheritedQueryId ?? createQueryId();
 
   const rows = await any(log, connection, clientConfigurationType, rawSql, values, queryId);

@@ -11,7 +11,7 @@ import {
 /**
  * Makes a query and expects any number of results.
  */
-export const any: InternalQueryMethodType<any> = async (log, connection, clientConfiguration, rawSql, values, inheritedQueryId) => {
+export const any: InternalQueryMethodType = async (log, connection, clientConfiguration, rawSql, values, inheritedQueryId) => {
   const queryId = inheritedQueryId ?? createQueryId();
 
   const {

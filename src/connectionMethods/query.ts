@@ -10,8 +10,8 @@ import type {
   QueryResultType,
 } from '../types';
 
-export const query: InternalQueryMethodType<any> = async (connectionLogger, connection, clientConfiguration, rawSql, values, inheritedQueryId) => {
-  return executeQuery(
+export const query: InternalQueryMethodType = async (connectionLogger, connection, clientConfiguration, rawSql, values, inheritedQueryId) => {
+  return await executeQuery(
     connectionLogger,
     connection,
     clientConfiguration,

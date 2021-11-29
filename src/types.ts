@@ -338,7 +338,8 @@ export type SqlTaggedTemplateType<T extends UserQueryResultRowType = QueryResult
   ) => UnnestSqlTokenType,
 };
 
-export type InternalQueryMethodType<R> = (
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export type InternalQueryMethodType<R = any> = (
   log: Logger,
   connection: InternalDatabaseConnectionType,
   clientConfiguration: ClientConfigurationType,

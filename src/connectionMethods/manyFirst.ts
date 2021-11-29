@@ -11,7 +11,7 @@ import {
   many,
 } from './many';
 
-export const manyFirst: InternalQueryMethodType<any> = async (log, connection, clientConfigurationType, rawSql, values, inheritedQueryId) => {
+export const manyFirst: InternalQueryMethodType = async (log, connection, clientConfigurationType, rawSql, values, inheritedQueryId) => {
   const queryId = inheritedQueryId ?? createQueryId();
 
   const rows = await many(log, connection, clientConfigurationType, rawSql, values, queryId);
