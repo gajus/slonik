@@ -238,9 +238,9 @@ const typeParserTypes = () => {
 
 const recipes = async () => {
   await connection.query(sql`
-      INSERT INTO (foo, bar, baz)
-      SELECT *
-      FROM ${sql.unnest(
+    INSERT INTO (foo, bar, baz)
+    SELECT *
+    FROM ${sql.unnest(
     [
       [1, 2, 3],
       [4, 5, 6],
@@ -283,32 +283,32 @@ const sqlTypes = async () => {
   const query1 = sql`SELECT ${'baz'} FROM (${query0})`;
 
   await connection.query(sql`
-  SELECT ${sql.identifier(['foo', 'a'])}
-  FROM (
-    VALUES
-    (
-      ${sql.join([sql.join(['a1', 'b1', 'c1'], sql`, `), sql.join(['a2', 'b2', 'c2'], sql`, `)], sql`), (`)}
-    )
-  ) foo(a, b, c)
-  WHERE foo.b IN (${sql.join(['c1', 'a2'], sql`, `)})
-`);
+    SELECT ${sql.identifier(['foo', 'a'])}
+    FROM (
+      VALUES
+      (
+        ${sql.join([sql.join(['a1', 'b1', 'c1'], sql`, `), sql.join(['a2', 'b2', 'c2'], sql`, `)], sql`), (`)}
+      )
+    ) foo(a, b, c)
+    WHERE foo.b IN (${sql.join(['c1', 'a2'], sql`, `)})
+  `);
 
   await connection.query(sql`
     SELECT (${sql.json([1, 2, {other: 'test',
     test: 12}])})
-`);
+  `);
 
   await connection.query(sql`
     SELECT (${sql.json('test')})
-`);
+  `);
 
   await connection.query(sql`
     SELECT (${sql.json(null)})
-`);
+  `);
 
   await connection.query(sql`
     SELECT (${sql.json(123)})
-`);
+  `);
 
   await connection.query(sql`
     SELECT (${sql.json({
@@ -318,7 +318,7 @@ const sqlTypes = async () => {
         this: 'test'}},
     },
   })})
-`);
+  `);
 
   // @ts-expect-error
   sql`SELECT ${sql.json(undefined)}`;
@@ -332,12 +332,12 @@ const sqlTypes = async () => {
     ],
     ['int4', 'text'],
   )} AS foo(bar, baz)
-`);
+  `);
 
   sql`
     SELECT 1
     FROM ${sql.identifier(['bar', 'baz'])}
-`;
+  `;
 };
 
 const createSqlTagTypes = () => {
