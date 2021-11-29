@@ -4,6 +4,7 @@ import {
 import type {
   SqlFragmentType,
   UnnestSqlTokenType,
+  PrimitiveValueExpressionType,
 } from '../types';
 import {
   countArrayDimensions,
@@ -17,8 +18,8 @@ export const createUnnestSqlFragment = (token: UnnestSqlTokenType, greatestParam
 
   const values = [];
 
-  const unnestBindings = [];
-  const unnestSqlTokens = [];
+  const unnestBindings: PrimitiveValueExpressionType[][] = [];
+  const unnestSqlTokens: string[] = [];
 
   let columnIndex = 0;
 
@@ -73,12 +74,19 @@ export const createUnnestSqlFragment = (token: UnnestSqlTokenType, greatestParam
         throw new InvalidInputError('Invalid unnest tuple member type. Must be a primitive value expression.');
       }
 
-      // @ts-expect-error
-      unnestBindings[tupleColumnIndex++].push(tupleValue);
+      const tupleBindings = unnestBindings[tupleColumnIndex++];
+
+      if (!tupleBindings) {
+        throw new Error('test');
+      }
+
+      tupleBindings.push(tupleValue);
     }
   }
 
-  values.push(...unnestBindings);
+  values.push(
+    ...unnestBindings,
+  );
 
   const sql = 'unnest(' + unnestSqlTokens.join(', ') + ')';
 

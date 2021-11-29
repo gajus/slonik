@@ -13,6 +13,9 @@ import {
   executeQuery,
 } from '../../../src/routines/executeQuery';
 import {
+  poolClientStateMap,
+} from '../../../src/state';
+import {
   createClientConfiguration,
 } from '../../helpers/createClientConfiguration';
 import {
@@ -31,13 +34,22 @@ const createConnectionStub = () => {
     },
     off () {},
     on () {},
-  };
+  } as any;
 };
 
 beforeEach((t) => {
   t.context.logger = Roarr;
   t.context.connection = createConnectionStub();
   t.context.executionRoutine = () => {};
+
+  poolClientStateMap.set(t.context.connection, {
+    connectionId: '1',
+    mock: true,
+    poolId: '1',
+    terminated: null,
+    transactionDepth: null,
+    transactionId: null,
+  });
 });
 
 test('throws a descriptive error if query is empty', async (t) => {
@@ -145,18 +157,27 @@ test('returns the thrown transaction error if the retry limit is reached', async
 });
 
 test('transaction errors are not handled if the function was called by a transaction', async (t) => {
+  const connection = createConnectionStub();
+
+  poolClientStateMap.set(connection, {
+    connectionId: '1',
+    mock: true,
+    poolId: '1',
+    terminated: null,
+    transactionDepth: null,
+    transactionId: '1',
+  });
+
   const executionRoutineStub = sinon.stub();
 
   executionRoutineStub.onFirstCall()
     .rejects(createErrorWithCode('40P01'));
 
-  t.context.connection.connection.slonik.transactionId = 'foobar';
-
   const clientConfiguration = createClientConfiguration();
 
   const error: any = await t.throwsAsync(executeQuery(
     t.context.logger,
-    t.context.connection,
+    connection,
     {
       ...clientConfiguration,
       queryRetryLimit: 1,

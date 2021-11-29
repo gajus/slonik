@@ -1,3 +1,7 @@
+import type {
+  Pool as PgPool,
+  PoolClient as PgPoolClient,
+} from 'pg';
 import {
   serializeError,
 } from 'serialize-error';
@@ -11,33 +15,47 @@ import {
 import {
   createTypeOverrides,
 } from '../routines';
+import {
+  getPoolClientState,
+  getPoolState,
+  poolClientStateMap,
+} from '../state';
 import type {
   MaybePromiseType,
   ClientConfigurationType,
   ConnectionTypeType,
   DatabasePoolType,
   DatabasePoolConnectionType,
-  InternalDatabaseConnectionType,
-  InternalDatabasePoolType,
   Logger,
   TaggedTemplateLiteralInvocationType,
 } from '../types';
+import {
+  createUid,
+} from '../utilities';
 
 type ConnectionHandlerType = (
   connectionLog: Logger,
-  connection: InternalDatabaseConnectionType,
+  connection: PgPoolClient,
   boundConnection: DatabasePoolConnectionType,
   clientConfiguration: ClientConfigurationType
-) => MaybePromiseType<unknown>;
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+) => MaybePromiseType<any>;
 
 type PoolHandlerType = (pool: DatabasePoolType) => Promise<unknown>;
 
-const terminatePoolConnection = (pool: any, connection: any, error: any) => {
-  if (!connection.connection.slonik.terminated) {
-    connection.connection.slonik.terminated = error;
+const terminatePoolConnection = (
+  pool: PgPool,
+  connection: PgPoolClient,
+  error: Error,
+) => {
+  const poolState = getPoolState(pool);
+  const poolClientState = getPoolClientState(connection);
+
+  if (!poolClientState.terminated) {
+    poolClientState.terminated = error;
   }
 
-  if (pool.slonik.mock) {
+  if (poolState.mock) {
     return;
   }
 
@@ -48,14 +66,16 @@ const terminatePoolConnection = (pool: any, connection: any, error: any) => {
 // eslint-disable-next-line complexity
 export const createConnection = async (
   parentLog: Logger,
-  pool: InternalDatabasePoolType,
+  pool: PgPool,
   clientConfiguration: ClientConfigurationType,
   connectionType: ConnectionTypeType,
   connectionHandler: ConnectionHandlerType,
   poolHandler: PoolHandlerType,
   query: TaggedTemplateLiteralInvocationType | null = null,
-): Promise<any> => {
-  if (pool.slonik.ended) {
+) => {
+  const poolState = getPoolState(pool);
+
+  if (poolState.ended) {
     throw new UnexpectedStateError('Connection pool shutdown has been already initiated. Cannot create a new connection.');
   }
 
@@ -63,7 +83,7 @@ export const createConnection = async (
     if (interceptor.beforePoolConnection) {
       const maybeNewPool = await interceptor.beforePoolConnection({
         log: parentLog,
-        poolId: pool.slonik.poolId,
+        poolId: poolState.poolId,
         query,
       });
 
@@ -73,7 +93,7 @@ export const createConnection = async (
     }
   }
 
-  let connection: InternalDatabaseConnectionType;
+  let connection: PgPoolClient;
 
   let remainingConnectionRetryLimit = clientConfiguration.connectionRetryLimit;
 
@@ -83,6 +103,15 @@ export const createConnection = async (
 
     try {
       connection = await pool.connect();
+
+      poolClientStateMap.set(connection, {
+        connectionId: createUid(),
+        mock: poolState.mock,
+        poolId: poolState.poolId,
+        terminated: null,
+        transactionDepth: null,
+        transactionId: null,
+      });
 
       break;
     } catch (error) {
@@ -105,22 +134,23 @@ export const createConnection = async (
     throw new UnexpectedStateError('Connection handle is not present.');
   }
 
-  if (!pool.slonik.mock) {
-    if (!pool.typeOverrides) {
-      pool.typeOverrides = createTypeOverrides(connection, clientConfiguration.typeParsers);
+  if (!poolState.mock) {
+    if (!poolState.typeOverrides) {
+      poolState.typeOverrides = createTypeOverrides(
+        connection,
+        clientConfiguration.typeParsers,
+      );
     }
 
     // eslint-disable-next-line canonical/id-match
-    connection._types = await pool.typeOverrides;
-
-    // This property exists only if the underlying connection is initiated using pg-native.
-    if (connection.native) {
-      // eslint-disable-next-line canonical/id-match
-      connection.native._types = await pool.typeOverrides;
-    }
+    connection._types = await poolState.typeOverrides;
   }
 
-  const {connectionId} = connection.connection.slonik;
+  const poolClientState = getPoolClientState(connection);
+
+  const {
+    connectionId,
+  } = poolClientState;
 
   const connectionLog = parentLog.child({
     connectionId,
@@ -130,10 +160,14 @@ export const createConnection = async (
     connectionId,
     connectionType,
     log: connectionLog,
-    poolId: pool.slonik.poolId,
+    poolId: poolState.poolId,
   };
 
-  const boundConnection = bindPoolConnection(connectionLog, connection, clientConfiguration);
+  const boundConnection = bindPoolConnection(
+    connectionLog,
+    connection,
+    clientConfiguration,
+  );
 
   try {
     for (const interceptor of clientConfiguration.interceptors) {
@@ -150,7 +184,12 @@ export const createConnection = async (
   let result;
 
   try {
-    result = await connectionHandler(connectionLog, connection, boundConnection, clientConfiguration);
+    result = await connectionHandler(
+      connectionLog,
+      connection,
+      boundConnection,
+      clientConfiguration,
+    );
   } catch (error) {
     terminatePoolConnection(pool, connection, error);
 
@@ -169,8 +208,11 @@ export const createConnection = async (
     throw error;
   }
 
-  if (pool.slonik.mock === false && pool.slonik.ended === false && ['IMPLICIT_QUERY', 'IMPLICIT_TRANSACTION'].includes(connectionType)) {
-    await connection.release();
+  if (
+    poolState.mock === false &&
+    poolState.ended === false && ['IMPLICIT_QUERY', 'IMPLICIT_TRANSACTION'].includes(connectionType)
+  ) {
+    connection.release();
   } else {
     // Do not use `connection.release()` for explicit connections:
     //

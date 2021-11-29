@@ -7,6 +7,11 @@ import type {
   ConnectionOptions,
 } from '../types';
 
+type NamedParameters = {
+  application_name?: string,
+  sslmode?: string,
+};
+
 export const stringifyDsn = (connectionOptions: ConnectionOptions): string => {
   const {
     applicationName,
@@ -53,7 +58,7 @@ export const stringifyDsn = (connectionOptions: ConnectionOptions): string => {
     );
   }
 
-  const namedParameters: any = {};
+  const namedParameters: NamedParameters = {};
 
   if (applicationName) {
     namedParameters.application_name = applicationName;

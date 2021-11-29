@@ -5,9 +5,6 @@ import {
   from,
 } from 'pg-copy-streams';
 import {
-  UnexpectedStateError,
-} from '../errors';
-import {
   executeQuery,
 } from '../routines';
 import type {
@@ -35,10 +32,6 @@ export const copyFromBinary: InternalCopyFromBinaryFunctionType = async (
   tupleList,
   columnTypes,
 ) => {
-  if (connection.connection.slonik.native) {
-    throw new UnexpectedStateError('COPY streams do not work with the native driver. Use JavaScript driver.');
-  }
-
   const payloadBuffer = await encodeTupleList(tupleList, columnTypes);
 
   return await executeQuery(
@@ -59,8 +52,13 @@ export const copyFromBinary: InternalCopyFromBinaryFunctionType = async (
         });
 
         copyFromBinaryStream.on('finish', () => {
-          // @ts-expect-error
-          resolve({});
+          resolve({
+            command: 'COPY',
+            fields: [],
+            notices: [],
+            rowCount: 0,
+            rows: [],
+          });
         });
       });
     },

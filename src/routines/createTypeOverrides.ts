@@ -1,13 +1,25 @@
+import type {
+  PoolClient as PgPoolClient,
+} from 'pg';
 import TypeOverrides from 'pg/lib/type-overrides';
 import {
   parse as parseArray,
 } from 'postgres-array';
 import type {
-  InternalDatabaseConnectionType,
+  TypeOverrides as TypeOverridesType,
   TypeParserType,
 } from '../types';
 
-export const createTypeOverrides = async (connection: InternalDatabaseConnectionType, typeParsers: readonly TypeParserType[]): Promise<any> => {
+type PostgresType = {
+  oid: string,
+  typarray: string,
+  typname: string,
+};
+
+export const createTypeOverrides = async (
+  connection: PgPoolClient,
+  typeParsers: readonly TypeParserType[],
+): Promise<TypeOverridesType> => {
   const typeOverrides = new TypeOverrides();
 
   if (typeParsers.length === 0) {
@@ -18,7 +30,7 @@ export const createTypeOverrides = async (connection: InternalDatabaseConnection
     return typeParser.name;
   });
 
-  const postgresTypes: any[] = (
+  const postgresTypes: PostgresType[] = (
     await connection.query('SELECT oid, typarray, typname FROM pg_type WHERE typname = ANY($1::text[])', [
       typeNames,
     ])

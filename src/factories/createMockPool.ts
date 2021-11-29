@@ -4,13 +4,14 @@ import {
 import {
   bindPool,
 } from '../binders/bindPool';
+import {
+  poolStateMap,
+  poolClientStateMap,
+} from '../state';
 import type {
   ClientConfigurationInputType,
   DatabasePoolType,
   MockPoolOverridesType,
-  PrimitiveValueExpressionType,
-  QueryResultRowType,
-  QueryResultType,
 } from '../types';
 import {
   createUid,
@@ -34,29 +35,24 @@ export const createMockPool = (
   const pool = {
     connect: () => {
       const connection = {
-        connection: {
-          slonik: {
-            connectionId: createUid(),
-            mock: true,
-            terminated: null,
-            transactionDepth: null,
-          },
-        },
         off: () => {},
         on: () => {},
         query: overrides.query,
         release: () => {},
-      };
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      } as any;
 
       return connection;
     },
-    slonik: {
-      ended: false,
-      mock: true,
-      poolId,
-      typeOverrides: null,
-    },
-  };
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  } as any;
+
+  poolStateMap.set(pool, {
+    ended: false,
+    mock: true,
+    poolId,
+    typeOverrides: null,
+  });
 
   return bindPool(
     poolLog,

@@ -3,6 +3,9 @@ import * as sinon from 'sinon';
 import {
   bindPool,
 } from '../../src/binders/bindPool';
+import {
+  poolStateMap,
+} from '../../src/state';
 import type {
   ClientConfigurationInputType,
 } from '../../src/types';
@@ -16,8 +19,6 @@ const defaultConfiguration = {
 };
 
 export const createPool = (clientConfiguration: ClientConfigurationInputType = defaultConfiguration) => {
-  // eslint-disable-next-line @typescript-eslint/prefer-ts-expect-error
-  // @ts-ignore
   const eventEmitter = new EventEmitter();
 
   const connection = {
@@ -45,12 +46,14 @@ export const createPool = (clientConfiguration: ClientConfigurationInputType = d
     connect: () => {
       return connection;
     },
-    slonik: {
-      ended: false,
-      mock: false,
-      poolId: '1',
-    },
-  };
+  } as any;
+
+  poolStateMap.set(internalPool, {
+    ended: false,
+    mock: false,
+    poolId: '1',
+    typeOverrides: null,
+  });
 
   const connectSpy: sinon.SinonSpy = sinon.spy(internalPool, 'connect');
   const endSpy: sinon.SinonSpy = sinon.spy(connection, 'end');
@@ -61,10 +64,17 @@ export const createPool = (clientConfiguration: ClientConfigurationInputType = d
   const pool = bindPool(
     log,
     internalPool,
-
-    // @ts-expect-error
     {
+      captureStackTrace: false,
+      connectionRetryLimit: 1,
+      connectionTimeout: 5_000,
+      idleInTransactionSessionTimeout: 5_000,
+      idleTimeout: 5_000,
       interceptors: [],
+      maximumPoolSize: 1,
+      queryRetryLimit: 1,
+      statementTimeout: 5_000,
+      transactionRetryLimit: 1,
       typeParsers: [],
       ...clientConfiguration,
     },

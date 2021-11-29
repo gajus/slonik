@@ -4,9 +4,6 @@ import {
   QueryStream,
 } from '../QueryStream';
 import {
-  UnexpectedStateError,
-} from '../errors';
-import {
   executeQuery,
 } from '../routines';
 import type {
@@ -23,10 +20,6 @@ export const stream: InternalStreamFunctionType = async (connectionLogger, conne
     values,
     undefined,
     (finalConnection, finalSql, finalValues, executionContext, actualQuery) => {
-      if (connection.native) {
-        throw new UnexpectedStateError('Result cursors do not work with the native driver. Use JavaScript driver.');
-      }
-
       const query = new QueryStream(finalSql, finalValues);
 
       const queryStream: Stream = finalConnection.query(query);
@@ -44,7 +37,7 @@ export const stream: InternalStreamFunctionType = async (connectionLogger, conne
           reject(error);
         });
 
-        const transformedStream = queryStream.pipe(through.obj(function (datum: any, enc: any, callback: any) {
+        const transformedStream = queryStream.pipe(through.obj(function (datum, enc, callback) {
           let finalRow = datum.row;
 
           if (rowTransformers.length) {
@@ -53,7 +46,7 @@ export const stream: InternalStreamFunctionType = async (connectionLogger, conne
             }
           }
 
-          // eslint-disable-next-line fp/no-this, babel/no-invalid-this
+          // eslint-disable-next-line @babel/no-invalid-this
           this.push({
             fields: datum.fields,
             row: finalRow,
@@ -63,14 +56,24 @@ export const stream: InternalStreamFunctionType = async (connectionLogger, conne
         }));
 
         transformedStream.on('end', () => {
-          // @ts-expect-error
-          resolve({});
+          resolve({
+            command: 'SELECT',
+            fields: [],
+            notices: [],
+            rowCount: 0,
+            rows: [],
+          });
         });
 
         // Invoked if stream is destroyed using transformedStream.destroy().
         transformedStream.on('close', () => {
-          // @ts-expect-error
-          resolve({});
+          resolve({
+            command: 'SELECT',
+            fields: [],
+            notices: [],
+            rowCount: 0,
+            rows: [],
+          });
         });
 
         streamHandler(transformedStream);

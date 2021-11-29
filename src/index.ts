@@ -23,7 +23,6 @@ export type {
   JsonSqlTokenType,
   ListSqlTokenType,
   MockPoolOverridesType,
-  PgClientType,
   QueryContextType,
   QueryResultRowColumnType,
   QueryResultRowType,

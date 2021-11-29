@@ -1,3 +1,6 @@
+import type {
+  PoolClient as PgPoolClient,
+} from 'pg';
 import {
   assertSqlSqlToken,
 } from '../assertions';
@@ -19,13 +22,12 @@ import {
 import type {
   ClientConfigurationType,
   DatabasePoolConnectionType,
-  InternalDatabaseConnectionType,
   Logger,
 } from '../types';
 
 export const bindPoolConnection = (
   parentLog: Logger,
-  connection: InternalDatabaseConnectionType,
+  connection: PgPoolClient,
   clientConfiguration: ClientConfigurationType,
 ): DatabasePoolConnectionType => {
   return {

@@ -10,7 +10,14 @@ import type {
   QueryResultType,
 } from '../types';
 
-export const query: InternalQueryMethodType = async (connectionLogger, connection, clientConfiguration, rawSql, values, inheritedQueryId) => {
+export const query: InternalQueryMethodType = async (
+  connectionLogger,
+  connection,
+  clientConfiguration,
+  rawSql,
+  values,
+  inheritedQueryId,
+) => {
   return await executeQuery(
     connectionLogger,
     connection,
@@ -19,7 +26,11 @@ export const query: InternalQueryMethodType = async (connectionLogger, connectio
     values,
     inheritedQueryId,
     async (finalConnection, finalSql, finalValues) => {
-      const result: QueryResult & {notices?: NoticeType[], } = await finalConnection.query(finalSql, finalValues);
+      const result: QueryResult & {notices?: NoticeType[], } = await finalConnection.query(
+        finalSql,
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        finalValues as any[],
+      );
 
       return {
         command: result.command as QueryResultType<unknown>['command'],

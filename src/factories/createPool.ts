@@ -1,8 +1,6 @@
-import type {
-  EventEmitter,
-} from 'events';
-import pgClient from 'pg';
-import type pgTypes from 'pg';
+import {
+  Pool as PgPool,
+} from 'pg';
 import {
   serializeError,
 } from 'serialize-error';
@@ -12,6 +10,11 @@ import {
 import {
   bindPool,
 } from '../binders/bindPool';
+import {
+  poolStateMap,
+  poolClientStateMap,
+  getPoolClientState,
+} from '../state';
 import type {
   ClientConfigurationInputType,
   DatabasePoolType,
@@ -43,51 +46,58 @@ export const createPool = (
 
   const poolConfiguration = createPoolConfiguration(connectionUri, clientConfiguration);
 
-  let pg: Exclude<typeof pgTypes.native, null>;
+  let Pool = clientConfiguration.PgPool;
 
-  if (clientConfiguration.pgClient) {
-    pg = clientConfiguration.pgClient;
-  } else {
-    pg = pgClient;
+  if (!Pool) {
+    Pool = PgPool;
   }
 
-  type ModifiedPool = EventEmitter & Omit<pgTypes.Pool, 'on'> & {
-    slonik?: unknown,
-  };
+  if (!Pool) {
+    throw new Error('Unexpected state.');
+  }
 
-  const pool: ModifiedPool = new pg.Pool(poolConfiguration);
+  const pool: PgPool = new Pool(poolConfiguration);
 
-  pool.slonik = {
+  poolStateMap.set(pool, {
     ended: false,
     mock: false,
     poolId,
     typeOverrides: null,
-  };
-
-  // istanbul ignore next
-  pool.on('error', (error) => {
-    if (!error.client.connection.slonik.terminated) {
-      poolLog.error({
-        error: serializeError(error),
-      }, 'client connection error');
-    }
   });
 
   // istanbul ignore next
-  pool.on('connect', (client: EventEmitter & {connection: any, processID: string, }) => {
-    client.connection = client.connection || {};
+  // pool.on('error', (error) => {
+  //   // @todo how to replicate
+  //   if (!error.client.connection.slonik.terminated) {
+  //     poolLog.error({
+  //       error: serializeError(error),
+  //     }, 'client connection error');
+  //   }
+  // });
 
-    client.connection.slonik = {
-      connectionId: createUid(),
-      mock: false,
-      terminated: null,
-      transactionDepth: null,
-    };
+  // istanbul ignore next
+  pool.on('connect', (client) => {
+    // const clientState = getPoolClientState(client);
+
+    // if (!clientState) {
+    //   poolClientStateMap.set(client, {
+    //     connectionId: createUid(),
+    //     mock: false,
+    //     poolId,
+    //     terminated: null,
+    //     transactionDepth: null,
+    //     transactionId: null,
+    //   });
+
+    // }
 
     client.on('error', (error) => {
-      if (error.message.includes('Connection terminated unexpectedly') || error.message.includes('server closed the connection unexpectedly')) {
-        client.connection.slonik.terminated = error;
-      }
+      // if (
+      //   error.message.includes('Connection terminated unexpectedly') ||
+      //   error.message.includes('server closed the connection unexpectedly')
+      // ) {
+      //   client.connection.slonik.terminated = error;
+      // }
 
       poolLog.error({
         error: serializeError(error),

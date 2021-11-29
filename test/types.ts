@@ -15,20 +15,6 @@ import type {
   QueryResultType,
 } from '../src/types';
 
-export const queryMethod = async (): Promise<void> => {
-  const client = createPool('');
-
-  const query = await client.query(sql``);
-
-  expectTypeOf(query).toMatchTypeOf<{
-    readonly command: 'DELETE' | 'INSERT' | 'SELECT' | 'UPDATE',
-    readonly fields: ReadonlyArray<{ dataTypeId: number, name: string, }>,
-    readonly notices: ReadonlyArray<{ code: string, message: string, }>,
-    readonly rowCount: number,
-    readonly rows: readonly unknown[],
-  }>();
-};
-
 export const queryMethods = async (): Promise<void> => {
   const client = createPool('');
 

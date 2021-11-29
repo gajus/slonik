@@ -2,6 +2,9 @@ import {
   getStackTrace,
 } from 'get-stack-trace';
 import Deferred from 'p-defer';
+import type {
+  PoolClient as PgPoolClient,
+} from 'pg';
 import {
   serializeError,
 } from 'serialize-error';
@@ -20,9 +23,11 @@ import {
   UniqueIntegrityConstraintViolationError,
   TupleMovedToAnotherPartitionError,
 } from '../errors';
+import {
+  getPoolClientState,
+} from '../state';
 import type {
   ClientConfigurationType,
-  InternalDatabaseConnectionType,
   Logger,
   NoticeType,
   PrimitiveValueExpressionType,
@@ -34,14 +39,13 @@ import type {
 } from '../types';
 import {
   createQueryId,
-  normaliseQueryValues,
   removeCommentedOutBindings,
 } from '../utilities';
 
 type GenericQueryResult = QueryResultType<QueryResultRowType>;
 
 type ExecutionRoutineType = (
-  connection: InternalDatabaseConnectionType,
+  connection: PgPoolClient,
   sql: string,
   values: readonly PrimitiveValueExpressionType[],
   queryContext: QueryContextType,
@@ -57,7 +61,7 @@ type TransactionQueryType = {
 
 const retryQuery = async (
   connectionLogger: Logger,
-  connection: InternalDatabaseConnectionType,
+  connection: PgPoolClient,
   query: TransactionQueryType,
   retryLimit: number,
 ) => {
@@ -80,7 +84,7 @@ const retryQuery = async (
         query.sql,
 
         // @todo Refresh execution context to reflect that the query has been re-tried.
-        normaliseQueryValues(query.values, connection.native),
+        query.values,
 
         // This (probably) requires changing `queryId` and `queryInputTime`.
         // It should be needed only for the last query (because other queries will not be processed by the middlewares).
@@ -109,15 +113,17 @@ const retryQuery = async (
 // eslint-disable-next-line complexity
 export const executeQuery = async (
   connectionLogger: Logger,
-  connection: InternalDatabaseConnectionType,
+  connection: PgPoolClient,
   clientConfiguration: ClientConfigurationType,
   rawSql: string,
   values: readonly PrimitiveValueExpressionType[],
   inheritedQueryId: QueryIdType | undefined,
   executionRoutine: ExecutionRoutineType,
 ): Promise<QueryResultType<Record<string, PrimitiveValueExpressionType>>> => {
-  if (connection.connection.slonik.terminated) {
-    throw new BackendTerminatedError(connection.connection.slonik.terminated);
+  const poolClientState = getPoolClientState(connection);
+
+  if (poolClientState.terminated) {
+    throw new BackendTerminatedError(poolClientState.terminated);
   }
 
   if (rawSql.trim() === '') {
@@ -160,15 +166,15 @@ export const executeQuery = async (
   };
 
   const executionContext: QueryContextType = {
-    connectionId: connection.connection.slonik.connectionId,
+    connectionId: poolClientState.connectionId,
     log,
     originalQuery,
-    poolId: connection.connection.slonik.poolId,
+    poolId: poolClientState.poolId,
     queryId,
     queryInputTime,
     sandbox: {},
     stackTrace,
-    transactionId: connection.connection.slonik.transactionId,
+    transactionId: poolClientState.transactionId,
   };
 
   for (const interceptor of clientConfiguration.interceptors) {
@@ -210,9 +216,9 @@ export const executeQuery = async (
 
   const activeQuery = Deferred();
 
-  const blockingPromise = connection.connection.slonik.activeQuery?.promise ?? null;
+  const blockingPromise = poolClientState.activeQuery?.promise ?? null;
 
-  connection.connection.slonik.activeQuery = activeQuery;
+  poolClientState.activeQuery = activeQuery;
 
   await blockingPromise;
 
@@ -231,7 +237,7 @@ export const executeQuery = async (
         result = await executionRoutine(
           connection,
           actualQuery.sql,
-          normaliseQueryValues(actualQuery.values, connection.native),
+          actualQuery.values,
           executionContext,
           actualQuery,
         );
@@ -241,7 +247,7 @@ export const executeQuery = async (
           clientConfiguration.queryRetryLimit > 0;
 
         // Transactions errors in queries that are part of a transaction are handled by the transaction/nestedTransaction functions
-        if (shouldRetry && !connection.connection.slonik.transactionId) {
+        if (shouldRetry && !poolClientState.transactionId) {
           result = await retryQuery(
             connectionLogger,
             connection,
@@ -260,7 +266,7 @@ export const executeQuery = async (
       // 'Connection terminated' refers to node-postgres error.
       // @see https://github.com/brianc/node-postgres/blob/eb076db5d47a29c19d3212feac26cd7b6d257a95/lib/client.js#L199
       if (error.code === '57P01' || error.message === 'Connection terminated') {
-        connection.connection.slonik.terminated = error;
+        poolClientState.terminated = error;
 
         throw new BackendTerminatedError(error);
       }
@@ -320,7 +326,7 @@ export const executeQuery = async (
     throw new UnexpectedStateError();
   }
 
-  // @ts-expect-error
+  // @ts-expect-error -- We want to keep notices as readonly for consumer, but write to it here.
   result.notices = notices;
 
   for (const interceptor of clientConfiguration.interceptors) {

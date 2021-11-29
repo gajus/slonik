@@ -1,4 +1,5 @@
 import {
+  UnexpectedStateError,
   InvalidInputError,
 } from '../errors';
 import {
@@ -40,12 +41,14 @@ export const createArraySqlFragment = (token: ArraySqlTokenType, greatestParamet
   let sql = '$' + String(placeholderIndex) + '::';
 
   if (isSqlToken(token.memberType) && token.memberType.type === 'SLONIK_TOKEN_SQL') {
-    const sqlFragment = createSqlTokenSqlFragment(token.memberType, placeholderIndex);
+    const sqlFragment = createSqlTokenSqlFragment(
+      token.memberType,
+      placeholderIndex,
+    );
 
-    placeholderIndex += sqlFragment.values.length;
-
-    // @ts-expect-error (is this right?)
-    values.push(...sqlFragment.values);
+    if (sqlFragment.values.length > 0) {
+      throw new UnexpectedStateError('Type is not expected to have a value binding.');
+    }
 
     sql += sqlFragment.sql;
   } else if (typeof token.memberType === 'string') {
@@ -56,8 +59,6 @@ export const createArraySqlFragment = (token: ArraySqlTokenType, greatestParamet
 
   return {
     sql,
-
-    // @ts-expect-error
     values,
   };
 };

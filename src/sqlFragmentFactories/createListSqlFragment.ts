@@ -14,7 +14,10 @@ import {
   isSqlToken,
 } from '../utilities';
 
-export const createListSqlFragment = (token: ListSqlTokenType, greatestParameterPosition: number): SqlFragmentType => {
+export const createListSqlFragment = (
+  token: ListSqlTokenType,
+  greatestParameterPosition: number,
+): SqlFragmentType => {
   const values = [];
   const placeholders = [];
 
@@ -41,7 +44,6 @@ export const createListSqlFragment = (token: ListSqlTokenType, greatestParameter
   }
 
   return {
-    // @ts-expect-error
     sql: placeholders.join(token.glue.sql),
     values: createPrimitiveValueExpressions(values),
   };

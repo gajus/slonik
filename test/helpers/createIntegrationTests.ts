@@ -3,6 +3,10 @@ import type {
   TestFn,
 } from 'ava';
 import delay from 'delay';
+import type {
+  PoolConfig,
+  Pool as PgPoolType,
+} from 'pg';
 import {
   BackendTerminatedError,
   createPool,
@@ -13,16 +17,13 @@ import {
   TupleMovedToAnotherPartitionError,
   UnexpectedStateError,
 } from '../../src';
-import type {
-  PgClientType,
-} from '../../src';
 
 type TestContextType = {
   dsn: string,
   testDatabaseName: string,
 };
 
-export const createTestRunner = (pgClient: PgClientType, name: string) => {
+export const createTestRunner = (PgPool: new (poolConfig: PoolConfig) => PgPoolType, name: string) => {
   let testId = 0;
 
   const test = anyTest as TestFn<TestContextType>;
@@ -45,7 +46,7 @@ export const createTestRunner = (pgClient: PgClientType, name: string) => {
 
     const pool0 = createPool('postgresql://postgres@localhost', {
       maximumPoolSize: 1,
-      pgClient,
+      PgPool,
     });
 
     await pool0.connect(async (connection) => {
@@ -64,7 +65,7 @@ export const createTestRunner = (pgClient: PgClientType, name: string) => {
 
     const pool1 = createPool(t.context.dsn, {
       maximumPoolSize: 1,
-      pgClient,
+      PgPool,
     });
 
     await pool1.connect(async (connection) => {
@@ -84,7 +85,7 @@ export const createTestRunner = (pgClient: PgClientType, name: string) => {
   afterEach(async (t) => {
     const pool = createPool('postgresql://postgres@localhost', {
       maximumPoolSize: 1,
-      pgClient,
+      PgPool,
     });
 
     await pool.connect(async (connection) => {
@@ -108,11 +109,11 @@ export const createTestRunner = (pgClient: PgClientType, name: string) => {
 
 export const createIntegrationTests = (
   test: TestFn<TestContextType>,
-  pgClient: PgClientType,
+  PgPool: new () => PgPoolType,
 ) => {
   test('returns expected query result object (array bytea)', async (t) => {
     const pool = createPool(t.context.dsn, {
-      pgClient,
+      PgPool,
     });
 
     const result = await pool.query(sql`
@@ -143,7 +144,7 @@ export const createIntegrationTests = (
 
   test('returns expected query result object (INSERT)', async (t) => {
     const pool = createPool(t.context.dsn, {
-      pgClient,
+      PgPool,
     });
 
     const result = await pool.query(sql`
@@ -181,7 +182,7 @@ export const createIntegrationTests = (
 
   test('returns expected query result object (UPDATE)', async (t) => {
     const pool = createPool(t.context.dsn, {
-      pgClient,
+      PgPool,
     });
 
     await pool.query(sql`
@@ -228,7 +229,7 @@ export const createIntegrationTests = (
 
   test('returns expected query result object (DELETE)', async (t) => {
     const pool = createPool(t.context.dsn, {
-      pgClient,
+      PgPool,
     });
 
     await pool.query(sql`
@@ -273,7 +274,7 @@ export const createIntegrationTests = (
 
   test('terminated backend produces BackendTerminatedError error', async (t) => {
     const pool = createPool(t.context.dsn, {
-      pgClient,
+      PgPool,
     });
 
     const error = await t.throwsAsync(pool.connect(async (connection) => {
@@ -295,7 +296,7 @@ export const createIntegrationTests = (
 
   test('cancelled statement produces StatementCancelledError error', async (t) => {
     const pool = createPool(t.context.dsn, {
-      pgClient,
+      PgPool,
     });
 
     const error = await t.throwsAsync(pool.connect(async (connection) => {
@@ -317,7 +318,7 @@ export const createIntegrationTests = (
 
   test('statement cancelled because of statement_timeout produces StatementTimeoutError error', async (t) => {
     const pool = createPool(t.context.dsn, {
-      pgClient,
+      PgPool,
     });
 
     const error = await t.throwsAsync(pool.connect(async (connection) => {
@@ -335,7 +336,7 @@ export const createIntegrationTests = (
 
   test.skip('transaction terminated while in an idle state is rejected (at the next transaction query)', async (t) => {
     const pool = createPool(t.context.dsn, {
-      pgClient,
+      PgPool,
     });
 
     await pool.connect(async (connection) => {
@@ -355,7 +356,7 @@ export const createIntegrationTests = (
 
   test.skip('connection of transaction terminated while in an idle state is rejected (at the end of the transaction)', async (t) => {
     const pool = createPool(t.context.dsn, {
-      pgClient,
+      PgPool,
     });
 
     await pool.connect(async (connection) => {
@@ -373,7 +374,7 @@ export const createIntegrationTests = (
 
   test('throws an error if an attempt is made to make multiple transactions at once using the same connection', async (t) => {
     const pool = createPool(t.context.dsn, {
-      pgClient,
+      PgPool,
     });
 
     const error = await t.throwsAsync(pool.connect(async (connection) => {
@@ -398,7 +399,7 @@ export const createIntegrationTests = (
 
   test('writes and reads buffers', async (t) => {
     const pool = createPool(t.context.dsn, {
-      pgClient,
+      PgPool,
     });
 
     const payload = 'foobarbazqux';
@@ -424,12 +425,10 @@ export const createIntegrationTests = (
     await pool.end();
   });
 
-  // REMOVED
-
   test('explicit connection configuration is persisted', async (t) => {
     const pool = createPool(t.context.dsn, {
       maximumPoolSize: 1,
-      pgClient,
+      PgPool,
     });
 
     await pool.connect(async (connection) => {
@@ -452,7 +451,7 @@ export const createIntegrationTests = (
 
     const pool = createPool(t.context.dsn, {
       maximumPoolSize: 1,
-      pgClient,
+      PgPool,
     });
 
     let index = 100;
@@ -474,7 +473,7 @@ export const createIntegrationTests = (
 
   test('pool.end() resolves when there are no more connections (no connections at start)', async (t) => {
     const pool = createPool(t.context.dsn, {
-      pgClient,
+      PgPool,
     });
 
     t.deepEqual(pool.getPoolState(), {
@@ -496,7 +495,7 @@ export const createIntegrationTests = (
 
   test('pool.end() resolves when there are no more connections (implicit connection)', async (t) => {
     const pool = createPool(t.context.dsn, {
-      pgClient,
+      PgPool,
     });
 
     t.deepEqual(pool.getPoolState(), {
@@ -529,7 +528,7 @@ export const createIntegrationTests = (
 
   test('pool.end() resolves when there are no more connections (explicit connection holding pool alive)', async (t) => {
     const pool = createPool(t.context.dsn, {
-      pgClient,
+      PgPool,
     });
 
     t.deepEqual(pool.getPoolState(), {
@@ -568,7 +567,7 @@ export const createIntegrationTests = (
     const pool = createPool(t.context.dsn, {
       idleTimeout: 5_000,
       maximumPoolSize: 5,
-      pgClient,
+      PgPool,
     });
 
     t.deepEqual(pool.getPoolState(), {
@@ -619,7 +618,7 @@ export const createIntegrationTests = (
     const pool = createPool(t.context.dsn, {
       idleInTransactionSessionTimeout: 1_000,
       maximumPoolSize: 5,
-      pgClient,
+      PgPool,
     });
 
     t.deepEqual(pool.getPoolState(), {
@@ -645,7 +644,7 @@ export const createIntegrationTests = (
 
     const pool = createPool(t.context.dsn, {
       maximumPoolSize: 5,
-      pgClient,
+      PgPool,
       statementTimeout: 1_000,
     });
 
@@ -667,7 +666,7 @@ export const createIntegrationTests = (
     t.timeout(2_000);
 
     const pool = createPool(t.context.dsn, {
-      pgClient,
+      PgPool,
     });
 
     const firstPersonId = await pool.oneFirst(sql`
@@ -748,7 +747,7 @@ export const createIntegrationTests = (
 
   test('does not throw an error if running a query with array_agg on dates', async (t) => {
     const pool = createPool(t.context.dsn, {
-      pgClient,
+      PgPool,
     });
 
     await pool.query(sql`
@@ -802,7 +801,7 @@ export const createIntegrationTests = (
 
   test('returns true if returns rows', async (t) => {
     const pool = createPool(t.context.dsn, {
-      pgClient,
+      PgPool,
     });
 
     t.true(
@@ -816,7 +815,7 @@ export const createIntegrationTests = (
 
   test('returns false if returns rows', async (t) => {
     const pool = createPool(t.context.dsn, {
-      pgClient,
+      PgPool,
     });
 
     t.false(
@@ -830,7 +829,7 @@ export const createIntegrationTests = (
 
   test('returns expected query result object (SELECT)', async (t) => {
     const pool = createPool(t.context.dsn, {
-      pgClient,
+      PgPool,
     });
 
     const result = await pool.query(sql`
@@ -859,7 +858,7 @@ export const createIntegrationTests = (
 
   test('throw error with notices', async (t) => {
     const pool = createPool(t.context.dsn, {
-      pgClient,
+      PgPool,
     });
 
     await pool.query(sql`
@@ -895,7 +894,7 @@ export const createIntegrationTests = (
 
   test('error messages include original pg error', async (t) => {
     const pool = createPool(t.context.dsn, {
-      pgClient,
+      PgPool,
     });
 
     await pool.query(sql`
@@ -922,7 +921,7 @@ export const createIntegrationTests = (
 
   test('Tuple moved to another partition due to concurrent update error handled', async (t) => {
     const pool = createPool(t.context.dsn, {
-      pgClient,
+      PgPool,
       queryRetryLimit: 0,
     });
 
@@ -957,7 +956,7 @@ export const createIntegrationTests = (
 
   test('throws InvalidInputError in case of invalid bound value', async (t) => {
     const pool = createPool(t.context.dsn, {
-      pgClient,
+      PgPool,
     });
 
     await pool.query(sql`

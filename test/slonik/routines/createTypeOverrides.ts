@@ -16,7 +16,7 @@ test('uses typname to retrieve pg_type oid', async (t) => {
         ],
       };
     },
-  };
+  } as any;
 
   const typeParser = {
     name: 'int8',
@@ -28,7 +28,7 @@ test('uses typname to retrieve pg_type oid', async (t) => {
 
   const typeOverrides = await createTypeOverrides(connection, [
     typeParser,
-  ]);
+  ]) as any;
 
   t.is(typeof typeOverrides.text.foo, 'function');
   t.is(typeof typeOverrides.text.bar, 'function');
@@ -41,7 +41,7 @@ test('throws an error if type cannot be found', async (t) => {
         rows: [],
       };
     },
-  };
+  } as any;
 
   const typeParser = {
     name: 'int8',

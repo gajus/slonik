@@ -23,9 +23,6 @@ export {
   isSqlToken,
 } from './isSqlToken';
 export {
-  normaliseQueryValues,
-} from './normaliseQueryValues';
-export {
   parseDsn,
 } from './parseDsn';
 export {

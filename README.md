@@ -71,7 +71,6 @@ Note: Using this project does not require TypeScript. It is a regular ES6 module
         * [Describing the current state of the connection pool](#slonik-usage-describing-the-current-state-of-the-connection-pool)
         * [API](#slonik-usage-api)
         * [Default configuration](#slonik-usage-default-configuration)
-        * [Using native libpq bindings](#slonik-usage-using-native-libpq-bindings)
         * [Checking out a client from the connection pool](#slonik-usage-checking-out-a-client-from-the-connection-pool)
         * [Mocking Slonik](#slonik-usage-mocking-slonik)
     * [How are they different?](#slonik-how-are-they-different)
@@ -583,7 +582,7 @@ createPool(
  * @property idleTimeout Timeout (in milliseconds) after which idle clients are closed. Use 'DISABLE_TIMEOUT' constant to disable the timeout. (Default: 5000)
  * @property interceptors An array of [Slonik interceptors](https://github.com/gajus/slonik#slonik-interceptors).
  * @property maximumPoolSize Do not allow more than this many connections. Use 'DISABLE_TIMEOUT' constant to disable the timeout. (Default: 10)
- * @property pgClient Override the underlying PostgreSQL client.
+ * @property PgPool Override the underlying PostgreSQL Pool constructor.
  * @property queryRetryLimit Number of times a query failing with Transaction Rollback class error, that doesn't belong to a transaction, is retried. (Default: 5)
  * @property ssl [tls.connect options](https://nodejs.org/api/tls.html#tlsconnectoptions-callback)
  * @property statementTimeout Timeout (in milliseconds) after which database is instructed to abort the query. Use 'DISABLE_TIMEOUT' constant to disable the timeout. (Default: 60000)
@@ -598,7 +597,7 @@ type ClientConfigurationInputType = {
   idleTimeout?: number | 'DISABLE_TIMEOUT',
   interceptors?: InterceptorType[],
   maximumPoolSize?: number,
-  pgClient?: PgClientType,
+  PgPool?: new (poolConfig: PoolConfig) => PgPool,
   queryRetryLimit?: number,
   ssl?: Parameters<tls.connect>[0],
   statementTimeout?: number | 'DISABLE_TIMEOUT',
@@ -683,28 +682,7 @@ There are 4 types of configurable timeouts:
 
 Slonik sets aggressive timeouts by default. These timeouts are designed to provide safe interface to the database. These timeouts might not work for all programs. If your program has long running statements, consider adjusting timeouts just for those statements instead of changing the defaults.
 
-<a name="slonik-usage-using-native-libpq-bindings"></a>
-### Using native libpq bindings
-
-In order to use native [libpq](https://www.npmjs.com/package/libpq) PostgreSQL bindings install `pg-native` and configure `pgClient`, e.g.
-
-```js
-// You have to have pg-native installed for this to work.
-// `native` is intentionally imported from 'pg' and not 'pg-native'.
-import {
-  native as pgClient,
-} from 'pg';
-import {
-  createPool,
-} from 'slonik';
-
-const pool = createPool('postgres://', {
-  pgClient,
-});
-
-```
-
-<a name="slonik-usage-using-native-libpq-bindings-known-limitations-of-using-pg-native-with-slonik"></a>
+<a name="slonik-usage-default-configuration-known-limitations-of-using-pg-native-with-slonik"></a>
 #### Known limitations of using pg-native with Slonik
 
 * notice logs are not captured in `notices` query result property (`notice` event is never fired on connection instance).

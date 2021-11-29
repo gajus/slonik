@@ -1,4 +1,6 @@
-import * as pgClient from 'pg';
+import {
+  Pool as PgPool,
+} from 'pg';
 import {
   createPool,
   sql,
@@ -10,16 +12,16 @@ import {
 
 const {
   test,
-} = createTestRunner(pgClient, 'pg');
+} = createTestRunner(PgPool, 'pg');
 
 createIntegrationTests(
   test,
-  pgClient,
+  PgPool,
 );
 
 test('returns expected query result object (NOTICE)', async (t) => {
   const pool = createPool(t.context.dsn, {
-    pgClient,
+    PgPool,
   });
 
   await pool.query(sql`
@@ -106,6 +108,7 @@ test('streams rows', async (t) => {
 
   await pool.end();
 });
+
 test('applies type parsers to streamed rows', async (t) => {
   const pool = createPool(t.context.dsn, {
     typeParsers: [
@@ -177,6 +180,7 @@ test('applies type parsers to streamed rows', async (t) => {
 
   await pool.end();
 });
+
 test('streams over a transaction', async (t) => {
   const pool = createPool(t.context.dsn);
 
@@ -186,8 +190,8 @@ test('streams over a transaction', async (t) => {
 
   const messages: Array<Record<string, unknown>> = [];
 
-  await pool.transaction(async (trxn) => {
-    await trxn.stream(sql`
+  await pool.transaction(async (transaction) => {
+    await transaction.stream(sql`
       SELECT name
       FROM person
     `, (stream) => {
@@ -232,6 +236,35 @@ test('streams over a transaction', async (t) => {
       },
     },
   ]);
+
+  await pool.end();
+});
+
+test('copies from binary stream', async (t) => {
+  const pool = createPool(t.context.dsn);
+
+  await pool.copyFromBinary(
+    sql`
+      COPY person
+      (
+        name
+      )
+      FROM STDIN BINARY
+    `,
+    [
+      ['foo'],
+      ['bar'],
+      ['baz'],
+    ],
+    [
+      'text',
+    ],
+  );
+
+  t.deepEqual(await pool.anyFirst(sql`
+    SELECT name
+    FROM person
+  `), ['foo', 'bar', 'baz']);
 
   await pool.end();
 });

@@ -1,24 +1,24 @@
-/* eslint-disable line-comment-position */
-/* eslint-disable no-inline-comments */
-
 import type {
   Readable,
 } from 'stream';
 import type {
   ConnectionOptions as TlsConnectionOptions,
 } from 'tls';
-import type pgTypes from 'pg';
-import {
+import type {
+  PoolConfig,
+  Pool as PgPool,
+  PoolClient as PgPoolClient,
+} from 'pg';
+import type {
+  NoticeMessage as NoticeType,
+} from 'pg-protocol/dist/messages';
+import type {
   Logger,
 } from 'roarr';
 import type {
   SlonikError,
 } from './errors';
 import type * as tokens from './tokens';
-
-export {
-  Logger,
-};
 
 /**
  * @see https://www.postgresql.org/docs/current/libpq-connect.html#LIBPQ-PARAMKEYWORDS
@@ -32,8 +32,6 @@ export type ConnectionOptions = {
   sslMode?: 'disable' | 'no-verify' | 'require',
   username?: string,
 };
-
-export type PgClientType = typeof pgTypes.native;
 
 export type TypeNameIdentifierType =
   | 'bool'
@@ -66,53 +64,66 @@ export type FieldType = {
   readonly name: string,
 };
 
-export type NoticeType = {
-  readonly code: string,
-  readonly length: number,
-  readonly message: string,
-  readonly name: string,
-  readonly severity: string,
-  readonly where: string,
-};
-
 export type QueryResultType<T> = {
-  readonly command: 'DELETE' | 'INSERT' | 'SELECT' | 'UPDATE',
+  readonly command: 'COPY' | 'DELETE' | 'INSERT' | 'SELECT' | 'UPDATE',
   readonly fields: readonly FieldType[],
   readonly notices: readonly NoticeType[],
   readonly rowCount: number,
   readonly rows: readonly T[],
 };
 
-export type InternalDatabasePoolType = any;
-
-export type InternalDatabaseConnectionType = any;
-
 export type ClientConfigurationType = {
-  /** Dictates whether to capture stack trace before executing query. Middlewares access stack trace through query execution context. (Default: true) */
+  /**
+   * Override the underlying PostgreSQL driver. *
+   */
+  readonly PgPool?: new (poolConfig: PoolConfig) => PgPool,
+  /**
+   * Dictates whether to capture stack trace before executing query. Middlewares access stack trace through query execution context. (Default: true)
+   */
   readonly captureStackTrace: boolean,
-  /** Number of times to retry establishing a new connection. (Default: 3) */
+  /**
+   * Number of times to retry establishing a new connection. (Default: 3)
+   */
   readonly connectionRetryLimit: number,
-  /** Timeout (in milliseconds) after which an error is raised if connection cannot cannot be established. (Default: 5000) */
+  /**
+   * Timeout (in milliseconds) after which an error is raised if connection cannot cannot be established. (Default: 5000)
+   */
   readonly connectionTimeout: number | 'DISABLE_TIMEOUT',
-  /** Timeout (in milliseconds) after which idle clients are closed. Use 'DISABLE_TIMEOUT' constant to disable the timeout. (Default: 60000) */
+  /**
+   * Timeout (in milliseconds) after which idle clients are closed. Use 'DISABLE_TIMEOUT' constant to disable the timeout. (Default: 60000)
+   */
   readonly idleInTransactionSessionTimeout: number | 'DISABLE_TIMEOUT',
-  /** Timeout (in milliseconds) after which idle clients are closed. Use 'DISABLE_TIMEOUT' constant to disable the timeout. (Default: 5000) */
+  /**
+   * Timeout (in milliseconds) after which idle clients are closed. Use 'DISABLE_TIMEOUT' constant to disable the timeout. (Default: 5000)
+   */
   readonly idleTimeout: number | 'DISABLE_TIMEOUT',
-  /** An array of [Slonik interceptors](https://github.com/gajus/slonik#slonik-interceptors). */
+  /**
+   * An array of [Slonik interceptors](https://github.com/gajus/slonik#slonik-interceptors).
+   */
   readonly interceptors: readonly InterceptorType[],
-  /** Do not allow more than this many connections. Use 'DISABLE_TIMEOUT' constant to disable the timeout. (Default: 10) */
+  /**
+   * Do not allow more than this many connections. Use 'DISABLE_TIMEOUT' constant to disable the timeout. (Default: 10)
+   */
   readonly maximumPoolSize: number,
-  /** Override the underlying PostgreSQL driver. **/
-  readonly pgClient?: PgClientType,
-  /** Timeout (in milliseconds) after which database is instructed to abort the query. Use 'DISABLE_TIMEOUT' constant to disable the timeout. (Default: 60000) */
-  readonly statementTimeout: number | 'DISABLE_TIMEOUT',
-  /** Number of times a transaction failing with Transaction Rollback class error is retried. (Default: 5) */
-  readonly transactionRetryLimit: number,
-  /** tls.connect options **/
-  readonly ssl?: TlsConnectionOptions,
-  /** Number of times a query failing with Transaction Rollback class error, that doesn't belong to a transaction, is retried. (Default: 5) */
+  /**
+   * Number of times a query failing with Transaction Rollback class error, that doesn't belong to a transaction, is retried. (Default: 5)
+   */
   readonly queryRetryLimit: number,
-  /** An array of [Slonik type parsers](https://github.com/gajus/slonik#slonik-type-parsers). */
+  /**
+   * tls.connect options *
+   */
+  readonly ssl?: TlsConnectionOptions,
+  /**
+   * Timeout (in milliseconds) after which database is instructed to abort the query. Use 'DISABLE_TIMEOUT' constant to disable the timeout. (Default: 60000)
+   */
+  readonly statementTimeout: number | 'DISABLE_TIMEOUT',
+  /**
+   * Number of times a transaction failing with Transaction Rollback class error is retried. (Default: 5)
+   */
+  readonly transactionRetryLimit: number,
+  /**
+   * An array of [Slonik type parsers](https://github.com/gajus/slonik#slonik-type-parsers).
+   */
   readonly typeParsers: readonly TypeParserType[],
 };
 
@@ -121,13 +132,14 @@ export type ClientConfigurationInputType = Partial<ClientConfigurationType>;
 export type StreamFunctionType = (
   sql: TaggedTemplateLiteralInvocationType,
   streamHandler: StreamHandlerType,
-) => Promise<Record<string, unknown> | null>; // bindPoolConnection returns an object
+) => Promise<Record<string, unknown> | null>;
 
 export type QueryCopyFromBinaryFunctionType = (
   streamQuery: TaggedTemplateLiteralInvocationType,
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   tupleList: ReadonlyArray<readonly any[]>,
   columnTypes: readonly TypeNameIdentifierType[],
-) => Promise<Record<string, unknown> | null>; // bindPoolConnection returns an object
+) => Promise<Record<string, unknown> | null>;
 
 export type CommonQueryMethodsType = {
   readonly any: QueryAnyFunctionType,
@@ -250,13 +262,13 @@ export type QueryContextType = {
   readonly queryInputTime: bigint | number,
   readonly sandbox: Record<string, unknown>,
   readonly stackTrace: readonly CallSiteType[] | null,
-  readonly transactionId?: string,
+  readonly transactionId: string | null,
 };
 
 export type ArraySqlTokenType = {
   readonly memberType: SqlTokenType | TypeNameIdentifierType | string,
   readonly type: typeof tokens.ArrayToken,
-  readonly values: readonly ValueExpressionType[],
+  readonly values: readonly PrimitiveValueExpressionType[],
 };
 
 export type BinarySqlTokenType = {
@@ -270,7 +282,7 @@ export type IdentifierSqlTokenType = {
 };
 
 export type ListSqlTokenType = {
-  readonly glue: SqlTokenType,
+  readonly glue: SqlSqlTokenType,
   readonly members: readonly ValueExpressionType[],
   readonly type: typeof tokens.ListToken,
 };
@@ -295,7 +307,12 @@ export type UnnestSqlTokenType = {
 };
 
 export type PrimitiveValueExpressionType =
-  Buffer | boolean | number | string | readonly PrimitiveValueExpressionType[] | null;
+  Buffer |
+  boolean |
+  number |
+  string |
+  readonly PrimitiveValueExpressionType[] |
+  null;
 
 export type SqlTokenType =
   | ArraySqlTokenType
@@ -323,13 +340,14 @@ export type SqlTaggedTemplateType<T extends UserQueryResultRowType = QueryResult
   ) => ArraySqlTokenType,
   binary: (data: Buffer) => BinarySqlTokenType,
   identifier: (names: readonly string[]) => IdentifierSqlTokenType,
-  join: (members: readonly ValueExpressionType[], glue: SqlTokenType) => ListSqlTokenType,
+  join: (members: readonly ValueExpressionType[], glue: SqlSqlTokenType) => ListSqlTokenType,
   json: (value: SerializableValueType) => JsonSqlTokenType,
   literalValue: (value: string) => SqlSqlTokenType,
   unnest: (
-    // Value might be $ReadOnlyArray<$ReadOnlyArray<PrimitiveValueExpressionType>>,
+    // Value might be ReadonlyArray<ReadonlyArray<PrimitiveValueExpressionType>>,
     // or it can be infinitely nested array, e.g.
     // https://github.com/gajus/slonik/issues/44
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     tuples: ReadonlyArray<readonly any[]>,
     columnTypes: readonly UnnestSqlColumnType[],
   ) => UnnestSqlTokenType,
@@ -338,7 +356,7 @@ export type SqlTaggedTemplateType<T extends UserQueryResultRowType = QueryResult
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export type InternalQueryMethodType<R = any> = (
   log: Logger,
-  connection: InternalDatabaseConnectionType,
+  connection: PgPoolClient,
   clientConfiguration: ClientConfigurationType,
   sql: string,
   values: readonly PrimitiveValueExpressionType[],
@@ -347,17 +365,18 @@ export type InternalQueryMethodType<R = any> = (
 
 export type InternalCopyFromBinaryFunctionType = (
   log: Logger,
-  connection: InternalDatabaseConnectionType,
+  connection: PgPoolClient,
   clientConfiguration: ClientConfigurationType,
   sql: string,
   boundValues: readonly PrimitiveValueExpressionType[],
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   tupleList: ReadonlyArray<readonly any[]>,
   columnTypes: readonly TypeNameIdentifierType[],
 ) => Promise<Record<string, unknown>>;
 
 export type InternalStreamFunctionType = (
   log: Logger,
-  connection: InternalDatabaseConnectionType,
+  connection: PgPoolClient,
   clientConfiguration: ClientConfigurationType,
   sql: string,
   values: readonly PrimitiveValueExpressionType[],
@@ -367,7 +386,7 @@ export type InternalStreamFunctionType = (
 
 export type InternalTransactionFunctionType = <T>(
   log: Logger,
-  connection: InternalDatabaseConnectionType,
+  connection: PgPoolClient,
   clientConfiguration: ClientConfigurationType,
   handler: TransactionFunctionType<T>,
   transactionRetryLimit?: number,
@@ -375,7 +394,7 @@ export type InternalTransactionFunctionType = <T>(
 
 export type InternalNestedTransactionFunctionType = <T>(
   log: Logger,
-  connection: InternalDatabaseConnectionType,
+  connection: PgPoolClient,
   clientConfiguration: ClientConfigurationType,
   handler: TransactionFunctionType<T>,
   transactionDepth: number,
@@ -473,3 +492,15 @@ export type IdentifierNormalizerType = (identifierName: string) => string;
 export type MockPoolOverridesType = {
   readonly query: (sql: string, values: readonly PrimitiveValueExpressionType[]) => Promise<QueryResultType<QueryResultRowType>>,
 };
+
+export type {
+  Logger,
+} from 'roarr';
+
+export type TypeOverrides = {
+  setTypeParser: (type: string, parser: (value: string) => unknown) => void,
+};
+
+export {
+  NoticeMessage as NoticeType,
+} from 'pg-protocol/dist/messages';

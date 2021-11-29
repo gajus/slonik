@@ -7,6 +7,9 @@ import {
 import {
   TRANSACTION_ROLLBACK_ERROR_PREFIX,
 } from '../constants';
+import {
+  getPoolClientState,
+} from '../state';
 import type {
   InternalNestedTransactionFunctionType,
 } from '../types';
@@ -14,8 +17,16 @@ import {
   createUid,
 } from '../utilities';
 
-const execNestedTransaction: InternalNestedTransactionFunctionType = async (parentLog, connection, clientConfiguration, handler, newTransactionDepth) => {
-  if (connection.connection.slonik.mock === false) {
+const execNestedTransaction: InternalNestedTransactionFunctionType = async (
+  parentLog,
+  connection,
+  clientConfiguration,
+  handler,
+  newTransactionDepth,
+) => {
+  const poolClientState = getPoolClientState(connection);
+
+  if (poolClientState.mock === false) {
     await connection.query('SAVEPOINT slonik_savepoint_' + String(newTransactionDepth));
   }
 
@@ -29,7 +40,7 @@ const execNestedTransaction: InternalNestedTransactionFunctionType = async (pare
 
     return result;
   } catch (error) {
-    if (connection.connection.slonik.mock === false) {
+    if (poolClientState.mock === false) {
       await connection.query('ROLLBACK TO SAVEPOINT slonik_savepoint_' + String(newTransactionDepth));
     }
 
@@ -51,6 +62,8 @@ const retryNestedTransaction: InternalNestedTransactionFunctionType = async (
   transactionDepth,
   transactionRetryLimit,
 ) => {
+  const poolClientState = getPoolClientState(connection);
+
   let remainingRetries = transactionRetryLimit ?? clientConfiguration.transactionRetryLimit;
   let attempt = 0;
   let result: Awaited<ReturnType<typeof handler>>;
@@ -61,7 +74,7 @@ const retryNestedTransaction: InternalNestedTransactionFunctionType = async (
     try {
       parentLog.trace({
         attempt,
-        parentTransactionId: connection.connection.slonik.transactionId,
+        parentTransactionId: poolClientState.transactionId,
       }, 'retrying nested transaction');
 
       result = await execNestedTransaction(parentLog, connection, clientConfiguration, handler, transactionDepth);
@@ -89,6 +102,8 @@ export const nestedTransaction: InternalNestedTransactionFunctionType = async (
   transactionDepth,
   transactionRetryLimit,
 ) => {
+  const poolClientState = getPoolClientState(connection);
+
   const newTransactionDepth = transactionDepth + 1;
 
   const log = parentLog.child({
@@ -96,7 +111,7 @@ export const nestedTransaction: InternalNestedTransactionFunctionType = async (
   });
 
   try {
-    connection.connection.slonik.transactionDepth = newTransactionDepth;
+    poolClientState.transactionDepth = newTransactionDepth;
 
     return await execNestedTransaction(log, connection, clientConfiguration, handler, newTransactionDepth);
   } catch (error) {
@@ -110,6 +125,6 @@ export const nestedTransaction: InternalNestedTransactionFunctionType = async (
       throw error;
     }
   } finally {
-    connection.connection.slonik.transactionDepth = newTransactionDepth - 1;
+    poolClientState.transactionDepth = newTransactionDepth - 1;
   }
 };

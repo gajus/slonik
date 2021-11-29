@@ -1,3 +1,6 @@
+import type {
+  PoolClient as PgPoolClient,
+} from 'pg';
 import {
   assertSqlSqlToken,
 } from '../assertions';
@@ -15,21 +18,25 @@ import {
   stream,
   query as queryMethod,
 } from '../connectionMethods';
+import {
+  getPoolClientState,
+} from '../state';
 import type {
   ClientConfigurationType,
   DatabaseTransactionConnectionType,
-  InternalDatabaseConnectionType,
   Logger,
 } from '../types';
 
 export const bindTransactionConnection = (
   parentLog: Logger,
-  connection: InternalDatabaseConnectionType,
+  connection: PgPoolClient,
   clientConfiguration: ClientConfigurationType,
   transactionDepth: number,
 ): DatabaseTransactionConnectionType => {
+  const poolClientState = getPoolClientState(connection);
+
   const assertTransactionDepth = () => {
-    if (transactionDepth !== connection.connection.slonik.transactionDepth) {
+    if (transactionDepth !== poolClientState.transactionDepth) {
       throw new Error('Cannot run a query using parent transaction.');
     }
   };

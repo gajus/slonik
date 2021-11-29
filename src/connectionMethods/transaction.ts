@@ -11,6 +11,9 @@ import {
   BackendTerminatedError,
   UnexpectedStateError,
 } from '../errors';
+import {
+  getPoolClientState,
+} from '../state';
 import type {
   InternalTransactionFunctionType,
 } from '../types';
@@ -18,9 +21,20 @@ import {
   createUid,
 } from '../utilities';
 
-const execTransaction: InternalTransactionFunctionType = async (parentLog, connection, clientConfiguration, handler) => {
-  if (connection.connection.slonik.mock === false) {
+const execTransaction: InternalTransactionFunctionType = async (
+  parentLog,
+  connection,
+  clientConfiguration,
+  handler,
+) => {
+  const poolClientState = getPoolClientState(connection);
+
+  if (poolClientState.mock === false) {
     await connection.query('START TRANSACTION');
+  }
+
+  if (typeof poolClientState.transactionDepth !== 'number') {
+    throw new UnexpectedStateError('Cannot execute transaction without knowing the transaction depth.');
   }
 
   try {
@@ -28,21 +42,21 @@ const execTransaction: InternalTransactionFunctionType = async (parentLog, conne
       parentLog,
       connection,
       clientConfiguration,
-      connection.connection.slonik.transactionDepth,
+      poolClientState.transactionDepth,
     ));
 
-    if (connection.connection.slonik.terminated) {
-      throw new BackendTerminatedError(connection.connection.slonik.terminated);
+    if (poolClientState.terminated) {
+      throw new BackendTerminatedError(poolClientState.terminated);
     }
 
-    if (connection.connection.slonik.mock === false) {
+    if (poolClientState.mock === false) {
       await connection.query('COMMIT');
     }
 
     return result;
   } catch (error) {
-    if (!connection.connection.slonik.terminated) {
-      if (connection.connection.slonik.mock === false) {
+    if (!poolClientState.terminated) {
+      if (poolClientState.mock === false) {
         await connection.query('ROLLBACK');
       }
 
@@ -58,6 +72,8 @@ const execTransaction: InternalTransactionFunctionType = async (parentLog, conne
 type Awaited<T> = T extends PromiseLike<infer U> ? U : T;
 
 const retryTransaction: InternalTransactionFunctionType = async (parentLog, connection, clientConfiguration, handler, transactionRetryLimit) => {
+  const poolClientState = getPoolClientState(connection);
+
   let remainingRetries = transactionRetryLimit ?? clientConfiguration.transactionRetryLimit;
   let attempt = 0;
   let result: Awaited<ReturnType<typeof handler>>;
@@ -68,7 +84,7 @@ const retryTransaction: InternalTransactionFunctionType = async (parentLog, conn
     try {
       parentLog.trace({
         attempt,
-        transactionId: connection.connection.slonik.transactionId,
+        transactionId: poolClientState.transactionId,
       }, 'retrying transaction');
 
       result = await execTransaction(parentLog, connection, clientConfiguration, handler);
@@ -89,15 +105,17 @@ const retryTransaction: InternalTransactionFunctionType = async (parentLog, conn
 };
 
 export const transaction: InternalTransactionFunctionType = async (parentLog, connection, clientConfiguration, handler, transactionRetryLimit) => {
-  if (connection.connection.slonik.transactionDepth !== null) {
+  const poolClientState = getPoolClientState(connection);
+
+  if (poolClientState.transactionDepth !== null) {
     throw new UnexpectedStateError('Cannot use the same connection to start a new transaction before completing the last transaction.');
   }
 
-  connection.connection.slonik.transactionDepth = 0;
-  connection.connection.slonik.transactionId = createUid();
+  poolClientState.transactionDepth = 0;
+  poolClientState.transactionId = createUid();
 
   const log = parentLog.child({
-    transactionId: connection.connection.slonik.transactionId,
+    transactionId: poolClientState.transactionId,
   });
 
   try {
@@ -113,7 +131,7 @@ export const transaction: InternalTransactionFunctionType = async (parentLog, co
       throw error;
     }
   } finally {
-    connection.connection.slonik.transactionDepth = null;
-    connection.connection.slonik.transactionId = null;
+    poolClientState.transactionDepth = null;
+    poolClientState.transactionId = null;
   }
 };

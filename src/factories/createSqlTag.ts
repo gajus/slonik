@@ -145,7 +145,7 @@ sql.json = (
 
 sql.join = (
   members: readonly ValueExpressionType[],
-  glue: SqlTokenType,
+  glue: SqlSqlTokenType,
 ): ListSqlTokenType => {
   return {
     glue,

@@ -23,10 +23,11 @@ const Tokens = [
   UnnestToken,
 ] as const;
 
-export const isSqlToken = (subject: any): subject is SqlTokenType => {
+export const isSqlToken = (subject: unknown): subject is SqlTokenType => {
   if (typeof subject !== 'object' || subject === null) {
     return false;
   }
 
+  // @ts-expect-error -- not sure how to assert that property exists
   return Tokens.includes(subject.type);
 };
