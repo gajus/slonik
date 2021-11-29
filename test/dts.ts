@@ -86,7 +86,7 @@ const poolTypes = () => {
     const transaction2 = await poolConnection.transaction(async (t1) => {
       await t1.query(sql`INSERT INTO foo (bar) VALUES ('baz')`);
 
-      return t1.transaction((t2) => {
+      return await t1.transaction((t2) => {
         return t2.query(sql`INSERT INTO qux (quux) VALUES ('corge')`);
       });
     });
@@ -100,7 +100,7 @@ const poolTypes = () => {
         await t1.transaction(async (t2) => {
           await t2.query(sql`INSERT INTO qux (quux) VALUES ('corge')`);
 
-          return Promise.reject(new Error('foo'));
+          return await Promise.reject(new Error('foo'));
         });
       } catch {
         /* empty */

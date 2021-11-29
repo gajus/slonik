@@ -36,7 +36,7 @@ test('ends connection after promise is rejected', async (t) => {
   const pool = createPool();
 
   await t.throwsAsync(pool.connect(async () => {
-    return Promise.reject(new Error('foo'));
+    return await Promise.reject(new Error('foo'));
   }));
 
   t.is(pool.connectSpy.callCount, 1);

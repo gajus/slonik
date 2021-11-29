@@ -14,7 +14,7 @@ test('creates a savepoint', async (t) => {
   const pool = createPool();
 
   await pool.transaction(async (transactionConnection) => {
-    return transactionConnection.transaction(async () => {});
+    await transactionConnection.transaction(async () => {});
   });
 
   t.is(pool.querySpy.getCall(0).args[0], 'START TRANSACTION');
@@ -25,8 +25,8 @@ test('rollbacks unsuccessful nested transaction', async (t) => {
   const pool = createPool();
 
   await t.throwsAsync(pool.transaction(async (transactionConnection) => {
-    return transactionConnection.transaction(async () => {
-      return Promise.reject(new Error('foo'));
+    return await transactionConnection.transaction(async () => {
+      return await Promise.reject(new Error('foo'));
     });
   }));
 
@@ -54,7 +54,7 @@ test('retries a nested transaction that failed due to a transaction error', asyn
     });
 
   const result = await pool.transaction(async (transactionConnection) => {
-    return transactionConnection.transaction(handlerStub);
+    return await transactionConnection.transaction(handlerStub);
   });
 
   t.is(handlerStub.callCount, 2);
@@ -91,7 +91,7 @@ test('commits successful transaction with retries', async (t) => {
     });
 
   await pool.transaction(async (transactionConnection) => {
-    return transactionConnection.transaction(handlerStub);
+    return await transactionConnection.transaction(handlerStub);
   });
 
   t.is(pool.querySpy.getCall(1).args[0], 'SAVEPOINT slonik_savepoint_1');
@@ -112,7 +112,7 @@ test('returns the thrown transaction error if the retry limit is reached', async
     .rejects(createErrorWithCode('40P01'));
 
   const error: any = await t.throwsAsync(pool.transaction(async (transactionConnection) => {
-    return transactionConnection.transaction(handlerStub, 1);
+    return await transactionConnection.transaction(handlerStub, 1);
   }, 0));
 
   t.is(handlerStub.callCount, 2);
@@ -131,7 +131,7 @@ test('rollbacks unsuccessful nested transaction with retries', async (t) => {
     .rejects(createErrorWithCode('40P01'));
 
   await t.throwsAsync(pool.transaction(async (transactionConnection) => {
-    return transactionConnection.transaction(handlerStub, 1);
+    return await transactionConnection.transaction(handlerStub, 1);
   }, 0));
 
   t.is(pool.querySpy.getCall(1).args[0], 'SAVEPOINT slonik_savepoint_1');

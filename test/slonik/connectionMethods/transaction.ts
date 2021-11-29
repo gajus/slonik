@@ -23,7 +23,7 @@ test('rollbacks unsuccessful transaction', async (t) => {
   const pool = createPool();
 
   await t.throwsAsync(pool.transaction(async () => {
-    return Promise.reject(new Error('foo'));
+    return await Promise.reject(new Error('foo'));
   }));
 
   t.is(pool.querySpy.getCall(0).args[0], 'START TRANSACTION');

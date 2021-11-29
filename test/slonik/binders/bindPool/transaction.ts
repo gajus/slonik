@@ -38,7 +38,7 @@ test('rollsback unsuccessful transaction', async (t) => {
     await c1.transaction(async (t1) => {
       await t1.query(sql`SELECT 1`);
 
-      return Promise.reject(new Error('foo'));
+      return await Promise.reject(new Error('foo'));
     });
   }));
 
@@ -80,7 +80,7 @@ test('rollsback to the last savepoint', async (t) => {
       await t.throwsAsync(t1.transaction(async (t2) => {
         await t2.query(sql`SELECT 2`);
 
-        return Promise.reject(new Error('foo'));
+        return await Promise.reject(new Error('foo'));
       }));
     });
   });
@@ -102,10 +102,10 @@ test('rollsback the entire transaction with multiple savepoints', async (t) => {
     return t.throwsAsync(c1.transaction(async (t1) => {
       await t1.query(sql`SELECT 1`);
 
-      return t1.transaction(async (t2) => {
+      return await t1.transaction(async (t2) => {
         await t2.query(sql`SELECT 2`);
 
-        return Promise.reject(new Error('foo'));
+        return await Promise.reject(new Error('foo'));
       });
     }));
   });
@@ -127,13 +127,13 @@ test('rollsback the entire transaction with multiple savepoints (multiple depth 
     return t.throwsAsync(c1.transaction(async (t1) => {
       await t1.query(sql`SELECT 1`);
 
-      return t1.transaction(async (t2) => {
+      return await t1.transaction(async (t2) => {
         await t2.query(sql`SELECT 2`);
 
-        return t2.transaction(async (t3) => {
+        return await t2.transaction(async (t3) => {
           await t3.query(sql`SELECT 3`);
 
-          return Promise.reject(new Error('foo'));
+          return await Promise.reject(new Error('foo'));
         });
       });
     }));

@@ -97,7 +97,7 @@ export const bindPool = (
 
       pool.slonik.ended = true;
 
-      return new Promise((resolve) => {
+      await new Promise((resolve) => {
         terminateIdleClients();
 
         pool.on('remove', () => {
@@ -145,7 +145,7 @@ export const bindPool = (
       );
     },
     transaction: async (transactionHandler, transactionRetryLimit) => {
-      return createConnection(
+      return await createConnection(
         parentLog,
         pool,
         clientConfiguration,

@@ -903,7 +903,7 @@ export const createIntegrationTests = (
     `);
 
     const error = await t.throwsAsync(async () => {
-      return pool.query(sql`
+      return await pool.query(sql`
         INSERT INTO person (id)
         VALUES (1)
       `);

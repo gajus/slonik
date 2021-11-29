@@ -41,7 +41,7 @@ export const copyFromBinary: InternalCopyFromBinaryFunctionType = async (
 
   const payloadBuffer = await encodeTupleList(tupleList, columnTypes);
 
-  return executeQuery(
+  return await executeQuery(
     connectionLogger,
     connection,
     clientConfiguration,

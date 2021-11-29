@@ -17,7 +17,7 @@ import type {
 } from '../types';
 
 export const stream: InternalStreamFunctionType = async (connectionLogger, connection, clientConfiguration, rawSql, values, streamHandler) => {
-  return executeQuery(
+  return await executeQuery(
     connectionLogger,
     connection,
     clientConfiguration,
