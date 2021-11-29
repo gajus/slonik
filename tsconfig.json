@@ -2,6 +2,9 @@
   "compilerOptions": {
     "declaration": true,
     "esModuleInterop": true,
+    "lib": [
+      "es2020"
+    ],
     "module": "commonjs",
     "noEmit": true,
     "rootDir": ".",
