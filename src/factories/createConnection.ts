@@ -110,12 +110,12 @@ export const createConnection = async (
       pool.typeOverrides = createTypeOverrides(connection, clientConfiguration.typeParsers);
     }
 
-    // eslint-disable-next-line id-match
+    // eslint-disable-next-line canonical/id-match
     connection._types = await pool.typeOverrides;
 
     // This property exists only if the underlying connection is initiated using pg-native.
     if (connection.native) {
-      // eslint-disable-next-line id-match
+      // eslint-disable-next-line canonical/id-match
       connection.native._types = await pool.typeOverrides;
     }
   }

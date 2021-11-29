@@ -1,4 +1,4 @@
-/* eslint-disable id-match */
+/* eslint-disable canonical/id-match */
 
 import type {
   PoolConfig,
