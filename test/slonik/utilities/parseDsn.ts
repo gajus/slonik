@@ -4,7 +4,6 @@ import type {
 } from '../../../src/types';
 import {
   parseDsn,
-  stringifyDsn,
 } from '../../../src/utilities';
 
 const testParse = test.macro((t, connectionOptions: ConnectionOptions) => {
