@@ -20,7 +20,7 @@ import {
 } from '../../helpers/createErrorWithCode';
 
 const test = anyTest as TestFn<any>;
-const beforeEach = test.beforeEach;
+const {beforeEach} = test;
 
 const createConnectionStub = () => {
   return {

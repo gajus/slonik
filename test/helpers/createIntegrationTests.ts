@@ -26,8 +26,8 @@ export const createTestRunner = (pgClient: PgClientType, name: string) => {
   let testId = 0;
 
   const test = anyTest as TestFn<TestContextType>;
-  const beforeEach = test.beforeEach;
-  const afterEach = test.afterEach;
+  const {beforeEach} = test;
+  const {afterEach} = test;
 
   beforeEach(async (t) => {
     ++testId;

@@ -336,8 +336,8 @@ export const executeQuery = async (
   if (result.rows) {
     for (const interceptor of clientConfiguration.interceptors) {
       if (interceptor.transformRow) {
-        const transformRow = interceptor.transformRow;
-        const fields = result.fields;
+        const {transformRow} = interceptor;
+        const {fields} = result;
 
         const rows: readonly QueryResultRowType[] = result.rows.map((row) => {
           return transformRow(executionContext, actualQuery, row, fields);

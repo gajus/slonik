@@ -120,7 +120,7 @@ export const createConnection = async (
     }
   }
 
-  const connectionId = connection.connection.slonik.connectionId;
+  const {connectionId} = connection.connection.slonik;
 
   const connectionLog = parentLog.child({
     connectionId,
