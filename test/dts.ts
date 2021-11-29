@@ -1,5 +1,5 @@
 /* eslint-disable no-new */
-/* eslint-disable unicorn/consistent-function-scoping */
+
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import {
   expectTypeOf,
@@ -190,7 +190,6 @@ const interceptorTypes = () => {
         expectTypeOf(queryContext.sandbox.foo).toBeUnknown();
 
         // @ts-expect-error
-        // eslint-disable-next-line @typescript-eslint/restrict-plus-operands
         const foo = queryContext.sandbox + 1;
 
         return null;

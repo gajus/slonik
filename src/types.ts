@@ -1,8 +1,5 @@
-/* eslint-disable import/no-namespace */
-/* eslint-disable lines-around-comment */
 /* eslint-disable line-comment-position */
 /* eslint-disable no-inline-comments */
-/* eslint-disable max-len */
 
 import type {
   Readable,

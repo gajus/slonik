@@ -1,5 +1,3 @@
-/* eslint-disable import/no-namespace */
-
 import * as pgClient from 'pg';
 import {
   createPool,
