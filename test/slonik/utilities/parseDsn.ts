@@ -17,7 +17,7 @@ test('postgresql://localhost', testParse, {
 });
 test('postgresql://localhost:5432', testParse, {
   host: 'localhost',
-  port: 5432,
+  port: 5_432,
 });
 test('postgresql://localhost/foo', testParse, {
   databaseName: 'foo',

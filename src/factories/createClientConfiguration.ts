@@ -16,13 +16,13 @@ export const createClientConfiguration = (clientUserConfigurationInput?: ClientC
   const configuration = {
     captureStackTrace: true,
     connectionRetryLimit: 3,
-    connectionTimeout: 5000,
-    idleInTransactionSessionTimeout: 60000,
-    idleTimeout: 5000,
+    connectionTimeout: 5_000,
+    idleInTransactionSessionTimeout: 60_000,
+    idleTimeout: 5_000,
     interceptors: [],
     maximumPoolSize: 10,
     queryRetryLimit: 5,
-    statementTimeout: 60000,
+    statementTimeout: 60_000,
     transactionRetryLimit: 5,
     typeParsers,
 

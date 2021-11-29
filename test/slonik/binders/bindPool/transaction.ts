@@ -158,10 +158,10 @@ test('throws an error if an attempt is made to create a new transaction before t
   const connection = pool.connect((c1) => {
     return Promise.race([
       c1.transaction(() => {
-        return delay(1000);
+        return delay(1_000);
       }),
       c1.transaction(() => {
-        return delay(1000);
+        return delay(1_000);
       }),
     ]);
   });

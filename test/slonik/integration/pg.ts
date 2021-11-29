@@ -145,34 +145,34 @@ test('applies type parsers to streamed rows', async (t) => {
     {
       fields: [
         {
-          dataTypeId: 1082,
+          dataTypeId: 1_082,
           name: 'birth_date',
         },
       ],
       row: {
-        birth_date: 1990,
+        birth_date: 1_990,
       },
     },
     {
       fields: [
         {
-          dataTypeId: 1082,
+          dataTypeId: 1_082,
           name: 'birth_date',
         },
       ],
       row: {
-        birth_date: 1991,
+        birth_date: 1_991,
       },
     },
     {
       fields: [
         {
-          dataTypeId: 1082,
+          dataTypeId: 1_082,
           name: 'birth_date',
         },
       ],
       row: {
-        birth_date: 1992,
+        birth_date: 1_992,
       },
     },
   ]);

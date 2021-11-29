@@ -57,7 +57,7 @@ test('JSON encodes string values', (t) => {
 });
 
 test('JSON encodes numeric values', (t) => {
-  const query = sql`SELECT ${sql.json(1234)}`;
+  const query = sql`SELECT ${sql.json(1_234)}`;
 
   t.deepEqual(query, {
     sql: 'SELECT $1',

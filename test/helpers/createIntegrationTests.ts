@@ -123,7 +123,7 @@ export const createIntegrationTests = (
       command: 'SELECT',
       fields: [
         {
-          dataTypeId: 1001,
+          dataTypeId: 1_001,
           name: 'names',
         },
       ],
@@ -342,7 +342,7 @@ export const createIntegrationTests = (
       await connection.query(sql`SET idle_in_transaction_session_timeout=500`);
 
       const error = await t.throwsAsync(connection.transaction(async (transaction) => {
-        await delay(1000);
+        await delay(1_000);
 
         await transaction.query(sql`SELECT 1`);
       }));
@@ -362,7 +362,7 @@ export const createIntegrationTests = (
       await connection.query(sql`SET idle_in_transaction_session_timeout=500`);
 
       const error = await t.throwsAsync(connection.transaction(async () => {
-        await delay(1000);
+        await delay(1_000);
       }));
 
       t.true(error instanceof BackendTerminatedError);
@@ -379,13 +379,13 @@ export const createIntegrationTests = (
     const error = await t.throwsAsync(pool.connect(async (connection) => {
       await Promise.all([
         connection.transaction(async () => {
-          await delay(1000);
+          await delay(1_000);
         }),
         connection.transaction(async () => {
-          await delay(1000);
+          await delay(1_000);
         }),
         connection.transaction(async () => {
-          await delay(1000);
+          await delay(1_000);
         }),
       ]);
     }));
@@ -448,7 +448,7 @@ export const createIntegrationTests = (
   });
 
   test('serves waiting requests', async (t) => {
-    t.timeout(10000);
+    t.timeout(10_000);
 
     const pool = createPool(t.context.dsn, {
       maximumPoolSize: 1,
@@ -563,10 +563,10 @@ export const createIntegrationTests = (
   });
 
   test('pool.end() resolves when there are no more connections (terminates idle connections)', async (t) => {
-    t.timeout(1000);
+    t.timeout(1_000);
 
     const pool = createPool(t.context.dsn, {
-      idleTimeout: 5000,
+      idleTimeout: 5_000,
       maximumPoolSize: 5,
       pgClient,
     });
@@ -614,10 +614,10 @@ export const createIntegrationTests = (
   });
 
   test.skip('idle transactions are terminated after `idleInTransactionSessionTimeout`', async (t) => {
-    t.timeout(10000);
+    t.timeout(10_000);
 
     const pool = createPool(t.context.dsn, {
-      idleInTransactionSessionTimeout: 1000,
+      idleInTransactionSessionTimeout: 1_000,
       maximumPoolSize: 5,
       pgClient,
     });
@@ -630,7 +630,7 @@ export const createIntegrationTests = (
     });
 
     const error = await t.throwsAsync(pool.transaction(async () => {
-      await delay(2000);
+      await delay(2_000);
     }));
 
     t.true(error instanceof BackendTerminatedError);
@@ -641,12 +641,12 @@ export const createIntegrationTests = (
   // Skipping test because of a bug in node-postgres.
   // @see https://github.com/brianc/node-postgres/issues/2103
   test.skip('statements are cancelled after `statementTimeout`', async (t) => {
-    t.timeout(5000);
+    t.timeout(5_000);
 
     const pool = createPool(t.context.dsn, {
       maximumPoolSize: 5,
       pgClient,
-      statementTimeout: 1000,
+      statementTimeout: 1_000,
     });
 
     t.deepEqual(pool.getPoolState(), {
@@ -664,7 +664,7 @@ export const createIntegrationTests = (
   });
 
   test.serial.skip('retries failing transactions (deadlock)', async (t) => {
-    t.timeout(2000);
+    t.timeout(2_000);
 
     const pool = createPool(t.context.dsn, {
       pgClient,
@@ -779,7 +779,7 @@ export const createIntegrationTests = (
           name: 'name',
         },
         {
-          dataTypeId: 1182,
+          dataTypeId: 1_182,
           name: 'birth_dates',
         },
       ],
@@ -945,7 +945,7 @@ export const createIntegrationTests = (
         });
 
         // Ensures that query is processed before concurrent commit is called.
-        await delay(1000);
+        await delay(1_000);
         await connection1.query(sql`COMMIT`);
         await connection2.query(sql`COMMIT`);
       });

@@ -5,7 +5,7 @@ const {
 
 const pool = createPool('postgres://', {
   captureStackTrace: false,
-  connectionTimeout: 30 * 1000,
+  connectionTimeout: 30 * 1_000,
   maximumPoolSize: 4,
 });
 
