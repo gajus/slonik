@@ -8,7 +8,7 @@ import type {
 const matchAllBindings = (sql: string) => {
   return Array
     .from(
-      sql.matchAll(/(\$\d+)/g),
+      sql.matchAll(/(\$\d+)/gu),
     )
     .map((match) => {
       return Number(match[0].slice(1));
@@ -40,7 +40,7 @@ export const removeCommentedOutBindings = (query: QueryType): QueryType => {
 
     const greatestBounding = lastFoundBinding;
 
-    finalSql = finalSql.replace(/(\$\d+)/g, (match) => {
+    finalSql = finalSql.replace(/(\$\d+)/gu, (match) => {
       const matchedBinding = Number(match.slice(1));
 
       if (matchedBinding > greatestBounding) {
