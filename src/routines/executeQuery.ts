@@ -1,10 +1,7 @@
-// eslint-disable-next-line import/order
 import {
   getStackTrace,
 } from 'get-stack-trace';
-
-// @ts-expect-error
-import Deferred from 'promise-deferred';
+import Deferred from 'p-defer';
 import {
   serializeError,
 } from 'serialize-error';
@@ -211,7 +208,7 @@ export const executeQuery = async (
     notices.push(notice);
   };
 
-  const activeQuery = new Deferred();
+  const activeQuery = Deferred();
 
   const blockingPromise = connection.connection.slonik.activeQuery?.promise ?? null;
 
