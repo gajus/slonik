@@ -1,5 +1,5 @@
 import EventEmitter from 'events';
-import sinon from 'sinon';
+import * as sinon from 'sinon';
 import {
   bindPool,
 } from '../../src/binders/bindPool';

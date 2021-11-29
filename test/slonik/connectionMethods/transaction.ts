@@ -1,5 +1,5 @@
 import test from 'ava';
-import sinon from 'sinon';
+import * as sinon from 'sinon';
 import {
   createClientConfiguration,
 } from '../../helpers/createClientConfiguration';

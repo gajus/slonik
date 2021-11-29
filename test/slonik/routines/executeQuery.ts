@@ -5,7 +5,7 @@ import type {
 import {
   Roarr,
 } from 'roarr';
-import sinon from 'sinon';
+import * as sinon from 'sinon';
 import {
   InvalidInputError,
 } from '../../../src/errors';

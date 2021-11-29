@@ -1,6 +1,6 @@
 import test from 'ava';
 import delay from 'delay';
-import sinon from 'sinon';
+import * as sinon from 'sinon';
 import {
   BackendTerminatedError,
   CheckIntegrityConstraintViolationError,
