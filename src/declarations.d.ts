@@ -1,8 +1,8 @@
 declare module 'get-stack-trace' {
   export const getStackTrace: () => Promise<Array<{
+    columnNumber: number,
     fileName: string,
     lineNumber: number,
-    columnNumber: number,
   }>>;
 }
 declare module 'pg-cursor';

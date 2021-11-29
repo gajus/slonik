@@ -32,8 +32,8 @@ export type ConnectionOptions = {
   host?: string,
   password?: string,
   port?: number,
-  username?: string,
   sslMode?: 'disable' | 'no-verify' | 'require',
+  username?: string,
 };
 
 export type PgClientType = typeof pgTypes.native;
@@ -168,13 +168,13 @@ export type PoolStateType = {
 };
 
 export type DatabasePoolType = CommonQueryMethodsType & {
+  readonly configuration: ClientConfigurationType,
   readonly connect: <T>(connectionRoutine: ConnectionRoutineType<T>) => Promise<T>,
   readonly copyFromBinary: QueryCopyFromBinaryFunctionType,
   readonly end: () => Promise<void>,
   readonly getPoolState: () => PoolStateType,
   readonly stream: StreamFunctionType,
   readonly transaction: <T>(handler: TransactionFunctionType<T>, transactionRetryLimit?: number) => Promise<T>,
-  readonly configuration: ClientConfigurationType,
 };
 
 /**
@@ -279,8 +279,8 @@ export type ListSqlTokenType = {
 };
 
 export type JsonSqlTokenType = {
-  readonly value: SerializableValueType,
   readonly type: typeof tokens.JsonToken,
+  readonly value: SerializableValueType,
 };
 
 export type SqlSqlTokenType = {
@@ -326,8 +326,8 @@ export type SqlTaggedTemplateType<T extends UserQueryResultRowType = QueryResult
   ) => ArraySqlTokenType,
   binary: (data: Buffer) => BinarySqlTokenType,
   identifier: (names: readonly string[]) => IdentifierSqlTokenType,
-  json: (value: SerializableValueType) => JsonSqlTokenType,
   join: (members: readonly ValueExpressionType[], glue: SqlTokenType) => ListSqlTokenType,
+  json: (value: SerializableValueType) => JsonSqlTokenType,
   literalValue: (value: string) => SqlSqlTokenType,
   unnest: (
     // Value might be $ReadOnlyArray<$ReadOnlyArray<PrimitiveValueExpressionType>>,

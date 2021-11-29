@@ -33,8 +33,8 @@ export const queryMethods = async (): Promise<void> => {
   const client = createPool('');
 
   type Row = {
-    foo: string,
     bar: boolean,
+    foo: string,
   };
 
   // any
