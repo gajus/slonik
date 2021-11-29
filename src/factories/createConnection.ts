@@ -68,7 +68,7 @@ export const createConnection = async (
       });
 
       if (maybeNewPool) {
-        return poolHandler(maybeNewPool);
+        return await poolHandler(maybeNewPool);
       }
     }
   }
