@@ -89,3 +89,29 @@ test('removes multiple bindings in the same comment (block comment)', (t) => {
     },
   );
 });
+
+test('does not generate undefined values for $1 appearing in a string', (t) => {
+  t.deepEqual(
+    removeCommentedOutBindings({
+      sql: 'SELECT \'$1\'',
+      values: [],
+    }),
+    {
+      sql: 'SELECT \'$1\'',
+      values: [],
+    },
+  );
+});
+
+test('does not generate undefined values for $1 appearing in a prepared statement', (t) => {
+  t.deepEqual(
+    removeCommentedOutBindings({
+      sql: 'PREPARE test_statement AS SELECT foo FROM bar WHERE baz = $1',
+      values: [],
+    }),
+    {
+      sql: 'PREPARE test_statement AS SELECT foo FROM bar WHERE baz = $1',
+      values: [],
+    },
+  );
+});
