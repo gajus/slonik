@@ -1,3 +1,4 @@
+import safeStringify from 'fast-safe-stringify';
 import {
   Logger,
 } from '../Logger';
@@ -26,8 +27,8 @@ export const createPrimitiveValueExpressions = (values: readonly unknown[]): rea
       primitiveValueExpressions.push(value);
     } else {
       log.warn({
-        value: JSON.parse(JSON.stringify(value)),
-        values: JSON.parse(JSON.stringify(values)),
+        value: JSON.parse(safeStringify(value)),
+        values: JSON.parse(safeStringify(values)),
       }, 'unexpected value expression');
 
       throw new UnexpectedStateError('Unexpected value expression.');

@@ -19,6 +19,7 @@
   "dependencies": {
     "concat-stream": "^2.0.0",
     "es6-error": "^4.1.1",
+    "fast-safe-stringify": "^2.1.1",
     "get-stack-trace": "^2.1.1",
     "hyperid": "^2.3.1",
     "is-plain-object": "^5.0.0",

@@ -1,3 +1,4 @@
+import safeStringify from 'fast-safe-stringify';
 import {
   isPlainObject,
 } from 'is-plain-object';
@@ -32,7 +33,7 @@ export const createJsonSqlFragment = (token: JsonSqlTokenType, greatestParameter
     throw new InvalidInputError('JSON payload must be a primitive value or a plain object.');
   } else {
     try {
-      value = JSON.stringify(token.value);
+      value = safeStringify(token.value);
     } catch (error) {
       log.error({
         error: serializeError(error),
