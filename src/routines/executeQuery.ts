@@ -134,10 +134,6 @@ export const executeQuery = async (
     throw new InvalidInputError('Unexpected SQL input. Query cannot be empty. Found only value binding.');
   }
 
-  // const rawSql = slonikSql.replace(/#\$#(\d+)/gu, (match, p1) => {
-  //   return '$' + p1;
-  // });
-
   const queryInputTime = process.hrtime.bigint();
 
   let stackTrace = null;
