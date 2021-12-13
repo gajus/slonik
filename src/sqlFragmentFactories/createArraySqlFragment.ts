@@ -38,7 +38,7 @@ export const createArraySqlFragment = (token: ArraySqlTokenType, greatestParamet
 
   placeholderIndex++;
 
-  let sql = '$' + String(placeholderIndex) + '::';
+  let sql = '#$#' + String(placeholderIndex) + '::';
 
   if (isSqlToken(token.memberType) && token.memberType.type === 'SLONIK_TOKEN_SQL') {
     const sqlFragment = createSqlTokenSqlFragment(

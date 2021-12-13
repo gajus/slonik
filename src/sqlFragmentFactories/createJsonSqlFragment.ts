@@ -49,7 +49,7 @@ export const createJsonSqlFragment = (token: JsonSqlTokenType, greatestParameter
 
   // Do not add `::json` as it will fail if an attempt is made to insert to jsonb-type column.
   return {
-    sql: '$' + String(greatestParameterPosition + 1),
+    sql: '#$#' + String(greatestParameterPosition + 1),
     values: [
       value,
     ],

@@ -75,7 +75,7 @@ test('throws a descriptive error if the entire query is a value binding', async 
       t.context.logger,
       t.context.connection,
       createClientConfiguration(),
-      '$1',
+      '#$#1',
       [],
       'foo',
       t.context.executionRoutine,

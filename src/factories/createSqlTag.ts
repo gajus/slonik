@@ -72,7 +72,7 @@ const sql: SqlTaggedTemplateType = (
 
       throw new InvalidInputError('SQL tag cannot be bound an undefined value.');
     } else if (isPrimitiveValueExpression(token)) {
-      rawSql += '$' + String(parameterValues.length + 1);
+      rawSql += '#$#' + String(parameterValues.length + 1);
 
       parameterValues.push(token);
     } else if (isSqlToken(token)) {

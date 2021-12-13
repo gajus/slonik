@@ -12,7 +12,7 @@ test('creates an unnest expression using primitive values', (t) => {
   const query = sql`SELECT * FROM ${sql.unnest([[1, 2, 3], [4, 5, 6]], ['int4', 'int4', 'int4'])}`;
 
   t.deepEqual(query, {
-    sql: 'SELECT * FROM unnest($1::"int4"[], $2::"int4"[], $3::"int4"[])',
+    sql: 'SELECT * FROM unnest(#$#1::"int4"[], #$#2::"int4"[], #$#3::"int4"[])',
     type: SqlToken,
     values: [
       [
@@ -35,7 +35,7 @@ test('creates an unnest expression using arrays', (t) => {
   const query = sql`SELECT * FROM ${sql.unnest([[1, 2, 3], [4, 5, 6]], ['int4', 'int4', 'int4'])}`;
 
   t.deepEqual(query, {
-    sql: 'SELECT * FROM unnest($1::"int4"[], $2::"int4"[], $3::"int4"[])',
+    sql: 'SELECT * FROM unnest(#$#1::"int4"[], #$#2::"int4"[], #$#3::"int4"[])',
     type: SqlToken,
     values: [
       [
@@ -58,7 +58,7 @@ test('creates incremental alias names if no alias names are provided', (t) => {
   const query = sql`SELECT * FROM ${sql.unnest([[1, 2, 3], [4, 5, 6]], ['int4', 'int4', 'int4'])}`;
 
   t.deepEqual(query, {
-    sql: 'SELECT * FROM unnest($1::"int4"[], $2::"int4"[], $3::"int4"[])',
+    sql: 'SELECT * FROM unnest(#$#1::"int4"[], #$#2::"int4"[], #$#3::"int4"[])',
     type: SqlToken,
     values: [
       [
@@ -81,7 +81,7 @@ test('recognizes an array of arrays array', (t) => {
   const query = sql`SELECT * FROM ${sql.unnest([[[[1], [2], [3]]]], ['int4[]'])}`;
 
   t.deepEqual(query, {
-    sql: 'SELECT * FROM unnest($1::"int4"[][])',
+    sql: 'SELECT * FROM unnest(#$#1::"int4"[][])',
     type: SqlToken,
     values: [
       [
@@ -99,7 +99,7 @@ test('recognizes sql.identifier-like column types', (t) => {
   const query = sql`SELECT bar, baz FROM ${sql.unnest([[1, 3], [2, 4]], [['foo', 'level'], ['foo', 'score']])} AS foo(bar, baz)`;
 
   t.deepEqual(query, {
-    sql: 'SELECT bar, baz FROM unnest($1::"foo"."level"[], $2::"foo"."score"[]) AS foo(bar, baz)',
+    sql: 'SELECT bar, baz FROM unnest(#$#1::"foo"."level"[], #$#2::"foo"."score"[]) AS foo(bar, baz)',
     type: SqlToken,
     values: [
       [

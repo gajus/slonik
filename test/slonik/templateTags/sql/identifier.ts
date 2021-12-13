@@ -12,7 +12,7 @@ test('creates an object describing a query with inlined identifiers', (t) => {
   const query = sql`SELECT ${'foo'} FROM ${sql.identifier(['bar'])}`;
 
   t.deepEqual(query, {
-    sql: 'SELECT $1 FROM "bar"',
+    sql: 'SELECT #$#1 FROM "bar"',
     type: SqlToken,
     values: [
       'foo',
@@ -24,7 +24,7 @@ test('creates an object describing a query with inlined identifiers (specifier)'
   const query = sql`SELECT ${'foo'} FROM ${sql.identifier(['bar', 'baz'])}`;
 
   t.deepEqual(query, {
-    sql: 'SELECT $1 FROM "bar"."baz"',
+    sql: 'SELECT #$#1 FROM "bar"."baz"',
     type: SqlToken,
     values: [
       'foo',

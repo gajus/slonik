@@ -1,5 +1,3 @@
-// @flow
-
 import minify from 'pg-minify';
 import type {
   QueryType,
@@ -8,17 +6,17 @@ import type {
 const matchAllBindings = (sql: string) => {
   return Array
     .from(
-      sql.matchAll(/(\$\d+)/gu),
+      sql.matchAll(/(#\$#\d+)/gu),
     )
     .map((match) => {
-      return Number(match[0].slice(1));
+      return Number(match[0].slice(3));
     })
     .sort((a, b) => {
       return a - b;
     });
 };
 
-export const removeCommentedOutBindings = (query: QueryType): QueryType => {
+export const interpolateSlonikBindings = (query: QueryType): QueryType => {
   const minifiedSql = minify(query.sql);
   const originalBindings = matchAllBindings(query.sql);
   const actualBindings = matchAllBindings(minifiedSql);
@@ -40,11 +38,11 @@ export const removeCommentedOutBindings = (query: QueryType): QueryType => {
 
     const greatestBounding = lastFoundBinding;
 
-    finalSql = finalSql.replace(/(\$\d+)/gu, (match) => {
-      const matchedBinding = Number(match.slice(1));
+    finalSql = finalSql.replace(/#\$#(\d+)/gu, (match, p1) => {
+      const matchedBinding = Number(p1);
 
       if (matchedBinding > greatestBounding) {
-        return '$' + String(matchedBinding - 1);
+        return '#$#' + String(matchedBinding - 1);
       } else {
         return match;
       }
@@ -52,7 +50,9 @@ export const removeCommentedOutBindings = (query: QueryType): QueryType => {
   }
 
   return {
-    sql: finalSql,
+    sql: finalSql.replace(/#\$#(\d+)/gu, (match, p1) => {
+      return '$' + p1;
+    }),
     values: finalValues,
   };
 };

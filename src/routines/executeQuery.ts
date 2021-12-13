@@ -39,7 +39,7 @@ import type {
 } from '../types';
 import {
   createQueryId,
-  removeCommentedOutBindings,
+  interpolateSlonikBindings,
 } from '../utilities';
 
 type GenericQueryResult = QueryResultType<QueryResultRowType>;
@@ -115,7 +115,7 @@ export const executeQuery = async (
   connectionLogger: Logger,
   connection: PgPoolClient,
   clientConfiguration: ClientConfigurationType,
-  rawSql: string,
+  slonikSql: string,
   values: readonly PrimitiveValueExpressionType[],
   inheritedQueryId: QueryIdType | undefined,
   executionRoutine: ExecutionRoutineType,
@@ -126,13 +126,17 @@ export const executeQuery = async (
     throw new BackendTerminatedError(poolClientState.terminated);
   }
 
-  if (rawSql.trim() === '') {
+  if (slonikSql.trim() === '') {
     throw new InvalidInputError('Unexpected SQL input. Query cannot be empty.');
   }
 
-  if (rawSql.trim() === '$1') {
+  if (slonikSql.trim() === '#$#1') {
     throw new InvalidInputError('Unexpected SQL input. Query cannot be empty. Found only value binding.');
   }
+
+  // const rawSql = slonikSql.replace(/#\$#(\d+)/gu, (match, p1) => {
+  //   return '$' + p1;
+  // });
 
   const queryInputTime = process.hrtime.bigint();
 
@@ -157,8 +161,10 @@ export const executeQuery = async (
   });
 
   const originalQuery = {
-    sql: rawSql,
-    values,
+    ...interpolateSlonikBindings({
+      sql: slonikSql,
+      values,
+    }),
   };
 
   let actualQuery = {
@@ -191,8 +197,6 @@ export const executeQuery = async (
       actualQuery = interceptor.transformQuery(executionContext, actualQuery);
     }
   }
-
-  actualQuery = removeCommentedOutBindings(actualQuery);
 
   let result: GenericQueryResult | null;
 

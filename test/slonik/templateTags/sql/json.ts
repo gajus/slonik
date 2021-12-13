@@ -12,7 +12,7 @@ test('creates a value list (object)', (t) => {
   const query = sql`SELECT ${sql.json({foo: 'bar'})}`;
 
   t.deepEqual(query, {
-    sql: 'SELECT $1',
+    sql: 'SELECT #$#1',
     type: SqlToken,
     values: [
       '{"foo":"bar"}',
@@ -24,7 +24,7 @@ test('creates a value list (array)', (t) => {
   const query = sql`SELECT ${sql.json([{foo: 'bar'}])}`;
 
   t.deepEqual(query, {
-    sql: 'SELECT $1',
+    sql: 'SELECT #$#1',
     type: SqlToken,
     values: [
       '[{"foo":"bar"}]',
@@ -36,7 +36,7 @@ test('passes null unstringified', (t) => {
   const query = sql`SELECT ${sql.json(null)}`;
 
   t.deepEqual(query, {
-    sql: 'SELECT $1',
+    sql: 'SELECT #$#1',
     type: SqlToken,
     values: [
       null,
@@ -48,7 +48,7 @@ test('JSON encodes string values', (t) => {
   const query = sql`SELECT ${sql.json('example string')}`;
 
   t.deepEqual(query, {
-    sql: 'SELECT $1',
+    sql: 'SELECT #$#1',
     type: SqlToken,
     values: [
       '"example string"',
@@ -60,7 +60,7 @@ test('JSON encodes numeric values', (t) => {
   const query = sql`SELECT ${sql.json(1_234)}`;
 
   t.deepEqual(query, {
-    sql: 'SELECT $1',
+    sql: 'SELECT #$#1',
     type: SqlToken,
     values: [
       '1234',
@@ -72,7 +72,7 @@ test('JSON encodes boolean values', (t) => {
   const query = sql`SELECT ${sql.json(true)}`;
 
   t.deepEqual(query, {
-    sql: 'SELECT $1',
+    sql: 'SELECT #$#1',
     type: SqlToken,
     values: [
       'true',
@@ -98,20 +98,6 @@ test('throws if payload cannot be stringified (non-primitive object)', (t) => {
   t.is(error?.message, 'JSON payload must be a primitive value or a plain object.');
 });
 
-test('throws if payload cannot be stringified (circular reference)', (t) => {
-  const error = t.throws(() => {
-    const foo: any = {};
-    const bar = {
-      foo,
-    };
-    foo.bar = bar;
-
-    sql`SELECT ${sql.json(foo)}`;
-  });
-
-  t.is(error?.message, 'JSON payload cannot be stringified.');
-});
-
 test('Object types with optional properties are allowed', (t) => {
   type TypeWithOptionalProperty = { foo: string, opt?: string, };
   const testValue: TypeWithOptionalProperty = {foo: 'bar'};
@@ -119,7 +105,7 @@ test('Object types with optional properties are allowed', (t) => {
   const query = sql`SELECT ${sql.json(testValue)}`;
 
   t.deepEqual(query, {
-    sql: 'SELECT $1',
+    sql: 'SELECT #$#1',
     type: SqlToken,
     values: [
       '{"foo":"bar"}',

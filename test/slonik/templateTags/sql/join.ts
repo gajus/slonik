@@ -12,7 +12,7 @@ test('creates a list of values', (t) => {
   const query = sql`SELECT (${sql.join([1, 2, 3], sql`, `)})`;
 
   t.deepEqual(query, {
-    sql: 'SELECT ($1, $2, $3)',
+    sql: 'SELECT (#$#1, #$#2, #$#3)',
     type: SqlToken,
     values: [
       1,
@@ -36,7 +36,7 @@ test('interpolates SQL tokens', (t) => {
   const query = sql`SELECT (${sql.join([1, sql`foo`, 3], sql`, `)})`;
 
   t.deepEqual(query, {
-    sql: 'SELECT ($1, foo, $2)',
+    sql: 'SELECT (#$#1, foo, #$#2)',
     type: SqlToken,
     values: [
       1,
@@ -49,7 +49,7 @@ test('interpolates SQL tokens with bound values', (t) => {
   const query = sql`SELECT ${sql.join([1, sql`to_timestamp(${2}), ${3}`, 4], sql`, `)}`;
 
   t.deepEqual(query, {
-    sql: 'SELECT $1, to_timestamp($2), $3, $4',
+    sql: 'SELECT #$#1, to_timestamp(#$#2), #$#3, #$#4',
     type: SqlToken,
     values: [
       1,
@@ -64,7 +64,7 @@ test('offsets positional parameter indexes', (t) => {
   const query = sql`SELECT ${1}, ${sql.join([1, sql`to_timestamp(${2}), ${3}`, 4], sql`, `)}, ${3}`;
 
   t.deepEqual(query, {
-    sql: 'SELECT $1, $2, to_timestamp($3), $4, $5, $6',
+    sql: 'SELECT #$#1, #$#2, to_timestamp(#$#3), #$#4, #$#5, #$#6',
     type: SqlToken,
     values: [
       1,
@@ -87,7 +87,7 @@ test('nests expressions', (t) => {
   )}`;
 
   t.deepEqual(query, {
-    sql: 'SELECT ($1, $2), ($3, $4)',
+    sql: 'SELECT (#$#1, #$#2), (#$#3, #$#4)',
     type: SqlToken,
     values: [
       1,
@@ -105,7 +105,7 @@ test('binary join expressions', (t) => {
   })`;
 
   t.deepEqual(query, {
-    sql: 'SELECT ($1, $2)',
+    sql: 'SELECT (#$#1, #$#2)',
     type: SqlToken,
     values: [
       'a',

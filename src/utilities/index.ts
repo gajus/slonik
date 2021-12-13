@@ -17,6 +17,9 @@ export {
   escapeLiteralValue,
 } from './escapeLiteralValue';
 export {
+  interpolateSlonikBindings,
+} from './interpolateSlonikBindings';
+export {
   isPrimitiveValueExpression,
 } from './isPrimitiveValueExpression';
 export {
@@ -25,9 +28,6 @@ export {
 export {
   parseDsn,
 } from './parseDsn';
-export {
-  removeCommentedOutBindings,
-} from './removeCommentedOutBindings';
 export {
   stringifyDsn,
 } from './stringifyDsn';

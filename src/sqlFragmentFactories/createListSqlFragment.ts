@@ -35,7 +35,7 @@ export const createListSqlFragment = (
       placeholderIndex += sqlFragment.values.length;
       values.push(...sqlFragment.values);
     } else if (isPrimitiveValueExpression(member)) {
-      placeholders.push('$' + String(++placeholderIndex));
+      placeholders.push('#$#' + String(++placeholderIndex));
 
       values.push(member);
     } else {

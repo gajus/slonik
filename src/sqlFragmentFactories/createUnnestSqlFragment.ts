@@ -42,7 +42,7 @@ export const createUnnestSqlFragment = (token: UnnestSqlTokenType, greatestParam
     }
 
     unnestSqlTokens.push(
-      '$' +
+      '#$#' +
       String(++placeholderIndex) +
       '::' +
       (columnTypeIsIdentifier ? stripArrayNotation(columnType) : escapeIdentifier(stripArrayNotation(columnType))) +
