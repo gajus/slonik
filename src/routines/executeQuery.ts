@@ -145,8 +145,8 @@ export const executeQuery = async (
       return {
         columnNumber: callSite.columnNumber,
         fileName: callSite.fileName,
-        lineNumber: callSite.lineNumber,
         functionName: callSite.functionName,
+        lineNumber: callSite.lineNumber,
       };
     });
   }
