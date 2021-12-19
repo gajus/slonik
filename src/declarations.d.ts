@@ -2,6 +2,7 @@ declare module 'get-stack-trace' {
   export const getStackTrace: () => Promise<Array<{
     columnNumber: number,
     fileName: string,
+    functionName: string | null,
     lineNumber: number,
   }>>;
 }
