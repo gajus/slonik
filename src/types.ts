@@ -241,6 +241,7 @@ type CallSiteType = {
   readonly columnNumber: number,
   readonly fileName: string | null,
   readonly lineNumber: number,
+  readonly functionName: string | null,
 };
 
 /**
