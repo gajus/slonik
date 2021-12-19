@@ -145,6 +145,7 @@ export const executeQuery = async (
       return {
         columnNumber: callSite.columnNumber,
         fileName: callSite.fileName,
+        functionName: callSite.functionName,
         lineNumber: callSite.lineNumber,
       };
     });

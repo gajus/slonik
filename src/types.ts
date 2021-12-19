@@ -240,6 +240,7 @@ export type ConnectionContextType = {
 type CallSiteType = {
   readonly columnNumber: number,
   readonly fileName: string | null,
+  readonly functionName: string | null,
   readonly lineNumber: number,
 };
 
