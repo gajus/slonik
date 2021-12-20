@@ -14,7 +14,7 @@ test('creates a value list (object)', (t) => {
   })}`;
 
   t.deepEqual(query, {
-    sql: 'SELECT #$#1',
+    sql: 'SELECT $1',
     type: SqlToken,
     values: [
       '{"foo":"bar"}',
@@ -30,7 +30,7 @@ test('creates a value list (array)', (t) => {
   ])}`;
 
   t.deepEqual(query, {
-    sql: 'SELECT #$#1',
+    sql: 'SELECT $1',
     type: SqlToken,
     values: [
       '[{"foo":"bar"}]',
@@ -42,7 +42,7 @@ test('passes null unstringified', (t) => {
   const query = sql`SELECT ${sql.json(null)}`;
 
   t.deepEqual(query, {
-    sql: 'SELECT #$#1',
+    sql: 'SELECT $1',
     type: SqlToken,
     values: [
       null,
@@ -54,7 +54,7 @@ test('JSON encodes string values', (t) => {
   const query = sql`SELECT ${sql.json('example string')}`;
 
   t.deepEqual(query, {
-    sql: 'SELECT #$#1',
+    sql: 'SELECT $1',
     type: SqlToken,
     values: [
       '"example string"',
@@ -66,7 +66,7 @@ test('JSON encodes numeric values', (t) => {
   const query = sql`SELECT ${sql.json(1_234)}`;
 
   t.deepEqual(query, {
-    sql: 'SELECT #$#1',
+    sql: 'SELECT $1',
     type: SqlToken,
     values: [
       '1234',
@@ -78,7 +78,7 @@ test('JSON encodes boolean values', (t) => {
   const query = sql`SELECT ${sql.json(true)}`;
 
   t.deepEqual(query, {
-    sql: 'SELECT #$#1',
+    sql: 'SELECT $1',
     type: SqlToken,
     values: [
       'true',
@@ -113,7 +113,7 @@ test('Object types with optional properties are allowed', (t) => {
   const query = sql`SELECT ${sql.json(testValue)}`;
 
   t.deepEqual(query, {
-    sql: 'SELECT #$#1',
+    sql: 'SELECT $1',
     type: SqlToken,
     values: [
       '{"foo":"bar"}',

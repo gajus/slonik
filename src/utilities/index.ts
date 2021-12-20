@@ -17,9 +17,6 @@ export {
   escapeLiteralValue,
 } from './escapeLiteralValue';
 export {
-  interpolateSlonikBindings,
-} from './interpolateSlonikBindings';
-export {
   isPrimitiveValueExpression,
 } from './isPrimitiveValueExpression';
 export {

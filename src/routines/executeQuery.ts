@@ -39,7 +39,6 @@ import type {
 } from '../types';
 import {
   createQueryId,
-  interpolateSlonikBindings,
 } from '../utilities';
 
 type GenericQueryResult = QueryResultType<QueryResultRowType>;
@@ -130,7 +129,7 @@ export const executeQuery = async (
     throw new InvalidInputError('Unexpected SQL input. Query cannot be empty.');
   }
 
-  if (slonikSql.trim() === '#$#1') {
+  if (slonikSql.trim() === '$1') {
     throw new InvalidInputError('Unexpected SQL input. Query cannot be empty. Found only value binding.');
   }
 
@@ -158,10 +157,8 @@ export const executeQuery = async (
   });
 
   const originalQuery = {
-    ...interpolateSlonikBindings({
-      sql: slonikSql,
-      values,
-    }),
+    sql: slonikSql,
+    values,
   };
 
   let actualQuery = {

@@ -12,7 +12,7 @@ export const createSqlSqlFragment = (token: SqlSqlTokenType, greatestParameterPo
   let leastMatchedParameterPosition = Number.POSITIVE_INFINITY;
   let greatestMatchedParameterPosition = 0;
 
-  sql += token.sql.replace(/#\$#(\d+)/gu, (match, g1) => {
+  sql += token.sql.replace(/\$(\d+)/gu, (match, g1) => {
     const parameterPosition = Number.parseInt(g1, 10);
 
     if (parameterPosition > greatestMatchedParameterPosition) {
@@ -23,7 +23,7 @@ export const createSqlSqlFragment = (token: SqlSqlTokenType, greatestParameterPo
       leastMatchedParameterPosition = parameterPosition;
     }
 
-    return '#$#' + String(parameterPosition + greatestParameterPosition);
+    return '$' + String(parameterPosition + greatestParameterPosition);
   });
 
   if (greatestMatchedParameterPosition > token.values.length) {

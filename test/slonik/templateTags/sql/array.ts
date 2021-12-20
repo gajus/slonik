@@ -12,7 +12,7 @@ test('binds an empty array', (t) => {
   const query = sql`SELECT ${sql.array([], 'int4')}`;
 
   t.deepEqual(query, {
-    sql: 'SELECT #$#1::"int4"[]',
+    sql: 'SELECT $1::"int4"[]',
     type: SqlToken,
     values: [
       [],
@@ -28,7 +28,7 @@ test('binds an array with multiple values', (t) => {
   ], 'int4')}`;
 
   t.deepEqual(query, {
-    sql: 'SELECT #$#1::"int4"[]',
+    sql: 'SELECT $1::"int4"[]',
     type: SqlToken,
     values: [
       [
@@ -46,7 +46,7 @@ test('binds an array with bytea values', (t) => {
   ], 'bytea')}`;
 
   t.deepEqual(query, {
-    sql: 'SELECT #$#1::"bytea"[]',
+    sql: 'SELECT $1::"bytea"[]',
     type: SqlToken,
     values: [
       [
@@ -64,7 +64,7 @@ test('offsets positional parameter indexes', (t) => {
   ], 'int4')}, ${3}`;
 
   t.deepEqual(query, {
-    sql: 'SELECT #$#1, #$#2::"int4"[], #$#3',
+    sql: 'SELECT $1, $2::"int4"[], $3',
     type: SqlToken,
     values: [
       1,
@@ -86,7 +86,7 @@ test('binds a SQL token', (t) => {
   ], sql`int[]`)}`;
 
   t.deepEqual(query, {
-    sql: 'SELECT #$#1::int[]',
+    sql: 'SELECT $1::int[]',
     type: SqlToken,
     values: [
       [
@@ -100,8 +100,8 @@ test('binds a SQL token', (t) => {
 
 test('throws if array member is not a primitive value expression', (t) => {
   const error = t.throws(() => {
-    // @ts-expect-error
     sql`SELECT ${sql.array([
+      // @ts-expect-error
       () => {},
     ], 'int')}`;
   });

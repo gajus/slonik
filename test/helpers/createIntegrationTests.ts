@@ -8,6 +8,9 @@ import type {
   Pool as PgPoolType,
 } from 'pg';
 import {
+  serializeError,
+} from 'serialize-error';
+import {
   BackendTerminatedError,
   createPool,
   InvalidInputError,
@@ -17,6 +20,13 @@ import {
   TupleMovedToAnotherPartitionError,
   UnexpectedStateError,
 } from '../../src';
+import {
+  Logger,
+} from '../../src/Logger';
+
+const log = Logger.child({
+  namespace: 'createIntegrationTests',
+});
 
 type TestContextType = {
   dsn: string,
@@ -96,18 +106,24 @@ export const createTestRunner = (PgPool: new (poolConfig: PoolConfig) => PgPoolT
       PgPool,
     });
 
-    await pool.connect(async (connection) => {
-      await connection.query(sql`
-        SELECT pg_terminate_backend(pid)
-        FROM pg_stat_activity
-        WHERE
-          pid != pg_backend_pid() AND
-          datname = 'slonik_test'
-      `);
-      await connection.query(sql`DROP DATABASE IF EXISTS ${sql.identifier([
-        t.context.testDatabaseName,
-      ])}`);
-    });
+    try {
+      await pool.connect(async (connection) => {
+        await connection.query(sql`
+          SELECT pg_terminate_backend(pid)
+          FROM pg_stat_activity
+          WHERE
+            pid != pg_backend_pid() AND
+            datname = 'slonik_test'
+        `);
+        await connection.query(sql`DROP DATABASE IF EXISTS ${sql.identifier([
+          t.context.testDatabaseName,
+        ])}`);
+      });
+    } catch (error) {
+      log.error({
+        error: serializeError(error),
+      }, 'could not clean up database');
+    }
 
     await pool.end();
   });

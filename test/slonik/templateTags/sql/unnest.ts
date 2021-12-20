@@ -27,7 +27,7 @@ test('creates an unnest expression using primitive values', (t) => {
   ])}`;
 
   t.deepEqual(query, {
-    sql: 'SELECT * FROM unnest(#$#1::"int4"[], #$#2::"int4"[], #$#3::"int4"[])',
+    sql: 'SELECT * FROM unnest($1::"int4"[], $2::"int4"[], $3::"int4"[])',
     type: SqlToken,
     values: [
       [
@@ -65,7 +65,7 @@ test('creates an unnest expression using arrays', (t) => {
   ])}`;
 
   t.deepEqual(query, {
-    sql: 'SELECT * FROM unnest(#$#1::"int4"[], #$#2::"int4"[], #$#3::"int4"[])',
+    sql: 'SELECT * FROM unnest($1::"int4"[], $2::"int4"[], $3::"int4"[])',
     type: SqlToken,
     values: [
       [
@@ -103,7 +103,7 @@ test('creates incremental alias names if no alias names are provided', (t) => {
   ])}`;
 
   t.deepEqual(query, {
-    sql: 'SELECT * FROM unnest(#$#1::"int4"[], #$#2::"int4"[], #$#3::"int4"[])',
+    sql: 'SELECT * FROM unnest($1::"int4"[], $2::"int4"[], $3::"int4"[])',
     type: SqlToken,
     values: [
       [
@@ -142,7 +142,7 @@ test('recognizes an array of arrays array', (t) => {
   ])}`;
 
   t.deepEqual(query, {
-    sql: 'SELECT * FROM unnest(#$#1::"int4"[][])',
+    sql: 'SELECT * FROM unnest($1::"int4"[][])',
     type: SqlToken,
     values: [
       [
@@ -184,7 +184,7 @@ test('recognizes sql.identifier-like column types', (t) => {
   ])} AS foo(bar, baz)`;
 
   t.deepEqual(query, {
-    sql: 'SELECT bar, baz FROM unnest(#$#1::"foo"."level"[], #$#2::"foo"."score"[]) AS foo(bar, baz)',
+    sql: 'SELECT bar, baz FROM unnest($1::"foo"."level"[], $2::"foo"."score"[]) AS foo(bar, baz)',
     type: SqlToken,
     values: [
       [

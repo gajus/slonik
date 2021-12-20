@@ -40,7 +40,7 @@ test('creates an object describing query value bindings', (t) => {
   const query = sql`SELECT ${'foo'}`;
 
   t.deepEqual(query, {
-    sql: 'SELECT #$#1',
+    sql: 'SELECT $1',
     type: SqlToken,
     values: [
       'foo',
@@ -52,7 +52,7 @@ test('creates an object describing query value bindings (multiple)', (t) => {
   const query = sql`SELECT ${'foo'}, ${'bar'}`;
 
   t.deepEqual(query, {
-    sql: 'SELECT #$#1, #$#2',
+    sql: 'SELECT $1, $2',
     type: SqlToken,
     values: [
       'foo',
@@ -66,7 +66,7 @@ test('nests sql templates', (t) => {
   const query1 = sql`SELECT ${'baz'} FROM (${query0})`;
 
   t.deepEqual(query1, {
-    sql: 'SELECT #$#1 FROM (SELECT #$#2 FROM bar)',
+    sql: 'SELECT $1 FROM (SELECT $2 FROM bar)',
     type: SqlToken,
     values: [
       'baz',
