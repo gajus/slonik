@@ -186,11 +186,7 @@ export type DatabasePoolType = CommonQueryMethodsType & {
   readonly transaction: <T>(handler: TransactionFunctionType<T>, transactionRetryLimit?: number) => Promise<T>,
 };
 
-/**
- * This appears to be the only sane way to have a generic database connection type
- * that can be refined, i.e. DatabaseConnectionType => DatabasePoolType.
- */
-export type DatabaseConnectionType = Partial<DatabasePoolConnectionType & DatabasePoolType>;
+export type DatabaseConnectionType = DatabasePoolConnectionType | DatabasePoolType;
 
 export type QueryResultRowColumnType = PrimitiveValueExpressionType;
 
