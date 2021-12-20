@@ -1,5 +1,3 @@
-/* eslint-disable canonical/id-match */
-
 import {
   stringify,
 } from 'querystring';
@@ -61,6 +59,7 @@ export const stringifyDsn = (connectionOptions: ConnectionOptions): string => {
   const namedParameters: NamedParameters = {};
 
   if (applicationName) {
+    // eslint-disable-next-line canonical/id-match
     namedParameters.application_name = applicationName;
   }
 
