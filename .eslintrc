@@ -1,9 +1,4 @@
 {
-  "ignorePatterns": [
-    "dist",
-    "node_modules",
-    "coverage"
-  ],
   "overrides": [
     {
       "extends": [

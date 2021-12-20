@@ -1,7 +1,7 @@
 /coverage
 /dist
-node_modules
-package-lock.json
+/node_modules
+/package-lock.json
 *.log
 .*
 !.editorconfig
@@ -12,4 +12,3 @@ package-lock.json
 !.npmignore
 !.README
 !.travis.yml
-yarn.lock
