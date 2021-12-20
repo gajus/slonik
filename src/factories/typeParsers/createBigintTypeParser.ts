@@ -1,5 +1,5 @@
 import type {
-  TypeParserType,
+  TypeParser,
 } from '../../types';
 
 const bigintParser = (value: string) => {
@@ -7,7 +7,7 @@ const bigintParser = (value: string) => {
   return Number.parseInt(value, 10);
 };
 
-export const createBigintTypeParser = (): TypeParserType => {
+export const createBigintTypeParser = (): TypeParser => {
   return {
     name: 'int8',
     parse: bigintParser,

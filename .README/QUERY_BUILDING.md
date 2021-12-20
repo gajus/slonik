@@ -8,9 +8,9 @@ If this is your first time using Slonik, read [Dynamically generating SQL querie
 
 ```js
 (
-  values: PrimitiveValueExpressionType[],
-  memberType: TypeNameIdentifierType | SqlTokenType
-) => ArraySqlTokenType;
+  values: PrimitiveValueExpression[],
+  memberType: TypeNameIdentifier | SqlToken
+) => ArraySqlToken;
 
 ```
 
@@ -41,7 +41,7 @@ Produces:
 
 #### `sql.array` `memberType`
 
-If `memberType` is a string (`TypeNameIdentifierType`), then it is treated as a type name identifier and will be quoted using double quotes, i.e. `sql.array([1, 2, 3], 'int4')` is equivalent to `$1::"int4"[]`. The implication is that keywords that are often used interchangeably with type names are not going to work, e.g. [`int4`](https://github.com/postgres/postgres/blob/69edf4f8802247209e77f69e089799b3d83c13a4/src/include/catalog/pg_type.dat#L74-L78) is a type name identifier and will work. However, [`int`](https://github.com/postgres/postgres/blob/69edf4f8802247209e77f69e089799b3d83c13a4/src/include/parser/kwlist.h#L213) is a keyword and will not work. You can either use type name identifiers or you can construct custom member using `sql` tag, e.g.
+If `memberType` is a string (`TypeNameIdentifier`), then it is treated as a type name identifier and will be quoted using double quotes, i.e. `sql.array([1, 2, 3], 'int4')` is equivalent to `$1::"int4"[]`. The implication is that keywords that are often used interchangeably with type names are not going to work, e.g. [`int4`](https://github.com/postgres/postgres/blob/69edf4f8802247209e77f69e089799b3d83c13a4/src/include/catalog/pg_type.dat#L74-L78) is a type name identifier and will work. However, [`int`](https://github.com/postgres/postgres/blob/69edf4f8802247209e77f69e089799b3d83c13a4/src/include/parser/kwlist.h#L213) is a keyword and will not work. You can either use type name identifiers or you can construct custom member using `sql` tag, e.g.
 
 ```js
 await connection.query(sql`
@@ -96,7 +96,7 @@ Furthermore, unlike `sql.join`, `sql.array` can be used with an empty array of v
 ```js
 (
   data: Buffer
-) => BinarySqlTokenType;
+) => BinarySqlToken;
 
 ```
 
@@ -126,7 +126,7 @@ Produces:
 ```js
 (
   names: string[],
-) => IdentifierSqlTokenType;
+) => IdentifierSqlToken;
 
 ```
 
@@ -154,8 +154,8 @@ Produces:
 
 ```js
 (
-  value: SerializableValueType
-) => JsonSqlTokenType;
+  value: SerializableValue
+) => JsonSqlToken;
 
 ```
 
@@ -191,9 +191,9 @@ Produces:
 
 ```js
 (
-  members: SqlTokenType[],
-  glue: SqlTokenType
-) => ListSqlTokenType;
+  members: SqlToken[],
+  glue: SqlToken
+) => ListSqlToken;
 
 ```
 
@@ -268,7 +268,7 @@ sql`
 ```js
 (
   value: string,
-) => SqlSqlTokenType;
+) => SqlSqlToken;
 
 ```
 
@@ -294,9 +294,9 @@ Produces:
 
 ```js
 (
-  tuples: PrimitiveValueExpressionType[][],
+  tuples: PrimitiveValueExpression[][],
   columnTypes: (string | string[])[]
-): UnnestSqlTokenType;
+): UnnestSqlToken;
 
 ```
 

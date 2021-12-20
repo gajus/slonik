@@ -15,13 +15,13 @@ import {
   getPoolClientState,
 } from '../state';
 import type {
-  InternalTransactionFunctionType,
+  InternalTransactionFunction,
 } from '../types';
 import {
   createUid,
 } from '../utilities';
 
-const execTransaction: InternalTransactionFunctionType = async (
+const execTransaction: InternalTransactionFunction = async (
   parentLog,
   connection,
   clientConfiguration,
@@ -71,7 +71,7 @@ const execTransaction: InternalTransactionFunctionType = async (
 
 type Awaited<T> = T extends PromiseLike<infer U> ? U : T;
 
-const retryTransaction: InternalTransactionFunctionType = async (parentLog, connection, clientConfiguration, handler, transactionRetryLimit) => {
+const retryTransaction: InternalTransactionFunction = async (parentLog, connection, clientConfiguration, handler, transactionRetryLimit) => {
   const poolClientState = getPoolClientState(connection);
 
   let remainingRetries = transactionRetryLimit ?? clientConfiguration.transactionRetryLimit;
@@ -104,7 +104,7 @@ const retryTransaction: InternalTransactionFunctionType = async (parentLog, conn
   return result!;
 };
 
-export const transaction: InternalTransactionFunctionType = async (parentLog, connection, clientConfiguration, handler, transactionRetryLimit) => {
+export const transaction: InternalTransactionFunction = async (parentLog, connection, clientConfiguration, handler, transactionRetryLimit) => {
   const poolClientState = getPoolClientState(connection);
 
   if (poolClientState.transactionDepth !== null) {

@@ -6,8 +6,8 @@ import {
   createSqlTokenSqlFragment,
 } from '../factories';
 import type {
-  SqlFragmentType,
-  ListSqlTokenType,
+  SqlFragment,
+  ListSqlToken,
 } from '../types';
 import {
   isPrimitiveValueExpression,
@@ -15,9 +15,9 @@ import {
 } from '../utilities';
 
 export const createListSqlFragment = (
-  token: ListSqlTokenType,
+  token: ListSqlToken,
   greatestParameterPosition: number,
-): SqlFragmentType => {
+): SqlFragment => {
   const values = [];
   const placeholders = [];
 

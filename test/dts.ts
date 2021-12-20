@@ -25,16 +25,16 @@ import {
   sql,
 } from '../src';
 import type {
-  ClientConfigurationInputType,
-  ClientConfigurationType,
-  CommonQueryMethodsType,
-  IdentifierNormalizerType,
-  InterceptorType,
-  QueryContextType,
-  QueryResultRowColumnType,
-  QueryResultType,
-  SqlTaggedTemplateType,
-  TypeParserType,
+  ClientConfigurationInput,
+  ClientConfiguration,
+  CommonQueryMethods,
+  IdentifierNormalizer,
+  Interceptor,
+  QueryContext,
+  QueryResultRowColumn,
+  QueryResult,
+  SqlTaggedTemplate,
+  TypeParser,
 } from '../src';
 
 const VALUE = 'foo';
@@ -44,17 +44,17 @@ const connection = createPool('postgres://');
 const poolTypes = () => {
   const pool = createPool('postgres://localhost');
 
-  expectTypeOf<ClientConfigurationType>().toMatchTypeOf<ClientConfigurationInputType>();
-  expectTypeOf<Partial<ClientConfigurationType>>().toEqualTypeOf<ClientConfigurationInputType>();
+  expectTypeOf<ClientConfiguration>().toMatchTypeOf<ClientConfigurationInput>();
+  expectTypeOf<Partial<ClientConfiguration>>().toEqualTypeOf<ClientConfigurationInput>();
 
-  expectTypeOf(pool).toHaveProperty('configuration').toEqualTypeOf<ClientConfigurationType>();
+  expectTypeOf(pool).toHaveProperty('configuration').toEqualTypeOf<ClientConfiguration>();
 
   const promise = pool.connect(async (poolConnection) => {
     const result = await poolConnection.query(sql`SELECT 1`);
 
-    expectTypeOf(result).toEqualTypeOf<QueryResultType<Record<string, QueryResultRowColumnType>>>();
+    expectTypeOf(result).toEqualTypeOf<QueryResult<Record<string, QueryResultRowColumn>>>();
 
-    expectTypeOf(result.rows[0]).toEqualTypeOf<Record<string, QueryResultRowColumnType>>();
+    expectTypeOf(result.rows[0]).toEqualTypeOf<Record<string, QueryResultRowColumn>>();
 
     void poolConnection.query(sql`
       SELECT 1
@@ -94,7 +94,7 @@ const poolTypes = () => {
         return t2.query(sql`INSERT INTO qux (quux) VALUES ('corge')`);
       });
     });
-    expectTypeOf(transaction2).toEqualTypeOf<QueryResultType<Record<string, QueryResultRowColumnType>>>();
+    expectTypeOf(transaction2).toEqualTypeOf<QueryResult<Record<string, QueryResultRowColumn>>>();
 
     // eslint-disable-next-line @typescript-eslint/no-confusing-void-expression
     const transaction3 = await poolConnection.transaction(async (t1): Promise<void> => {
@@ -138,7 +138,7 @@ const poolTypes = () => {
       return sql<FooBar>`select foo, bar from foobartable limit ${limit}`;
     };
 
-    expectTypeOf(await pool.query(getFooBarQuery(10))).toEqualTypeOf<QueryResultType<FooBar>>();
+    expectTypeOf(await pool.query(getFooBarQuery(10))).toEqualTypeOf<QueryResult<FooBar>>();
 
     expectTypeOf(await pool.exists(getFooQuery(10))).toBeBoolean();
 
@@ -174,7 +174,7 @@ const poolTypes = () => {
           expectTypeOf(context.queryId).toBeString();
           expectTypeOf(query.sql).toBeString();
           expectTypeOf(fields[0].dataTypeId).toBeNumber();
-          expectTypeOf(row.foo).toEqualTypeOf<QueryResultRowColumnType>();
+          expectTypeOf(row.foo).toEqualTypeOf<QueryResultRowColumn>();
 
           return row;
         },
@@ -188,10 +188,10 @@ const interceptorTypes = () => {
     interceptors: [],
   });
 
-  const interceptors: InterceptorType[] = [
+  const interceptors: Interceptor[] = [
     {
       afterQueryExecution: (queryContext) => {
-        expectTypeOf(queryContext).toEqualTypeOf<QueryContextType>();
+        expectTypeOf(queryContext).toEqualTypeOf<QueryContext>();
 
         expectTypeOf(queryContext.sandbox.foo).toBeUnknown();
 
@@ -219,7 +219,7 @@ const interceptorTypes = () => {
 // TYPE PARSER
 // ----------------------------------------------------------------------
 const typeParserTypes = () => {
-  const typeParser: TypeParserType<number> = {
+  const typeParser: TypeParser<number> = {
     name: 'int8',
     parse: (value) => {
       expectTypeOf(value).toBeString();
@@ -303,10 +303,10 @@ const dynamicWhere = async () => {
 };
 
 const sqlTypes = async () => {
-  // ExpectType SqlSqlTokenType
+  // ExpectType SqlSqlToken
   const query0 = sql`SELECT ${'foo'} FROM bar`;
 
-  // ExpectType SqlSqlTokenType
+  // ExpectType SqlSqlToken
   const query1 = sql`SELECT ${'baz'} FROM (${query0})`;
 
   await connection.query(sql`
@@ -407,13 +407,13 @@ const sqlTypes = async () => {
 };
 
 const createSqlTagTypes = () => {
-  const sqlTag: SqlTaggedTemplateType = createSqlTag();
+  const sqlTag: SqlTaggedTemplate = createSqlTag();
 
   sqlTag`
     SELECT 1;
   `;
 
-  const normalizeIdentifier: IdentifierNormalizerType = (input: string) => {
+  const normalizeIdentifier: IdentifierNormalizer = (input: string) => {
     return input.split('').reverse().join('');
   };
 };
@@ -528,6 +528,6 @@ const samplesFromDocs = async () => {
 };
 
 const exportedTypes = (): void => {
-  // make sure CommonQueryMethodsType is exported by package
-  expectTypeOf<CommonQueryMethodsType>().toHaveProperty('any').toBeCallableWith(sql`select 1`);
+  // make sure CommonQueryMethods is exported by package
+  expectTypeOf<CommonQueryMethods>().toHaveProperty('any').toBeCallableWith(sql`select 1`);
 };

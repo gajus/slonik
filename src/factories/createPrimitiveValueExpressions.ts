@@ -6,14 +6,14 @@ import {
   UnexpectedStateError,
 } from '../errors';
 import type {
-  PrimitiveValueExpressionType,
+  PrimitiveValueExpression,
 } from '../types';
 
 const log = Logger.child({
   namespace: 'createPrimitiveValueExpressions',
 });
 
-export const createPrimitiveValueExpressions = (values: readonly unknown[]): readonly PrimitiveValueExpressionType[] => {
+export const createPrimitiveValueExpressions = (values: readonly unknown[]): readonly PrimitiveValueExpression[] => {
   const primitiveValueExpressions = [];
 
   for (const value of values) {

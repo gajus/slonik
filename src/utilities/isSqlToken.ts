@@ -9,7 +9,7 @@ import {
   UnnestToken,
 } from '../tokens';
 import type {
-  SqlTokenType,
+  SqlToken as SqlTokenType,
 } from '../types';
 
 const Tokens = [

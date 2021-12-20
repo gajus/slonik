@@ -7,13 +7,13 @@ import {
   Logger as log,
 } from '../Logger';
 import type {
-  ClientConfigurationType,
+  ClientConfiguration,
 } from '../types';
 import {
   parseDsn,
 } from '../utilities';
 
-export const createPoolConfiguration = (dsn: string, clientConfiguration: ClientConfigurationType): PoolConfig => {
+export const createPoolConfiguration = (dsn: string, clientConfiguration: ClientConfiguration): PoolConfig => {
   const connectionOptions = parseDsn(dsn);
 
   const poolConfiguration: PoolConfig = {

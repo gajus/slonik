@@ -14,19 +14,19 @@ import {
   getPoolState,
 } from '../state';
 import type {
-  ClientConfigurationType,
-  DatabasePoolType,
+  ClientConfiguration,
+  DatabasePool,
   Logger,
-  TaggedTemplateLiteralInvocationType,
+  TaggedTemplateLiteralInvocation,
 } from '../types';
 
 export const bindPool = (
   parentLog: Logger,
   pool: PgPool,
-  clientConfiguration: ClientConfigurationType,
-): DatabasePoolType => {
+  clientConfiguration: ClientConfiguration,
+): DatabasePool => {
   return {
-    any: (query: TaggedTemplateLiteralInvocationType) => {
+    any: (query: TaggedTemplateLiteralInvocation) => {
       return createConnection(
         parentLog,
         pool,
@@ -45,7 +45,7 @@ export const bindPool = (
         query,
       );
     },
-    anyFirst: (query: TaggedTemplateLiteralInvocationType) => {
+    anyFirst: (query: TaggedTemplateLiteralInvocation) => {
       return createConnection(
         parentLog,
         pool,
@@ -140,7 +140,7 @@ export const bindPool = (
         }
       });
     },
-    exists: (query: TaggedTemplateLiteralInvocationType) => {
+    exists: (query: TaggedTemplateLiteralInvocation) => {
       return createConnection(
         parentLog,
         pool,
@@ -169,7 +169,7 @@ export const bindPool = (
         waitingClientCount: pool.waitingCount,
       };
     },
-    many: (query: TaggedTemplateLiteralInvocationType) => {
+    many: (query: TaggedTemplateLiteralInvocation) => {
       return createConnection(
         parentLog,
         pool,
@@ -188,7 +188,7 @@ export const bindPool = (
         query,
       );
     },
-    manyFirst: (query: TaggedTemplateLiteralInvocationType) => {
+    manyFirst: (query: TaggedTemplateLiteralInvocation) => {
       return createConnection(
         parentLog,
         pool,
@@ -207,7 +207,7 @@ export const bindPool = (
         query,
       );
     },
-    maybeOne: (query: TaggedTemplateLiteralInvocationType) => {
+    maybeOne: (query: TaggedTemplateLiteralInvocation) => {
       return createConnection(
         parentLog,
         pool,
@@ -226,7 +226,7 @@ export const bindPool = (
         query,
       );
     },
-    maybeOneFirst: (query: TaggedTemplateLiteralInvocationType) => {
+    maybeOneFirst: (query: TaggedTemplateLiteralInvocation) => {
       return createConnection(
         parentLog,
         pool,
@@ -245,7 +245,7 @@ export const bindPool = (
         query,
       );
     },
-    one: (query: TaggedTemplateLiteralInvocationType) => {
+    one: (query: TaggedTemplateLiteralInvocation) => {
       return createConnection(
         parentLog,
         pool,
@@ -264,7 +264,7 @@ export const bindPool = (
         query,
       );
     },
-    oneFirst: (query: TaggedTemplateLiteralInvocationType) => {
+    oneFirst: (query: TaggedTemplateLiteralInvocation) => {
       return createConnection(
         parentLog,
         pool,
@@ -283,7 +283,7 @@ export const bindPool = (
         query,
       );
     },
-    query: (query: TaggedTemplateLiteralInvocationType) => {
+    query: (query: TaggedTemplateLiteralInvocation) => {
       return createConnection(
         parentLog,
         pool,

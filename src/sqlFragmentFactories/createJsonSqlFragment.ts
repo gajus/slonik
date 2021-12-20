@@ -12,15 +12,15 @@ import {
   InvalidInputError,
 } from '../errors';
 import type {
-  JsonSqlTokenType,
-  SqlFragmentType,
+  JsonSqlToken,
+  SqlFragment,
 } from '../types';
 
 const log = Logger.child({
   namespace: 'createJsonSqlFragment',
 });
 
-export const createJsonSqlFragment = (token: JsonSqlTokenType, greatestParameterPosition: number): SqlFragmentType => {
+export const createJsonSqlFragment = (token: JsonSqlToken, greatestParameterPosition: number): SqlFragment => {
   let value;
 
   if (token.value === undefined) {

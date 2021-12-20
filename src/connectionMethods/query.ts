@@ -1,16 +1,16 @@
 import type {
-  QueryResult,
+  QueryResult as PgQueryResult,
 } from 'pg';
 import {
   executeQuery,
 } from '../routines';
 import type {
-  InternalQueryMethodType,
-  NoticeType,
-  QueryResultType,
+  InternalQueryMethod,
+  Notice,
+  QueryResult,
 } from '../types';
 
-export const query: InternalQueryMethodType = async (
+export const query: InternalQueryMethod = async (
   connectionLogger,
   connection,
   clientConfiguration,
@@ -26,14 +26,14 @@ export const query: InternalQueryMethodType = async (
     values,
     inheritedQueryId,
     async (finalConnection, finalSql, finalValues) => {
-      const result: QueryResult & {notices?: NoticeType[], } = await finalConnection.query(
+      const result: PgQueryResult & {notices?: Notice[], } = await finalConnection.query(
         finalSql,
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         finalValues as any[],
       );
 
       return {
-        command: result.command as QueryResultType<unknown>['command'],
+        command: result.command as QueryResult<unknown>['command'],
         fields: (result.fields || []).map((field) => {
           return {
             dataTypeId: field.dataTypeID,

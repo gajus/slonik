@@ -20,11 +20,11 @@ import {
   UnnestToken,
 } from '../tokens';
 import type {
-  SqlTokenType,
-  SqlFragmentType,
+  SqlToken as SqlTokenType,
+  SqlFragment,
 } from '../types';
 
-export const createSqlTokenSqlFragment = (token: SqlTokenType, greatestParameterPosition: number): SqlFragmentType => {
+export const createSqlTokenSqlFragment = (token: SqlTokenType, greatestParameterPosition: number): SqlFragment => {
   if (token.type === ArrayToken) {
     return createArraySqlFragment(token, greatestParameterPosition);
   } else if (token.type === BinaryToken) {

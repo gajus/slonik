@@ -22,17 +22,17 @@ import {
   getPoolClientState,
 } from '../state';
 import type {
-  ClientConfigurationType,
-  DatabaseTransactionConnectionType,
+  ClientConfiguration,
+  DatabaseTransactionConnection,
   Logger,
 } from '../types';
 
 export const bindTransactionConnection = (
   parentLog: Logger,
   connection: PgPoolClient,
-  clientConfiguration: ClientConfigurationType,
+  clientConfiguration: ClientConfiguration,
   transactionDepth: number,
-): DatabaseTransactionConnectionType => {
+): DatabaseTransactionConnection => {
   const poolClientState = getPoolClientState(connection);
 
   const assertTransactionDepth = () => {

@@ -2,11 +2,11 @@ import {
   UnexpectedStateError,
 } from '../errors';
 import type {
-  SqlSqlTokenType,
-  SqlFragmentType,
+  SqlSqlToken,
+  SqlFragment,
 } from '../types';
 
-export const createSqlSqlFragment = (token: SqlSqlTokenType, greatestParameterPosition: number): SqlFragmentType => {
+export const createSqlSqlFragment = (token: SqlSqlToken, greatestParameterPosition: number): SqlFragment => {
   let sql = '';
 
   let leastMatchedParameterPosition = Number.POSITIVE_INFINITY;

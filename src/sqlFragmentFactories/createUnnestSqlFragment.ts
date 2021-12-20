@@ -2,9 +2,9 @@ import {
   InvalidInputError,
 } from '../errors';
 import type {
-  SqlFragmentType,
-  UnnestSqlTokenType,
-  PrimitiveValueExpressionType,
+  SqlFragment,
+  UnnestSqlToken,
+  PrimitiveValueExpression,
 } from '../types';
 import {
   countArrayDimensions,
@@ -13,14 +13,14 @@ import {
   stripArrayNotation,
 } from '../utilities';
 
-export const createUnnestSqlFragment = (token: UnnestSqlTokenType, greatestParameterPosition: number): SqlFragmentType => {
+export const createUnnestSqlFragment = (token: UnnestSqlToken, greatestParameterPosition: number): SqlFragment => {
   const {
     columnTypes,
   } = token;
 
   const values = [];
 
-  const unnestBindings: PrimitiveValueExpressionType[][] = [];
+  const unnestBindings: PrimitiveValueExpression[][] = [];
   const unnestSqlTokens: string[] = [];
 
   let columnIndex = 0;

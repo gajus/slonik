@@ -1,10 +1,10 @@
 import type {
-  QueryIdType,
+  QueryId,
 } from '../types';
 import {
   createUid,
 } from './createUid';
 
-export const createQueryId = (): QueryIdType => {
+export const createQueryId = (): QueryId => {
   return createUid();
 };

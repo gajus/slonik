@@ -27,41 +27,41 @@ import {
   getPoolClientState,
 } from '../state';
 import type {
-  ClientConfigurationType,
+  ClientConfiguration,
   Logger,
-  NoticeType,
-  PrimitiveValueExpressionType,
-  QueryContextType,
-  QueryIdType,
-  QueryResultRowType,
-  QueryResultType,
-  QueryType,
+  Notice,
+  PrimitiveValueExpression,
+  QueryContext,
+  QueryId,
+  QueryResultRow,
+  QueryResult,
+  Query,
 } from '../types';
 import {
   createQueryId,
 } from '../utilities';
 
-type GenericQueryResult = QueryResultType<QueryResultRowType>;
+type GenericQueryResult = QueryResult<QueryResultRow>;
 
 type ExecutionRoutineType = (
   connection: PgPoolClient,
   sql: string,
-  values: readonly PrimitiveValueExpressionType[],
-  queryContext: QueryContextType,
-  query: QueryType,
+  values: readonly PrimitiveValueExpression[],
+  queryContext: QueryContext,
+  query: Query,
 ) => Promise<GenericQueryResult>;
 
-type TransactionQueryType = {
-  readonly executionContext: QueryContextType,
+type TransactionQuery = {
+  readonly executionContext: QueryContext,
   readonly executionRoutine: ExecutionRoutineType,
   readonly sql: string,
-  readonly values: readonly PrimitiveValueExpressionType[],
+  readonly values: readonly PrimitiveValueExpression[],
 };
 
 const retryQuery = async (
   connectionLogger: Logger,
   connection: PgPoolClient,
-  query: TransactionQueryType,
+  query: TransactionQuery,
   retryLimit: number,
 ) => {
   let result: GenericQueryResult;
@@ -113,12 +113,12 @@ const retryQuery = async (
 export const executeQuery = async (
   connectionLogger: Logger,
   connection: PgPoolClient,
-  clientConfiguration: ClientConfigurationType,
+  clientConfiguration: ClientConfiguration,
   slonikSql: string,
-  values: readonly PrimitiveValueExpressionType[],
-  inheritedQueryId: QueryIdType | undefined,
+  values: readonly PrimitiveValueExpression[],
+  inheritedQueryId: QueryId | undefined,
   executionRoutine: ExecutionRoutineType,
-): Promise<QueryResultType<Record<string, PrimitiveValueExpressionType>>> => {
+): Promise<QueryResult<Record<string, PrimitiveValueExpression>>> => {
   const poolClientState = getPoolClientState(connection);
 
   if (poolClientState.terminated) {
@@ -165,7 +165,7 @@ export const executeQuery = async (
     ...originalQuery,
   };
 
-  const executionContext: QueryContextType = {
+  const executionContext: QueryContext = {
     connectionId: poolClientState.connectionId,
     log,
     originalQuery,
@@ -206,9 +206,9 @@ export const executeQuery = async (
     }
   }
 
-  const notices: NoticeType[] = [];
+  const notices: Notice[] = [];
 
-  const noticeListener = (notice: NoticeType) => {
+  const noticeListener = (notice: Notice) => {
     notices.push(notice);
   };
 
@@ -344,7 +344,7 @@ export const executeQuery = async (
           fields,
         } = result;
 
-        const rows: readonly QueryResultRowType[] = result.rows.map((row) => {
+        const rows: readonly QueryResultRow[] = result.rows.map((row) => {
           return transformRow(executionContext, actualQuery, row, fields);
         });
 

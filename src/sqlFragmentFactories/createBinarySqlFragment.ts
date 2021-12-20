@@ -2,11 +2,11 @@ import {
   InvalidInputError,
 } from '../errors';
 import type {
-  BinarySqlTokenType,
-  SqlFragmentType,
+  BinarySqlToken,
+  SqlFragment,
 } from '../types';
 
-export const createBinarySqlFragment = (token: BinarySqlTokenType, greatestParameterPosition: number): SqlFragmentType => {
+export const createBinarySqlFragment = (token: BinarySqlToken, greatestParameterPosition: number): SqlFragment => {
   if (!Buffer.isBuffer(token.data)) {
     throw new InvalidInputError('Binary value must be a buffer.');
   }

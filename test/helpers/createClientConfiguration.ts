@@ -1,8 +1,8 @@
 import type {
-  ClientConfigurationType,
+  ClientConfiguration,
 } from '../../src/types';
 
-export const createClientConfiguration = (): ClientConfigurationType => {
+export const createClientConfiguration = (): ClientConfiguration => {
   return {
     captureStackTrace: true,
     connectionRetryLimit: 3,

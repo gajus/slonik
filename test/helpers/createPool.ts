@@ -7,7 +7,7 @@ import {
   poolStateMap,
 } from '../../src/state';
 import type {
-  ClientConfigurationInputType,
+  ClientConfigurationInput,
 } from '../../src/types';
 import {
   Logger as log,
@@ -18,7 +18,7 @@ const defaultConfiguration = {
   typeParsers: [],
 };
 
-export const createPool = (clientConfiguration: ClientConfigurationInputType = defaultConfiguration) => {
+export const createPool = (clientConfiguration: ClientConfigurationInput = defaultConfiguration) => {
   const eventEmitter = new EventEmitter();
 
   const connection = {

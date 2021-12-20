@@ -11,13 +11,13 @@ import {
   getPoolClientState,
 } from '../state';
 import type {
-  InternalNestedTransactionFunctionType,
+  InternalNestedTransactionFunction,
 } from '../types';
 import {
   createUid,
 } from '../utilities';
 
-const execNestedTransaction: InternalNestedTransactionFunctionType = async (
+const execNestedTransaction: InternalNestedTransactionFunction = async (
   parentLog,
   connection,
   clientConfiguration,
@@ -54,7 +54,7 @@ const execNestedTransaction: InternalNestedTransactionFunctionType = async (
 
 type Awaited<T> = T extends PromiseLike<infer U> ? U : T;
 
-const retryNestedTransaction: InternalNestedTransactionFunctionType = async (
+const retryNestedTransaction: InternalNestedTransactionFunction = async (
   parentLog,
   connection,
   clientConfiguration,
@@ -94,7 +94,7 @@ const retryNestedTransaction: InternalNestedTransactionFunctionType = async (
   return result!;
 };
 
-export const nestedTransaction: InternalNestedTransactionFunctionType = async (
+export const nestedTransaction: InternalNestedTransactionFunction = async (
   parentLog,
   connection,
   clientConfiguration,

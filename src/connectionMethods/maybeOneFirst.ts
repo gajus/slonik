@@ -2,7 +2,7 @@ import {
   DataIntegrityError,
 } from '../errors';
 import type {
-  InternalQueryMethodType,
+  InternalQueryMethod,
 } from '../types';
 import {
   createQueryId,
@@ -17,7 +17,7 @@ import {
  *
  * @throws DataIntegrityError If query returns multiple rows.
  */
-export const maybeOneFirst: InternalQueryMethodType = async (log, connection, clientConfiguration, rawSql, values, inheritedQueryId) => {
+export const maybeOneFirst: InternalQueryMethod = async (log, connection, clientConfiguration, rawSql, values, inheritedQueryId) => {
   const queryId = inheritedQueryId ?? createQueryId();
 
   const row = await maybeOne(

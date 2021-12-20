@@ -1,8 +1,8 @@
 import type {
-  QueryContextType,
+  QueryContext,
 } from '../../src/types';
 
-export const createQueryContext = (): QueryContextType => {
+export const createQueryContext = (): QueryContext => {
   return {
     connectionId: '1',
 

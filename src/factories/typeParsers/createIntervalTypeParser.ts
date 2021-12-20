@@ -4,14 +4,14 @@ import {
 } from 'iso8601-duration';
 import parseInterval from 'postgres-interval';
 import type {
-  TypeParserType,
+  TypeParser,
 } from '../../types';
 
 const intervalParser = (value: string) => {
   return value === null ? value : durationToSeconds(parseIsoDuration(parseInterval(value).toISOString()));
 };
 
-export const createIntervalTypeParser = (): TypeParserType => {
+export const createIntervalTypeParser = (): TypeParser => {
   return {
     name: 'interval',
     parse: intervalParser,

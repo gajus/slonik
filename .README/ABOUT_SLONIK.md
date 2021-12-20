@@ -23,12 +23,12 @@ import {
   sql
 } from 'slonik';
 import type {
-  DatabaseConnectionType
+  DatabaseConnection
 } from 'slonik';
 
 type DatabaseRecordIdType = number;
 
-const getFooIdByBar = async (connection: DatabaseConnectionType, bar: string): Promise<DatabaseRecordIdType> => {
+const getFooIdByBar = async (connection: DatabaseConnection, bar: string): Promise<DatabaseRecordIdType> => {
   const fooResult = await connection.query(sql`
     SELECT id
     FROM foo
@@ -51,7 +51,7 @@ const getFooIdByBar = async (connection: DatabaseConnectionType, bar: string): P
 `oneFirst` method abstracts all of the above logic into:
 
 ```js
-const getFooIdByBar = (connection: DatabaseConnectionType, bar: string): Promise<DatabaseRecordIdType> => {
+const getFooIdByBar = (connection: DatabaseConnection, bar: string): Promise<DatabaseRecordIdType> => {
   return connection.oneFirst(sql`
     SELECT id
     FROM foo

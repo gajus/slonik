@@ -8,9 +8,9 @@ import {
   poolStateMap,
 } from '../state';
 import type {
-  ClientConfigurationInputType,
-  DatabasePoolType,
-  MockPoolOverridesType,
+  ClientConfigurationInput,
+  DatabasePool,
+  MockPoolOverrides,
 } from '../types';
 import {
   createUid,
@@ -20,9 +20,9 @@ import {
 } from './createClientConfiguration';
 
 export const createMockPool = (
-  overrides: MockPoolOverridesType,
-  clientConfigurationInput?: ClientConfigurationInputType,
-): DatabasePoolType => {
+  overrides: MockPoolOverrides,
+  clientConfigurationInput?: ClientConfigurationInput,
+): DatabasePool => {
   const clientConfiguration = createClientConfiguration(clientConfigurationInput);
 
   const poolId = createUid();

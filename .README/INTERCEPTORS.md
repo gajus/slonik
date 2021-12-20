@@ -26,51 +26,51 @@ Read: [Default interceptors](#default-interceptors).
 Interceptor is an object that implements methods that can change the behaviour of the database client at different stages of the connection life-cycle
 
 ```js
-type InterceptorType = {
+type Interceptor = {
   afterPoolConnection?: (
-    connectionContext: ConnectionContextType,
-    connection: DatabasePoolConnectionType
-  ) => MaybePromiseType<null>,
+    connectionContext: ConnectionContext,
+    connection: DatabasePoolConnection
+  ) => MaybePromise<null>,
   afterQueryExecution?: (
-    queryContext: QueryContextType,
-    query: QueryType,
-    result: QueryResultType<QueryResultRowType>
-  ) => MaybePromiseType<QueryResultType<QueryResultRowType>>,
+    queryContext: QueryContext,
+    query: Query,
+    result: QueryResult<QueryResultRow>
+  ) => MaybePromise<QueryResult<QueryResultRow>>,
   beforePoolConnection?: (
-    connectionContext: ConnectionContextType
-  ) => MaybePromiseType<?DatabasePoolType>,
+    connectionContext: ConnectionContext
+  ) => MaybePromise<?DatabasePool>,
   beforePoolConnectionRelease?: (
-    connectionContext: ConnectionContextType,
-    connection: DatabasePoolConnectionType
-  ) => MaybePromiseType<null>,
+    connectionContext: ConnectionContext,
+    connection: DatabasePoolConnection
+  ) => MaybePromise<null>,
   beforeQueryExecution?: (
-    queryContext: QueryContextType,
-    query: QueryType
-  ) => MaybePromiseType<QueryResultType<QueryResultRowType>> | MaybePromiseType<null>,
+    queryContext: QueryContext,
+    query: Query
+  ) => MaybePromise<QueryResult<QueryResultRow>> | MaybePromise<null>,
   beforeQueryResult?: (
-    queryContext: QueryContextType,
-    query: QueryType,
-    result: QueryResultType<QueryResultRowType>
-  ) => MaybePromiseType<null>,
+    queryContext: QueryContext,
+    query: Query,
+    result: QueryResult<QueryResultRow>
+  ) => MaybePromise<null>,
   beforeTransformQuery?: (
-    queryContext: QueryContextType,
-    query: QueryType
+    queryContext: QueryContext,
+    query: Query
   ) => Promise<null>,
   queryExecutionError?: (
-    queryContext: QueryContextType,
-    query: QueryType,
+    queryContext: QueryContext,
+    query: Query,
     error: SlonikError
-  ) => MaybePromiseType<null>,
+  ) => MaybePromise<null>,
   transformQuery?: (
-    queryContext: QueryContextType,
-    query: QueryType
-  ) => QueryType,
+    queryContext: QueryContext,
+    query: Query
+  ) => Query,
   transformRow?: (
-    queryContext: QueryContextType,
-    query: QueryType,
-    row: QueryResultRowType,
-    fields: FieldType[],
-  ) => QueryResultRowType
+    queryContext: QueryContext,
+    query: Query,
+    row: QueryResultRow,
+    fields: Field[],
+  ) => QueryResultRow
 };
 
 ```

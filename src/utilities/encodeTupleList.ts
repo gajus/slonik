@@ -6,12 +6,12 @@ import {
   rowWriter as createEncoder,
 } from 'pg-copy-streams-binary';
 import type {
-  TypeNameIdentifierType,
+  TypeNameIdentifier,
 } from '../types';
 
 export const encodeTupleList = (
   tupleList: ReadonlyArray<readonly unknown[]>,
-  columnTypes: readonly TypeNameIdentifierType[],
+  columnTypes: readonly TypeNameIdentifier[],
 ): Promise<Buffer> => {
   return new Promise((resolve, reject) => {
     const concatStream = createConcatStream((payloadBuffer) => {

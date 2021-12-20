@@ -14,8 +14,8 @@ import {
   poolStateMap,
 } from '../state';
 import type {
-  ClientConfigurationInputType,
-  DatabasePoolType,
+  ClientConfigurationInput,
+  DatabasePool,
 } from '../types';
 import {
   createUid,
@@ -32,8 +32,8 @@ import {
  */
 export const createPool = (
   connectionUri: string,
-  clientConfigurationInput?: ClientConfigurationInputType,
-): DatabasePoolType => {
+  clientConfigurationInput?: ClientConfigurationInput,
+): DatabasePool => {
   const clientConfiguration = createClientConfiguration(clientConfigurationInput);
 
   const poolId = createUid();

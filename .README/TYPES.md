@@ -6,19 +6,19 @@ Refer to [`./src/types.js`](./src/types.js).
 
 The public interface exports the following types:
 
-* `DatabaseConnectionType`
-* `DatabasePoolConnectionType`
-* `DatabaseSingleConnectionType`
+* `DatabaseConnection`
+* `DatabasePoolConnection`
+* `DatabaseSingleConnection`
 
 Use these types to annotate `connection` instance in your code base, e.g.
 
 ```js
 import type {
-  DatabaseConnectionType
+  DatabaseConnection
 } from 'slonik';
 
 export default async (
-  connection: DatabaseConnectionType,
+  connection: DatabaseConnection,
   code: string
 ): Promise<number> => {
   const countryId = await connection.oneFirst(sql`

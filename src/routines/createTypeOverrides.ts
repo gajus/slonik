@@ -7,7 +7,7 @@ import {
 } from 'postgres-array';
 import type {
   TypeOverrides as TypeOverridesType,
-  TypeParserType,
+  TypeParser,
 } from '../types';
 
 type PostgresType = {
@@ -18,7 +18,7 @@ type PostgresType = {
 
 export const createTypeOverrides = async (
   connection: PgPoolClient,
-  typeParsers: readonly TypeParserType[],
+  typeParsers: readonly TypeParser[],
 ): Promise<TypeOverridesType> => {
   const typeOverrides = new TypeOverrides();
 

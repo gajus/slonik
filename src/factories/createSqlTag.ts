@@ -15,21 +15,21 @@ import {
   UnnestToken,
 } from '../tokens';
 import type {
-  ArraySqlTokenType,
-  BinarySqlTokenType,
-  IdentifierSqlTokenType,
-  JsonSqlTokenType,
-  ListSqlTokenType,
-  PrimitiveValueExpressionType,
-  QueryResultRowType,
-  SerializableValueType,
-  SqlSqlTokenType,
-  SqlTaggedTemplateType,
-  SqlTokenType,
-  TypeNameIdentifierType,
-  UnnestSqlColumnType,
-  UnnestSqlTokenType,
-  ValueExpressionType,
+  ArraySqlToken,
+  BinarySqlToken,
+  IdentifierSqlToken,
+  JsonSqlToken,
+  SqlToken as SqlTokenType,
+  ListSqlToken,
+  PrimitiveValueExpression,
+  QueryResultRow,
+  SerializableValue,
+  SqlSqlToken,
+  SqlTaggedTemplate,
+  TypeNameIdentifier,
+  UnnestSqlColumn,
+  UnnestSqlToken,
+  ValueExpression,
 } from '../types';
 import {
   escapeLiteralValue,
@@ -44,10 +44,10 @@ const log = Logger.child({
   namespace: 'sql',
 });
 
-const sql: SqlTaggedTemplateType = (
+const sql: SqlTaggedTemplate = (
   parts: readonly string[],
-  ...values: readonly ValueExpressionType[]
-): SqlSqlTokenType => {
+  ...values: readonly ValueExpression[]
+): SqlSqlToken => {
   let rawSql = '';
 
   const parameterValues = [];
@@ -107,9 +107,9 @@ const sql: SqlTaggedTemplateType = (
 };
 
 sql.array = (
-  values: readonly PrimitiveValueExpressionType[],
-  memberType: SqlTokenType | TypeNameIdentifierType | string,
-): ArraySqlTokenType => {
+  values: readonly PrimitiveValueExpression[],
+  memberType: SqlTokenType | TypeNameIdentifier | string,
+): ArraySqlToken => {
   return {
     memberType,
     type: ArrayToken,
@@ -119,7 +119,7 @@ sql.array = (
 
 sql.binary = (
   data: Buffer,
-): BinarySqlTokenType => {
+): BinarySqlToken => {
   return {
     data,
     type: BinaryToken,
@@ -128,7 +128,7 @@ sql.binary = (
 
 sql.identifier = (
   names: readonly string[],
-): IdentifierSqlTokenType => {
+): IdentifierSqlToken => {
   return {
     names,
     type: IdentifierToken,
@@ -136,8 +136,8 @@ sql.identifier = (
 };
 
 sql.json = (
-  value: SerializableValueType,
-): JsonSqlTokenType => {
+  value: SerializableValue,
+): JsonSqlToken => {
   return {
     type: JsonToken,
     value,
@@ -145,9 +145,9 @@ sql.json = (
 };
 
 sql.join = (
-  members: readonly ValueExpressionType[],
-  glue: SqlSqlTokenType,
-): ListSqlTokenType => {
+  members: readonly ValueExpression[],
+  glue: SqlSqlToken,
+): ListSqlToken => {
   return {
     glue,
     members,
@@ -157,7 +157,7 @@ sql.join = (
 
 sql.literalValue = (
   value: string,
-): SqlSqlTokenType => {
+): SqlSqlToken => {
   return {
     sql: escapeLiteralValue(value),
     type: SqlToken,
@@ -166,9 +166,9 @@ sql.literalValue = (
 };
 
 sql.unnest = (
-  tuples: ReadonlyArray<readonly PrimitiveValueExpressionType[]>,
-  columnTypes: readonly UnnestSqlColumnType[],
-): UnnestSqlTokenType => {
+  tuples: ReadonlyArray<readonly PrimitiveValueExpression[]>,
+  columnTypes: readonly UnnestSqlColumn[],
+): UnnestSqlToken => {
   return {
     columnTypes,
     tuples,
@@ -176,6 +176,6 @@ sql.unnest = (
   };
 };
 
-export const createSqlTag = <T extends QueryResultRowType = QueryResultRowType>(): SqlTaggedTemplateType<T> => {
+export const createSqlTag = <T extends QueryResultRow = QueryResultRow>(): SqlTaggedTemplate<T> => {
   return sql;
 };

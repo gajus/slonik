@@ -162,8 +162,8 @@ Note: `pool.end()` does not terminate active connections/ transactions.
  */
 createPool(
   connectionUri: string,
-  clientConfiguration: ClientConfigurationType
-): DatabasePoolType;
+  clientConfiguration: ClientConfiguration
+): DatabasePool;
 
 /**
  * @property captureStackTrace Dictates whether to capture stack trace before executing query. Middlewares access stack trace through query execution context. (Default: true)
@@ -180,20 +180,20 @@ createPool(
  * @property transactionRetryLimit Number of times a transaction failing with Transaction Rollback class error is retried. (Default: 5)
  * @property typeParsers An array of [Slonik type parsers](https://github.com/gajus/slonik#slonik-type-parsers).
  */
-type ClientConfigurationInputType = {
+type TypeParser = {
   captureStackTrace?: boolean,
   connectionRetryLimit?: number,
   connectionTimeout?: number | 'DISABLE_TIMEOUT',
   idleInTransactionSessionTimeout?: number | 'DISABLE_TIMEOUT',
   idleTimeout?: number | 'DISABLE_TIMEOUT',
-  interceptors?: InterceptorType[],
+  interceptors?: Interceptor[],
   maximumPoolSize?: number,
   PgPool?: new (poolConfig: PoolConfig) => PgPool,
   queryRetryLimit?: number,
   ssl?: Parameters<tls.connect>[0],
   statementTimeout?: number | 'DISABLE_TIMEOUT',
   transactionRetryLimit?: number,
-  typeParsers?: TypeParserType[],
+  typeParsers?: TypeParser[],
 };
 
 ```
@@ -316,11 +316,11 @@ import {
 } from 'slonik';
 
 type OverridesType =
-  query: (sql: string, values: PrimitiveValueExpressionType[],) => Promise<QueryResultType<QueryResultRowType>>,
+  query: (sql: string, values: PrimitiveValueExpression[],) => Promise<QueryResult<QueryResultRow>>,
 };
 
-createMockPool(overrides: OverridesType): DatabasePoolType;
-createMockQueryResult(rows: QueryResultRowType[]): QueryResultType<QueryResultRowType>;
+createMockPool(overrides: OverridesType): DatabasePool;
+createMockQueryResult(rows: QueryResultRow[]): QueryResult<QueryResultRow>;
 
 ```
 

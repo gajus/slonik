@@ -7,11 +7,11 @@ import {
   executeQuery,
 } from '../routines';
 import type {
-  InterceptorType,
-  InternalStreamFunctionType,
+  Interceptor,
+  InternalStreamFunction,
 } from '../types';
 
-export const stream: InternalStreamFunctionType = async (connectionLogger, connection, clientConfiguration, rawSql, values, streamHandler) => {
+export const stream: InternalStreamFunction = async (connectionLogger, connection, clientConfiguration, rawSql, values, streamHandler) => {
   return await executeQuery(
     connectionLogger,
     connection,
@@ -24,7 +24,7 @@ export const stream: InternalStreamFunctionType = async (connectionLogger, conne
 
       const queryStream: Stream = finalConnection.query(query);
 
-      const rowTransformers: Array<NonNullable<InterceptorType['transformRow']>> = [];
+      const rowTransformers: Array<NonNullable<Interceptor['transformRow']>> = [];
 
       for (const interceptor of clientConfiguration.interceptors) {
         if (interceptor.transformRow) {

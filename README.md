@@ -169,12 +169,12 @@ import {
   sql
 } from 'slonik';
 import type {
-  DatabaseConnectionType
+  DatabaseConnection
 } from 'slonik';
 
 type DatabaseRecordIdType = number;
 
-const getFooIdByBar = async (connection: DatabaseConnectionType, bar: string): Promise<DatabaseRecordIdType> => {
+const getFooIdByBar = async (connection: DatabaseConnection, bar: string): Promise<DatabaseRecordIdType> => {
   const fooResult = await connection.query(sql`
     SELECT id
     FROM foo
@@ -197,7 +197,7 @@ const getFooIdByBar = async (connection: DatabaseConnectionType, bar: string): P
 `oneFirst` method abstracts all of the above logic into:
 
 ```js
-const getFooIdByBar = (connection: DatabaseConnectionType, bar: string): Promise<DatabaseRecordIdType> => {
+const getFooIdByBar = (connection: DatabaseConnection, bar: string): Promise<DatabaseRecordIdType> => {
   return connection.oneFirst(sql`
     SELECT id
     FROM foo
@@ -571,8 +571,8 @@ Note: `pool.end()` does not terminate active connections/ transactions.
  */
 createPool(
   connectionUri: string,
-  clientConfiguration: ClientConfigurationType
-): DatabasePoolType;
+  clientConfiguration: ClientConfiguration
+): DatabasePool;
 
 /**
  * @property captureStackTrace Dictates whether to capture stack trace before executing query. Middlewares access stack trace through query execution context. (Default: true)
@@ -589,20 +589,20 @@ createPool(
  * @property transactionRetryLimit Number of times a transaction failing with Transaction Rollback class error is retried. (Default: 5)
  * @property typeParsers An array of [Slonik type parsers](https://github.com/gajus/slonik#slonik-type-parsers).
  */
-type ClientConfigurationInputType = {
+type TypeParser = {
   captureStackTrace?: boolean,
   connectionRetryLimit?: number,
   connectionTimeout?: number | 'DISABLE_TIMEOUT',
   idleInTransactionSessionTimeout?: number | 'DISABLE_TIMEOUT',
   idleTimeout?: number | 'DISABLE_TIMEOUT',
-  interceptors?: InterceptorType[],
+  interceptors?: Interceptor[],
   maximumPoolSize?: number,
   PgPool?: new (poolConfig: PoolConfig) => PgPool,
   queryRetryLimit?: number,
   ssl?: Parameters<tls.connect>[0],
   statementTimeout?: number | 'DISABLE_TIMEOUT',
   transactionRetryLimit?: number,
-  typeParsers?: TypeParserType[],
+  typeParsers?: TypeParser[],
 };
 
 ```
@@ -732,11 +732,11 @@ import {
 } from 'slonik';
 
 type OverridesType =
-  query: (sql: string, values: PrimitiveValueExpressionType[],) => Promise<QueryResultType<QueryResultRowType>>,
+  query: (sql: string, values: PrimitiveValueExpression[],) => Promise<QueryResult<QueryResultRow>>,
 };
 
-createMockPool(overrides: OverridesType): DatabasePoolType;
-createMockQueryResult(rows: QueryResultRowType[]): QueryResultType<QueryResultRowType>;
+createMockPool(overrides: OverridesType): DatabasePool;
+createMockQueryResult(rows: QueryResultRow[]): QueryResult<QueryResultRow>;
 
 ```
 
@@ -812,7 +812,7 @@ Work on `pg-promise` began [Wed Mar 4 02:00:34 2015](https://github.com/vitaly-t
 Type parsers describe how to parse PostgreSQL types.
 
 ```js
-type TypeParserType = {
+type TypeParser = {
   name: string,
   parse: (value: string) => *
 };
@@ -908,51 +908,51 @@ Read: [Default interceptors](#default-interceptors).
 Interceptor is an object that implements methods that can change the behaviour of the database client at different stages of the connection life-cycle
 
 ```js
-type InterceptorType = {
+type Interceptor = {
   afterPoolConnection?: (
-    connectionContext: ConnectionContextType,
-    connection: DatabasePoolConnectionType
-  ) => MaybePromiseType<null>,
+    connectionContext: ConnectionContext,
+    connection: DatabasePoolConnection
+  ) => MaybePromise<null>,
   afterQueryExecution?: (
-    queryContext: QueryContextType,
-    query: QueryType,
-    result: QueryResultType<QueryResultRowType>
-  ) => MaybePromiseType<QueryResultType<QueryResultRowType>>,
+    queryContext: QueryContext,
+    query: Query,
+    result: QueryResult<QueryResultRow>
+  ) => MaybePromise<QueryResult<QueryResultRow>>,
   beforePoolConnection?: (
-    connectionContext: ConnectionContextType
-  ) => MaybePromiseType<?DatabasePoolType>,
+    connectionContext: ConnectionContext
+  ) => MaybePromise<?DatabasePool>,
   beforePoolConnectionRelease?: (
-    connectionContext: ConnectionContextType,
-    connection: DatabasePoolConnectionType
-  ) => MaybePromiseType<null>,
+    connectionContext: ConnectionContext,
+    connection: DatabasePoolConnection
+  ) => MaybePromise<null>,
   beforeQueryExecution?: (
-    queryContext: QueryContextType,
-    query: QueryType
-  ) => MaybePromiseType<QueryResultType<QueryResultRowType>> | MaybePromiseType<null>,
+    queryContext: QueryContext,
+    query: Query
+  ) => MaybePromise<QueryResult<QueryResultRow>> | MaybePromise<null>,
   beforeQueryResult?: (
-    queryContext: QueryContextType,
-    query: QueryType,
-    result: QueryResultType<QueryResultRowType>
-  ) => MaybePromiseType<null>,
+    queryContext: QueryContext,
+    query: Query,
+    result: QueryResult<QueryResultRow>
+  ) => MaybePromise<null>,
   beforeTransformQuery?: (
-    queryContext: QueryContextType,
-    query: QueryType
+    queryContext: QueryContext,
+    query: Query
   ) => Promise<null>,
   queryExecutionError?: (
-    queryContext: QueryContextType,
-    query: QueryType,
+    queryContext: QueryContext,
+    query: Query,
     error: SlonikError
-  ) => MaybePromiseType<null>,
+  ) => MaybePromise<null>,
   transformQuery?: (
-    queryContext: QueryContextType,
-    query: QueryType
-  ) => QueryType,
+    queryContext: QueryContext,
+    query: Query
+  ) => Query,
   transformRow?: (
-    queryContext: QueryContextType,
-    query: QueryType,
-    row: QueryResultRowType,
-    fields: FieldType[],
-  ) => QueryResultRowType
+    queryContext: QueryContext,
+    query: Query,
+    row: QueryResultRow,
+    fields: Field[],
+  ) => QueryResultRow
 };
 
 ```
@@ -1289,9 +1289,9 @@ If this is your first time using Slonik, read [Dynamically generating SQL querie
 
 ```js
 (
-  values: PrimitiveValueExpressionType[],
-  memberType: TypeNameIdentifierType | SqlTokenType
-) => ArraySqlTokenType;
+  values: PrimitiveValueExpression[],
+  memberType: TypeNameIdentifier | SqlToken
+) => ArraySqlToken;
 
 ```
 
@@ -1323,7 +1323,7 @@ Produces:
 <a name="slonik-query-building-sql-array-sql-array-membertype"></a>
 #### <code>sql.array</code> <code>memberType</code>
 
-If `memberType` is a string (`TypeNameIdentifierType`), then it is treated as a type name identifier and will be quoted using double quotes, i.e. `sql.array([1, 2, 3], 'int4')` is equivalent to `$1::"int4"[]`. The implication is that keywords that are often used interchangeably with type names are not going to work, e.g. [`int4`](https://github.com/postgres/postgres/blob/69edf4f8802247209e77f69e089799b3d83c13a4/src/include/catalog/pg_type.dat#L74-L78) is a type name identifier and will work. However, [`int`](https://github.com/postgres/postgres/blob/69edf4f8802247209e77f69e089799b3d83c13a4/src/include/parser/kwlist.h#L213) is a keyword and will not work. You can either use type name identifiers or you can construct custom member using `sql` tag, e.g.
+If `memberType` is a string (`TypeNameIdentifier`), then it is treated as a type name identifier and will be quoted using double quotes, i.e. `sql.array([1, 2, 3], 'int4')` is equivalent to `$1::"int4"[]`. The implication is that keywords that are often used interchangeably with type names are not going to work, e.g. [`int4`](https://github.com/postgres/postgres/blob/69edf4f8802247209e77f69e089799b3d83c13a4/src/include/catalog/pg_type.dat#L74-L78) is a type name identifier and will work. However, [`int`](https://github.com/postgres/postgres/blob/69edf4f8802247209e77f69e089799b3d83c13a4/src/include/parser/kwlist.h#L213) is a keyword and will not work. You can either use type name identifiers or you can construct custom member using `sql` tag, e.g.
 
 ```js
 await connection.query(sql`
@@ -1380,7 +1380,7 @@ Furthermore, unlike `sql.join`, `sql.array` can be used with an empty array of v
 ```js
 (
   data: Buffer
-) => BinarySqlTokenType;
+) => BinarySqlToken;
 
 ```
 
@@ -1411,7 +1411,7 @@ Produces:
 ```js
 (
   names: string[],
-) => IdentifierSqlTokenType;
+) => IdentifierSqlToken;
 
 ```
 
@@ -1440,8 +1440,8 @@ Produces:
 
 ```js
 (
-  value: SerializableValueType
-) => JsonSqlTokenType;
+  value: SerializableValue
+) => JsonSqlToken;
 
 ```
 
@@ -1479,9 +1479,9 @@ Produces:
 
 ```js
 (
-  members: SqlTokenType[],
-  glue: SqlTokenType
-) => ListSqlTokenType;
+  members: SqlToken[],
+  glue: SqlToken
+) => ListSqlToken;
 
 ```
 
@@ -1557,7 +1557,7 @@ sql`
 ```js
 (
   value: string,
-) => SqlSqlTokenType;
+) => SqlSqlToken;
 
 ```
 
@@ -1584,9 +1584,9 @@ Produces:
 
 ```js
 (
-  tuples: PrimitiveValueExpressionType[][],
+  tuples: PrimitiveValueExpression[][],
   columnTypes: (string | string[])[]
-): UnnestSqlTokenType;
+): UnnestSqlToken;
 
 ```
 
@@ -1729,9 +1729,9 @@ pool.oneFirst(sql`
 
 ```js
 (
-  streamQuery: TaggedTemplateLiteralInvocationType,
+  streamQuery: TaggedTemplateLiteralInvocation,
   tupleList: any[][],
-  columnTypes: TypeNameIdentifierType[],
+  columnTypes: TypeNameIdentifier[],
 ) => Promise<null>;
 
 ```
@@ -2308,19 +2308,19 @@ Refer to [`./src/types.js`](./src/types.js).
 
 The public interface exports the following types:
 
-* `DatabaseConnectionType`
-* `DatabasePoolConnectionType`
-* `DatabaseSingleConnectionType`
+* `DatabaseConnection`
+* `DatabasePoolConnection`
+* `DatabaseSingleConnection`
 
 Use these types to annotate `connection` instance in your code base, e.g.
 
 ```js
 import type {
-  DatabaseConnectionType
+  DatabaseConnection
 } from 'slonik';
 
 export default async (
-  connection: DatabaseConnectionType,
+  connection: DatabaseConnection,
   code: string
 ): Promise<number> => {
   const countryId = await connection.oneFirst(sql`

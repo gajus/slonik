@@ -2,7 +2,7 @@ import {
   UnexpectedStateError,
 } from '../errors';
 import type {
-  InternalQueryMethodType,
+  InternalQueryMethod,
 } from '../types';
 import {
   createQueryId,
@@ -18,7 +18,7 @@ import {
  * @throws NotFoundError If query returns no rows.
  * @throws DataIntegrityError If query returns multiple rows.
  */
-export const oneFirst: InternalQueryMethodType = async (log, connection, clientConfiguration, rawSql, values, inheritedQueryId) => {
+export const oneFirst: InternalQueryMethod = async (log, connection, clientConfiguration, rawSql, values, inheritedQueryId) => {
   const queryId = inheritedQueryId ?? createQueryId();
 
   const row = await one(

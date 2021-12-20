@@ -20,16 +20,16 @@ import {
   transaction,
 } from '../connectionMethods';
 import type {
-  ClientConfigurationType,
-  DatabasePoolConnectionType,
+  ClientConfiguration,
+  DatabasePoolConnection,
   Logger,
 } from '../types';
 
 export const bindPoolConnection = (
   parentLog: Logger,
   connection: PgPoolClient,
-  clientConfiguration: ClientConfigurationType,
-): DatabasePoolConnectionType => {
+  clientConfiguration: ClientConfiguration,
+): DatabasePoolConnection => {
   return {
     any: (query) => {
       assertSqlSqlToken(query);

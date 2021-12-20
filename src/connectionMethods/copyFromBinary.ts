@@ -8,7 +8,7 @@ import {
   executeQuery,
 } from '../routines';
 import type {
-  InternalCopyFromBinaryFunctionType,
+  InternalCopyFromBinaryFunction,
 } from '../types';
 import {
   encodeTupleList,
@@ -23,7 +23,7 @@ const bufferToStream = (buffer: Buffer) => {
   return stream;
 };
 
-export const copyFromBinary: InternalCopyFromBinaryFunctionType = async (
+export const copyFromBinary: InternalCopyFromBinaryFunction = async (
   connectionLogger,
   connection,
   clientConfiguration,

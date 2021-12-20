@@ -2,16 +2,16 @@ import {
   InvalidConfigurationError,
 } from '../errors';
 import type {
-  ClientConfigurationInputType,
-  ClientConfigurationType,
-  TypeParserType,
+  ClientConfigurationInput,
+  ClientConfiguration,
+  TypeParser,
 } from '../types';
 import {
   createTypeParserPreset,
 } from './createTypeParserPreset';
 
-export const createClientConfiguration = (clientUserConfigurationInput?: ClientConfigurationInputType): ClientConfigurationType => {
-  const typeParsers: readonly TypeParserType[] = [];
+export const createClientConfiguration = (clientUserConfigurationInput?: ClientConfigurationInput): ClientConfiguration => {
+  const typeParsers: readonly TypeParser[] = [];
 
   const configuration = {
     captureStackTrace: true,

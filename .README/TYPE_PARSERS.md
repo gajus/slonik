@@ -3,7 +3,7 @@
 Type parsers describe how to parse PostgreSQL types.
 
 ```js
-type TypeParserType = {
+type TypeParser = {
   name: string,
   parse: (value: string) => *
 };

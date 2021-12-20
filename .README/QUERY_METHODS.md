@@ -54,9 +54,9 @@ pool.oneFirst(sql`
 
 ```js
 (
-  streamQuery: TaggedTemplateLiteralInvocationType,
+  streamQuery: TaggedTemplateLiteralInvocation,
   tupleList: any[][],
-  columnTypes: TypeNameIdentifierType[],
+  columnTypes: TypeNameIdentifier[],
 ) => Promise<null>;
 
 ```

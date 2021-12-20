@@ -21,13 +21,13 @@ import {
   poolClientStateMap,
 } from '../state';
 import type {
-  MaybePromiseType,
-  ClientConfigurationType,
-  ConnectionTypeType,
-  DatabasePoolType,
-  DatabasePoolConnectionType,
+  MaybePromise,
+  ClientConfiguration,
+  Connection,
+  DatabasePool,
+  DatabasePoolConnection,
   Logger,
-  TaggedTemplateLiteralInvocationType,
+  TaggedTemplateLiteralInvocation,
 } from '../types';
 import {
   createUid,
@@ -36,12 +36,12 @@ import {
 type ConnectionHandlerType = (
   connectionLog: Logger,
   connection: PgPoolClient,
-  boundConnection: DatabasePoolConnectionType,
-  clientConfiguration: ClientConfigurationType
+  boundConnection: DatabasePoolConnection,
+  clientConfiguration: ClientConfiguration
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-) => MaybePromiseType<any>;
+) => MaybePromise<any>;
 
-type PoolHandlerType = (pool: DatabasePoolType) => Promise<unknown>;
+type PoolHandlerType = (pool: DatabasePool) => Promise<unknown>;
 
 const terminatePoolConnection = (
   pool: PgPool,
@@ -67,11 +67,11 @@ const terminatePoolConnection = (
 export const createConnection = async (
   parentLog: Logger,
   pool: PgPool,
-  clientConfiguration: ClientConfigurationType,
-  connectionType: ConnectionTypeType,
+  clientConfiguration: ClientConfiguration,
+  connectionType: Connection,
   connectionHandler: ConnectionHandlerType,
   poolHandler: PoolHandlerType,
-  query: TaggedTemplateLiteralInvocationType | null = null,
+  query: TaggedTemplateLiteralInvocation | null = null,
 ) => {
   const poolState = getPoolState(pool);
 

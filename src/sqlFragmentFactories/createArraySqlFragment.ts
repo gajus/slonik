@@ -6,8 +6,8 @@ import {
   createSqlTokenSqlFragment,
 } from '../factories';
 import type {
-  ArraySqlTokenType,
-  SqlFragmentType,
+  ArraySqlToken,
+  SqlFragment,
 } from '../types';
 import {
   escapeIdentifier,
@@ -15,7 +15,7 @@ import {
   isSqlToken,
 } from '../utilities';
 
-export const createArraySqlFragment = (token: ArraySqlTokenType, greatestParameterPosition: number): SqlFragmentType => {
+export const createArraySqlFragment = (token: ArraySqlToken, greatestParameterPosition: number): SqlFragment => {
   let placeholderIndex = greatestParameterPosition;
 
   for (const value of token.values) {
