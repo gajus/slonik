@@ -9,7 +9,9 @@ import {
 const sql = createSqlTag();
 
 test('creates an object describing a query with inlined identifiers', (t) => {
-  const query = sql`SELECT ${'foo'} FROM ${sql.identifier(['bar'])}`;
+  const query = sql`SELECT ${'foo'} FROM ${sql.identifier([
+    'bar',
+  ])}`;
 
   t.deepEqual(query, {
     sql: 'SELECT #$#1 FROM "bar"',
@@ -21,7 +23,10 @@ test('creates an object describing a query with inlined identifiers', (t) => {
 });
 
 test('creates an object describing a query with inlined identifiers (specifier)', (t) => {
-  const query = sql`SELECT ${'foo'} FROM ${sql.identifier(['bar', 'baz'])}`;
+  const query = sql`SELECT ${'foo'} FROM ${sql.identifier([
+    'bar',
+    'baz',
+  ])}`;
 
   t.deepEqual(query, {
     sql: 'SELECT #$#1 FROM "bar"."baz"',

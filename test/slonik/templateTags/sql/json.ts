@@ -9,7 +9,9 @@ import {
 const sql = createSqlTag();
 
 test('creates a value list (object)', (t) => {
-  const query = sql`SELECT ${sql.json({foo: 'bar'})}`;
+  const query = sql`SELECT ${sql.json({
+    foo: 'bar',
+  })}`;
 
   t.deepEqual(query, {
     sql: 'SELECT #$#1',
@@ -21,7 +23,11 @@ test('creates a value list (object)', (t) => {
 });
 
 test('creates a value list (array)', (t) => {
-  const query = sql`SELECT ${sql.json([{foo: 'bar'}])}`;
+  const query = sql`SELECT ${sql.json([
+    {
+      foo: 'bar',
+    },
+  ])}`;
 
   t.deepEqual(query, {
     sql: 'SELECT #$#1',
@@ -100,7 +106,9 @@ test('throws if payload cannot be stringified (non-primitive object)', (t) => {
 
 test('Object types with optional properties are allowed', (t) => {
   type TypeWithOptionalProperty = { foo: string, opt?: string, };
-  const testValue: TypeWithOptionalProperty = {foo: 'bar'};
+  const testValue: TypeWithOptionalProperty = {
+    foo: 'bar',
+  };
 
   const query = sql`SELECT ${sql.json(testValue)}`;
 

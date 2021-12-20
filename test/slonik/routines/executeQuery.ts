@@ -23,7 +23,9 @@ import {
 } from '../../helpers/createErrorWithCode';
 
 const test = anyTest as TestFn<any>;
-const {beforeEach} = test;
+const {
+  beforeEach,
+} = test;
 
 const createConnectionStub = () => {
   return {

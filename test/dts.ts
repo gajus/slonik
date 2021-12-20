@@ -15,7 +15,9 @@ import {
   SlonikError,
   StatementCancelledError,
   StatementTimeoutError,
-  UniqueIntegrityConstraintViolationError, createBigintTypeParser, createPool,
+  UniqueIntegrityConstraintViolationError,
+  createBigintTypeParser,
+  createPool,
   createSqlTag,
   createTimestampTypeParser,
   createTimestampWithTimeZoneTypeParser,
@@ -79,7 +81,9 @@ const poolTypes = () => {
       await transactionConnection.query(sql`INSERT INTO foo (bar) VALUES ('baz')`);
       await transactionConnection.query(sql`INSERT INTO qux (quux) VALUES ('corge')`);
 
-      return {transactionResult: 'foo'};
+      return {
+        transactionResult: 'foo',
+      };
     });
     expectTypeOf(transaction1).toEqualTypeOf<{transactionResult: string, }>();
 
@@ -110,7 +114,9 @@ const poolTypes = () => {
     // eslint-disable-next-line @typescript-eslint/no-invalid-void-type
     expectTypeOf(transaction3).toEqualTypeOf<void>();
 
-    return {connectResult: 'foo'};
+    return {
+      connectResult: 'foo',
+    };
   });
 
   expectTypeOf(promise).resolves.toEqualTypeOf<{ connectResult: string, }>();
@@ -223,11 +229,15 @@ const typeParserTypes = () => {
   };
 
   createPool('postgres://', {
-    typeParsers: [typeParser],
+    typeParsers: [
+      typeParser,
+    ],
   });
 
   createPool('postgres://', {
-    typeParsers: [...createTypeParserPreset()],
+    typeParsers: [
+      ...createTypeParserPreset(),
+    ],
   });
 
   createBigintTypeParser();
@@ -241,18 +251,36 @@ const recipes = async () => {
     SELECT *
     FROM ${sql.unnest(
     [
-      [1, 2, 3],
-      [4, 5, 6],
+      [
+        1,
+        2,
+        3,
+      ],
+      [
+        4,
+        5,
+        6,
+      ],
     ],
-    ['int4', 'int4', 'int4'],
+    [
+      'int4',
+      'int4',
+      'int4',
+    ],
   )}
   `);
 };
 
 const dynamicWhere = async () => {
   const uniquePairs = [
-    ['a', 1],
-    ['b', 2],
+    [
+      'a',
+      1,
+    ],
+    [
+      'b',
+      2,
+    ],
   ];
 
   let placeholderIndex = 1;
@@ -282,19 +310,42 @@ const sqlTypes = async () => {
   const query1 = sql`SELECT ${'baz'} FROM (${query0})`;
 
   await connection.query(sql`
-    SELECT ${sql.identifier(['foo', 'a'])}
+    SELECT ${sql.identifier([
+    'foo',
+    'a',
+  ])}
     FROM (
       VALUES
       (
-        ${sql.join([sql.join(['a1', 'b1', 'c1'], sql`, `), sql.join(['a2', 'b2', 'c2'], sql`, `)], sql`), (`)}
+        ${sql.join([
+    sql.join([
+      'a1',
+      'b1',
+      'c1',
+    ], sql`, `),
+    sql.join([
+      'a2',
+      'b2',
+      'c2',
+    ], sql`, `),
+  ], sql`), (`)}
       )
     ) foo(a, b, c)
-    WHERE foo.b IN (${sql.join(['c1', 'a2'], sql`, `)})
+    WHERE foo.b IN (${sql.join([
+    'c1',
+    'a2',
+  ], sql`, `)})
   `);
 
   await connection.query(sql`
-    SELECT (${sql.json([1, 2, {other: 'test',
-    test: 12}])})
+    SELECT (${sql.json([
+    1,
+    2,
+    {
+      other: 'test',
+      test: 12,
+    },
+  ])})
   `);
 
   await connection.query(sql`
@@ -312,9 +363,13 @@ const sqlTypes = async () => {
   await connection.query(sql`
     SELECT (${sql.json({
     nested: {
-      object: {is: {and: new Date('123').toISOString(),
-        other: 12,
-        this: 'test'}},
+      object: {
+        is: {
+          and: new Date('123').toISOString(),
+          other: 12,
+          this: 'test',
+        },
+      },
     },
   })})
   `);
@@ -326,16 +381,28 @@ const sqlTypes = async () => {
     SELECT bar, baz
     FROM ${sql.unnest(
     [
-      [1, 'foo'],
-      [2, 'bar'],
+      [
+        1,
+        'foo',
+      ],
+      [
+        2,
+        'bar',
+      ],
     ],
-    ['int4', 'text'],
+    [
+      'int4',
+      'text',
+    ],
   )} AS foo(bar, baz)
   `);
 
   sql`
     SELECT 1
-    FROM ${sql.identifier(['bar', 'baz'])}
+    FROM ${sql.identifier([
+    'bar',
+    'baz',
+  ])}
   `;
 };
 
@@ -374,27 +441,55 @@ const samplesFromDocs = async () => {
       SELECT *
       FROM ${sql.unnest(
     [
-      [1, 2, 3],
-      [4, 5, 6],
+      [
+        1,
+        2,
+        3,
+      ],
+      [
+        4,
+        5,
+        6,
+      ],
     ],
-    ['int4', 'int4', 'int4'],
+    [
+      'int4',
+      'int4',
+      'int4',
+    ],
   )}
     `);
   };
 
   const sample2 = async () => {
     await connection.query(sql`
-      SELECT (${sql.array([1, 2, 3], 'int4')})
+      SELECT (${sql.array([
+    1,
+    2,
+    3,
+  ], 'int4')})
     `);
 
     await connection.query(sql`
-      SELECT (${sql.array([1, 2, 3], sql`int[]`)})
+      SELECT (${sql.array([
+    1,
+    2,
+    3,
+  ], sql`int[]`)})
     `);
   };
 
   const sample3 = async () => {
-    sql`SELECT id FROM foo WHERE id = ANY(${sql.array([1, 2, 3], 'int4')})`;
-    sql`SELECT id FROM foo WHERE id != ALL(${sql.array([1, 2, 3], 'int4')})`;
+    sql`SELECT id FROM foo WHERE id = ANY(${sql.array([
+      1,
+      2,
+      3,
+    ], 'int4')})`;
+    sql`SELECT id FROM foo WHERE id != ALL(${sql.array([
+      1,
+      2,
+      3,
+    ], 'int4')})`;
   };
 
   const sample4 = async () => {
@@ -402,10 +497,19 @@ const samplesFromDocs = async () => {
       SELECT bar, baz
       FROM ${sql.unnest(
     [
-      [1, 'foo'],
-      [2, 'bar'],
+      [
+        1,
+        'foo',
+      ],
+      [
+        2,
+        'bar',
+      ],
     ],
-    ['int4', 'text'],
+    [
+      'int4',
+      'text',
+    ],
   )} AS foo(bar, baz)
     `);
   };
@@ -413,7 +517,10 @@ const samplesFromDocs = async () => {
   const sample5 = async () => {
     sql`
       SELECT 1
-      FROM ${sql.identifier(['bar', 'baz'])}
+      FROM ${sql.identifier([
+    'bar',
+    'baz',
+  ])}
     `;
   };
 

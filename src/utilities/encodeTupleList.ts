@@ -44,7 +44,9 @@ export const encodeTupleList = (
 
       lastTupleSize = tuple.length;
 
-      const payload = Array.from({length: lastTupleSize});
+      const payload = Array.from({
+        length: lastTupleSize,
+      });
 
       let tupleColumnIndex = -1;
 

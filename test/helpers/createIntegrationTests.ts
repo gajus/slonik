@@ -27,8 +27,12 @@ export const createTestRunner = (PgPool: new (poolConfig: PoolConfig) => PgPoolT
   let testId = 0;
 
   const test = anyTest as TestFn<TestContextType>;
-  const {beforeEach} = test;
-  const {afterEach} = test;
+  const {
+    beforeEach,
+  } = test;
+  const {
+    afterEach,
+  } = test;
 
   beforeEach(async (t) => {
     ++testId;
@@ -57,8 +61,12 @@ export const createTestRunner = (PgPool: new (poolConfig: PoolConfig) => PgPoolT
           pid != pg_backend_pid() AND
           datname = 'slonik_test'
       `);
-      await connection.query(sql`DROP DATABASE IF EXISTS ${sql.identifier([TEST_DATABASE_NAME])}`);
-      await connection.query(sql`CREATE DATABASE ${sql.identifier([TEST_DATABASE_NAME])}`);
+      await connection.query(sql`DROP DATABASE IF EXISTS ${sql.identifier([
+        TEST_DATABASE_NAME,
+      ])}`);
+      await connection.query(sql`CREATE DATABASE ${sql.identifier([
+        TEST_DATABASE_NAME,
+      ])}`);
     });
 
     await pool0.end();
@@ -96,7 +104,9 @@ export const createTestRunner = (PgPool: new (poolConfig: PoolConfig) => PgPoolT
           pid != pg_backend_pid() AND
           datname = 'slonik_test'
       `);
-      await connection.query(sql`DROP DATABASE IF EXISTS ${sql.identifier([t.context.testDatabaseName])}`);
+      await connection.query(sql`DROP DATABASE IF EXISTS ${sql.identifier([
+        t.context.testDatabaseName,
+      ])}`);
     });
 
     await pool.end();
@@ -117,7 +127,9 @@ export const createIntegrationTests = (
     });
 
     const result = await pool.query(sql`
-      SELECT ${sql.array([Buffer.from('foo')], 'bytea')} "names"
+      SELECT ${sql.array([
+    Buffer.from('foo'),
+  ], 'bytea')} "names"
     `);
 
     t.deepEqual(result, {
@@ -786,11 +798,16 @@ export const createIntegrationTests = (
       rowCount: 2,
       rows: [
         {
-          birth_dates: ['2020-01-03'],
+          birth_dates: [
+            '2020-01-03',
+          ],
           name: 'bar',
         },
         {
-          birth_dates: ['2020-01-01', '2020-01-02'],
+          birth_dates: [
+            '2020-01-01',
+            '2020-01-02',
+          ],
           name: 'foo',
         },
       ],

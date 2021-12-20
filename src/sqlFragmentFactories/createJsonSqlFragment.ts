@@ -29,7 +29,11 @@ export const createJsonSqlFragment = (token: JsonSqlTokenType, greatestParameter
     value = token.value;
 
   // @todo Deep check Array.
-  } else if (!isPlainObject(token.value) && !Array.isArray(token.value) && !['number', 'string', 'boolean'].includes(typeof token.value)) {
+  } else if (!isPlainObject(token.value) && !Array.isArray(token.value) && ![
+    'number',
+    'string',
+    'boolean',
+  ].includes(typeof token.value)) {
     throw new InvalidInputError('JSON payload must be a primitive value or a plain object.');
   } else {
     try {

@@ -27,7 +27,14 @@ module.exports = {
               ${null} as null,
               ${false}::bool as boolean,
               ${Buffer.from('bar').toString()}::bytea as bytea,
-              ${sql.json(JSON.stringify([{foo: 'bar'}, {bar: 'baz'}]))}::jsonb as json
+              ${sql.json(JSON.stringify([
+    {
+      foo: 'bar',
+    },
+    {
+      bar: 'baz',
+    },
+  ]))}::jsonb as json
       `);
     },
     select_where: () => {

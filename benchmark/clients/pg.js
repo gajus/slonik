@@ -11,7 +11,9 @@ module.exports = {
       return db.query('select 1 as x');
     },
     select_arg: () => {
-      return db.query('select $1 as x', [1]);
+      return db.query('select $1 as x', [
+        1,
+      ]);
     },
     select_args: () => {
       return db.query(`select
@@ -40,7 +42,9 @@ module.exports = {
       ]);
     },
     select_where: () => {
-      return db.query('select * from pg_catalog.pg_type where typname = $1', ['bool']);
+      return db.query('select * from pg_catalog.pg_type where typname = $1', [
+        'bool',
+      ]);
     },
   },
   url: 'https://github.com/brianc/node-postgres',

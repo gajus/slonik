@@ -14,7 +14,9 @@ import {
 } from '../utilities';
 
 export const createUnnestSqlFragment = (token: UnnestSqlTokenType, greatestParameterPosition: number): SqlFragmentType => {
-  const {columnTypes} = token;
+  const {
+    columnTypes,
+  } = token;
 
   const values = [];
 

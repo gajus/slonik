@@ -210,7 +210,10 @@ export const createConnection = async (
 
   if (
     poolState.mock === false &&
-    poolState.ended === false && ['IMPLICIT_QUERY', 'IMPLICIT_TRANSACTION'].includes(connectionType)
+    poolState.ended === false && [
+      'IMPLICIT_QUERY',
+      'IMPLICIT_TRANSACTION',
+    ].includes(connectionType)
   ) {
     connection.release();
   } else {

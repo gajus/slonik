@@ -252,9 +252,15 @@ test('copies from binary stream', async (t) => {
       FROM STDIN BINARY
     `,
     [
-      ['foo'],
-      ['bar'],
-      ['baz'],
+      [
+        'foo',
+      ],
+      [
+        'bar',
+      ],
+      [
+        'baz',
+      ],
     ],
     [
       'text',
@@ -264,7 +270,11 @@ test('copies from binary stream', async (t) => {
   t.deepEqual(await pool.anyFirst(sql`
     SELECT name
     FROM person
-  `), ['foo', 'bar', 'baz']);
+  `), [
+    'foo',
+    'bar',
+    'baz',
+  ]);
 
   await pool.end();
 });

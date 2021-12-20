@@ -46,8 +46,8 @@
     "ava": "^4.0.0-rc.1",
     "coveralls": "^3.1.1",
     "delay": "^5.0.0",
-    "eslint": "^8.3.0",
-    "eslint-config-canonical": "^32.43.0",
+    "eslint": "^8.5.0",
+    "eslint-config-canonical": "^32.48.8",
     "expect-type": "^0.13.0",
     "gitdown": "^3.1.4",
     "husky": "^4.3.6",
@@ -56,7 +56,7 @@
     "semantic-release": "^18.0.1",
     "sinon": "^12.0.1",
     "ts-node": "^10.4.0",
-    "typescript": "^4.5.2"
+    "typescript": "^4.5.4"
   },
   "engines": {
     "node": ">=10.0"
