@@ -38,7 +38,7 @@ export class QueryStream extends Readable {
 
   public handleError: Function;
 
-  public constructor (text: unknown, values: unknown, options?: ReadableOptions & {batchSize: number, }) {
+  public constructor (text: unknown, values: unknown, options?: ReadableOptions & {batchSize?: number, }) {
     super({
       objectMode: true,
       ...options,

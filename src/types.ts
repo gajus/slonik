@@ -1,5 +1,6 @@
 import type {
   Readable,
+  ReadableOptions,
 } from 'stream';
 import type {
   ConnectionOptions as TlsConnectionOptions,
@@ -129,9 +130,12 @@ export type ClientConfiguration = {
 
 export type ClientConfigurationInput = Partial<ClientConfiguration>;
 
+export type QueryStreamConfig = ReadableOptions & {batchSize?: number, };
+
 export type StreamFunction = (
   sql: TaggedTemplateLiteralInvocation,
   streamHandler: StreamHandler,
+  config?: QueryStreamConfig
 ) => Promise<Record<string, unknown> | null>;
 
 export type QueryCopyFromBinaryFunction = (
@@ -380,6 +384,7 @@ export type InternalStreamFunction = (
   values: readonly PrimitiveValueExpression[],
   streamHandler: StreamHandler,
   uid?: QueryId,
+  config?: QueryStreamConfig,
 ) => Promise<Record<string, unknown>>;
 
 export type InternalTransactionFunction = <T>(

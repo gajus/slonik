@@ -109,6 +109,65 @@ test('streams rows', async (t) => {
   await pool.end();
 });
 
+test('streams rows with different batchSize', async (t) => {
+  const pool = createPool(t.context.dsn);
+
+  await pool.query(sql`
+    INSERT INTO person (name) VALUES ('foo'), ('bar'), ('baz')
+  `);
+
+  const messages: Array<Record<string, unknown>> = [];
+
+  await pool.stream(sql`
+    SELECT name
+    FROM person
+  `, (stream) => {
+    stream.on('data', (datum) => {
+      messages.push(datum);
+    });
+  }, {
+    batchSize: 1,
+  });
+
+  t.deepEqual(messages, [
+    {
+      fields: [
+        {
+          dataTypeId: 25,
+          name: 'name',
+        },
+      ],
+      row: {
+        name: 'foo',
+      },
+    },
+    {
+      fields: [
+        {
+          dataTypeId: 25,
+          name: 'name',
+        },
+      ],
+      row: {
+        name: 'bar',
+      },
+    },
+    {
+      fields: [
+        {
+          dataTypeId: 25,
+          name: 'name',
+        },
+      ],
+      row: {
+        name: 'baz',
+      },
+    },
+  ]);
+
+  await pool.end();
+});
+
 test('applies type parsers to streamed rows', async (t) => {
   const pool = createPool(t.context.dsn, {
     typeParsers: [

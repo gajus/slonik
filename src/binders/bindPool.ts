@@ -302,7 +302,7 @@ export const bindPool = (
         query,
       );
     },
-    stream: (streamQuery, streamHandler) => {
+    stream: (streamQuery, streamHandler, config) => {
       assertSqlSqlToken(streamQuery);
 
       return createConnection(
@@ -315,10 +315,10 @@ export const bindPool = (
           connection,
           boundConnection,
         ) => {
-          return boundConnection.stream(streamQuery, streamHandler);
+          return boundConnection.stream(streamQuery, streamHandler, config);
         },
         (newPool) => {
-          return newPool.stream(streamQuery, streamHandler);
+          return newPool.stream(streamQuery, streamHandler, config);
         },
         streamQuery,
       );

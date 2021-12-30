@@ -154,7 +154,7 @@ export const bindPoolConnection = (
         query.values,
       );
     },
-    stream: (query, streamHandler) => {
+    stream: (query, streamHandler, config) => {
       assertSqlSqlToken(query);
 
       return stream(
@@ -164,6 +164,8 @@ export const bindPoolConnection = (
         query.sql,
         query.values,
         streamHandler,
+        undefined,
+        config,
       );
     },
     transaction: (handler, transactionRetryLimit) => {
