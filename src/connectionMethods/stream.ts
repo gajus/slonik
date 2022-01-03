@@ -11,7 +11,7 @@ import type {
   InternalStreamFunction,
 } from '../types';
 
-export const stream: InternalStreamFunction = async (connectionLogger, connection, clientConfiguration, rawSql, values, streamHandler) => {
+export const stream: InternalStreamFunction = async (connectionLogger, connection, clientConfiguration, rawSql, values, streamHandler, uid, options) => {
   return await executeQuery(
     connectionLogger,
     connection,
@@ -20,7 +20,7 @@ export const stream: InternalStreamFunction = async (connectionLogger, connectio
     values,
     undefined,
     (finalConnection, finalSql, finalValues, executionContext, actualQuery) => {
-      const query = new QueryStream(finalSql, finalValues);
+      const query = new QueryStream(finalSql, finalValues, options);
 
       const queryStream: Stream = finalConnection.query(query);
 
