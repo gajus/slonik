@@ -28,5 +28,5 @@ export const isSqlToken = (subject: unknown): subject is SqlTokenType => {
     return false;
   }
 
-  return Tokens.includes((subject as {type: string}).type);
+  return Tokens.includes((subject as SqlTokenType).type);
 };
