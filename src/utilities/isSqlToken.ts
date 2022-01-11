@@ -28,6 +28,5 @@ export const isSqlToken = (subject: unknown): subject is SqlTokenType => {
     return false;
   }
 
-  // @ts-expect-error -- not sure how to assert that property exists
-  return Tokens.includes(subject.type);
+  return Tokens.includes((subject as {type: string}).type);
 };
