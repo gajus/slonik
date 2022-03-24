@@ -47,7 +47,6 @@ test('overrides provided properties', (t) => {
     {
       ...defaultConfiguration,
       interceptors: [
-        // @ts-expect-error
         'foo',
       ],
     },
@@ -63,7 +62,6 @@ test('overrides provided properties', (t) => {
     {
       ...defaultConfiguration,
       typeParsers: [
-        // @ts-expect-error
         'foo',
       ],
     },
