@@ -32,7 +32,7 @@
     "pg-protocol": "^1.5.0",
     "postgres-array": "^3.0.1",
     "postgres-interval": "^4.0.0",
-    "roarr": "^7.8.0",
+    "roarr": "^7.11.0",
     "serialize-error": "^8.0.0",
     "through2": "^4.0.2"
   },
