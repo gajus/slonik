@@ -2,6 +2,7 @@ const pg = require('pg-promise');
 
 const db = pg()({
   max: 4,
+  user: 'postgres',
 });
 
 module.exports = {

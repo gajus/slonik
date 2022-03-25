@@ -4,10 +4,12 @@ const {
   cycle,
   suite,
 } = require('benny');
+
 const clients = [
   require('./clients/pg'),
   require('./clients/pg-promise'),
   require('./clients/slonik'),
+  require('./clients/postgres'),
 ];
 
 const tests = [

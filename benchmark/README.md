@@ -4,9 +4,10 @@
 
 |**client**|**select**|**select_arg**|**select_args**|**select_where**|
 |-|-|-|-|-|
-|[`pg`](https://github.com/brianc/node-postgres)|11,097|10,807|5,171|2,892|
-|[`pg-promise`](https://github.com/vitaly-t/pg-promise)|10,964|11,466|5,903|3,408|
-|[`slonik`](https://github.com/gajus/slonik)|11,411|9,318|5,459|2,769|
+|[`pg`](https://github.com/brianc/node-postgres)|1,161|912|816|664|
+|[`pg-promise`](https://github.com/vitaly-t/pg-promise)|1,147|1,185|1,010|792|
+|[`slonik`](https://github.com/gajus/slonik)|1,123|1,151|1,033|729|
+|[`postgres`](https://github.com/porsager/postgres)|1,168|1,220|1,009|1,035|
 
 Results show operations per second (greater is better).
 

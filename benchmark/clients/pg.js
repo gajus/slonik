@@ -2,6 +2,7 @@ const pg = require('pg');
 
 const db = new pg.Pool({
   max: 4,
+  user: 'postgres',
 });
 
 module.exports = {
