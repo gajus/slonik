@@ -1,10 +1,10 @@
 {
   "dependencies": {
-    "benny": "^3.6.15",
-    "pg": "^8.5.1",
-    "pg-promise": "^10.8.6",
+    "benny": "^3.7.1",
+    "pg": "^8.7.3",
+    "pg-promise": "^10.11.1",
     "postgres": "^3.0.0",
-    "slonik": "^23.5.1"
+    "slonik": "^27.1.1"
   },
   "scripts": {
     "benchmark": "node benchmark.js"
