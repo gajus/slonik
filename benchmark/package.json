@@ -8,5 +8,9 @@
   },
   "scripts": {
     "benchmark": "NODE_ENV=production node benchmark.js"
+  },
+  "devDependencies": {
+    "eslint": "^8.11.0",
+    "eslint-config-canonical": "^33.0.1"
   }
 }
