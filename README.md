@@ -7,7 +7,7 @@
 [![Canonical Code Style](https://img.shields.io/badge/code%20style-canonical-blue.svg?style=flat-square)](https://github.com/gajus/canonical)
 [![Twitter Follow](https://img.shields.io/twitter/follow/kuizinas.svg?style=social&label=Follow)](https://twitter.com/kuizinas)
 
-A [battle-tested](#battle-tested) PostgreSQL client with strict types, detailed logging and assertions.
+A [battle-tested](#battle-tested) Node.js PostgreSQL client with strict types, detailed logging and assertions.
 
 ![Tailing Slonik logs](./.README/slonik-log-tailing.gif)
 

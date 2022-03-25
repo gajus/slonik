@@ -36,7 +36,7 @@
     "serialize-error": "^8.0.0",
     "through2": "^4.0.2"
   },
-  "description": "A PostgreSQL client with strict types, detailed logging and assertions.",
+  "description": "A Node.js PostgreSQL client with strict types, detailed logging and assertions.",
   "devDependencies": {
     "@types/concat-stream": "^1.6.1",
     "@types/pg-copy-streams": "^1.2.1",
