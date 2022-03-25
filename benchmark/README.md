@@ -13,12 +13,14 @@ Results show operations per second (greater is better).
 
 System used to run benchmarks:
 
-> System:
->   OS: macOS 10.15.6
->   CPU: (16) x64 Intel(R) Core(TM) i9-9980HK CPU @ 2.40GHz
->   Memory: 64.00 GB
-> Binaries:
->   Node: 15.2.1
+```
+System:
+  OS: macOS 10.15.6
+  CPU: (16) x64 Intel(R) Core(TM) i9-9980HK CPU @ 2.40GHz
+  Memory: 64.00 GB
+Binaries:
+  Node: 15.2.1
+```
 
 <!-- Use https://npmjs.com/envinfo to generate the system information. -->
 
