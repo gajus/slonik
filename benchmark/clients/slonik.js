@@ -5,29 +5,52 @@ const {
 
 const pool = createPool('postgres://postgres@127.0.0.1:5432', {
   captureStackTrace: false,
-  connectionTimeout: 30 * 1_000,
-  maximumPoolSize: 4,
 });
+
+const connect = () => {
+  return new Promise((resolve) => {
+    pool.connect((connection) => {
+      resolve(connection);
+
+      return new Promise((end) => {
+        connection.end = () => {
+          end();
+        };
+      });
+    });
+  });
+};
 
 module.exports = {
   name: 'slonik',
   tests: {
-    select: () => {
-      return pool.query(sql`select 1 as x`);
+    select: async () => {
+      const connection = await connect();
+
+      return () => {
+        return connection.query(sql`select 1 as x`);
+      };
     },
-    select_arg: () => {
-      return pool.query(sql`select ${1} as x`);
+    select_arg: async () => {
+      const connection = await connect();
+
+      return () => {
+        return connection.query(sql`select ${1} as x`);
+      };
     },
-    select_args: () => {
-      return pool.query(sql`
-        select
-              ${1} as int,
-              ${'foo'} as string,
-              ${new Date().toISOString()}::timestamp with time zone as timestamp,
-              ${null} as null,
-              ${false}::bool as boolean,
-              ${Buffer.from('bar').toString()}::bytea as bytea,
-              ${sql.json(JSON.stringify([
+    select_args: async () => {
+      const connection = await connect();
+
+      return () => {
+        return connection.query(sql`
+          select
+                ${1} as int,
+                ${'foo'} as string,
+                ${new Date().toISOString()}::timestamp with time zone as timestamp,
+                ${null} as null,
+                ${false}::bool as boolean,
+                ${Buffer.from('bar').toString()}::bytea as bytea,
+                ${sql.json(JSON.stringify([
     {
       foo: 'bar',
     },
@@ -35,10 +58,15 @@ module.exports = {
       bar: 'baz',
     },
   ]))}::jsonb as json
-      `);
+        `);
+      };
     },
-    select_where: () => {
-      return pool.query(sql`select * from pg_catalog.pg_type where typname = ${'bool'}`);
+    select_where: async () => {
+      const connection = await connect();
+
+      return () => {
+        return connection.query(sql`select * from pg_catalog.pg_type where typname = ${'bool'}`);
+      };
     },
   },
   url: 'https://github.com/gajus/slonik',
