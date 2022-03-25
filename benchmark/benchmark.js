@@ -1,3 +1,5 @@
+/* eslint-disable node/global-require */
+
 const {
   add,
   complete,
@@ -69,7 +71,7 @@ const tests = [
       if (clientResults[client.name][test].percentSlower) {
         row.push(new Intl.NumberFormat('en-US').format(clientResults[client.name][test].ops) + ' (-' + clientResults[client.name][test].percentSlower + '%)');
       } else {
-        row.push('**' + new Intl.NumberFormat('en-US').format(clientResults[client.name][test].ops) + '**');
+        row.push(new Intl.NumberFormat('en-US').format(clientResults[client.name][test].ops) + ' ⚡️');
       }
     }
 
@@ -78,5 +80,6 @@ const tests = [
     );
   }
 
+  // eslint-disable-next-line no-console
   console.log(table.join('\n'));
 })();
