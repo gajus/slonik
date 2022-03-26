@@ -20,6 +20,7 @@ export type {
   IdentifierNormalizer,
   IdentifierSqlToken,
   Interceptor,
+  JsonBinarySqlToken,
   JsonSqlToken,
   ListSqlToken,
   MockPoolOverrides,
