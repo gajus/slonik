@@ -193,7 +193,7 @@ Serializes value and binds it as a JSON binary, e.g.
 
 ```js
 await connection.query(sql`
-  SELECT (${sql.json([1, 2, 3])})
+  SELECT (${sql.jsonb([1, 2, 3])})
 `);
 
 ```
