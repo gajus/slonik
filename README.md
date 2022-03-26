@@ -1527,15 +1527,6 @@ Produces:
 
 ```
 
-<a name="user-content-slonik-query-building-sql-json-difference-from-json-stringify"></a>
-<a name="slonik-query-building-sql-json-difference-from-json-stringify"></a>
-#### Difference from <code>JSON.stringify</code>
-
-|Input|`sql.json`|`JSON.stringify`|
-|---|---|---|
-|`undefined`|Throws `InvalidInputError` error.|`undefined`|
-|`null`|`null`|`"null"` (string literal)|
-
 <a name="user-content-slonik-query-building-sql-jsonb"></a>
 <a name="slonik-query-building-sql-jsonb"></a>
 ### <code>sql.jsonb</code>
@@ -1567,15 +1558,6 @@ Produces:
 }
 
 ```
-
-<a name="user-content-slonik-query-building-sql-jsonb-difference-from-json-stringify-1"></a>
-<a name="slonik-query-building-sql-jsonb-difference-from-json-stringify-1"></a>
-#### Difference from <code>JSON.stringify</code>
-
-|Input|`sql.json`|`JSON.stringify`|
-|---|---|---|
-|`undefined`|Throws `InvalidInputError` error.|`undefined`|
-|`null`|`null`|`"null"` (string literal)|
 
 <a name="user-content-slonik-query-building-sql-join"></a>
 <a name="slonik-query-building-sql-join"></a>

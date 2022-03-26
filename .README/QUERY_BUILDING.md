@@ -180,13 +180,6 @@ Produces:
 
 ```
 
-#### Difference from `JSON.stringify`
-
-|Input|`sql.json`|`JSON.stringify`|
-|---|---|---|
-|`undefined`|Throws `InvalidInputError` error.|`undefined`|
-|`null`|`null`|`"null"` (string literal)|
-
 ### `sql.jsonb`
 
 ```js
@@ -216,13 +209,6 @@ Produces:
 }
 
 ```
-
-#### Difference from `JSON.stringify`
-
-|Input|`sql.json`|`JSON.stringify`|
-|---|---|---|
-|`undefined`|Throws `InvalidInputError` error.|`undefined`|
-|`null`|`null`|`"null"` (string literal)|
 
 ### `sql.join`
 

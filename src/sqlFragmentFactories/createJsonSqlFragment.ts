@@ -27,7 +27,7 @@ export const createJsonSqlFragment = (token: JsonBinarySqlToken | JsonSqlToken, 
   if (token.value === undefined) {
     throw new InvalidInputError('JSON payload must not be undefined.');
   } else if (token.value === null) {
-    value = token.value;
+    value = 'null';
 
   // @todo Deep check Array.
   } else if (!isPlainObject(token.value) && !Array.isArray(token.value) && ![

@@ -38,14 +38,14 @@ test('creates a value list (array)', (t) => {
   });
 });
 
-test('passes null unstringified', (t) => {
+test('stringifies NULL to \'null\'::json', (t) => {
   const query = sql`SELECT ${sql.json(null)}`;
 
   t.deepEqual(query, {
     sql: 'SELECT $1::json',
     type: SqlToken,
     values: [
-      null,
+      'null',
     ],
   });
 });
