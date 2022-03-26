@@ -34,18 +34,124 @@ export type ConnectionOptions = {
   username?: string,
 };
 
+/**
+ * Do not edit manually. This type definition is generated using: ./bin/generate-type-name.js
+ */
 export type TypeNameIdentifier =
+  // We have to provide `string` fallback for custom types.
+  | string
+  | '_record'
+  | 'aclitem'
+  | 'any'
+  | 'anyarray'
+  | 'anycompatible'
+  | 'anycompatiblearray'
+  | 'anycompatiblemultirange'
+  | 'anycompatiblenonarray'
+  | 'anycompatiblerange'
+  | 'anyelement'
+  | 'anyenum'
+  | 'anymultirange'
+  | 'anynonarray'
+  | 'anyrange'
+  | 'bit'
   | 'bool'
+  | 'box'
+  | 'bpchar'
   | 'bytea'
+  | 'char'
+  | 'cid'
+  | 'cidr'
+  | 'circle'
+  | 'cstring'
+  | 'date'
+  | 'datemultirange'
+  | 'daterange'
+  | 'event_trigger'
+  | 'fdw_handler'
   | 'float4'
   | 'float8'
+  | 'gtsvector'
+  | 'index_am_handler'
+  | 'inet'
   | 'int2'
+  | 'int2vector'
   | 'int4'
+  | 'int4multirange'
+  | 'int4range'
   | 'int8'
+  | 'int8multirange'
+  | 'int8range'
+  | 'internal'
+  | 'interval'
   | 'json'
+  | 'jsonb'
+  | 'jsonpath'
+  | 'language_handler'
+  | 'line'
+  | 'lseg'
+  | 'macaddr'
+  | 'macaddr8'
+  | 'money'
+  | 'name'
+  | 'numeric'
+  | 'nummultirange'
+  | 'numrange'
+  | 'oid'
+  | 'oidvector'
+  | 'path'
+  | 'pg_attribute'
+  | 'pg_brin_bloom_summary'
+  | 'pg_brin_minmax_multi_summary'
+  | 'pg_class'
+  | 'pg_ddl_command'
+  | 'pg_dependencies'
+  | 'pg_lsn'
+  | 'pg_mcv_list'
+  | 'pg_ndistinct'
+  | 'pg_node_tree'
+  | 'pg_proc'
+  | 'pg_snapshot'
+  | 'pg_type'
+  | 'point'
+  | 'polygon'
+  | 'record'
+  | 'refcursor'
+  | 'regclass'
+  | 'regcollation'
+  | 'regconfig'
+  | 'regdictionary'
+  | 'regnamespace'
+  | 'regoper'
+  | 'regoperator'
+  | 'regproc'
+  | 'regprocedure'
+  | 'regrole'
+  | 'regtype'
+  | 'table_am_handler'
   | 'text'
+  | 'tid'
+  | 'time'
+  | 'timestamp'
   | 'timestamptz'
-  | 'uuid';
+  | 'timetz'
+  | 'trigger'
+  | 'tsm_handler'
+  | 'tsmultirange'
+  | 'tsquery'
+  | 'tsrange'
+  | 'tstzmultirange'
+  | 'tstzrange'
+  | 'tsvector'
+  | 'txid_snapshot'
+  | 'unknown'
+  | 'uuid'
+  | 'varbit'
+  | 'varchar'
+  | 'void'
+  | 'xid'
+  | 'xid8'
+  | 'xml';
 
 export type SerializableValue =
   boolean | number | string | readonly SerializableValue[] | {
@@ -267,7 +373,7 @@ export type QueryContext = {
 };
 
 export type ArraySqlToken = {
-  readonly memberType: SqlToken | TypeNameIdentifier | string,
+  readonly memberType: SqlToken | TypeNameIdentifier,
   readonly type: typeof tokens.ArrayToken,
   readonly values: readonly PrimitiveValueExpression[],
 };
@@ -299,7 +405,7 @@ export type SqlSqlToken = {
   readonly values: readonly PrimitiveValueExpression[],
 };
 
-export type UnnestSqlColumn = string | readonly string[];
+export type UnnestSqlColumn = TypeNameIdentifier | readonly TypeNameIdentifier[];
 
 export type UnnestSqlToken = {
   readonly columnTypes: readonly UnnestSqlColumn[],
