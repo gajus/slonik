@@ -9,12 +9,12 @@ import {
 const sql = createSqlTag();
 
 test('creates a value list (object)', (t) => {
-  const query = sql`SELECT ${sql.json({
+  const query = sql`SELECT ${sql.jsonb({
     foo: 'bar',
   })}`;
 
   t.deepEqual(query, {
-    sql: 'SELECT $1::json',
+    sql: 'SELECT $1::jsonb',
     type: SqlToken,
     values: [
       '{"foo":"bar"}',
@@ -23,14 +23,14 @@ test('creates a value list (object)', (t) => {
 });
 
 test('creates a value list (array)', (t) => {
-  const query = sql`SELECT ${sql.json([
+  const query = sql`SELECT ${sql.jsonb([
     {
       foo: 'bar',
     },
   ])}`;
 
   t.deepEqual(query, {
-    sql: 'SELECT $1::json',
+    sql: 'SELECT $1::jsonb',
     type: SqlToken,
     values: [
       '[{"foo":"bar"}]',
@@ -39,10 +39,10 @@ test('creates a value list (array)', (t) => {
 });
 
 test('passes null unstringified', (t) => {
-  const query = sql`SELECT ${sql.json(null)}`;
+  const query = sql`SELECT ${sql.jsonb(null)}`;
 
   t.deepEqual(query, {
-    sql: 'SELECT $1::json',
+    sql: 'SELECT $1::jsonb',
     type: SqlToken,
     values: [
       null,
@@ -51,10 +51,10 @@ test('passes null unstringified', (t) => {
 });
 
 test('JSON encodes string values', (t) => {
-  const query = sql`SELECT ${sql.json('example string')}`;
+  const query = sql`SELECT ${sql.jsonb('example string')}`;
 
   t.deepEqual(query, {
-    sql: 'SELECT $1::json',
+    sql: 'SELECT $1::jsonb',
     type: SqlToken,
     values: [
       '"example string"',
@@ -63,10 +63,10 @@ test('JSON encodes string values', (t) => {
 });
 
 test('JSON encodes numeric values', (t) => {
-  const query = sql`SELECT ${sql.json(1_234)}`;
+  const query = sql`SELECT ${sql.jsonb(1_234)}`;
 
   t.deepEqual(query, {
-    sql: 'SELECT $1::json',
+    sql: 'SELECT $1::jsonb',
     type: SqlToken,
     values: [
       '1234',
@@ -75,10 +75,10 @@ test('JSON encodes numeric values', (t) => {
 });
 
 test('JSON encodes boolean values', (t) => {
-  const query = sql`SELECT ${sql.json(true)}`;
+  const query = sql`SELECT ${sql.jsonb(true)}`;
 
   t.deepEqual(query, {
-    sql: 'SELECT $1::json',
+    sql: 'SELECT $1::jsonb',
     type: SqlToken,
     values: [
       'true',
@@ -89,7 +89,7 @@ test('JSON encodes boolean values', (t) => {
 test('throws if payload is undefined', (t) => {
   const error = t.throws(() => {
     // @ts-expect-error
-    sql`SELECT ${sql.json(undefined)}`;
+    sql`SELECT ${sql.jsonb(undefined)}`;
   });
 
   t.is(error?.message, 'JSON payload must not be undefined.');
@@ -98,7 +98,7 @@ test('throws if payload is undefined', (t) => {
 test('throws if payload cannot be stringified (non-primitive object)', (t) => {
   const error = t.throws(() => {
     // @ts-expect-error
-    sql`SELECT ${sql.json(() => {})}`;
+    sql`SELECT ${sql.jsonb(() => {})}`;
   });
 
   t.is(error?.message, 'JSON payload must be a primitive value or a plain object.');
@@ -110,10 +110,10 @@ test('Object types with optional properties are allowed', (t) => {
     foo: 'bar',
   };
 
-  const query = sql`SELECT ${sql.json(testValue)}`;
+  const query = sql`SELECT ${sql.jsonb(testValue)}`;
 
   t.deepEqual(query, {
-    sql: 'SELECT $1::json',
+    sql: 'SELECT $1::jsonb',
     type: SqlToken,
     values: [
       '{"foo":"bar"}',
