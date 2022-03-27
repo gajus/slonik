@@ -14,6 +14,7 @@ import {
   ArrayToken,
   BinaryToken,
   IdentifierToken,
+  JsonBinaryToken,
   JsonToken,
   ListToken,
   SqlToken,
@@ -31,8 +32,10 @@ export const createSqlTokenSqlFragment = (token: SqlTokenType, greatestParameter
     return createBinarySqlFragment(token, greatestParameterPosition);
   } else if (token.type === IdentifierToken) {
     return createIdentifierSqlFragment(token);
+  } else if (token.type === JsonBinaryToken) {
+    return createJsonSqlFragment(token, greatestParameterPosition, true);
   } else if (token.type === JsonToken) {
-    return createJsonSqlFragment(token, greatestParameterPosition);
+    return createJsonSqlFragment(token, greatestParameterPosition, false);
   } else if (token.type === ListToken) {
     return createListSqlFragment(token, greatestParameterPosition);
   } else if (token.type === SqlToken) {
