@@ -172,7 +172,7 @@ Produces:
 
 ```js
 {
-  sql: 'SELECT $1',
+  sql: 'SELECT $1::json',
   values: [
     '[1,2,3]'
   ]
@@ -180,12 +180,35 @@ Produces:
 
 ```
 
-#### Difference from `JSON.stringify`
+### `sql.jsonb`
 
-|Input|`sql.json`|`JSON.stringify`|
-|---|---|---|
-|`undefined`|Throws `InvalidInputError` error.|`undefined`|
-|`null`|`null`|`"null"` (string literal)|
+```js
+(
+  value: SerializableValue
+) => JsonBinarySqlToken;
+
+```
+
+Serializes value and binds it as a JSON binary, e.g.
+
+```js
+await connection.query(sql`
+  SELECT (${sql.jsonb([1, 2, 3])})
+`);
+
+```
+
+Produces:
+
+```js
+{
+  sql: 'SELECT $1::jsonb',
+  values: [
+    '[1,2,3]'
+  ]
+}
+
+```
 
 ### `sql.join`
 

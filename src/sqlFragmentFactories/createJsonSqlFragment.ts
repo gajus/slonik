@@ -12,6 +12,7 @@ import {
   InvalidInputError,
 } from '../errors';
 import type {
+  JsonBinarySqlToken,
   JsonSqlToken,
   SqlFragment,
 } from '../types';
@@ -20,13 +21,13 @@ const log = Logger.child({
   namespace: 'createJsonSqlFragment',
 });
 
-export const createJsonSqlFragment = (token: JsonSqlToken, greatestParameterPosition: number): SqlFragment => {
+export const createJsonSqlFragment = (token: JsonBinarySqlToken | JsonSqlToken, greatestParameterPosition: number, binary: boolean): SqlFragment => {
   let value;
 
   if (token.value === undefined) {
     throw new InvalidInputError('JSON payload must not be undefined.');
   } else if (token.value === null) {
-    value = token.value;
+    value = 'null';
 
   // @todo Deep check Array.
   } else if (!isPlainObject(token.value) && !Array.isArray(token.value) && ![
@@ -51,9 +52,8 @@ export const createJsonSqlFragment = (token: JsonSqlToken, greatestParameterPosi
     }
   }
 
-  // Do not add `::json` as it will fail if an attempt is made to insert to jsonb-type column.
   return {
-    sql: '$' + String(greatestParameterPosition + 1),
+    sql: '$' + String(greatestParameterPosition + 1) + '::' + (binary ? 'jsonb' : 'json'),
     values: [
       value,
     ],

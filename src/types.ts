@@ -394,6 +394,11 @@ export type ListSqlToken = {
   readonly type: typeof tokens.ListToken,
 };
 
+export type JsonBinarySqlToken = {
+  readonly type: typeof tokens.JsonBinaryToken,
+  readonly value: SerializableValue,
+};
+
 export type JsonSqlToken = {
   readonly type: typeof tokens.JsonToken,
   readonly value: SerializableValue,
@@ -425,6 +430,7 @@ export type SqlToken =
   | ArraySqlToken
   | BinarySqlToken
   | IdentifierSqlToken
+  | JsonBinarySqlToken
   | JsonSqlToken
   | ListSqlToken
   | SqlSqlToken
@@ -450,6 +456,7 @@ export type SqlTaggedTemplate<T extends UserQueryResultRow = QueryResultRow> = {
   identifier: (names: readonly string[]) => IdentifierSqlToken,
   join: (members: readonly ValueExpression[], glue: SqlSqlToken) => ListSqlToken,
   json: (value: SerializableValue) => JsonSqlToken,
+  jsonb: (value: SerializableValue) => JsonBinarySqlToken,
   literalValue: (value: string) => SqlSqlToken,
   unnest: (
     // Value might be ReadonlyArray<ReadonlyArray<PrimitiveValueExpression>>,

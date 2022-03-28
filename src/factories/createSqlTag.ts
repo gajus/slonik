@@ -9,6 +9,7 @@ import {
   ArrayToken,
   BinaryToken,
   IdentifierToken,
+  JsonBinaryToken,
   JsonToken,
   ListToken,
   SqlToken,
@@ -18,6 +19,7 @@ import type {
   ArraySqlToken,
   BinarySqlToken,
   IdentifierSqlToken,
+  JsonBinarySqlToken,
   JsonSqlToken,
   SqlToken as SqlTokenType,
   ListSqlToken,
@@ -140,6 +142,15 @@ sql.json = (
 ): JsonSqlToken => {
   return {
     type: JsonToken,
+    value,
+  };
+};
+
+sql.jsonb = (
+  value: SerializableValue,
+): JsonBinarySqlToken => {
+  return {
+    type: JsonBinaryToken,
     value,
   };
 };
