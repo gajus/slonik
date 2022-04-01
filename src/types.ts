@@ -410,10 +410,8 @@ export type SqlSqlToken = {
   readonly values: readonly PrimitiveValueExpression[],
 };
 
-export type UnnestSqlColumn = TypeNameIdentifier | readonly TypeNameIdentifier[];
-
 export type UnnestSqlToken = {
-  readonly columnTypes: readonly UnnestSqlColumn[],
+  readonly columnTypes: TypeNameIdentifier | readonly TypeNameIdentifier[],
   readonly tuples: ReadonlyArray<readonly ValueExpression[]>,
   readonly type: typeof tokens.UnnestToken,
 };
@@ -464,7 +462,7 @@ export type SqlTaggedTemplate<T extends UserQueryResultRow = QueryResultRow> = {
     // https://github.com/gajus/slonik/issues/44
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     tuples: ReadonlyArray<readonly any[]>,
-    columnTypes: readonly UnnestSqlColumn[],
+    columnTypes: TypeNameIdentifier | readonly TypeNameIdentifier[],
   ) => UnnestSqlToken,
 };
 

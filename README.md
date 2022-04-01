@@ -1673,7 +1673,7 @@ Produces:
 ```js
 (
   tuples: ReadonlyArray<readonly any[]>,
-  columnTypes: readonly UnnestSqlColumn[]
+  columnTypes: TypeNameIdentifier | readonly TypeNameIdentifier[]
 ): UnnestSqlToken;
 
 ```
