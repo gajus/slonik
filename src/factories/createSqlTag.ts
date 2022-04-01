@@ -109,7 +109,7 @@ const sql: SqlTaggedTemplate = (
 
 sql.array = (
   values: readonly PrimitiveValueExpression[],
-  memberType: SqlTokenType | TypeNameIdentifier | string,
+  memberType: SqlTokenType | TypeNameIdentifier,
 ): ArraySqlToken => {
   return {
     memberType,
