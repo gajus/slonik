@@ -17,7 +17,7 @@ import {
   parseDsn,
 } from 'slonik';
 
-parseDsn('postgresql://foo@localhost/bar?connect_timeout=10&application_name=baz');
+parseDsn('postgresql://foo@localhost/bar?application_name=baz');
 ```
 
 ### `stringifyDsn`
@@ -30,10 +30,17 @@ parseDsn('postgresql://foo@localhost/bar?connect_timeout=10&application_name=baz
 
 Stringifies `ConnectionOptions` to a DSN.
 
+Example:
+
 ```ts
 import {
   stringifyDsn,
 } from 'slonik';
 
-stringifyDsn('postgresql://foo@localhost/bar?connect_timeout=10&application_name=baz');
+stringifyDsn({
+  host: 'localhost',
+  username: 'foo',
+  databaseName: 'bar',
+  applicationName: 'baz',
+});
 ```
