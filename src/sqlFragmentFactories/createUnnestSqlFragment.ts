@@ -1,14 +1,10 @@
 import {
   InvalidInputError,
 } from '../errors';
-import {
-  SqlToken,
-} from '../tokens';
 import type {
   SqlFragment,
   UnnestSqlToken,
   PrimitiveValueExpression,
-  SqlSqlToken,
 } from '../types';
 import {
   countArrayDimensions,
