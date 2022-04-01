@@ -2467,7 +2467,7 @@ await pool.connect(async (connection0) => {
 
 This package is using [TypeScript](http://typescriptlang.org/) types.
 
-Refer to [`./src/types.js`](./src/types.js).
+Refer to [`./src/types.ts`](./src/types.ts).
 
 The public interface exports the following types:
 
