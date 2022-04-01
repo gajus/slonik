@@ -317,8 +317,8 @@ Produces:
 
 ```js
 (
-  tuples: PrimitiveValueExpression[][],
-  columnTypes: (string | string[])[]
+  tuples: ReadonlyArray<readonly any[]>,
+  columnTypes: readonly UnnestSqlColumn[]
 ): UnnestSqlToken;
 
 ```
