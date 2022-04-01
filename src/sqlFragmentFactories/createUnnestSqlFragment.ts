@@ -28,19 +28,27 @@ export const createUnnestSqlFragment = (token: UnnestSqlToken, greatestParameter
   let placeholderIndex = greatestParameterPosition;
 
   while (columnIndex < columnTypes.length) {
-    let columnType = columnTypes[columnIndex];
-    let columnTypeIsIdentifier = typeof columnType !== 'string';
+    const typeMember = columnTypes[columnIndex];
 
-    if (typeof columnType !== 'string') {
-      columnTypeIsIdentifier = true;
-      columnType = columnType.map((identifierName) => {
+    let columnType = columnTypes[columnIndex];
+    let columnTypeIsIdentifier;
+
+    if (typeof typeMember === 'string') {
+      columnType = typeMember;
+      columnTypeIsIdentifier = false;
+    } else if (Array.isArray(typeMember)) {
+      columnType = typeMember.map((identifierName) => {
         if (typeof identifierName !== 'string') {
-          throw new InvalidInputError('sql.unnest column identifier name array member type must be a string.');
+          throw new InvalidInputError('sql.unnest column identifier name array member type must be a string (type name identifier) or a SQL token.');
         }
 
         return escapeIdentifier(identifierName);
       })
         .join('.');
+      columnTypeIsIdentifier = true;
+    } else {
+      columnType = typeMember.sql;
+      columnTypeIsIdentifier = true;
     }
 
     unnestSqlTokens.push(

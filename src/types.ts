@@ -34,7 +34,12 @@ export type ConnectionOptions = {
   username?: string,
 };
 
+/**
+ * "string" type covers all type name identifiers – the literal values are added only to assist developer
+ * experience with auto suggestions for commonly used type name identifiers.
+ */
 export type TypeNameIdentifier =
+  | string
   | 'bool'
   | 'bytea'
   | 'float4'
@@ -267,7 +272,7 @@ export type QueryContext = {
 };
 
 export type ArraySqlToken = {
-  readonly memberType: SqlToken | TypeNameIdentifier | string,
+  readonly memberType: SqlToken | TypeNameIdentifier,
   readonly type: typeof tokens.ArrayToken,
   readonly values: readonly PrimitiveValueExpression[],
 };
@@ -304,10 +309,8 @@ export type SqlSqlToken = {
   readonly values: readonly PrimitiveValueExpression[],
 };
 
-export type UnnestSqlColumn = string | readonly string[];
-
 export type UnnestSqlToken = {
-  readonly columnTypes: readonly UnnestSqlColumn[],
+  readonly columnTypes: Array<[...string[], TypeNameIdentifier]> | Array<SqlSqlToken | TypeNameIdentifier>,
   readonly tuples: ReadonlyArray<readonly ValueExpression[]>,
   readonly type: typeof tokens.UnnestToken,
 };
@@ -358,7 +361,7 @@ export type SqlTaggedTemplate<T extends UserQueryResultRow = QueryResultRow> = {
     // https://github.com/gajus/slonik/issues/44
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     tuples: ReadonlyArray<readonly any[]>,
-    columnTypes: readonly UnnestSqlColumn[],
+    columnTypes: Array<[...string[], TypeNameIdentifier]> | Array<SqlSqlToken | TypeNameIdentifier>
   ) => UnnestSqlToken,
 };
 

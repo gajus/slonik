@@ -29,7 +29,6 @@ import type {
   SqlSqlToken,
   SqlTaggedTemplate,
   TypeNameIdentifier,
-  UnnestSqlColumn,
   UnnestSqlToken,
   ValueExpression,
 } from '../types';
@@ -110,7 +109,7 @@ const sql: SqlTaggedTemplate = (
 
 sql.array = (
   values: readonly PrimitiveValueExpression[],
-  memberType: SqlTokenType | TypeNameIdentifier | string,
+  memberType: SqlTokenType | TypeNameIdentifier,
 ): ArraySqlToken => {
   return {
     memberType,
@@ -178,7 +177,7 @@ sql.literalValue = (
 
 sql.unnest = (
   tuples: ReadonlyArray<readonly PrimitiveValueExpression[]>,
-  columnTypes: readonly UnnestSqlColumn[],
+  columnTypes: Array<[...string[], TypeNameIdentifier]> | Array<SqlSqlToken | TypeNameIdentifier>,
 ): UnnestSqlToken => {
   return {
     columnTypes,
