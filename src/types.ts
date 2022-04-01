@@ -365,8 +365,6 @@ export type SqlTaggedTemplate<T extends UserQueryResultRow = QueryResultRow> = {
   ) => UnnestSqlToken,
 };
 
-// ReadonlyArray<[string, SqlToken | TypeNameIdentifier]> | SqlToken |
-
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export type InternalQueryMethod<R = any> = (
   log: Logger,
