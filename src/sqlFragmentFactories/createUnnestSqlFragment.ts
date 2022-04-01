@@ -32,18 +32,16 @@ export const createUnnestSqlFragment = (token: UnnestSqlToken, greatestParameter
   let placeholderIndex = greatestParameterPosition;
 
   while (columnIndex < columnTypes.length) {
+    const typeMember = columnTypes[columnIndex];
+
     let columnType = columnTypes[columnIndex];
-    let columnTypeIsIdentifier = typeof columnType !== 'string';
+    let columnTypeIsIdentifier;
 
-    if (columnType.type === SqlToken) {
-      columnType = columnType.sql;
-    }
-
-    if (typeof columnType !== 'string') {
-      columnTypeIsIdentifier = true;
-
-      // @todo We should validate that the last member is a valid type name identifier.
-      columnType = columnType.map((identifierName: SqlSqlToken | string) => {
+    if (typeof typeMember === 'string') {
+      columnType = typeMember;
+      columnTypeIsIdentifier = false;
+    } else if (Array.isArray(typeMember)) {
+      columnType = typeMember.map((identifierName) => {
         if (typeof identifierName !== 'string') {
           throw new InvalidInputError('sql.unnest column identifier name array member type must be a string (type name identifier) or a SQL token.');
         }
@@ -51,6 +49,10 @@ export const createUnnestSqlFragment = (token: UnnestSqlToken, greatestParameter
         return escapeIdentifier(identifierName);
       })
         .join('.');
+      columnTypeIsIdentifier = true;
+    } else {
+      columnType = typeMember.sql;
+      columnTypeIsIdentifier = true;
     }
 
     unnestSqlTokens.push(

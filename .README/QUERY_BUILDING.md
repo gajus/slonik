@@ -214,8 +214,8 @@ Produces:
 
 ```js
 (
-  members: SqlToken[],
-  glue: SqlToken
+  members: SqlSqlToken[],
+  glue: SqlSqlToken
 ) => ListSqlToken;
 
 ```
@@ -318,7 +318,7 @@ Produces:
 ```js
 (
   tuples: ReadonlyArray<readonly any[]>,
-  columnTypes:  Array<[...string[], TypeNameIdentifier]> | Array<SqlToken | TypeNameIdentifier>
+  columnTypes:  Array<[...string[], TypeNameIdentifier]> | Array<SqlSqlToken | TypeNameIdentifier>
 ): UnnestSqlToken;
 
 ```
