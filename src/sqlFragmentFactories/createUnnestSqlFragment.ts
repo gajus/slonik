@@ -1,10 +1,14 @@
 import {
   InvalidInputError,
 } from '../errors';
+import {
+  SqlToken,
+} from '../tokens';
 import type {
   SqlFragment,
   UnnestSqlToken,
   PrimitiveValueExpression,
+  SqlSqlToken,
 } from '../types';
 import {
   countArrayDimensions,
@@ -31,11 +35,17 @@ export const createUnnestSqlFragment = (token: UnnestSqlToken, greatestParameter
     let columnType = columnTypes[columnIndex];
     let columnTypeIsIdentifier = typeof columnType !== 'string';
 
+    if (columnType.type === SqlToken) {
+      columnType = columnType.sql;
+    }
+
     if (typeof columnType !== 'string') {
       columnTypeIsIdentifier = true;
-      columnType = columnType.map((identifierName) => {
+
+      // @todo We should validate that the last member is a valid type name identifier.
+      columnType = columnType.map((identifierName: SqlSqlToken | string) => {
         if (typeof identifierName !== 'string') {
-          throw new InvalidInputError('sql.unnest column identifier name array member type must be a string.');
+          throw new InvalidInputError('sql.unnest column identifier name array member type must be a string (type name identifier) or a SQL token.');
         }
 
         return escapeIdentifier(identifierName);

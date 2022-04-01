@@ -8,7 +8,7 @@ import {
 
 const sql = createSqlTag();
 
-test('creates an unnest expression using primitive values', (t) => {
+test('creates an unnest expression using primitive values (type name identifier)', (t) => {
   const query = sql`SELECT * FROM ${sql.unnest([
     [
       1,
@@ -41,6 +41,81 @@ test('creates an unnest expression using primitive values', (t) => {
       [
         3,
         6,
+      ],
+    ],
+  });
+});
+
+test('creates an unnest expression using primitive values (sql token)', (t) => {
+  const query = sql`SELECT * FROM ${sql.unnest([
+    [
+      1,
+      2,
+      3,
+    ],
+    [
+      4,
+      5,
+      6,
+    ],
+  ], [
+    sql`integer`,
+    sql`integer`,
+    sql`integer`,
+  ])}`;
+
+  t.deepEqual(query, {
+    sql: 'SELECT * FROM unnest($1::integer[], $2::integer[], $3::integer[])',
+    type: SqlToken,
+    values: [
+      [
+        1,
+        4,
+      ],
+      [
+        2,
+        5,
+      ],
+      [
+        3,
+        6,
+      ],
+    ],
+  });
+});
+
+test('treats type as sql.identifier', (t) => {
+  const query = sql`SELECT bar, baz FROM ${sql.unnest([
+    [
+      1,
+      3,
+    ],
+    [
+      2,
+      4,
+    ],
+  ], [
+    [
+      'foo',
+      'int4',
+    ],
+    [
+      'foo',
+      'int4',
+    ],
+  ])} AS foo(bar, baz)`;
+
+  t.deepEqual(query, {
+    sql: 'SELECT bar, baz FROM unnest($1::"foo"."int4"[], $2::"foo"."int4"[]) AS foo(bar, baz)',
+    type: SqlToken,
+    values: [
+      [
+        1,
+        2,
+      ],
+      [
+        3,
+        4,
       ],
     ],
   });
@@ -157,43 +232,6 @@ test('recognizes an array of arrays array', (t) => {
             3,
           ],
         ],
-      ],
-    ],
-  });
-});
-
-test('recognizes sql.identifier-like column types', (t) => {
-  const query = sql`SELECT bar, baz FROM ${sql.unnest([
-    [
-      1,
-      3,
-    ],
-    [
-      2,
-      4,
-    ],
-  ], [
-    [
-      'foo',
-      'level',
-    ],
-    [
-      'foo',
-      'score',
-    ],
-  ])} AS foo(bar, baz)`;
-
-  t.deepEqual(query, {
-    sql: 'SELECT bar, baz FROM unnest($1::"foo"."level"[], $2::"foo"."score"[]) AS foo(bar, baz)',
-    type: SqlToken,
-    values: [
-      [
-        1,
-        2,
-      ],
-      [
-        3,
-        4,
       ],
     ],
   });

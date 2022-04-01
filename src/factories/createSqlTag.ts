@@ -177,7 +177,7 @@ sql.literalValue = (
 
 sql.unnest = (
   tuples: ReadonlyArray<readonly PrimitiveValueExpression[]>,
-  columnTypes: TypeNameIdentifier | readonly TypeNameIdentifier[],
+  columnTypes: SqlTokenType | TypeNameIdentifier | readonly SqlTokenType[] | readonly TypeNameIdentifier[],
 ): UnnestSqlToken => {
   return {
     columnTypes,

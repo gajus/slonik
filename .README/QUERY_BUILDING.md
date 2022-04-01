@@ -318,7 +318,7 @@ Produces:
 ```js
 (
   tuples: ReadonlyArray<readonly any[]>,
-  columnTypes: TypeNameIdentifier | readonly TypeNameIdentifier[]
+  columnTypes:  Array<[...string[], TypeNameIdentifier]> | Array<SqlToken | TypeNameIdentifier>
 ): UnnestSqlToken;
 
 ```
@@ -346,7 +346,7 @@ Produces:
 
 ```js
 {
-  sql: 'SELECT bar, baz FROM unnest($1::int4[], $2::text[]) AS foo(bar, baz)',
+  sql: 'SELECT bar, baz FROM unnest($1::"int4"[], $2::"text"[]) AS foo(bar, baz)',
   values: [
     [
       1,
@@ -361,20 +361,21 @@ Produces:
 
 ```
 
-if `columnType` type is `string[][]`, it will act similar as [`sql.identifier`](#sqlidentifier), e.g.
+If `columnType` array member type is `string`, it will treat it as a type name identifier (and quote with double quotes; illustrated in the example above).
 
+If `columnType` array member type is `SqlToken`, it will inline type name without quotes, e.g.
 
 ```js
 await connection.query(sql`
   SELECT bar, baz
   FROM ${sql.unnest(
     [
-      [1, 3],
-      [2, 4]
+      [1, 'foo'],
+      [2, 'bar']
     ],
     [
-      ['foo', 'level'],
-      ['foo', 'score']
+      sql`integer`,
+      sql`text`
     ]
   )} AS foo(bar, baz)
 `);
@@ -385,7 +386,45 @@ Produces:
 
 ```js
 {
-  sql: 'SELECT bar, baz FROM unnest($1::"foo"."level"[], $2::"foo"."score"[]) AS foo(bar, baz)',
+  sql: 'SELECT bar, baz FROM unnest($1::integer[], $2::text[]) AS foo(bar, baz)',
+  values: [
+    [
+      1,
+      2
+    ],
+    [
+      'foo',
+      'bar'
+    ]
+  ]
+}
+
+```
+
+If `columnType` array member type is `[...string[], TypeNameIdentifier]`, it will act as [`sql.identifier`](#sqlidentifier), e.g.
+
+```js
+await connection.query(sql`
+  SELECT bar, baz
+  FROM ${sql.unnest(
+    [
+      [1, 3],
+      [2, 4]
+    ],
+    [
+      ['foo', 'int4'],
+      ['foo', 'int4']
+    ]
+  )} AS foo(bar, baz)
+`);
+
+```
+
+Produces:
+
+```js
+{
+  sql: 'SELECT bar, baz FROM unnest($1::"foo"."int4"[], $2::"foo"."int4"[]) AS foo(bar, baz)',
   values: [
     [
       1,
@@ -397,5 +436,4 @@ Produces:
     ]
   ]
 }
-
 ```
