@@ -72,7 +72,7 @@ To handle the case where the data result does not match the expectations, catch 
 
 ```js
 import {
-  NotFoundError
+  DataIntegrityError
 } from 'slonik';
 
 let row;
