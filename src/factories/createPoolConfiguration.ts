@@ -58,6 +58,16 @@ export const createPoolConfiguration = (dsn: string, clientConfiguration: Client
     }
   }
 
+  if (clientConfiguration.idleTimeout !== 'DISABLE_TIMEOUT') {
+    if (clientConfiguration.idleTimeout === 0) {
+      log.warn('idleTimeout=0 sets timeout to 0 milliseconds; use idleTimeout=DISABLE_TIMEOUT to disable timeout');
+
+      poolConfiguration.idleTimeoutMillis = 1;
+    } else {
+      poolConfiguration.idleTimeoutMillis = clientConfiguration.idleTimeout;
+    }
+  }
+
   if (clientConfiguration.idleInTransactionSessionTimeout !== 'DISABLE_TIMEOUT') {
     if (clientConfiguration.idleInTransactionSessionTimeout === 0) {
       log.warn('idleInTransactionSessionTimeout=0 sets timeout to 0 milliseconds; use idleInTransactionSessionTimeout=DISABLE_TIMEOUT to disable timeout');
