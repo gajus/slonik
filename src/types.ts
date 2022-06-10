@@ -161,11 +161,11 @@ export type CommonQueryMethods = {
   readonly one: QueryOneFunction,
   readonly oneFirst: QueryOneFirstFunction,
   readonly query: QueryFunction,
+  readonly transaction: <T>(handler: TransactionFunction<T>, transactionRetryLimit?: number) => Promise<T>,
 };
 
 export type DatabaseTransactionConnection = CommonQueryMethods & {
   readonly stream: StreamFunction,
-  readonly transaction: <T>(handler: TransactionFunction<T>, transactionRetryLimit?: number) => Promise<T>,
 };
 
 export type TransactionFunction<T> = (connection: DatabaseTransactionConnection) => Promise<T>;
@@ -173,7 +173,6 @@ export type TransactionFunction<T> = (connection: DatabaseTransactionConnection)
 export type DatabasePoolConnection = CommonQueryMethods & {
   readonly copyFromBinary: QueryCopyFromBinaryFunction,
   readonly stream: StreamFunction,
-  readonly transaction: <T>(handler: TransactionFunction<T>, transactionRetryLimit?: number) => Promise<T>,
 };
 
 export type ConnectionRoutine<T> = (connection: DatabasePoolConnection) => Promise<T>;
@@ -192,7 +191,6 @@ export type DatabasePool = CommonQueryMethods & {
   readonly end: () => Promise<void>,
   readonly getPoolState: () => PoolState,
   readonly stream: StreamFunction,
-  readonly transaction: <T>(handler: TransactionFunction<T>, transactionRetryLimit?: number) => Promise<T>,
 };
 
 export type DatabaseConnection = DatabasePool | DatabasePoolConnection;
