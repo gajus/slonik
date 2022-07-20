@@ -1223,7 +1223,7 @@ import {
 
 ```
 
-Sometimes it may be desirable to construct a custom instance of `sql` tag. In those cases, you can use the `createSqlTag` factory, e.g.
+**(unimplemented)** Sometimes it may be desirable to construct a custom instance of `sql` tag. In those cases, you can use the `createSqlTag` factory, e.g.
 
 ```js
 import {
@@ -1237,7 +1237,7 @@ import {
 /**
  * @param {SqlTagConfiguration} configuration
  */
-const sql = createSqlTag(configuration);
+const sql = createSqlTag(configuration); // (unimplemented)
 
 ```
 
