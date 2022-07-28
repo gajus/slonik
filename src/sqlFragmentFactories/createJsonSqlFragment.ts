@@ -11,10 +11,10 @@ import {
 import {
   InvalidInputError,
 } from '../errors';
-import type {
-  JsonBinarySqlToken,
-  JsonSqlToken,
-  SqlFragment,
+import {
+  type JsonBinarySqlToken,
+  type JsonSqlToken,
+  type SqlFragment,
 } from '../types';
 
 const log = Logger.child({

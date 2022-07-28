@@ -1,9 +1,9 @@
 import {
   InvalidInputError,
 } from '../errors';
-import type {
-  IdentifierSqlToken,
-  SqlFragment,
+import {
+  type IdentifierSqlToken,
+  type SqlFragment,
 } from '../types';
 import {
   escapeIdentifier,

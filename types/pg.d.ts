@@ -7,11 +7,11 @@
 declare module 'pg' {
   import events from 'events';
   import type stream from 'stream';
-  import type {
-    ConnectionOptions,
+  import {
+    type ConnectionOptions,
   } from 'tls';
-  import type {
-    NoticeMessage,
+  import {
+    type NoticeMessage,
   } from 'pg-protocol/dist/messages';
   import type pgTypes from 'pg-types';
 

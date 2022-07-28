@@ -5,9 +5,9 @@ import {
 import {
   createSqlTokenSqlFragment,
 } from '../factories';
-import type {
-  ArraySqlToken,
-  SqlFragment,
+import {
+  type ArraySqlToken,
+  type SqlFragment,
 } from '../types';
 import {
   escapeIdentifier,

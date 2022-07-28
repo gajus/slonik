@@ -12,8 +12,8 @@ import {
   SqlToken,
   UnnestToken,
 } from '../tokens';
-import type {
-  SqlToken as SqlTokenType,
+import {
+  type SqlToken as SqlTokenType,
 } from '../types';
 import {
   hasOwnProperty,

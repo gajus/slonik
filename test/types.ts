@@ -10,9 +10,9 @@ import {
   createPool,
   sql,
 } from '../src';
-import type {
-  PrimitiveValueExpression,
-  QueryResult,
+import {
+  type PrimitiveValueExpression,
+  type QueryResult,
 } from '../src/types';
 
 export const queryMethods = async (): Promise<void> => {

@@ -2,8 +2,8 @@ import {
   getStackTrace,
 } from 'get-stack-trace';
 import Deferred from 'p-defer';
-import type {
-  PoolClient as PgPoolClient,
+import {
+  type PoolClient as PgPoolClient,
 } from 'pg';
 import {
   serializeError,
@@ -26,16 +26,16 @@ import {
 import {
   getPoolClientState,
 } from '../state';
-import type {
-  ClientConfiguration,
-  Logger,
-  Notice,
-  PrimitiveValueExpression,
-  QueryContext,
-  QueryId,
-  QueryResultRow,
-  QueryResult,
-  Query,
+import {
+  type ClientConfiguration,
+  type Logger,
+  type Notice,
+  type PrimitiveValueExpression,
+  type QueryContext,
+  type QueryId,
+  type QueryResultRow,
+  type QueryResult,
+  type Query,
 } from '../types';
 import {
   createQueryId,

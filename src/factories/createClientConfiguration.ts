@@ -1,10 +1,10 @@
 import {
   InvalidConfigurationError,
 } from '../errors';
-import type {
-  ClientConfigurationInput,
-  ClientConfiguration,
-  TypeParser,
+import {
+  type ClientConfigurationInput,
+  type ClientConfiguration,
+  type TypeParser,
 } from '../types';
 import {
   createTypeParserPreset,

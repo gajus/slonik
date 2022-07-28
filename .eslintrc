@@ -2,7 +2,8 @@
   "overrides": [
     {
       "extends": [
-        "canonical"
+        "canonical",
+        "canonical/node"
       ],
       "files": "*.js",
       "rules": {
@@ -25,6 +26,7 @@
         "project": "./tsconfig.json"
       },
       "rules": {
+        "@typescript-eslint/no-unnecessary-condition": 0,
         "require-atomic-updates": 0,
         "unicorn/prevent-abbreviations": 0
       }

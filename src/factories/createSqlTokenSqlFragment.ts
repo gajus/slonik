@@ -20,9 +20,9 @@ import {
   SqlToken,
   UnnestToken,
 } from '../tokens';
-import type {
-  SqlToken as SqlTokenType,
-  SqlFragment,
+import {
+  type SqlToken as SqlTokenType,
+  type SqlFragment,
 } from '../types';
 
 export const createSqlTokenSqlFragment = (token: SqlTokenType, greatestParameterPosition: number): SqlFragment => {

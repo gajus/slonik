@@ -6,8 +6,8 @@ import {
 import {
   poolStateMap,
 } from '../../src/state';
-import type {
-  ClientConfigurationInput,
+import {
+  type ClientConfigurationInput,
 } from '../../src/types';
 import {
   Logger as log,

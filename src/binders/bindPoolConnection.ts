@@ -1,5 +1,5 @@
-import type {
-  PoolClient as PgPoolClient,
+import {
+  type PoolClient as PgPoolClient,
 } from 'pg';
 import {
   assertSqlSqlToken,
@@ -19,10 +19,10 @@ import {
   stream,
   transaction,
 } from '../connectionMethods';
-import type {
-  ClientConfiguration,
-  DatabasePoolConnection,
-  Logger,
+import {
+  type ClientConfiguration,
+  type DatabasePoolConnection,
+  type Logger,
 } from '../types';
 
 export const bindPoolConnection = (

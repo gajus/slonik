@@ -1,13 +1,13 @@
-import type {
-  PoolClient as PgPoolClient,
+import {
+  type PoolClient as PgPoolClient,
 } from 'pg';
 import TypeOverrides from 'pg/lib/type-overrides';
 import {
   parse as parseArray,
 } from 'postgres-array';
-import type {
-  TypeOverrides as TypeOverridesType,
-  TypeParser,
+import {
+  type TypeOverrides as TypeOverridesType,
+  type TypeParser,
 } from '../types';
 
 type PostgresType = {

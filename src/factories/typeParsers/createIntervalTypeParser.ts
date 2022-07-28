@@ -3,8 +3,8 @@ import {
   toSeconds as durationToSeconds,
 } from 'iso8601-duration';
 import parseInterval from 'postgres-interval';
-import type {
-  TypeParser,
+import {
+  type TypeParser,
 } from '../../types';
 
 const intervalParser = (value: string) => {

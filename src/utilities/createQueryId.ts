@@ -1,5 +1,5 @@
-import type {
-  QueryId,
+import {
+  type QueryId,
 } from '../types';
 import {
   createUid,

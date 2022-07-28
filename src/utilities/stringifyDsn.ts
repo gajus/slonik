@@ -1,8 +1,8 @@
 import {
   stringify,
 } from 'querystring';
-import type {
-  ConnectionOptions,
+import {
+  type ConnectionOptions,
 } from '../types';
 
 type NamedParameters = {

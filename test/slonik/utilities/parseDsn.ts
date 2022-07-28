@@ -1,6 +1,6 @@
 import test from 'ava';
-import type {
-  ConnectionOptions,
+import {
+  type ConnectionOptions,
 } from '../../../src/types';
 import {
   parseDsn,

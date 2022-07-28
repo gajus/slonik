@@ -1,15 +1,15 @@
-import type {
-  DeferredPromise,
+import {
+  type DeferredPromise,
 } from 'p-defer';
-import type {
-  Pool as PgPool,
-  PoolClient as PgClientPool,
+import {
+  type Pool as PgPool,
+  type PoolClient as PgClientPool,
 } from 'pg';
 import {
   UnexpectedStateError,
 } from './errors';
-import type {
-  TypeOverrides,
+import {
+  type TypeOverrides,
 } from './types';
 
 type PoolState = {

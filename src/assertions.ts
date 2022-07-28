@@ -1,5 +1,5 @@
-import type {
-  SqlSqlToken,
+import {
+  type SqlSqlToken,
 } from './types';
 
 export const assertSqlSqlToken = (subject: SqlSqlToken | null): void => {

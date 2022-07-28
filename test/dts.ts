@@ -23,18 +23,17 @@ import {
   createTimestampWithTimeZoneTypeParser,
   createTypeParserPreset,
   sql,
-} from '../src';
-import type {
-  ClientConfigurationInput,
-  ClientConfiguration,
-  CommonQueryMethods,
-  IdentifierNormalizer,
-  Interceptor,
-  QueryContext,
-  QueryResultRowColumn,
-  QueryResult,
-  SqlTaggedTemplate,
-  TypeParser,
+
+  type ClientConfigurationInput,
+  type ClientConfiguration,
+  type CommonQueryMethods,
+  type IdentifierNormalizer,
+  type Interceptor,
+  type QueryContext,
+  type QueryResultRowColumn,
+  type QueryResult,
+  type SqlTaggedTemplate,
+  type TypeParser,
 } from '../src';
 
 const VALUE = 'foo';

@@ -1,8 +1,8 @@
 import {
   UnexpectedStateError,
 } from '../errors';
-import type {
-  InternalQueryMethod,
+import {
+  type InternalQueryMethod,
 } from '../types';
 import {
   createQueryId,

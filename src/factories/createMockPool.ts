@@ -7,10 +7,10 @@ import {
 import {
   poolStateMap,
 } from '../state';
-import type {
-  ClientConfigurationInput,
-  DatabasePool,
-  MockPoolOverrides,
+import {
+  type ClientConfigurationInput,
+  type DatabasePool,
+  type MockPoolOverrides,
 } from '../types';
 import {
   createUid,

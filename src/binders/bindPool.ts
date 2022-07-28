@@ -1,5 +1,5 @@
-import type {
-  Pool as PgPool,
+import {
+  type Pool as PgPool,
 } from 'pg';
 import {
   assertSqlSqlToken,
@@ -13,11 +13,11 @@ import {
 import {
   getPoolState,
 } from '../state';
-import type {
-  ClientConfiguration,
-  DatabasePool,
-  Logger,
-  TaggedTemplateLiteralInvocation,
+import {
+  type ClientConfiguration,
+  type DatabasePool,
+  type Logger,
+  type TaggedTemplateLiteralInvocation,
 } from '../types';
 
 export const bindPool = (

@@ -4,8 +4,8 @@ import {
 import {
   Logger,
 } from '../Logger';
-import type {
-  ConnectionOptions,
+import {
+  type ConnectionOptions,
 } from '../types';
 
 const log = Logger.child({

@@ -1,5 +1,5 @@
-import type {
-  ClientConfiguration,
+import {
+  type ClientConfiguration,
 } from '../../src/types';
 
 export const createClientConfiguration = (): ClientConfiguration => {

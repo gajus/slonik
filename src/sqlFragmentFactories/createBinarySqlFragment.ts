@@ -1,9 +1,9 @@
 import {
   InvalidInputError,
 } from '../errors';
-import type {
-  BinarySqlToken,
-  SqlFragment,
+import {
+  type BinarySqlToken,
+  type SqlFragment,
 } from '../types';
 
 export const createBinarySqlFragment = (token: BinarySqlToken, greatestParameterPosition: number): SqlFragment => {

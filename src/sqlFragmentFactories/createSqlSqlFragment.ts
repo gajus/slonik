@@ -1,9 +1,9 @@
 import {
   UnexpectedStateError,
 } from '../errors';
-import type {
-  SqlSqlToken,
-  SqlFragment,
+import {
+  type SqlSqlToken,
+  type SqlFragment,
 } from '../types';
 
 export const createSqlSqlFragment = (token: SqlSqlToken, greatestParameterPosition: number): SqlFragment => {

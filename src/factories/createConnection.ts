@@ -1,6 +1,6 @@
-import type {
-  Pool as PgPool,
-  PoolClient as PgPoolClient,
+import {
+  type Pool as PgPool,
+  type PoolClient as PgPoolClient,
 } from 'pg';
 import {
   serializeError,
@@ -20,14 +20,14 @@ import {
   getPoolState,
   poolClientStateMap,
 } from '../state';
-import type {
-  MaybePromise,
-  ClientConfiguration,
-  Connection,
-  DatabasePool,
-  DatabasePoolConnection,
-  Logger,
-  TaggedTemplateLiteralInvocation,
+import {
+  type MaybePromise,
+  type ClientConfiguration,
+  type Connection,
+  type DatabasePool,
+  type DatabasePoolConnection,
+  type Logger,
+  type TaggedTemplateLiteralInvocation,
 } from '../types';
 import {
   createUid,

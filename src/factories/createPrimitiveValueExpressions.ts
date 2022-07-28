@@ -5,8 +5,8 @@ import {
 import {
   UnexpectedStateError,
 } from '../errors';
-import type {
-  PrimitiveValueExpression,
+import {
+  type PrimitiveValueExpression,
 } from '../types';
 
 const log = Logger.child({

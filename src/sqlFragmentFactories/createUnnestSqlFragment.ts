@@ -1,10 +1,10 @@
 import {
   InvalidInputError,
 } from '../errors';
-import type {
-  SqlFragment,
-  UnnestSqlToken,
-  PrimitiveValueExpression,
+import {
+  type SqlFragment,
+  type UnnestSqlToken,
+  type PrimitiveValueExpression,
 } from '../types';
 import {
   countArrayDimensions,

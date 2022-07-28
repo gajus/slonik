@@ -5,8 +5,8 @@ import createConcatStream from 'concat-stream';
 import {
   rowWriter as createEncoder,
 } from 'pg-copy-streams-binary';
-import type {
-  TypeNameIdentifier,
+import {
+  type TypeNameIdentifier,
 } from '../types';
 
 export const encodeTupleList = (

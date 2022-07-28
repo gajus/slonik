@@ -1,23 +1,23 @@
-import type {
-  Readable,
-  ReadableOptions,
+import {
+  type Readable,
+  type ReadableOptions,
 } from 'stream';
-import type {
-  ConnectionOptions as TlsConnectionOptions,
+import {
+  type ConnectionOptions as TlsConnectionOptions,
 } from 'tls';
-import type {
-  PoolConfig,
-  Pool as PgPool,
-  PoolClient as PgPoolClient,
+import {
+  type PoolConfig,
+  type Pool as PgPool,
+  type PoolClient as PgPoolClient,
 } from 'pg';
-import type {
-  NoticeMessage as Notice,
+import {
+  type NoticeMessage as Notice,
 } from 'pg-protocol/dist/messages';
-import type {
-  Logger,
+import {
+  type Logger,
 } from 'roarr';
-import type {
-  SlonikError,
+import {
+  type SlonikError,
 } from './errors';
 import type * as tokens from './tokens';
 

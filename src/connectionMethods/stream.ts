@@ -6,9 +6,9 @@ import {
 import {
   executeQuery,
 } from '../routines';
-import type {
-  Interceptor,
-  InternalStreamFunction,
+import {
+  type Interceptor,
+  type InternalStreamFunction,
 } from '../types';
 
 export const stream: InternalStreamFunction = async (connectionLogger, connection, clientConfiguration, rawSql, values, streamHandler, uid, options) => {

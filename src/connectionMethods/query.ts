@@ -1,13 +1,13 @@
-import type {
-  QueryResult as PgQueryResult,
+import {
+  type QueryResult as PgQueryResult,
 } from 'pg';
 import {
   executeQuery,
 } from '../routines';
-import type {
-  InternalQueryMethod,
-  Notice,
-  QueryResult,
+import {
+  type InternalQueryMethod,
+  type Notice,
+  type QueryResult,
 } from '../types';
 
 export const query: InternalQueryMethod = async (

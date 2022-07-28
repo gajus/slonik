@@ -1,11 +1,10 @@
-import anyTest from 'ava';
-import type {
-  TestFn,
+import anyTest, {
+  type TestFn,
 } from 'ava';
 import delay from 'delay';
-import type {
-  PoolConfig,
-  Pool as PgPoolType,
+import {
+  type PoolConfig,
+  type Pool as PgPoolType,
 } from 'pg';
 import {
   serializeError,

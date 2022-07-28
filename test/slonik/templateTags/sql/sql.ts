@@ -1,6 +1,5 @@
-import anyTest from 'ava';
-import type {
-  TestFn,
+import anyTest, {
+  type TestFn,
 } from 'ava';
 import {
   ROARR,

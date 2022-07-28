@@ -13,9 +13,9 @@ import {
 import {
   poolStateMap,
 } from '../state';
-import type {
-  ClientConfigurationInput,
-  DatabasePool,
+import {
+  type ClientConfigurationInput,
+  type DatabasePool,
 } from '../types';
 import {
   createUid,

@@ -7,8 +7,8 @@ import {
 import {
   executeQuery,
 } from '../routines';
-import type {
-  InternalCopyFromBinaryFunction,
+import {
+  type InternalCopyFromBinaryFunction,
 } from '../types';
 import {
   encodeTupleList,

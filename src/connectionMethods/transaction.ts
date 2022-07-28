@@ -14,8 +14,8 @@ import {
 import {
   getPoolClientState,
 } from '../state';
-import type {
-  InternalTransactionFunction,
+import {
+  type InternalTransactionFunction,
 } from '../types';
 import {
   createUid,

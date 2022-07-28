@@ -1,13 +1,13 @@
 /* eslint-disable canonical/id-match */
 
-import type {
-  PoolConfig,
+import {
+  type PoolConfig,
 } from 'pg';
 import {
   Logger as log,
 } from '../Logger';
-import type {
-  ClientConfiguration,
+import {
+  type ClientConfiguration,
 } from '../types';
 import {
   parseDsn,

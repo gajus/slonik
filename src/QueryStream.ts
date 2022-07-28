@@ -1,13 +1,12 @@
 /* eslint-disable canonical/id-match */
 
-import type {
-  ReadableOptions,
-} from 'stream';
 import {
+  type ReadableOptions,
+
   Readable,
 } from 'stream';
-import type {
-  QueryResult,
+import {
+  type QueryResult,
 } from 'pg';
 import Cursor from 'pg-cursor';
 

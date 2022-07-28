@@ -10,8 +10,8 @@ import {
 import {
   getPoolClientState,
 } from '../state';
-import type {
-  InternalNestedTransactionFunction,
+import {
+  type InternalNestedTransactionFunction,
 } from '../types';
 import {
   createUid,
