@@ -27,7 +27,7 @@ Produces:
 
 ```js
 {
-  sql: 'INSERT INTO foo (bar, baz, qux) SELECT * FROM unnest($1::int4[], $2::int4[], $2::int4[])',
+  sql: 'INSERT INTO foo (bar, baz, qux) SELECT * FROM unnest($1::int4[], $2::int4[], $3::int4[])',
   values: [
     [
       1,
