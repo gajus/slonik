@@ -7,7 +7,7 @@ import {
 } from '../../../src/factories/createTypeParserPreset';
 
 const defaultConfiguration = {
-  captureStackTrace: true,
+  captureStackTrace: false,
   connectionRetryLimit: 3,
   connectionTimeout: 5_000,
   idleInTransactionSessionTimeout: 60_000,
