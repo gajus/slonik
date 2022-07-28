@@ -14,7 +14,7 @@ export const createClientConfiguration = (clientUserConfigurationInput?: ClientC
   const typeParsers: readonly TypeParser[] = [];
 
   const configuration = {
-    captureStackTrace: true,
+    captureStackTrace: false,
     connectionRetryLimit: 3,
     connectionTimeout: 5_000,
     idleInTransactionSessionTimeout: 60_000,
