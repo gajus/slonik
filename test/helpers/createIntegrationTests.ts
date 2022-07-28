@@ -53,11 +53,11 @@ export const createTestRunner = (PgPool: new (poolConfig: PoolConfig) => PgPoolT
     ].join('_');
 
     t.context = {
-      dsn: 'postgresql://postgres@localhost/' + TEST_DATABASE_NAME,
+      dsn: 'postgresql://postgres@localhost:5432/' + TEST_DATABASE_NAME,
       testDatabaseName: TEST_DATABASE_NAME,
     };
 
-    const pool0 = createPool('postgresql://postgres@localhost', {
+    const pool0 = createPool('postgresql://postgres@localhost:5432', {
       maximumPoolSize: 1,
       PgPool,
     });
@@ -100,7 +100,7 @@ export const createTestRunner = (PgPool: new (poolConfig: PoolConfig) => PgPoolT
   });
 
   afterEach(async (t) => {
-    const pool = createPool('postgresql://postgres@localhost', {
+    const pool = createPool('postgresql://postgres@localhost:5432', {
       maximumPoolSize: 1,
       PgPool,
     });
