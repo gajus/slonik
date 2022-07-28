@@ -63,27 +63,9 @@ export const createPool = (
     typeOverrides: null,
   });
 
-  // @todo There are no tests for this
-  // pool.on('error', (error) => {
-  //   // @todo how to replicate
-  //   if (!error.client.connection.slonik.terminated) {
-  //     poolLog.error({
-  //       error: serializeError(error),
-  //     }, 'client connection error');
-  //   }
-  // });
-
   // istanbul ignore next
   pool.on('connect', (client) => {
     client.on('error', (error) => {
-      // @todo There are no tests for this
-      // if (
-      //   error.message.includes('Connection terminated unexpectedly') ||
-      //   error.message.includes('server closed the connection unexpectedly')
-      // ) {
-      //   client.connection.slonik.terminated = error;
-      // }
-
       poolLog.error({
         error: serializeError(error),
       }, 'client error');
