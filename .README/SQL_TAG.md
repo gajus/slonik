@@ -21,13 +21,6 @@ import {
   createSqlTag
 } from 'slonik';
 
-/**
- * @typedef SqlTagConfiguration
- */
-
-/**
- * @param {SqlTagConfiguration} configuration
- */
-const sql = createSqlTag(configuration);
+const sql = createSqlTag();
 
 ```
