@@ -1,4 +1,6 @@
-import type Stream from 'stream';
+import {
+  type Readable,
+} from 'stream';
 import through from 'through2';
 import {
   QueryStream,
@@ -21,7 +23,7 @@ export const stream: InternalStreamFunction = async (connectionLogger, connectio
     (finalConnection, finalSql, finalValues, executionContext, actualQuery) => {
       const query = new QueryStream(finalSql, finalValues, options);
 
-      const queryStream: Stream = finalConnection.query(query);
+      const queryStream: Readable = finalConnection.query(query);
 
       const rowTransformers: Array<NonNullable<Interceptor['transformRow']>> = [];
 
@@ -66,6 +68,10 @@ export const stream: InternalStreamFunction = async (connectionLogger, connectio
 
         // Invoked if stream is destroyed using transformedStream.destroy().
         transformedStream.on('close', () => {
+          if (!queryStream.destroyed) {
+            queryStream.destroy();
+          }
+
           resolve({
             command: 'SELECT',
             fields: [],
@@ -73,6 +79,10 @@ export const stream: InternalStreamFunction = async (connectionLogger, connectio
             rowCount: 0,
             rows: [],
           });
+        });
+
+        transformedStream.on('error', (error: Error) => {
+          queryStream.destroy(error);
         });
 
         streamHandler(transformedStream);
