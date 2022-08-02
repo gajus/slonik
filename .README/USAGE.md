@@ -400,7 +400,7 @@ import { createPool } from 'slonik';
 const PostgresBridge = createPostgresBridge(postgres);
 
 const pool = createPool('postgres://', {
-  PgPool: createPostgresBridge(postgres),
+  PgPool: PostgresBridge,
 });
 
 ```
