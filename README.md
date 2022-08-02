@@ -81,6 +81,7 @@ Note: Using this project does not require TypeScript. It is a regular ES6 module
     * [How are they different?](#user-content-slonik-how-are-they-different)
         * [`pg` vs `slonik`](#user-content-slonik-how-are-they-different-pg-vs-slonik)
         * [`pg-promise` vs `slonik`](#user-content-slonik-how-are-they-different-pg-promise-vs-slonik)
+        * [`postgres` vs `slonik`](#user-content-slonik-how-are-they-different-postgres-vs-slonik)
     * [Type parsers](#user-content-slonik-type-parsers)
         * [Built-in type parsers](#user-content-slonik-type-parsers-built-in-type-parsers)
     * [Interceptors](#user-content-slonik-interceptors)
@@ -835,6 +836,26 @@ When weighting which abstraction to use, it would be unfair not to consider that
 
 Work on `pg-promise` began [Wed Mar 4 02:00:34 2015](https://github.com/vitaly-t/pg-promise/commit/78fb80f638e7f28b301f75576701536d6b638f31). It is authored by [Vitaly Tomilov](https://github.com/vitaly-t).
 
+<a name="user-content-slonik-how-are-they-different-postgres-vs-slonik"></a>
+<a name="slonik-how-are-they-different-postgres-vs-slonik"></a>
+### <code>postgres</code> vs <code>slonik</code>
+
+[`postgres`](https://github.com/porsager/postgres) recently gained in popularity due to its performance benefits when compared to `pg`. In terms of API, it has a pretty bare-bones API that heavily relies on using ES6 tagged templates and abstracts away many concepts of connection pool handling. While `postgres` API might be preferred by some, projects that already use `pg` may have difficulty migrating.
+
+However, by using [postgres-bridge](https://github.com/gajus/postgres-bridge) (`postgres`/`pg` compatibility layer), you can benefit from `postgres` performance improvements while still using Slonik API:
+
+```ts
+import postgres from 'postgres';
+import { createPostgresBridge } from 'postgres-bridge';
+import { createPool } from 'slonik';
+
+const PostgresBridge = createPostgresBridge(postgres);
+
+const pool = createPool('postgres://', {
+  PgPool: createPostgresBridge(postgres),
+});
+
+```
 
 <a name="user-content-slonik-type-parsers"></a>
 <a name="slonik-type-parsers"></a>
