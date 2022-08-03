@@ -1,8 +1,8 @@
 jobs:
-  test:
+  release:
     runs-on: ubuntu-latest
     environment: release
-    name: Test
+    name: Release
     steps:
       - name: setup repository
         uses: actions/checkout@v2
@@ -13,13 +13,14 @@ jobs:
         with:
           node-version: "18"
           cache: "npm"
+      - run: npm ci
       - run: npm run lint
       - run: npm run build
       - run: npx semantic-release
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
-name: Test, build and release
+name: Lint, build and release
 on:
   push:
     branches:

@@ -13,6 +13,7 @@ jobs:
         with:
           node-version: "18"
           cache: "npm"
+      - run: npm ci
       - run: npm run lint
     timeout-minutes: 10
   build:
@@ -29,6 +30,7 @@ jobs:
         with:
           node-version: "18"
           cache: "npm"
+      - run: npm ci
       - run: npm run build
     timeout-minutes: 10
   test:
@@ -55,6 +57,7 @@ jobs:
         with:
           node-version: "18"
           cache: "npm"
+      - run: npm ci
       - run: npm run test
     timeout-minutes: 10
 name: Test and build
