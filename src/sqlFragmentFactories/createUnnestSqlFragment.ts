@@ -18,7 +18,7 @@ export const createUnnestSqlFragment = (token: UnnestSqlToken, greatestParameter
     columnTypes,
   } = token;
 
-  const values = [];
+  const values: PrimitiveValueExpression[] = [];
 
   const unnestBindings: PrimitiveValueExpression[][] = [];
   const unnestSqlTokens: string[] = [];

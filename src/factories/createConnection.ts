@@ -154,8 +154,11 @@ export const createConnection = async (
       );
     }
 
-    // eslint-disable-next-line canonical/id-match
+    // TODO this should be unnecessary as can override types at Pool constructor level
+    /* eslint-disable canonical/id-match */
+    // @ts-expect-error Internal property
     connection._types = await poolState.typeOverrides;
+    /* eslint-enable canonical/id-match */
   }
 
   const poolClientState = getPoolClientState(connection);

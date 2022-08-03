@@ -1,14 +1,14 @@
 coverage
 dist
 node_modules
-package-lock.json
 *.log
 .*
 !.editorconfig
 !.eslintignore
 !.eslintrc
+!.github
 !.gitignore
 !.ncurc.js
 !.npmignore
 !.README
-!.travis.yml
+!.releaserc

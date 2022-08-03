@@ -30,7 +30,7 @@ test('ends connection after promise is resolved (explicit connection)', async (t
   await pool.connect(async (connection) => {
     let queryCount = 20;
 
-    const queries = [];
+    const queries: Array<Promise<unknown>> = [];
 
     while (queryCount-- > 0) {
       queries.push(

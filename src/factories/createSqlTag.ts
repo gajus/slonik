@@ -51,7 +51,7 @@ const sql: SqlTaggedTemplate = (
 ): SqlSqlToken => {
   let rawSql = '';
 
-  const parameterValues = [];
+  const parameterValues: PrimitiveValueExpression[] = [];
 
   let index = 0;
 

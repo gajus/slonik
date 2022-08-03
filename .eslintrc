@@ -1,4 +1,7 @@
 {
+  "ignorePatterns": [
+    "package-lock.json"
+  ],
   "overrides": [
     {
       "extends": [

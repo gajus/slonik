@@ -109,6 +109,13 @@ const retryQuery = async (
   return result!;
 };
 
+type StackCrumb = {
+  columnNumber: number,
+  fileName: string,
+  functionName: string | null,
+  lineNumber: number,
+};
+
 // eslint-disable-next-line complexity
 export const executeQuery = async (
   connectionLogger: Logger,
@@ -135,7 +142,7 @@ export const executeQuery = async (
 
   const queryInputTime = process.hrtime.bigint();
 
-  let stackTrace = null;
+  let stackTrace: StackCrumb[] | null = null;
 
   if (clientConfiguration.captureStackTrace) {
     const callSites = await getStackTrace();
