@@ -35,7 +35,7 @@ jobs:
     timeout-minutes: 10
   test:
     env:
-      TEST_ONLY_NON_INTEGRATION: true
+      TEST_ONLY_NON_INTEGRATION: trust
     runs-on: ubuntu-latest
     environment: release
     name: Test
@@ -59,7 +59,7 @@ jobs:
       postgres:
         image: postgres
         env:
-          POSTGRES_HOST_AUTH_METHOD: true
+          POSTGRES_HOST_AUTH_METHOD: trust
         options: >-
           --health-cmd pg_isready
           --health-interval 10s
@@ -67,7 +67,7 @@ jobs:
           --health-retries 5
     runs-on: ubuntu-latest
     environment: release
-    name: Test
+    name: Test "pg" integration
     steps:
       - name: setup repository
         uses: actions/checkout@v2
@@ -96,7 +96,7 @@ jobs:
           --health-retries 5
     runs-on: ubuntu-latest
     environment: release
-    name: Test
+    name: Test "postgres" integration
     steps:
       - name: setup repository
         uses: actions/checkout@v2
