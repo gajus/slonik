@@ -81,7 +81,6 @@ export const createPool = (
     });
 
     poolLog.debug({
-      processId: client.processID,
       stats: {
         idleConnectionCount: pool.idleCount,
         totalConnectionCount: pool.totalCount,
@@ -91,9 +90,8 @@ export const createPool = (
   });
 
   // istanbul ignore next
-  pool.on('acquire', (client) => {
+  pool.on('acquire', () => {
     poolLog.debug({
-      processId: client.processID,
       stats: {
         idleConnectionCount: pool.idleCount,
         totalConnectionCount: pool.totalCount,
@@ -103,9 +101,8 @@ export const createPool = (
   });
 
   // istanbul ignore next
-  pool.on('remove', (client) => {
+  pool.on('remove', () => {
     poolLog.debug({
-      processId: client.processID,
       stats: {
         idleConnectionCount: pool.idleCount,
         totalConnectionCount: pool.totalCount,

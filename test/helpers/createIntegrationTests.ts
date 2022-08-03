@@ -535,7 +535,7 @@ export const createIntegrationTests = (
 
     let index = 100;
 
-    const queue = [];
+    const queue: Array<Promise<unknown>> = [];
 
     while (index--) {
       queue.push(pool.query(sql`SELECT 1`));

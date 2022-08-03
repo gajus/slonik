@@ -14,7 +14,8 @@ const log = Logger.child({
 });
 
 export const createPrimitiveValueExpressions = (values: readonly unknown[]): readonly PrimitiveValueExpression[] => {
-  const primitiveValueExpressions = [];
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const primitiveValueExpressions: Array<any[] | Buffer | boolean | number | string | null> = [];
 
   for (const value of values) {
     if (Array.isArray(value) ||

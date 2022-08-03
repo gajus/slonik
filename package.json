@@ -104,9 +104,9 @@
     "url": "https://github.com/gajus/slonik"
   },
   "scripts": {
-    "build": "rm -fr ./dist && tsc -p tsconfig.lib.json",
+    "build": "rm -fr ./dist && tsc",
     "create-readme": "gitdown ./.README/README.md --output-file ./README.md",
-    "lint": "eslint ./src ./test && tsc",
+    "lint": "eslint ./src ./test && tsc --noEmit",
     "test": "nyc ava --verbose --serial"
   },
   "types": "./dist/src/index.d.ts",
