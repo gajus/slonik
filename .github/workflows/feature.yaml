@@ -80,6 +80,8 @@ jobs:
           cache: "npm"
       - run: npm ci
       - run: npm run test
+        env:
+          POSTGRES_HOST: postgres
     timeout-minutes: 10
   test-postgres-integration:
     env:
@@ -109,6 +111,8 @@ jobs:
           cache: "npm"
       - run: npm ci
       - run: npm run test
+        env:
+          POSTGRES_HOST: postgres
     timeout-minutes: 10
 name: Test and build
 on:
