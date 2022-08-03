@@ -35,7 +35,7 @@ jobs:
     timeout-minutes: 10
   test:
     env:
-      TEST_ONLY_NON_INTEGRATION: trust
+      TEST_ONLY_NON_INTEGRATION: 'true'
     runs-on: ubuntu-latest
     environment: release
     name: Test
@@ -54,7 +54,7 @@ jobs:
     timeout-minutes: 10
   test-pg-integration:
     env:
-      TEST_ONLY_PG_INTEGRATION: true
+      TEST_ONLY_PG_INTEGRATION: 'true'
     services:
       postgres:
         image: postgres
@@ -83,12 +83,12 @@ jobs:
     timeout-minutes: 10
   test-postgres-integration:
     env:
-      TEST_ONLY_POSTGRES_INTEGRATION: true
+      TEST_ONLY_POSTGRES_INTEGRATION: 'true'
     services:
       postgres:
         image: postgres
         env:
-          POSTGRES_HOST_AUTH_METHOD: true
+          POSTGRES_HOST_AUTH_METHOD: trust
         options: >-
           --health-cmd pg_isready
           --health-interval 10s
