@@ -106,10 +106,8 @@
   "scripts": {
     "build": "rm -fr ./dist && tsc -p tsconfig.lib.json",
     "create-readme": "gitdown ./.README/README.md --output-file ./README.md",
-    "eslint": "eslint --ext '.ts'",
-    "lint": "npm run eslint ./src ./test && npm run type-check",
-    "test": "ROARR_LOG=true NODE_ENV=test nyc ava --verbose --serial",
-    "type-check": "tsc -p ."
+    "lint": "eslint ./src ./test && tsc",
+    "test": "nyc ava --verbose --serial"
   },
   "types": "./dist/src/index.d.ts",
   "version": "0.0.0-development"
