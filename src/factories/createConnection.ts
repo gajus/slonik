@@ -50,6 +50,7 @@ const terminatePoolConnection = (
   connection.release(true);
 };
 
+// eslint-disable-next-line complexity
 export const createConnection = async (
   parentLog: Logger,
   pool: PgPool,
