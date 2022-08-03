@@ -50,6 +50,31 @@ const terminatePoolConnection = (
   connection.release(true);
 };
 
+const destroyBoundConnection = (boundConnection: DatabasePoolConnection) => {
+  const boundConnectionMethods = [
+    'any',
+    'anyFirst',
+    'copyFromBinary',
+    'exists',
+    'many',
+    'manyFirst',
+    'maybeOne',
+    'maybeOneFirst',
+    'one',
+    'oneFirst',
+    'query',
+    'stream',
+    'transaction',
+  ];
+
+  for (const boundConnectionMethod of boundConnectionMethods) {
+    // @ts-expect-error Intentional override
+    boundConnection[boundConnectionMethod] = async () => {
+      throw new Error('Cannot use released connection');
+    };
+  }
+};
+
 // eslint-disable-next-line complexity
 export const createConnection = async (
   parentLog: Logger,
@@ -195,35 +220,9 @@ export const createConnection = async (
     throw error;
   }
 
-  if (
-    poolState.mock === false &&
-    poolState.ended === false && [
-      'IMPLICIT_QUERY',
-      'IMPLICIT_TRANSACTION',
-    ].includes(connectionType)
-  ) {
-    connection.release();
-  } else {
-    // Do not use `connection.release()` for explicit connections:
-    //
-    // It is possible that user might mishandle connection release,
-    // and same connection is going to end up being used by multiple
-    // invocations of `pool.connect`, e.g.
-    //
-    // ```
-    // pool.connect((connection1) => { setTimeout(() => { connection1; }, 1000) });
-    // pool.connect((connection2) => { setTimeout(() => { connection2; }, 1000) });
-    // ```
-    //
-    // In the above scenario, connection1 and connection2 are going to be the same connection.
-    //
-    // `pool._remove(connection)` ensures that we create a new connection for each `pool.connect()`.
-    //
-    // The downside of this approach is that we cannot leverage idle connection pooling.
-    terminatePoolConnection(connection);
-  }
+  destroyBoundConnection(boundConnection);
 
-  // terminatePoolConnection(boundConnection);
+  connection.release();
 
   return result;
 };
