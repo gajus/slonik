@@ -2,7 +2,7 @@ jobs:
   lint:
     runs-on: ubuntu-latest
     environment: release
-    name: Test
+    name: Lint
     steps:
       - name: setup repository
         uses: actions/checkout@v2
@@ -18,7 +18,7 @@ jobs:
   build:
     runs-on: ubuntu-latest
     environment: release
-    name: Test
+    name: Build
     steps:
       - name: setup repository
         uses: actions/checkout@v2
