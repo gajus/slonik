@@ -68,7 +68,6 @@ const destroyBoundConnection = (boundConnection: DatabasePoolConnection) => {
   ];
 
   for (const boundConnectionMethod of boundConnectionMethods) {
-    // @ts-expect-error Intentional override
     boundConnection[boundConnectionMethod] = async () => {
       throw new Error('Cannot use released connection');
     };
