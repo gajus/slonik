@@ -18,8 +18,8 @@ test('ends connection after promise is resolved (explicit connection)', async (t
   });
 
   t.is(pool.connectSpy.callCount, 1);
-  t.is(pool.releaseSpy.callCount, 0);
-  t.is(pool.removeSpy.callCount, 1);
+  t.is(pool.releaseSpy.callCount, 1);
+  t.true(pool.releaseSpy.calledWith(true));
 });
 
 test('release connection after promise is resolved (implicit connection)', async (t) => {
@@ -40,8 +40,8 @@ test('ends connection after promise is rejected', async (t) => {
   }));
 
   t.is(pool.connectSpy.callCount, 1);
-  t.is(pool.releaseSpy.callCount, 0);
-  t.is(pool.removeSpy.callCount, 1);
+  t.is(pool.releaseSpy.callCount, 1);
+  t.true(pool.releaseSpy.calledWith(true));
 });
 
 test('does not connect if `beforePoolConnection` throws an error', async (t) => {
@@ -80,8 +80,8 @@ test('ends connection if `afterPoolConnection` throws an error', async (t) => {
   }));
 
   t.is(pool.connectSpy.callCount, 1);
-  t.is(pool.releaseSpy.callCount, 0);
-  t.is(pool.removeSpy.callCount, 1);
+  t.is(pool.releaseSpy.callCount, 1);
+  t.true(pool.releaseSpy.calledWith(true));
 });
 
 test('ends connection if `beforePoolConnectionRelease` throws an error', async (t) => {
@@ -100,8 +100,8 @@ test('ends connection if `beforePoolConnectionRelease` throws an error', async (
   }));
 
   t.is(pool.connectSpy.callCount, 1);
-  t.is(pool.releaseSpy.callCount, 0);
-  t.is(pool.removeSpy.callCount, 1);
+  t.is(pool.releaseSpy.callCount, 1);
+  t.true(pool.releaseSpy.calledWith(true));
 });
 
 test('if `beforePoolConnection` returns pool object, then the returned pool object is used to create a new connection (IMPLICIT_QUERY)', async (t) => {
@@ -172,8 +172,8 @@ test('if `beforePoolConnection` returns pool object, then the returned pool obje
   });
 
   t.is(pool0.connectSpy.callCount, 1);
-  t.is(pool0.releaseSpy.callCount, 0);
-  t.is(pool0.removeSpy.callCount, 1);
+  t.is(pool0.releaseSpy.callCount, 1);
+  t.true(pool0.releaseSpy.calledWith(true));
 
   t.is(pool1.connectSpy.callCount, 0);
   t.is(pool1.releaseSpy.callCount, 0);

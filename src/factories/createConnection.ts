@@ -44,23 +44,10 @@ type ConnectionHandlerType = (
 type PoolHandlerType = (pool: DatabasePool) => Promise<unknown>;
 
 const terminatePoolConnection = (
-  pool: PgPool,
   connection: PgPoolClient,
-  error: Error,
 ) => {
-  const poolState = getPoolState(pool);
-  const poolClientState = getPoolClientState(connection);
-
-  if (!poolClientState.terminated) {
-    poolClientState.terminated = error;
-  }
-
-  if (poolState.mock) {
-    return;
-  }
-
-  pool._remove(connection);
-  pool._pulseQueue();
+  // tells the pool to destroy this client
+  connection.release(true);
 };
 
 // eslint-disable-next-line complexity
@@ -176,7 +163,7 @@ export const createConnection = async (
       }
     }
   } catch (error) {
-    terminatePoolConnection(pool, connection, error);
+    terminatePoolConnection(connection);
 
     throw error;
   }
@@ -191,7 +178,7 @@ export const createConnection = async (
       clientConfiguration,
     );
   } catch (error) {
-    terminatePoolConnection(pool, connection, error);
+    terminatePoolConnection(connection);
 
     throw error;
   }
@@ -203,7 +190,7 @@ export const createConnection = async (
       }
     }
   } catch (error) {
-    terminatePoolConnection(pool, connection, error);
+    terminatePoolConnection(connection);
 
     throw error;
   }
@@ -233,8 +220,10 @@ export const createConnection = async (
     // `pool._remove(connection)` ensures that we create a new connection for each `pool.connect()`.
     //
     // The downside of this approach is that we cannot leverage idle connection pooling.
-    terminatePoolConnection(pool, connection, new ConnectionError('Forced connection termination (explicit connection).'));
+    terminatePoolConnection(connection);
   }
+
+  // terminatePoolConnection(boundConnection);
 
   return result;
 };
