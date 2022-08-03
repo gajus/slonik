@@ -18,6 +18,7 @@ import {
   StatementTimeoutError,
   TupleMovedToAnotherPartitionError,
   UnexpectedStateError,
+  createNumericTypeParser,
 } from '../../src';
 import {
   Logger,
@@ -136,6 +137,57 @@ export const createIntegrationTests = (
   test: TestFn<TestContextType>,
   PgPool: new () => PgPoolType,
 ) => {
+  // We have to test serialization due to the use of different drivers (pg and postgres).
+  test('serializes json', async (t) => {
+    const pool = createPool(t.context.dsn, {
+      PgPool,
+    });
+
+    const result = await pool.oneFirst(sql`
+      SELECT ${sql.json({
+    bar: 'baz',
+  })} foo
+    `);
+
+    t.like(result, {
+      bar: 'baz',
+    });
+
+    await pool.end();
+  });
+
+  test('returns numerics as strings by default', async (t) => {
+    const pool = createPool(t.context.dsn, {
+      PgPool,
+      typeParsers: [],
+    });
+
+    const result = await pool.oneFirst(sql`
+      SELECT 1::numeric foo
+    `);
+
+    t.is(result, '1');
+
+    await pool.end();
+  });
+
+  test('parses numerics as floats', async (t) => {
+    const pool = createPool(t.context.dsn, {
+      PgPool,
+      typeParsers: [
+        createNumericTypeParser(),
+      ],
+    });
+
+    const result = await pool.oneFirst(sql`
+      SELECT 1::numeric foo
+    `);
+
+    t.is(result, 1);
+
+    await pool.end();
+  });
+
   test('returns expected query result object (array bytea)', async (t) => {
     const pool = createPool(t.context.dsn, {
       PgPool,
