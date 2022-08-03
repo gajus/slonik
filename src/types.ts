@@ -17,6 +17,9 @@ import {
   type Logger,
 } from 'roarr';
 import {
+  type ZodTypeAny,
+} from 'zod';
+import {
   type SlonikError,
 } from './errors';
 import type * as tokens from './tokens';
@@ -305,6 +308,7 @@ export type SqlSqlToken = {
   readonly sql: string,
   readonly type: typeof tokens.SqlToken,
   readonly values: readonly PrimitiveValueExpression[],
+  readonly zodObject?: ZodTypeAny,
 };
 
 export type UnnestSqlToken = {

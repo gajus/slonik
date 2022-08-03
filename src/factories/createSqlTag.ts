@@ -1,5 +1,8 @@
 import safeStringify from 'fast-safe-stringify';
 import {
+  type ZodTypeAny,
+} from 'zod';
+import {
   Logger,
 } from '../Logger';
 import {
@@ -47,8 +50,20 @@ const log = Logger.child({
 
 const sql: SqlTaggedTemplate = (
   parts: readonly string[],
-  ...values: readonly ValueExpression[]
+  ...args: readonly [ValueExpression | ZodTypeAny, ...ValueExpression[]]
 ): SqlSqlToken => {
+  let values: readonly ValueExpression[];
+
+  let zodObject!: ZodTypeAny;
+
+  // https://github.com/colinhacks/zod/issues/1306
+  if ((args[0] as ZodTypeAny)?._def?.typeName === 'ZodObject') {
+    zodObject = args[0] as ZodTypeAny;
+    values = args.slice(1) as readonly ValueExpression[];
+  } else {
+    values = args as readonly ValueExpression[];
+  }
+
   let rawSql = '';
 
   const parameterValues: PrimitiveValueExpression[] = [];
@@ -92,10 +107,11 @@ const sql: SqlTaggedTemplate = (
     }
   }
 
-  const query: SqlTokenType = {
+  const query: SqlSqlToken = {
     sql: rawSql,
     type: SqlToken,
     values: parameterValues,
+    zodObject,
   };
 
   Object.defineProperty(query, 'sql', {
