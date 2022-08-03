@@ -10,6 +10,7 @@ import {
   serializeError,
 } from 'serialize-error';
 import {
+  type DatabasePoolConnection,
   BackendTerminatedError,
   createPool,
   InvalidInputError,
@@ -139,6 +140,24 @@ export const createIntegrationTests = (
   test: TestFn<TestContextType>,
   PgPool: new () => PgPoolType,
 ) => {
+  test('does not allow to reuse released connection', async (t) => {
+    const pool = createPool(t.context.dsn, {
+      PgPool,
+    });
+
+    let firstConnection!: DatabasePoolConnection;
+
+    await pool.connect(async (connection) => {
+      firstConnection = connection;
+    });
+
+    if (!firstConnection) {
+      throw new Error('Expected connection object');
+    }
+
+    await t.throwsAsync(firstConnection.oneFirst(sql`SELECT 1`));
+  });
+
   // We have to test serialization due to the use of different drivers (pg and postgres).
   test('serializes json', async (t) => {
     const pool = createPool(t.context.dsn, {

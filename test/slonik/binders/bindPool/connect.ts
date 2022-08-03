@@ -10,18 +10,6 @@ import {
 
 const sql = createSqlTag();
 
-test('ends connection after promise is resolved (explicit connection)', async (t) => {
-  const pool = createPool();
-
-  await pool.connect(() => {
-    return Promise.resolve('foo');
-  });
-
-  t.is(pool.connectSpy.callCount, 1);
-  t.is(pool.releaseSpy.callCount, 1);
-  t.true(pool.releaseSpy.calledWith(true));
-});
-
 test('release connection after promise is resolved (implicit connection)', async (t) => {
   const pool = createPool();
 
@@ -173,7 +161,7 @@ test('if `beforePoolConnection` returns pool object, then the returned pool obje
 
   t.is(pool0.connectSpy.callCount, 1);
   t.is(pool0.releaseSpy.callCount, 1);
-  t.true(pool0.releaseSpy.calledWith(true));
+  t.is(pool0.removeSpy.callCount, 0);
 
   t.is(pool1.connectSpy.callCount, 0);
   t.is(pool1.releaseSpy.callCount, 0);
