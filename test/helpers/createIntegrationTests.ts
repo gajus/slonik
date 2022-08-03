@@ -153,7 +153,6 @@ export const createIntegrationTests = (
       throw new Error('Expected connection object');
     }
 
-    // At this point, the connection in the scope of `pool.connect` must not be usable anymore.
     await t.throwsAsync(firstConnection.oneFirst(sql`SELECT 1`));
   });
 
