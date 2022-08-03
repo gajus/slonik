@@ -4,18 +4,6 @@
     "name": "Gajus Kuizinas",
     "url": "http://gajus.com"
   },
-  "ava": {
-    "extensions": [
-      "ts"
-    ],
-    "files": [
-      "test/slonik/**/*"
-    ],
-    "require": [
-      "ts-node/register/transpile-only"
-    ],
-    "timeout": "30s"
-  },
   "dependencies": {
     "concat-stream": "^2.0.0",
     "es6-error": "^4.1.1",

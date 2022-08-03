@@ -34,6 +34,56 @@ jobs:
       - run: npm run build
     timeout-minutes: 10
   test:
+    env:
+      TEST_ONLY_NON_INTEGRATION: true
+    runs-on: ubuntu-latest
+    environment: release
+    name: Test
+    steps:
+      - name: setup repository
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+      - name: setup node.js
+        uses: actions/setup-node@v2
+        with:
+          node-version: "18"
+          cache: "npm"
+      - run: npm ci
+      - run: npm run test
+    timeout-minutes: 10
+  test-pg-integration:
+    env:
+      TEST_ONLY_PG_INTEGRATION: true
+    services:
+      postgres:
+        image: postgres
+        env:
+          POSTGRES_HOST_AUTH_METHOD: true
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+    runs-on: ubuntu-latest
+    environment: release
+    name: Test
+    steps:
+      - name: setup repository
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+      - name: setup node.js
+        uses: actions/setup-node@v2
+        with:
+          node-version: "18"
+          cache: "npm"
+      - run: npm ci
+      - run: npm run test
+    timeout-minutes: 10
+  test-postgres-integration:
+    env:
+      TEST_ONLY_POSTGRES_INTEGRATION: true
     services:
       postgres:
         image: postgres
