@@ -4,18 +4,6 @@
     "name": "Gajus Kuizinas",
     "url": "http://gajus.com"
   },
-  "ava": {
-    "extensions": [
-      "ts"
-    ],
-    "files": [
-      "test/slonik/**/*"
-    ],
-    "require": [
-      "ts-node/register/transpile-only"
-    ],
-    "timeout": "30s"
-  },
   "dependencies": {
     "concat-stream": "^2.0.0",
     "es6-error": "^4.1.1",
@@ -38,6 +26,9 @@
   },
   "description": "A Node.js PostgreSQL client with strict types, detailed logging and assertions.",
   "devDependencies": {
+    "@semantic-release/commit-analyzer": "^9.0.2",
+    "@semantic-release/github": "^8.0.5",
+    "@semantic-release/npm": "^9.0.1",
     "@types/concat-stream": "^1.6.1",
     "@types/pg-copy-streams": "^1.2.1",
     "@types/sinon": "^10.0.6",
@@ -54,7 +45,7 @@
     "pg-native": "^3.0.0",
     "postgres": "^3.2.4",
     "postgres-bridge": "^1.14.0",
-    "semantic-release": "^18.0.1",
+    "semantic-release": "^19.0.3",
     "sinon": "^12.0.1",
     "ts-node": "^10.7.0",
     "typescript": "^4.7.4"
@@ -101,12 +92,10 @@
     "url": "https://github.com/gajus/slonik"
   },
   "scripts": {
-    "build": "rm -fr ./dist && tsc -p tsconfig.lib.json",
+    "build": "rm -fr ./dist && tsc",
     "create-readme": "gitdown ./.README/README.md --output-file ./README.md",
-    "eslint": "eslint --ext '.ts'",
-    "lint": "npm run eslint ./src ./test && npm run type-check",
-    "test": "ROARR_LOG=true NODE_ENV=test nyc ava --verbose --serial",
-    "type-check": "tsc -p ."
+    "lint": "eslint ./src ./test && tsc --noEmit",
+    "test": "nyc ava --verbose --serial"
   },
   "types": "./dist/src/index.d.ts",
   "version": "0.0.0-development"

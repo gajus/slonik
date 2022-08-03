@@ -114,11 +114,14 @@ export const bindPool = (
     end: async () => {
       const poolState = getPoolState(pool);
 
+      // TODO this code should be unnecessary
       const terminateIdleClients = () => {
         const activeConnectionCount = pool.totalCount - pool.idleCount;
 
         if (activeConnectionCount === 0) {
+          // @ts-expect-error Internal property
           for (const client of pool._clients) {
+            // @ts-expect-error Internal property
             pool._remove(client);
           }
         }

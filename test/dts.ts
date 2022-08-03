@@ -294,7 +294,7 @@ const dynamicWhere = async () => {
     })
     .join(' OR ');
 
-  const values = [];
+  const values: Array<number | string> = [];
 
   for (const pairValues of uniquePairs) {
     values.push(...pairValues);
