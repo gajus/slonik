@@ -68,7 +68,7 @@ jobs:
       - run: npm ci
       - run: npm run test
         env:
-          POSTGRES_DSN: postgres:postgres@postgres:5432
+          POSTGRES_DSN: postgres:postgres@localhost:5432
     timeout-minutes: 10
   test-postgres-integration:
     env:
@@ -103,7 +103,7 @@ jobs:
       - run: npm ci
       - run: npm run test
         env:
-          POSTGRES_DSN: postgres:postgres@postgres:5432
+          POSTGRES_DSN: postgres:postgres@localhost:5432
     timeout-minutes: 10
   release:
     needs:
