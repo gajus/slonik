@@ -4,12 +4,12 @@ node_modules
 package-lock.json
 *.log
 .*
-!.github
 !.editorconfig
 !.eslintignore
 !.eslintrc
+!.github
 !.gitignore
 !.ncurc.js
 !.npmignore
 !.README
-!.travis.yml
+!.releaserc

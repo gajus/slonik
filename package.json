@@ -38,6 +38,9 @@
   },
   "description": "A Node.js PostgreSQL client with strict types, detailed logging and assertions.",
   "devDependencies": {
+    "@semantic-release/commit-analyzer": "^9.0.2",
+    "@semantic-release/github": "^8.0.5",
+    "@semantic-release/npm": "^9.0.1",
     "@types/concat-stream": "^1.6.1",
     "@types/pg-copy-streams": "^1.2.1",
     "@types/sinon": "^10.0.6",
@@ -54,7 +57,7 @@
     "pg-native": "^3.0.0",
     "postgres": "^3.2.4",
     "postgres-bridge": "^1.14.0",
-    "semantic-release": "^18.0.1",
+    "semantic-release": "^19.0.3",
     "sinon": "^12.0.1",
     "ts-node": "^10.7.0",
     "typescript": "^4.7.4"
