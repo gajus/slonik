@@ -222,5 +222,7 @@ export const createConnection = async (
     terminatePoolConnection(connection);
   }
 
+  // terminatePoolConnection(boundConnection);
+
   return result;
 };
