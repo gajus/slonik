@@ -5,6 +5,9 @@ import {
   expectTypeOf,
 } from 'expect-type';
 import {
+  emptyQuery,
+} from 'pg-protocol/dist/messages';
+import {
   ROARR,
 } from 'roarr';
 import {
@@ -125,7 +128,14 @@ test('describes zod object associated with the query', (t) => {
     SELECT 1 id
   `;
 
-  t.is(query.zodObject, zodObject);
+  // These are not equal because Slonik applies .strict() on the object it receives.
+  // t.is(query.zodObject, zodObject);
+
+  // @ts-expect-error Accessing a private property
+  t.is(query.zodObject._def?.typeName, 'ZodObject');
+
+  // @ts-expect-error Accessing a private property
+  t.is(query.zodObject._def?.unknownKeys, 'strict');
 
   expectTypeOf(query.zodObject._type).toMatchTypeOf<{id: number, }>();
 });
