@@ -35,7 +35,7 @@ connection.any(sql`
 `);
 ```
 
-With your knowledge of the database schema, you would define zod object:
+With your knowledge of the database schema, define a zod object:
 
 ```ts
 const personObject = z.object({
@@ -44,7 +44,7 @@ const personObject = z.object({
 });
 ```
 
-Now update your query to use `sql.type` tag and pass `personObject`:
+Update your query to use `sql.type` tag and pass `personObject`:
 
 ```ts
 const personQuery = sql.type(personObject)`
@@ -53,7 +53,7 @@ const personQuery = sql.type(personObject)`
 `;
 ```
 
-Now query the database:
+Finally, query the database using typed `sql` tagged template:
 
 ```ts
 const persons = await connection.any(personQuery);
