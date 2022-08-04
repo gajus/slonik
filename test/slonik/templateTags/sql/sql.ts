@@ -5,9 +5,6 @@ import {
   expectTypeOf,
 } from 'expect-type';
 import {
-  emptyQuery,
-} from 'pg-protocol/dist/messages';
-import {
   ROARR,
 } from 'roarr';
 import {
