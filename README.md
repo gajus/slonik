@@ -1329,6 +1329,8 @@ If query produces a row that does not satisfy zod object, then `SchemaValidation
 * `row` – row data that did not satisfy the schema.
 * `issues` – array of unmet expectations.
 
+Whenever this error occurs, the same information is also included in the [logs](#user-content-logging).
+
 In most cases, you shouldn't attempt to handle these errors at individual query level – allow to propagate to the top of the application and fix the issue when you become aware of it.
 
 However, in cases such as dealing with unstructured data, it might be useful to handle these errors at a query level, e.g.
