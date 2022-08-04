@@ -51,6 +51,10 @@ const persons = await connection.any(personQuery);
 
 With this information, Slonik guarantees that every member of `persons` is an object that has properties `id` and `name`, which are a non-null `number` and a non-null `string` respectively.
 
+### Unknown keys
+
+Slonik disallows unknown keys, i.e. query that returns `{foo: 'bar', baz: 'qux'}` with `z.object({foo: z.string()})` schema will produce `SchemaValidationError` error.
+
 ### Handling schema validation errors
 
 If query produces a row that does not satisfy zod object, then `SchemaValidationError` error is thrown.

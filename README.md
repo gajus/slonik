@@ -94,6 +94,7 @@ Note: Using this project does not require TypeScript. It is a regular ES6 module
         * [Building Utility Statements](#user-content-slonik-recipes-building-utility-statements)
     * [Runtime validation and static type inference](#user-content-slonik-runtime-validation-and-static-type-inference)
         * [Example use of `sql.type`](#user-content-slonik-runtime-validation-and-static-type-inference-example-use-of-sql-type)
+        * [Unknown keys](#user-content-slonik-runtime-validation-and-static-type-inference-unknown-keys)
         * [Handling schema validation errors](#user-content-slonik-runtime-validation-and-static-type-inference-handling-schema-validation-errors)
         * [Inferring types](#user-content-slonik-runtime-validation-and-static-type-inference-inferring-types)
     * [`sql` tag](#user-content-slonik-sql-tag)
@@ -1287,6 +1288,12 @@ const persons = await connection.any(personQuery);
 ```
 
 With this information, Slonik guarantees that every member of `persons` is an object that has properties `id` and `name`, which are a non-null `number` and a non-null `string` respectively.
+
+<a name="user-content-slonik-runtime-validation-and-static-type-inference-unknown-keys"></a>
+<a name="slonik-runtime-validation-and-static-type-inference-unknown-keys"></a>
+### Unknown keys
+
+Slonik disallows unknown keys, i.e. query that returns `{foo: 'bar', baz: 'qux'}` with `z.object({foo: z.string()})` schema will produce `SchemaValidationError` error.
 
 <a name="user-content-slonik-runtime-validation-and-static-type-inference-handling-schema-validation-errors"></a>
 <a name="slonik-runtime-validation-and-static-type-inference-handling-schema-validation-errors"></a>
