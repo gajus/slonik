@@ -51,6 +51,12 @@ const persons = await connection.any(personQuery);
 
 With this information, Slonik guarantees that every member of `persons` is an object that has properties `id` and `name`, which are a non-null `number` and a non-null `string` respectively.
 
+### Performance penalty
+
+In the context of the network overhead, validation accounts for a tiny amount of the total execution time.
+
+Just to give an idea, in our sample of data, it takes ~3ms to validate 1,000 rows and ~25ms to validate 100,000 rows.
+
 ### Unknown keys
 
 Slonik disallows unknown keys, i.e. query that returns `{foo: 'bar', baz: 'qux'}` with `z.object({foo: z.string()})` schema will produce `SchemaValidationError` error.

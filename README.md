@@ -94,6 +94,7 @@ Note: Using this project does not require TypeScript. It is a regular ES6 module
         * [Building Utility Statements](#user-content-slonik-recipes-building-utility-statements)
     * [Runtime validation and static type inference](#user-content-slonik-runtime-validation-and-static-type-inference)
         * [Example use of `sql.type`](#user-content-slonik-runtime-validation-and-static-type-inference-example-use-of-sql-type)
+        * [Performance penalty](#user-content-slonik-runtime-validation-and-static-type-inference-performance-penalty)
         * [Unknown keys](#user-content-slonik-runtime-validation-and-static-type-inference-unknown-keys)
         * [Handling schema validation errors](#user-content-slonik-runtime-validation-and-static-type-inference-handling-schema-validation-errors)
         * [Inferring types](#user-content-slonik-runtime-validation-and-static-type-inference-inferring-types)
@@ -1288,6 +1289,14 @@ const persons = await connection.any(personQuery);
 ```
 
 With this information, Slonik guarantees that every member of `persons` is an object that has properties `id` and `name`, which are a non-null `number` and a non-null `string` respectively.
+
+<a name="user-content-slonik-runtime-validation-and-static-type-inference-performance-penalty"></a>
+<a name="slonik-runtime-validation-and-static-type-inference-performance-penalty"></a>
+### Performance penalty
+
+In the context of the network overhead, validation accounts for a tiny amount of the total execution time.
+
+Just to give an idea, in our sample of data, it takes ~3ms to validate 1,000 rows and ~25ms to validate 100,000 rows.
 
 <a name="user-content-slonik-runtime-validation-and-static-type-inference-unknown-keys"></a>
 <a name="slonik-runtime-validation-and-static-type-inference-unknown-keys"></a>
