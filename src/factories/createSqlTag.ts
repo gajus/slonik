@@ -140,7 +140,8 @@ sql.type = <T extends ZodTypeAny>(zodObject: T) => {
       sql: sqlText,
       type: SqlToken,
       values,
-      zodObject,
+      // @ts-expect-error We know that `zodObject` is ZodObject
+      zodObject: zodObject.strict(),
     };
 
     Object.defineProperty(query, 'sql', {

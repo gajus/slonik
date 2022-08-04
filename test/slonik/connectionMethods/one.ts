@@ -6,6 +6,8 @@ import {
   z,
 } from 'zod';
 import {
+  type SchemaValidationError,
+
   DataIntegrityError,
   NotFoundError,
 } from '../../../src/errors';
@@ -110,5 +112,40 @@ test('throws an error if object does match the zod object shape', async (t) => {
 
   const query = sql.type(zodObject)`SELECT 1`;
 
-  await t.throwsAsync(pool.one(query));
+  const error = await t.throwsAsync<SchemaValidationError>(pool.one(query));
+
+  if (!error) {
+    throw new Error('Expected SchemaValidationError');
+  }
+
+  t.is(error.issues.length, 1);
+  t.is(error.issues[0]?.code, 'invalid_type');
+});
+
+test('throws an error if object does match the zod object shape (2)', async (t) => {
+  const pool = createPool();
+
+  pool.querySpy.returns({
+    rows: [
+      {
+        bar: 1,
+        foo: 1,
+      },
+    ],
+  });
+
+  const zodObject = z.object({
+    foo: z.number(),
+  });
+
+  const query = sql.type(zodObject)`SELECT 1`;
+
+  const error = await t.throwsAsync<SchemaValidationError>(pool.one(query));
+
+  if (!error) {
+    throw new Error('Expected SchemaValidationError');
+  }
+
+  t.is(error.issues.length, 1);
+  t.is(error.issues[0]?.code, 'unrecognized_keys');
 });
