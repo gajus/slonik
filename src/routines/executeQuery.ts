@@ -346,7 +346,7 @@ export const executeQuery = async (
 
   // Stream does not have `rows` in the result object and all rows are already transformed.
   if (result.rows) {
-    if (slonikSqlRename.zodObject) {
+    if (slonikSqlRename.zodObject && slonikSqlRename.zodObject?._def?.typeName !== 'ZodAny') {
       for (const row of result.rows) {
         slonikSqlRename.zodObject.parse(row);
       }
