@@ -6,6 +6,8 @@ import {
   z,
 } from 'zod';
 import {
+  type SchemaValidationError,
+
   DataIntegrityError,
   NotFoundError,
   UnexpectedStateError,
@@ -124,5 +126,21 @@ test('throws an error if object does match the zod object shape', async (t) => {
 
   const query = sql.type(zodObject)`SELECT 1`;
 
-  await t.throwsAsync(pool.oneFirst(query));
+  const error = await t.throwsAsync<SchemaValidationError>(pool.oneFirst(query));
+
+  t.is(error?.sql, 'SELECT 1');
+  t.deepEqual(error?.row, {
+    foo: '1',
+  });
+  t.deepEqual(error?.issues, [
+    {
+      code: 'invalid_type',
+      expected: 'number',
+      message: 'Expected number, received string',
+      path: [
+        'foo',
+      ],
+      received: 'string',
+    },
+  ]);
 });

@@ -17,11 +17,12 @@ import {
   ForeignKeyIntegrityConstraintViolationError,
   InvalidInputError,
   NotNullIntegrityConstraintViolationError,
+  SchemaValidationError,
   StatementCancelledError,
   StatementTimeoutError,
+  TupleMovedToAnotherPartitionError,
   UnexpectedStateError,
   UniqueIntegrityConstraintViolationError,
-  TupleMovedToAnotherPartitionError,
 } from '../errors';
 import {
   getPoolClientState,
@@ -348,7 +349,21 @@ export const executeQuery = async (
   if (result.rows) {
     if (slonikSqlRename.zodObject && slonikSqlRename.zodObject?._def?.typeName !== 'ZodAny') {
       for (const row of result.rows) {
-        slonikSqlRename.zodObject.parse(row);
+        const validationResult = slonikSqlRename.zodObject.safeParse(row);
+
+        if (!validationResult.success) {
+          log.error({
+            error: serializeError(validationResult.error),
+            row: JSON.parse(JSON.stringify(row)),
+            sql: slonikSql,
+          }, 'row failed validation');
+
+          throw new SchemaValidationError(
+            slonikSql,
+            JSON.parse(JSON.stringify(row)),
+            validationResult.error.issues,
+          );
+        }
       }
     }
 

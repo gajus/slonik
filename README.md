@@ -852,6 +852,37 @@ const persons = await connection.any(personQuery);
 ```
 
 With this information, Slonik guarantees that every member of `persons` is an object that has properties `id` and `name`, which are a non-null `number` and a non-null `string` respectively.
+
+<a name="user-content-slonik-usage-runtime-validation-and-static-type-inference-handling-schema-validation-errors"></a>
+<a name="slonik-usage-runtime-validation-and-static-type-inference-handling-schema-validation-errors"></a>
+#### Handling schema validation errors
+
+If query produces a row that does not satisfy zod object, then `SchemaValidationError` error is thrown.
+
+`SchemaValidationError` includes properties that describe the query and validation errors:
+
+* `sql` – SQL of the query that produced unexpected row.
+* `row` – row data that did not satisfy the schema.
+* `issues` – array of unmet expectations.
+
+In most cases, you shouldn't attempt to handle these errors at individual query level – allow to propagate to the top of the application and fix the issue when you become aware of it.
+
+However, in cases such as dealing with unstructured data, it might be useful to handle these errors at a query level, e.g.
+
+```ts
+import {
+  SchemaValidationError
+} from 'slonik';
+
+try {
+
+} catch (error) {
+  if (error extends SchemaValidationError) {
+    // Handle scheme validation error
+  }
+}
+```
+
 <a name="user-content-slonik-usage-runtime-validation-and-static-type-inference-inferring-types"></a>
 <a name="slonik-usage-runtime-validation-and-static-type-inference-inferring-types"></a>
 #### Inferring types

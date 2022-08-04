@@ -65,10 +65,11 @@ export {
   InvalidInputError,
   NotFoundError,
   NotNullIntegrityConstraintViolationError,
+  SchemaValidationError,
   SlonikError,
   StatementCancelledError,
   StatementTimeoutError,
+  TupleMovedToAnotherPartitionError,
   UnexpectedStateError,
   UniqueIntegrityConstraintViolationError,
-  TupleMovedToAnotherPartitionError,
 } from './errors';
