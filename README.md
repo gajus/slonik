@@ -38,7 +38,8 @@ Note: Using this project does not require TypeScript. It is a regular ES6 module
 <a name="slonik-features"></a>
 ## Features
 
-* [Assertions and type safety](#user-content-repeating-code-patterns-and-type-safety).
+* [Helper methods](#user-content-repeating-code-patterns-and-type-safety).
+* [Runtime validation and static type inference](#user-content-runtime-validation-and-static-type-inference)
 * [Connection mocking](#user-content-mocking-slonik).
 * [Safe connection handling](#user-content-protecting-against-unsafe-connection-handling).
 * [Safe transaction handling](#user-content-protecting-against-unsafe-transaction-handling).
@@ -78,6 +79,7 @@ Note: Using this project does not require TypeScript. It is a regular ES6 module
         * [Default configuration](#user-content-slonik-usage-default-configuration)
         * [Checking out a client from the connection pool](#user-content-slonik-usage-checking-out-a-client-from-the-connection-pool)
         * [Mocking Slonik](#user-content-slonik-usage-mocking-slonik)
+        * [Runtime validation and static type inference](#user-content-slonik-usage-runtime-validation-and-static-type-inference)
     * [How are they different?](#user-content-slonik-how-are-they-different)
         * [`pg` vs `slonik`](#user-content-slonik-how-are-they-different-pg-vs-slonik)
         * [`pg-promise` vs `slonik`](#user-content-slonik-how-are-they-different-pg-promise-vs-slonik)
@@ -792,6 +794,79 @@ await pool.connect(async (connection) => {
   `);
 });
 
+```
+
+<a name="user-content-slonik-usage-runtime-validation-and-static-type-inference"></a>
+<a name="slonik-usage-runtime-validation-and-static-type-inference"></a>
+### Runtime validation and static type inference
+
+Slonik integrates [zod](https://github.com/colinhacks/zod) to provide runtime query result validation and static type inference.
+
+Runtime validation is added by defining a zod [object](https://github.com/colinhacks/zod#objects) and passing it to `sql.type` tagged template.
+
+<a name="user-content-slonik-usage-runtime-validation-and-static-type-inference-example-use-of-sql-type"></a>
+<a name="slonik-usage-runtime-validation-and-static-type-inference-example-use-of-sql-type"></a>
+#### Example use of <code>sql.type</code>
+
+Let's assume that you have a PostgreSQL table `person`:
+
+```sql
+CREATE TABLE "public"."person" (
+  "id" integer GENERATED ALWAYS AS IDENTITY,
+  "name" text NOT NULL,
+  PRIMARY KEY ("id")
+);
+```
+
+and you want to retrieve all persons in the database, along with their `id` and `name`:
+
+```ts
+connection.any(sql`
+  SELECT id, name
+  FROM person
+`);
+```
+
+With your knowledge of the database schema, you would define zod object:
+
+```ts
+const personObject = z.object({
+  id: t.number,
+  name: t.string,
+});
+```
+
+Now update your query to use `sql.type` tag and pass `personObject`:
+
+```ts
+const personQuery = sql.type(personObject)`
+  SELECT id, name
+  FROM person
+`;
+```
+
+Now query the database:
+
+```ts
+const persons = await connection.any(personQuery);
+```
+
+With this information, Slonik guarantees that every member of `persons` is an object that has properties `id` and `name`, which are a non-null `number` and a non-null `string` respectively.
+<a name="user-content-slonik-usage-runtime-validation-and-static-type-inference-inferring-types"></a>
+<a name="slonik-usage-runtime-validation-and-static-type-inference-inferring-types"></a>
+#### Inferring types
+
+You can infer the TypeScript type of the query result. There are couple of ways of doing it:
+
+```ts
+// Infer using z.infer<typeof yourSchema>
+// https://github.com/colinhacks/zod#type-inference
+type Person = z.infer<typeof personObject>;
+
+// from sql tagged template `zodObject` property
+type Person = z.infer<
+  personQuery.zodObject
+>;
 ```
 
 <a name="user-content-slonik-how-are-they-different"></a>

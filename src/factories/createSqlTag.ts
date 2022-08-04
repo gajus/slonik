@@ -1,5 +1,9 @@
 import safeStringify from 'fast-safe-stringify';
 import {
+  z,
+  type ZodTypeAny,
+} from 'zod';
+import {
   Logger,
 } from '../Logger';
 import {
@@ -24,7 +28,6 @@ import {
   type SqlToken as SqlTokenType,
   type ListSqlToken,
   type PrimitiveValueExpression,
-  type QueryResultRow,
   type SerializableValue,
   type SqlSqlToken,
   type SqlTaggedTemplate,
@@ -45,10 +48,11 @@ const log = Logger.child({
   namespace: 'sql',
 });
 
-const sql: SqlTaggedTemplate = (
+const maybeTypedSql = <T extends ZodTypeAny = ZodTypeAny>(
   parts: readonly string[],
-  ...values: readonly ValueExpression[]
-): SqlSqlToken => {
+  zodObject: T,
+  values: readonly ValueExpression[],
+): SqlSqlToken<T> => {
   let rawSql = '';
 
   const parameterValues: PrimitiveValueExpression[] = [];
@@ -92,10 +96,11 @@ const sql: SqlTaggedTemplate = (
     }
   }
 
-  const query: SqlTokenType = {
+  const query: SqlSqlToken<T> = {
     sql: rawSql,
     type: SqlToken,
     values: parameterValues,
+    zodObject,
   };
 
   Object.defineProperty(query, 'sql', {
@@ -105,6 +110,22 @@ const sql: SqlTaggedTemplate = (
   });
 
   return query;
+};
+
+const sql = (
+  parts: readonly string[],
+  ...values: readonly ValueExpression[]
+): SqlSqlToken<ZodTypeAny> => {
+  return maybeTypedSql(parts, z.any() as ZodTypeAny, values);
+};
+
+sql.type = <T extends ZodTypeAny>(zodObject: T) => {
+  return (
+    parts: readonly string[],
+    ...values: readonly ValueExpression[]
+  ): SqlSqlToken<T> => {
+    return maybeTypedSql<T>(parts, zodObject, values);
+  };
 };
 
 sql.array = (
@@ -172,6 +193,7 @@ sql.literalValue = (
     sql: escapeLiteralValue(value),
     type: SqlToken,
     values: [],
+    zodObject: z.object({}),
   };
 };
 
@@ -186,6 +208,6 @@ sql.unnest = (
   };
 };
 
-export const createSqlTag = <T extends QueryResultRow = QueryResultRow>(): SqlTaggedTemplate<T> => {
-  return sql;
+export const createSqlTag = <Z extends ZodTypeAny = ZodTypeAny>(): SqlTaggedTemplate<Z> => {
+  return sql as unknown as SqlTaggedTemplate<Z>;
 };

@@ -346,6 +346,12 @@ export const executeQuery = async (
 
   // Stream does not have `rows` in the result object and all rows are already transformed.
   if (result.rows) {
+    if (slonikSqlRename.zodObject) {
+      for (const row of result.rows) {
+        slonikSqlRename.zodObject.parse(row);
+      }
+    }
+
     for (const interceptor of clientConfiguration.interceptors) {
       if (interceptor.transformRow) {
         const {

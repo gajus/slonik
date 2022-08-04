@@ -1,5 +1,11 @@
 import test from 'ava';
 import {
+  expectType,
+} from 'tsd';
+import {
+  z,
+} from 'zod';
+import {
   DataIntegrityError,
   NotFoundError,
   UnexpectedStateError,
@@ -75,4 +81,48 @@ test('throws an error if more than one column is returned', async (t) => {
   const error = await t.throwsAsync(pool.oneFirst(sql`SELECT 1`));
 
   t.true(error instanceof UnexpectedStateError);
+});
+
+test('describes zod object associated with the query', async (t) => {
+  const pool = createPool();
+
+  pool.querySpy.returns({
+    rows: [
+      {
+        foo: 1,
+      },
+    ],
+  });
+
+  const zodObject = z.object({
+    foo: z.number(),
+  });
+
+  const query = sql.type(zodObject)`SELECT 1`;
+
+  const result = await pool.oneFirst(query);
+
+  expectType<number>(result);
+
+  t.is(result, 1);
+});
+
+test('throws an error if object does match the zod object shape', async (t) => {
+  const pool = createPool();
+
+  pool.querySpy.returns({
+    rows: [
+      {
+        foo: '1',
+      },
+    ],
+  });
+
+  const zodObject = z.object({
+    foo: z.number(),
+  });
+
+  const query = sql.type(zodObject)`SELECT 1`;
+
+  await t.throwsAsync(pool.oneFirst(query));
 });

@@ -22,7 +22,8 @@
     "postgres-interval": "^4.0.0",
     "roarr": "^7.11.0",
     "serialize-error": "^8.0.0",
-    "through2": "^4.0.2"
+    "through2": "^4.0.2",
+    "zod": "^3.17.10"
   },
   "description": "A Node.js PostgreSQL client with strict types, detailed logging and assertions.",
   "devDependencies": {
@@ -38,7 +39,6 @@
     "delay": "^5.0.0",
     "eslint": "^8.20.0",
     "eslint-config-canonical": "^35.1.4",
-    "expect-type": "^0.13.0",
     "gitdown": "^3.1.5",
     "husky": "^4.3.6",
     "nyc": "^15.1.0",
@@ -48,6 +48,7 @@
     "semantic-release": "^19.0.3",
     "sinon": "^12.0.1",
     "ts-node": "^10.7.0",
+    "tsd": "^0.22.0",
     "typescript": "^4.7.4"
   },
   "engines": {

@@ -4,148 +4,86 @@
  */
 
 import {
-  expectTypeOf,
-} from 'expect-type';
+  expectType,
+} from 'tsd';
+import {
+  z,
+} from 'zod';
 import {
   createPool,
   sql,
 } from '../src';
 import {
-  type PrimitiveValueExpression,
   type QueryResult,
 } from '../src/types';
+
+const Row = z.object({
+  foo: z.string(),
+});
 
 export const queryMethods = async (): Promise<void> => {
   const client = createPool('');
 
-  type Row = {
-    bar: boolean,
-    foo: string,
-  };
-
   // any
   const any = await client.any(sql``);
-  expectTypeOf(any).toEqualTypeOf<ReadonlyArray<Record<string, PrimitiveValueExpression>>>();
+  expectType<readonly any[]>(any);
 
-  const anyTyped = await client.any<Row>(sql``);
-  expectTypeOf(anyTyped).toEqualTypeOf<readonly Row[]>();
-
-  const anyTypedQuery = await client.any(sql<Row>``);
-  expectTypeOf(anyTypedQuery).toEqualTypeOf<readonly Row[]>();
+  const anyTyped = await client.any(sql.type(Row)``);
+  expectType<ReadonlyArray<{foo: string, }>>(anyTyped);
 
   // anyFirst
   const anyFirst = await client.anyFirst(sql``);
-  expectTypeOf(anyFirst).toEqualTypeOf<readonly PrimitiveValueExpression[]>();
+  expectType<any>(anyFirst);
 
-  const anyFirstTyped = await client.anyFirst<boolean>(sql``);
-  expectTypeOf(anyFirstTyped).toEqualTypeOf<readonly boolean[]>();
-
-  const anyFirstTypedQuery = await client.anyFirst(sql<Row>``);
-  expectTypeOf(anyFirstTypedQuery).toEqualTypeOf<ReadonlyArray<boolean | string>>();
+  const anyFirstTyped = await client.anyFirst(sql.type(Row)``);
+  expectType<readonly string[]>(anyFirstTyped);
 
   // many
   const many = await client.many(sql``);
-  expectTypeOf(many).toEqualTypeOf<ReadonlyArray<Record<string, PrimitiveValueExpression>>>();
+  expectType<readonly any[]>(many);
 
-  const manyTyped = await client.many<Row>(sql``);
-  expectTypeOf(manyTyped).toEqualTypeOf<readonly Row[]>();
-
-  const manyTypedQuery = await client.many(sql<Row>``);
-  expectTypeOf(manyTypedQuery).toEqualTypeOf<readonly Row[]>();
+  const manyTyped = await client.many(sql.type(Row)``);
+  expectType<ReadonlyArray<{foo: string, }>>(manyTyped);
 
   // manyFirst
   const manyFirst = await client.manyFirst(sql``);
-  expectTypeOf(manyFirst).toEqualTypeOf<readonly PrimitiveValueExpression[]>();
+  expectType<readonly any[]>(manyFirst);
 
-  const manyFirstTyped = await client.manyFirst<boolean>(sql``);
-  expectTypeOf(manyFirstTyped).toEqualTypeOf<readonly boolean[]>();
-
-  const manyFirstTypedQuery = await client.manyFirst(sql<Row>``);
-  expectTypeOf(manyFirstTypedQuery).toEqualTypeOf<ReadonlyArray<boolean | string>>();
+  const manyFirstTyped = await client.manyFirst(sql.type(Row)``);
+  expectType<readonly string[]>(manyFirstTyped);
 
   // maybeOne
   const maybeOne = await client.maybeOne(sql``);
-  expectTypeOf(maybeOne).toEqualTypeOf<Record<string, PrimitiveValueExpression> | null>();
+  expectType<any>(maybeOne);
 
-  const maybeOneTyped = await client.maybeOne<Row>(sql``);
-  expectTypeOf(maybeOneTyped).toEqualTypeOf<Row | null>();
-
-  const maybeOneTypedQuery = await client.maybeOne(sql<Row>``);
-  expectTypeOf(maybeOneTypedQuery).toEqualTypeOf<Row | null>();
+  const maybeOneTyped = await client.maybeOne(sql.type(Row)``);
+  expectType<{foo: string, } | null>(maybeOneTyped);
 
   // maybeOneFirst
   const maybeOneFirst = await client.maybeOneFirst(sql``);
-  expectTypeOf(maybeOneFirst).toEqualTypeOf<PrimitiveValueExpression>();
+  expectType<any>(maybeOneFirst);
 
-  const maybeOneFirstTyped = await client.maybeOneFirst<boolean>(sql``);
-  expectTypeOf(maybeOneFirstTyped).toEqualTypeOf<boolean | null>();
-
-  const maybeOneFirstTypedQuery = await client.maybeOneFirst(sql<Row>``);
-  expectTypeOf(maybeOneFirstTypedQuery).toEqualTypeOf<boolean | string | null>();
+  const maybeOneFirstTyped = await client.maybeOneFirst(sql.type(Row)``);
+  expectType<string | null>(maybeOneFirstTyped);
 
   // one
   const one = await client.one(sql``);
-  expectTypeOf(one).toEqualTypeOf<Record<string, PrimitiveValueExpression>>();
+  expectType<Record<string, any>>(one);
 
-  const oneTyped = await client.one<Row>(sql``);
-  expectTypeOf(oneTyped).toEqualTypeOf<Row>();
-
-  const oneTypedQuery = await client.one(sql<Row>``);
-  expectTypeOf(oneTypedQuery).toEqualTypeOf<Row>();
+  const oneTyped = await client.one(sql.type(Row)``);
+  expectType<{foo: string, }>(oneTyped);
 
   // oneFirst
   const oneFirst = await client.oneFirst(sql``);
-  expectTypeOf(oneFirst).toEqualTypeOf<PrimitiveValueExpression>();
+  expectType<any>(oneFirst);
 
-  const oneFirstTyped = await client.oneFirst<boolean>(sql``);
-  expectTypeOf(oneFirstTyped).toEqualTypeOf<boolean>();
-
-  const oneFirstTypedQuery = await client.oneFirst(sql<Row>``);
-  expectTypeOf(oneFirstTypedQuery).toEqualTypeOf<boolean | string>();
+  const oneFirstTyped = await client.oneFirst(sql.type(Row)``);
+  expectType<string>(oneFirstTyped);
 
   // query
   const query = await client.query(sql``);
-  expectTypeOf(query).toMatchTypeOf<QueryResult<Record<string, PrimitiveValueExpression>>>();
+  expectType<QueryResult<Record<string, any>>>(query);
 
-  const queryTyped = await client.query<Row>(sql``);
-  expectTypeOf(queryTyped).toMatchTypeOf<{rows: readonly Row[], }>();
-
-  const queryTypedQuery = await client.query(sql<Row>``);
-  expectTypeOf(queryTypedQuery).toMatchTypeOf<{ rows: readonly Row[], }>();
-
-  type RowWithJSONB = {
-    foo: {
-      bar: number,
-    },
-  };
-
-  const jsonbSql = sql<RowWithJSONB>`select '{"bar": 123}'::jsonb as foo`;
-
-  expectTypeOf(await client.query(jsonbSql)).toEqualTypeOf<QueryResult<RowWithJSONB>>();
-  expectTypeOf(await client.one(jsonbSql)).toEqualTypeOf<RowWithJSONB>();
-  expectTypeOf(await client.maybeOne(jsonbSql)).toEqualTypeOf<RowWithJSONB | null>();
-  expectTypeOf(await client.any(jsonbSql)).toEqualTypeOf<readonly RowWithJSONB[]>();
-  expectTypeOf(await client.many(jsonbSql)).toEqualTypeOf<readonly RowWithJSONB[]>();
-  expectTypeOf(await client.oneFirst(jsonbSql)).toEqualTypeOf<{ bar: number, }>();
-  expectTypeOf(await client.maybeOneFirst(jsonbSql)).toEqualTypeOf<{ bar: number, } | null>();
-  expectTypeOf(await client.manyFirst(jsonbSql)).toEqualTypeOf<ReadonlyArray<{ bar: number, }>>();
-  expectTypeOf(await client.anyFirst(jsonbSql)).toEqualTypeOf<ReadonlyArray<{ bar: number, }>>();
-
-  // `interface` can behave slightly differently from `type` when it comes to type inference
-  // eslint-disable-next-line @typescript-eslint/consistent-type-definitions
-  interface IRow {
-    foo: string | null;
-  }
-
-  const nullableSql = sql<IRow>`select 'abc' as foo`;
-
-  expectTypeOf(await client.query(nullableSql)).toEqualTypeOf<QueryResult<IRow>>();
-  expectTypeOf(await client.one(nullableSql)).toEqualTypeOf<IRow>();
-  expectTypeOf(await client.maybeOne(nullableSql)).toEqualTypeOf<IRow | null>();
-  expectTypeOf(await client.any(nullableSql)).toEqualTypeOf<readonly IRow[]>();
-  expectTypeOf(await client.many(nullableSql)).toEqualTypeOf<readonly IRow[]>();
-  expectTypeOf(await client.oneFirst(nullableSql)).toEqualTypeOf<string | null>();
-  expectTypeOf(await client.maybeOneFirst(nullableSql)).toEqualTypeOf<string | null>();
-  expectTypeOf(await client.manyFirst(nullableSql)).toEqualTypeOf<ReadonlyArray<string | null>>();
-  expectTypeOf(await client.anyFirst(nullableSql)).toEqualTypeOf<ReadonlyArray<string | null>>();
+  const queryTyped = await client.query(sql.type(Row)``);
+  expectType<{rows: ReadonlyArray<{foo: string, }>, }>(queryTyped);
 };

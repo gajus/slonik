@@ -515,7 +515,7 @@ export const createIntegrationTests = (
       )
     `);
 
-    const result = await pool.oneFirst<Buffer>(sql`
+    const result = await pool.oneFirst(sql`
       SELECT payload
       FROM person
     `);
