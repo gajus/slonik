@@ -318,6 +318,9 @@ export type UnnestSqlToken = {
   readonly type: typeof tokens.UnnestToken,
 };
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+type AnySqlSqlToken = SqlSqlToken<any>;
+
 export type PrimitiveValueExpression =
   Buffer |
   boolean |
@@ -350,7 +353,7 @@ export type SqlTaggedTemplate<Z extends QueryResultRow = QueryResultRow> = {
   ) => ArraySqlToken,
   binary: (data: Buffer) => BinarySqlToken,
   identifier: (names: readonly string[]) => IdentifierSqlToken,
-  join: (members: readonly ValueExpression[], glue: SqlSqlToken) => ListSqlToken,
+  join: (members: readonly ValueExpression[], glue: AnySqlSqlToken) => ListSqlToken,
   json: (value: SerializableValue) => JsonSqlToken,
   jsonb: (value: SerializableValue) => JsonBinarySqlToken,
   literalValue: (value: string) => SqlSqlToken,
@@ -361,7 +364,7 @@ export type SqlTaggedTemplate<Z extends QueryResultRow = QueryResultRow> = {
     // https://github.com/gajus/slonik/issues/44
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     tuples: ReadonlyArray<readonly any[]>,
-    columnTypes: Array<[...string[], TypeNameIdentifier]> | Array<SqlSqlToken | TypeNameIdentifier>
+    columnTypes: Array<[...string[], TypeNameIdentifier]> | Array<AnySqlSqlToken | TypeNameIdentifier>
   ) => UnnestSqlToken,
 };
 
@@ -413,7 +416,7 @@ export type InternalNestedTransactionFunction = <T>(
 
 type MixedRow = QueryResultRow | ZodTypeAny;
 
-export type TaggedTemplateLiteralInvocation = SqlSqlToken;
+export type TaggedTemplateLiteralInvocation = AnySqlSqlToken;
 
 export type QueryAnyFirstFunction = <T extends MixedRow | PrimitiveValueExpression>(
   sql: SqlSqlToken<T extends MixedRow ? T : Record<string, PrimitiveValueExpression>>,

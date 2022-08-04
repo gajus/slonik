@@ -35,7 +35,6 @@ import {
   type TypeNameIdentifier,
   type UnnestSqlToken,
   type ValueExpression,
-  type TaggedTemplateLiteralInvocation,
 } from '../types';
 import {
   escapeLiteralValue,
@@ -103,10 +102,10 @@ const createQuery = (
   };
 };
 
-const sql: SqlTaggedTemplate = (
+const sql = (
   parts: readonly string[],
   ...args: readonly ValueExpression[]
-): SqlSqlToken => {
+) => {
   const {
     sql: sqlText,
     values,
@@ -132,7 +131,7 @@ sql.type = <T extends ZodTypeAny>(zodObject: T) => {
   return (
     parts: readonly string[],
     ...args: readonly ValueExpression[]
-  ): TaggedTemplateLiteralInvocation<T> => {
+  ) => {
     const {
       sql: sqlText,
       values,
@@ -145,13 +144,13 @@ sql.type = <T extends ZodTypeAny>(zodObject: T) => {
       zodObject,
     };
 
-    // Object.defineProperty(query, 'sql', {
-    //   configurable: false,
-    //   enumerable: true,
-    //   writable: false,
-    // });
+    Object.defineProperty(query, 'sql', {
+      configurable: false,
+      enumerable: true,
+      writable: false,
+    });
 
-    return query;
+    return query as unknown as SqlSqlToken<T>;
   };
 };
 
@@ -235,6 +234,6 @@ sql.unnest = (
   };
 };
 
-export const createSqlTag = <T extends QueryResultRow = QueryResultRow>(): SqlTaggedTemplate<T> => {
-  return sql;
+export const createSqlTag = <T extends QueryResultRow = QueryResultRow>() => {
+  return sql as SqlTaggedTemplate<T>;
 };
