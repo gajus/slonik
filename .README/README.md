@@ -31,7 +31,7 @@ Note: Using this project does not require TypeScript. It is a regular ES6 module
 ## Features
 
 * [Helper methods](#repeating-code-patterns-and-type-safety).
-* [Runtime validation and static type inference](#runtime-validation-and-static-type-inference)
+* [Runtime validation and static type inference](#runtime-validation-and-static-type-inference).
 * [Connection mocking](#mocking-slonik).
 * [Safe connection handling](#protecting-against-unsafe-connection-handling).
 * [Safe transaction handling](#protecting-against-unsafe-transaction-handling).
@@ -57,11 +57,15 @@ Note: Using this project does not require TypeScript. It is a regular ES6 module
 
 {"gitdown": "include", "file": "./USAGE.md"}
 
+{"gitdown": "include", "file": "./LIBRARY_COMPARISON.md"}
+
 {"gitdown": "include", "file": "./TYPE_PARSERS.md"}
 
 {"gitdown": "include", "file": "./INTERCEPTORS.md"}
 
 {"gitdown": "include", "file": "./RECIPES.md"}
+
+{"gitdown": "include", "file": "./RUNTIME_VALIDATION.md"}
 
 {"gitdown": "include", "file": "./SQL_TAG.md"}
 
