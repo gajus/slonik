@@ -28,12 +28,14 @@ import {
   type SqlToken as SqlTokenType,
   type ListSqlToken,
   type PrimitiveValueExpression,
+  type QueryResultRow,
   type SerializableValue,
   type SqlSqlToken,
   type SqlTaggedTemplate,
   type TypeNameIdentifier,
   type UnnestSqlToken,
   type ValueExpression,
+  type TaggedTemplateLiteralInvocation,
 } from '../types';
 import {
   escapeLiteralValue,
@@ -48,11 +50,10 @@ const log = Logger.child({
   namespace: 'sql',
 });
 
-const maybeTypedSql = <T extends ZodTypeAny = ZodTypeAny>(
+const createQuery = (
   parts: readonly string[],
-  zodObject: T,
   values: readonly ValueExpression[],
-): SqlSqlToken<T> => {
+) => {
   let rawSql = '';
 
   const parameterValues: PrimitiveValueExpression[] = [];
@@ -96,11 +97,26 @@ const maybeTypedSql = <T extends ZodTypeAny = ZodTypeAny>(
     }
   }
 
-  const query: SqlSqlToken<T> = {
+  return {
     sql: rawSql,
-    type: SqlToken,
     values: parameterValues,
-    zodObject,
+  };
+};
+
+const sql: SqlTaggedTemplate = (
+  parts: readonly string[],
+  ...args: readonly ValueExpression[]
+): SqlSqlToken => {
+  const {
+    sql: sqlText,
+    values,
+  } = createQuery(parts, args);
+
+  const query: SqlTokenType = {
+    sql: sqlText,
+    type: SqlToken,
+    values,
+    zodObject: z.any({}),
   };
 
   Object.defineProperty(query, 'sql', {
@@ -112,19 +128,30 @@ const maybeTypedSql = <T extends ZodTypeAny = ZodTypeAny>(
   return query;
 };
 
-const sql = (
-  parts: readonly string[],
-  ...values: readonly ValueExpression[]
-): SqlSqlToken<ZodTypeAny> => {
-  return maybeTypedSql(parts, z.any() as ZodTypeAny, values);
-};
-
 sql.type = <T extends ZodTypeAny>(zodObject: T) => {
   return (
     parts: readonly string[],
-    ...values: readonly ValueExpression[]
-  ): SqlSqlToken<T> => {
-    return maybeTypedSql<T>(parts, zodObject, values);
+    ...args: readonly ValueExpression[]
+  ): TaggedTemplateLiteralInvocation<T> => {
+    const {
+      sql: sqlText,
+      values,
+    } = createQuery(parts, args);
+
+    const query = {
+      sql: sqlText,
+      type: SqlToken,
+      values,
+      zodObject,
+    };
+
+    // Object.defineProperty(query, 'sql', {
+    //   configurable: false,
+    //   enumerable: true,
+    //   writable: false,
+    // });
+
+    return query;
   };
 };
 
@@ -193,7 +220,7 @@ sql.literalValue = (
     sql: escapeLiteralValue(value),
     type: SqlToken,
     values: [],
-    zodObject: z.object({}),
+    zodObject: z.any({}),
   };
 };
 
@@ -208,6 +235,6 @@ sql.unnest = (
   };
 };
 
-export const createSqlTag = <Z extends ZodTypeAny = ZodTypeAny>(): SqlTaggedTemplate<Z> => {
-  return sql as unknown as SqlTaggedTemplate<Z>;
+export const createSqlTag = <T extends QueryResultRow = QueryResultRow>(): SqlTaggedTemplate<T> => {
+  return sql;
 };

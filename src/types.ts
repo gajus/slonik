@@ -201,7 +201,7 @@ export type DatabaseConnection = DatabasePool | DatabasePoolConnection;
 
 export type QueryResultRowColumn = PrimitiveValueExpression;
 
-export type QueryResultRow = Record<string, QueryResultRowColumn>;
+export type QueryResultRow = Record<string, PrimitiveValueExpression>;
 
 export type Query = {
   readonly sql: string,
@@ -305,11 +305,11 @@ export type JsonSqlToken = {
   readonly value: SerializableValue,
 };
 
-export type SqlSqlToken<T extends ZodTypeAny = ZodTypeAny> = {
+export type SqlSqlToken<T extends MixedRow = ZodTypeAny> = {
   readonly sql: string,
   readonly type: typeof tokens.SqlToken,
   readonly values: readonly PrimitiveValueExpression[],
-  readonly zodObject: T,
+  readonly zodObject: T extends ZodTypeAny ? T : never,
 };
 
 export type UnnestSqlToken = {
@@ -342,8 +342,8 @@ export type NamedAssignment = {
   readonly [key: string]: ValueExpression,
 };
 
-export type SqlTaggedTemplate<Z extends ZodTypeAny = ZodTypeAny> = {
-  <U extends ZodTypeAny = Z>(template: TemplateStringsArray, ...values: ValueExpression[]): TaggedTemplateLiteralInvocation<U>,
+export type SqlTaggedTemplate<Z extends QueryResultRow = QueryResultRow> = {
+  <U extends QueryResultRow = Z>(template: TemplateStringsArray, ...values: ValueExpression[]): SqlSqlToken<U>,
   array: (
     values: readonly PrimitiveValueExpression[],
     memberType: SqlToken | TypeNameIdentifier,
@@ -354,7 +354,7 @@ export type SqlTaggedTemplate<Z extends ZodTypeAny = ZodTypeAny> = {
   json: (value: SerializableValue) => JsonSqlToken,
   jsonb: (value: SerializableValue) => JsonBinarySqlToken,
   literalValue: (value: string) => SqlSqlToken,
-  type: <Y extends ZodTypeAny>(zodObject: Y) => SqlTaggedTemplate<Y>,
+  type: <Y extends ZodTypeAny>(zodObject: Y) => (template: TemplateStringsArray, ...values: ValueExpression[]) => SqlSqlToken<Y>,
   unnest: (
     // Value might be ReadonlyArray<ReadonlyArray<PrimitiveValueExpression>>,
     // or it can be infinitely nested array, e.g.
@@ -411,50 +411,50 @@ export type InternalNestedTransactionFunction = <T>(
   transactionRetryLimit?: number,
 ) => Promise<T>;
 
-// eslint-disable-next-line @typescript-eslint/no-empty-interface, @typescript-eslint/consistent-type-definitions
-export interface TaggedTemplateLiteralInvocation<T extends ZodTypeAny = ZodTypeAny> extends SqlSqlToken<T> { }
+type MixedRow = QueryResultRow | ZodTypeAny;
 
-export type QueryAnyFirstFunction = <T extends ZodTypeAny>(
-  sql: TaggedTemplateLiteralInvocation<T>,
+export type TaggedTemplateLiteralInvocation = SqlSqlToken;
+
+export type QueryAnyFirstFunction = <T extends MixedRow | PrimitiveValueExpression>(
+  sql: SqlSqlToken<T extends MixedRow ? T : Record<string, PrimitiveValueExpression>>,
   values?: PrimitiveValueExpression[],
-) => Promise<ReadonlyArray<z.infer<T>[keyof z.infer<T>]>>;
-export type QueryAnyFunction = <T extends ZodTypeAny>(
-  sql: TaggedTemplateLiteralInvocation<T>,
+) => Promise<ReadonlyArray<T extends MixedRow ? (T extends ZodTypeAny ? z.infer<T>[keyof z.infer<T>] : T[keyof T]) : T>>;
+export type QueryAnyFunction = <T extends MixedRow | PrimitiveValueExpression>(
+  sql: SqlSqlToken<T extends MixedRow ? T : Record<string, PrimitiveValueExpression>>,
   values?: PrimitiveValueExpression[],
-) => Promise<ReadonlyArray<z.infer<T>>>;
+) => Promise<ReadonlyArray<T extends MixedRow ? (T extends ZodTypeAny ? z.infer<T> : T) : T>>;
 export type QueryExistsFunction = (
   sql: TaggedTemplateLiteralInvocation,
   values?: PrimitiveValueExpression[],
 ) => Promise<boolean>;
-export type QueryFunction = <T extends ZodTypeAny>(
-  sql: TaggedTemplateLiteralInvocation<T>,
+export type QueryFunction = <T extends MixedRow | PrimitiveValueExpression>(
+  sql: SqlSqlToken<T extends MixedRow ? T : Record<string, PrimitiveValueExpression>>,
   values?: PrimitiveValueExpression[],
-) => Promise<QueryResult<z.infer<T>>>;
-export type QueryManyFirstFunction = <T extends ZodTypeAny>(
-  sql: TaggedTemplateLiteralInvocation<T>,
+) => Promise<QueryResult<T extends MixedRow ? (T extends ZodTypeAny ? z.infer<T> : T) : T>>;
+export type QueryManyFirstFunction = <T extends MixedRow | PrimitiveValueExpression>(
+  sql: SqlSqlToken<T extends MixedRow ? T : Record<string, PrimitiveValueExpression>>,
   values?: PrimitiveValueExpression[],
-) => Promise<ReadonlyArray<z.infer<T>[keyof z.infer<T>]>>;
-export type QueryManyFunction = <T extends ZodTypeAny>(
-  sql: TaggedTemplateLiteralInvocation<T>,
+) => Promise<ReadonlyArray<T extends MixedRow ? (T extends ZodTypeAny ? z.infer<T>[keyof z.infer<T>] : T[keyof T]) : T>>;
+export type QueryManyFunction = <T extends MixedRow | PrimitiveValueExpression>(
+  sql: SqlSqlToken<T extends MixedRow ? T : Record<string, PrimitiveValueExpression>>,
   values?: PrimitiveValueExpression[],
-) => Promise<ReadonlyArray<z.infer<T>>>;
-export type QueryMaybeOneFirstFunction = <T extends ZodTypeAny>(
-  sql: TaggedTemplateLiteralInvocation<T>,
+) => Promise<ReadonlyArray<T extends MixedRow ? (T extends ZodTypeAny ? z.infer<T> : T) : T>>;
+export type QueryMaybeOneFirstFunction = <T extends MixedRow | PrimitiveValueExpression>(
+  sql: SqlSqlToken<T extends MixedRow ? T : Record<string, PrimitiveValueExpression>>,
   values?: PrimitiveValueExpression[],
-) => Promise<z.infer<T>[keyof z.infer<T>] | null>;
-export type QueryMaybeOneFunction = <T extends ZodTypeAny>(
-  sql: TaggedTemplateLiteralInvocation<T>,
+) => Promise<(T extends MixedRow ? (T extends ZodTypeAny ? z.infer<T>[keyof z.infer<T>] : T[keyof T]) : T) | null>;
+export type QueryMaybeOneFunction = <T extends MixedRow | PrimitiveValueExpression>(
+  sql: SqlSqlToken<T extends MixedRow ? T : Record<string, PrimitiveValueExpression>>,
   values?: PrimitiveValueExpression[],
-) => Promise<z.infer<T> | null>;
-export type QueryOneFirstFunction = <T extends ZodTypeAny>(
-  sql: TaggedTemplateLiteralInvocation<T>,
+) => Promise<(T extends MixedRow ? (T extends ZodTypeAny ? z.infer<T> : T) : T) | null>;
+export type QueryOneFirstFunction = <T extends MixedRow | PrimitiveValueExpression>(
+  sql: SqlSqlToken<T extends MixedRow ? T : Record<string, PrimitiveValueExpression>>,
   values?: PrimitiveValueExpression[],
-) => Promise<z.infer<T>[keyof z.infer<T>]>;
-// ) => Promise<T[keyof T]>;
-export type QueryOneFunction = <T extends ZodTypeAny>(
-  sql: TaggedTemplateLiteralInvocation<T>,
+) => Promise<T extends MixedRow ? (T extends ZodTypeAny ? z.infer<T>[keyof z.infer<T>] : T[keyof T]) : T>;
+export type QueryOneFunction = <T extends MixedRow | PrimitiveValueExpression>(
+  sql: SqlSqlToken<T extends MixedRow ? T : Record<string, PrimitiveValueExpression>>,
   values?: PrimitiveValueExpression[],
-) => Promise<z.infer<T>>;
+) => Promise<T extends MixedRow ? (T extends ZodTypeAny ? z.infer<T> : T) : T>;
 
 export type Interceptor = {
   readonly afterPoolConnection?: (

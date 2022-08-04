@@ -63,7 +63,9 @@ test('throws an error if more than one row is returned', async (t) => {
     ],
   });
 
-  const error = await t.throwsAsync(pool.oneFirst(sql`SELECT 1`));
+  const query = sql`SELECT 1`;
+
+  const error = await t.throwsAsync(pool.oneFirst(query));
 
   t.true(error instanceof DataIntegrityError);
 });
