@@ -322,12 +322,7 @@ export type UnnestSqlToken = {
 type AnySqlSqlToken = SqlSqlToken<any>;
 
 export type PrimitiveValueExpression =
-  Buffer |
-  boolean |
-  number |
-  string |
-  readonly PrimitiveValueExpression[] |
-  null;
+  Buffer | SerializableValue | boolean | number | string | readonly PrimitiveValueExpression[] | null;
 
 export type SqlToken =
   | ArraySqlToken
