@@ -93,6 +93,7 @@ Note: Using this project does not require TypeScript. It is a regular ES6 module
         * [Routing queries to different connections](#user-content-slonik-recipes-routing-queries-to-different-connections)
         * [Building Utility Statements](#user-content-slonik-recipes-building-utility-statements)
     * [Runtime validation and static type inference](#user-content-slonik-runtime-validation-and-static-type-inference)
+        * [Motivation](#user-content-slonik-runtime-validation-and-static-type-inference-motivation)
         * [Example use of `sql.type`](#user-content-slonik-runtime-validation-and-static-type-inference-example-use-of-sql-type)
         * [Performance penalty](#user-content-slonik-runtime-validation-and-static-type-inference-performance-penalty)
         * [Unknown keys](#user-content-slonik-runtime-validation-and-static-type-inference-unknown-keys)
@@ -1240,6 +1241,18 @@ await connection.query(sql`
 Slonik integrates [zod](https://github.com/colinhacks/zod) to provide runtime query result validation and static type inference.
 
 Runtime validation is added by defining a zod [object](https://github.com/colinhacks/zod#objects) and passing it to `sql.type` tagged template.
+
+<a name="user-content-slonik-runtime-validation-and-static-type-inference-motivation"></a>
+<a name="slonik-runtime-validation-and-static-type-inference-motivation"></a>
+### Motivation
+
+Build-time type safety guarantees that your application will work as expected at the time of the build (assuming that the types are correct in the first place).
+
+The problem is that once you deploy the application, the database schema might change independently of the codebase. This drift may result in your application behaving in unpredictable and potentially dangerous ways, e.g., imagine if table `product` changed `price` from `numeric` to `text`. Without runtime validation, this would cause a cascade of problems and potential database corruption. Even worse, without runtime checks, this could go unnoticed for a long time.
+
+In contrast, by using runtime checks, you can ensure that the contract between your codebase and the database is always respected. If there is a breaking change, the application fails with a loud error that is easy to debug.
+
+By using `zod`, we get the best of both worlds: type safety and runtime checks.
 
 <a name="user-content-slonik-runtime-validation-and-static-type-inference-example-use-of-sql-type"></a>
 <a name="slonik-runtime-validation-and-static-type-inference-example-use-of-sql-type"></a>

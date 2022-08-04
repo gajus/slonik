@@ -4,6 +4,16 @@ Slonik integrates [zod](https://github.com/colinhacks/zod) to provide runtime qu
 
 Runtime validation is added by defining a zod [object](https://github.com/colinhacks/zod#objects) and passing it to `sql.type` tagged template.
 
+### Motivation
+
+Build-time type safety guarantees that your application will work as expected at the time of the build (assuming that the types are correct in the first place).
+
+The problem is that once you deploy the application, the database schema might change independently of the codebase. This drift may result in your application behaving in unpredictable and potentially dangerous ways, e.g., imagine if table `product` changed `price` from `numeric` to `text`. Without runtime validation, this would cause a cascade of problems and potential database corruption. Even worse, without runtime checks, this could go unnoticed for a long time.
+
+In contrast, by using runtime checks, you can ensure that the contract between your codebase and the database is always respected. If there is a breaking change, the application fails with a loud error that is easy to debug.
+
+By using `zod`, we get the best of both worlds: type safety and runtime checks.
+
 ### Example use of `sql.type`
 
 Let's assume that you have a PostgreSQL table `person`:
