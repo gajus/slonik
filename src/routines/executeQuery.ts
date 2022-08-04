@@ -36,6 +36,7 @@ import {
   type QueryResultRow,
   type QueryResult,
   type Query,
+  type TaggedTemplateLiteralInvocation,
 } from '../types';
 import {
   createQueryId,
@@ -121,11 +122,14 @@ export const executeQuery = async (
   connectionLogger: Logger,
   connection: PgPoolClient,
   clientConfiguration: ClientConfiguration,
-  slonikSql: string,
-  values: readonly PrimitiveValueExpression[],
+  slonikSqlRename: TaggedTemplateLiteralInvocation,
   inheritedQueryId: QueryId | undefined,
   executionRoutine: ExecutionRoutineType,
 ): Promise<QueryResult<Record<string, PrimitiveValueExpression>>> => {
+  // TODO rename
+  const slonikSql = slonikSqlRename.sql;
+  const values = slonikSqlRename.values;
+
   const poolClientState = getPoolClientState(connection);
 
   if (poolClientState.terminated) {

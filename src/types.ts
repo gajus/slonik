@@ -368,8 +368,7 @@ export type InternalQueryMethod<R = any> = (
   log: Logger,
   connection: PgPoolClient,
   clientConfiguration: ClientConfiguration,
-  sql: string,
-  values: readonly PrimitiveValueExpression[],
+  slonikSql: TaggedTemplateLiteralInvocation,
   uid?: QueryId,
 ) => R;
 
@@ -377,8 +376,7 @@ export type InternalCopyFromBinaryFunction = (
   log: Logger,
   connection: PgPoolClient,
   clientConfiguration: ClientConfiguration,
-  sql: string,
-  boundValues: readonly PrimitiveValueExpression[],
+  slonikSql: TaggedTemplateLiteralInvocation,
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   tupleList: ReadonlyArray<readonly any[]>,
   columnTypes: readonly TypeNameIdentifier[],
@@ -388,8 +386,7 @@ export type InternalStreamFunction = (
   log: Logger,
   connection: PgPoolClient,
   clientConfiguration: ClientConfiguration,
-  sql: string,
-  values: readonly PrimitiveValueExpression[],
+  slonikSql: TaggedTemplateLiteralInvocation,
   streamHandler: StreamHandler,
   uid?: QueryId,
   config?: QueryStreamConfig,

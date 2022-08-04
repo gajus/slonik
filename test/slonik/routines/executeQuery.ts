@@ -6,6 +6,9 @@ import {
 } from 'roarr';
 import * as sinon from 'sinon';
 import {
+  type TaggedTemplateLiteralInvocation,
+} from '../../../src';
+import {
   InvalidInputError,
 } from '../../../src/errors';
 import {
@@ -59,8 +62,10 @@ test('throws a descriptive error if query is empty', async (t) => {
       t.context.logger,
       t.context.connection,
       createClientConfiguration(),
-      '',
-      [],
+      {
+        sql: '',
+        values: [],
+      } as unknown as TaggedTemplateLiteralInvocation,
       'foo',
       t.context.executionRoutine,
     );
@@ -76,8 +81,10 @@ test('throws a descriptive error if the entire query is a value binding', async 
       t.context.logger,
       t.context.connection,
       createClientConfiguration(),
-      '$1',
-      [],
+      {
+        sql: '$1',
+        values: [],
+      } as unknown as TaggedTemplateLiteralInvocation,
       'foo',
       t.context.executionRoutine,
     );
@@ -109,8 +116,10 @@ test('retries an implicit query that failed due to a transaction error', async (
     t.context.logger,
     t.context.connection,
     createClientConfiguration(),
-    'SELECT 1 AS foo',
-    [],
+    {
+      sql: 'SELECT 1 AS foo',
+      values: [],
+    } as unknown as TaggedTemplateLiteralInvocation,
     'foo',
     executionRoutineStub,
   );
@@ -146,8 +155,10 @@ test('returns the thrown transaction error if the retry limit is reached', async
       ...clientConfiguration,
       queryRetryLimit: 1,
     },
-    'SELECT 1 AS foo',
-    [],
+    {
+      sql: 'SELECT 1 AS foo',
+      values: [],
+    } as unknown as TaggedTemplateLiteralInvocation,
     'foo',
     executionRoutineStub,
   ));
@@ -183,8 +194,10 @@ test('transaction errors are not handled if the function was called by a transac
       ...clientConfiguration,
       queryRetryLimit: 1,
     },
-    'SELECT 1 AS foo',
-    [],
+    {
+      sql: 'SELECT 1 AS foo',
+      values: [],
+    } as unknown as TaggedTemplateLiteralInvocation,
     'foo',
     executionRoutineStub,
   ));

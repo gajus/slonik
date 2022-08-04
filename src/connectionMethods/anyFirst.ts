@@ -11,10 +11,10 @@ import {
   any,
 } from './any';
 
-export const anyFirst: InternalQueryMethod = async (log, connection, clientConfigurationType, rawSql, values, inheritedQueryId) => {
+export const anyFirst: InternalQueryMethod = async (log, connection, clientConfigurationType, slonikSql, inheritedQueryId) => {
   const queryId = inheritedQueryId ?? createQueryId();
 
-  const rows = await any(log, connection, clientConfigurationType, rawSql, values, queryId);
+  const rows = await any(log, connection, clientConfigurationType, slonikSql, queryId);
 
   if (rows.length === 0) {
     return [];
