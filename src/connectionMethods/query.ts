@@ -14,16 +14,14 @@ export const query: InternalQueryMethod = async (
   connectionLogger,
   connection,
   clientConfiguration,
-  rawSql,
-  values,
+  slonikSql,
   inheritedQueryId,
 ) => {
   return await executeQuery(
     connectionLogger,
     connection,
     clientConfiguration,
-    rawSql,
-    values,
+    slonikSql,
     inheritedQueryId,
     async (finalConnection, finalSql, finalValues) => {
       const result: PgQueryResult & {notices?: Notice[], } = await finalConnection.query(

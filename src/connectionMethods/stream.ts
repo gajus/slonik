@@ -11,13 +11,12 @@ import {
   type InternalStreamFunction,
 } from '../types';
 
-export const stream: InternalStreamFunction = async (connectionLogger, connection, clientConfiguration, rawSql, values, streamHandler, uid, options) => {
+export const stream: InternalStreamFunction = async (connectionLogger, connection, clientConfiguration, slonikSql, streamHandler, uid, options) => {
   return await executeQuery(
     connectionLogger,
     connection,
     clientConfiguration,
-    rawSql,
-    values,
+    slonikSql,
     undefined,
     (finalConnection, finalSql, finalValues, executionContext, actualQuery) => {
       const query = new QueryStream(finalSql, finalValues, options);

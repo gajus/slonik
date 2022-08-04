@@ -42,136 +42,125 @@ export const bindTransactionConnection = (
   };
 
   return {
-    any: (query) => {
-      assertSqlSqlToken(query);
+    any: (slonikSql) => {
+      assertSqlSqlToken(slonikSql);
       assertTransactionDepth();
 
       return any(
         parentLog,
         connection,
         clientConfiguration,
-        query.sql,
-        query.values,
+        slonikSql,
       );
     },
-    anyFirst: (query) => {
-      assertSqlSqlToken(query);
+    anyFirst: (slonikSql) => {
+      assertSqlSqlToken(slonikSql);
       assertTransactionDepth();
 
       return anyFirst(
         parentLog,
         connection,
         clientConfiguration,
-        query.sql,
-        query.values,
+        slonikSql,
       );
     },
-    exists: (query) => {
-      assertSqlSqlToken(query);
+    exists: (slonikSql) => {
+      assertSqlSqlToken(slonikSql);
       assertTransactionDepth();
 
       return exists(
         parentLog,
         connection,
         clientConfiguration,
-        query.sql,
-        query.values,
+        slonikSql,
       );
     },
-    many: (query) => {
-      assertSqlSqlToken(query);
+    many: (slonikSql) => {
+      assertSqlSqlToken(slonikSql);
       assertTransactionDepth();
 
       return many(
         parentLog,
         connection,
         clientConfiguration,
-        query.sql,
-        query.values,
+        slonikSql,
       );
     },
-    manyFirst: (query) => {
-      assertSqlSqlToken(query);
+    manyFirst: (slonikSql) => {
+      assertSqlSqlToken(slonikSql);
       assertTransactionDepth();
 
       return manyFirst(
         parentLog,
         connection,
         clientConfiguration,
-        query.sql,
-        query.values,
+        slonikSql,
       );
     },
-    maybeOne: (query) => {
-      assertSqlSqlToken(query);
+    maybeOne: (slonikSql) => {
+      assertSqlSqlToken(slonikSql);
       assertTransactionDepth();
 
       return maybeOne(
         parentLog,
         connection,
         clientConfiguration,
-        query.sql,
-        query.values,
+        slonikSql,
       );
     },
-    maybeOneFirst: (query) => {
-      assertSqlSqlToken(query);
+    maybeOneFirst: (slonikSql) => {
+      assertSqlSqlToken(slonikSql);
       assertTransactionDepth();
 
       return maybeOneFirst(
         parentLog,
         connection,
         clientConfiguration,
-        query.sql,
-        query.values,
+        slonikSql,
       );
     },
-    one: (query) => {
-      assertSqlSqlToken(query);
+    one: (slonikSql) => {
+      assertSqlSqlToken(slonikSql);
       assertTransactionDepth();
 
       return one(
         parentLog,
         connection,
         clientConfiguration,
-        query.sql,
-        query.values,
+        slonikSql,
       );
     },
-    oneFirst: (query) => {
-      assertSqlSqlToken(query);
+    oneFirst: (slonikSql) => {
+      assertSqlSqlToken(slonikSql);
       assertTransactionDepth();
 
       return oneFirst(
         parentLog,
         connection,
         clientConfiguration,
-        query.sql,
-        query.values,
+        slonikSql,
       );
     },
-    query: (query) => {
-      assertSqlSqlToken(query);
+    query: (slonikSql) => {
+      assertSqlSqlToken(slonikSql);
       assertTransactionDepth();
 
       return queryMethod(
         parentLog,
         connection,
         clientConfiguration,
-        query.sql,
-        query.values,
+        slonikSql,
       );
     },
-    stream: (query, streamHandler) => {
-      assertSqlSqlToken(query);
+    stream: (slonikSql, streamHandler) => {
+      assertSqlSqlToken(slonikSql);
       assertTransactionDepth();
 
       return stream(
         parentLog,
         connection,
         clientConfiguration,
-        query.sql,
-        query.values,
+        slonikSql,
         streamHandler,
       );
     },
