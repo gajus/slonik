@@ -1,7 +1,7 @@
 import test from 'ava';
 import {
-  expectType,
-} from 'tsd';
+  expectTypeOf,
+} from 'expect-type';
 import {
   z,
 } from 'zod';
@@ -86,7 +86,7 @@ test('describes zod object associated with the query', async (t) => {
 
   const result = await pool.one(query);
 
-  expectType<{foo: number, }>(result);
+  expectTypeOf(result).toMatchTypeOf<{foo: number, }>();
 
   t.deepEqual(result, {
     foo: 1,

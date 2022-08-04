@@ -4,8 +4,8 @@
  */
 
 import {
-  expectType,
-} from 'tsd';
+  expectTypeOf,
+} from 'expect-type';
 import {
   z,
 } from 'zod';
@@ -26,64 +26,64 @@ export const queryMethods = async (): Promise<void> => {
 
   // any
   const any = await client.any(sql``);
-  expectType<readonly any[]>(any);
+  expectTypeOf(any).toMatchTypeOf<readonly any[]>();
 
   const anyTyped = await client.any(sql.type(Row)``);
-  expectType<ReadonlyArray<{foo: string, }>>(anyTyped);
+  expectTypeOf(anyTyped).toMatchTypeOf<ReadonlyArray<{foo: string, }>>();
 
   // anyFirst
   const anyFirst = await client.anyFirst(sql``);
-  expectType<any>(anyFirst);
+  expectTypeOf(anyFirst).toMatchTypeOf<any>();
 
   const anyFirstTyped = await client.anyFirst(sql.type(Row)``);
-  expectType<readonly string[]>(anyFirstTyped);
+  expectTypeOf(anyFirstTyped).toMatchTypeOf<readonly string[]>();
 
   // many
   const many = await client.many(sql``);
-  expectType<readonly any[]>(many);
+  expectTypeOf(many).toMatchTypeOf<readonly any[]>();
 
   const manyTyped = await client.many(sql.type(Row)``);
-  expectType<ReadonlyArray<{foo: string, }>>(manyTyped);
+  expectTypeOf(manyTyped).toMatchTypeOf<ReadonlyArray<{foo: string, }>>();
 
   // manyFirst
   const manyFirst = await client.manyFirst(sql``);
-  expectType<readonly any[]>(manyFirst);
+  expectTypeOf(manyFirst).toMatchTypeOf<readonly any[]>();
 
   const manyFirstTyped = await client.manyFirst(sql.type(Row)``);
-  expectType<readonly string[]>(manyFirstTyped);
+  expectTypeOf(manyFirstTyped).toMatchTypeOf<readonly string[]>();
 
   // maybeOne
   const maybeOne = await client.maybeOne(sql``);
-  expectType<any>(maybeOne);
+  expectTypeOf(maybeOne).toMatchTypeOf<any>();
 
   const maybeOneTyped = await client.maybeOne(sql.type(Row)``);
-  expectType<{foo: string, } | null>(maybeOneTyped);
+  expectTypeOf(maybeOneTyped).toMatchTypeOf<{foo: string, } | null>();
 
   // maybeOneFirst
   const maybeOneFirst = await client.maybeOneFirst(sql``);
-  expectType<any>(maybeOneFirst);
+  expectTypeOf(maybeOneFirst).toMatchTypeOf<any>();
 
   const maybeOneFirstTyped = await client.maybeOneFirst(sql.type(Row)``);
-  expectType<string | null>(maybeOneFirstTyped);
+  expectTypeOf(maybeOneFirstTyped).toMatchTypeOf<string | null>();
 
   // one
   const one = await client.one(sql``);
-  expectType<Record<string, any>>(one);
+  expectTypeOf(one).toMatchTypeOf<any>();
 
   const oneTyped = await client.one(sql.type(Row)``);
-  expectType<{foo: string, }>(oneTyped);
+  expectTypeOf(oneTyped).toMatchTypeOf<{foo: string, }>();
 
   // oneFirst
   const oneFirst = await client.oneFirst(sql``);
-  expectType<any>(oneFirst);
+  expectTypeOf(oneFirst).toMatchTypeOf<any>();
 
   const oneFirstTyped = await client.oneFirst(sql.type(Row)``);
-  expectType<string>(oneFirstTyped);
+  expectTypeOf(oneFirstTyped).toMatchTypeOf<string>();
 
   // query
   const query = await client.query(sql``);
-  expectType<QueryResult<Record<string, any>>>(query);
+  expectTypeOf(query).toMatchTypeOf<QueryResult<Record<string, any>>>();
 
   const queryTyped = await client.query(sql.type(Row)``);
-  expectType<{rows: ReadonlyArray<{foo: string, }>, }>(queryTyped);
+  expectTypeOf(queryTyped).toMatchTypeOf<{rows: ReadonlyArray<{foo: string, }>, }>();
 };

@@ -2,11 +2,11 @@ import anyTest, {
   type TestFn,
 } from 'ava';
 import {
+  expectTypeOf,
+} from 'expect-type';
+import {
   ROARR,
 } from 'roarr';
-import {
-  expectType,
-} from 'tsd';
 import {
   z,
 } from 'zod';
@@ -127,5 +127,5 @@ test('describes zod object associated with the query', (t) => {
 
   t.is(query.zodObject, zodObject);
 
-  expectType<{id: number, }>(query.zodObject._type);
+  expectTypeOf(query.zodObject._type).toMatchTypeOf<{id: number, }>();
 });
