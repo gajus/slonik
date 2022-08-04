@@ -111,11 +111,10 @@ const sql = (
     values,
   } = createQuery(parts, args);
 
-  const query: SqlTokenType = {
+  const query = {
     sql: sqlText,
     type: SqlToken,
     values,
-    zodObject: z.any({}),
   };
 
   Object.defineProperty(query, 'sql', {
@@ -124,7 +123,7 @@ const sql = (
     writable: false,
   });
 
-  return query;
+  return query as unknown as SqlSqlToken<QueryResultRow>;
 };
 
 sql.type = <T extends ZodTypeAny>(zodObject: T) => {
