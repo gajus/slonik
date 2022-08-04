@@ -27,8 +27,7 @@ export const copyFromBinary: InternalCopyFromBinaryFunction = async (
   connectionLogger,
   connection,
   clientConfiguration,
-  rawSql,
-  boundValues,
+  slonikSql,
   tupleList,
   columnTypes,
 ) => {
@@ -38,8 +37,7 @@ export const copyFromBinary: InternalCopyFromBinaryFunction = async (
     connectionLogger,
     connection,
     clientConfiguration,
-    rawSql,
-    boundValues,
+    slonikSql,
     undefined,
     (finalConnection, finalSql) => {
       const copyFromBinaryStream = finalConnection.query(from(finalSql));

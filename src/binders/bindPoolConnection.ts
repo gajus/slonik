@@ -31,138 +31,126 @@ export const bindPoolConnection = (
   clientConfiguration: ClientConfiguration,
 ): DatabasePoolConnection => {
   return {
-    any: (query) => {
-      assertSqlSqlToken(query);
+    any: (slonikSql) => {
+      assertSqlSqlToken(slonikSql);
 
       return any(
         parentLog,
         connection,
         clientConfiguration,
-        query.sql,
-        query.values,
+        slonikSql,
       );
     },
-    anyFirst: (query) => {
-      assertSqlSqlToken(query);
+    anyFirst: (slonikSql) => {
+      assertSqlSqlToken(slonikSql);
 
       return anyFirst(
         parentLog,
         connection,
         clientConfiguration,
-        query.sql,
-        query.values,
+        slonikSql,
       );
     },
-    copyFromBinary: (query, values, columnTypes) => {
-      assertSqlSqlToken(query);
+    copyFromBinary: (slonikSql, values, columnTypes) => {
+      assertSqlSqlToken(slonikSql);
 
       return copyFromBinary(
         parentLog,
         connection,
         clientConfiguration,
-        query.sql,
-        query.values,
+        slonikSql,
         values,
         columnTypes,
       );
     },
-    exists: (query) => {
-      assertSqlSqlToken(query);
+    exists: (slonikSql) => {
+      assertSqlSqlToken(slonikSql);
 
       return exists(
         parentLog,
         connection,
         clientConfiguration,
-        query.sql,
-        query.values,
+        slonikSql,
       );
     },
-    many: (query) => {
-      assertSqlSqlToken(query);
+    many: (slonikSql) => {
+      assertSqlSqlToken(slonikSql);
 
       return many(
         parentLog,
         connection,
         clientConfiguration,
-        query.sql,
-        query.values,
+        slonikSql,
       );
     },
-    manyFirst: (query) => {
-      assertSqlSqlToken(query);
+    manyFirst: (slonikSql) => {
+      assertSqlSqlToken(slonikSql);
 
       return manyFirst(
         parentLog,
         connection,
         clientConfiguration,
-        query.sql,
-        query.values,
+        slonikSql,
       );
     },
-    maybeOne: (query) => {
-      assertSqlSqlToken(query);
+    maybeOne: (slonikSql) => {
+      assertSqlSqlToken(slonikSql);
 
       return maybeOne(
         parentLog,
         connection,
         clientConfiguration,
-        query.sql,
-        query.values,
+        slonikSql,
       );
     },
-    maybeOneFirst: (query) => {
-      assertSqlSqlToken(query);
+    maybeOneFirst: (slonikSql) => {
+      assertSqlSqlToken(slonikSql);
 
       return maybeOneFirst(
         parentLog,
         connection,
         clientConfiguration,
-        query.sql,
-        query.values,
+        slonikSql,
       );
     },
-    one: (query) => {
-      assertSqlSqlToken(query);
+    one: (slonikSql) => {
+      assertSqlSqlToken(slonikSql);
 
       return one(
         parentLog,
         connection,
         clientConfiguration,
-        query.sql,
-        query.values,
+        slonikSql,
       );
     },
-    oneFirst: (query) => {
-      assertSqlSqlToken(query);
+    oneFirst: (slonikSql) => {
+      assertSqlSqlToken(slonikSql);
 
       return oneFirst(
         parentLog,
         connection,
         clientConfiguration,
-        query.sql,
-        query.values,
+        slonikSql,
       );
     },
-    query: (query) => {
-      assertSqlSqlToken(query);
+    query: (slonikSql) => {
+      assertSqlSqlToken(slonikSql);
 
       return queryMethod(
         parentLog,
         connection,
         clientConfiguration,
-        query.sql,
-        query.values,
+        slonikSql,
       );
     },
-    stream: (query, streamHandler, config) => {
-      assertSqlSqlToken(query);
+    stream: (slonikSql, streamHandler, config) => {
+      assertSqlSqlToken(slonikSql);
 
       return stream(
         parentLog,
         connection,
         clientConfiguration,
-        query.sql,
-        query.values,
+        slonikSql,
         streamHandler,
         undefined,
         config,

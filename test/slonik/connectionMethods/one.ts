@@ -1,5 +1,11 @@
 import test from 'ava';
 import {
+  expectType,
+} from 'tsd';
+import {
+  z,
+} from 'zod';
+import {
   DataIntegrityError,
   NotFoundError,
 } from '../../../src/errors';
@@ -59,4 +65,46 @@ test('throws an error if more than one row is returned', async (t) => {
   const error = await t.throwsAsync(pool.one(sql`SELECT 1`));
 
   t.true(error instanceof DataIntegrityError);
+});
+
+test.only('describes zod object associated with the query', async (t) => {
+  const pool = createPool();
+
+  pool.querySpy.returns({
+    rows: [
+      {
+        foo: 1,
+      },
+    ],
+  });
+
+  const zodObject = z.object({
+    foo: z.number(),
+  });
+
+  const result = await pool.one(sql`${zodObject} SELECT 1`);
+
+  expectType<{foo: number, }>(result._type);
+
+  t.deepEqual(result, {
+    foo: 1,
+  });
+});
+
+test.only('throws an error if object does match the zod object shape', async (t) => {
+  const pool = createPool();
+
+  pool.querySpy.returns({
+    rows: [
+      {
+        foo: '1',
+      },
+    ],
+  });
+
+  const zodObject = z.object({
+    foo: z.number(),
+  });
+
+  await t.throwsAsync(pool.one(sql`${zodObject} SELECT 1`));
 });

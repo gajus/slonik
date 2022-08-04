@@ -30,7 +30,8 @@ Note: Using this project does not require TypeScript. It is a regular ES6 module
 
 ## Features
 
-* [Assertions and type safety](#repeating-code-patterns-and-type-safety).
+* [Helper methods](#repeating-code-patterns-and-type-safety).
+* [Runtime validation and static type inference](#runtime-validation-and-static-type-inference)
 * [Connection mocking](#mocking-slonik).
 * [Safe connection handling](#protecting-against-unsafe-connection-handling).
 * [Safe transaction handling](#protecting-against-unsafe-transaction-handling).

@@ -48,18 +48,21 @@ const log = Logger.child({
   namespace: 'sql',
 });
 
-const sql: SqlTaggedTemplate = (
+const sql: SqlTaggedTemplate = <T extends ZodTypeAny = ZodTypeAny>(
   parts: readonly string[],
-  ...args: readonly [ValueExpression | ZodTypeAny, ...ValueExpression[]]
+  ...args: readonly [T | ValueExpression, ...ValueExpression[]] | readonly ValueExpression[]
 ): SqlSqlToken => {
   let values: readonly ValueExpression[];
 
   let zodObject!: ZodTypeAny;
 
+  let index = 0;
+
   // https://github.com/colinhacks/zod/issues/1306
   if ((args[0] as ZodTypeAny)?._def?.typeName === 'ZodObject') {
     zodObject = args[0] as ZodTypeAny;
     values = args.slice(1) as readonly ValueExpression[];
+    index++;
   } else {
     values = args as readonly ValueExpression[];
   }
@@ -67,8 +70,6 @@ const sql: SqlTaggedTemplate = (
   let rawSql = '';
 
   const parameterValues: PrimitiveValueExpression[] = [];
-
-  let index = 0;
 
   for (const part of parts) {
     const token = values[index++];
@@ -107,7 +108,7 @@ const sql: SqlTaggedTemplate = (
     }
   }
 
-  const query: SqlSqlToken = {
+  const query: SqlSqlToken<T> = {
     sql: rawSql,
     type: SqlToken,
     values: parameterValues,

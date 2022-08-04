@@ -304,11 +304,11 @@ export type JsonSqlToken = {
   readonly value: SerializableValue,
 };
 
-export type SqlSqlToken = {
+export type SqlSqlToken<T extends ZodTypeAny = never> = {
   readonly sql: string,
   readonly type: typeof tokens.SqlToken,
   readonly values: readonly PrimitiveValueExpression[],
-  readonly zodObject?: ZodTypeAny,
+  readonly zodObject: T,
 };
 
 export type UnnestSqlToken = {
@@ -345,8 +345,11 @@ export type NamedAssignment = {
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 type UserQueryResultRow = Record<string, any>;
 
-export type SqlTaggedTemplate<T extends UserQueryResultRow = QueryResultRow> = {
-  <U extends UserQueryResultRow = T>(template: TemplateStringsArray, ...values: ValueExpression[]): TaggedTemplateLiteralInvocation<U>,
+export type SqlTaggedTemplate<T extends ZodTypeAny = ZodTypeAny> = {
+  <U extends ZodTypeAny = T>(
+    template: TemplateStringsArray,
+    ...args: readonly [U | ValueExpression, ...ValueExpression[]] | readonly ValueExpression[]
+  ): TaggedTemplateLiteralInvocation<U>,
   array: (
     values: readonly PrimitiveValueExpression[],
     memberType: SqlToken | TypeNameIdentifier,
@@ -372,8 +375,7 @@ export type InternalQueryMethod<R = any> = (
   log: Logger,
   connection: PgPoolClient,
   clientConfiguration: ClientConfiguration,
-  sql: string,
-  values: readonly PrimitiveValueExpression[],
+  slonikSql: SqlSqlToken,
   uid?: QueryId,
 ) => R;
 
@@ -381,8 +383,7 @@ export type InternalCopyFromBinaryFunction = (
   log: Logger,
   connection: PgPoolClient,
   clientConfiguration: ClientConfiguration,
-  sql: string,
-  boundValues: readonly PrimitiveValueExpression[],
+  slonikSql: SqlSqlToken,
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   tupleList: ReadonlyArray<readonly any[]>,
   columnTypes: readonly TypeNameIdentifier[],
@@ -392,8 +393,7 @@ export type InternalStreamFunction = (
   log: Logger,
   connection: PgPoolClient,
   clientConfiguration: ClientConfiguration,
-  sql: string,
-  values: readonly PrimitiveValueExpression[],
+  slonikSql: SqlSqlToken,
   streamHandler: StreamHandler,
   uid?: QueryId,
   config?: QueryStreamConfig,
@@ -417,13 +417,13 @@ export type InternalNestedTransactionFunction = <T>(
 ) => Promise<T>;
 
 // eslint-disable-next-line @typescript-eslint/no-empty-interface, @typescript-eslint/consistent-type-definitions, @typescript-eslint/no-unused-vars
-export interface TaggedTemplateLiteralInvocation<Result extends UserQueryResultRow = QueryResultRow> extends SqlSqlToken { }
+export interface TaggedTemplateLiteralInvocation<T extends ZodTypeAny = ZodTypeAny> extends SqlSqlToken<T> { }
 
-export type QueryAnyFirstFunction = <T, Row = Record<string, T>>(
+export type QueryAnyFirstFunction = <T extends ZodTypeAny = ZodTypeAny, Row = Record<string, T>>(
   sql: TaggedTemplateLiteralInvocation<Row>,
   values?: PrimitiveValueExpression[],
 ) => Promise<ReadonlyArray<Row[keyof Row]>>;
-export type QueryAnyFunction = <T>(
+export type QueryAnyFunction = <T extends ZodTypeAny = ZodTypeAny>(
   sql: TaggedTemplateLiteralInvocation<T>,
   values?: PrimitiveValueExpression[],
 ) => Promise<readonly T[]>;
@@ -431,31 +431,31 @@ export type QueryExistsFunction = (
   sql: TaggedTemplateLiteralInvocation,
   values?: PrimitiveValueExpression[],
 ) => Promise<boolean>;
-export type QueryFunction = <T>(
+export type QueryFunction = <T extends ZodTypeAny = ZodTypeAny>(
   sql: TaggedTemplateLiteralInvocation<T>,
   values?: PrimitiveValueExpression[],
 ) => Promise<QueryResult<T>>;
-export type QueryManyFirstFunction = <T, Row = Record<string, T>>(
+export type QueryManyFirstFunction = <T extends ZodTypeAny = ZodTypeAny, Row = Record<string, T>>(
   sql: TaggedTemplateLiteralInvocation<Row>,
   values?: PrimitiveValueExpression[],
 ) => Promise<ReadonlyArray<Row[keyof Row]>>;
-export type QueryManyFunction = <T>(
+export type QueryManyFunction = <T extends ZodTypeAny = ZodTypeAny>(
   sql: TaggedTemplateLiteralInvocation<T>,
   values?: PrimitiveValueExpression[],
 ) => Promise<readonly T[]>;
-export type QueryMaybeOneFirstFunction = <T, Row = Record<string, T>>(
+export type QueryMaybeOneFirstFunction = <T extends ZodTypeAny = ZodTypeAny, Row = Record<string, T>>(
   sql: TaggedTemplateLiteralInvocation<Row>,
   values?: PrimitiveValueExpression[],
 ) => Promise<Row[keyof Row] | null>;
-export type QueryMaybeOneFunction = <T>(
+export type QueryMaybeOneFunction = <T extends ZodTypeAny = ZodTypeAny>(
   sql: TaggedTemplateLiteralInvocation<T>,
   values?: PrimitiveValueExpression[],
 ) => Promise<T | null>;
-export type QueryOneFirstFunction = <T, Row = Record<string, T>>(
+export type QueryOneFirstFunction = <T extends ZodTypeAny = ZodTypeAny, Row = Record<string, T>>(
   sql: TaggedTemplateLiteralInvocation<Row>,
   values?: PrimitiveValueExpression[],
 ) => Promise<Row[keyof Row]>;
-export type QueryOneFunction = <T extends UserQueryResultRow = UserQueryResultRow>(
+export type QueryOneFunction = <T extends ZodTypeAny = ZodTypeAny>(
   sql: TaggedTemplateLiteralInvocation<T>,
   values?: PrimitiveValueExpression[],
 ) => Promise<T>;

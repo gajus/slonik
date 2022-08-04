@@ -17,15 +17,14 @@ import {
  *
  * @throws DataIntegrityError If query returns multiple rows.
  */
-export const maybeOneFirst: InternalQueryMethod = async (log, connection, clientConfiguration, rawSql, values, inheritedQueryId) => {
+export const maybeOneFirst: InternalQueryMethod = async (log, connection, clientConfiguration, slonikSql, inheritedQueryId) => {
   const queryId = inheritedQueryId ?? createQueryId();
 
   const row = await maybeOne(
     log,
     connection,
     clientConfiguration,
-    rawSql,
-    values,
+    slonikSql,
     queryId,
   );
 

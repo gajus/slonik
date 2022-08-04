@@ -5,6 +5,12 @@ import {
   ROARR,
 } from 'roarr';
 import {
+  expectType,
+} from 'tsd';
+import {
+  z,
+} from 'zod';
+import {
   createSqlTag,
 } from '../../../../src/factories/createSqlTag';
 import {
@@ -108,4 +114,19 @@ test('the sql property is immutable', (t) => {
     // @ts-expect-error
     query.sql = 'SELECT 2';
   });
+});
+
+test.only('describes zod object associated with the query', (t) => {
+  const zodObject = z.object({
+    id: z.number(),
+  });
+
+  const query = sql`
+    ${zodObject}
+    SELECT 1 id
+  `;
+
+  t.is(query.zodObject, zodObject);
+
+  expectType<{id: number, }>(query.zodObject._type);
 });
