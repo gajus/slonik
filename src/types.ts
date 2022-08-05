@@ -301,7 +301,8 @@ export type JsonSqlToken = {
   readonly value: SerializableValue,
 };
 
-export type SqlSqlToken = {
+export type SqlSqlToken<T = UserQueryResultRow> = {
+  readonly parser?: Parser<T>,
   readonly sql: string,
   readonly type: typeof tokens.SqlToken,
   readonly values: readonly PrimitiveValueExpression[],
@@ -337,6 +338,14 @@ export type NamedAssignment = {
   readonly [key: string]: ValueExpression,
 };
 
+/**
+ * Usually, a `zod` type
+ */
+ export type Parser<T> = {
+  safeParse: (input: unknown) => { data: T, success: true, } | { error: { issues: unknown[] }, success: false, },
+};
+
+
 // @todo may want to think how to make this extendable.
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 type UserQueryResultRow = Record<string, any>;
@@ -353,6 +362,7 @@ export type SqlTaggedTemplate<T extends UserQueryResultRow = QueryResultRow> = {
   json: (value: SerializableValue) => JsonSqlToken,
   jsonb: (value: SerializableValue) => JsonBinarySqlToken,
   literalValue: (value: string) => SqlSqlToken,
+  type: <U>(parser: Parser<U>) => (template: TemplateStringsArray, ...values: ValueExpression[]) => TaggedTemplateLiteralInvocation<U>,
   unnest: (
     // Value might be ReadonlyArray<ReadonlyArray<PrimitiveValueExpression>>,
     // or it can be infinitely nested array, e.g.

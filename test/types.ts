@@ -7,6 +7,9 @@ import {
   expectTypeOf,
 } from 'expect-type';
 import {
+  z,
+} from 'zod';
+import {
   createPool,
   sql,
 } from '../src';
@@ -148,4 +151,12 @@ export const queryMethods = async (): Promise<void> => {
   expectTypeOf(await client.maybeOneFirst(nullableSql)).toEqualTypeOf<string | null>();
   expectTypeOf(await client.manyFirst(nullableSql)).toEqualTypeOf<ReadonlyArray<string | null>>();
   expectTypeOf(await client.anyFirst(nullableSql)).toEqualTypeOf<ReadonlyArray<string | null>>();
+
+  const FooBarRow = z.object({
+    x: z.string(),
+    y: z.number(),
+  });
+
+  expectTypeOf(await client.one(sql.type(FooBarRow)`select 'x' x, 123 y`)).toEqualTypeOf<{ x: string, y: number, }>();
+  expectTypeOf(await client.any(sql.type(FooBarRow)`select 'x' x, 123 y`)).toEqualTypeOf<ReadonlyArray<{ x: string, y: number, }>>();
 };

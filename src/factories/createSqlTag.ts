@@ -175,6 +175,17 @@ sql.literalValue = (
   };
 };
 
+sql.type = (
+  parser,
+) => {
+  return (...args) => {
+    return {
+      ...sql(...args),
+      parser,
+    };
+  };
+};
+
 sql.unnest = (
   tuples: ReadonlyArray<readonly PrimitiveValueExpression[]>,
   columnTypes: Array<[...string[], TypeNameIdentifier]> | Array<SqlSqlToken | TypeNameIdentifier>,

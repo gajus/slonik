@@ -22,6 +22,7 @@ import {
   UnexpectedStateError,
   UniqueIntegrityConstraintViolationError,
   TupleMovedToAnotherPartitionError,
+  SchemaValidationError,
 } from '../errors';
 import {
   getPoolClientState,
@@ -346,6 +347,25 @@ export const executeQuery = async (
 
   // Stream does not have `rows` in the result object and all rows are already transformed.
   if (result.rows) {
+    if (slonikSqlRename.parser) {
+      for (const row of result.rows) {
+        const validationResult = slonikSqlRename.parser.safeParse(row);
+
+        if (!validationResult.success) {
+          log.error({
+            error: serializeError(validationResult.error),
+            row: JSON.parse(JSON.stringify(row)),
+            sql: slonikSql,
+          }, 'row failed validation');
+
+          throw new SchemaValidationError(
+            slonikSql,
+            JSON.parse(JSON.stringify(row)),
+            validationResult.error.issues,
+          );
+        }
+      }
+    }
     for (const interceptor of clientConfiguration.interceptors) {
       if (interceptor.transformRow) {
         const {
