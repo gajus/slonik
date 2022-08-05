@@ -121,6 +121,33 @@ test('respects zod transformers', async (t) => {
   });
 });
 
+test('strips keys by default', async (t) => {
+  const pool = createPool();
+
+  pool.querySpy.returns({
+    rows: [
+      {
+        foo: 'x',
+        bar: 'y',
+      },
+    ],
+  });
+
+  const zodObject = z.object({
+    foo: z.string(),
+  });
+
+  const query = sql.type(zodObject)`SELECT 'x' as foo, 'y' as bar`;
+
+  const result = await pool.one(query);
+
+  expectTypeOf(result).toMatchTypeOf<{ foo: string }>();
+
+  t.deepEqual(result, {
+    foo: 'x',
+  });
+});
+
 test('throws an error if object does match the zod object shape', async (t) => {
   const pool = createPool();
 
