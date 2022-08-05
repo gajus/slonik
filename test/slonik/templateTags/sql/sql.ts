@@ -122,4 +122,10 @@ test('describes zod object associated with the query', (t) => {
     SELECT 1 id
   `;
   t.is(query.parser, zodObject);
+
+  // @ts-expect-error Accessing a private property
+  t.is(query.parser._def?.typeName, 'ZodObject');
+
+  // @ts-expect-error Accessing a private property
+  t.is(query.parser._def?.unknownKeys, 'strip');
 });
