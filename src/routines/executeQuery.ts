@@ -22,11 +22,13 @@ import {
   UnexpectedStateError,
   UniqueIntegrityConstraintViolationError,
   TupleMovedToAnotherPartitionError,
+  SchemaValidationError,
 } from '../errors';
 import {
   getPoolClientState,
 } from '../state';
 import {
+  type Interceptor,
   type ClientConfiguration,
   type Logger,
   type Notice,
@@ -37,6 +39,7 @@ import {
   type QueryResult,
   type Query,
   type TaggedTemplateLiteralInvocation,
+  type Parser,
 } from '../types';
 import {
   createQueryId,
@@ -57,6 +60,34 @@ type TransactionQuery = {
   readonly executionRoutine: ExecutionRoutineType,
   readonly sql: string,
   readonly values: readonly PrimitiveValueExpression[],
+};
+
+const createParseInterceptor = (parser: Parser<unknown>): Interceptor => {
+  return {
+    transformRow: (executionContext, actualQuery, row) => {
+      const {
+        log,
+      } = executionContext;
+
+      const validationResult = parser.safeParse(row);
+
+      if (!validationResult.success) {
+        log.error({
+          error: serializeError(validationResult.error),
+          row: JSON.parse(JSON.stringify(row)),
+          sql: actualQuery.sql,
+        }, 'row failed validation');
+
+        throw new SchemaValidationError(
+          actualQuery.sql,
+          JSON.parse(JSON.stringify(row)),
+          validationResult.error.issues,
+        );
+      }
+
+      return validationResult.data as QueryResultRow;
+    },
+  };
 };
 
 const retryQuery = async (
@@ -346,7 +377,19 @@ export const executeQuery = async (
 
   // Stream does not have `rows` in the result object and all rows are already transformed.
   if (result.rows) {
-    for (const interceptor of clientConfiguration.interceptors) {
+    const {
+      parser,
+    } = slonikSqlRename;
+
+    const interceptors: Interceptor[] = clientConfiguration.interceptors.slice();
+
+    if (parser) {
+      interceptors.push(
+        createParseInterceptor(parser),
+      );
+    }
+
+    for (const interceptor of interceptors) {
       if (interceptor.transformRow) {
         const {
           transformRow,

@@ -38,6 +38,7 @@ Note: Using this project does not require TypeScript. It is a regular ES6 module
 <a name="slonik-features"></a>
 ## Features
 
+* [Runtime validation](#user-content-runtime-validation)
 * [Assertions and type safety](#user-content-repeating-code-patterns-and-type-safety).
 * [Connection mocking](#user-content-mocking-slonik).
 * [Safe connection handling](#user-content-protecting-against-unsafe-connection-handling).
@@ -91,6 +92,14 @@ Note: Using this project does not require TypeScript. It is a regular ES6 module
         * [Inserting large number of rows](#user-content-slonik-recipes-inserting-large-number-of-rows)
         * [Routing queries to different connections](#user-content-slonik-recipes-routing-queries-to-different-connections)
         * [Building Utility Statements](#user-content-slonik-recipes-building-utility-statements)
+    * [Runtime validation](#user-content-slonik-runtime-validation)
+        * [Motivation](#user-content-slonik-runtime-validation-motivation)
+        * [Example use of `sql.type`](#user-content-slonik-runtime-validation-example-use-of-sql-type)
+        * [Performance penalty](#user-content-slonik-runtime-validation-performance-penalty)
+        * [Unknown keys](#user-content-slonik-runtime-validation-unknown-keys)
+        * [Handling schema validation errors](#user-content-slonik-runtime-validation-handling-schema-validation-errors)
+        * [Inferring types](#user-content-slonik-runtime-validation-inferring-types)
+        * [Transforming results](#user-content-slonik-runtime-validation-transforming-results)
     * [`sql` tag](#user-content-slonik-sql-tag)
     * [Value placeholders](#user-content-slonik-value-placeholders)
         * [Tagged template literals](#user-content-slonik-value-placeholders-tagged-template-literals)
@@ -1185,6 +1194,172 @@ await connection.query(sql`
 `);
 ```
 
+
+<a name="user-content-slonik-runtime-validation"></a>
+<a name="slonik-runtime-validation"></a>
+## Runtime validation
+
+Slonik integrates [zod](https://github.com/colinhacks/zod) to provide runtime query result validation and static type inference.
+
+Runtime validation is added by defining a zod [object](https://github.com/colinhacks/zod#objects) and passing it to `sql.type` tagged template.
+
+<a name="user-content-slonik-runtime-validation-motivation"></a>
+<a name="slonik-runtime-validation-motivation"></a>
+### Motivation
+
+Build-time type safety guarantees that your application will work as expected at the time of the build (assuming that the types are correct in the first place).
+
+The problem is that once you deploy the application, the database schema might change independently of the codebase. This drift may result in your application behaving in unpredictable and potentially dangerous ways, e.g., imagine if table `product` changed `price` from `numeric` to `text`. Without runtime validation, this would cause a cascade of problems and potential database corruption. Even worse, without runtime checks, this could go unnoticed for a long time.
+
+In contrast, by using runtime checks, you can ensure that the contract between your codebase and the database is always respected. If there is a breaking change, the application fails with a loud error that is easy to debug.
+
+By using `zod`, we get the best of both worlds: type safety and runtime checks.
+
+<a name="user-content-slonik-runtime-validation-example-use-of-sql-type"></a>
+<a name="slonik-runtime-validation-example-use-of-sql-type"></a>
+### Example use of <code>sql.type</code>
+
+Let's assume that you have a PostgreSQL table `person`:
+
+```sql
+CREATE TABLE "public"."person" (
+  "id" integer GENERATED ALWAYS AS IDENTITY,
+  "name" text NOT NULL,
+  PRIMARY KEY ("id")
+);
+```
+
+and you want to retrieve all persons in the database, along with their `id` and `name`:
+
+```ts
+connection.any(sql`
+  SELECT id, name
+  FROM person
+`);
+```
+
+With your knowledge of the database schema, define a zod object:
+
+```ts
+const personObject = z.object({
+  id: t.number,
+  name: t.string,
+});
+```
+
+Update your query to use `sql.type` tag and pass `personObject`:
+
+```ts
+const personQuery = sql.type(personObject)`
+  SELECT id, name
+  FROM person
+`;
+```
+
+Finally, query the database using typed `sql` tagged template:
+
+```ts
+const persons = await connection.any(personQuery);
+```
+
+With this information, Slonik guarantees that every member of `persons` is an object that has properties `id` and `name`, which are a non-null `number` and a non-null `string` respectively.
+
+<a name="user-content-slonik-runtime-validation-performance-penalty"></a>
+<a name="slonik-runtime-validation-performance-penalty"></a>
+### Performance penalty
+
+In the context of the network overhead, validation accounts for a tiny amount of the total execution time.
+
+Just to give an idea, in our sample of data, it takes sub 0.1ms to validate 1 row, ~3ms to validate 1,000 and ~25ms to validate 100,000 rows.
+
+<a name="user-content-slonik-runtime-validation-unknown-keys"></a>
+<a name="slonik-runtime-validation-unknown-keys"></a>
+### Unknown keys
+
+Slonik disallows unknown keys, i.e. query that returns `{foo: 'bar', baz: 'qux'}` with `z.object({foo: z.string()})` schema will produce `SchemaValidationError` error.
+
+<a name="user-content-slonik-runtime-validation-handling-schema-validation-errors"></a>
+<a name="slonik-runtime-validation-handling-schema-validation-errors"></a>
+### Handling schema validation errors
+
+If query produces a row that does not satisfy zod object, then `SchemaValidationError` error is thrown.
+
+`SchemaValidationError` includes properties that describe the query and validation errors:
+
+* `sql` – SQL of the query that produced unexpected row.
+* `row` – row data that did not satisfy the schema.
+* `issues` – array of unmet expectations.
+
+Whenever this error occurs, the same information is also included in the [logs](#user-content-logging).
+
+In most cases, you shouldn't attempt to handle these errors at individual query level – allow to propagate to the top of the application and fix the issue when you become aware of it.
+
+However, in cases such as dealing with unstructured data, it might be useful to handle these errors at a query level, e.g.
+
+```ts
+import {
+  SchemaValidationError
+} from 'slonik';
+try {
+} catch (error) {
+  if (error extends SchemaValidationError) {
+    // Handle scheme validation error
+  }
+}
+```
+
+<a name="user-content-slonik-runtime-validation-inferring-types"></a>
+<a name="slonik-runtime-validation-inferring-types"></a>
+### Inferring types
+
+You can infer the TypeScript type of the query result. There are couple of ways of doing it:
+
+```ts
+// Infer using z.infer<typeof yourSchema>
+// https://github.com/colinhacks/zod#type-inference
+type Person = z.infer<typeof personObject>;
+// from sql tagged template `zodObject` property
+type Person = z.infer<
+  personQuery.zodObject
+>;
+```
+
+<a name="user-content-slonik-runtime-validation-transforming-results"></a>
+<a name="slonik-runtime-validation-transforming-results"></a>
+### Transforming results
+
+Using zod [transform](https://github.com/colinhacks/zod#transform) you can refine the result shape and its type, e.g.
+
+```ts
+const coordinatesType = z.string().transform((subject) => {
+  const [
+    x,
+    y,
+  ] = subject.split(',');
+
+  return {
+    x: Number(x),
+    y: Number(y),
+  };
+});
+
+const zodObject = z.object({
+  foo: coordinatesType,
+});
+
+const query = sql.type(zodObject)`SELECT '1,2' as foo`;
+
+const result = await pool.one(query);
+
+expectTypeOf(result).toMatchTypeOf<{foo: {x: number, y: number, }, }>();
+
+t.deepEqual(result, {
+  foo: {
+    x: 1,
+    y: 2,
+  },
+});
+```
 
 <a name="user-content-slonik-sql-tag"></a>
 <a name="slonik-sql-tag"></a>
