@@ -1242,8 +1242,8 @@ With your knowledge of the database schema, define a zod object:
 
 ```ts
 const personObject = z.object({
-  id: t.number,
-  name: t.string,
+  id: z.number(),
+  name: z.string(),
 });
 ```
 
