@@ -65,7 +65,7 @@ With this information, Slonik guarantees that every member of `persons` is an ob
 
 In the context of the network overhead, validation accounts for a tiny amount of the total execution time.
 
-Just to give an idea, in our sample of data, it takes ~3ms to validate 1,000 rows and ~25ms to validate 100,000 rows.
+Just to give an idea, in our sample of data, it takes sub 0.1ms to validate 1 row, ~3ms to validate 1,000 and ~25ms to validate 100,000 rows.
 
 ### Unknown keys
 
