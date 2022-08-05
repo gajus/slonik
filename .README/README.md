@@ -56,6 +56,8 @@ Note: Using this project does not require TypeScript. It is a regular ES6 module
 
 {"gitdown": "include", "file": "./USAGE.md"}
 
+{"gitdown": "include", "file": "./LIBRARY_COMPARISON.md"}
+
 {"gitdown": "include", "file": "./TYPE_PARSERS.md"}
 
 {"gitdown": "include", "file": "./INTERCEPTORS.md"}

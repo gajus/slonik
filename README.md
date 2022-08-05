@@ -794,6 +794,7 @@ await pool.connect(async (connection) => {
 
 ```
 
+
 <a name="user-content-slonik-how-are-they-different"></a>
 <a name="slonik-how-are-they-different"></a>
 ## How are they different?
@@ -848,13 +849,10 @@ However, by using [postgres-bridge](https://github.com/gajus/postgres-bridge) (`
 import postgres from 'postgres';
 import { createPostgresBridge } from 'postgres-bridge';
 import { createPool } from 'slonik';
-
 const PostgresBridge = createPostgresBridge(postgres);
-
-const pool = await createPool('postgres://', {
+const pool = createPool('postgres://', {
   PgPool: PostgresBridge,
 });
-
 ```
 
 <a name="user-content-slonik-type-parsers"></a>
