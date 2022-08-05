@@ -11,7 +11,7 @@ import {
 } from '../../helpers/createPool';
 
 test('commits successful transaction', async (t) => {
-  const pool = createPool();
+  const pool = await createPool();
 
   await pool.transaction(async () => {});
 
@@ -20,7 +20,7 @@ test('commits successful transaction', async (t) => {
 });
 
 test('rollbacks unsuccessful transaction', async (t) => {
-  const pool = createPool();
+  const pool = await createPool();
 
   await t.throwsAsync(pool.transaction(async () => {
     return await Promise.reject(new Error('foo'));
@@ -31,7 +31,7 @@ test('rollbacks unsuccessful transaction', async (t) => {
 });
 
 test('retries a transaction that failed due to a transaction error', async (t) => {
-  const pool = createPool(createClientConfiguration());
+  const pool = await createPool(createClientConfiguration());
   const handlerStub = sinon.stub();
 
   handlerStub.onFirstCall()
@@ -66,7 +66,7 @@ test('retries a transaction that failed due to a transaction error', async (t) =
 });
 
 test('commits successful transaction with retries', async (t) => {
-  const pool = createPool(createClientConfiguration());
+  const pool = await createPool(createClientConfiguration());
   const handlerStub = sinon.stub();
 
   handlerStub.onFirstCall()
@@ -93,7 +93,7 @@ test('commits successful transaction with retries', async (t) => {
 });
 
 test('returns the thrown transaction error if the retry limit is reached', async (t) => {
-  const pool = createPool(createClientConfiguration());
+  const pool = await createPool(createClientConfiguration());
   const handlerStub = sinon.stub();
 
   handlerStub.onFirstCall()
@@ -110,7 +110,7 @@ test('returns the thrown transaction error if the retry limit is reached', async
 });
 
 test('rollbacks unsuccessful transaction with retries', async (t) => {
-  const pool = createPool(createClientConfiguration());
+  const pool = await createPool(createClientConfiguration());
   const handlerStub = sinon.stub();
 
   handlerStub.onFirstCall()

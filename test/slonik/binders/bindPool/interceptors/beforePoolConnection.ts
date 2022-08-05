@@ -7,7 +7,7 @@ import {
 test('`beforePoolConnection` is called before `connect`', async (t) => {
   const beforePoolConnection = sinon.stub();
 
-  const pool = createPool({
+  const pool = await createPool({
     interceptors: [
       {
         beforePoolConnection,

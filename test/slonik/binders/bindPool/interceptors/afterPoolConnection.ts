@@ -12,7 +12,7 @@ const sql = createSqlTag();
 test('`afterPoolConnection` is called after `connect`', async (t) => {
   const afterPoolConnection = sinon.stub();
 
-  const pool = createPool({
+  const pool = await createPool({
     interceptors: [
       {},
     ],
@@ -28,7 +28,7 @@ test('`afterPoolConnection` is called after `connect`', async (t) => {
 test('`connectionType` is "EXPLICIT" when `connect` is used to create connection', async (t) => {
   const afterPoolConnection = sinon.stub();
 
-  const pool = createPool({
+  const pool = await createPool({
     interceptors: [
       {
         afterPoolConnection,
@@ -46,7 +46,7 @@ test('`connectionType` is "EXPLICIT" when `connect` is used to create connection
 test('`connectionType` is "IMPLICIT_QUERY" when a query method is used to create a connection', async (t) => {
   const afterPoolConnection = sinon.stub();
 
-  const pool = createPool({
+  const pool = await createPool({
     interceptors: [
       {
         afterPoolConnection,
@@ -62,7 +62,7 @@ test('`connectionType` is "IMPLICIT_QUERY" when a query method is used to create
 test('`connectionType` is "IMPLICIT_TRANSACTION" when `transaction` is used to create a connection', async (t) => {
   const afterPoolConnection = sinon.stub();
 
-  const pool = createPool({
+  const pool = await createPool({
     interceptors: [
       {
         afterPoolConnection,

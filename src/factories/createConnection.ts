@@ -13,9 +13,6 @@ import {
   UnexpectedStateError,
 } from '../errors';
 import {
-  createTypeOverrides,
-} from '../routines';
-import {
   getPoolClientState,
   getPoolState,
   poolClientStateMap,
@@ -143,21 +140,6 @@ export const createConnection = async (
 
   if (!connection) {
     throw new UnexpectedStateError('Connection handle is not present.');
-  }
-
-  if (!poolState.mock) {
-    if (!poolState.typeOverrides) {
-      poolState.typeOverrides = createTypeOverrides(
-        connection,
-        clientConfiguration.typeParsers,
-      );
-    }
-
-    // TODO this should be unnecessary as can override types at Pool constructor level
-    /* eslint-disable canonical/id-match */
-    // @ts-expect-error Internal property
-    connection._types = await poolState.typeOverrides;
-    /* eslint-enable canonical/id-match */
   }
 
   const poolClientState = getPoolClientState(connection);

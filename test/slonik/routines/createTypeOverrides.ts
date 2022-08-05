@@ -16,22 +16,31 @@ test('uses typname to retrieve pg_type oid', async (t) => {
         ],
       };
     },
+    release: () => {},
+  } as any;
+
+  const pool = {
+    connect: () => {
+      return connection;
+    },
   } as any;
 
   const typeParser = {
     name: 'int8',
 
     parse: () => {
-      return null;
+      return 'our-int8';
     },
   };
 
-  const typeOverrides = await createTypeOverrides(connection, [
+  const typeOverrides = await createTypeOverrides(pool, [
     typeParser,
   ]) as any;
 
-  t.is(typeof typeOverrides.text.foo, 'function');
-  t.is(typeof typeOverrides.text.bar, 'function');
+  t.is(typeOverrides('foo')('qux'), 'our-int8');
+  t.deepEqual(typeOverrides('bar')('{qux}'), [
+    'our-int8',
+  ]);
 });
 
 test('throws an error if type cannot be found', async (t) => {
@@ -41,6 +50,13 @@ test('throws an error if type cannot be found', async (t) => {
         rows: [],
       };
     },
+    release: () => {},
+  } as any;
+
+  const pool = {
+    connect: () => {
+      return connection;
+    },
   } as any;
 
   const typeParser = {
@@ -51,7 +67,7 @@ test('throws an error if type cannot be found', async (t) => {
     },
   };
 
-  const error = await t.throwsAsync(createTypeOverrides(connection, [
+  const error = await t.throwsAsync(createTypeOverrides(pool, [
     typeParser,
   ]));
 

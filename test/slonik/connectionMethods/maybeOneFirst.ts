@@ -12,7 +12,7 @@ import {
 const sql = createSqlTag();
 
 test('returns the first row', async (t) => {
-  const pool = createPool();
+  const pool = await createPool();
 
   pool.querySpy.returns({
     rows: [
@@ -28,7 +28,7 @@ test('returns the first row', async (t) => {
 });
 
 test('returns null if no results', async (t) => {
-  const pool = createPool();
+  const pool = await createPool();
 
   pool.querySpy.returns({
     rows: [],
@@ -40,7 +40,7 @@ test('returns null if no results', async (t) => {
 });
 
 test('throws an error if more than one row is returned', async (t) => {
-  const pool = createPool();
+  const pool = await createPool();
 
   pool.querySpy.returns({
     rows: [
@@ -59,7 +59,7 @@ test('throws an error if more than one row is returned', async (t) => {
 });
 
 test('throws an error if more than one column is returned', async (t) => {
-  const pool = createPool();
+  const pool = await createPool();
 
   pool.querySpy.returns({
     rows: [

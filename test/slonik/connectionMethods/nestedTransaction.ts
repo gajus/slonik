@@ -11,7 +11,7 @@ import {
 } from '../../helpers/createPool';
 
 test('creates a savepoint', async (t) => {
-  const pool = createPool();
+  const pool = await createPool();
 
   await pool.transaction(async (transactionConnection) => {
     await transactionConnection.transaction(async () => {});
@@ -22,7 +22,7 @@ test('creates a savepoint', async (t) => {
 });
 
 test('rollbacks unsuccessful nested transaction', async (t) => {
-  const pool = createPool();
+  const pool = await createPool();
 
   await t.throwsAsync(pool.transaction(async (transactionConnection) => {
     return await transactionConnection.transaction(async () => {
@@ -35,7 +35,7 @@ test('rollbacks unsuccessful nested transaction', async (t) => {
 });
 
 test('retries a nested transaction that failed due to a transaction error', async (t) => {
-  const pool = createPool(createClientConfiguration());
+  const pool = await createPool(createClientConfiguration());
   const handlerStub = sinon.stub();
 
   handlerStub.onFirstCall()
@@ -72,7 +72,7 @@ test('retries a nested transaction that failed due to a transaction error', asyn
 });
 
 test('commits successful transaction with retries', async (t) => {
-  const pool = createPool(createClientConfiguration());
+  const pool = await createPool(createClientConfiguration());
   const handlerStub = sinon.stub();
 
   handlerStub.onFirstCall()
@@ -103,7 +103,7 @@ test('commits successful transaction with retries', async (t) => {
 test('returns the thrown transaction error if the retry limit is reached', async (t) => {
   const clientConfiguration = createClientConfiguration();
 
-  const pool = createPool(clientConfiguration);
+  const pool = await createPool(clientConfiguration);
   const handlerStub = sinon.stub();
 
   handlerStub.onFirstCall()
@@ -122,7 +122,7 @@ test('returns the thrown transaction error if the retry limit is reached', async
 });
 
 test('rollbacks unsuccessful nested transaction with retries', async (t) => {
-  const pool = createPool(createClientConfiguration());
+  const pool = await createPool(createClientConfiguration());
   const handlerStub = sinon.stub();
 
   handlerStub.onFirstCall()

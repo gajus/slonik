@@ -18,7 +18,7 @@ const defaultConfiguration = {
   typeParsers: [],
 };
 
-export const createPool = (clientConfiguration: ClientConfigurationInput = defaultConfiguration) => {
+export const createPool = async (clientConfiguration: ClientConfigurationInput = defaultConfiguration) => {
   const eventEmitter = new EventEmitter();
 
   const connection = {

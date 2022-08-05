@@ -9,7 +9,7 @@ import {
 const sql = createSqlTag();
 
 test('transforms query', async (t) => {
-  const pool = createPool({
+  const pool = await createPool({
     interceptors: [
       {
         transformQuery: (executionContext, query) => {

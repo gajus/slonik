@@ -9,7 +9,7 @@ import {
 const sql = createSqlTag();
 
 test('short-circuits the query execution', async (t) => {
-  const pool = createPool({
+  const pool = await createPool({
     interceptors: [
       {
         beforeQueryExecution: () => {
@@ -53,7 +53,7 @@ test('short-circuits the query execution', async (t) => {
 });
 
 test('executes query if "beforeQuery" does not return results', async (t) => {
-  const pool = createPool({
+  const pool = await createPool({
     interceptors: [
       {
         beforeQueryExecution: () => {

@@ -16,7 +16,7 @@ import {
 } from '../src/types';
 
 export const queryMethods = async (): Promise<void> => {
-  const client = createPool('');
+  const client = await createPool('');
 
   type Row = {
     bar: boolean,

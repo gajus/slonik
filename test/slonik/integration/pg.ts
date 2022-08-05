@@ -20,7 +20,7 @@ createIntegrationTests(
 );
 
 test('returns expected query result object (NOTICE)', async (t) => {
-  const pool = createPool(t.context.dsn, {
+  const pool = await createPool(t.context.dsn, {
     PgPool,
   });
 
@@ -53,7 +53,7 @@ test('returns expected query result object (NOTICE)', async (t) => {
 });
 
 test('streams rows', async (t) => {
-  const pool = createPool(t.context.dsn);
+  const pool = await createPool(t.context.dsn);
 
   await pool.query(sql`
     INSERT INTO person (name) VALUES ('foo'), ('bar'), ('baz')
@@ -110,7 +110,7 @@ test('streams rows', async (t) => {
 });
 
 test('streams rows with different batchSize', async (t) => {
-  const pool = createPool(t.context.dsn);
+  const pool = await createPool(t.context.dsn);
 
   await pool.query(sql`
     INSERT INTO person (name) VALUES ('foo'), ('bar'), ('baz')
@@ -169,7 +169,7 @@ test('streams rows with different batchSize', async (t) => {
 });
 
 test('applies type parsers to streamed rows', async (t) => {
-  const pool = createPool(t.context.dsn, {
+  const pool = await createPool(t.context.dsn, {
     typeParsers: [
       {
         name: 'date',
@@ -241,7 +241,7 @@ test('applies type parsers to streamed rows', async (t) => {
 });
 
 test('streams over a transaction', async (t) => {
-  const pool = createPool(t.context.dsn);
+  const pool = await createPool(t.context.dsn);
 
   await pool.query(sql`
     INSERT INTO person (name) VALUES ('foo'), ('bar'), ('baz')
@@ -300,7 +300,7 @@ test('streams over a transaction', async (t) => {
 });
 
 test('copies from binary stream', async (t) => {
-  const pool = createPool(t.context.dsn);
+  const pool = await createPool(t.context.dsn);
 
   await pool.copyFromBinary(
     sql`

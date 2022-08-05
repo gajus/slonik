@@ -61,7 +61,7 @@ export const createTestRunner = (PgPool: new (poolConfig: PoolConfig) => PgPoolT
       testDatabaseName: TEST_DATABASE_NAME,
     };
 
-    const pool0 = createPool('postgresql://' + POSTGRES_DSN, {
+    const pool0 = await createPool('postgresql://' + POSTGRES_DSN, {
       maximumPoolSize: 1,
       PgPool,
     });
@@ -84,7 +84,7 @@ export const createTestRunner = (PgPool: new (poolConfig: PoolConfig) => PgPoolT
 
     await pool0.end();
 
-    const pool1 = createPool(t.context.dsn, {
+    const pool1 = await createPool(t.context.dsn, {
       maximumPoolSize: 1,
       PgPool,
     });
@@ -104,7 +104,7 @@ export const createTestRunner = (PgPool: new (poolConfig: PoolConfig) => PgPoolT
   });
 
   afterEach(async (t) => {
-    const pool = createPool('postgresql://' + POSTGRES_DSN, {
+    const pool = await createPool('postgresql://' + POSTGRES_DSN, {
       maximumPoolSize: 1,
       PgPool,
     });
@@ -141,7 +141,7 @@ export const createIntegrationTests = (
   PgPool: new () => PgPoolType,
 ) => {
   test('does not allow to reuse released connection', async (t) => {
-    const pool = createPool(t.context.dsn, {
+    const pool = await createPool(t.context.dsn, {
       PgPool,
     });
 
@@ -160,7 +160,7 @@ export const createIntegrationTests = (
 
   // We have to test serialization due to the use of different drivers (pg and postgres).
   test('serializes json', async (t) => {
-    const pool = createPool(t.context.dsn, {
+    const pool = await createPool(t.context.dsn, {
       PgPool,
     });
 
@@ -178,7 +178,7 @@ export const createIntegrationTests = (
   });
 
   test('returns numerics as strings by default', async (t) => {
-    const pool = createPool(t.context.dsn, {
+    const pool = await createPool(t.context.dsn, {
       PgPool,
       typeParsers: [],
     });
@@ -193,7 +193,7 @@ export const createIntegrationTests = (
   });
 
   test('parses numerics as floats', async (t) => {
-    const pool = createPool(t.context.dsn, {
+    const pool = await createPool(t.context.dsn, {
       PgPool,
       typeParsers: [
         createNumericTypeParser(),
@@ -210,7 +210,7 @@ export const createIntegrationTests = (
   });
 
   test('returns expected query result object (array bytea)', async (t) => {
-    const pool = createPool(t.context.dsn, {
+    const pool = await createPool(t.context.dsn, {
       PgPool,
     });
 
@@ -243,7 +243,7 @@ export const createIntegrationTests = (
   });
 
   test('returns expected query result object (INSERT)', async (t) => {
-    const pool = createPool(t.context.dsn, {
+    const pool = await createPool(t.context.dsn, {
       PgPool,
     });
 
@@ -281,7 +281,7 @@ export const createIntegrationTests = (
   });
 
   test('returns expected query result object (UPDATE)', async (t) => {
-    const pool = createPool(t.context.dsn, {
+    const pool = await createPool(t.context.dsn, {
       PgPool,
     });
 
@@ -328,7 +328,7 @@ export const createIntegrationTests = (
   });
 
   test('returns expected query result object (DELETE)', async (t) => {
-    const pool = createPool(t.context.dsn, {
+    const pool = await createPool(t.context.dsn, {
       PgPool,
     });
 
@@ -373,7 +373,7 @@ export const createIntegrationTests = (
   });
 
   test('terminated backend produces BackendTerminatedError error', async (t) => {
-    const pool = createPool(t.context.dsn, {
+    const pool = await createPool(t.context.dsn, {
       PgPool,
     });
 
@@ -395,7 +395,7 @@ export const createIntegrationTests = (
   });
 
   test('cancelled statement produces StatementCancelledError error', async (t) => {
-    const pool = createPool(t.context.dsn, {
+    const pool = await createPool(t.context.dsn, {
       PgPool,
     });
 
@@ -417,7 +417,7 @@ export const createIntegrationTests = (
   });
 
   test('statement cancelled because of statement_timeout produces StatementTimeoutError error', async (t) => {
-    const pool = createPool(t.context.dsn, {
+    const pool = await createPool(t.context.dsn, {
       PgPool,
     });
 
@@ -435,7 +435,7 @@ export const createIntegrationTests = (
   });
 
   test.skip('transaction terminated while in an idle state is rejected (at the next transaction query)', async (t) => {
-    const pool = createPool(t.context.dsn, {
+    const pool = await createPool(t.context.dsn, {
       PgPool,
     });
 
@@ -455,7 +455,7 @@ export const createIntegrationTests = (
   });
 
   test.skip('connection of transaction terminated while in an idle state is rejected (at the end of the transaction)', async (t) => {
-    const pool = createPool(t.context.dsn, {
+    const pool = await createPool(t.context.dsn, {
       PgPool,
     });
 
@@ -473,7 +473,7 @@ export const createIntegrationTests = (
   });
 
   test('throws an error if an attempt is made to make multiple transactions at once using the same connection', async (t) => {
-    const pool = createPool(t.context.dsn, {
+    const pool = await createPool(t.context.dsn, {
       PgPool,
     });
 
@@ -498,7 +498,7 @@ export const createIntegrationTests = (
   });
 
   test('writes and reads buffers', async (t) => {
-    const pool = createPool(t.context.dsn, {
+    const pool = await createPool(t.context.dsn, {
       PgPool,
     });
 
@@ -526,7 +526,7 @@ export const createIntegrationTests = (
   });
 
   test('explicit connection configuration is persisted', async (t) => {
-    const pool = createPool(t.context.dsn, {
+    const pool = await createPool(t.context.dsn, {
       maximumPoolSize: 1,
       PgPool,
     });
@@ -549,7 +549,7 @@ export const createIntegrationTests = (
   test('serves waiting requests', async (t) => {
     t.timeout(10_000);
 
-    const pool = createPool(t.context.dsn, {
+    const pool = await createPool(t.context.dsn, {
       maximumPoolSize: 1,
       PgPool,
     });
@@ -572,7 +572,7 @@ export const createIntegrationTests = (
   });
 
   test('pool.end() resolves when there are no more connections (no connections at start)', async (t) => {
-    const pool = createPool(t.context.dsn, {
+    const pool = await createPool(t.context.dsn, {
       PgPool,
     });
 
@@ -594,7 +594,7 @@ export const createIntegrationTests = (
   });
 
   test('pool.end() resolves when there are no more connections (implicit connection)', async (t) => {
-    const pool = createPool(t.context.dsn, {
+    const pool = await createPool(t.context.dsn, {
       PgPool,
     });
 
@@ -627,7 +627,7 @@ export const createIntegrationTests = (
   });
 
   test('pool.end() resolves when there are no more connections (explicit connection holding pool alive)', async (t) => {
-    const pool = createPool(t.context.dsn, {
+    const pool = await createPool(t.context.dsn, {
       PgPool,
     });
 
@@ -664,7 +664,7 @@ export const createIntegrationTests = (
   test('pool.end() resolves when there are no more connections (terminates idle connections)', async (t) => {
     t.timeout(1_000);
 
-    const pool = createPool(t.context.dsn, {
+    const pool = await createPool(t.context.dsn, {
       idleTimeout: 5_000,
       maximumPoolSize: 5,
       PgPool,
@@ -715,7 +715,7 @@ export const createIntegrationTests = (
   test.skip('idle transactions are terminated after `idleInTransactionSessionTimeout`', async (t) => {
     t.timeout(10_000);
 
-    const pool = createPool(t.context.dsn, {
+    const pool = await createPool(t.context.dsn, {
       idleInTransactionSessionTimeout: 1_000,
       maximumPoolSize: 5,
       PgPool,
@@ -742,7 +742,7 @@ export const createIntegrationTests = (
   test.skip('statements are cancelled after `statementTimeout`', async (t) => {
     t.timeout(5_000);
 
-    const pool = createPool(t.context.dsn, {
+    const pool = await createPool(t.context.dsn, {
       maximumPoolSize: 5,
       PgPool,
       statementTimeout: 1_000,
@@ -765,7 +765,7 @@ export const createIntegrationTests = (
   test.serial.skip('retries failing transactions (deadlock)', async (t) => {
     t.timeout(2_000);
 
-    const pool = createPool(t.context.dsn, {
+    const pool = await createPool(t.context.dsn, {
       PgPool,
     });
 
@@ -846,7 +846,7 @@ export const createIntegrationTests = (
   });
 
   test('does not throw an error if running a query with array_agg on dates', async (t) => {
-    const pool = createPool(t.context.dsn, {
+    const pool = await createPool(t.context.dsn, {
       PgPool,
     });
 
@@ -905,7 +905,7 @@ export const createIntegrationTests = (
   });
 
   test('returns true if returns rows', async (t) => {
-    const pool = createPool(t.context.dsn, {
+    const pool = await createPool(t.context.dsn, {
       PgPool,
     });
 
@@ -919,7 +919,7 @@ export const createIntegrationTests = (
   });
 
   test('returns false if returns rows', async (t) => {
-    const pool = createPool(t.context.dsn, {
+    const pool = await createPool(t.context.dsn, {
       PgPool,
     });
 
@@ -933,7 +933,7 @@ export const createIntegrationTests = (
   });
 
   test('returns expected query result object (SELECT)', async (t) => {
-    const pool = createPool(t.context.dsn, {
+    const pool = await createPool(t.context.dsn, {
       PgPool,
     });
 
@@ -962,7 +962,7 @@ export const createIntegrationTests = (
   });
 
   test('throw error with notices', async (t) => {
-    const pool = createPool(t.context.dsn, {
+    const pool = await createPool(t.context.dsn, {
       PgPool,
     });
 
@@ -998,7 +998,7 @@ export const createIntegrationTests = (
   });
 
   test('error messages include original pg error', async (t) => {
-    const pool = createPool(t.context.dsn, {
+    const pool = await createPool(t.context.dsn, {
       PgPool,
     });
 
@@ -1025,7 +1025,7 @@ export const createIntegrationTests = (
   });
 
   test('Tuple moved to another partition due to concurrent update error handled', async (t) => {
-    const pool = createPool(t.context.dsn, {
+    const pool = await createPool(t.context.dsn, {
       PgPool,
       queryRetryLimit: 0,
     });
@@ -1060,7 +1060,7 @@ export const createIntegrationTests = (
   });
 
   test('throws InvalidInputError in case of invalid bound value', async (t) => {
-    const pool = createPool(t.context.dsn, {
+    const pool = await createPool(t.context.dsn, {
       PgPool,
     });
 

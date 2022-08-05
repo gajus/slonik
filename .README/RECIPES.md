@@ -53,8 +53,8 @@ Inserting data this way ensures that the query is stable and reduces the amount 
 If connection is initiated by a query (as opposed to a obtained explicitly using `pool#connect()`), then `beforePoolConnection` interceptor can be used to change the pool that will be used to execute the query, e.g.
 
 ```js
-const slavePool = createPool('postgres://slave');
-const masterPool = createPool('postgres://master', {
+const slavePool = await createPool('postgres://slave');
+const masterPool = await createPool('postgres://master', {
   interceptors: [
     {
       beforePoolConnection: (connectionContext, pool) => {

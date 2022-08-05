@@ -3,7 +3,7 @@ const {
   sql,
 } = require('slonik');
 
-const pool = createPool('postgres://postgres@127.0.0.1:5432', {
+const pool = await createPool('postgres://postgres@127.0.0.1:5432', {
   captureStackTrace: false,
 });
 
