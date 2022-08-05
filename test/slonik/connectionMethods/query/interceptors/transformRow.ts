@@ -9,7 +9,7 @@ import {
 const sql = createSqlTag();
 
 test('overrides result row', async (t) => {
-  const pool = createPool({
+  const pool = await createPool({
     interceptors: [
       {
         transformRow: () => {

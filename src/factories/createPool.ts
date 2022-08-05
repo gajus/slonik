@@ -1,5 +1,6 @@
 import {
   Pool as PgPool,
+  types,
 } from 'pg';
 import {
   serializeError,
@@ -10,6 +11,9 @@ import {
 import {
   bindPool,
 } from '../binders/bindPool';
+import {
+  createTypeOverrides,
+} from '../routines';
 import {
   poolStateMap,
 } from '../state';
@@ -30,10 +34,10 @@ import {
 /**
  * @param connectionUri PostgreSQL [Connection URI](https://www.postgresql.org/docs/current/libpq-connect.html#LIBPQ-CONNSTRING).
  */
-export const createPool = (
+export const createPool = async (
   connectionUri: string,
   clientConfigurationInput?: ClientConfigurationInput,
-): DatabasePool => {
+): Promise<DatabasePool> => {
   const clientConfiguration = createClientConfiguration(clientConfigurationInput);
 
   const poolId = createUid();
@@ -54,7 +58,22 @@ export const createPool = (
     throw new Error('Unexpected state.');
   }
 
-  const pool: PgPool = new Pool(poolConfiguration);
+  // This pool is only used to initialize the client.
+  const setupPool: PgPool = new Pool(poolConfiguration);
+
+  const getTypeParser = await createTypeOverrides(
+    setupPool,
+    clientConfiguration.typeParsers,
+  );
+
+  await setupPool.end();
+
+  const pool: PgPool = new Pool({
+    ...poolConfiguration,
+    types: {
+      getTypeParser,
+    },
+  });
 
   poolStateMap.set(pool, {
     ended: false,

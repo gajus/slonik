@@ -12,7 +12,7 @@ import {
 const sql = createSqlTag();
 
 test('returns the query results rows', async (t) => {
-  const pool = createPool();
+  const pool = await createPool();
 
   pool.querySpy.returns({
     rows: [
@@ -38,7 +38,7 @@ test('returns the query results rows', async (t) => {
 });
 
 test('throws an error if no rows are returned', async (t) => {
-  const pool = createPool();
+  const pool = await createPool();
 
   pool.querySpy.returns({
     rows: [],

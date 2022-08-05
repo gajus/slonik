@@ -12,7 +12,7 @@ import {
 const sql = createSqlTag();
 
 test('returns empty array if no rows are returned', async (t) => {
-  const pool = createPool();
+  const pool = await createPool();
 
   pool.querySpy.returns({
     rows: [],
@@ -24,7 +24,7 @@ test('returns empty array if no rows are returned', async (t) => {
 });
 
 test('returns first column values of the query result rows', async (t) => {
-  const pool = createPool();
+  const pool = await createPool();
 
   pool.querySpy.returns({
     rows: [
@@ -46,7 +46,7 @@ test('returns first column values of the query result rows', async (t) => {
 });
 
 test('throws an error if more than one column is returned', async (t) => {
-  const pool = createPool();
+  const pool = await createPool();
 
   pool.querySpy.returns({
     rows: [

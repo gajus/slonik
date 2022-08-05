@@ -40,7 +40,7 @@ import {
   createPool,
 } from 'slonik';
 
-const pool = createPool('postgres://');
+const pool = await createPool('postgres://');
 
 ```
 
@@ -78,7 +78,7 @@ import {
   sql,
 } from 'slonik';
 
-const pool = createPool('postgres://');
+const pool = await createPool('postgres://');
 
 const main = async () => {
   await pool.query(sql`
@@ -104,7 +104,7 @@ import {
   sql,
 } from 'slonik';
 
-const pool = createPool('postgres://');
+const pool = await createPool('postgres://');
 
 const main = async () => {
   pool.getPoolState();
@@ -205,7 +205,7 @@ import {
   createPool
 } from 'slonik';
 
-const pool = createPool('postgres://');
+const pool = await createPool('postgres://');
 
 await pool.query(sql`SELECT 1`);
 
@@ -284,7 +284,7 @@ import {
   createPool,
 } from 'slonik';
 
-const pool = createPool('postgres://localhost');
+const pool = await createPool('postgres://localhost');
 
 const result = await pool.connect(async (connection) => {
   await connection.query(sql`SELECT 1`);
@@ -399,7 +399,7 @@ import { createPool } from 'slonik';
 
 const PostgresBridge = createPostgresBridge(postgres);
 
-const pool = createPool('postgres://', {
+const pool = await createPool('postgres://', {
   PgPool: PostgresBridge,
 });
 

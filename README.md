@@ -464,7 +464,7 @@ import {
   createPool,
 } from 'slonik';
 
-const pool = createPool('postgres://');
+const pool = await createPool('postgres://');
 
 ```
 
@@ -504,7 +504,7 @@ import {
   sql,
 } from 'slonik';
 
-const pool = createPool('postgres://');
+const pool = await createPool('postgres://');
 
 const main = async () => {
   await pool.query(sql`
@@ -532,7 +532,7 @@ import {
   sql,
 } from 'slonik';
 
-const pool = createPool('postgres://');
+const pool = await createPool('postgres://');
 
 const main = async () => {
   pool.getPoolState();
@@ -635,7 +635,7 @@ import {
   createPool
 } from 'slonik';
 
-const pool = createPool('postgres://');
+const pool = await createPool('postgres://');
 
 await pool.query(sql`SELECT 1`);
 
@@ -726,7 +726,7 @@ import {
   createPool,
 } from 'slonik';
 
-const pool = createPool('postgres://localhost');
+const pool = await createPool('postgres://localhost');
 
 const result = await pool.connect(async (connection) => {
   await connection.query(sql`SELECT 1`);
@@ -851,7 +851,7 @@ import { createPool } from 'slonik';
 
 const PostgresBridge = createPostgresBridge(postgres);
 
-const pool = createPool('postgres://', {
+const pool = await createPool('postgres://', {
   PgPool: PostgresBridge,
 });
 
@@ -946,7 +946,7 @@ import {
 
 const interceptors = [];
 
-const connection = createPool('postgres://', {
+const connection = await createPool('postgres://', {
   interceptors
 });
 
@@ -1019,7 +1019,7 @@ type Interceptor = {
 Executed after a connection is acquired from the connection pool (or a new connection is created), e.g.
 
 ```js
-const pool = createPool('postgres://');
+const pool = await createPool('postgres://');
 
 // Interceptor is executed here. ↓
 pool.connect();
@@ -1181,8 +1181,8 @@ Inserting data this way ensures that the query is stable and reduces the amount 
 If connection is initiated by a query (as opposed to a obtained explicitly using `pool#connect()`), then `beforePoolConnection` interceptor can be used to change the pool that will be used to execute the query, e.g.
 
 ```js
-const slavePool = createPool('postgres://slave');
-const masterPool = createPool('postgres://master', {
+const slavePool = await createPool('postgres://slave');
+const masterPool = await createPool('postgres://master', {
   interceptors: [
     {
       beforePoolConnection: (connectionContext, pool) => {

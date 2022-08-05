@@ -1,12 +1,13 @@
 import {
-  type PoolClient as PgPoolClient,
+  type Pool as PgPool,
 } from 'pg';
-import TypeOverrides from 'pg/lib/type-overrides';
+import {
+  getTypeParser,
+} from 'pg-types';
 import {
   parse as parseArray,
 } from 'postgres-array';
 import {
-  type TypeOverrides as TypeOverridesType,
   type TypeParser,
 } from '../types';
 
@@ -17,24 +18,24 @@ type PostgresType = {
 };
 
 export const createTypeOverrides = async (
-  connection: PgPoolClient,
+  pool: PgPool,
   typeParsers: readonly TypeParser[],
-): Promise<TypeOverridesType> => {
-  const typeOverrides = new TypeOverrides();
-
-  if (typeParsers.length === 0) {
-    return typeOverrides;
-  }
-
+) => {
   const typeNames = typeParsers.map((typeParser) => {
     return typeParser.name;
   });
+
+  const connection = await pool.connect();
 
   const postgresTypes: PostgresType[] = (
     await connection.query('SELECT oid, typarray, typname FROM pg_type WHERE typname = ANY($1::text[])', [
       typeNames,
     ])
   ).rows;
+
+  connection.release(true);
+
+  const parsers = {};
 
   for (const typeParser of typeParsers) {
     const postgresType = postgresTypes.find((maybeTargetPostgresType) => {
@@ -45,19 +46,25 @@ export const createTypeOverrides = async (
       throw new Error('Database type "' + typeParser.name + '" not found.');
     }
 
-    typeOverrides.setTypeParser(postgresType.oid, (value) => {
+    parsers[postgresType.oid] = (value) => {
       return typeParser.parse(value);
-    });
+    };
 
     if (postgresType.typarray) {
-      typeOverrides.setTypeParser(postgresType.typarray, (arrayValue) => {
+      parsers[postgresType.typarray] = (arrayValue) => {
         return parseArray(arrayValue)
           .map((value) => {
             return typeParser.parse(value);
           });
-      });
+      };
     }
   }
 
-  return typeOverrides;
+  return (oid: number) => {
+    if (parsers[oid]) {
+      return parsers[oid];
+    }
+
+    return getTypeParser(oid);
+  };
 };

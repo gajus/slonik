@@ -11,7 +11,7 @@ import {
 
 const interceptors = [];
 
-const connection = createPool('postgres://', {
+const connection = await createPool('postgres://', {
   interceptors
 });
 
@@ -80,7 +80,7 @@ type Interceptor = {
 Executed after a connection is acquired from the connection pool (or a new connection is created), e.g.
 
 ```js
-const pool = createPool('postgres://');
+const pool = await createPool('postgres://');
 
 // Interceptor is executed here. ↓
 pool.connect();
