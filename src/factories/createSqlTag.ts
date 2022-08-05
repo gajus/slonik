@@ -150,7 +150,7 @@ sql.type = <T extends ZodTypeAny>(zodObject: T) => {
       writable: false,
     });
 
-    return query as unknown as SqlSqlToken<T>;
+    return query;
   };
 };
 
