@@ -6,26 +6,24 @@ If this is your first time using Slonik, read [Dynamically generating SQL querie
 
 ### `sql.array`
 
-```js
+```ts
 (
   values: PrimitiveValueExpression[],
   memberType: TypeNameIdentifier | SqlToken
 ) => ArraySqlToken;
-
 ```
 
 Creates an array value binding, e.g.
 
-```js
+```ts
 await connection.query(sql`
   SELECT (${sql.array([1, 2, 3], 'int4')})
 `);
-
 ```
 
 Produces:
 
-```js
+```ts
 {
   sql: 'SELECT $1::"int4"[]',
   values: [
@@ -36,23 +34,21 @@ Produces:
     ]
   ]
 }
-
 ```
 
 #### `sql.array` `memberType`
 
 If `memberType` is a string (`TypeNameIdentifier`), then it is treated as a type name identifier and will be quoted using double quotes, i.e. `sql.array([1, 2, 3], 'int4')` is equivalent to `$1::"int4"[]`. The implication is that keywords that are often used interchangeably with type names are not going to work, e.g. [`int4`](https://github.com/postgres/postgres/blob/69edf4f8802247209e77f69e089799b3d83c13a4/src/include/catalog/pg_type.dat#L74-L78) is a type name identifier and will work. However, [`int`](https://github.com/postgres/postgres/blob/69edf4f8802247209e77f69e089799b3d83c13a4/src/include/parser/kwlist.h#L213) is a keyword and will not work. You can either use type name identifiers or you can construct custom member using `sql` tag, e.g.
 
-```js
+```ts
 await connection.query(sql`
   SELECT (${sql.array([1, 2, 3], sql`int[]`)})
 `);
-
 ```
 
 Produces:
 
-```js
+```ts
 {
   sql: 'SELECT $1::int[]',
   values: [
@@ -63,7 +59,6 @@ Produces:
     ]
   ]
 }
-
 ```
 
 #### `sql.array` vs `sql.join`
@@ -75,163 +70,147 @@ Unlike `sql.join`, `sql.array` generates a stable query of a predictable length,
 
 Example:
 
-```js
+```ts
 sql`SELECT id FROM foo WHERE id IN (${sql.join([1, 2, 3], sql`, `)})`;
 sql`SELECT id FROM foo WHERE id NOT IN (${sql.join([1, 2, 3], sql`, `)})`;
-
 ```
 
 Is equivalent to:
 
-```js
+```ts
 sql`SELECT id FROM foo WHERE id = ANY(${sql.array([1, 2, 3], 'int4')})`;
 sql`SELECT id FROM foo WHERE id != ALL(${sql.array([1, 2, 3], 'int4')})`;
-
 ```
 
 Furthermore, unlike `sql.join`, `sql.array` can be used with an empty array of values. In short, `sql.array` should be preferred over `sql.join` when possible.
 
 ### `sql.binary`
 
-```js
+```ts
 (
   data: Buffer
 ) => BinarySqlToken;
-
 ```
 
 Binds binary ([`bytea`](https://www.postgresql.org/docs/current/datatype-binary.html)) data, e.g.
 
-```js
+```ts
 await connection.query(sql`
   SELECT ${sql.binary(Buffer.from('foo'))}
 `);
-
 ```
 
 Produces:
 
-```js
+```ts
 {
   sql: 'SELECT $1',
   values: [
     Buffer.from('foo')
   ]
 }
-
 ```
 
 ### `sql.identifier`
 
-```js
+```ts
 (
   names: string[],
 ) => IdentifierSqlToken;
-
 ```
 
 [Delimited identifiers](https://www.postgresql.org/docs/current/static/sql-syntax-lexical.html#SQL-SYNTAX-IDENTIFIERS) are created by enclosing an arbitrary sequence of characters in double-quotes ("). To create a delimited identifier, create an `sql` tag function placeholder value using `sql.identifier`, e.g.
 
-```js
+```ts
 sql`
   SELECT 1
   FROM ${sql.identifier(['bar', 'baz'])}
 `;
-
 ```
 
 Produces:
 
-```js
+```ts
 {
   sql: 'SELECT 1 FROM "bar"."baz"',
   values: []
 }
-
 ```
 
 ### `sql.json`
 
-```js
+```ts
 (
   value: SerializableValue
 ) => JsonSqlToken;
-
 ```
 
 Serializes value and binds it as a JSON string literal, e.g.
 
-```js
+```ts
 await connection.query(sql`
   SELECT (${sql.json([1, 2, 3])})
 `);
-
 ```
 
 Produces:
 
-```js
+```ts
 {
   sql: 'SELECT $1::json',
   values: [
     '[1,2,3]'
   ]
 }
-
 ```
 
 ### `sql.jsonb`
 
-```js
+```ts
 (
   value: SerializableValue
 ) => JsonBinarySqlToken;
-
 ```
 
 Serializes value and binds it as a JSON binary, e.g.
 
-```js
+```ts
 await connection.query(sql`
   SELECT (${sql.jsonb([1, 2, 3])})
 `);
-
 ```
 
 Produces:
 
-```js
+```ts
 {
   sql: 'SELECT $1::jsonb',
   values: [
     '[1,2,3]'
   ]
 }
-
 ```
 
 ### `sql.join`
 
-```js
+```ts
 (
   members: SqlSqlToken[],
   glue: SqlSqlToken
 ) => ListSqlToken;
-
 ```
 
 Concatenates SQL expressions using `glue` separator, e.g.
 
-```js
+```ts
 await connection.query(sql`
   SELECT ${sql.join([1, 2, 3], sql`, `)}
 `);
-
 ```
 
 Produces:
 
-```js
+```ts
 {
   sql: 'SELECT $1, $2, $3',
   values: [
@@ -240,36 +219,33 @@ Produces:
     3
   ]
 }
-
 ```
 
 `sql.join` is the primary building block for most of the SQL, e.g.
 
 Boolean expressions:
 
-```js
+```ts
 sql`
   SELECT ${sql.join([1, 2], sql` AND `)}
 `
 
 // SELECT $1 AND $2
-
 ```
 
 Tuple:
 
-```js
+```ts
 sql`
   SELECT (${sql.join([1, 2], sql`, `)})
 `
 
 // SELECT ($1, $2)
-
 ```
 
 Tuple list:
 
-```js
+```ts
 sql`
   SELECT ${sql.join(
     [
@@ -281,51 +257,46 @@ sql`
 `
 
 // SELECT ($1, $2), ($3, $4)
-
 ```
 
 ### `sql.literalValue`
 
 > ⚠️ Do not use. This method interpolates values as literals and it must be used only for [building utility statements](#slonik-recipes-building-utility-statements). You are most likely looking for [value placeholders](#slonik-value-placeholders).
 
-```js
+```ts
 (
   value: string,
 ) => SqlSqlToken;
-
 ```
 
 Escapes and interpolates a literal value into a query.
 
-```js
+```ts
 await connection.query(sql`
   CREATE USER "foo" WITH PASSWORD ${sql.literalValue('bar')}
 `);
-
 ```
 
 Produces:
 
-```js
+```ts
 {
   sql: 'CREATE USER "foo" WITH PASSWORD \'bar\''
 }
-
 ```
 
 ### `sql.unnest`
 
-```js
+```ts
 (
   tuples: ReadonlyArray<readonly any[]>,
   columnTypes:  Array<[...string[], TypeNameIdentifier]> | Array<SqlSqlToken | TypeNameIdentifier>
 ): UnnestSqlToken;
-
 ```
 
 Creates an `unnest` expressions, e.g.
 
-```js
+```ts
 await connection.query(sql`
   SELECT bar, baz
   FROM ${sql.unnest(
@@ -339,12 +310,11 @@ await connection.query(sql`
     ]
   )} AS foo(bar, baz)
 `);
-
 ```
 
 Produces:
 
-```js
+```ts
 {
   sql: 'SELECT bar, baz FROM unnest($1::"int4"[], $2::"text"[]) AS foo(bar, baz)',
   values: [
@@ -358,14 +328,13 @@ Produces:
     ]
   ]
 }
-
 ```
 
 If `columnType` array member type is `string`, it will treat it as a type name identifier (and quote with double quotes; illustrated in the example above).
 
 If `columnType` array member type is `SqlToken`, it will inline type name without quotes, e.g.
 
-```js
+```ts
 await connection.query(sql`
   SELECT bar, baz
   FROM ${sql.unnest(
@@ -379,12 +348,11 @@ await connection.query(sql`
     ]
   )} AS foo(bar, baz)
 `);
-
 ```
 
 Produces:
 
-```js
+```ts
 {
   sql: 'SELECT bar, baz FROM unnest($1::integer[], $2::text[]) AS foo(bar, baz)',
   values: [
@@ -398,12 +366,11 @@ Produces:
     ]
   ]
 }
-
 ```
 
 If `columnType` array member type is `[...string[], TypeNameIdentifier]`, it will act as [`sql.identifier`](#sqlidentifier), e.g.
 
-```js
+```ts
 await connection.query(sql`
   SELECT bar, baz
   FROM ${sql.unnest(
@@ -417,12 +384,11 @@ await connection.query(sql`
     ]
   )} AS foo(bar, baz)
 `);
-
 ```
 
 Produces:
 
-```js
+```ts
 {
   sql: 'SELECT bar, baz FROM unnest($1::"foo"."int4"[], $2::"foo"."int4"[]) AS foo(bar, baz)',
   values: [

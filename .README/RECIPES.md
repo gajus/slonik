@@ -4,7 +4,7 @@
 
 Use [`sql.unnest`](#sqlunnest) to create a set of rows using `unnest`. Using the `unnest` approach requires only 1 variable per every column; values for each column are passed as an array, e.g.
 
-```js
+```ts
 await connection.query(sql`
   INSERT INTO foo (bar, baz, qux)
   SELECT *
@@ -20,12 +20,11 @@ await connection.query(sql`
     ]
   )}
 `);
-
 ```
 
 Produces:
 
-```js
+```ts
 {
   sql: 'INSERT INTO foo (bar, baz, qux) SELECT * FROM unnest($1::int4[], $2::int4[], $3::int4[])',
   values: [
@@ -43,7 +42,6 @@ Produces:
     ]
   ]
 }
-
 ```
 
 Inserting data this way ensures that the query is stable and reduces the amount of time it takes to parse the query.
@@ -52,7 +50,7 @@ Inserting data this way ensures that the query is stable and reduces the amount 
 
 If connection is initiated by a query (as opposed to a obtained explicitly using `pool#connect()`), then `beforePoolConnection` interceptor can be used to change the pool that will be used to execute the query, e.g.
 
-```js
+```ts
 const slavePool = await createPool('postgres://slave');
 const masterPool = await createPool('postgres://master', {
   interceptors: [
@@ -73,7 +71,6 @@ masterPool.query(sql`SELECT 1`);
 
 // This query will use `postgres://master` connection.
 masterPool.query(sql`UPDATE 1`);
-
 ```
 
 ### Building Utility Statements
@@ -87,10 +84,9 @@ In the context of Slonik, if you are building utility statements you must use qu
 
 Example:
 
-```js
+```ts
 await connection.query(sql`
   CREATE USER ${sql.identifier(['foo'])}
   WITH PASSWORD ${sql.literalValue('bar')}
 `);
-
 ```

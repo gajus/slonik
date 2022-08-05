@@ -2,7 +2,7 @@
 
 All Slonik errors extend from `SlonikError`, i.e. You can catch Slonik specific errors using the following logic.
 
-```js
+```ts
 import {
   SlonikError
 } from 'slonik';
@@ -14,16 +14,15 @@ try {
     // This error is thrown by Slonik.
   }
 }
-
 ```
 
 ### Original `node-postgres` error
 
 When error originates from `node-postgres`, the original error is available under `originalError` property.
 
-This propery is exposed for debugging purposes only. Do not use it for conditional checks – it can change.
+This property is exposed for debugging purposes only. Do not use it for conditional checks – it can change.
 
-If you require to extract meta-data about a specific type of error (e.g. contraint violation name), raise a GitHub issue describing your use case.
+If you require to extract meta-data about a specific type of error (e.g. constraint violation name), raise a GitHub issue describing your use case.
 
 ### Handling `BackendTerminatedError`
 
@@ -31,7 +30,7 @@ If you require to extract meta-data about a specific type of error (e.g. contrai
 
 `BackendTerminatedError` must be handled at the connection level, i.e.
 
-```js
+```ts
 await pool.connect(async (connection0) => {
   try {
     await pool.connect(async (connection1) => {
@@ -55,7 +54,6 @@ await pool.connect(async (connection0) => {
     }
   }
 });
-
 ```
 
 ### Handling `CheckIntegrityConstraintViolationError`
@@ -70,7 +68,7 @@ await pool.connect(async (connection0) => {
 
 To handle the case where the data result does not match the expectations, catch `DataIntegrityError` error.
 
-```js
+```ts
 import {
   DataIntegrityError
 } from 'slonik';
@@ -86,7 +84,6 @@ try {
     throw error;
   }
 }
-
 ```
 
 ### Handling `ForeignKeyIntegrityConstraintViolationError`
@@ -97,7 +94,7 @@ try {
 
 To handle the case where query returns less than one row, catch `NotFoundError` error.
 
-```js
+```ts
 import {
   NotFoundError
 } from 'slonik';
@@ -115,7 +112,6 @@ try {
 if (row) {
   // row.foo is the result of the `foo` column value of the first row.
 }
-
 ```
 
 ### Handling `NotNullIntegrityConstraintViolationError`
@@ -128,7 +124,7 @@ if (row) {
 
 It should be safe to use the same connection if `StatementCancelledError` is handled, e.g.
 
-```js
+```ts
 await pool.connect(async (connection0) => {
   await pool.connect(async (connection1) => {
     const backendProcessId = await connection1.oneFirst(sql`SELECT pg_backend_pid()`);
@@ -148,7 +144,6 @@ await pool.connect(async (connection0) => {
     }
   });
 });
-
 ```
 
 ### Handling `StatementTimeoutError`

@@ -4,7 +4,7 @@
 
 Slonik client is configured using a custom connection URI (DSN).
 
-```json
+```tson
 postgresql://[user[:password]@][host[:port]][/database name][?name=value[&...]]
 ```
 
@@ -19,7 +19,7 @@ Note that unless listed above, other [libpq parameters](https://www.postgresql.o
 
 Examples of valid DSNs:
 
-```json
+```text
 postgresql://
 postgresql://localhost
 postgresql://localhost:5432
@@ -35,22 +35,20 @@ Other configurations are available through the [`clientConfiguration` parameter]
 
 Use `createPool` to create a connection pool, e.g.
 
-```js
+```ts
 import {
   createPool,
 } from 'slonik';
 
 const pool = await createPool('postgres://');
-
 ```
 
 Instance of Slonik connection pool can be then used to create a new connection, e.g.
 
-```js
+```ts
 pool.connect(async (connection) => {
   await connection.query(sql`SELECT 1`);
 });
-
 ```
 
 The connection will be kept alive until the promise resolves (the result of the method supplied to `connect()`).
@@ -59,9 +57,8 @@ Refer to [query method](#slonik-query-methods) documentation to learn about the 
 
 If you do not require having a persistent connection to the same backend, then you can directly use `pool` to run queries, e.g.
 
-```js
+```ts
 pool.query(sql`SELECT 1`);
-
 ```
 
 Beware that in the latter example, the connection picked to execute the query is a random connection from the connection pool, i.e. using the latter method (without explicit `connect()`) does not guarantee that multiple queries will refer to the same backend.
@@ -72,7 +69,7 @@ Use `pool.end()` to end idle connections and prevent creation of new connections
 
 The result of `pool.end()` is a promise that is resolved when all connections are ended.
 
-```js
+```ts
 import {
   createPool,
   sql,
@@ -89,7 +86,6 @@ const main = async () => {
 };
 
 main();
-
 ```
 
 Note: `pool.end()` does not terminate active connections/ transactions.
@@ -98,7 +94,7 @@ Note: `pool.end()` does not terminate active connections/ transactions.
 
 Use `pool.getPoolState()` to find out if pool is alive and how many connections are active and idle, and how many clients are waiting for a connection.
 
-```js
+```ts
 import {
   createPool,
   sql,
@@ -149,14 +145,13 @@ const main = async () => {
 };
 
 main();
-
 ```
 
 Note: `pool.end()` does not terminate active connections/ transactions.
 
 ### API
 
-```js
+```ts
 /**
  * @param connectionUri PostgreSQL [Connection URI](https://www.postgresql.org/docs/current/libpq-connect.html#LIBPQ-CONNSTRING).
  */
@@ -195,12 +190,11 @@ type ClientConfiguration = {
   transactionRetryLimit?: number,
   typeParsers?: TypeParser[],
 };
-
 ```
 
 Example:
 
-```js
+```ts
 import {
   createPool
 } from 'slonik';
@@ -208,7 +202,6 @@ import {
 const pool = await createPool('postgres://');
 
 await pool.query(sql`SELECT 1`);
-
 ```
 
 ### Default configuration
@@ -234,16 +227,15 @@ These type parsers are enabled by default:
 
 To disable the default type parsers, pass an empty array, e.g.
 
-```js
+```ts
 createPool('postgres://', {
   typeParsers: []
 });
-
 ```
 
 You can create default type parser collection using `createTypeParserPreset`, e.g.
 
-```js
+```ts
 import {
   createTypeParserPreset
 } from 'slonik';
@@ -253,7 +245,6 @@ createPool('postgres://', {
     ...createTypeParserPreset()
   ]
 });
-
 ```
 
 #### Default timeouts
@@ -279,7 +270,7 @@ Slonik sets aggressive timeouts by default. These timeouts are designed to provi
 
 Slonik only allows to check out a connection for the duration of the promise routine supplied to the `pool#connect()` method.
 
-```js
+```ts
 import {
   createPool,
 } from 'slonik';
@@ -309,7 +300,7 @@ Slonik provides a way to mock queries against the database.
 * Use `createMockPool` to create a mock connection.
 * Use `createMockQueryResult` to create a mock query result.
 
-```js
+```ts
 import {
   createMockPool,
   createMockQueryResult,
@@ -321,12 +312,11 @@ type OverridesType =
 
 createMockPool(overrides: OverridesType): DatabasePool;
 createMockQueryResult(rows: QueryResultRow[]): QueryResult<QueryResultRow>;
-
 ```
 
 Example:
 
-```js
+```ts
 import {
   createMockPool,
   createMockQueryResult,
@@ -347,5 +337,4 @@ await pool.connect(async (connection) => {
     SELECT ${'foo'}
   `);
 });
-
 ```

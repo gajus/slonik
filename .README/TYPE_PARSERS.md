@@ -2,24 +2,22 @@
 
 Type parsers describe how to parse PostgreSQL types.
 
-```js
+```ts
 type TypeParser = {
   name: string,
   parse: (value: string) => *
 };
-
 ```
 
 Example:
 
-```js
+```ts
 {
   name: 'int8',
   parse: (value) => {
     return parseInt(value, 10);
   }
 }
-
 ```
 
 Note: Unlike [`pg-types`](https://github.com/brianc/node-pg-types) that uses OIDs to identify types, Slonik identifies types using their names.
@@ -27,11 +25,9 @@ Note: Unlike [`pg-types`](https://github.com/brianc/node-pg-types) that uses OID
 Use this query to find type names:
 
 ```sql
-SELECT
-  typname
+SELECT typname
 FROM pg_type
 ORDER BY typname ASC
-
 ```
 
 Type parsers are configured using [`typeParsers` client configuration](#slonik-usage-api).
@@ -51,7 +47,7 @@ Read: [Default type parsers](#default-type-parsers).
 
 Built-in type parsers can be created using the exported factory functions, e.g.
 
-```js
+```ts
 import {
   createTimestampTypeParser
 } from 'slonik';
@@ -64,5 +60,4 @@ createTimestampTypeParser();
 //     return value === null ? value : Date.parse(value + ' UTC');
 //   }
 // }
-
 ```

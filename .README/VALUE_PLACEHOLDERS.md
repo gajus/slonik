@@ -4,7 +4,7 @@
 
 Slonik query methods can only be executed using `sql` [tagged template literal](https://developer.mozilla.org/en/docs/Web/JavaScript/Reference/Template_literals#Tagged_template_literals), e.g.
 
-```js
+```ts
 import {
   sql
 } from 'slonik'
@@ -14,7 +14,6 @@ connection.query(sql`
   FROM foo
   WHERE bar = ${'baz'}
 `);
-
 ```
 
 The above is equivalent to evaluating:
@@ -34,7 +33,7 @@ Manually constructing queries is not allowed.
 
 There is an internal mechanism that checks to see if query was created using `sql` tagged template literal, i.e.
 
-```js
+```ts
 const query = {
   sql: 'SELECT 1 FROM foo WHERE bar = $1',
   type: 'SQL',
@@ -44,7 +43,6 @@ const query = {
 };
 
 connection.query(query);
-
 ```
 
 Will result in an error:
@@ -59,15 +57,14 @@ Furthermore, a query object constructed using `sql` tagged template literal is [
 
 `sql` tagged template literals can be nested, e.g.
 
-```js
+```ts
 const query0 = sql`SELECT ${'foo'} FROM bar`;
 const query1 = sql`SELECT ${'baz'} FROM (${query0})`;
-
 ```
 
 Produces:
 
-```js
+```ts
 {
   sql: 'SELECT $1 FROM (SELECT $2 FROM bar)',
   values: [
@@ -75,5 +72,4 @@ Produces:
     'foo'
   ]
 }
-
 ```

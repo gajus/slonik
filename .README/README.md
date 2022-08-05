@@ -48,8 +48,6 @@ Note: Using this project does not require TypeScript. It is a regular ES6 module
 
 {"gitdown": "contents"}
 
-## About Slonik
-
 {"gitdown": "include", "file": "./ABOUT_SLONIK.md"}
 
 ## Documentation

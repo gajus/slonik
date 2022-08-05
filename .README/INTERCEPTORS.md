@@ -4,7 +4,7 @@ Functionality can be added to Slonik client by adding interceptors (middleware).
 
 Interceptors are configured using [client configuration](#api), e.g.
 
-```js
+```ts
 import {
   createPool
 } from 'slonik';
@@ -14,7 +14,6 @@ const interceptors = [];
 const connection = await createPool('postgres://', {
   interceptors
 });
-
 ```
 
 Interceptors are executed in the order they are added.
@@ -25,7 +24,7 @@ Read: [Default interceptors](#default-interceptors).
 
 Interceptor is an object that implements methods that can change the behaviour of the database client at different stages of the connection life-cycle
 
-```js
+```ts
 type Interceptor = {
   afterPoolConnection?: (
     connectionContext: ConnectionContext,
@@ -72,19 +71,17 @@ type Interceptor = {
     fields: Field[],
   ) => QueryResultRow
 };
-
 ```
 
 #### `afterPoolConnection`
 
 Executed after a connection is acquired from the connection pool (or a new connection is created), e.g.
 
-```js
+```ts
 const pool = await createPool('postgres://');
 
 // Interceptor is executed here. ↓
 pool.connect();
-
 ```
 
 #### `afterQueryExecution`
@@ -117,7 +114,7 @@ This function can optionally return a pool to another database, causing a connec
 
 Executed before connection is released back to the connection pool, e.g.
 
-```js
+```ts
 const pool = await createPool('postgres://');
 
 pool.connect(async () => {
@@ -125,7 +122,6 @@ pool.connect(async () => {
 
   // Interceptor is executed here. ↓
 });
-
 ```
 
 #### `queryExecutionError`

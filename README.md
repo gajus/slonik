@@ -153,7 +153,7 @@ Note: Using this project does not require TypeScript. It is a regular ES6 module
 <a name="slonik-about-slonik-battle-tested"></a>
 ### Battle-Tested
 
-Slonik began as a collection of utilities designed for working with [`node-postgres`](https://github.com/brianc/node-postgres). We continue to use `node-postgres` as it provides a robust foundation for interacting with PostgreSQL. However, what once was a collection of utilities has since grown into a framework that abstracts repeating code patterns, protects against unsafe connection handling and value interpolation, and provides rich debugging experience.
+Slonik began as a collection of utilities designed for working with [`node-postgres`](https://github.com/brianc/node-postgres). It continues to use `node-postgres` driver as it provides a robust foundation for interacting with PostgreSQL. However, what once was a collection of utilities has since grown into a framework that abstracts repeating code patterns, protects against unsafe connection handling and value interpolation, and provides a rich debugging experience.
 
 Slonik has been [battle-tested](https://medium.com/@gajus/lessons-learned-scaling-postgresql-database-to-1-2bn-records-month-edc5449b3067) with large data volumes and queries ranging from simple CRUD operations to data-warehousing needs.
 
@@ -173,14 +173,12 @@ Read: [The History of Slonik, the PostgreSQL Elephant Logo](https://www.vertabel
 
 Among the primary reasons for developing Slonik, was the motivation to reduce the repeating code patterns and add a level of type safety. This is primarily achieved through the methods such as `one`, `many`, etc. But what is the issue? It is best illustrated with an example.
 
-Suppose the requirement is to write a method that retrieves a resource ID given values defining (what we assume to be) a unique constraint. If we did not have the aforementioned convenience methods available, then it would need to be written as:
+Suppose the requirement is to write a method that retrieves a resource ID given values defining (what we assume to be) a unique constraint. If we did not have the aforementioned helper methods available, then it would need to be written as:
 
-```js
+```ts
 import {
-  sql
-} from 'slonik';
-import type {
-  DatabaseConnection
+  sql,
+  type DatabaseConnection
 } from 'slonik';
 
 type DatabaseRecordIdType = number;
@@ -202,12 +200,11 @@ const getFooIdByBar = async (connection: DatabaseConnection, bar: string): Promi
 
   return fooResult[0].id;
 };
-
 ```
 
 `oneFirst` method abstracts all of the above logic into:
 
-```js
+```ts
 const getFooIdByBar = (connection: DatabaseConnection, bar: string): Promise<DatabaseRecordIdType> => {
   return connection.oneFirst(sql`
     SELECT id
@@ -215,7 +212,6 @@ const getFooIdByBar = (connection: DatabaseConnection, bar: string): Promise<Dat
     WHERE bar = ${bar}
   `);
 };
-
 ```
 
 `oneFirst` throws:
@@ -224,11 +220,11 @@ const getFooIdByBar = (connection: DatabaseConnection, bar: string): Promise<Dat
 * `DataIntegrityError` if query returns multiple rows
 * `DataIntegrityError` if query returns multiple columns
 
-This becomes particularly important when writing routines where multiple queries depend on the previous result. Using methods with inbuilt assertions ensures that in case of an error, the error points to the original source of the problem. In contrast, unless assertions for all possible outcomes are typed out as in the previous example, the unexpected result of the query will be fed to the next operation. If you are lucky, the next operation will simply break; if you are unlucky, you are risking data corruption and hard to locate bugs.
+In the absence of helper methods, the overhead of repeating code becomes particularly visible when writing routines where multiple queries depend on the proceeding query results. Using methods with inbuilt assertions ensures that in case of an error, the error points to the source of the problem. In contrast, unless assertions for all possible outcomes are typed out as in the previous example, the unexpected result of the query will be fed to the next operation. If you are lucky, the next operation will simply break; if you are unlucky, you are risking data corruption and hard-to-locate bugs.
 
-Furthermore, using methods that guarantee the shape of the results, allows us to leverage static type checking and catch some of the errors even before they executing the code, e.g.
+Furthermore, using methods that guarantee the shape of the results allows us to leverage static type checking and catch some of the errors even before executing the code, e.g.
 
-```js
+```ts
 const fooId = await connection.many(sql`
   SELECT id
   FROM foo
@@ -239,7 +235,6 @@ await connection.query(sql`
   DELETE FROM baz
   WHERE foo_id = ${fooId}
 `);
-
 ```
 
 Static type check of the above example will produce a warning as the `fooId` is guaranteed to be an array and binding of the last query is expecting a primitive value.
@@ -252,8 +247,8 @@ Slonik only allows to check out a connection for the duration of the promise rou
 
 The primary reason for implementing _only_ this connection pooling method is because the alternative is inherently unsafe, e.g.
 
-```js
-// Note: This example is using unsupported API.
+```ts
+// This is not valid Slonik API
 
 const main = async () => {
   const connection = await pool.connect();
@@ -262,15 +257,14 @@ const main = async () => {
 
   await connection.release();
 };
-
 ```
 
-In this example, if `SELECT foo()` produces an error, then connection is never released, i.e. the connection remains to hang.
+In this example, if `SELECT foo()` produces an error, then connection is never released, i.e. the connection hangs indefinitely.
 
 A fix to the above is to ensure that `connection#release()` is always called, i.e.
 
-```js
-// Note: This example is using unsupported API.
+```ts
+// This is not valid Slonik API
 
 const main = async () => {
   const connection = await pool.connect();
@@ -285,34 +279,31 @@ const main = async () => {
 
   return lastExecutionResult;
 };
-
 ```
 
 Slonik abstracts the latter pattern into `pool#connect()` method.
 
-```js
+```ts
 const main = () => {
   return pool.connect((connection) => {
     return connection.query(sql`SELECT foo()`);
   });
 };
-
 ```
 
-Connection is always released back to the pool after the promise produced by the function supplied to `connect()` method is either resolved or rejected.
+Using this pattern, we guarantee that connection is always released as soon as the `connect()` routine resolves or is rejected.
 
 <a name="user-content-slonik-about-slonik-protecting-against-unsafe-transaction-handling"></a>
 <a name="slonik-about-slonik-protecting-against-unsafe-transaction-handling"></a>
 ### Protecting against unsafe transaction handling
 
-Just like in the [unsafe connection handling](#user-content-protecting-against-unsafe-connection-handling) described above, Slonik only allows to create a transaction for the duration of the promise routine supplied to the `connection#transaction()` method.
+Just like in the [unsafe connection handling](#user-content-protecting-against-unsafe-connection-handling) example, Slonik only allows to create a transaction for the duration of the promise routine supplied to the `connection#transaction()` method.
 
-```js
+```ts
 connection.transaction(async (transactionConnection) => {
   await transactionConnection.query(sql`INSERT INTO foo (bar) VALUES ('baz')`);
   await transactionConnection.query(sql`INSERT INTO qux (quux) VALUES ('quuz')`);
 });
-
 ```
 
 This pattern ensures that the transaction is either committed or aborted the moment the promise is either resolved or rejected.
@@ -323,33 +314,32 @@ This pattern ensures that the transaction is either committed or aborted the mom
 
 [SQL injections](https://en.wikipedia.org/wiki/SQL_injection) are one of the most well known attack vectors. Some of the [biggest data leaks](https://en.wikipedia.org/wiki/SQL_injection#Examples) were the consequence of improper user-input handling. In general, SQL injections are easily preventable by using parameterization and by restricting database permissions, e.g.
 
-```js
-// Note: This example is using unsupported API.
+```ts
+// This is not valid Slonik API
 
 connection.query('SELECT $1', [
   userInput
 ]);
-
 ```
 
-In this example, the query text (`SELECT $1`) and parameters (value of the `userInput`) are passed to the PostgreSQL server where the parameters are safely substituted into the query. This is a safe way to execute a query using user-input.
+In this example, the query text (`SELECT $1`) and parameters (`userInput`) are passed separately to the PostgreSQL server where the parameters are safely substituted into the query. This is a safe way to execute a query using user-input.
 
 The vulnerabilities appear when developers cut corners or when they do not know about parameterization, i.e. there is a risk that someone will instead write:
 
-```js
-// Note: This example is using unsupported API.
+```ts
+// This is not valid Slonik API
 
 connection.query('SELECT \'' + userInput + '\'');
-
 ```
 
-As evident by the history of the data leaks, this happens more often than anyone would like to admit. This is especially a big risk in Node.js community, where predominant number of developers are coming from frontend and have not had training working with RDBMSes. Therefore, one of the key selling points of Slonik is that it adds multiple layers of protection to prevent unsafe handling of user-input.
+As evident by the history of the data leaks, this happens more often than anyone would like to admit. This security vulnerability is especially a significant risk in Node.js community, where a predominant number of developers are coming from frontend and have not had training working with RDBMSes. Therefore, one of the key selling points of Slonik is that it adds multiple layers of protection to prevent unsafe handling of user input.
 
-To begin with, Slonik does not allow to run plain-text queries.
+To begin with, Slonik does not allow running plain-text queries.
 
-```js
+```ts
+// This is not valid Slonik API
+
 connection.query('SELECT 1');
-
 ```
 
 The above invocation would produce an error:
@@ -358,23 +348,21 @@ The above invocation would produce an error:
 
 This means that the only way to run a query is by constructing it using [`sql` tagged template literal](https://github.com/gajus/slonik#slonik-value-placeholders-tagged-template-literals), e.g.
 
-```js
+```ts
 connection.query(sql`SELECT 1`);
-
 ```
 
 To add a parameter to the query, user must use [template literal placeholders](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Template_literals#Description), e.g.
 
-```js
+```ts
 connection.query(sql`SELECT ${userInput}`);
-
 ```
 
-Slonik takes over from here and constructs a query with value bindings, and sends the resulting query text and parameters to the PostgreSQL. As `sql` tagged template literal is the only way to execute the query, it adds a strong layer of protection against accidental unsafe user-input handling due to limited knowledge of the SQL client API.
+Slonik takes over from here and constructs a query with value bindings, and sends the resulting query text and parameters to PostgreSQL. There is no other way of passing parameters to the query – this adds a strong layer of protection against accidental unsafe user input handling due to limited knowledge of the SQL client API.
 
 As Slonik restricts user's ability to generate and execute dynamic SQL, it provides helper functions used to generate fragments of the query and the corresponding value bindings, e.g. [`sql.identifier`](#user-content-sqlidentifier), [`sql.join`](#user-content-sqljoin) and [`sql.unnest`](#user-content-sqlunnest). These methods generate tokens that the query executor interprets to construct a safe query, e.g.
 
-```js
+```ts
 connection.query(sql`
   SELECT ${sql.identifier(['foo', 'a'])}
   FROM (
@@ -391,7 +379,6 @@ connection.query(sql`
   ) foo(a, b, c)
   WHERE foo.b IN (${sql.join(['c1', 'a2'], sql`, `)})
 `);
-
 ```
 
 This (contrived) example generates a query equivalent to:
@@ -404,10 +391,9 @@ FROM (
     ($4, $5, $6)
 ) foo(a, b, c)
 WHERE foo.b IN ($7, $8)
-
 ```
 
-That is executed with the parameters provided by the user.
+This query is executed with the parameters provided by the user.
 
 To sum up, Slonik is designed to prevent accidental creation of queries vulnerable to SQL injections.
 
@@ -426,7 +412,7 @@ To sum up, Slonik is designed to prevent accidental creation of queries vulnerab
 
 Slonik client is configured using a custom connection URI (DSN).
 
-```json
+```tson
 postgresql://[user[:password]@][host[:port]][/database name][?name=value[&...]]
 ```
 
@@ -441,7 +427,7 @@ Note that unless listed above, other [libpq parameters](https://www.postgresql.o
 
 Examples of valid DSNs:
 
-```json
+```text
 postgresql://
 postgresql://localhost
 postgresql://localhost:5432
@@ -459,22 +445,20 @@ Other configurations are available through the [`clientConfiguration` parameter]
 
 Use `createPool` to create a connection pool, e.g.
 
-```js
+```ts
 import {
   createPool,
 } from 'slonik';
 
 const pool = await createPool('postgres://');
-
 ```
 
 Instance of Slonik connection pool can be then used to create a new connection, e.g.
 
-```js
+```ts
 pool.connect(async (connection) => {
   await connection.query(sql`SELECT 1`);
 });
-
 ```
 
 The connection will be kept alive until the promise resolves (the result of the method supplied to `connect()`).
@@ -483,9 +467,8 @@ Refer to [query method](#user-content-slonik-query-methods) documentation to lea
 
 If you do not require having a persistent connection to the same backend, then you can directly use `pool` to run queries, e.g.
 
-```js
+```ts
 pool.query(sql`SELECT 1`);
-
 ```
 
 Beware that in the latter example, the connection picked to execute the query is a random connection from the connection pool, i.e. using the latter method (without explicit `connect()`) does not guarantee that multiple queries will refer to the same backend.
@@ -498,7 +481,7 @@ Use `pool.end()` to end idle connections and prevent creation of new connections
 
 The result of `pool.end()` is a promise that is resolved when all connections are ended.
 
-```js
+```ts
 import {
   createPool,
   sql,
@@ -515,7 +498,6 @@ const main = async () => {
 };
 
 main();
-
 ```
 
 Note: `pool.end()` does not terminate active connections/ transactions.
@@ -526,7 +508,7 @@ Note: `pool.end()` does not terminate active connections/ transactions.
 
 Use `pool.getPoolState()` to find out if pool is alive and how many connections are active and idle, and how many clients are waiting for a connection.
 
-```js
+```ts
 import {
   createPool,
   sql,
@@ -577,7 +559,6 @@ const main = async () => {
 };
 
 main();
-
 ```
 
 Note: `pool.end()` does not terminate active connections/ transactions.
@@ -586,7 +567,7 @@ Note: `pool.end()` does not terminate active connections/ transactions.
 <a name="slonik-usage-api"></a>
 ### API
 
-```js
+```ts
 /**
  * @param connectionUri PostgreSQL [Connection URI](https://www.postgresql.org/docs/current/libpq-connect.html#LIBPQ-CONNSTRING).
  */
@@ -625,12 +606,11 @@ type ClientConfiguration = {
   transactionRetryLimit?: number,
   typeParsers?: TypeParser[],
 };
-
 ```
 
 Example:
 
-```js
+```ts
 import {
   createPool
 } from 'slonik';
@@ -638,7 +618,6 @@ import {
 const pool = await createPool('postgres://');
 
 await pool.query(sql`SELECT 1`);
-
 ```
 
 <a name="user-content-slonik-usage-default-configuration"></a>
@@ -670,16 +649,15 @@ These type parsers are enabled by default:
 
 To disable the default type parsers, pass an empty array, e.g.
 
-```js
+```ts
 createPool('postgres://', {
   typeParsers: []
 });
-
 ```
 
 You can create default type parser collection using `createTypeParserPreset`, e.g.
 
-```js
+```ts
 import {
   createTypeParserPreset
 } from 'slonik';
@@ -689,7 +667,6 @@ createPool('postgres://', {
     ...createTypeParserPreset()
   ]
 });
-
 ```
 
 <a name="user-content-slonik-usage-default-configuration-default-timeouts"></a>
@@ -721,7 +698,7 @@ Slonik sets aggressive timeouts by default. These timeouts are designed to provi
 
 Slonik only allows to check out a connection for the duration of the promise routine supplied to the `pool#connect()` method.
 
-```js
+```ts
 import {
   createPool,
 } from 'slonik';
@@ -753,7 +730,7 @@ Slonik provides a way to mock queries against the database.
 * Use `createMockPool` to create a mock connection.
 * Use `createMockQueryResult` to create a mock query result.
 
-```js
+```ts
 import {
   createMockPool,
   createMockQueryResult,
@@ -765,12 +742,11 @@ type OverridesType =
 
 createMockPool(overrides: OverridesType): DatabasePool;
 createMockQueryResult(rows: QueryResultRow[]): QueryResult<QueryResultRow>;
-
 ```
 
 Example:
 
-```js
+```ts
 import {
   createMockPool,
   createMockQueryResult,
@@ -791,7 +767,6 @@ await pool.connect(async (connection) => {
     SELECT ${'foo'}
   `);
 });
-
 ```
 
 
@@ -861,24 +836,22 @@ const pool = createPool('postgres://', {
 
 Type parsers describe how to parse PostgreSQL types.
 
-```js
+```ts
 type TypeParser = {
   name: string,
   parse: (value: string) => *
 };
-
 ```
 
 Example:
 
-```js
+```ts
 {
   name: 'int8',
   parse: (value) => {
     return parseInt(value, 10);
   }
 }
-
 ```
 
 Note: Unlike [`pg-types`](https://github.com/brianc/node-pg-types) that uses OIDs to identify types, Slonik identifies types using their names.
@@ -886,11 +859,9 @@ Note: Unlike [`pg-types`](https://github.com/brianc/node-pg-types) that uses OID
 Use this query to find type names:
 
 ```sql
-SELECT
-  typname
+SELECT typname
 FROM pg_type
 ORDER BY typname ASC
-
 ```
 
 Type parsers are configured using [`typeParsers` client configuration](#user-content-slonik-usage-api).
@@ -912,7 +883,7 @@ Read: [Default type parsers](#user-content-default-type-parsers).
 
 Built-in type parsers can be created using the exported factory functions, e.g.
 
-```js
+```ts
 import {
   createTimestampTypeParser
 } from 'slonik';
@@ -925,7 +896,6 @@ createTimestampTypeParser();
 //     return value === null ? value : Date.parse(value + ' UTC');
 //   }
 // }
-
 ```
 
 
@@ -937,7 +907,7 @@ Functionality can be added to Slonik client by adding interceptors (middleware).
 
 Interceptors are configured using [client configuration](#user-content-api), e.g.
 
-```js
+```ts
 import {
   createPool
 } from 'slonik';
@@ -947,7 +917,6 @@ const interceptors = [];
 const connection = await createPool('postgres://', {
   interceptors
 });
-
 ```
 
 Interceptors are executed in the order they are added.
@@ -960,7 +929,7 @@ Read: [Default interceptors](#user-content-default-interceptors).
 
 Interceptor is an object that implements methods that can change the behaviour of the database client at different stages of the connection life-cycle
 
-```js
+```ts
 type Interceptor = {
   afterPoolConnection?: (
     connectionContext: ConnectionContext,
@@ -1007,7 +976,6 @@ type Interceptor = {
     fields: Field[],
   ) => QueryResultRow
 };
-
 ```
 
 <a name="user-content-slonik-interceptors-interceptor-methods-afterpoolconnection"></a>
@@ -1016,12 +984,11 @@ type Interceptor = {
 
 Executed after a connection is acquired from the connection pool (or a new connection is created), e.g.
 
-```js
+```ts
 const pool = await createPool('postgres://');
 
 // Interceptor is executed here. ↓
 pool.connect();
-
 ```
 
 <a name="user-content-slonik-interceptors-interceptor-methods-afterqueryexecution"></a>
@@ -1066,7 +1033,7 @@ This function can optionally return a pool to another database, causing a connec
 
 Executed before connection is released back to the connection pool, e.g.
 
-```js
+```ts
 const pool = await createPool('postgres://');
 
 pool.connect(async () => {
@@ -1074,7 +1041,6 @@ pool.connect(async () => {
 
   // Interceptor is executed here. ↓
 });
-
 ```
 
 <a name="user-content-slonik-interceptors-interceptor-methods-queryexecutionerror"></a>
@@ -1128,7 +1094,7 @@ Check out [`slonik-interceptor-preset`](https://github.com/gajus/slonik-intercep
 
 Use [`sql.unnest`](#user-content-sqlunnest) to create a set of rows using `unnest`. Using the `unnest` approach requires only 1 variable per every column; values for each column are passed as an array, e.g.
 
-```js
+```ts
 await connection.query(sql`
   INSERT INTO foo (bar, baz, qux)
   SELECT *
@@ -1144,12 +1110,11 @@ await connection.query(sql`
     ]
   )}
 `);
-
 ```
 
 Produces:
 
-```js
+```ts
 {
   sql: 'INSERT INTO foo (bar, baz, qux) SELECT * FROM unnest($1::int4[], $2::int4[], $3::int4[])',
   values: [
@@ -1167,7 +1132,6 @@ Produces:
     ]
   ]
 }
-
 ```
 
 Inserting data this way ensures that the query is stable and reduces the amount of time it takes to parse the query.
@@ -1178,7 +1142,7 @@ Inserting data this way ensures that the query is stable and reduces the amount 
 
 If connection is initiated by a query (as opposed to a obtained explicitly using `pool#connect()`), then `beforePoolConnection` interceptor can be used to change the pool that will be used to execute the query, e.g.
 
-```js
+```ts
 const slavePool = await createPool('postgres://slave');
 const masterPool = await createPool('postgres://master', {
   interceptors: [
@@ -1199,7 +1163,6 @@ masterPool.query(sql`SELECT 1`);
 
 // This query will use `postgres://master` connection.
 masterPool.query(sql`UPDATE 1`);
-
 ```
 
 <a name="user-content-slonik-recipes-building-utility-statements"></a>
@@ -1215,12 +1178,11 @@ In the context of Slonik, if you are building utility statements you must use qu
 
 Example:
 
-```js
+```ts
 await connection.query(sql`
   CREATE USER ${sql.identifier(['foo'])}
   WITH PASSWORD ${sql.literalValue('bar')}
 `);
-
 ```
 
 
@@ -1235,22 +1197,20 @@ await connection.query(sql`
 
 `sql` tag can be imported from Slonik package:
 
-```js
+```ts
 import {
   sql
 } from 'slonik';
-
 ```
 
 Sometimes it may be desirable to construct a custom instance of `sql` tag. In those cases, you can use the `createSqlTag` factory, e.g.
 
-```js
+```ts
 import {
   createSqlTag
 } from 'slonik';
 
 const sql = createSqlTag();
-
 ```
 
 
@@ -1264,7 +1224,7 @@ const sql = createSqlTag();
 
 Slonik query methods can only be executed using `sql` [tagged template literal](https://developer.mozilla.org/en/docs/Web/JavaScript/Reference/Template_literals#Tagged_template_literals), e.g.
 
-```js
+```ts
 import {
   sql
 } from 'slonik'
@@ -1274,7 +1234,6 @@ connection.query(sql`
   FROM foo
   WHERE bar = ${'baz'}
 `);
-
 ```
 
 The above is equivalent to evaluating:
@@ -1296,7 +1255,7 @@ Manually constructing queries is not allowed.
 
 There is an internal mechanism that checks to see if query was created using `sql` tagged template literal, i.e.
 
-```js
+```ts
 const query = {
   sql: 'SELECT 1 FROM foo WHERE bar = $1',
   type: 'SQL',
@@ -1306,7 +1265,6 @@ const query = {
 };
 
 connection.query(query);
-
 ```
 
 Will result in an error:
@@ -1323,15 +1281,14 @@ Furthermore, a query object constructed using `sql` tagged template literal is [
 
 `sql` tagged template literals can be nested, e.g.
 
-```js
+```ts
 const query0 = sql`SELECT ${'foo'} FROM bar`;
 const query1 = sql`SELECT ${'baz'} FROM (${query0})`;
-
 ```
 
 Produces:
 
-```js
+```ts
 {
   sql: 'SELECT $1 FROM (SELECT $2 FROM bar)',
   values: [
@@ -1339,7 +1296,6 @@ Produces:
     'foo'
   ]
 }
-
 ```
 
 
@@ -1355,26 +1311,24 @@ If this is your first time using Slonik, read [Dynamically generating SQL querie
 <a name="slonik-query-building-sql-array"></a>
 ### <code>sql.array</code>
 
-```js
+```ts
 (
   values: PrimitiveValueExpression[],
   memberType: TypeNameIdentifier | SqlToken
 ) => ArraySqlToken;
-
 ```
 
 Creates an array value binding, e.g.
 
-```js
+```ts
 await connection.query(sql`
   SELECT (${sql.array([1, 2, 3], 'int4')})
 `);
-
 ```
 
 Produces:
 
-```js
+```ts
 {
   sql: 'SELECT $1::"int4"[]',
   values: [
@@ -1385,7 +1339,6 @@ Produces:
     ]
   ]
 }
-
 ```
 
 <a name="user-content-slonik-query-building-sql-array-sql-array-membertype"></a>
@@ -1394,16 +1347,15 @@ Produces:
 
 If `memberType` is a string (`TypeNameIdentifier`), then it is treated as a type name identifier and will be quoted using double quotes, i.e. `sql.array([1, 2, 3], 'int4')` is equivalent to `$1::"int4"[]`. The implication is that keywords that are often used interchangeably with type names are not going to work, e.g. [`int4`](https://github.com/postgres/postgres/blob/69edf4f8802247209e77f69e089799b3d83c13a4/src/include/catalog/pg_type.dat#L74-L78) is a type name identifier and will work. However, [`int`](https://github.com/postgres/postgres/blob/69edf4f8802247209e77f69e089799b3d83c13a4/src/include/parser/kwlist.h#L213) is a keyword and will not work. You can either use type name identifiers or you can construct custom member using `sql` tag, e.g.
 
-```js
+```ts
 await connection.query(sql`
   SELECT (${sql.array([1, 2, 3], sql`int[]`)})
 `);
-
 ```
 
 Produces:
 
-```js
+```ts
 {
   sql: 'SELECT $1::int[]',
   values: [
@@ -1414,7 +1366,6 @@ Produces:
     ]
   ]
 }
-
 ```
 
 <a name="user-content-slonik-query-building-sql-array-sql-array-vs-sql-join"></a>
@@ -1428,18 +1379,16 @@ Unlike `sql.join`, `sql.array` generates a stable query of a predictable length,
 
 Example:
 
-```js
+```ts
 sql`SELECT id FROM foo WHERE id IN (${sql.join([1, 2, 3], sql`, `)})`;
 sql`SELECT id FROM foo WHERE id NOT IN (${sql.join([1, 2, 3], sql`, `)})`;
-
 ```
 
 Is equivalent to:
 
-```js
+```ts
 sql`SELECT id FROM foo WHERE id = ANY(${sql.array([1, 2, 3], 'int4')})`;
 sql`SELECT id FROM foo WHERE id != ALL(${sql.array([1, 2, 3], 'int4')})`;
-
 ```
 
 Furthermore, unlike `sql.join`, `sql.array` can be used with an empty array of values. In short, `sql.array` should be preferred over `sql.join` when possible.
@@ -1448,153 +1397,139 @@ Furthermore, unlike `sql.join`, `sql.array` can be used with an empty array of v
 <a name="slonik-query-building-sql-binary"></a>
 ### <code>sql.binary</code>
 
-```js
+```ts
 (
   data: Buffer
 ) => BinarySqlToken;
-
 ```
 
 Binds binary ([`bytea`](https://www.postgresql.org/docs/current/datatype-binary.html)) data, e.g.
 
-```js
+```ts
 await connection.query(sql`
   SELECT ${sql.binary(Buffer.from('foo'))}
 `);
-
 ```
 
 Produces:
 
-```js
+```ts
 {
   sql: 'SELECT $1',
   values: [
     Buffer.from('foo')
   ]
 }
-
 ```
 
 <a name="user-content-slonik-query-building-sql-identifier"></a>
 <a name="slonik-query-building-sql-identifier"></a>
 ### <code>sql.identifier</code>
 
-```js
+```ts
 (
   names: string[],
 ) => IdentifierSqlToken;
-
 ```
 
 [Delimited identifiers](https://www.postgresql.org/docs/current/static/sql-syntax-lexical.html#SQL-SYNTAX-IDENTIFIERS) are created by enclosing an arbitrary sequence of characters in double-quotes ("). To create a delimited identifier, create an `sql` tag function placeholder value using `sql.identifier`, e.g.
 
-```js
+```ts
 sql`
   SELECT 1
   FROM ${sql.identifier(['bar', 'baz'])}
 `;
-
 ```
 
 Produces:
 
-```js
+```ts
 {
   sql: 'SELECT 1 FROM "bar"."baz"',
   values: []
 }
-
 ```
 
 <a name="user-content-slonik-query-building-sql-json"></a>
 <a name="slonik-query-building-sql-json"></a>
 ### <code>sql.json</code>
 
-```js
+```ts
 (
   value: SerializableValue
 ) => JsonSqlToken;
-
 ```
 
 Serializes value and binds it as a JSON string literal, e.g.
 
-```js
+```ts
 await connection.query(sql`
   SELECT (${sql.json([1, 2, 3])})
 `);
-
 ```
 
 Produces:
 
-```js
+```ts
 {
   sql: 'SELECT $1::json',
   values: [
     '[1,2,3]'
   ]
 }
-
 ```
 
 <a name="user-content-slonik-query-building-sql-jsonb"></a>
 <a name="slonik-query-building-sql-jsonb"></a>
 ### <code>sql.jsonb</code>
 
-```js
+```ts
 (
   value: SerializableValue
 ) => JsonBinarySqlToken;
-
 ```
 
 Serializes value and binds it as a JSON binary, e.g.
 
-```js
+```ts
 await connection.query(sql`
   SELECT (${sql.jsonb([1, 2, 3])})
 `);
-
 ```
 
 Produces:
 
-```js
+```ts
 {
   sql: 'SELECT $1::jsonb',
   values: [
     '[1,2,3]'
   ]
 }
-
 ```
 
 <a name="user-content-slonik-query-building-sql-join"></a>
 <a name="slonik-query-building-sql-join"></a>
 ### <code>sql.join</code>
 
-```js
+```ts
 (
   members: SqlSqlToken[],
   glue: SqlSqlToken
 ) => ListSqlToken;
-
 ```
 
 Concatenates SQL expressions using `glue` separator, e.g.
 
-```js
+```ts
 await connection.query(sql`
   SELECT ${sql.join([1, 2, 3], sql`, `)}
 `);
-
 ```
 
 Produces:
 
-```js
+```ts
 {
   sql: 'SELECT $1, $2, $3',
   values: [
@@ -1603,36 +1538,33 @@ Produces:
     3
   ]
 }
-
 ```
 
 `sql.join` is the primary building block for most of the SQL, e.g.
 
 Boolean expressions:
 
-```js
+```ts
 sql`
   SELECT ${sql.join([1, 2], sql` AND `)}
 `
 
 // SELECT $1 AND $2
-
 ```
 
 Tuple:
 
-```js
+```ts
 sql`
   SELECT (${sql.join([1, 2], sql`, `)})
 `
 
 // SELECT ($1, $2)
-
 ```
 
 Tuple list:
 
-```js
+```ts
 sql`
   SELECT ${sql.join(
     [
@@ -1644,7 +1576,6 @@ sql`
 `
 
 // SELECT ($1, $2), ($3, $4)
-
 ```
 
 <a name="user-content-slonik-query-building-sql-literalvalue"></a>
@@ -1653,46 +1584,42 @@ sql`
 
 > ⚠️ Do not use. This method interpolates values as literals and it must be used only for [building utility statements](#user-content-slonik-recipes-building-utility-statements). You are most likely looking for [value placeholders](#user-content-slonik-value-placeholders).
 
-```js
+```ts
 (
   value: string,
 ) => SqlSqlToken;
-
 ```
 
 Escapes and interpolates a literal value into a query.
 
-```js
+```ts
 await connection.query(sql`
   CREATE USER "foo" WITH PASSWORD ${sql.literalValue('bar')}
 `);
-
 ```
 
 Produces:
 
-```js
+```ts
 {
   sql: 'CREATE USER "foo" WITH PASSWORD \'bar\''
 }
-
 ```
 
 <a name="user-content-slonik-query-building-sql-unnest"></a>
 <a name="slonik-query-building-sql-unnest"></a>
 ### <code>sql.unnest</code>
 
-```js
+```ts
 (
   tuples: ReadonlyArray<readonly any[]>,
   columnTypes:  Array<[...string[], TypeNameIdentifier]> | Array<SqlSqlToken | TypeNameIdentifier>
 ): UnnestSqlToken;
-
 ```
 
 Creates an `unnest` expressions, e.g.
 
-```js
+```ts
 await connection.query(sql`
   SELECT bar, baz
   FROM ${sql.unnest(
@@ -1706,12 +1633,11 @@ await connection.query(sql`
     ]
   )} AS foo(bar, baz)
 `);
-
 ```
 
 Produces:
 
-```js
+```ts
 {
   sql: 'SELECT bar, baz FROM unnest($1::"int4"[], $2::"text"[]) AS foo(bar, baz)',
   values: [
@@ -1725,14 +1651,13 @@ Produces:
     ]
   ]
 }
-
 ```
 
 If `columnType` array member type is `string`, it will treat it as a type name identifier (and quote with double quotes; illustrated in the example above).
 
 If `columnType` array member type is `SqlToken`, it will inline type name without quotes, e.g.
 
-```js
+```ts
 await connection.query(sql`
   SELECT bar, baz
   FROM ${sql.unnest(
@@ -1746,12 +1671,11 @@ await connection.query(sql`
     ]
   )} AS foo(bar, baz)
 `);
-
 ```
 
 Produces:
 
-```js
+```ts
 {
   sql: 'SELECT bar, baz FROM unnest($1::integer[], $2::text[]) AS foo(bar, baz)',
   values: [
@@ -1765,12 +1689,11 @@ Produces:
     ]
   ]
 }
-
 ```
 
 If `columnType` array member type is `[...string[], TypeNameIdentifier]`, it will act as [`sql.identifier`](#user-content-sqlidentifier), e.g.
 
-```js
+```ts
 await connection.query(sql`
   SELECT bar, baz
   FROM ${sql.unnest(
@@ -1784,12 +1707,11 @@ await connection.query(sql`
     ]
   )} AS foo(bar, baz)
 `);
-
 ```
 
 Produces:
 
-```js
+```ts
 {
   sql: 'SELECT bar, baz FROM unnest($1::"foo"."int4"[], $2::"foo"."int4"[]) AS foo(bar, baz)',
   values: [
@@ -1818,9 +1740,8 @@ Returns result rows.
 
 Example:
 
-```js
+```ts
 const rows = await connection.any(sql`SELECT foo`);
-
 ```
 
 `#any` is similar to `#query` except that it returns rows without fields information.
@@ -1835,9 +1756,8 @@ Returns value of the first column of every row in the result set.
 
 Example:
 
-```js
+```ts
 const fooValues = await connection.anyFirst(sql`SELECT foo`);
-
 ```
 
 <a name="user-content-slonik-query-methods-exists"></a>
@@ -1848,35 +1768,32 @@ Returns a boolean value indicating whether query produces results.
 
 The query that is passed to this function is wrapped in `SELECT exists()` prior to it getting executed, i.e.
 
-```js
+```ts
 pool.exists(sql`
   SELECT LIMIT 1
 `)
-
 ```
 
 is equivalent to:
 
-```js
+```ts
 pool.oneFirst(sql`
   SELECT exists(
     SELECT LIMIT 1
   )
 `)
-
 ```
 
 <a name="user-content-slonik-query-methods-copyfrombinary"></a>
 <a name="slonik-query-methods-copyfrombinary"></a>
 ### <code>copyFromBinary</code>
 
-```js
+```ts
 (
   streamQuery: TaggedTemplateLiteralInvocation,
   tupleList: any[][],
   columnTypes: TypeNameIdentifier[],
 ) => Promise<null>;
-
 ```
 
 Copies from a binary stream.
@@ -1885,7 +1802,7 @@ The binary stream is constructed using user supplied `tupleList` and `columnType
 
 Example:
 
-```js
+```ts
 const tupleList = [
   [
     1,
@@ -1914,7 +1831,6 @@ await connection.copyFromBinary(
   tupleList,
   columnTypes
 );
-
 ```
 
 <a name="user-content-slonik-query-methods-copyfrombinary-limitations"></a>
@@ -1945,9 +1861,8 @@ Returns result rows.
 
 Example:
 
-```js
+```ts
 const rows = await connection.many(sql`SELECT foo`);
-
 ```
 
 <a name="user-content-slonik-query-methods-manyfirst"></a>
@@ -1961,9 +1876,8 @@ Returns value of the first column of every row in the result set.
 
 Example:
 
-```js
+```ts
 const fooValues = await connection.many(sql`SELECT foo`);
-
 ```
 
 <a name="user-content-slonik-query-methods-maybeone"></a>
@@ -1977,11 +1891,10 @@ Selects the first row from the result.
 
 Example:
 
-```js
+```ts
 const row = await connection.maybeOne(sql`SELECT foo`);
 
 // row.foo is the result of the `foo` column value of the first row.
-
 ```
 
 <a name="user-content-slonik-query-methods-maybeonefirst"></a>
@@ -1996,11 +1909,10 @@ Returns value of the first column from the first row.
 
 Example:
 
-```js
+```ts
 const foo = await connection.maybeOneFirst(sql`SELECT foo`);
 
 // foo is the result of the `foo` column value of the first row.
-
 ```
 
 <a name="user-content-slonik-query-methods-one"></a>
@@ -2014,11 +1926,10 @@ Selects the first row from the result.
 
 Example:
 
-```js
+```ts
 const row = await connection.one(sql`SELECT foo`);
 
 // row.foo is the result of the `foo` column value of the first row.
-
 ```
 
 > Note:
@@ -2040,11 +1951,10 @@ Returns value of the first column from the first row.
 
 Example:
 
-```js
+```ts
 const foo = await connection.oneFirst(sql`SELECT foo`);
 
 // foo is the result of the `foo` column value of the first row.
-
 ```
 
 <a name="user-content-slonik-query-methods-query"></a>
@@ -2055,7 +1965,7 @@ API and the result shape are equivalent to [`pg#query`](https://github.com/brian
 
 Example:
 
-```js
+```ts
 await connection.query(sql`SELECT foo`);
 
 // {
@@ -2069,7 +1979,6 @@ await connection.query(sql`SELECT foo`);
 //     }
 //   ]
 // }
-
 ```
 
 <a name="user-content-slonik-query-methods-stream"></a>
@@ -2080,7 +1989,7 @@ Streams query results.
 
 Example:
 
-```js
+```ts
 await connection.stream(sql`SELECT foo`, (stream) => {
   stream.on('data', (datum) => {
     datum;
@@ -2097,7 +2006,6 @@ await connection.stream(sql`SELECT foo`, (stream) => {
     // }
   });
 });
-
 ```
 
 Note: Implemented using [`pg-query-stream`](https://github.com/brianc/node-pg-query-stream).
@@ -2110,7 +2018,7 @@ Note: Implemented using [`pg-query-stream`](https://github.com/brianc/node-pg-qu
 
 `transaction` method can be used together with `createPool` method. When used to create a transaction from an instance of a pool, a new connection is allocated for the duration of the transaction.
 
-```js
+```ts
 const result = await connection.transaction(async (transactionConnection) => {
   await transactionConnection.query(sql`INSERT INTO foo (bar) VALUES ('baz')`);
   await transactionConnection.query(sql`INSERT INTO qux (quux) VALUES ('corge')`);
@@ -2119,7 +2027,6 @@ const result = await connection.transaction(async (transactionConnection) => {
 });
 
 result === 'FOO';
-
 ```
 
 <a name="user-content-slonik-query-methods-transaction-transaction-nesting"></a>
@@ -2128,7 +2035,7 @@ result === 'FOO';
 
 Slonik uses [`SAVEPOINT`](https://www.postgresql.org/docs/current/sql-savepoint.html) to automatically nest transactions, e.g.
 
-```js
+```ts
 await connection.transaction(async (t1) => {
   await t1.query(sql`INSERT INTO foo (bar) VALUES ('baz')`);
 
@@ -2136,7 +2043,6 @@ await connection.transaction(async (t1) => {
     return t2.query(sql`INSERT INTO qux (quux) VALUES ('corge')`);
   });
 });
-
 ```
 
 is equivalent to:
@@ -2147,12 +2053,11 @@ INSERT INTO foo (bar) VALUES ('baz');
 SAVEPOINT slonik_savepoint_1;
 INSERT INTO qux (quux) VALUES ('corge');
 COMMIT;
-
 ```
 
 Slonik automatically rollsback to the last savepoint if a query belonging to a transaction results in an error, e.g.
 
-```js
+```ts
 await connection.transaction(async (t1) => {
   await t1.query(sql`INSERT INTO foo (bar) VALUES ('baz')`);
 
@@ -2166,7 +2071,6 @@ await connection.transaction(async (t1) => {
 
   }
 });
-
 ```
 
 is equivalent to:
@@ -2178,12 +2082,11 @@ SAVEPOINT slonik_savepoint_1;
 INSERT INTO qux (quux) VALUES ('corge');
 ROLLBACK TO SAVEPOINT slonik_savepoint_1;
 COMMIT;
-
 ```
 
 If error is unhandled, then the entire transaction is rolledback, e.g.
 
-```js
+```ts
 await connection.transaction(async (t1) => {
   await t1.query(sql`INSERT INTO foo (bar) VALUES ('baz')`);
 
@@ -2197,7 +2100,6 @@ await connection.transaction(async (t1) => {
     });
   });
 });
-
 ```
 
 is equivalent to:
@@ -2212,7 +2114,6 @@ INSERT INTO uier (grault) VALUES ('garply');
 ROLLBACK TO SAVEPOINT slonik_savepoint_2;
 ROLLBACK TO SAVEPOINT slonik_savepoint_1;
 ROLLBACK;
-
 ```
 
 <a name="user-content-slonik-query-methods-transaction-transaction-retrying"></a>
@@ -2294,7 +2195,7 @@ stringifyDsn({
 
 All Slonik errors extend from `SlonikError`, i.e. You can catch Slonik specific errors using the following logic.
 
-```js
+```ts
 import {
   SlonikError
 } from 'slonik';
@@ -2306,7 +2207,6 @@ try {
     // This error is thrown by Slonik.
   }
 }
-
 ```
 
 <a name="user-content-slonik-error-handling-original-node-postgres-error"></a>
@@ -2315,9 +2215,9 @@ try {
 
 When error originates from `node-postgres`, the original error is available under `originalError` property.
 
-This propery is exposed for debugging purposes only. Do not use it for conditional checks – it can change.
+This property is exposed for debugging purposes only. Do not use it for conditional checks – it can change.
 
-If you require to extract meta-data about a specific type of error (e.g. contraint violation name), raise a GitHub issue describing your use case.
+If you require to extract meta-data about a specific type of error (e.g. constraint violation name), raise a GitHub issue describing your use case.
 
 <a name="user-content-slonik-error-handling-handling-backendterminatederror"></a>
 <a name="slonik-error-handling-handling-backendterminatederror"></a>
@@ -2327,7 +2227,7 @@ If you require to extract meta-data about a specific type of error (e.g. contrai
 
 `BackendTerminatedError` must be handled at the connection level, i.e.
 
-```js
+```ts
 await pool.connect(async (connection0) => {
   try {
     await pool.connect(async (connection1) => {
@@ -2351,7 +2251,6 @@ await pool.connect(async (connection0) => {
     }
   }
 });
-
 ```
 
 <a name="user-content-slonik-error-handling-handling-checkintegrityconstraintviolationerror"></a>
@@ -2372,7 +2271,7 @@ await pool.connect(async (connection0) => {
 
 To handle the case where the data result does not match the expectations, catch `DataIntegrityError` error.
 
-```js
+```ts
 import {
   DataIntegrityError
 } from 'slonik';
@@ -2388,7 +2287,6 @@ try {
     throw error;
   }
 }
-
 ```
 
 <a name="user-content-slonik-error-handling-handling-foreignkeyintegrityconstraintviolationerror"></a>
@@ -2403,7 +2301,7 @@ try {
 
 To handle the case where query returns less than one row, catch `NotFoundError` error.
 
-```js
+```ts
 import {
   NotFoundError
 } from 'slonik';
@@ -2421,7 +2319,6 @@ try {
 if (row) {
   // row.foo is the result of the `foo` column value of the first row.
 }
-
 ```
 
 <a name="user-content-slonik-error-handling-handling-notnullintegrityconstraintviolationerror"></a>
@@ -2438,7 +2335,7 @@ if (row) {
 
 It should be safe to use the same connection if `StatementCancelledError` is handled, e.g.
 
-```js
+```ts
 await pool.connect(async (connection0) => {
   await pool.connect(async (connection1) => {
     const backendProcessId = await connection1.oneFirst(sql`SELECT pg_backend_pid()`);
@@ -2458,7 +2355,6 @@ await pool.connect(async (connection0) => {
     }
   });
 });
-
 ```
 
 <a name="user-content-slonik-error-handling-handling-statementtimeouterror"></a>
@@ -2490,36 +2386,35 @@ Refer to [`./src/types.ts`](./src/types.ts).
 
 The public interface exports the following types:
 
-* `DatabaseConnection`
+* `CommonQueryMethods` (most generic)
+* `DatabaseConnection` (`DatabasePool | DatabasePoolConnection`)
+* `DatabasePool`
 * `DatabasePoolConnection`
-* `DatabaseSingleConnection`
+* `DatabaseTransactionConnection`
 
 Use these types to annotate `connection` instance in your code base, e.g.
 
-```js
-import type {
-  DatabaseConnection
+```ts
+import {
+  type DatabaseConnection
 } from 'slonik';
 
 export default async (
   connection: DatabaseConnection,
   code: string
 ): Promise<number> => {
-  const countryId = await connection.oneFirst(sql`
+  return await connection.oneFirst(sql`
     SELECT id
     FROM country
     WHERE code = ${code}
   `);
-
-  return countryId;
 };
-
 ```
 
 The `sql` tag itself can receive a generic type, allowing strong type-checking for query results:
 
 ```ts
-interface Country {
+type Country = {
   id: number
   code: string
 }
@@ -2528,7 +2423,8 @@ const countryQuery = sql<Country>`SELECT id, code FROM country`;
 
 const country = await connection.one(countryQuery);
 
-console.log(country.cod) // ts error: Property 'cod' does not exist on type 'Country'. Did you mean 'code'?
+// ts error: Property 'cod' does not exist on type 'Country'. Did you mean 'code'?
+console.log(country.cod);
 ```
 
 It is recommended to give a generic type to the `sql` tag itself, rather than the query method, since each query method uses generic types slightly differently:
@@ -2540,8 +2436,6 @@ await pool.query<{ foo: string }>(sql`SELECT foo FROM bar`)
 // good
 await pool.query(sql<{ foo: string }>`SELECT foo FROM bar`)
 ```
-
-[@slonik/typegen](https://npmjs.com/package/@slonik/typegen) is a community library which will scan your source code for `sql` queries, and apply typescript interfaces to them automatically.
 
 <a name="user-content-slonik-debugging"></a>
 <a name="slonik-debugging"></a>
@@ -2567,10 +2461,57 @@ Note: Requires [`slonik-interceptor-query-logging`](https://github.com/gajus/slo
 
 Enabling `captureStackTrace` configuration will create a stack trace before invoking the query and include the stack trace in the logs, e.g.
 
-```json
-{"context":{"package":"slonik","namespace":"slonik","logLevel":20,"executionTime":"357 ms","queryId":"01CV2V5S4H57KCYFFBS0BJ8K7E","rowCount":1,"sql":"SELECT schedule_cinema_data_task();","stackTrace":["/Users/gajus/Documents/dev/applaudience/data-management-program/node_modules/slonik/dist:162:28","/Users/gajus/Documents/dev/applaudience/data-management-program/node_modules/slonik/dist:314:12","/Users/gajus/Documents/dev/applaudience/data-management-program/node_modules/slonik/dist:361:20","/Users/gajus/Documents/dev/applaudience/data-management-program/node_modules/slonik/dist/utilities:17:13","/Users/gajus/Documents/dev/applaudience/data-management-program/src/bin/commands/do-cinema-data-tasks.js:59:21","/Users/gajus/Documents/dev/applaudience/data-management-program/src/bin/commands/do-cinema-data-tasks.js:590:45","internal/process/next_tick.js:68:7"],"values":[]},"message":"query","sequence":4,"time":1540915127833,"version":"1.0.0"}
-{"context":{"package":"slonik","namespace":"slonik","logLevel":20,"executionTime":"66 ms","queryId":"01CV2V5SGS0WHJX4GJN09Z3MTB","rowCount":1,"sql":"SELECT cinema_id \"cinemaId\", target_data \"targetData\" FROM cinema_data_task WHERE id = ?","stackTrace":["/Users/gajus/Documents/dev/applaudience/data-management-program/node_modules/slonik/dist:162:28","/Users/gajus/Documents/dev/applaudience/data-management-program/node_modules/slonik/dist:285:12","/Users/gajus/Documents/dev/applaudience/data-management-program/node_modules/slonik/dist/utilities:17:13","/Users/gajus/Documents/dev/applaudience/data-management-program/src/bin/commands/do-cinema-data-tasks.js:603:26","internal/process/next_tick.js:68:7"],"values":[17953947]},"message":"query","sequence":5,"time":1540915127902,"version":"1.0.0"}
-
+```tson
+{
+  "context": {
+    "package": "slonik",
+    "namespace": "slonik",
+    "logLevel": 20,
+    "executionTime": "357 ms",
+    "queryId": "01CV2V5S4H57KCYFFBS0BJ8K7E",
+    "rowCount": 1,
+    "sql": "SELECT schedule_cinema_data_task();",
+    "stackTrace": [
+      "/node_modules/slonik/dist:162:28",
+      "/node_modules/slonik/dist:314:12",
+      "/node_modules/slonik/dist:361:20",
+      "/node_modules/slonik/dist/utilities:17:13",
+      "/src/bin/commands/do-cinema-data-tasks.js:59:21",
+      "/src/bin/commands/do-cinema-data-tasks.js:590:45",
+      "internal/process/next_tick.js:68:7"
+    ],
+    "values": []
+  },
+  "message": "query",
+  "sequence": 4,
+  "time": 1540915127833,
+  "version": "1.0.0"
+}
+{
+  "context": {
+    "package": "slonik",
+    "namespace": "slonik",
+    "logLevel": 20,
+    "executionTime": "66 ms",
+    "queryId": "01CV2V5SGS0WHJX4GJN09Z3MTB",
+    "rowCount": 1,
+    "sql": "SELECT cinema_id \"cinemaId\", target_data \"targetData\" FROM cinema_data_task WHERE id = ?",
+    "stackTrace": [
+      "/node_modules/slonik/dist:162:28",
+      "/node_modules/slonik/dist:285:12",
+      "/node_modules/slonik/dist/utilities:17:13",
+      "/src/bin/commands/do-cinema-data-tasks.js:603:26",
+      "internal/process/next_tick.js:68:7"
+    ],
+    "values": [
+      17953947
+    ]
+  },
+  "message": "query",
+  "sequence": 5,
+  "time": 1540915127902,
+  "version": "1.0.0"
+}
 ```
 
 Use [`@roarr/cli`](https://github.com/gajus/roarr-cli) to pretty-print the output.

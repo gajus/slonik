@@ -7,20 +7,18 @@
 
 `sql` tag can be imported from Slonik package:
 
-```js
+```ts
 import {
   sql
 } from 'slonik';
-
 ```
 
 Sometimes it may be desirable to construct a custom instance of `sql` tag. In those cases, you can use the `createSqlTag` factory, e.g.
 
-```js
+```ts
 import {
   createSqlTag
 } from 'slonik';
 
 const sql = createSqlTag();
-
 ```
