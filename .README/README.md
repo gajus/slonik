@@ -30,6 +30,7 @@ Note: Using this project does not require TypeScript. It is a regular ES6 module
 
 ## Features
 
+* [Runtime validation](#runtime-validation)
 * [Assertions and type safety](#repeating-code-patterns-and-type-safety).
 * [Connection mocking](#mocking-slonik).
 * [Safe connection handling](#protecting-against-unsafe-connection-handling).
@@ -61,6 +62,8 @@ Note: Using this project does not require TypeScript. It is a regular ES6 module
 {"gitdown": "include", "file": "./INTERCEPTORS.md"}
 
 {"gitdown": "include", "file": "./RECIPES.md"}
+
+{"gitdown": "include", "file": "./RUNTIME_VALIDATION.md"}
 
 {"gitdown": "include", "file": "./SQL_TAG.md"}
 

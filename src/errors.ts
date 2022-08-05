@@ -1,4 +1,8 @@
 import ExtendableError from 'es6-error';
+import {
+  type ParserIssue,
+  type SerializableValue,
+} from './types';
 
 export class SlonikError extends ExtendableError {}
 
@@ -55,6 +59,22 @@ export class NotFoundError extends SlonikError {
 export class DataIntegrityError extends SlonikError {
   public constructor () {
     super('Query returns an unexpected result.');
+  }
+}
+
+export class SchemaValidationError extends SlonikError {
+  public sql: string;
+
+  public row: SerializableValue;
+
+  public issues: ParserIssue[];
+
+  public constructor (sql: string, row: SerializableValue, issues: ParserIssue[]) {
+    super('Query returned rows that do not conform with the schema.');
+
+    this.sql = sql;
+    this.row = row;
+    this.issues = issues;
   }
 }
 

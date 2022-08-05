@@ -301,7 +301,8 @@ export type JsonSqlToken = {
   readonly value: SerializableValue,
 };
 
-export type SqlSqlToken = {
+export type SqlSqlToken<T = UserQueryResultRow> = {
+  readonly parser?: Parser<T>,
   readonly sql: string,
   readonly type: typeof tokens.SqlToken,
   readonly values: readonly PrimitiveValueExpression[],
@@ -337,6 +338,29 @@ export type NamedAssignment = {
   readonly [key: string]: ValueExpression,
 };
 
+/**
+ * Usually, a `ZodIssue` - but in theory you could construct your own, or wrap zod.
+ * Re-defined here to avoid a hard dependency on zod.
+ */
+export type ParserIssue = {
+  code: string,
+  message: string,
+  path: Array<number | string>,
+};
+
+/**
+ * Usually, a `zod` type.
+ * Re-defined here to avoid a hard dependency on zod.
+ */
+export type Parser<T> = {
+  _def: {
+    typeName: 'ZodObject',
+    unknownKeys: 'strict' | 'strip',
+  },
+  safeParse: (input: unknown) => { data: T, success: true, } | { error: { issues: ParserIssue[], }, success: false, },
+  strict: () => Parser<T>,
+};
+
 // @todo may want to think how to make this extendable.
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 type UserQueryResultRow = Record<string, any>;
@@ -353,6 +377,7 @@ export type SqlTaggedTemplate<T extends UserQueryResultRow = QueryResultRow> = {
   json: (value: SerializableValue) => JsonSqlToken,
   jsonb: (value: SerializableValue) => JsonBinarySqlToken,
   literalValue: (value: string) => SqlSqlToken,
+  type: <U>(parser: Parser<U>) => (template: TemplateStringsArray, ...values: ValueExpression[]) => TaggedTemplateLiteralInvocation<U>,
   unnest: (
     // Value might be ReadonlyArray<ReadonlyArray<PrimitiveValueExpression>>,
     // or it can be infinitely nested array, e.g.
