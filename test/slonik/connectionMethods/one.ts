@@ -95,6 +95,32 @@ test('describes zod object associated with the query', async (t) => {
   });
 });
 
+test('respects zod transformers', async (t) => {
+  const pool = createPool();
+
+  pool.querySpy.returns({
+    rows: [
+      {
+        foo: 'x,y',
+      },
+    ],
+  });
+
+  const zodObject = z.object({
+    foo: z.string().transform(s => s.split(',')),
+  });
+
+  const query = sql.type(zodObject)`SELECT 'x,y' as foo`;
+
+  const result = await pool.one(query);
+
+  expectTypeOf(result).toMatchTypeOf<{foo: string[], }>();
+
+  t.deepEqual(result, {
+    foo: ['x', 'y'],
+  });
+});
+
 test('throws an error if object does match the zod object shape', async (t) => {
   const pool = createPool();
 

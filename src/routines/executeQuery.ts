@@ -347,9 +347,12 @@ export const executeQuery = async (
 
   // Stream does not have `rows` in the result object and all rows are already transformed.
   if (result.rows) {
-    if (slonikSqlRename.parser) {
-      for (const row of result.rows) {
-        const validationResult = slonikSqlRename.parser.safeParse(row);
+    const {parser} = slonikSqlRename
+
+    // if a parser exists, use it to transform the row. This allows for zod objects like `z.object({ foo: z.string().transform(s => s.split(',') )})`
+    const parserInterceptor: typeof clientConfiguration.interceptors[0] | undefined = parser && {
+      transformRow: (_executionContext, _actualQuery, row) => {
+        const validationResult = parser.safeParse(row);
 
         if (!validationResult.success) {
           log.error({
@@ -364,9 +367,15 @@ export const executeQuery = async (
             validationResult.error.issues,
           );
         }
+        return validationResult.data
       }
     }
-    for (const interceptor of clientConfiguration.interceptors) {
+
+    const interceptors = parserInterceptor
+      ? [...clientConfiguration.interceptors, parserInterceptor]
+      : clientConfiguration.interceptors
+
+    for (const interceptor of interceptors) {
       if (interceptor.transformRow) {
         const {
           transformRow,
