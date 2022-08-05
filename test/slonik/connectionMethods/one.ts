@@ -1,5 +1,13 @@
 import test from 'ava';
 import {
+  expectTypeOf,
+} from 'expect-type';
+import {
+  z,
+} from 'zod';
+import {
+  type SchemaValidationError,
+
   DataIntegrityError,
   NotFoundError,
 } from '../../../src/errors';
@@ -59,4 +67,85 @@ test('throws an error if more than one row is returned', async (t) => {
   const error = await t.throwsAsync(pool.one(sql`SELECT 1`));
 
   t.true(error instanceof DataIntegrityError);
+});
+
+test('describes zod object associated with the query', async (t) => {
+  const pool = createPool();
+
+  pool.querySpy.returns({
+    rows: [
+      {
+        foo: 1,
+      },
+    ],
+  });
+
+  const zodObject = z.object({
+    foo: z.number(),
+  });
+
+  const query = sql.type(zodObject)`SELECT 1`;
+
+  const result = await pool.one(query);
+
+  expectTypeOf(result).toMatchTypeOf<{foo: number, }>();
+
+  t.deepEqual(result, {
+    foo: 1,
+  });
+});
+
+test('throws an error if object does match the zod object shape', async (t) => {
+  const pool = createPool();
+
+  pool.querySpy.returns({
+    rows: [
+      {
+        foo: '1',
+      },
+    ],
+  });
+
+  const zodObject = z.object({
+    foo: z.number(),
+  });
+
+  const query = sql.type(zodObject)`SELECT 1`;
+
+  const error = await t.throwsAsync<SchemaValidationError>(pool.one(query));
+
+  if (!error) {
+    throw new Error('Expected SchemaValidationError');
+  }
+
+  t.is(error.issues.length, 1);
+  t.is(error.issues[0]?.code, 'invalid_type');
+});
+
+test('throws an error if object does match the zod object shape (2)', async (t) => {
+  const pool = createPool();
+
+  pool.querySpy.returns({
+    rows: [
+      {
+        bar: 1,
+        foo: 1,
+      },
+    ],
+  });
+
+  const zodObject = z.object({
+    foo: z.number(),
+  });
+
+  const query = sql.type(zodObject.strict())`SELECT 1`;
+
+  const error = await t.throwsAsync<SchemaValidationError>(pool.one(query));
+
+  if (!error) {
+    throw new Error('Expected SchemaValidationError');
+  }
+
+  t.is(error.issues.length, 1);
+  t.is(error.issues[0]?.code, 'unrecognized_keys');
 });

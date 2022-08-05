@@ -339,12 +339,17 @@ export type NamedAssignment = {
 };
 
 /**
- * Usually, a `zod` type
+ * Usually, a `ZodIssue` - but in theory you could construct your own, or wrap zod.
+ * Re-defined here to avoid a hard dependency on zod.
+ */
+export type ParserIssue = {code: string; path: (string | number)[]; message: string}
+/**
+ * Usually, a `zod` type.
+ * Re-defined here to avoid a hard dependency on zod.
  */
  export type Parser<T> = {
-  safeParse: (input: unknown) => { data: T, success: true, } | { error: { issues: unknown[] }, success: false, },
+  safeParse: (input: unknown) => { data: T, success: true, } | { error: { issues: ParserIssue[] }, success: false, },
 };
-
 
 // @todo may want to think how to make this extendable.
 // eslint-disable-next-line @typescript-eslint/no-explicit-any

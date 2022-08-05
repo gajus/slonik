@@ -1,5 +1,6 @@
 import ExtendableError from 'es6-error';
 import {
+  type ParserIssue,
   type SerializableValue,
 } from './types';
 
@@ -66,9 +67,9 @@ export class SchemaValidationError extends SlonikError {
 
   public row: SerializableValue;
 
-  public issues: unknown[];
+  public issues: ParserIssue[];
 
-  public constructor (sql: string, row: SerializableValue, issues: unknown[]) {
+  public constructor (sql: string, row: SerializableValue, issues: ParserIssue[]) {
     super('Query returned rows that do not conform with the schema.');
 
     this.sql = sql;
