@@ -114,7 +114,7 @@ test('respects zod transformers', async (t) => {
 
   const result = await pool.one(query);
 
-  expectTypeOf(result).toMatchTypeOf<{foo: string[], }>();
+  expectTypeOf(result).toMatchTypeOf<{ foo: string[] }>();
 
   t.deepEqual(result, {
     foo: ['x', 'y'],
@@ -146,6 +146,34 @@ test('strips keys by default', async (t) => {
   t.deepEqual(result, {
     foo: 'x',
   });
+});
+
+test('respects strict zod object', async (t) => {
+  const pool = createPool();
+
+  pool.querySpy.returns({
+    rows: [
+      {
+        foo: 'x',
+        bar: 'y',
+      },
+    ],
+  });
+
+  const zodObject = z.object({
+    foo: z.string(),
+  }).strict();
+
+  const query = sql.type(zodObject)`SELECT 'x' as foo, 'y' as bar`;
+
+  const error = await t.throwsAsync<SchemaValidationError>(pool.one(query));
+
+  if (!error) {
+    throw new Error('Expected SchemaValidationError');
+  }
+
+  t.is(error.issues.length, 1);
+  t.is(error.issues[0]?.code, 'unrecognized_keys');
 });
 
 test('throws an error if object does match the zod object shape', async (t) => {
