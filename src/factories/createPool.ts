@@ -1,6 +1,5 @@
 import {
   Pool as PgPool,
-  types,
 } from 'pg';
 import {
   serializeError,
