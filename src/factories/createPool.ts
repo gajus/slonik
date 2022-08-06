@@ -1,4 +1,5 @@
 import {
+  Client as PgClient,
   Pool as PgPool,
 } from 'pg';
 import {
@@ -57,18 +58,23 @@ export const createPool = async (
     throw new Error('Unexpected state.');
   }
 
-  // This pool is only used to initialize the client.
-  const setupPool: PgPool = new Pool({
-    ...poolConfiguration,
-    max: 1,
+  const setupClient = new PgClient({
+    database: poolConfiguration.database,
+    host: poolConfiguration.host,
+    password: poolConfiguration.password,
+    port: poolConfiguration.port,
+    ssl: poolConfiguration.ssl,
+    user: poolConfiguration.user,
   });
 
+  await setupClient.connect();
+
   const getTypeParser = await createTypeOverrides(
-    setupPool,
+    setupClient,
     clientConfiguration.typeParsers,
   );
 
-  await setupPool.end();
+  await setupClient.end();
 
   const pool: PgPool = new Pool({
     ...poolConfiguration,
