@@ -10,6 +10,9 @@ import {
   serializeError,
 } from 'serialize-error';
 import {
+  z,
+} from 'zod';
+import {
   type DatabasePoolConnection,
   BackendTerminatedError,
   createPool,
@@ -24,6 +27,9 @@ import {
 import {
   Logger,
 } from '../../src/Logger';
+import {
+  type SchemaValidationError,
+} from '../../src/errors';
 
 const POSTGRES_DSN = process.env.POSTGRES_DSN ?? 'postgres@localhost:5432';
 
@@ -156,6 +162,46 @@ export const createIntegrationTests = (
     }
 
     await t.throwsAsync(firstConnection.oneFirst(sql`SELECT 1`));
+  });
+
+  test('validates results using zod (passes)', async (t) => {
+    const pool = await createPool(t.context.dsn, {
+      PgPool,
+    });
+
+    const result = await pool.one(sql.type(z.object({
+      foo: z.string(),
+    }))`
+      SELECT 'bar' foo
+    `);
+
+    t.like(result, {
+      foo: 'bar',
+    });
+
+    await pool.end();
+  });
+
+  test('validates results using zod (fails)', async (t) => {
+    const pool = await createPool(t.context.dsn, {
+      PgPool,
+    });
+
+    const error = await t.throwsAsync<SchemaValidationError>(pool.one(sql.type(z.object({
+      foo: z.number(),
+    }))`
+      SELECT 'bar' foo
+    `));
+
+    if (!error) {
+      throw new Error('Expected SchemaValidationError');
+    }
+
+    t.like(error.issues[0], {
+      code: 'invalid_type',
+    });
+
+    await pool.end();
   });
 
   // We have to test serialization due to the use of different drivers (pg and postgres).
