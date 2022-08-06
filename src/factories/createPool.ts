@@ -58,7 +58,10 @@ export const createPool = async (
   }
 
   // This pool is only used to initialize the client.
-  const setupPool: PgPool = new Pool(poolConfiguration);
+  const setupPool: PgPool = new Pool({
+    ...poolConfiguration,
+    max: 1,
+  });
 
   const getTypeParser = await createTypeOverrides(
     setupPool,
