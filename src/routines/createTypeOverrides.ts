@@ -1,5 +1,5 @@
 import {
-  type Pool as PgPool,
+  type Client as PgClient,
 } from 'pg';
 import {
   getTypeParser,
@@ -18,22 +18,18 @@ type PostgresType = {
 };
 
 export const createTypeOverrides = async (
-  pool: PgPool,
+  pool: PgClient,
   typeParsers: readonly TypeParser[],
 ) => {
   const typeNames = typeParsers.map((typeParser) => {
     return typeParser.name;
   });
 
-  const connection = await pool.connect();
-
   const postgresTypes: PostgresType[] = (
-    await connection.query('SELECT oid, typarray, typname FROM pg_type WHERE typname = ANY($1::text[])', [
+    await pool.query('SELECT oid, typarray, typname FROM pg_type WHERE typname = ANY($1::text[])', [
       typeNames,
     ])
   ).rows;
-
-  connection.release(true);
 
   const parsers = {};
 
