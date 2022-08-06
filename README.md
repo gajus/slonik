@@ -101,6 +101,7 @@ Note: Using this project does not require TypeScript. It is a regular ES6 module
         * [Inferring types](#user-content-slonik-runtime-validation-inferring-types)
         * [Transforming results](#user-content-slonik-runtime-validation-transforming-results)
     * [`sql` tag](#user-content-slonik-sql-tag)
+        * [Typing `sql` tag](#user-content-slonik-sql-tag-typing-sql-tag)
     * [Value placeholders](#user-content-slonik-value-placeholders)
         * [Tagged template literals](#user-content-slonik-value-placeholders-tagged-template-literals)
         * [Manually constructing the query](#user-content-slonik-value-placeholders-manually-constructing-the-query)
@@ -1388,6 +1389,33 @@ import {
 const sql = createSqlTag();
 ```
 
+<a name="user-content-slonik-sql-tag-typing-sql-tag"></a>
+<a name="slonik-sql-tag-typing-sql-tag"></a>
+### Typing <code>sql</code> tag
+
+`sql` has a generic interface, meaning that you can supply it with the type that represents the expected result of the query, e.g.
+
+```ts
+type Person = {
+  id: number,
+  name: string,
+};
+
+const query = sql<Person>`
+  SELECT id, name
+  FROM person
+`;
+
+// onePerson has a type of Person
+const onePerson = await connection.one(query);
+
+// persons has a type of Person[]
+const persons = await connection.many(query);
+```
+
+As you see, query helper methods (`one`, `many`, etc.) infer the result type based on the type associated with the `sql` tag instance.
+
+However, you should avoid passing types directly to `sql` and instead use [runtime validation](#user-content-runtime-validation). Runtime validation produces typed `sql` tags, but also validates the results of the query.
 
 <a name="user-content-slonik-value-placeholders"></a>
 <a name="slonik-value-placeholders"></a>
