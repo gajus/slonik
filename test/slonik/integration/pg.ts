@@ -338,14 +338,37 @@ test('copies from binary stream', async (t) => {
   await pool.end();
 });
 
-test('does not crash after destroying a stream with an error', async (t) => {
+test('does not crash after destroying a stream with an error, and can make more requests', async (t) => {
   const pool = await createPool(t.context.dsn);
+
+  const events: any[] = [];
 
   await pool.stream(sql`
     SELECT * FROM GENERATE_SERIES(1, 100)
   `, (stream) => {
     stream.destroy(new Error('Foo'));
+    stream.on('close', () => {
+      return events.push({
+        event: 'close',
+      });
+    });
+    stream.on('error', (error) => {
+      return events.push({
+        error: error.message,
+        event: 'error',
+      });
+    });
   });
+
+  t.deepEqual(events, [
+    {
+      event: 'close',
+    },
+    {
+      error: 'Foo',
+      event: 'error',
+    },
+  ]);
 
   t.deepEqual(await pool.anyFirst(sql`
     SELECT TRUE
