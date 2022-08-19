@@ -110,9 +110,9 @@ Note: Using this project does not require TypeScript. It is a regular ES6 module
         * [`sql.array`](#user-content-slonik-query-building-sql-array)
         * [`sql.binary`](#user-content-slonik-query-building-sql-binary)
         * [`sql.identifier`](#user-content-slonik-query-building-sql-identifier)
+        * [`sql.join`](#user-content-slonik-query-building-sql-join)
         * [`sql.json`](#user-content-slonik-query-building-sql-json)
         * [`sql.jsonb`](#user-content-slonik-query-building-sql-jsonb)
-        * [`sql.join`](#user-content-slonik-query-building-sql-join)
         * [`sql.literalValue`](#user-content-slonik-query-building-sql-literalvalue)
         * [`sql.unnest`](#user-content-slonik-query-building-sql-unnest)
     * [Query methods](#user-content-slonik-query-methods)
@@ -1653,64 +1653,6 @@ Produces:
 }
 ```
 
-<a name="user-content-slonik-query-building-sql-json"></a>
-<a name="slonik-query-building-sql-json"></a>
-### <code>sql.json</code>
-
-```ts
-(
-  value: SerializableValue
-) => JsonSqlToken;
-```
-
-Serializes value and binds it as a JSON string literal, e.g.
-
-```ts
-await connection.query(sql`
-  SELECT (${sql.json([1, 2, 3])})
-`);
-```
-
-Produces:
-
-```ts
-{
-  sql: 'SELECT $1::json',
-  values: [
-    '[1,2,3]'
-  ]
-}
-```
-
-<a name="user-content-slonik-query-building-sql-jsonb"></a>
-<a name="slonik-query-building-sql-jsonb"></a>
-### <code>sql.jsonb</code>
-
-```ts
-(
-  value: SerializableValue
-) => JsonBinarySqlToken;
-```
-
-Serializes value and binds it as a JSON binary, e.g.
-
-```ts
-await connection.query(sql`
-  SELECT (${sql.jsonb([1, 2, 3])})
-`);
-```
-
-Produces:
-
-```ts
-{
-  sql: 'SELECT $1::jsonb',
-  values: [
-    '[1,2,3]'
-  ]
-}
-```
-
 <a name="user-content-slonik-query-building-sql-join"></a>
 <a name="slonik-query-building-sql-join"></a>
 ### <code>sql.join</code>
@@ -1779,6 +1721,64 @@ sql`
 `
 
 // SELECT ($1, $2), ($3, $4)
+```
+
+<a name="user-content-slonik-query-building-sql-json"></a>
+<a name="slonik-query-building-sql-json"></a>
+### <code>sql.json</code>
+
+```ts
+(
+  value: SerializableValue
+) => JsonSqlToken;
+```
+
+Serializes value and binds it as a JSON string literal, e.g.
+
+```ts
+await connection.query(sql`
+  SELECT (${sql.json([1, 2, 3])})
+`);
+```
+
+Produces:
+
+```ts
+{
+  sql: 'SELECT $1::json',
+  values: [
+    '[1,2,3]'
+  ]
+}
+```
+
+<a name="user-content-slonik-query-building-sql-jsonb"></a>
+<a name="slonik-query-building-sql-jsonb"></a>
+### <code>sql.jsonb</code>
+
+```ts
+(
+  value: SerializableValue
+) => JsonBinarySqlToken;
+```
+
+Serializes value and binds it as a JSON binary, e.g.
+
+```ts
+await connection.query(sql`
+  SELECT (${sql.jsonb([1, 2, 3])})
+`);
+```
+
+Produces:
+
+```ts
+{
+  sql: 'SELECT $1::jsonb',
+  values: [
+    '[1,2,3]'
+  ]
+}
 ```
 
 <a name="user-content-slonik-query-building-sql-literalvalue"></a>

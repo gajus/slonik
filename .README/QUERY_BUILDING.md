@@ -137,60 +137,6 @@ Produces:
 }
 ```
 
-### `sql.json`
-
-```ts
-(
-  value: SerializableValue
-) => JsonSqlToken;
-```
-
-Serializes value and binds it as a JSON string literal, e.g.
-
-```ts
-await connection.query(sql`
-  SELECT (${sql.json([1, 2, 3])})
-`);
-```
-
-Produces:
-
-```ts
-{
-  sql: 'SELECT $1::json',
-  values: [
-    '[1,2,3]'
-  ]
-}
-```
-
-### `sql.jsonb`
-
-```ts
-(
-  value: SerializableValue
-) => JsonBinarySqlToken;
-```
-
-Serializes value and binds it as a JSON binary, e.g.
-
-```ts
-await connection.query(sql`
-  SELECT (${sql.jsonb([1, 2, 3])})
-`);
-```
-
-Produces:
-
-```ts
-{
-  sql: 'SELECT $1::jsonb',
-  values: [
-    '[1,2,3]'
-  ]
-}
-```
-
 ### `sql.join`
 
 ```ts
@@ -257,6 +203,60 @@ sql`
 `
 
 // SELECT ($1, $2), ($3, $4)
+```
+
+### `sql.json`
+
+```ts
+(
+  value: SerializableValue
+) => JsonSqlToken;
+```
+
+Serializes value and binds it as a JSON string literal, e.g.
+
+```ts
+await connection.query(sql`
+  SELECT (${sql.json([1, 2, 3])})
+`);
+```
+
+Produces:
+
+```ts
+{
+  sql: 'SELECT $1::json',
+  values: [
+    '[1,2,3]'
+  ]
+}
+```
+
+### `sql.jsonb`
+
+```ts
+(
+  value: SerializableValue
+) => JsonBinarySqlToken;
+```
+
+Serializes value and binds it as a JSON binary, e.g.
+
+```ts
+await connection.query(sql`
+  SELECT (${sql.jsonb([1, 2, 3])})
+`);
+```
+
+Produces:
+
+```ts
+{
+  sql: 'SELECT $1::jsonb',
+  values: [
+    '[1,2,3]'
+  ]
+}
 ```
 
 ### `sql.literalValue`
