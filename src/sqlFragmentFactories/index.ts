@@ -11,6 +11,9 @@ export {
   createIdentifierSqlFragment,
 } from './createIdentifierSqlFragment';
 export {
+  createIntervalSqlFragment,
+} from './createIntervalSqlFragment';
+export {
   createJsonSqlFragment,
 } from './createJsonSqlFragment';
 export {
