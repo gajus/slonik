@@ -8,26 +8,33 @@ import {
 import {
   ArrayToken,
   BinaryToken,
+  DateToken,
   IdentifierToken,
+  IntervalToken,
   JsonBinaryToken,
   JsonToken,
   ListToken,
   SqlToken,
+  TimestampToken,
   UnnestToken,
 } from '../tokens';
 import {
   type ArraySqlToken,
   type BinarySqlToken,
+  type DateSqlToken,
   type IdentifierSqlToken,
+  type IntervalInput,
+  type IntervalSqlToken,
   type JsonBinarySqlToken,
   type JsonSqlToken,
-  type SqlToken as SqlTokenType,
   type ListSqlToken,
   type PrimitiveValueExpression,
   type QueryResultRow,
   type SerializableValue,
   type SqlSqlToken,
   type SqlTaggedTemplate,
+  type SqlToken as SqlTokenType,
+  type TimestampSqlToken,
   type TypeNameIdentifier,
   type UnnestSqlToken,
   type ValueExpression,
@@ -107,23 +114,6 @@ const sql: SqlTaggedTemplate = (
   return query;
 };
 
-sql.type = (
-  parser,
-) => {
-  let strictParser = parser;
-
-  if (parser._def.unknownKeys === 'strip') {
-    strictParser = parser.strict();
-  }
-
-  return (...args) => {
-    return {
-      ...sql(...args),
-      parser: strictParser,
-    };
-  };
-};
-
 sql.array = (
   values: readonly PrimitiveValueExpression[],
   memberType: SqlTokenType | TypeNameIdentifier,
@@ -144,12 +134,41 @@ sql.binary = (
   };
 };
 
+sql.date = (
+  date: Date,
+): DateSqlToken => {
+  return {
+    date,
+    type: DateToken,
+  };
+};
+
 sql.identifier = (
   names: readonly string[],
 ): IdentifierSqlToken => {
   return {
     names,
     type: IdentifierToken,
+  };
+};
+
+sql.interval = (
+  interval: IntervalInput,
+): IntervalSqlToken => {
+  return {
+    interval,
+    type: IntervalToken,
+  };
+};
+
+sql.join = (
+  members: readonly ValueExpression[],
+  glue: SqlSqlToken,
+): ListSqlToken => {
+  return {
+    glue,
+    members,
+    type: ListToken,
   };
 };
 
@@ -171,17 +190,6 @@ sql.jsonb = (
   };
 };
 
-sql.join = (
-  members: readonly ValueExpression[],
-  glue: SqlSqlToken,
-): ListSqlToken => {
-  return {
-    glue,
-    members,
-    type: ListToken,
-  };
-};
-
 sql.literalValue = (
   value: string,
 ): SqlSqlToken => {
@@ -189,6 +197,32 @@ sql.literalValue = (
     sql: escapeLiteralValue(value),
     type: SqlToken,
     values: [],
+  };
+};
+
+sql.timestamp = (
+  date: Date,
+): TimestampSqlToken => {
+  return {
+    date,
+    type: TimestampToken,
+  };
+};
+
+sql.type = (
+  parser,
+) => {
+  let strictParser = parser;
+
+  if (parser._def.unknownKeys === 'strip') {
+    strictParser = parser.strict();
+  }
+
+  return (...args) => {
+    return {
+      ...sql(...args),
+      parser: strictParser,
+    };
   };
 };
 

@@ -111,6 +111,33 @@ Produces:
 }
 ```
 
+### `sql.date`
+
+```ts
+(
+  date: Date
+) => DateSqlToken;
+```
+
+Inserts a date, e.g.
+
+```ts
+await connection.query(sql`
+  SELECT ${sql.date(new Date('2022-08-19T03:27:24.951Z'))}
+`);
+```
+
+Produces:
+
+```ts
+{
+  sql: 'SELECT $1::date',
+  values: [
+    '2022-08-19'
+  ]
+}
+```
+
 ### `sql.identifier`
 
 ```ts
@@ -137,59 +164,72 @@ Produces:
 }
 ```
 
-### `sql.json`
+### `sql.interval`
 
 ```ts
 (
-  value: SerializableValue
-) => JsonSqlToken;
+  interval: {
+    years?: number,
+    months?: number,
+    weeks?: number,
+    days?: number,
+    hours?: number,
+    minutes?: number,
+    seconds?: number,
+  }
+) => IntervalSqlToken;
 ```
 
-Serializes value and binds it as a JSON string literal, e.g.
+Inserts an [interval](https://www.postgresql.org/docs/current/datatype-datetime.html#DATATYPE-INTERVAL-INPUT), e.g.
 
 ```ts
-await connection.query(sql`
-  SELECT (${sql.json([1, 2, 3])})
-`);
+sql`
+  SELECT 1
+  FROM ${sql.interval({days: 3})}
+`;
 ```
 
 Produces:
 
 ```ts
 {
-  sql: 'SELECT $1::json',
+  sql: 'SELECT make_interval("days" => $1)',
   values: [
-    '[1,2,3]'
+    3
   ]
 }
 ```
 
-### `sql.jsonb`
+You can use `sql.interval` exactly how you would use PostgreSQL [`make_interval` function](https://www.postgresql.org/docs/current/functions-datetime.html). However, notice that Slonik does not use abbreviations, i.e. "secs" is seconds and "mins" is minutes.
+
+|`make_interval`|`sql.interval`|Interval output|
+|---|---|---|
+|`make_interval("days" => 1, "hours" => 2)`|`sql.interval({days: 1, hours: 2})`|`1 day 02:00:00`|
+|`make_interval("mins" => 1)`|`sql.interval({minutes: 1})`|`00:01:00`|
+|`make_interval("secs" => 120)`|`sql.interval({seconds: 120})`|`00:02:00`|
+|`make_interval("secs" => 0.001)`|`sql.interval({seconds: 0.001})`|`00:00:00.001`|
+
+#### Dynamic intervals without `sql.interval`
+
+If you need a dynamic interval (e.g. X days), you can achieve this using multiplication, e.g.
 
 ```ts
-(
-  value: SerializableValue
-) => JsonBinarySqlToken;
+sql`
+  SELECT ${2} * interval '1 day'
+`
 ```
 
-Serializes value and binds it as a JSON binary, e.g.
+The above is equivalent to `interval '2 days'`.
+
+You could also use `make_interval()` directly, e.g.
 
 ```ts
-await connection.query(sql`
-  SELECT (${sql.jsonb([1, 2, 3])})
-`);
+sql`
+  SELECT make_interval("days" => ${2})
+`
 ```
 
-Produces:
-
-```ts
-{
-  sql: 'SELECT $1::jsonb',
-  values: [
-    '[1,2,3]'
-  ]
-}
-```
+`sql.interval` was added mostly as a type-safe alternative.
 
 ### `sql.join`
 
@@ -259,6 +299,60 @@ sql`
 // SELECT ($1, $2), ($3, $4)
 ```
 
+### `sql.json`
+
+```ts
+(
+  value: SerializableValue
+) => JsonSqlToken;
+```
+
+Serializes value and binds it as a JSON string literal, e.g.
+
+```ts
+await connection.query(sql`
+  SELECT (${sql.json([1, 2, 3])})
+`);
+```
+
+Produces:
+
+```ts
+{
+  sql: 'SELECT $1::json',
+  values: [
+    '[1,2,3]'
+  ]
+}
+```
+
+### `sql.jsonb`
+
+```ts
+(
+  value: SerializableValue
+) => JsonBinarySqlToken;
+```
+
+Serializes value and binds it as a JSON binary, e.g.
+
+```ts
+await connection.query(sql`
+  SELECT (${sql.jsonb([1, 2, 3])})
+`);
+```
+
+Produces:
+
+```ts
+{
+  sql: 'SELECT $1::jsonb',
+  values: [
+    '[1,2,3]'
+  ]
+}
+```
+
 ### `sql.literalValue`
 
 > ⚠️ Do not use. This method interpolates values as literals and it must be used only for [building utility statements](#slonik-recipes-building-utility-statements). You are most likely looking for [value placeholders](#slonik-value-placeholders).
@@ -282,6 +376,33 @@ Produces:
 ```ts
 {
   sql: 'CREATE USER "foo" WITH PASSWORD \'bar\''
+}
+```
+
+### `sql.timestamp`
+
+```ts
+(
+  date: Date
+) => TimestampSqlToken;
+```
+
+Inserts a timestamp, e.g.
+
+```ts
+await connection.query(sql`
+  SELECT ${sql.timestamp(new Date('2022-08-19T03:27:24.951Z'))}
+`);
+```
+
+Produces:
+
+```ts
+{
+  sql: 'SELECT to_timestamp($1)',
+  values: [
+    '1660879644.951'
+  ]
 }
 ```
 

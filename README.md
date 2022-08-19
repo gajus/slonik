@@ -109,11 +109,14 @@ Note: Using this project does not require TypeScript. It is a regular ES6 module
     * [Query building](#user-content-slonik-query-building)
         * [`sql.array`](#user-content-slonik-query-building-sql-array)
         * [`sql.binary`](#user-content-slonik-query-building-sql-binary)
+        * [`sql.date`](#user-content-slonik-query-building-sql-date)
         * [`sql.identifier`](#user-content-slonik-query-building-sql-identifier)
+        * [`sql.interval`](#user-content-slonik-query-building-sql-interval)
+        * [`sql.join`](#user-content-slonik-query-building-sql-join)
         * [`sql.json`](#user-content-slonik-query-building-sql-json)
         * [`sql.jsonb`](#user-content-slonik-query-building-sql-jsonb)
-        * [`sql.join`](#user-content-slonik-query-building-sql-join)
         * [`sql.literalValue`](#user-content-slonik-query-building-sql-literalvalue)
+        * [`sql.timestamp`](#user-content-slonik-query-building-sql-timestamp)
         * [`sql.unnest`](#user-content-slonik-query-building-sql-unnest)
     * [Query methods](#user-content-slonik-query-methods)
         * [`any`](#user-content-slonik-query-methods-any)
@@ -1625,6 +1628,35 @@ Produces:
 }
 ```
 
+<a name="user-content-slonik-query-building-sql-date"></a>
+<a name="slonik-query-building-sql-date"></a>
+### <code>sql.date</code>
+
+```ts
+(
+  date: Date
+) => DateSqlToken;
+```
+
+Inserts a date, e.g.
+
+```ts
+await connection.query(sql`
+  SELECT ${sql.date(new Date('2022-08-19T03:27:24.951Z'))}
+`);
+```
+
+Produces:
+
+```ts
+{
+  sql: 'SELECT $1::date',
+  values: [
+    '2022-08-19'
+  ]
+}
+```
+
 <a name="user-content-slonik-query-building-sql-identifier"></a>
 <a name="slonik-query-building-sql-identifier"></a>
 ### <code>sql.identifier</code>
@@ -1653,63 +1685,76 @@ Produces:
 }
 ```
 
-<a name="user-content-slonik-query-building-sql-json"></a>
-<a name="slonik-query-building-sql-json"></a>
-### <code>sql.json</code>
+<a name="user-content-slonik-query-building-sql-interval"></a>
+<a name="slonik-query-building-sql-interval"></a>
+### <code>sql.interval</code>
 
 ```ts
 (
-  value: SerializableValue
-) => JsonSqlToken;
+  interval: {
+    years?: number,
+    months?: number,
+    weeks?: number,
+    days?: number,
+    hours?: number,
+    minutes?: number,
+    seconds?: number,
+  }
+) => IntervalSqlToken;
 ```
 
-Serializes value and binds it as a JSON string literal, e.g.
+Inserts an [interval](https://www.postgresql.org/docs/current/datatype-datetime.html#DATATYPE-INTERVAL-INPUT), e.g.
 
 ```ts
-await connection.query(sql`
-  SELECT (${sql.json([1, 2, 3])})
-`);
+sql`
+  SELECT 1
+  FROM ${sql.interval({days: 3})}
+`;
 ```
 
 Produces:
 
 ```ts
 {
-  sql: 'SELECT $1::json',
+  sql: 'SELECT make_interval("days" => $1)',
   values: [
-    '[1,2,3]'
+    3
   ]
 }
 ```
 
-<a name="user-content-slonik-query-building-sql-jsonb"></a>
-<a name="slonik-query-building-sql-jsonb"></a>
-### <code>sql.jsonb</code>
+You can use `sql.interval` exactly how you would use PostgreSQL [`make_interval` function](https://www.postgresql.org/docs/current/functions-datetime.html). However, notice that Slonik does not use abbreviations, i.e. "secs" is seconds and "mins" is minutes.
+
+|`make_interval`|`sql.interval`|Interval output|
+|---|---|---|
+|`make_interval("days" => 1, "hours" => 2)`|`sql.interval({days: 1, hours: 2})`|`1 day 02:00:00`|
+|`make_interval("mins" => 1)`|`sql.interval({minutes: 1})`|`00:01:00`|
+|`make_interval("secs" => 120)`|`sql.interval({seconds: 120})`|`00:02:00`|
+|`make_interval("secs" => 0.001)`|`sql.interval({seconds: 0.001})`|`00:00:00.001`|
+
+<a name="user-content-slonik-query-building-sql-interval-dynamic-intervals-without-sql-interval"></a>
+<a name="slonik-query-building-sql-interval-dynamic-intervals-without-sql-interval"></a>
+#### Dynamic intervals without <code>sql.interval</code>
+
+If you need a dynamic interval (e.g. X days), you can achieve this using multiplication, e.g.
 
 ```ts
-(
-  value: SerializableValue
-) => JsonBinarySqlToken;
+sql`
+  SELECT ${2} * interval '1 day'
+`
 ```
 
-Serializes value and binds it as a JSON binary, e.g.
+The above is equivalent to `interval '2 days'`.
+
+You could also use `make_interval()` directly, e.g.
 
 ```ts
-await connection.query(sql`
-  SELECT (${sql.jsonb([1, 2, 3])})
-`);
+sql`
+  SELECT make_interval("days" => ${2})
+`
 ```
 
-Produces:
-
-```ts
-{
-  sql: 'SELECT $1::jsonb',
-  values: [
-    '[1,2,3]'
-  ]
-}
-```
+`sql.interval` was added mostly as a type-safe alternative.
 
 <a name="user-content-slonik-query-building-sql-join"></a>
 <a name="slonik-query-building-sql-join"></a>
@@ -1781,6 +1826,64 @@ sql`
 // SELECT ($1, $2), ($3, $4)
 ```
 
+<a name="user-content-slonik-query-building-sql-json"></a>
+<a name="slonik-query-building-sql-json"></a>
+### <code>sql.json</code>
+
+```ts
+(
+  value: SerializableValue
+) => JsonSqlToken;
+```
+
+Serializes value and binds it as a JSON string literal, e.g.
+
+```ts
+await connection.query(sql`
+  SELECT (${sql.json([1, 2, 3])})
+`);
+```
+
+Produces:
+
+```ts
+{
+  sql: 'SELECT $1::json',
+  values: [
+    '[1,2,3]'
+  ]
+}
+```
+
+<a name="user-content-slonik-query-building-sql-jsonb"></a>
+<a name="slonik-query-building-sql-jsonb"></a>
+### <code>sql.jsonb</code>
+
+```ts
+(
+  value: SerializableValue
+) => JsonBinarySqlToken;
+```
+
+Serializes value and binds it as a JSON binary, e.g.
+
+```ts
+await connection.query(sql`
+  SELECT (${sql.jsonb([1, 2, 3])})
+`);
+```
+
+Produces:
+
+```ts
+{
+  sql: 'SELECT $1::jsonb',
+  values: [
+    '[1,2,3]'
+  ]
+}
+```
+
 <a name="user-content-slonik-query-building-sql-literalvalue"></a>
 <a name="slonik-query-building-sql-literalvalue"></a>
 ### <code>sql.literalValue</code>
@@ -1806,6 +1909,35 @@ Produces:
 ```ts
 {
   sql: 'CREATE USER "foo" WITH PASSWORD \'bar\''
+}
+```
+
+<a name="user-content-slonik-query-building-sql-timestamp"></a>
+<a name="slonik-query-building-sql-timestamp"></a>
+### <code>sql.timestamp</code>
+
+```ts
+(
+  date: Date
+) => TimestampSqlToken;
+```
+
+Inserts a timestamp, e.g.
+
+```ts
+await connection.query(sql`
+  SELECT ${sql.timestamp(new Date('2022-08-19T03:27:24.951Z'))}
+`);
+```
+
+Produces:
+
+```ts
+{
+  sql: 'SELECT to_timestamp($1)',
+  values: [
+    '1660879644.951'
+  ]
 }
 ```
 

@@ -5,11 +5,14 @@ import {
   ArrayToken,
   BinaryToken,
   ComparisonPredicateToken,
+  DateToken,
   IdentifierToken,
+  IntervalToken,
   JsonBinaryToken,
   JsonToken,
   ListToken,
   SqlToken,
+  TimestampToken,
   UnnestToken,
 } from '../tokens';
 import {
@@ -23,11 +26,14 @@ const Tokens = [
   ArrayToken,
   BinaryToken,
   ComparisonPredicateToken,
+  DateToken,
   IdentifierToken,
+  IntervalToken,
   JsonBinaryToken,
   JsonToken,
   ListToken,
   SqlToken,
+  TimestampToken,
   UnnestToken,
 ] as const;
 
