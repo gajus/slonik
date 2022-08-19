@@ -109,11 +109,13 @@ Note: Using this project does not require TypeScript. It is a regular ES6 module
     * [Query building](#user-content-slonik-query-building)
         * [`sql.array`](#user-content-slonik-query-building-sql-array)
         * [`sql.binary`](#user-content-slonik-query-building-sql-binary)
+        * [`sql.date`](#user-content-slonik-query-building-sql-date)
         * [`sql.identifier`](#user-content-slonik-query-building-sql-identifier)
         * [`sql.join`](#user-content-slonik-query-building-sql-join)
         * [`sql.json`](#user-content-slonik-query-building-sql-json)
         * [`sql.jsonb`](#user-content-slonik-query-building-sql-jsonb)
         * [`sql.literalValue`](#user-content-slonik-query-building-sql-literalvalue)
+        * [`sql.timestamp`](#user-content-slonik-query-building-sql-timestamp)
         * [`sql.unnest`](#user-content-slonik-query-building-sql-unnest)
     * [Query methods](#user-content-slonik-query-methods)
         * [`any`](#user-content-slonik-query-methods-any)
@@ -1625,6 +1627,35 @@ Produces:
 }
 ```
 
+<a name="user-content-slonik-query-building-sql-date"></a>
+<a name="slonik-query-building-sql-date"></a>
+### <code>sql.date</code>
+
+```ts
+(
+  date: Date
+) => DateSqlToken;
+```
+
+Inserts a date, e.g.
+
+```ts
+await connection.query(sql`
+  SELECT ${sql.date(new Date('2022-08-19T03:27:24.951Z'))}
+`);
+```
+
+Produces:
+
+```ts
+{
+  sql: 'SELECT $1::date',
+  values: [
+    '2022-08-19'
+  ]
+}
+```
+
 <a name="user-content-slonik-query-building-sql-identifier"></a>
 <a name="slonik-query-building-sql-identifier"></a>
 ### <code>sql.identifier</code>
@@ -1806,6 +1837,35 @@ Produces:
 ```ts
 {
   sql: 'CREATE USER "foo" WITH PASSWORD \'bar\''
+}
+```
+
+<a name="user-content-slonik-query-building-sql-timestamp"></a>
+<a name="slonik-query-building-sql-timestamp"></a>
+### <code>sql.timestamp</code>
+
+```ts
+(
+  date: Date
+) => TimestampSqlToken;
+```
+
+Inserts a timestamp, e.g.
+
+```ts
+await connection.query(sql`
+  SELECT ${sql.timestamp(new Date('2022-08-19T03:27:24.951Z'))}
+`);
+```
+
+Produces:
+
+```ts
+{
+  sql: 'SELECT to_timestamp($1)',
+  values: [
+    '1660879644.951'
+  ]
 }
 ```
 

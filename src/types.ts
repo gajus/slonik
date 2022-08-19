@@ -280,6 +280,11 @@ export type BinarySqlToken = {
   readonly type: typeof tokens.BinaryToken,
 };
 
+export type DateSqlToken = {
+  readonly date: Date,
+  readonly type: typeof tokens.DateToken,
+};
+
 export type IdentifierSqlToken = {
   readonly names: readonly string[],
   readonly type: typeof tokens.IdentifierToken,
@@ -308,6 +313,11 @@ export type SqlSqlToken<T = UserQueryResultRow> = {
   readonly values: readonly PrimitiveValueExpression[],
 };
 
+export type TimestampSqlToken = {
+  readonly date: Date,
+  readonly type: typeof tokens.TimestampToken,
+};
+
 export type UnnestSqlToken = {
   readonly columnTypes: Array<[...string[], TypeNameIdentifier]> | Array<SqlSqlToken | TypeNameIdentifier>,
   readonly tuples: ReadonlyArray<readonly ValueExpression[]>,
@@ -325,11 +335,13 @@ export type PrimitiveValueExpression =
 export type SqlToken =
   | ArraySqlToken
   | BinarySqlToken
+  | DateSqlToken
   | IdentifierSqlToken
   | JsonBinarySqlToken
   | JsonSqlToken
   | ListSqlToken
   | SqlSqlToken
+  | TimestampSqlToken
   | UnnestSqlToken;
 
 export type ValueExpression = PrimitiveValueExpression | SqlToken;
@@ -372,11 +384,13 @@ export type SqlTaggedTemplate<T extends UserQueryResultRow = QueryResultRow> = {
     memberType: SqlToken | TypeNameIdentifier,
   ) => ArraySqlToken,
   binary: (data: Buffer) => BinarySqlToken,
+  date: (date: Date) => DateSqlToken,
   identifier: (names: readonly string[]) => IdentifierSqlToken,
   join: (members: readonly ValueExpression[], glue: SqlSqlToken) => ListSqlToken,
   json: (value: SerializableValue) => JsonSqlToken,
   jsonb: (value: SerializableValue) => JsonBinarySqlToken,
   literalValue: (value: string) => SqlSqlToken,
+  timestamp: (date: Date) => TimestampSqlToken,
   type: <U>(parser: Parser<U>) => (template: TemplateStringsArray, ...values: ValueExpression[]) => TaggedTemplateLiteralInvocation<U>,
   unnest: (
     // Value might be ReadonlyArray<ReadonlyArray<PrimitiveValueExpression>>,

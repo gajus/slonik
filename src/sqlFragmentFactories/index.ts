@@ -5,6 +5,9 @@ export {
   createBinarySqlFragment,
 } from './createBinarySqlFragment';
 export {
+  createDateSqlFragment,
+} from './createDateSqlFragment';
+export {
   createIdentifierSqlFragment,
 } from './createIdentifierSqlFragment';
 export {
@@ -16,6 +19,9 @@ export {
 export {
   createSqlSqlFragment,
 } from './createSqlSqlFragment';
+export {
+  createTimestampSqlFragment,
+} from './createTimestampSqlFragment';
 export {
   createUnnestSqlFragment,
 } from './createUnnestSqlFragment';
