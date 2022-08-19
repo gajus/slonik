@@ -111,6 +111,33 @@ Produces:
 }
 ```
 
+### `sql.date`
+
+```ts
+(
+  date: Date
+) => DateSqlToken;
+```
+
+Inserts a date, e.g.
+
+```ts
+await connection.query(sql`
+  SELECT ${sql.date(new Date('2022-08-19T03:27:24.951Z'))}
+`);
+```
+
+Produces:
+
+```ts
+{
+  sql: 'SELECT $1::date',
+  values: [
+    '2022-08-19'
+  ]
+}
+```
+
 ### `sql.identifier`
 
 ```ts
@@ -282,6 +309,33 @@ Produces:
 ```ts
 {
   sql: 'CREATE USER "foo" WITH PASSWORD \'bar\''
+}
+```
+
+### `sql.timestamp`
+
+```ts
+(
+  date: Date
+) => TimestampSqlToken;
+```
+
+Inserts a timestamp, e.g.
+
+```ts
+await connection.query(sql`
+  SELECT ${sql.timestamp(new Date('2022-08-19T03:27:24.951Z'))}
+`);
+```
+
+Produces:
+
+```ts
+{
+  sql: 'SELECT to_timestamp($1)',
+  values: [
+    '1660879644.951'
+  ]
 }
 ```
 
