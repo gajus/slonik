@@ -10,6 +10,7 @@ import {
   BinaryToken,
   DateToken,
   IdentifierToken,
+  IntervalToken,
   JsonBinaryToken,
   JsonToken,
   ListToken,
@@ -22,6 +23,8 @@ import {
   type BinarySqlToken,
   type DateSqlToken,
   type IdentifierSqlToken,
+  type IntervalInput,
+  type IntervalSqlToken,
   type JsonBinarySqlToken,
   type JsonSqlToken,
   type ListSqlToken,
@@ -146,6 +149,15 @@ sql.identifier = (
   return {
     names,
     type: IdentifierToken,
+  };
+};
+
+sql.interval = (
+  interval: IntervalInput,
+): IntervalSqlToken => {
+  return {
+    interval,
+    type: IntervalToken,
   };
 };
 

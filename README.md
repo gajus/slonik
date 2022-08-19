@@ -111,6 +111,7 @@ Note: Using this project does not require TypeScript. It is a regular ES6 module
         * [`sql.binary`](#user-content-slonik-query-building-sql-binary)
         * [`sql.date`](#user-content-slonik-query-building-sql-date)
         * [`sql.identifier`](#user-content-slonik-query-building-sql-identifier)
+        * [`sql.interval`](#user-content-slonik-query-building-sql-interval)
         * [`sql.join`](#user-content-slonik-query-building-sql-join)
         * [`sql.json`](#user-content-slonik-query-building-sql-json)
         * [`sql.jsonb`](#user-content-slonik-query-building-sql-jsonb)
@@ -1683,6 +1684,77 @@ Produces:
   values: []
 }
 ```
+
+<a name="user-content-slonik-query-building-sql-interval"></a>
+<a name="slonik-query-building-sql-interval"></a>
+### <code>sql.interval</code>
+
+```ts
+(
+  interval: {
+    years?: number,
+    months?: number,
+    weeks?: number,
+    days?: number,
+    hours?: number,
+    minutes?: number,
+    seconds?: number,
+  }
+) => IntervalSqlToken;
+```
+
+Inserts an [interval](https://www.postgresql.org/docs/current/datatype-datetime.html#DATATYPE-INTERVAL-INPUT), e.g.
+
+```ts
+sql`
+  SELECT 1
+  FROM ${sql.interval({days: 3})}
+`;
+```
+
+Produces:
+
+```ts
+{
+  sql: 'SELECT make_interval("days" => $1)',
+  values: [
+    3
+  ]
+}
+```
+
+You can use `sql.interval` exactly how you would use PostgreSQL [`make_interval` function](https://www.postgresql.org/docs/current/functions-datetime.html). However, notice that Slonik does not use abbreviations, i.e. "secs" is seconds and "mins" is minutes.
+
+|`make_interval`|`sql.interval`|Interval output|
+|---|---|---|
+|`make_interval("days" => 1, "hours" => 2)`|`sql.interval({days: 1, hours: 2})`|`1 day 02:00:00`|
+|`make_interval("mins" => 1)`|`sql.interval({minutes: 1})`|`00:01:00`|
+|`make_interval("secs" => 120)`|`sql.interval({seconds: 120})`|`00:02:00`|
+|`make_interval("secs" => 0.001)`|`sql.interval({seconds: 0.001})`|`00:00:00.001`|
+
+<a name="user-content-slonik-query-building-sql-interval-dynamic-intervals-without-sql-interval"></a>
+<a name="slonik-query-building-sql-interval-dynamic-intervals-without-sql-interval"></a>
+#### Dynamic intervals without <code>sql.interval</code>
+
+If you need a dynamic interval (e.g. X days), you can achieve this using multiplication, e.g.
+
+```ts
+sql`
+  SELECT ${2} * interval '1 day'
+`
+```
+
+The above is equivalent to `interval '2 days'`.
+
+You could also use `make_interval()` directly, e.g.
+
+```ts
+sql`
+  SELECT make_interval("days" => ${2})
+`
+```
+
+`sql.interval` was added mostly as a type-safe alternative.
 
 <a name="user-content-slonik-query-building-sql-join"></a>
 <a name="slonik-query-building-sql-join"></a>

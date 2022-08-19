@@ -247,6 +247,16 @@ type CallSite = {
   readonly lineNumber: number,
 };
 
+export type IntervalInput = {
+  days?: number,
+  hours?: number,
+  minutes?: number,
+  months?: number,
+  seconds?: number,
+  weeks?: number,
+  years?: number,
+};
+
 /**
  * @property connectionId Unique connection ID.
  * @property log Instance of Roarr logger with bound query context parameters.
@@ -288,6 +298,11 @@ export type DateSqlToken = {
 export type IdentifierSqlToken = {
   readonly names: readonly string[],
   readonly type: typeof tokens.IdentifierToken,
+};
+
+export type IntervalSqlToken = {
+  readonly interval: IntervalInput,
+  readonly type: typeof tokens.IntervalToken,
 };
 
 export type ListSqlToken = {
@@ -337,6 +352,7 @@ export type SqlToken =
   | BinarySqlToken
   | DateSqlToken
   | IdentifierSqlToken
+  | IntervalSqlToken
   | JsonBinarySqlToken
   | JsonSqlToken
   | ListSqlToken
@@ -386,6 +402,7 @@ export type SqlTaggedTemplate<T extends UserQueryResultRow = QueryResultRow> = {
   binary: (data: Buffer) => BinarySqlToken,
   date: (date: Date) => DateSqlToken,
   identifier: (names: readonly string[]) => IdentifierSqlToken,
+  interval: (interval: IntervalInput) => IntervalSqlToken,
   join: (members: readonly ValueExpression[], glue: SqlSqlToken) => ListSqlToken,
   json: (value: SerializableValue) => JsonSqlToken,
   jsonb: (value: SerializableValue) => JsonBinarySqlToken,
