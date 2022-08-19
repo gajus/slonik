@@ -8,7 +8,7 @@ import {
 
 export const createTimestampSqlFragment = (token: TimestampSqlToken, greatestParameterPosition: number): SqlFragment => {
   if (!(token.date instanceof Date)) {
-    throw new InvalidInputError('Timestamp value must be a Date.');
+    throw new InvalidInputError('Timestamp parameter value must be an instance of Date.');
   }
 
   return {

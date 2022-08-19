@@ -23,8 +23,8 @@ test('binds a timestamp', (t) => {
 test('throws if not instance of Date', (t) => {
   const error = t.throws(() => {
     // @ts-expect-error
-    sql`SELECT ${sql.date(1)}`;
+    sql`SELECT ${sql.timestamp(1)}`;
   });
 
-  t.is(error?.message, 'Date parameter value must be an instance of Date.');
+  t.is(error?.message, 'Timestamp parameter value must be an instance of Date.');
 });
