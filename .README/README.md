@@ -99,7 +99,7 @@ For more information, refer to the [JavaScript Tagged Template Literal Grammar E
 
 ### VS Code Syntax Highlighting Extension
 
-The [`vscode-sql-template-literal` extension](https://marketplace.visualstudio.com/items?itemName=forbeslindesay.vscode-sql-template-literal) provides syntax highlighting for VS Code:
+The [`vscode-sql-lit` extension](https://marketplace.visualstudio.com/items?itemName=thebearingedge.vscode-sql-lit) provides syntax highlighting for VS Code:
 ![Syntax highlighting in VS Code](./.README/vscode-syntax-highlighting.png)
 
 ## Development
