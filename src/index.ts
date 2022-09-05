@@ -25,6 +25,7 @@ export type {
   ListSqlToken,
   MockPoolOverrides,
   PoolContext,
+  PrimitiveValueExpression,
   Query,
   QueryContext,
   QueryResult,
@@ -68,7 +69,7 @@ export {
   SlonikError,
   StatementCancelledError,
   StatementTimeoutError,
+  TupleMovedToAnotherPartitionError,
   UnexpectedStateError,
   UniqueIntegrityConstraintViolationError,
-  TupleMovedToAnotherPartitionError,
 } from './errors';
