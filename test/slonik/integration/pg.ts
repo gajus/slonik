@@ -356,7 +356,7 @@ test('frees connection after destroying a stream', async (t) => {
   await pool.end();
 });
 
-test('does not crash after destroying a stream with an error', async (t) => {
+test('frees connection after destroying a stream with an error', async (t) => {
   const pool = await createPool(t.context.dsn);
 
   await pool.stream(sql`
