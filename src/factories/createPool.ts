@@ -59,6 +59,7 @@ export const createPool = async (
   }
 
   const setupClient = new PgClient({
+    connectionTimeoutMillis: poolConfiguration.connectionTimeoutMillis,
     database: poolConfiguration.database,
     host: poolConfiguration.host,
     password: poolConfiguration.password,
