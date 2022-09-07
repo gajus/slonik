@@ -40,7 +40,7 @@
     "delay": "^5.0.0",
     "eslint": "^8.23.0",
     "eslint-config-canonical": "^37.0.3",
-    "expect-type": "^0.13.0",
+    "expect-type": "^0.14.0",
     "gitdown": "^3.1.5",
     "husky": "^4.3.6",
     "nyc": "^15.1.0",
