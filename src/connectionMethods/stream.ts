@@ -18,7 +18,7 @@ export const stream: InternalStreamFunction = async (connectionLogger, connectio
     clientConfiguration,
     slonikSql,
     undefined,
-    (finalConnection, finalSql, finalValues, executionContext, actualQuery) => {
+    async (finalConnection, finalSql, finalValues, executionContext, actualQuery) => {
       const query = new QueryStream(finalSql, finalValues, options);
 
       const queryStream: Stream = finalConnection.query(query);
@@ -31,7 +31,7 @@ export const stream: InternalStreamFunction = async (connectionLogger, connectio
         }
       }
 
-      return new Promise((resolve, reject) => {
+      return await new Promise((resolve, reject) => {
         queryStream.on('error', (error: Error) => {
           reject(error);
         });

@@ -15,8 +15,8 @@ test('`beforePoolConnection` is called before `connect`', async (t) => {
     ],
   });
 
-  await pool.connect(() => {
-    return Promise.resolve('foo');
+  await pool.connect(async () => {
+    return 'foo';
   });
 
   t.true(beforePoolConnection.calledBefore(pool.connectSpy));

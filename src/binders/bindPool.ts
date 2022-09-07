@@ -26,84 +26,84 @@ export const bindPool = (
   clientConfiguration: ClientConfiguration,
 ): DatabasePool => {
   return {
-    any: (query: TaggedTemplateLiteralInvocation) => {
-      return createConnection(
+    any: async (query: TaggedTemplateLiteralInvocation) => {
+      return await createConnection(
         parentLog,
         pool,
         clientConfiguration,
         'IMPLICIT_QUERY',
-        (
+        async (
           connectionLog,
           connection,
           boundConnection,
         ) => {
-          return boundConnection.any(query);
+          return await boundConnection.any(query);
         },
-        (newPool) => {
-          return newPool.any(query);
+        async (newPool) => {
+          return await newPool.any(query);
         },
         query,
       );
     },
-    anyFirst: (query: TaggedTemplateLiteralInvocation) => {
-      return createConnection(
+    anyFirst: async (query: TaggedTemplateLiteralInvocation) => {
+      return await createConnection(
         parentLog,
         pool,
         clientConfiguration,
         'IMPLICIT_QUERY',
-        (
+        async (
           connectionLog,
           connection,
           boundConnection,
         ) => {
-          return boundConnection.anyFirst(query);
+          return await boundConnection.anyFirst(query);
         },
-        (newPool) => {
-          return newPool.anyFirst(query);
+        async (newPool) => {
+          return await newPool.anyFirst(query);
         },
         query,
       );
     },
     configuration: clientConfiguration,
-    connect: (connectionHandler) => {
-      return createConnection(
+    connect: async (connectionHandler) => {
+      return await createConnection(
         parentLog,
         pool,
         clientConfiguration,
         'EXPLICIT',
-        (
+        async (
           connectionLog,
           connection,
           boundConnection,
         ) => {
-          return connectionHandler(boundConnection);
+          return await connectionHandler(boundConnection);
         },
-        (newPool) => {
-          return newPool.connect(connectionHandler);
+        async (newPool) => {
+          return await newPool.connect(connectionHandler);
         },
       );
     },
-    copyFromBinary: (copyQuery, values, columnTypes) => {
+    copyFromBinary: async (copyQuery, values, columnTypes) => {
       assertSqlSqlToken(copyQuery);
 
-      return createConnection(
+      return await createConnection(
         parentLog,
         pool,
         clientConfiguration,
         'IMPLICIT_QUERY',
-        (
+        async (
           connectionLog,
           connection,
           boundConnection,
         ) => {
-          return boundConnection.copyFromBinary(
+          return await boundConnection.copyFromBinary(
             copyQuery,
             values,
             columnTypes,
           );
         },
-        (newPool) => {
-          return newPool.copyFromBinary(
+        async (newPool) => {
+          return await newPool.copyFromBinary(
             copyQuery,
             values,
             columnTypes,
@@ -118,21 +118,21 @@ export const bindPool = (
 
       await pool.end();
     },
-    exists: (query: TaggedTemplateLiteralInvocation) => {
-      return createConnection(
+    exists: async (query: TaggedTemplateLiteralInvocation) => {
+      return await createConnection(
         parentLog,
         pool,
         clientConfiguration,
         'IMPLICIT_QUERY',
-        (
+        async (
           connectionLog,
           connection,
           boundConnection,
         ) => {
-          return boundConnection.exists(query);
+          return await boundConnection.exists(query);
         },
-        (newPool) => {
-          return newPool.exists(query);
+        async (newPool) => {
+          return await newPool.exists(query);
         },
         query,
       );
@@ -147,156 +147,156 @@ export const bindPool = (
         waitingClientCount: pool.waitingCount,
       };
     },
-    many: (query: TaggedTemplateLiteralInvocation) => {
-      return createConnection(
+    many: async (query: TaggedTemplateLiteralInvocation) => {
+      return await createConnection(
         parentLog,
         pool,
         clientConfiguration,
         'IMPLICIT_QUERY',
-        (
+        async (
           connectionLog,
           connection,
           boundConnection,
         ) => {
-          return boundConnection.many(query);
+          return await boundConnection.many(query);
         },
-        (newPool) => {
-          return newPool.many(query);
+        async (newPool) => {
+          return await newPool.many(query);
         },
         query,
       );
     },
-    manyFirst: (query: TaggedTemplateLiteralInvocation) => {
-      return createConnection(
+    manyFirst: async (query: TaggedTemplateLiteralInvocation) => {
+      return await createConnection(
         parentLog,
         pool,
         clientConfiguration,
         'IMPLICIT_QUERY',
-        (
+        async (
           connectionLog,
           connection,
           boundConnection,
         ) => {
-          return boundConnection.manyFirst(query);
+          return await boundConnection.manyFirst(query);
         },
-        (newPool) => {
-          return newPool.manyFirst(query);
+        async (newPool) => {
+          return await newPool.manyFirst(query);
         },
         query,
       );
     },
-    maybeOne: (query: TaggedTemplateLiteralInvocation) => {
-      return createConnection(
+    maybeOne: async (query: TaggedTemplateLiteralInvocation) => {
+      return await createConnection(
         parentLog,
         pool,
         clientConfiguration,
         'IMPLICIT_QUERY',
-        (
+        async (
           connectionLog,
           connection,
           boundConnection,
         ) => {
-          return boundConnection.maybeOne(query);
+          return await boundConnection.maybeOne(query);
         },
-        (newPool) => {
-          return newPool.maybeOne(query);
+        async (newPool) => {
+          return await newPool.maybeOne(query);
         },
         query,
       );
     },
-    maybeOneFirst: (query: TaggedTemplateLiteralInvocation) => {
-      return createConnection(
+    maybeOneFirst: async (query: TaggedTemplateLiteralInvocation) => {
+      return await createConnection(
         parentLog,
         pool,
         clientConfiguration,
         'IMPLICIT_QUERY',
-        (
+        async (
           connectionLog,
           connection,
           boundConnection,
         ) => {
-          return boundConnection.maybeOneFirst(query);
+          return await boundConnection.maybeOneFirst(query);
         },
-        (newPool) => {
-          return newPool.maybeOneFirst(query);
+        async (newPool) => {
+          return await newPool.maybeOneFirst(query);
         },
         query,
       );
     },
-    one: (query: TaggedTemplateLiteralInvocation) => {
-      return createConnection(
+    one: async (query: TaggedTemplateLiteralInvocation) => {
+      return await createConnection(
         parentLog,
         pool,
         clientConfiguration,
         'IMPLICIT_QUERY',
-        (
+        async (
           connectionLog,
           connection,
           boundConnection,
         ) => {
-          return boundConnection.one(query);
+          return await boundConnection.one(query);
         },
-        (newPool) => {
-          return newPool.one(query);
+        async (newPool) => {
+          return await newPool.one(query);
         },
         query,
       );
     },
-    oneFirst: (query: TaggedTemplateLiteralInvocation) => {
-      return createConnection(
+    oneFirst: async (query: TaggedTemplateLiteralInvocation) => {
+      return await createConnection(
         parentLog,
         pool,
         clientConfiguration,
         'IMPLICIT_QUERY',
-        (
+        async (
           connectionLog,
           connection,
           boundConnection,
         ) => {
-          return boundConnection.oneFirst(query);
+          return await boundConnection.oneFirst(query);
         },
-        (newPool) => {
-          return newPool.oneFirst(query);
+        async (newPool) => {
+          return await newPool.oneFirst(query);
         },
         query,
       );
     },
-    query: (query: TaggedTemplateLiteralInvocation) => {
-      return createConnection(
+    query: async (query: TaggedTemplateLiteralInvocation) => {
+      return await createConnection(
         parentLog,
         pool,
         clientConfiguration,
         'IMPLICIT_QUERY',
-        (
+        async (
           connectionLog,
           connection,
           boundConnection,
         ) => {
-          return boundConnection.query(query);
+          return await boundConnection.query(query);
         },
-        (newPool) => {
-          return newPool.query(query);
+        async (newPool) => {
+          return await newPool.query(query);
         },
         query,
       );
     },
-    stream: (streamQuery, streamHandler, config) => {
+    stream: async (streamQuery, streamHandler, config) => {
       assertSqlSqlToken(streamQuery);
 
-      return createConnection(
+      return await createConnection(
         parentLog,
         pool,
         clientConfiguration,
         'IMPLICIT_QUERY',
-        (
+        async (
           connectionLog,
           connection,
           boundConnection,
         ) => {
-          return boundConnection.stream(streamQuery, streamHandler, config);
+          return await boundConnection.stream(streamQuery, streamHandler, config);
         },
-        (newPool) => {
-          return newPool.stream(streamQuery, streamHandler, config);
+        async (newPool) => {
+          return await newPool.stream(streamQuery, streamHandler, config);
         },
         streamQuery,
       );
@@ -307,11 +307,11 @@ export const bindPool = (
         pool,
         clientConfiguration,
         'IMPLICIT_TRANSACTION',
-        (connectionLog, connection) => {
-          return transaction(connectionLog, connection, clientConfiguration, transactionHandler, transactionRetryLimit);
+        async (connectionLog, connection) => {
+          return await transaction(connectionLog, connection, clientConfiguration, transactionHandler, transactionRetryLimit);
         },
-        (newPool) => {
-          return newPool.transaction(transactionHandler);
+        async (newPool) => {
+          return await newPool.transaction(transactionHandler);
         },
       );
     },

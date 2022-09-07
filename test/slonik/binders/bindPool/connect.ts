@@ -36,8 +36,8 @@ test('does not connect if `beforePoolConnection` throws an error', async (t) => 
   const pool = await createPool({
     interceptors: [
       {
-        beforePoolConnection: () => {
-          return Promise.reject(new Error('foo'));
+        beforePoolConnection: async () => {
+          throw new Error('foo');
         },
       },
     ],
@@ -56,8 +56,8 @@ test('ends connection if `afterPoolConnection` throws an error', async (t) => {
   const pool = await createPool({
     interceptors: [
       {
-        afterPoolConnection: () => {
-          return Promise.reject(new Error('foo'));
+        afterPoolConnection: async () => {
+          throw new Error('foo');
         },
       },
     ],
@@ -76,8 +76,8 @@ test('ends connection if `beforePoolConnectionRelease` throws an error', async (
   const pool = await createPool({
     interceptors: [
       {
-        afterPoolConnection: () => {
-          return Promise.reject(new Error('foo'));
+        afterPoolConnection: async () => {
+          throw new Error('foo');
         },
       },
     ],
@@ -129,8 +129,8 @@ test('if `beforePoolConnection` returns pool object, then the returned pool obje
     ],
   });
 
-  await pool1.transaction((connection) => {
-    return connection.query(sql`SELECT 1`);
+  await pool1.transaction(async (connection) => {
+    return await connection.query(sql`SELECT 1`);
   });
 
   t.is(pool0.connectSpy.callCount, 1);
@@ -155,8 +155,8 @@ test('if `beforePoolConnection` returns pool object, then the returned pool obje
     ],
   });
 
-  await pool1.connect((connection) => {
-    return connection.query(sql`SELECT 1`);
+  await pool1.connect(async (connection) => {
+    return await connection.query(sql`SELECT 1`);
   });
 
   t.is(pool0.connectSpy.callCount, 1);

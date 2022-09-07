@@ -18,9 +18,9 @@ const getQueries = (spy: sinon.SinonSpy) => {
 test('commits successful transaction', async (t) => {
   const pool = await createPool();
 
-  await pool.connect((c1) => {
-    return c1.transaction((t1) => {
-      return t1.query(sql`SELECT 1`);
+  await pool.connect(async (c1) => {
+    return await c1.transaction(async (t1) => {
+      return await t1.query(sql`SELECT 1`);
     });
   });
 
@@ -52,11 +52,11 @@ test('rollsback unsuccessful transaction', async (t) => {
 test('uses savepoints to nest transactions', async (t) => {
   const pool = await createPool();
 
-  await pool.connect((c1) => {
-    return c1.transaction(async (t1) => {
+  await pool.connect(async (c1) => {
+    await c1.transaction(async (t1) => {
       await t1.query(sql`SELECT 1`);
-      await t1.transaction((t2) => {
-        return t2.query(sql`SELECT 2`);
+      await t1.transaction(async (t2) => {
+        return await t2.query(sql`SELECT 2`);
       });
     });
   });
@@ -98,8 +98,8 @@ test('rollsback to the last savepoint', async (t) => {
 test('rollsback the entire transaction with multiple savepoints', async (t) => {
   const pool = await createPool();
 
-  await pool.connect((c1) => {
-    return t.throwsAsync(c1.transaction(async (t1) => {
+  await pool.connect(async (c1) => {
+    return await t.throwsAsync(c1.transaction(async (t1) => {
       await t1.query(sql`SELECT 1`);
 
       return await t1.transaction(async (t2) => {
@@ -123,8 +123,8 @@ test('rollsback the entire transaction with multiple savepoints', async (t) => {
 test('rollsback the entire transaction with multiple savepoints (multiple depth layers)', async (t) => {
   const pool = await createPool();
 
-  await pool.connect((c1) => {
-    return t.throwsAsync(c1.transaction(async (t1) => {
+  await pool.connect(async (c1) => {
+    return await t.throwsAsync(c1.transaction(async (t1) => {
       await t1.query(sql`SELECT 1`);
 
       return await t1.transaction(async (t2) => {
@@ -155,13 +155,13 @@ test('rollsback the entire transaction with multiple savepoints (multiple depth 
 test('throws an error if an attempt is made to create a new transaction before the last transaction is completed', async (t) => {
   const pool = await createPool();
 
-  const connection = pool.connect((c1) => {
-    return Promise.race([
-      c1.transaction(() => {
-        return delay(1_000);
+  const connection = pool.connect(async (c1) => {
+    await Promise.race([
+      c1.transaction(async () => {
+        await delay(1_000);
       }),
-      c1.transaction(() => {
-        return delay(1_000);
+      c1.transaction(async () => {
+        await delay(1_000);
       }),
     ]);
   });
@@ -174,10 +174,10 @@ test('throws an error if an attempt is made to create a new transaction before t
 test('throws an error if an attempt is made to execute a query using the parent transaction before the current transaction is completed', async (t) => {
   const pool = await createPool();
 
-  const connection = pool.connect((c1) => {
-    return c1.transaction((t1) => {
-      return t1.transaction(() => {
-        return t1.query(sql`SELECT 1`);
+  const connection = pool.connect(async (c1) => {
+    return await c1.transaction(async (t1) => {
+      return await t1.transaction(async () => {
+        return await t1.query(sql`SELECT 1`);
       });
     });
   });

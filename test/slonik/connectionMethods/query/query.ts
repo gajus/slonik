@@ -84,8 +84,8 @@ test('adds notices observed during the query execution to the query result objec
   let resolveQuery: any;
 
   pool.querySpy.reset();
-  pool.querySpy.callsFake(() => {
-    return new Promise((resolve) => {
+  pool.querySpy.callsFake(async () => {
+    return await new Promise((resolve) => {
       resolveQuery = resolve;
     });
   });

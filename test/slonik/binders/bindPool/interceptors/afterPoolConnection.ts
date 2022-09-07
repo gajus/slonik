@@ -18,8 +18,8 @@ test('`afterPoolConnection` is called after `connect`', async (t) => {
     ],
   });
 
-  await pool.connect(() => {
-    return Promise.resolve('foo');
+  await pool.connect(async () => {
+    return 'foo';
   });
 
   t.true(pool.connectSpy.calledBefore(afterPoolConnection));
@@ -36,8 +36,8 @@ test('`connectionType` is "EXPLICIT" when `connect` is used to create connection
     ],
   });
 
-  await pool.connect(() => {
-    return Promise.resolve('foo');
+  await pool.connect(async () => {
+    return 'foo';
   });
 
   t.is(afterPoolConnection.firstCall.args[0].connectionType, 'EXPLICIT');
@@ -70,8 +70,8 @@ test('`connectionType` is "IMPLICIT_TRANSACTION" when `transaction` is used to c
     ],
   });
 
-  await pool.transaction(() => {
-    return Promise.resolve('foo');
+  await pool.transaction(async () => {
+    return 'foo';
   });
 
   t.is(afterPoolConnection.firstCall.args[0].connectionType, 'IMPLICIT_TRANSACTION');

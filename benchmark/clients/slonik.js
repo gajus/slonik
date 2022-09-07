@@ -12,6 +12,7 @@ const connect = () => {
     pool.connect((connection) => {
       resolve(connection);
 
+      // eslint-disable-next-line promise/param-names
       return new Promise((end) => {
         connection.end = () => {
           end();

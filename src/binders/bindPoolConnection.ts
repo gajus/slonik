@@ -51,10 +51,10 @@ export const bindPoolConnection = (
         slonikSql,
       );
     },
-    copyFromBinary: (slonikSql, values, columnTypes) => {
+    copyFromBinary: async (slonikSql, values, columnTypes) => {
       assertSqlSqlToken(slonikSql);
 
-      return copyFromBinary(
+      return await copyFromBinary(
         parentLog,
         connection,
         clientConfiguration,
@@ -63,10 +63,10 @@ export const bindPoolConnection = (
         columnTypes,
       );
     },
-    exists: (slonikSql) => {
+    exists: async (slonikSql) => {
       assertSqlSqlToken(slonikSql);
 
-      return exists(
+      return await exists(
         parentLog,
         connection,
         clientConfiguration,
@@ -143,10 +143,10 @@ export const bindPoolConnection = (
         slonikSql,
       );
     },
-    stream: (slonikSql, streamHandler, config) => {
+    stream: async (slonikSql, streamHandler, config) => {
       assertSqlSqlToken(slonikSql);
 
-      return stream(
+      return await stream(
         parentLog,
         connection,
         clientConfiguration,
@@ -156,8 +156,8 @@ export const bindPoolConnection = (
         config,
       );
     },
-    transaction: (handler, transactionRetryLimit) => {
-      return transaction(
+    transaction: async (handler, transactionRetryLimit) => {
+      return await transaction(
         parentLog,
         connection,
         clientConfiguration,

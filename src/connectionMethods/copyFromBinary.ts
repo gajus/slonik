@@ -39,12 +39,12 @@ export const copyFromBinary: InternalCopyFromBinaryFunction = async (
     clientConfiguration,
     slonikSql,
     undefined,
-    (finalConnection, finalSql) => {
+    async (finalConnection, finalSql) => {
       const copyFromBinaryStream = finalConnection.query(from(finalSql));
 
       bufferToStream(payloadBuffer).pipe(copyFromBinaryStream);
 
-      return new Promise((resolve, reject) => {
+      return await new Promise((resolve, reject) => {
         copyFromBinaryStream.on('error', (error: Error) => {
           reject(error);
         });

@@ -57,8 +57,8 @@ beforeEach((t) => {
 });
 
 test('throws a descriptive error if query is empty', async (t) => {
-  const error = await t.throwsAsync(() => {
-    return executeQuery(
+  const error = await t.throwsAsync(async () => {
+    return await executeQuery(
       t.context.logger,
       t.context.connection,
       createClientConfiguration(),
@@ -76,8 +76,8 @@ test('throws a descriptive error if query is empty', async (t) => {
 });
 
 test('throws a descriptive error if the entire query is a value binding', async (t) => {
-  const error = await t.throwsAsync(() => {
-    return executeQuery(
+  const error = await t.throwsAsync(async () => {
+    return await executeQuery(
       t.context.logger,
       t.context.connection,
       createClientConfiguration(),

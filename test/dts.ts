@@ -85,8 +85,8 @@ const poolTypes = async () => {
     const transaction2 = await poolConnection.transaction(async (t1) => {
       await t1.query(sql`INSERT INTO foo (bar) VALUES ('baz')`);
 
-      return await t1.transaction((t2) => {
-        return t2.query(sql`INSERT INTO qux (quux) VALUES ('corge')`);
+      return await t1.transaction(async (t2) => {
+        return await t2.query(sql`INSERT INTO qux (quux) VALUES ('corge')`);
       });
     });
     expectTypeOf(transaction2).toEqualTypeOf<QueryResult<Record<string, QueryResultRowColumn>>>();

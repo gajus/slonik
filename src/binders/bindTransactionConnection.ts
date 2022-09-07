@@ -64,11 +64,11 @@ export const bindTransactionConnection = (
         slonikSql,
       );
     },
-    exists: (slonikSql) => {
+    exists: async (slonikSql) => {
       assertSqlSqlToken(slonikSql);
       assertTransactionDepth();
 
-      return exists(
+      return await exists(
         parentLog,
         connection,
         clientConfiguration,
@@ -152,11 +152,11 @@ export const bindTransactionConnection = (
         slonikSql,
       );
     },
-    stream: (slonikSql, streamHandler) => {
+    stream: async (slonikSql, streamHandler) => {
       assertSqlSqlToken(slonikSql);
       assertTransactionDepth();
 
-      return stream(
+      return await stream(
         parentLog,
         connection,
         clientConfiguration,
@@ -164,10 +164,10 @@ export const bindTransactionConnection = (
         streamHandler,
       );
     },
-    transaction: (handler, transactionRetryLimit) => {
+    transaction: async (handler, transactionRetryLimit) => {
       assertTransactionDepth();
 
-      return nestedTransaction(
+      return await nestedTransaction(
         parentLog,
         connection,
         clientConfiguration,

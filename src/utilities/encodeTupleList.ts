@@ -9,11 +9,11 @@ import {
   type TypeNameIdentifier,
 } from '../types';
 
-export const encodeTupleList = (
+export const encodeTupleList = async (
   tupleList: ReadonlyArray<readonly unknown[]>,
   columnTypes: readonly TypeNameIdentifier[],
 ): Promise<Buffer> => {
-  return new Promise((resolve, reject) => {
+  return await new Promise((resolve, reject) => {
     const concatStream = createConcatStream((payloadBuffer) => {
       resolve(payloadBuffer);
     });
