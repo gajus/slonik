@@ -24,7 +24,7 @@
     "roarr": "^7.12.3",
     "serialize-error": "^8.0.0",
     "through2": "^4.0.2",
-    "zod": "^3.18.0"
+    "zod": "^3.19.0"
   },
   "description": "A Node.js PostgreSQL client with strict types, detailed logging and assertions.",
   "devDependencies": {
