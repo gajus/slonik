@@ -161,31 +161,3 @@ test('throws an error if property type does not conform to zod object (invalid_t
   t.is(error.issues.length, 1);
   t.is(error.issues[0]?.code, 'invalid_type');
 });
-
-test('throws an error if result includes unknown property (unrecognized_keys)', async (t) => {
-  const pool = await createPool();
-
-  pool.querySpy.returns({
-    rows: [
-      {
-        bar: 1,
-        foo: 1,
-      },
-    ],
-  });
-
-  const zodObject = z.object({
-    foo: z.number(),
-  });
-
-  const query = sql.type(zodObject)`SELECT 1`;
-
-  const error = await t.throwsAsync<SchemaValidationError>(pool.one(query));
-
-  if (!error) {
-    throw new Error('Expected SchemaValidationError');
-  }
-
-  t.is(error.issues.length, 1);
-  t.is(error.issues[0]?.code, 'unrecognized_keys');
-});

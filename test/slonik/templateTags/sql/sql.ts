@@ -122,12 +122,8 @@ test('describes zod object associated with the query', (t) => {
     SELECT 1 id
   `;
 
-  // These are not equal because Slonik applies .strict() on the object it receives.
-  // t.is(query.zodObject, zodObject);
+  t.is(query.parser, zodObject);
 
   // @ts-expect-error Accessing a private property
   t.is(query.parser._def?.typeName, 'ZodObject');
-
-  // @ts-expect-error Accessing a private property
-  t.is(query.parser._def?.unknownKeys, 'strict');
 });

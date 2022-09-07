@@ -212,16 +212,10 @@ sql.timestamp = (
 sql.type = (
   parser,
 ) => {
-  let strictParser = parser;
-
-  if (parser._def.unknownKeys === 'strip') {
-    strictParser = parser.strict();
-  }
-
   return (...args) => {
     return {
       ...sql(...args),
-      parser: strictParser,
+      parser,
     };
   };
 };
