@@ -445,7 +445,7 @@ export type InternalNestedTransactionFunction = <T>(
   transactionRetryLimit?: number,
 ) => Promise<T>;
 
-type MixedRow = QueryResultRow | ZodTypeAny;
+export type MixedRow = QueryResultRow | ZodTypeAny;
 
 export type TaggedTemplateLiteralInvocation = AnySqlSqlToken;
 

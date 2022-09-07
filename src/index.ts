@@ -23,6 +23,7 @@ export type {
   JsonBinarySqlToken,
   JsonSqlToken,
   ListSqlToken,
+  MixedRow,
   MockPoolOverrides,
   PoolContext,
   PrimitiveValueExpression,
