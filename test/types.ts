@@ -31,6 +31,10 @@ export const queryMethods = async (): Promise<void> => {
     foo: string,
   };
 
+  // parser
+  const parser = sql.type(ZodRow)``.parser;
+  expectTypeOf(parser).toEqualTypeOf<typeof ZodRow>();
+
   // any
   const any = await client.any(sql``);
   expectTypeOf(any).toEqualTypeOf<ReadonlyArray<Record<string, PrimitiveValueExpression>>>();
