@@ -367,16 +367,6 @@ export type NamedAssignment = {
 };
 
 /**
- * Usually, a `ZodIssue` - but in theory you could construct your own, or wrap zod.
- * Re-defined here to avoid a hard dependency on zod.
- */
-export type ParserIssue = {
-  code: string,
-  message: string,
-  path: Array<number | string>,
-};
-
-/**
  * Usually, a `zod` type.
  * Re-defined here to avoid a hard dependency on zod.
  */
