@@ -31,6 +31,10 @@ export const queryMethods = async (): Promise<void> => {
     foo: string,
   };
 
+  // parser
+  const parser = sql.type(ZodRow)``.parser;
+  expectTypeOf(parser).toEqualTypeOf<typeof ZodRow>();
+
   // any
   const any = await client.any(sql``);
   expectTypeOf(any).toEqualTypeOf<ReadonlyArray<Record<string, PrimitiveValueExpression>>>();
@@ -147,42 +151,6 @@ export const queryMethods = async (): Promise<void> => {
 
   const queryZodTypedQuery = await client.query(sql.type(ZodRow)``);
   expectTypeOf(queryZodTypedQuery).toMatchTypeOf<{ rows: readonly Row[], }>();
-
-  type RowWithJSONB = {
-    foo: {
-      bar: number,
-    },
-  };
-
-  const jsonbSql = sql<RowWithJSONB>`select '{"bar": 123}'::jsonb as foo`;
-
-  expectTypeOf(await client.query(jsonbSql)).toEqualTypeOf<QueryResult<RowWithJSONB>>();
-  expectTypeOf(await client.one(jsonbSql)).toEqualTypeOf<RowWithJSONB>();
-  expectTypeOf(await client.maybeOne(jsonbSql)).toEqualTypeOf<RowWithJSONB | null>();
-  expectTypeOf(await client.any(jsonbSql)).toEqualTypeOf<readonly RowWithJSONB[]>();
-  expectTypeOf(await client.many(jsonbSql)).toEqualTypeOf<readonly RowWithJSONB[]>();
-  expectTypeOf(await client.oneFirst(jsonbSql)).toEqualTypeOf<{ bar: number, }>();
-  expectTypeOf(await client.maybeOneFirst(jsonbSql)).toEqualTypeOf<{ bar: number, } | null>();
-  expectTypeOf(await client.manyFirst(jsonbSql)).toEqualTypeOf<ReadonlyArray<{ bar: number, }>>();
-  expectTypeOf(await client.anyFirst(jsonbSql)).toEqualTypeOf<ReadonlyArray<{ bar: number, }>>();
-
-  // `interface` can behave slightly differently from `type` when it comes to type inference
-  // eslint-disable-next-line @typescript-eslint/consistent-type-definitions
-  interface IRow {
-    foo: string | null;
-  }
-
-  const nullableSql = sql<IRow>`select 'abc' as foo`;
-
-  expectTypeOf(await client.query(nullableSql)).toEqualTypeOf<QueryResult<IRow>>();
-  expectTypeOf(await client.one(nullableSql)).toEqualTypeOf<IRow>();
-  expectTypeOf(await client.maybeOne(nullableSql)).toEqualTypeOf<IRow | null>();
-  expectTypeOf(await client.any(nullableSql)).toEqualTypeOf<readonly IRow[]>();
-  expectTypeOf(await client.many(nullableSql)).toEqualTypeOf<readonly IRow[]>();
-  expectTypeOf(await client.oneFirst(nullableSql)).toEqualTypeOf<string | null>();
-  expectTypeOf(await client.maybeOneFirst(nullableSql)).toEqualTypeOf<string | null>();
-  expectTypeOf(await client.manyFirst(nullableSql)).toEqualTypeOf<ReadonlyArray<string | null>>();
-  expectTypeOf(await client.anyFirst(nullableSql)).toEqualTypeOf<ReadonlyArray<string | null>>();
 
   const FooBarRow = z.object({
     x: z.string(),

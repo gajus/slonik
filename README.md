@@ -1322,9 +1322,9 @@ You can infer the TypeScript type of the query result. There are couple of ways 
 // Infer using z.infer<typeof yourSchema>
 // https://github.com/colinhacks/zod#type-inference
 type Person = z.infer<typeof personObject>;
-// from sql tagged template `zodObject` property
+// from sql tagged template `parser` property
 type Person = z.infer<
-  personQuery.zodObject
+  personQuery.parser
 >;
 ```
 

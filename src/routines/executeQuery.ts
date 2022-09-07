@@ -9,6 +9,9 @@ import {
   serializeError,
 } from 'serialize-error';
 import {
+  type ZodTypeAny,
+} from 'zod';
+import {
   TRANSACTION_ROLLBACK_ERROR_PREFIX,
 } from '../constants';
 import {
@@ -17,29 +20,28 @@ import {
   ForeignKeyIntegrityConstraintViolationError,
   InvalidInputError,
   NotNullIntegrityConstraintViolationError,
+  SchemaValidationError,
   StatementCancelledError,
   StatementTimeoutError,
+  TupleMovedToAnotherPartitionError,
   UnexpectedStateError,
   UniqueIntegrityConstraintViolationError,
-  TupleMovedToAnotherPartitionError,
-  SchemaValidationError,
 } from '../errors';
 import {
   getPoolClientState,
 } from '../state';
 import {
-  type Interceptor,
   type ClientConfiguration,
+  type Interceptor,
   type Logger,
   type Notice,
   type PrimitiveValueExpression,
+  type Query,
   type QueryContext,
   type QueryId,
-  type QueryResultRow,
   type QueryResult,
-  type Query,
+  type QueryResultRow,
   type TaggedTemplateLiteralInvocation,
-  type Parser,
 } from '../types';
 import {
   createQueryId,
@@ -62,7 +64,7 @@ type TransactionQuery = {
   readonly values: readonly PrimitiveValueExpression[],
 };
 
-const createParseInterceptor = (parser: Parser<unknown>): Interceptor => {
+const createParseInterceptor = (parser: ZodTypeAny): Interceptor => {
   return {
     transformRow: (executionContext, actualQuery, row) => {
       const {

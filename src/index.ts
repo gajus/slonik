@@ -66,6 +66,7 @@ export {
   InvalidInputError,
   NotFoundError,
   NotNullIntegrityConstraintViolationError,
+  SchemaValidationError,
   SlonikError,
   StatementCancelledError,
   StatementTimeoutError,
