@@ -1,5 +1,9 @@
 import safeStringify from 'fast-safe-stringify';
 import {
+  z,
+  type ZodTypeAny,
+} from 'zod';
+import {
   Logger,
 } from '../Logger';
 import {
@@ -52,10 +56,10 @@ const log = Logger.child({
   namespace: 'sql',
 });
 
-const sql: SqlTaggedTemplate = (
+const createQuery = (
   parts: readonly string[],
-  ...values: readonly ValueExpression[]
-): SqlSqlToken => {
+  values: readonly ValueExpression[],
+) => {
   let rawSql = '';
 
   const parameterValues: PrimitiveValueExpression[] = [];
@@ -99,10 +103,25 @@ const sql: SqlTaggedTemplate = (
     }
   }
 
-  const query: SqlTokenType = {
+  return {
     sql: rawSql,
-    type: SqlToken,
     values: parameterValues,
+  };
+};
+
+const sql = (
+  parts: readonly string[],
+  ...args: readonly ValueExpression[]
+) => {
+  const {
+    sql: sqlText,
+    values,
+  } = createQuery(parts, args);
+
+  const query = {
+    sql: sqlText,
+    type: SqlToken,
+    values,
   };
 
   Object.defineProperty(query, 'sql', {
@@ -111,7 +130,7 @@ const sql: SqlTaggedTemplate = (
     writable: false,
   });
 
-  return query;
+  return query as unknown as SqlSqlToken<QueryResultRow>;
 };
 
 sql.array = (
@@ -194,6 +213,7 @@ sql.literalValue = (
   value: string,
 ): SqlSqlToken => {
   return {
+    parser: z.any({}),
     sql: escapeLiteralValue(value),
     type: SqlToken,
     values: [],
@@ -209,14 +229,30 @@ sql.timestamp = (
   };
 };
 
-sql.type = (
-  parser,
-) => {
-  return (...args) => {
-    return {
-      ...sql(...args),
+sql.type = <T extends ZodTypeAny>(parser: T) => {
+  return (
+    parts: readonly string[],
+    ...args: readonly ValueExpression[]
+  ) => {
+    const {
+      sql: sqlText,
+      values,
+    } = createQuery(parts, args);
+
+    const query = {
       parser,
+      sql: sqlText,
+      type: SqlToken,
+      values,
     };
+
+    Object.defineProperty(query, 'sql', {
+      configurable: false,
+      enumerable: true,
+      writable: false,
+    });
+
+    return query;
   };
 };
 
@@ -231,6 +267,6 @@ sql.unnest = (
   };
 };
 
-export const createSqlTag = <T extends QueryResultRow = QueryResultRow>(): SqlTaggedTemplate<T> => {
-  return sql;
+export const createSqlTag = <T extends QueryResultRow = QueryResultRow>() => {
+  return sql as SqlTaggedTemplate<T>;
 };
