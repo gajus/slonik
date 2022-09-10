@@ -373,8 +373,11 @@ export type NamedAssignment = {
   readonly [key: string]: ValueExpression,
 };
 
-export type SqlTaggedTemplate<TypeAliases extends Record<string, ZodTypeAny>, Z extends QueryResultRow = QueryResultRow> = {
-  <U extends QueryResultRow = Z>(template: TemplateStringsArray, ...values: ValueExpression[]): SqlSqlToken<U>,
+export type SqlTaggedTemplate<
+  Z extends Record<string, ZodTypeAny>,
+  R extends QueryResultRow = QueryResultRow
+> = {
+  <U extends QueryResultRow = R>(template: TemplateStringsArray, ...values: ValueExpression[]): SqlSqlToken<U>,
   array: (
     values: readonly PrimitiveValueExpression[],
     memberType: SqlToken | TypeNameIdentifier,
@@ -389,7 +392,7 @@ export type SqlTaggedTemplate<TypeAliases extends Record<string, ZodTypeAny>, Z 
   literalValue: (value: string) => SqlSqlToken,
   timestamp: (date: Date) => TimestampSqlToken,
   type: <Y extends ZodTypeAny>(parser: Y) => (template: TemplateStringsArray, ...values: ValueExpression[]) => SqlSqlToken<Y>,
-  typeAlias: <Y extends keyof TypeAliases>(typeAlias: Y) => (template: TemplateStringsArray, ...values: ValueExpression[]) => SqlSqlToken<TypeAliases[Y]>,
+  typeAlias: <K extends keyof Z>(typeAlias: K) => (template: TemplateStringsArray, ...values: ValueExpression[]) => SqlSqlToken<Z[K]>,
   unnest: (
     // Value might be ReadonlyArray<ReadonlyArray<PrimitiveValueExpression>>,
     // or it can be infinitely nested array, e.g.

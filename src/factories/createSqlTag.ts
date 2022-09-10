@@ -109,12 +109,15 @@ const createQuery = (
   };
 };
 
-type SqlTagConfiguration<B> = {
-  typeAliases?: Record<string, B>,
-};
-
-export const createSqlTag = <B extends ZodTypeAny, T extends QueryResultRow = QueryResultRow>(configuration: SqlTagConfiguration<B> = {}) => {
-  const typeAliases = configuration.typeAliases ?? {};
+export const createSqlTag = <
+  K extends keyof Z,
+  P extends ZodTypeAny,
+  Z extends Record<K, P>,
+  T extends QueryResultRow = QueryResultRow
+>(configuration: {
+  typeAliases?: Z,
+} = {}) => {
+  const typeAliases = configuration.typeAliases;
 
   const sql = (
     parts: readonly string[],
@@ -263,8 +266,8 @@ export const createSqlTag = <B extends ZodTypeAny, T extends QueryResultRow = Qu
   };
 
   sql.typeAlias = <Y extends keyof typeof typeAliases>(parserAlias: Y) => {
-    if (!typeAliases[parserAlias]) {
-      throw new Error('Type alias "' + parserAlias + '" does not exist.');
+    if (!typeAliases?.[parserAlias]) {
+      throw new Error('Type alias "' + String(parserAlias) + '" does not exist.');
     }
 
     return sql.type(typeAliases[parserAlias]);
@@ -281,6 +284,5 @@ export const createSqlTag = <B extends ZodTypeAny, T extends QueryResultRow = Qu
     };
   };
 
-  // @ts-expect-error TODO fix
-  return sql as SqlTaggedTemplate<typeof typeAliases, T>;
+  return sql as SqlTaggedTemplate<Z, T>;
 };

@@ -40,3 +40,22 @@ test('describes zod object associated with the query', (t) => {
 
   t.is(query.parser, typeAliases.id);
 });
+
+test('cannot alias unknown fields', (t) => {
+  const typeAliases = {
+    id: z.object({
+      id: z.number(),
+    }),
+  };
+
+  const sql = createSqlTag({
+    typeAliases,
+  });
+
+  // @ts-expect-error
+  sql.typeAlias('void')`
+    SELECT 1 id
+  `;
+
+  t.true(true);
+});
