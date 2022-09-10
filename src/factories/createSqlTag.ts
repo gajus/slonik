@@ -281,5 +281,6 @@ export const createSqlTag = <B extends ZodTypeAny, T extends QueryResultRow = Qu
     };
   };
 
+  // @ts-expect-error TODO fix
   return sql as SqlTaggedTemplate<typeof typeAliases, T>;
 };

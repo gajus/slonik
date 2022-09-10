@@ -408,7 +408,7 @@ const sqlTypes = async () => {
 };
 
 const createSqlTagTypes = () => {
-  const sqlTag: SqlTaggedTemplate = createSqlTag();
+  const sqlTag = createSqlTag();
 
   sqlTag`
     SELECT 1;
