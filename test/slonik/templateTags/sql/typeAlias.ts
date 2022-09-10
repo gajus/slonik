@@ -52,10 +52,10 @@ test('cannot alias unknown fields', (t) => {
     typeAliases,
   });
 
-  // @ts-expect-error
-  sql.typeAlias('void')`
-    SELECT 1 id
-  `;
-
-  t.true(true);
+  t.throws(() => {
+    // @ts-expect-error
+    sql.typeAlias('void')`
+      SELECT 1 id
+    `;
+  });
 });
