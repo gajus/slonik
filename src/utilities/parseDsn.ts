@@ -22,7 +22,7 @@ export const parseDsn = (dsn: string): ConnectionOptions => {
   const connectionOptions: ConnectionOptions = {};
 
   if (url.host) {
-    connectionOptions.host = url.hostname;
+    connectionOptions.host = decodeURIComponent(url.hostname);
   }
 
   if (url.port) {
