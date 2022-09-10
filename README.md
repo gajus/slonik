@@ -101,6 +101,7 @@ Note: Using this project does not require TypeScript. It is a regular ES6 module
         * [Inferring types](#user-content-slonik-runtime-validation-inferring-types)
         * [Transforming results](#user-content-slonik-runtime-validation-transforming-results)
     * [`sql` tag](#user-content-slonik-sql-tag)
+        * [Type aliases](#user-content-slonik-sql-tag-type-aliases)
         * [Typing `sql` tag](#user-content-slonik-sql-tag-typing-sql-tag)
     * [Value placeholders](#user-content-slonik-value-placeholders)
         * [Tagged template literals](#user-content-slonik-value-placeholders-tagged-template-literals)
@@ -1390,6 +1391,28 @@ import {
 } from 'slonik';
 
 const sql = createSqlTag();
+```
+
+<a name="user-content-slonik-sql-tag-type-aliases"></a>
+<a name="slonik-sql-tag-type-aliases"></a>
+### Type aliases
+
+You can create a `sql` tag with a predefined set of Zod type aliases that can be later referenced when creating a query with [runtime validation](#user-content-runtime-validation), e.g.
+
+```ts
+const sql = createSqlTag({
+  typeAliases: {
+    id: z.object({
+      id: z.number(),
+    }),
+  }
+})
+
+const personId = await pool.oneFirst(
+  sql.typeAlias('id')`
+  SELECT id
+  FROM person
+`);
 ```
 
 <a name="user-content-slonik-sql-tag-typing-sql-tag"></a>

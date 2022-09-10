@@ -11,7 +11,7 @@ import {
 } from 'zod';
 import {
   createPool,
-  sql,
+  createSqlTag,
 } from '../src';
 import {
   type PrimitiveValueExpression,
@@ -31,6 +31,12 @@ export const queryMethods = async (): Promise<void> => {
     foo: string,
   };
 
+  const sql = createSqlTag({
+    typeAliases: {
+      row: ZodRow,
+    },
+  });
+
   // parser
   const parser = sql.type(ZodRow)``.parser;
   expectTypeOf(parser).toEqualTypeOf<typeof ZodRow>();
@@ -47,6 +53,9 @@ export const queryMethods = async (): Promise<void> => {
 
   const anyZodTypedQuery = await client.any(sql.type(ZodRow)``);
   expectTypeOf(anyZodTypedQuery).toEqualTypeOf<readonly Row[]>();
+
+  const anyZodAliasQuery = await client.any(sql.typeAlias('row')``);
+  expectTypeOf(anyZodAliasQuery).toEqualTypeOf<readonly Row[]>();
 
   // anyFirst
   const anyFirst = await client.anyFirst(sql``);

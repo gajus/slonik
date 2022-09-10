@@ -23,6 +23,26 @@ import {
 const sql = createSqlTag();
 ```
 
+### Type aliases
+
+You can create a `sql` tag with a predefined set of Zod type aliases that can be later referenced when creating a query with [runtime validation](#runtime-validation), e.g.
+
+```ts
+const sql = createSqlTag({
+  typeAliases: {
+    id: z.object({
+      id: z.number(),
+    }),
+  }
+})
+
+const personId = await pool.oneFirst(
+  sql.typeAlias('id')`
+  SELECT id
+  FROM person
+`);
+```
+
 ### Typing `sql` tag
 
 `sql` has a generic interface, meaning that you can supply it with the type that represents the expected result of the query, e.g.
