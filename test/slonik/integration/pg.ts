@@ -373,3 +373,42 @@ test('frees connection after destroying a stream with an error', async (t) => {
 
   await pool.end();
 });
+
+test('does something sensible with sytax errors', async (t) => {
+  const pool = await createPool(t.context.dsn);
+
+  const events: any[] = [];
+
+  await pool.stream(sql`
+    NONSENSE NOT REALLY SQL
+  `, (stream) => {
+    stream.on('close', () => {
+      return events.push({
+        event: 'close',
+      });
+    });
+    stream.on('end', () => {
+      return events.push({
+        event: 'end',
+      });
+    });
+    stream.on('error', (error) => {
+      return events.push({
+        error: error.message,
+        event: 'error',
+      });
+    });
+
+    t.deepEqual(stream.read(), null);
+
+    stream.destroy();
+  });
+
+  t.deepEqual(events, [
+    {
+      event: 'close',
+    },
+  ]);
+
+  await pool.end();
+});
