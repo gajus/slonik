@@ -87,7 +87,7 @@ export const stream: InternalStreamFunction = async (connectionLogger, connectio
 
         transformedStream.once('readable', () => {
           streamHandler(transformedStream);
-        })
+        });
       });
     },
   );
