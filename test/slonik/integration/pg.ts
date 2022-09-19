@@ -382,7 +382,7 @@ test('throws error on syntax errors', async (t) => {
   }));
 
   t.true(error instanceof Error);
-  t.deepEqual(error.message, 'syntax error at or near "NONSENSE"');
+  t.deepEqual(error?.message, 'syntax error at or near "NONSENSE"');
 
   await pool.end();
 });
