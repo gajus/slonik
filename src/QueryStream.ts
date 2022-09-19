@@ -63,10 +63,12 @@ export class QueryStream extends Readable {
     this.cursor.submit(connection);
   }
 
-  public _destroy (error: Error, callback: Function) {
+  public _destroy (error: Error, onDestroy: Function) {
     this._closed = true;
 
-    this.cursor.close(callback);
+    this.cursor.close(() => {
+      onDestroy(error);
+    });
   }
 
   public _read (size: number) {
