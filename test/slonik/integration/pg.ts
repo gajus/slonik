@@ -374,41 +374,17 @@ test('frees connection after destroying a stream with an error', async (t) => {
   await pool.end();
 });
 
-test('does something sensible with syntax errors', async (t) => {
+test('throws error on syntax errors', async (t) => {
   const pool = await createPool(t.context.dsn);
 
-  const events: any[] = [];
+  const error = await t.throwsAsync(pool.stream(sql`
+      NONSENSE NOT REALLY SQL
+    `, async (stream) => {
+      t.false('We should not have got this far!  Comment out this line to make the test pass.');
+    }));
 
-  await pool.stream(sql`
-    NONSENSE NOT REALLY SQL
-  `, (stream) => {
-    stream.on('close', () => {
-      return events.push({
-        event: 'close',
-      });
-    });
-    stream.on('end', () => {
-      return events.push({
-        event: 'end',
-      });
-    });
-    stream.on('error', (error) => {
-      return events.push({
-        error: error.message,
-        event: 'error',
-      });
-    });
-
-    t.deepEqual(stream.read(), null);
-
-    stream.destroy();
-  });
-
-  t.deepEqual(events, [
-    {
-      event: 'close',
-    },
-  ]);
+  t.true(error instanceof Error);
+  t.deepEqual(error.message, 'syntax error at or near "NONSENSE"');
 
   await pool.end();
 });
