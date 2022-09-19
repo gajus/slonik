@@ -82,7 +82,7 @@ export class QueryStream extends Readable {
       }
 
       if (error) {
-        this.emit('error', error);
+        this.destroy(error);
 
         return;
       }
