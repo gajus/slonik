@@ -378,7 +378,7 @@ test('throws error on syntax errors', async (t) => {
   const pool = await createPool(t.context.dsn);
 
   const error = await t.throwsAsync(pool.stream(sql`NONSENSE NOT REALLY SQL`, () => {
-    t.false('We should not have got this far!  Comment out this line to make the test pass.');
+    t.false('We should not have got this far!');
   }));
 
   t.true(error instanceof Error);
