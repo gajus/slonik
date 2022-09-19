@@ -374,7 +374,7 @@ test('frees connection after destroying a stream with an error', async (t) => {
   await pool.end();
 });
 
-test('does something sensible with sytax errors', async (t) => {
+test('does something sensible with syntax errors', async (t) => {
   const pool = await createPool(t.context.dsn);
 
   const events: any[] = [];
