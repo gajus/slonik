@@ -377,11 +377,9 @@ test('frees connection after destroying a stream with an error', async (t) => {
 test('throws error on syntax errors', async (t) => {
   const pool = await createPool(t.context.dsn);
 
-  const error = await t.throwsAsync(pool.stream(sql`
-      NONSENSE NOT REALLY SQL
-    `, async (stream) => {
-      t.false('We should not have got this far!  Comment out this line to make the test pass.');
-    }));
+  const error = await t.throwsAsync(pool.stream(sql`NONSENSE NOT REALLY SQL`, () => {
+    t.false('We should not have got this far!  Comment out this line to make the test pass.');
+  }));
 
   t.true(error instanceof Error);
   t.deepEqual(error.message, 'syntax error at or near "NONSENSE"');
