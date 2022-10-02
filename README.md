@@ -149,6 +149,7 @@ Note: Using this project does not require TypeScript. It is a regular ES6 module
         * [Handling `StatementTimeoutError`](#user-content-slonik-error-handling-handling-statementtimeouterror)
         * [Handling `UniqueIntegrityConstraintViolationError`](#user-content-slonik-error-handling-handling-uniqueintegrityconstraintviolationerror)
         * [Handling `TupleMovedToAnotherPartitionError`](#user-content-slonik-error-handling-handling-tuplemovedtoanotherpartitionerror)
+    * [Migrations](#user-content-slonik-migrations)
     * [Types](#user-content-slonik-types)
     * [Debugging](#user-content-slonik-debugging)
         * [Logging](#user-content-slonik-debugging-logging)
@@ -2733,6 +2734,19 @@ await pool.connect(async (connection0) => {
 
 `TupleMovedToAnotherPartitionError` is thrown when [`affecting tuple moved into different partition`](https://github.com/postgres/postgres/commit/f16241bef7cc271bff60e23de2f827a10e50dde8).
 
+
+<a name="user-content-slonik-migrations"></a>
+<a name="slonik-migrations"></a>
+## Migrations
+
+This library intentionally doesn't handle migrations, because a database client and migrations are conceptually distinct problems.
+
+My personal preference is to use [Flyway](https://flywaydb.org/) – it is a robust solution that many DBAs are already familiar with.
+
+The Slonik community has also shared their successes with these Node.js frameworks:
+
+* [`node-pg-migrate`](https://github.com/salsita/node-pg-migrate)
+* [`@slonik/migrator`](https://www.npmjs.com/package/@slonik/migrator)
 
 <a name="user-content-slonik-types"></a>
 <a name="slonik-types"></a>
