@@ -60,6 +60,7 @@ export class QueryStream extends Readable {
   }
 
   public submit (connection: Object) {
+    connection._usedForStream = true;
     this.cursor.submit(connection);
   }
 

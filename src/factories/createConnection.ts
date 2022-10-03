@@ -206,6 +206,10 @@ export const createConnection = async (
 
   destroyBoundConnection(boundConnection);
 
+  if(connection.connection?._usedForStream) {
+    await new Promise(resolve => setTimeout(resolve, 100));
+    delete connection.connection._usedForStream;
+  }
   connection.release();
 
   return result;
