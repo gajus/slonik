@@ -68,8 +68,8 @@ Note: `pool#transaction` triggers `beforePoolConnection` but has no `query`.
 Note: This particular implementation does not handle [`SELECT INTO`](https://www.postgresql.org/docs/current/sql-selectinto.html).
 
 ```ts
-const slavePool = await createPool('postgres://slave');
-const masterPool = await createPool('postgres://master', {
+const readOnlyPool = await createPool('postgres://read-only');
+const pool = await createPool('postgres://main', {
   interceptors: [
     {
       beforePoolConnection: (connectionContext) => {
@@ -90,17 +90,17 @@ const masterPool = await createPool('postgres://master', {
 
         // Returning an instance of DatabasePool will attempt to run the query using the other connection pool.
         // Note that all other interceptors of the pool that the query originated from are short-circuited.
-        return slavePool;
+        return readOnlyPool;
       }
     }
   ]
 });
 
-// This query will use `postgres://slave` connection.
-masterPool.query(sql`SELECT 1`);
+// This query will use `postgres://read-only` connection.
+pool.query(sql`SELECT 1`);
 
-// This query will use `postgres://master` connection.
-masterPool.query(sql`UPDATE 1`);
+// This query will use `postgres://main` connection.
+pool.query(sql`UPDATE 1`);
 ```
 
 ### Building Utility Statements
