@@ -1179,7 +1179,7 @@ const masterPool = await createPool('postgres://master', {
     {
       beforePoolConnection: (connectionContext) => {
         if (!connectionContext.query?.sql.trim().startsWith('SELECT ')) {
-          // Returning null fallsback to using the DatabasePool from which the query originates.
+          // Returning null falls back to using the DatabasePool from which the query originates.
           return null;
         }
 
@@ -1189,7 +1189,7 @@ const masterPool = await createPool('postgres://master', {
         //   # @volatile
         //   SELECT write_log()
         // `
-        if (!connectionContext.query?.sql.includes('@volatile')) {
+        if (connectionContext.query?.sql.includes('@volatile')) {
           return null;
         }
 
