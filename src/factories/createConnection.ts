@@ -206,7 +206,7 @@ export const createConnection = async (
 
   destroyBoundConnection(boundConnection);
 
-  if(connection?.connection?._usedForStream) {
+  if (connection?.connection?._usedForStream) {
     connection.release(true);
   } else {
     connection.release();
