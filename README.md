@@ -1170,6 +1170,8 @@ Note: How you determine which queries are safe to route to a read-only instance 
 
 Note: `beforePoolConnection` only works for connections initiated by a query, i.e. `pool#query` and not `pool#connect()`.
 
+Note: `pool#transaction` triggers `beforePoolConnection` but has no `query`.
+
 Note: This particular implementation does not handle [`SELECT INTO`](https://www.postgresql.org/docs/current/sql-selectinto.html).
 
 ```ts
