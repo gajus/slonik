@@ -9,6 +9,7 @@ import {
 import {
   serializeError,
 } from 'serialize-error';
+import * as sinon from 'sinon';
 import {
   z,
 } from 'zod';
@@ -146,6 +147,41 @@ export const createIntegrationTests = (
   test: TestFn<TestContextType>,
   PgPool: new () => PgPoolType,
 ) => {
+  test('re-routes query to a different pool', async (t) => {
+    const readOnlyBeforeTransformQuery = sinon.stub().resolves(null);
+    const beforeTransformQuery = sinon.stub().throws();
+
+    const readOnlyPool = await createPool(t.context.dsn, {
+      interceptors: [
+        {
+          beforeTransformQuery: readOnlyBeforeTransformQuery,
+        },
+      ],
+      PgPool,
+    });
+
+    const pool = await createPool(t.context.dsn, {
+      interceptors: [
+        {
+          beforePoolConnection: () => {
+            return readOnlyPool;
+          },
+          beforeTransformQuery,
+        },
+      ],
+      PgPool,
+    });
+
+    await pool.query(sql`
+      SELECT 1
+    `);
+
+    t.true(readOnlyBeforeTransformQuery.calledOnce);
+    t.true(beforeTransformQuery.notCalled);
+
+    await pool.end();
+  });
+
   test('does not allow to reuse released connection', async (t) => {
     const pool = await createPool(t.context.dsn, {
       PgPool,
