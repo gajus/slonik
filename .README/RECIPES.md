@@ -63,6 +63,8 @@ Note: How you determine which queries are safe to route to a read-only instance 
 
 Note: `beforePoolConnection` only works for connections initiated by a query, i.e. `pool#query` and not `pool#connect()`.
 
+Note: This particular implementation does not handle [`SELECT INTO`](https://www.postgresql.org/docs/current/sql-selectinto.html).
+
 ```ts
 const slavePool = await createPool('postgres://slave');
 const masterPool = await createPool('postgres://master', {
