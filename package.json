@@ -96,7 +96,7 @@
   "scripts": {
     "build": "rm -fr ./dist && tsc",
     "create-readme": "gitdown ./.README/README.md --output-file ./README.md",
-    "lint": "eslint ./src ./test && tsc --noEmit",
+    "lint": "eslint --cache ./src ./test && tsc --noEmit",
     "test": "nyc ava --verbose --serial"
   },
   "types": "./dist/src/index.d.ts",
