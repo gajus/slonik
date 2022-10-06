@@ -101,6 +101,7 @@ export const createTestRunner = (PgPool: new (poolConfig: PoolConfig) => PgPoolT
         CREATE TABLE person (
           id SERIAL PRIMARY KEY,
           name text,
+          tags text[],
           birth_date date,
           payload bytea
         )
@@ -147,6 +148,47 @@ export const createIntegrationTests = (
   test: TestFn<TestContextType>,
   PgPool: new () => PgPoolType,
 ) => {
+  test('inserting records using jsonb_to_recordset', async (t) => {
+    const pool = await createPool(t.context.dsn, {
+      PgPool,
+    });
+
+    const persons = await pool.any(sql`
+      INSERT INTO person
+      (
+        name,
+        tags
+      )
+      SELECT *
+      FROM jsonb_to_recordset(${sql.jsonb([
+    {
+      name: 'foo',
+      tags: [
+        'a',
+        'b',
+        'c',
+      ],
+    },
+  ])}) AS t(name text, tags text[])
+      RETURNING
+        name,
+        tags
+    `);
+
+    t.deepEqual(persons, [
+      {
+        name: 'foo',
+        tags: [
+          'a',
+          'b',
+          'c',
+        ],
+      },
+    ]);
+
+    await pool.end();
+  });
+
   test('re-routes query to a different pool', async (t) => {
     const readOnlyBeforeTransformQuery = sinon.stub().resolves(null);
     const beforeTransformQuery = sinon.stub().throws();
