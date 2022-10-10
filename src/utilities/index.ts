@@ -17,6 +17,9 @@ export {
   escapeLiteralValue,
 } from './escapeLiteralValue';
 export {
+  sanitizeObject,
+} from './sanitizeObject';
+export {
   isPrimitiveValueExpression,
 } from './isPrimitiveValueExpression';
 export {
