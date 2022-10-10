@@ -54,8 +54,12 @@ export class TupleMovedToAnotherPartitionError extends WrappedPGError {
 }
 
 export class NotFoundError extends SlonikError {
-  public constructor () {
+  public sql: string;
+
+  public constructor (query: Query) {
     super('Resource not found.');
+
+    this.sql = query.sql;
   }
 }
 

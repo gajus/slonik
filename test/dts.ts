@@ -421,7 +421,7 @@ const createSqlTagTypes = () => {
 
 const errorTypes = () => {
   new SlonikError();
-  new NotFoundError();
+  new NotFoundError(sql`SELECT 1`);
   new DataIntegrityError(sql`SELECT 1`);
   new InvalidConfigurationError();
   new StatementCancelledError(new Error('Foo'));

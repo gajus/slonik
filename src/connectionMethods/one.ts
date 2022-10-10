@@ -30,7 +30,7 @@ export const one: InternalQueryMethod = async (log, connection, clientConfigurat
       queryId,
     }, 'NotFoundError');
 
-    throw new NotFoundError();
+    throw new NotFoundError(slonikQuery);
   }
 
   if (rows.length > 1) {
