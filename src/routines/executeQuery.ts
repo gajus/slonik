@@ -82,7 +82,7 @@ const createParseInterceptor = (parser: ZodTypeAny): Interceptor => {
         }, 'row failed validation');
 
         throw new SchemaValidationError(
-          actualQuery.sql,
+          actualQuery,
           sanitizeObject(row),
           validationResult.error.issues,
         );

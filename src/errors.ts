@@ -4,6 +4,7 @@ import {
 } from 'zod';
 import {
   type SerializableValue,
+  type Query,
 } from './types';
 
 export class SlonikError extends ExtendableError {}
@@ -71,10 +72,10 @@ export class SchemaValidationError extends SlonikError {
 
   public issues: ZodIssue[];
 
-  public constructor (sql: string, row: SerializableValue, issues: ZodIssue[]) {
+  public constructor (sql: Query, row: SerializableValue, issues: ZodIssue[]) {
     super('Query returned rows that do not conform with the schema.');
 
-    this.sql = sql;
+    this.sql = sql.sql;
     this.row = row;
     this.issues = issues;
   }
