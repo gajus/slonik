@@ -3,6 +3,8 @@ import {
   type ZodIssue,
 } from 'zod';
 import {
+  type PrimitiveValueExpression,
+
   type SerializableValue,
   type Query,
 } from './types';
@@ -56,25 +58,33 @@ export class TupleMovedToAnotherPartitionError extends WrappedPGError {
 export class NotFoundError extends SlonikError {
   public sql: string;
 
+  public values: readonly PrimitiveValueExpression[];
+
   public constructor (query: Query) {
     super('Resource not found.');
 
     this.sql = query.sql;
+    this.values = query.values;
   }
 }
 
 export class DataIntegrityError extends SlonikError {
   public sql: string;
 
+  public values: readonly PrimitiveValueExpression[];
+
   public constructor (query: Query) {
     super('Query returns an unexpected result.');
 
     this.sql = query.sql;
+    this.values = query.values;
   }
 }
 
 export class SchemaValidationError extends SlonikError {
   public sql: string;
+
+  public values: readonly PrimitiveValueExpression[];
 
   public row: SerializableValue;
 
@@ -84,6 +94,7 @@ export class SchemaValidationError extends SlonikError {
     super('Query returned rows that do not conform with the schema.');
 
     this.sql = query.sql;
+    this.values = query.values;
     this.row = row;
     this.issues = issues;
   }
