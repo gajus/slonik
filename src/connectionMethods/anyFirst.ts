@@ -11,10 +11,10 @@ import {
   any,
 } from './any';
 
-export const anyFirst: InternalQueryMethod = async (log, connection, clientConfigurationType, slonikSql, inheritedQueryId) => {
+export const anyFirst: InternalQueryMethod = async (log, connection, clientConfigurationType, query, inheritedQueryId) => {
   const queryId = inheritedQueryId ?? createQueryId();
 
-  const rows = await any(log, connection, clientConfigurationType, slonikSql, queryId);
+  const rows = await any(log, connection, clientConfigurationType, query, queryId);
 
   if (rows.length === 0) {
     return [];
@@ -29,7 +29,7 @@ export const anyFirst: InternalQueryMethod = async (log, connection, clientConfi
       queryId,
     }, 'result row has no columns');
 
-    throw new DataIntegrityError();
+    throw new DataIntegrityError(query);
   }
 
   const firstColumnName = keys[0];

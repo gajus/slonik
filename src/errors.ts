@@ -60,8 +60,12 @@ export class NotFoundError extends SlonikError {
 }
 
 export class DataIntegrityError extends SlonikError {
-  public constructor () {
+  public sql: string;
+
+  public constructor (query: Query) {
     super('Query returns an unexpected result.');
+
+    this.sql = query.sql;
   }
 }
 
@@ -72,10 +76,10 @@ export class SchemaValidationError extends SlonikError {
 
   public issues: ZodIssue[];
 
-  public constructor (sql: Query, row: SerializableValue, issues: ZodIssue[]) {
+  public constructor (query: Query, row: SerializableValue, issues: ZodIssue[]) {
     super('Query returned rows that do not conform with the schema.');
 
-    this.sql = sql.sql;
+    this.sql = query.sql;
     this.row = row;
     this.issues = issues;
   }
