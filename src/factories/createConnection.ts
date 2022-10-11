@@ -71,7 +71,6 @@ const destroyBoundConnection = (boundConnection: DatabasePoolConnection) => {
   }
 };
 
-// eslint-disable-next-line complexity
 export const createConnection = async (
   parentLog: Logger,
   pool: PgPool,

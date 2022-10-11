@@ -11,17 +11,17 @@ import {
   many,
 } from './many';
 
-export const manyFirst: InternalQueryMethod = async (log, connection, clientConfigurationType, slonikSql, inheritedQueryId) => {
+export const manyFirst: InternalQueryMethod = async (log, connection, clientConfigurationType, query, inheritedQueryId) => {
   const queryId = inheritedQueryId ?? createQueryId();
 
-  const rows = await many(log, connection, clientConfigurationType, slonikSql, queryId);
+  const rows = await many(log, connection, clientConfigurationType, query, queryId);
 
   if (rows.length === 0) {
     log.error({
       queryId,
     }, 'DataIntegrityError');
 
-    throw new DataIntegrityError();
+    throw new DataIntegrityError(query);
   }
 
   const keys = Object.keys(rows[0] as Record<string, unknown>);
@@ -31,7 +31,7 @@ export const manyFirst: InternalQueryMethod = async (log, connection, clientConf
       queryId,
     }, 'DataIntegrityError');
 
-    throw new DataIntegrityError();
+    throw new DataIntegrityError(query);
   }
 
   const firstColumnName = keys[0];

@@ -21,7 +21,7 @@
     "pg-types": "^4.0.0",
     "postgres-array": "^3.0.1",
     "postgres-interval": "^4.0.0",
-    "roarr": "^7.12.3",
+    "roarr": "^7.13.0",
     "serialize-error": "^8.0.0",
     "through2": "^4.0.2",
     "zod": "^3.19.1"
@@ -96,7 +96,7 @@
   "scripts": {
     "build": "rm -fr ./dist && tsc",
     "create-readme": "gitdown ./.README/README.md --output-file ./README.md",
-    "lint": "eslint ./src ./test && tsc --noEmit",
+    "lint": "eslint --cache ./src ./test && tsc --noEmit",
     "test": "nyc ava --verbose --serial"
   },
   "types": "./dist/src/index.d.ts",
