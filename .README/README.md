@@ -77,6 +77,8 @@ Note: Using this project does not require TypeScript. It is a regular ES6 module
 
 {"gitdown": "include", "file": "./ERROR_HANDLING.md"}
 
+{"gitdown": "include", "file": "./MIGRATIONS.md"}
+
 {"gitdown": "include", "file": "./TYPES.md"}
 
 {"gitdown": "include", "file": "./DEBUGGING.md"}
