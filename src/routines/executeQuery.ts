@@ -45,6 +45,7 @@ import {
 } from '../types';
 import {
   createQueryId,
+  sanitizeObject,
 } from '../utilities';
 
 type GenericQueryResult = QueryResult<QueryResultRow>;
@@ -76,13 +77,13 @@ const createParseInterceptor = (parser: ZodTypeAny): Interceptor => {
       if (!validationResult.success) {
         log.error({
           error: serializeError(validationResult.error),
-          row: JSON.parse(JSON.stringify(row)),
+          row: sanitizeObject(row),
           sql: actualQuery.sql,
         }, 'row failed validation');
 
         throw new SchemaValidationError(
-          actualQuery.sql,
-          JSON.parse(JSON.stringify(row)),
+          actualQuery,
+          sanitizeObject(row),
           validationResult.error.issues,
         );
       }

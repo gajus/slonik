@@ -12,7 +12,7 @@ import {
   query,
 } from './query';
 
-export const exists: InternalQueryMethod<Promise<boolean>> = async (log, connection, clientConfiguration, slonikSql, inheritedQueryId) => {
+export const exists: InternalQueryMethod<Promise<boolean>> = async (log, connection, clientConfiguration, slonikQuery, inheritedQueryId) => {
   const queryId = inheritedQueryId ?? createQueryId();
 
   const {
@@ -22,8 +22,8 @@ export const exists: InternalQueryMethod<Promise<boolean>> = async (log, connect
     connection,
     clientConfiguration,
     {
-      sql: 'SELECT EXISTS(' + slonikSql.sql + ')',
-      values: slonikSql.values,
+      sql: 'SELECT EXISTS(' + slonikQuery.sql + ')',
+      values: slonikQuery.values,
     } as TaggedTemplateLiteralInvocation,
     queryId,
   );
@@ -33,7 +33,7 @@ export const exists: InternalQueryMethod<Promise<boolean>> = async (log, connect
       queryId,
     }, 'DataIntegrityError');
 
-    throw new DataIntegrityError();
+    throw new DataIntegrityError(slonikQuery);
   }
 
   return Boolean((rows[0] as Record<string, unknown>).exists);
