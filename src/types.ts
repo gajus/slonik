@@ -57,7 +57,7 @@ export type TypeNameIdentifier =
   | 'uuid';
 
 export type SerializableValue =
-  SerializableValue[] | boolean | number | string | {
+  SerializableValue[] | boolean | number | string | readonly SerializableValue[] | {
     [key: string]: SerializableValue,
   } | null;
 
