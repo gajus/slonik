@@ -71,4 +71,4 @@ Enabling `captureStackTrace` configuration will create a stack trace before invo
 
 Use [`@roarr/cli`](https://github.com/gajus/roarr-cli) to pretty-print the output.
 
-![Log Roarr pretty-print output.](./.README/log-roarr-pretty-print-output.png)
+![Log Roarr pretty-print output.](./log-roarr-pretty-print-output.png)
