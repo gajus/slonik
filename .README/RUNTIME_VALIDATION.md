@@ -2,7 +2,10 @@
 
 Slonik integrates [zod](https://github.com/colinhacks/zod) to provide runtime query result validation and static type inference.
 
-Runtime validation is added by defining a zod [object](https://github.com/colinhacks/zod#objects) and passing it to `sql.type` tagged template.
+Validating queries requires to:
+
+1. Define a Zod [object](https://github.com/colinhacks/zod#objects) and passing it to `sql.type` tagged template (see below)
+1. Add a [result parser interceptor](#result-parser-interceptor)
 
 ### Motivation
 
@@ -145,5 +148,57 @@ t.deepEqual(result, {
     x: 1,
     y: 2,
   },
+});
+```
+
+### Result parser interceptor
+
+Initially, when Zod parsing was introduced to Slonik, it was enabled for all queries. However, I eventually realized that the baked-in implementation is not going to suit everyone's needs, e.g. You may want to sample validation, warn instead of throwing an error, etc. For this reason, I decided to take out the built-in parser interceptor in favor of providing examples for common use cases. What follows is the original default implementation.  
+
+```ts
+import {
+  type Interceptor,
+  SchemaValidationError,
+} from 'slonik';
+
+const createResultParserInterceptor = (): Interceptor => {
+  return {
+    transformRow: (executionContext, actualQuery, row) => {
+      const {
+        log,
+        resultParser,
+      } = executionContext;
+
+      if (!resultParser) {
+        return row;
+      }
+
+      const validationResult = parser.safeParse(row);
+
+      if (!validationResult.success) {
+        throw new SchemaValidationError(
+          actualQuery,
+          sanitizeObject(row),
+          validationResult.error.issues,
+        );
+      }
+
+      return validationResult.data as QueryResultRow;
+    },
+  };
+};
+```
+
+To use it, simply add it as a middleware:
+
+```ts
+import {
+  createPool,
+} from 'slonik';
+
+createPool('postgresql://', {
+  interceptors: [
+    createResultParserInterceptor(),
+  ]
 });
 ```
