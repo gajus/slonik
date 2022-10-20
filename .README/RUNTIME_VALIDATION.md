@@ -153,7 +153,9 @@ t.deepEqual(result, {
 
 ### Result parser interceptor
 
-Initially, when Zod parsing was introduced to Slonik, it was enabled for all queries. However, I eventually realized that the baked-in implementation is not going to suit everyone's needs, e.g. You may want to sample validation, warn instead of throwing an error, etc. For this reason, I decided to take out the built-in parser interceptor in favor of providing examples for common use cases. What follows is the original default implementation.  
+Slonik works without the interceptor, but it doesn't validate the query results. To validate results, you must implement an interceptor that parses the results.
+
+For context, when Zod parsing was first introduced to Slonik, it was enabled for all queries by default. However, I eventually realized that the baked-in implementation is not going to suit everyone's needs. For this reason, I decided to take out the built-in interceptor in favor of providing examples for common use cases. What follows is the original default implementation.
 
 ```ts
 import {
@@ -164,6 +166,10 @@ import {
 
 const createResultParserInterceptor = (): Interceptor => {
   return {
+    // If you are not going to transform results using Zod, then you should use `afterQueryExecution` instead.
+    // Future versions of Zod will provide a more efficient parser when parsing without transformations.
+    // You can even combine the two – use `afterQueryExecution` to validate results, and (conditionally)
+    // transform results as needed in `transformRow`.
     transformRow: (executionContext, actualQuery, row) => {
       const {
         log,
