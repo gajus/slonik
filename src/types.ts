@@ -268,6 +268,7 @@ export type IntervalInput = {
  * @property poolId Unique connection pool ID.
  * @property queryId Unique query ID.
  * @property queryInputTime `process.hrtime.bigint()` for when query was received.
+ * @property resultParser A Zod function that parses the query result.
  * @property sandbox Object used by interceptors to assign interceptor-specific, query-specific context.
  * @property transactionId Unique transaction ID.
  */
@@ -278,6 +279,7 @@ export type QueryContext = {
   readonly poolId: string,
   readonly queryId: QueryId,
   readonly queryInputTime: bigint | number,
+  readonly resultParser?: ZodTypeAny,
   readonly sandbox: Record<string, unknown>,
   readonly stackTrace: readonly CallSite[] | null,
   readonly transactionId: string | null,

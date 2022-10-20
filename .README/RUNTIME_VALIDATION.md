@@ -2,7 +2,10 @@
 
 Slonik integrates [zod](https://github.com/colinhacks/zod) to provide runtime query result validation and static type inference.
 
-Runtime validation is added by defining a zod [object](https://github.com/colinhacks/zod#objects) and passing it to `sql.type` tagged template.
+Validating queries requires to:
+
+1. Define a Zod [object](https://github.com/colinhacks/zod#objects) and passing it to `sql.type` tagged template (see below)
+1. Add a [result parser interceptor](#result-parser-interceptor)
 
 ### Motivation
 
@@ -145,5 +148,64 @@ t.deepEqual(result, {
     x: 1,
     y: 2,
   },
+});
+```
+
+### Result parser interceptor
+
+Slonik works without the interceptor, but it doesn't validate the query results. To validate results, you must implement an interceptor that parses the results.
+
+For context, when Zod parsing was first introduced to Slonik, it was enabled for all queries by default. However, I eventually realized that the baked-in implementation is not going to suit everyone's needs. For this reason, I decided to take out the built-in interceptor in favor of providing examples for common use cases. What follows is the original default implementation.
+
+```ts
+import {
+  type Interceptor,
+  type QueryResultRow,
+  SchemaValidationError,
+} from 'slonik';
+
+const createResultParserInterceptor = (): Interceptor => {
+  return {
+    // If you are not going to transform results using Zod, then you should use `afterQueryExecution` instead.
+    // Future versions of Zod will provide a more efficient parser when parsing without transformations.
+    // You can even combine the two – use `afterQueryExecution` to validate results, and (conditionally)
+    // transform results as needed in `transformRow`.
+    transformRow: (executionContext, actualQuery, row) => {
+      const {
+        log,
+        resultParser,
+      } = executionContext;
+
+      if (!resultParser) {
+        return row;
+      }
+
+      const validationResult = resultParser.safeParse(row);
+
+      if (!validationResult.success) {
+        throw new SchemaValidationError(
+          actualQuery,
+          row,
+          validationResult.error.issues,
+        );
+      }
+
+      return validationResult.data as QueryResultRow;
+    },
+  };
+};
+```
+
+To use it, simply add it as a middleware:
+
+```ts
+import {
+  createPool,
+} from 'slonik';
+
+createPool('postgresql://', {
+  interceptors: [
+    createResultParserInterceptor(),
+  ]
 });
 ```
