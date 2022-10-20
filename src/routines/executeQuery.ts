@@ -403,9 +403,11 @@ export const executeQuery = async (
           fields,
         } = result;
 
-        const rows: readonly QueryResultRow[] = result.rows.map((row) => {
-          return transformRow(executionContext, actualQuery, row, fields);
-        });
+        const rows: QueryResultRow[] = [];
+
+        for (const row of result.rows) {
+          rows.push(transformRow(executionContext, actualQuery, row, fields));
+        }
 
         result = {
           ...result,
