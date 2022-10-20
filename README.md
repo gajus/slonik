@@ -1410,6 +1410,7 @@ Initially, when Zod parsing was introduced to Slonik, it was enabled for all que
 ```ts
 import {
   type Interceptor,
+  type QueryResultRow,
   SchemaValidationError,
 } from 'slonik';
 
