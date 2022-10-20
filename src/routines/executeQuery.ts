@@ -185,14 +185,16 @@ export const executeQuery = async (
   if (clientConfiguration.captureStackTrace) {
     const callSites = await getStackTrace();
 
-    stackTrace = callSites.map((callSite) => {
-      return {
+    stackTrace = [];
+
+    for (const callSite of callSites) {
+      stackTrace.push({
         columnNumber: callSite.columnNumber,
         fileName: callSite.fileName,
         functionName: callSite.functionName,
         lineNumber: callSite.lineNumber,
-      };
-    });
+      });
+    }
   }
 
   const queryId = inheritedQueryId ?? createQueryId();
