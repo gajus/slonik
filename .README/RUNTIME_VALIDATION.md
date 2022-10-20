@@ -174,12 +174,12 @@ const createResultParserInterceptor = (): Interceptor => {
         return row;
       }
 
-      const validationResult = parser.safeParse(row);
+      const validationResult = resultParser.safeParse(row);
 
       if (!validationResult.success) {
         throw new SchemaValidationError(
           actualQuery,
-          sanitizeObject(row),
+          row,
           validationResult.error.issues,
         );
       }

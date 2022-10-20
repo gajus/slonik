@@ -1431,7 +1431,7 @@ const createResultParserInterceptor = (): Interceptor => {
       if (!validationResult.success) {
         throw new SchemaValidationError(
           actualQuery,
-          sanitizeObject(row),
+          row,
           validationResult.error.issues,
         );
       }
