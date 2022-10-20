@@ -6,7 +6,6 @@ import {
   z,
 } from 'zod';
 import {
-  type SchemaValidationError,
   DataIntegrityError,
   NotFoundError,
   UnexpectedStateError,
@@ -106,40 +105,4 @@ test('describes zod object associated with the query', async (t) => {
   expectTypeOf(result).toMatchTypeOf<number>();
 
   t.is(result, 1);
-});
-
-test('throws an error if object does match the zod object shape', async (t) => {
-  const pool = await createPool();
-
-  pool.querySpy.returns({
-    rows: [
-      {
-        foo: '1',
-      },
-    ],
-  });
-
-  const zodObject = z.object({
-    foo: z.number(),
-  });
-
-  const query = sql.type(zodObject)`SELECT 1`;
-
-  const error = await t.throwsAsync<SchemaValidationError>(pool.oneFirst(query));
-
-  t.is(error?.sql, 'SELECT 1');
-  t.deepEqual(error?.row, {
-    foo: '1',
-  });
-  t.deepEqual(error?.issues, [
-    {
-      code: 'invalid_type',
-      expected: 'number',
-      message: 'Expected number, received string',
-      path: [
-        'foo',
-      ],
-      received: 'string',
-    },
-  ]);
 });

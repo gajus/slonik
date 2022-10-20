@@ -6,7 +6,6 @@ import {
   z,
 } from 'zod';
 import {
-  type SchemaValidationError,
   DataIntegrityError,
   NotFoundError,
 } from '../../../src/errors';
@@ -92,72 +91,4 @@ test('describes zod object associated with the query', async (t) => {
   t.deepEqual(result, {
     foo: 1,
   });
-});
-
-test('uses zod transform', async (t) => {
-  const pool = await createPool();
-
-  pool.querySpy.returns({
-    rows: [
-      {
-        foo: '1,2',
-      },
-    ],
-  });
-
-  const coordinatesType = z.string().transform((subject) => {
-    const [
-      x,
-      y,
-    ] = subject.split(',');
-
-    return {
-      x: Number(x),
-      y: Number(y),
-    };
-  });
-
-  const zodObject = z.object({
-    foo: coordinatesType,
-  });
-
-  const query = sql.type(zodObject)`SELECT '1,2' as foo`;
-
-  const result = await pool.one(query);
-
-  expectTypeOf(result).toMatchTypeOf<{foo: {x: number, y: number, }, }>();
-
-  t.deepEqual(result, {
-    foo: {
-      x: 1,
-      y: 2,
-    },
-  });
-});
-
-test('throws an error if property type does not conform to zod object (invalid_type)', async (t) => {
-  const pool = await createPool();
-
-  pool.querySpy.returns({
-    rows: [
-      {
-        foo: '1',
-      },
-    ],
-  });
-
-  const zodObject = z.object({
-    foo: z.number(),
-  });
-
-  const query = sql.type(zodObject)`SELECT 1`;
-
-  const error = await t.throwsAsync<SchemaValidationError>(pool.one(query));
-
-  if (!error) {
-    throw new Error('Expected SchemaValidationError');
-  }
-
-  t.is(error.issues.length, 1);
-  t.is(error.issues[0]?.code, 'invalid_type');
 });
