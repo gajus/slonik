@@ -5,6 +5,7 @@ import {
   executeQuery,
 } from '../routines';
 import {
+  type Field,
   type InternalQueryMethod,
   type Notice,
   type QueryResult,
@@ -30,14 +31,20 @@ export const query: InternalQueryMethod = async (
         finalValues as any[],
       );
 
-      return {
-        command: result.command as QueryResult<unknown>['command'],
-        fields: (result.fields || []).map((field) => {
-          return {
+      const fields: Field[] = [];
+
+      if (result.fields) {
+        for (const field of result.fields) {
+          fields.push({
             dataTypeId: field.dataTypeID,
             name: field.name,
-          };
-        }),
+          });
+        }
+      }
+
+      return {
+        command: result.command as QueryResult<unknown>['command'],
+        fields,
         notices: result.notices ?? [],
         rowCount: result.rowCount || 0,
         rows: result.rows || [],
