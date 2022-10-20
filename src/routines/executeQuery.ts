@@ -9,9 +9,6 @@ import {
   serializeError,
 } from 'serialize-error';
 import {
-  type ZodTypeAny,
-} from 'zod';
-import {
   TRANSACTION_ROLLBACK_ERROR_PREFIX,
 } from '../constants';
 import {
@@ -20,7 +17,6 @@ import {
   ForeignKeyIntegrityConstraintViolationError,
   InvalidInputError,
   NotNullIntegrityConstraintViolationError,
-  SchemaValidationError,
   StatementCancelledError,
   StatementTimeoutError,
   TupleMovedToAnotherPartitionError,
@@ -45,7 +41,6 @@ import {
 } from '../types';
 import {
   createQueryId,
-  sanitizeObject,
 } from '../utilities';
 
 type GenericQueryResult = QueryResult<QueryResultRow>;
@@ -63,34 +58,6 @@ type TransactionQuery = {
   readonly executionRoutine: ExecutionRoutineType,
   readonly sql: string,
   readonly values: readonly PrimitiveValueExpression[],
-};
-
-const createParseInterceptor = (parser: ZodTypeAny): Interceptor => {
-  return {
-    transformRow: (executionContext, actualQuery, row) => {
-      const {
-        log,
-      } = executionContext;
-
-      const validationResult = parser.safeParse(row);
-
-      if (!validationResult.success) {
-        log.error({
-          error: serializeError(validationResult.error),
-          row: sanitizeObject(row),
-          sql: actualQuery.sql,
-        }, 'row failed validation');
-
-        throw new SchemaValidationError(
-          actualQuery,
-          sanitizeObject(row),
-          validationResult.error.issues,
-        );
-      }
-
-      return validationResult.data as QueryResultRow;
-    },
-  };
 };
 
 const retryQuery = async (
@@ -219,6 +186,7 @@ export const executeQuery = async (
     poolId: poolClientState.poolId,
     queryId,
     queryInputTime,
+    resultParser: slonikSqlRename.parser,
     sandbox: {},
     stackTrace,
     transactionId: poolClientState.transactionId,
@@ -382,17 +350,7 @@ export const executeQuery = async (
 
   // Stream does not have `rows` in the result object and all rows are already transformed.
   if (result.rows) {
-    const {
-      parser,
-    } = slonikSqlRename;
-
     const interceptors: Interceptor[] = clientConfiguration.interceptors.slice();
-
-    if (parser) {
-      interceptors.push(
-        createParseInterceptor(parser),
-      );
-    }
 
     for (const interceptor of interceptors) {
       if (interceptor.transformRow) {
