@@ -9,8 +9,8 @@ import {
   sql
 } from 'slonik'
 
-connection.query(sql.unsafe`
-  SELECT 1
+connection.query(sql.typeAlias('id')`
+  SELECT 1 AS id
   FROM foo
   WHERE bar = ${'baz'}
 `);
@@ -19,7 +19,7 @@ connection.query(sql.unsafe`
 The above is equivalent to evaluating:
 
 ```sql
-SELECT 1
+SELECT 1 AS id
 FROM foo
 WHERE bar = $1
 
@@ -35,7 +35,7 @@ There is an internal mechanism that checks to see if query was created using `sq
 
 ```ts
 const query = {
-  sql: 'SELECT 1 FROM foo WHERE bar = $1',
+  sql: 'SELECT 1 AS id FROM foo WHERE bar = $1',
   type: 'SQL',
   values: [
     'baz'

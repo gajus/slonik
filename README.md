@@ -475,7 +475,7 @@ Instance of Slonik connection pool can be then used to create a new connection, 
 
 ```ts
 pool.connect(async (connection) => {
-  await connection.query(sql.unsafe`SELECT 1`);
+  await connection.query(sql.typeAlias('id')`SELECT 1 AS id`);
 });
 ```
 
@@ -486,7 +486,7 @@ Refer to [query method](#user-content-slonik-query-methods) documentation to lea
 If you do not require having a persistent connection to the same backend, then you can directly use `pool` to run queries, e.g.
 
 ```ts
-pool.query(sql.unsafe`SELECT 1`);
+pool.query(sql.typeAlias('id')`SELECT 1 AS id`);
 ```
 
 Beware that in the latter example, the connection picked to execute the query is a random connection from the connection pool, i.e. using the latter method (without explicit `connect()`) does not guarantee that multiple queries will refer to the same backend.
@@ -508,8 +508,8 @@ import {
 const pool = await createPool('postgres://');
 
 const main = async () => {
-  await pool.query(sql.unsafe`
-    SELECT 1
+  await pool.query(sql.typeAlias('id')`
+    SELECT 1 AS id
   `);
 
   await pool.end();
@@ -635,7 +635,7 @@ import {
 
 const pool = await createPool('postgres://');
 
-await pool.query(sql.unsafe`SELECT 1`);
+await pool.query(sql.typeAlias('id')`SELECT 1 AS id`);
 ```
 
 <a name="user-content-slonik-usage-default-configuration"></a>
@@ -724,8 +724,8 @@ import {
 const pool = await createPool('postgres://localhost');
 
 const result = await pool.connect(async (connection) => {
-  await connection.query(sql.unsafe`SELECT 1`);
-  await connection.query(sql.unsafe`SELECT 2`);
+  await connection.query(sql.typeAlias('id')`SELECT 1 AS id`);
+  await connection.query(sql.typeAlias('id')`SELECT 2 AS id`);
 
   return 'foo';
 });
@@ -781,8 +781,8 @@ const pool = createMockPool({
 });
 
 await pool.connect(async (connection) => {
-  const results = await connection.query(sql.unsafe`
-    SELECT ${'foo'}
+  const results = await connection.query(sql.typeAlias('foo')`
+    SELECT ${'foo'} AS foo
   `);
 });
 ```
@@ -1207,10 +1207,10 @@ const pool = await createPool('postgres://main', {
 });
 
 // This query will use `postgres://read-only` connection.
-pool.query(sql.unsafe`SELECT 1`);
+pool.query(sql.typeAlias('id')`SELECT 1 AS id`);
 
 // This query will use `postgres://main` connection.
-pool.query(sql.unsafe`UPDATE 1`);
+pool.query(sql.typeAlias('id')`UPDATE 1 AS id`);
 ```
 
 <a name="user-content-slonik-recipes-building-utility-statements"></a>
@@ -1227,7 +1227,7 @@ In the context of Slonik, if you are building utility statements you must use qu
 Example:
 
 ```ts
-await connection.query(sql.unsafe`
+await connection.query(sql.typeAlias('void')`
   CREATE USER ${sql.identifier(['foo'])}
   WITH PASSWORD ${sql.literalValue('bar')}
 `);
@@ -1541,8 +1541,8 @@ import {
   sql
 } from 'slonik'
 
-connection.query(sql.unsafe`
-  SELECT 1
+connection.query(sql.typeAlias('id')`
+  SELECT 1 AS id
   FROM foo
   WHERE bar = ${'baz'}
 `);
@@ -1551,7 +1551,7 @@ connection.query(sql.unsafe`
 The above is equivalent to evaluating:
 
 ```sql
-SELECT 1
+SELECT 1 AS id
 FROM foo
 WHERE bar = $1
 
@@ -1569,7 +1569,7 @@ There is an internal mechanism that checks to see if query was created using `sq
 
 ```ts
 const query = {
-  sql: 'SELECT 1 FROM foo WHERE bar = $1',
+  sql: 'SELECT 1 AS id FROM foo WHERE bar = $1',
   type: 'SQL',
   values: [
     'baz'

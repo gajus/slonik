@@ -97,10 +97,10 @@ const pool = await createPool('postgres://main', {
 });
 
 // This query will use `postgres://read-only` connection.
-pool.query(sql.unsafe`SELECT 1`);
+pool.query(sql.typeAlias('id')`SELECT 1 AS id`);
 
 // This query will use `postgres://main` connection.
-pool.query(sql.unsafe`UPDATE 1`);
+pool.query(sql.typeAlias('id')`UPDATE 1 AS id`);
 ```
 
 ### Building Utility Statements
@@ -115,7 +115,7 @@ In the context of Slonik, if you are building utility statements you must use qu
 Example:
 
 ```ts
-await connection.query(sql.unsafe`
+await connection.query(sql.typeAlias('void')`
   CREATE USER ${sql.identifier(['foo'])}
   WITH PASSWORD ${sql.literalValue('bar')}
 `);
