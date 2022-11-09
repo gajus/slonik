@@ -2,9 +2,6 @@ import {
   type Pool as PgPool,
 } from 'pg';
 import {
-  assertSqlSqlToken,
-} from '../assertions';
-import {
   transaction,
 } from '../connectionMethods';
 import {
@@ -84,8 +81,6 @@ export const bindPool = (
       );
     },
     copyFromBinary: async (copyQuery, values, columnTypes) => {
-      assertSqlSqlToken(copyQuery);
-
       return await createConnection(
         parentLog,
         pool,
@@ -281,8 +276,6 @@ export const bindPool = (
       );
     },
     stream: async (streamQuery, streamHandler, config) => {
-      assertSqlSqlToken(streamQuery);
-
       return await createConnection(
         parentLog,
         pool,
