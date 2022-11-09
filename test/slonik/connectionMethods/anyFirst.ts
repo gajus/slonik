@@ -18,7 +18,7 @@ test('returns empty array if no rows are returned', async (t) => {
     rows: [],
   });
 
-  const result = await pool.anyFirst(sql`SELECT 1`);
+  const result = await pool.anyFirst(sql.unsafe`SELECT 1`);
 
   t.deepEqual(result, []);
 });
@@ -37,7 +37,7 @@ test('returns first column values of the query result rows', async (t) => {
     ],
   });
 
-  const result = await pool.anyFirst(sql`SELECT 1`);
+  const result = await pool.anyFirst(sql.unsafe`SELECT 1`);
 
   t.deepEqual(result, [
     1,
@@ -57,7 +57,7 @@ test('throws an error if more than one column is returned', async (t) => {
     ],
   });
 
-  const error = await t.throwsAsync(pool.anyFirst(sql`SELECT 1`));
+  const error = await t.throwsAsync(pool.anyFirst(sql.unsafe`SELECT 1`));
 
   t.true(error instanceof DataIntegrityError);
 });

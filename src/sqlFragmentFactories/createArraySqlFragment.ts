@@ -40,7 +40,7 @@ export const createArraySqlFragment = (token: ArraySqlToken, greatestParameterPo
 
   let sql = '$' + String(placeholderIndex) + '::';
 
-  if (isSqlToken(token.memberType) && token.memberType.type === 'SLONIK_TOKEN_SQL') {
+  if (isSqlToken(token.memberType) && token.memberType.type === 'SLONIK_TOKEN_FRAGMENT') {
     const sqlFragment = createSqlTokenSqlFragment(
       token.memberType,
       placeholderIndex,
@@ -54,7 +54,7 @@ export const createArraySqlFragment = (token: ArraySqlToken, greatestParameterPo
   } else if (typeof token.memberType === 'string') {
     sql += escapeIdentifier(token.memberType) + '[]';
   } else {
-    throw new InvalidInputError('Unsupported `memberType`. `memberType` must be a string or SqlToken of "SLONIK_TOKEN_SQL" type.');
+    throw new InvalidInputError('Unsupported `memberType`. `memberType` must be a string or SqlToken of "SLONIK_TOKEN_FRAGMENT" type.');
   }
 
   return {

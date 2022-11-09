@@ -29,7 +29,7 @@ import {
 type DatabaseRecordIdType = number;
 
 const getFooIdByBar = async (connection: DatabaseConnection, bar: string): Promise<DatabaseRecordIdType> => {
-  const fooResult = await connection.query(sql`
+  const fooResult = await connection.query(sql.typeAlias('id')`
     SELECT id
     FROM foo
     WHERE bar = ${bar}
@@ -51,7 +51,7 @@ const getFooIdByBar = async (connection: DatabaseConnection, bar: string): Promi
 
 ```ts
 const getFooIdByBar = (connection: DatabaseConnection, bar: string): Promise<DatabaseRecordIdType> => {
-  return connection.oneFirst(sql`
+  return connection.oneFirst(sql.typeAlias('id')`
     SELECT id
     FROM foo
     WHERE bar = ${bar}
@@ -70,13 +70,13 @@ In the absence of helper methods, the overhead of repeating code becomes particu
 Furthermore, using methods that guarantee the shape of the results allows us to leverage static type checking and catch some of the errors even before executing the code, e.g.
 
 ```ts
-const fooId = await connection.many(sql`
+const fooId = await connection.many(sql.typeAlias('id')`
   SELECT id
   FROM foo
   WHERE bar = ${bar}
 `);
 
-await connection.query(sql`
+await connection.query(sql.typeAlias('void')`
   DELETE FROM baz
   WHERE foo_id = ${fooId}
 `);
@@ -96,7 +96,7 @@ The primary reason for implementing _only_ this connection pooling method is bec
 const main = async () => {
   const connection = await pool.connect();
 
-  await connection.query(sql`SELECT foo()`);
+  await connection.query(sql.unsafe`SELECT foo()`);
 
   await connection.release();
 };
@@ -115,7 +115,7 @@ const main = async () => {
   let lastExecutionResult;
 
   try {
-    lastExecutionResult = await connection.query(sql`SELECT foo()`);
+    lastExecutionResult = await connection.query(sql.unsafe`SELECT foo()`);
   } finally {
     await connection.release();
   }
@@ -129,7 +129,7 @@ Slonik abstracts the latter pattern into `pool#connect()` method.
 ```ts
 const main = () => {
   return pool.connect((connection) => {
-    return connection.query(sql`SELECT foo()`);
+    return connection.query(sql.unsafe`SELECT foo()`);
   });
 };
 ```
@@ -142,8 +142,8 @@ Just like in the [unsafe connection handling](#protecting-against-unsafe-connect
 
 ```ts
 connection.transaction(async (transactionConnection) => {
-  await transactionConnection.query(sql`INSERT INTO foo (bar) VALUES ('baz')`);
-  await transactionConnection.query(sql`INSERT INTO qux (quux) VALUES ('quuz')`);
+  await transactionConnection.query(sql.typeAlias('void')`INSERT INTO foo (bar) VALUES ('baz')`);
+  await transactionConnection.query(sql.typeAlias('void')`INSERT INTO qux (quux) VALUES ('quuz')`);
 });
 ```
 
@@ -188,13 +188,13 @@ The above invocation would produce an error:
 This means that the only way to run a query is by constructing it using [`sql` tagged template literal](https://github.com/gajus/slonik#slonik-value-placeholders-tagged-template-literals), e.g.
 
 ```ts
-connection.query(sql`SELECT 1`);
+connection.query(sql.unsafe`SELECT 1`);
 ```
 
 To add a parameter to the query, user must use [template literal placeholders](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Template_literals#Description), e.g.
 
 ```ts
-connection.query(sql`SELECT ${userInput}`);
+connection.query(sql.unsafe`SELECT ${userInput}`);
 ```
 
 Slonik takes over from here and constructs a query with value bindings, and sends the resulting query text and parameters to PostgreSQL. There is no other way of passing parameters to the query – this adds a strong layer of protection against accidental unsafe user input handling due to limited knowledge of the SQL client API.
@@ -202,21 +202,21 @@ Slonik takes over from here and constructs a query with value bindings, and send
 As Slonik restricts user's ability to generate and execute dynamic SQL, it provides helper functions used to generate fragments of the query and the corresponding value bindings, e.g. [`sql.identifier`](#sqlidentifier), [`sql.join`](#sqljoin) and [`sql.unnest`](#sqlunnest). These methods generate tokens that the query executor interprets to construct a safe query, e.g.
 
 ```ts
-connection.query(sql`
+connection.query(sql.unsafe`
   SELECT ${sql.identifier(['foo', 'a'])}
   FROM (
     VALUES
     (
       ${sql.join(
         [
-          sql.join(['a1', 'b1', 'c1'], sql`, `),
-          sql.join(['a2', 'b2', 'c2'], sql`, `)
+          sql.join(['a1', 'b1', 'c1'], sql.fragment`, `),
+          sql.join(['a2', 'b2', 'c2'], sql.fragment`, `)
         ],
-        sql`), (`
+        sql.fragment`), (`
       )}
     )
   ) foo(a, b, c)
-  WHERE foo.b IN (${sql.join(['c1', 'a2'], sql`, `)})
+  WHERE foo.b IN (${sql.join(['c1', 'a2'], sql.fragment`, `)})
 `);
 ```
 

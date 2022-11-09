@@ -5,7 +5,7 @@
 Use [`sql.unnest`](#sqlunnest) to create a set of rows using `unnest`. Using the `unnest` approach requires only 1 variable per every column; values for each column are passed as an array, e.g.
 
 ```ts
-await connection.query(sql`
+await connection.query(sql.unsafe`
   INSERT INTO foo (bar, baz, qux)
   SELECT *
   FROM ${sql.unnest(
@@ -80,7 +80,7 @@ const pool = await createPool('postgres://main', {
 
         // This is a convention for the edge-cases where a SELECT query includes a volatile function.
         // Adding a @volatile comment anywhere into the query bypasses the read-only route, e.g.
-        // sql`
+        // sql.unsafe`
         //   # @volatile
         //   SELECT write_log()
         // `
@@ -97,10 +97,10 @@ const pool = await createPool('postgres://main', {
 });
 
 // This query will use `postgres://read-only` connection.
-pool.query(sql`SELECT 1`);
+pool.query(sql.unsafe`SELECT 1`);
 
 // This query will use `postgres://main` connection.
-pool.query(sql`UPDATE 1`);
+pool.query(sql.unsafe`UPDATE 1`);
 ```
 
 ### Building Utility Statements
@@ -115,7 +115,7 @@ In the context of Slonik, if you are building utility statements you must use qu
 Example:
 
 ```ts
-await connection.query(sql`
+await connection.query(sql.unsafe`
   CREATE USER ${sql.identifier(['foo'])}
   WITH PASSWORD ${sql.literalValue('bar')}
 `);

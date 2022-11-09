@@ -3,19 +3,19 @@ import {
   createSqlTag,
 } from '../../../../src/factories/createSqlTag';
 import {
-  SqlToken,
+  FragmentToken,
 } from '../../../../src/tokens';
 
 const sql = createSqlTag();
 
 test('creates an object describing a query with inlined identifiers', (t) => {
-  const query = sql`SELECT ${'foo'} FROM ${sql.identifier([
+  const query = sql.fragment`SELECT ${'foo'} FROM ${sql.identifier([
     'bar',
   ])}`;
 
   t.deepEqual(query, {
     sql: 'SELECT $1 FROM "bar"',
-    type: SqlToken,
+    type: FragmentToken,
     values: [
       'foo',
     ],
@@ -23,14 +23,14 @@ test('creates an object describing a query with inlined identifiers', (t) => {
 });
 
 test('creates an object describing a query with inlined identifiers (specifier)', (t) => {
-  const query = sql`SELECT ${'foo'} FROM ${sql.identifier([
+  const query = sql.fragment`SELECT ${'foo'} FROM ${sql.identifier([
     'bar',
     'baz',
   ])}`;
 
   t.deepEqual(query, {
     sql: 'SELECT $1 FROM "bar"."baz"',
-    type: SqlToken,
+    type: FragmentToken,
     values: [
       'foo',
     ],
@@ -39,7 +39,7 @@ test('creates an object describing a query with inlined identifiers (specifier)'
 
 test('throws if an identifier name array member type is not a string', (t) => {
   const error = t.throws(() => {
-    sql`${sql.identifier([
+    sql.fragment`${sql.identifier([
       // @ts-expect-error
       () => {},
     ])}`;

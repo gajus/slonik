@@ -200,7 +200,7 @@ import {
 type DatabaseRecordIdType = number;
 
 const getFooIdByBar = async (connection: DatabaseConnection, bar: string): Promise<DatabaseRecordIdType> => {
-  const fooResult = await connection.query(sql`
+  const fooResult = await connection.query(sql.typeAlias('id')`
     SELECT id
     FROM foo
     WHERE bar = ${bar}
@@ -222,7 +222,7 @@ const getFooIdByBar = async (connection: DatabaseConnection, bar: string): Promi
 
 ```ts
 const getFooIdByBar = (connection: DatabaseConnection, bar: string): Promise<DatabaseRecordIdType> => {
-  return connection.oneFirst(sql`
+  return connection.oneFirst(sql.typeAlias('id')`
     SELECT id
     FROM foo
     WHERE bar = ${bar}
@@ -241,13 +241,13 @@ In the absence of helper methods, the overhead of repeating code becomes particu
 Furthermore, using methods that guarantee the shape of the results allows us to leverage static type checking and catch some of the errors even before executing the code, e.g.
 
 ```ts
-const fooId = await connection.many(sql`
+const fooId = await connection.many(sql.typeAlias('id')`
   SELECT id
   FROM foo
   WHERE bar = ${bar}
 `);
 
-await connection.query(sql`
+await connection.query(sql.typeAlias('void')`
   DELETE FROM baz
   WHERE foo_id = ${fooId}
 `);
@@ -269,7 +269,7 @@ The primary reason for implementing _only_ this connection pooling method is bec
 const main = async () => {
   const connection = await pool.connect();
 
-  await connection.query(sql`SELECT foo()`);
+  await connection.query(sql.unsafe`SELECT foo()`);
 
   await connection.release();
 };
@@ -288,7 +288,7 @@ const main = async () => {
   let lastExecutionResult;
 
   try {
-    lastExecutionResult = await connection.query(sql`SELECT foo()`);
+    lastExecutionResult = await connection.query(sql.unsafe`SELECT foo()`);
   } finally {
     await connection.release();
   }
@@ -302,7 +302,7 @@ Slonik abstracts the latter pattern into `pool#connect()` method.
 ```ts
 const main = () => {
   return pool.connect((connection) => {
-    return connection.query(sql`SELECT foo()`);
+    return connection.query(sql.unsafe`SELECT foo()`);
   });
 };
 ```
@@ -317,8 +317,8 @@ Just like in the [unsafe connection handling](#user-content-protecting-against-u
 
 ```ts
 connection.transaction(async (transactionConnection) => {
-  await transactionConnection.query(sql`INSERT INTO foo (bar) VALUES ('baz')`);
-  await transactionConnection.query(sql`INSERT INTO qux (quux) VALUES ('quuz')`);
+  await transactionConnection.query(sql.typeAlias('void')`INSERT INTO foo (bar) VALUES ('baz')`);
+  await transactionConnection.query(sql.typeAlias('void')`INSERT INTO qux (quux) VALUES ('quuz')`);
 });
 ```
 
@@ -365,13 +365,13 @@ The above invocation would produce an error:
 This means that the only way to run a query is by constructing it using [`sql` tagged template literal](https://github.com/gajus/slonik#slonik-value-placeholders-tagged-template-literals), e.g.
 
 ```ts
-connection.query(sql`SELECT 1`);
+connection.query(sql.unsafe`SELECT 1`);
 ```
 
 To add a parameter to the query, user must use [template literal placeholders](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Template_literals#Description), e.g.
 
 ```ts
-connection.query(sql`SELECT ${userInput}`);
+connection.query(sql.unsafe`SELECT ${userInput}`);
 ```
 
 Slonik takes over from here and constructs a query with value bindings, and sends the resulting query text and parameters to PostgreSQL. There is no other way of passing parameters to the query – this adds a strong layer of protection against accidental unsafe user input handling due to limited knowledge of the SQL client API.
@@ -379,21 +379,21 @@ Slonik takes over from here and constructs a query with value bindings, and send
 As Slonik restricts user's ability to generate and execute dynamic SQL, it provides helper functions used to generate fragments of the query and the corresponding value bindings, e.g. [`sql.identifier`](#user-content-sqlidentifier), [`sql.join`](#user-content-sqljoin) and [`sql.unnest`](#user-content-sqlunnest). These methods generate tokens that the query executor interprets to construct a safe query, e.g.
 
 ```ts
-connection.query(sql`
+connection.query(sql.unsafe`
   SELECT ${sql.identifier(['foo', 'a'])}
   FROM (
     VALUES
     (
       ${sql.join(
         [
-          sql.join(['a1', 'b1', 'c1'], sql`, `),
-          sql.join(['a2', 'b2', 'c2'], sql`, `)
+          sql.join(['a1', 'b1', 'c1'], sql.fragment`, `),
+          sql.join(['a2', 'b2', 'c2'], sql.fragment`, `)
         ],
-        sql`), (`
+        sql.fragment`), (`
       )}
     )
   ) foo(a, b, c)
-  WHERE foo.b IN (${sql.join(['c1', 'a2'], sql`, `)})
+  WHERE foo.b IN (${sql.join(['c1', 'a2'], sql.fragment`, `)})
 `);
 ```
 
@@ -473,7 +473,7 @@ Instance of Slonik connection pool can be then used to create a new connection, 
 
 ```ts
 pool.connect(async (connection) => {
-  await connection.query(sql`SELECT 1`);
+  await connection.query(sql.unsafe`SELECT 1`);
 });
 ```
 
@@ -484,7 +484,7 @@ Refer to [query method](#user-content-slonik-query-methods) documentation to lea
 If you do not require having a persistent connection to the same backend, then you can directly use `pool` to run queries, e.g.
 
 ```ts
-pool.query(sql`SELECT 1`);
+pool.query(sql.unsafe`SELECT 1`);
 ```
 
 Beware that in the latter example, the connection picked to execute the query is a random connection from the connection pool, i.e. using the latter method (without explicit `connect()`) does not guarantee that multiple queries will refer to the same backend.
@@ -506,7 +506,7 @@ import {
 const pool = await createPool('postgres://');
 
 const main = async () => {
-  await pool.query(sql`
+  await pool.query(sql.unsafe`
     SELECT 1
   `);
 
@@ -633,7 +633,7 @@ import {
 
 const pool = await createPool('postgres://');
 
-await pool.query(sql`SELECT 1`);
+await pool.query(sql.unsafe`SELECT 1`);
 ```
 
 <a name="user-content-slonik-usage-default-configuration"></a>
@@ -722,8 +722,8 @@ import {
 const pool = await createPool('postgres://localhost');
 
 const result = await pool.connect(async (connection) => {
-  await connection.query(sql`SELECT 1`);
-  await connection.query(sql`SELECT 2`);
+  await connection.query(sql.unsafe`SELECT 1`);
+  await connection.query(sql.unsafe`SELECT 2`);
 
   return 'foo';
 });
@@ -779,7 +779,7 @@ const pool = createMockPool({
 });
 
 await pool.connect(async (connection) => {
-  const results = await connection.query(sql`
+  const results = await connection.query(sql.unsafe`
     SELECT ${'foo'}
   `);
 });
@@ -1111,7 +1111,7 @@ Check out [`slonik-interceptor-preset`](https://github.com/gajus/slonik-intercep
 Use [`sql.unnest`](#user-content-sqlunnest) to create a set of rows using `unnest`. Using the `unnest` approach requires only 1 variable per every column; values for each column are passed as an array, e.g.
 
 ```ts
-await connection.query(sql`
+await connection.query(sql.unsafe`
   INSERT INTO foo (bar, baz, qux)
   SELECT *
   FROM ${sql.unnest(
@@ -1188,7 +1188,7 @@ const pool = await createPool('postgres://main', {
 
         // This is a convention for the edge-cases where a SELECT query includes a volatile function.
         // Adding a @volatile comment anywhere into the query bypasses the read-only route, e.g.
-        // sql`
+        // sql.unsafe`
         //   # @volatile
         //   SELECT write_log()
         // `
@@ -1205,10 +1205,10 @@ const pool = await createPool('postgres://main', {
 });
 
 // This query will use `postgres://read-only` connection.
-pool.query(sql`SELECT 1`);
+pool.query(sql.unsafe`SELECT 1`);
 
 // This query will use `postgres://main` connection.
-pool.query(sql`UPDATE 1`);
+pool.query(sql.unsafe`UPDATE 1`);
 ```
 
 <a name="user-content-slonik-recipes-building-utility-statements"></a>
@@ -1225,7 +1225,7 @@ In the context of Slonik, if you are building utility statements you must use qu
 Example:
 
 ```ts
-await connection.query(sql`
+await connection.query(sql.unsafe`
   CREATE USER ${sql.identifier(['foo'])}
   WITH PASSWORD ${sql.literalValue('bar')}
 `);
@@ -1272,7 +1272,7 @@ CREATE TABLE "public"."person" (
 and you want to retrieve all persons in the database, along with their `id` and `name`:
 
 ```ts
-connection.any(sql`
+connection.any(sql.unsafe`
   SELECT id, name
   FROM person
 `);
@@ -1515,29 +1515,7 @@ const personId = await pool.oneFirst(
 <a name="slonik-sql-tag-typing-sql-tag"></a>
 ### Typing <code>sql</code> tag
 
-`sql` has a generic interface, meaning that you can supply it with the type that represents the expected result of the query, e.g.
-
-```ts
-type Person = {
-  id: number,
-  name: string,
-};
-
-const query = sql<Person>`
-  SELECT id, name
-  FROM person
-`;
-
-// onePerson has a type of Person
-const onePerson = await connection.one(query);
-
-// persons has a type of Person[]
-const persons = await connection.many(query);
-```
-
-As you see, query helper methods (`one`, `many`, etc.) infer the result type based on the type associated with the `sql` tag instance.
-
-However, you should avoid passing types directly to `sql` and instead use [runtime validation](#user-content-runtime-validation). Runtime validation produces typed `sql` tags, but also validates the results of the query.
+See [runtime validation](#user-content-runtime-validation).
 
 <a name="user-content-slonik-value-placeholders"></a>
 <a name="slonik-value-placeholders"></a>
@@ -1554,7 +1532,7 @@ import {
   sql
 } from 'slonik'
 
-connection.query(sql`
+connection.query(sql.unsafe`
   SELECT 1
   FROM foo
   WHERE bar = ${'baz'}
@@ -1607,8 +1585,8 @@ Furthermore, a query object constructed using `sql` tagged template literal is [
 `sql` tagged template literals can be nested, e.g.
 
 ```ts
-const query0 = sql`SELECT ${'foo'} FROM bar`;
-const query1 = sql`SELECT ${'baz'} FROM (${query0})`;
+const query0 = sql.unsafe`SELECT ${'foo'} FROM bar`;
+const query1 = sql.unsafe`SELECT ${'baz'} FROM (${query0})`;
 ```
 
 Produces:
@@ -1646,7 +1624,7 @@ If this is your first time using Slonik, read [Dynamically generating SQL querie
 Creates an array value binding, e.g.
 
 ```ts
-await connection.query(sql`
+await connection.query(sql.unsafe`
   SELECT (${sql.array([1, 2, 3], 'int4')})
 `);
 ```
@@ -1670,11 +1648,11 @@ Produces:
 <a name="slonik-query-building-sql-array-sql-array-membertype"></a>
 #### <code>sql.array</code> <code>memberType</code>
 
-If `memberType` is a string (`TypeNameIdentifier`), then it is treated as a type name identifier and will be quoted using double quotes, i.e. `sql.array([1, 2, 3], 'int4')` is equivalent to `$1::"int4"[]`. The implication is that keywords that are often used interchangeably with type names are not going to work, e.g. [`int4`](https://github.com/postgres/postgres/blob/69edf4f8802247209e77f69e089799b3d83c13a4/src/include/catalog/pg_type.dat#L74-L78) is a type name identifier and will work. However, [`int`](https://github.com/postgres/postgres/blob/69edf4f8802247209e77f69e089799b3d83c13a4/src/include/parser/kwlist.h#L213) is a keyword and will not work. You can either use type name identifiers or you can construct custom member using `sql` tag, e.g.
+If `memberType` is a string (`TypeNameIdentifier`), then it is treated as a type name identifier and will be quoted using double quotes, i.e. `sql.array([1, 2, 3], 'int4')` is equivalent to `$1::"int4"[]`. The implication is that keywords that are often used interchangeably with type names are not going to work, e.g. [`int4`](https://github.com/postgres/postgres/blob/69edf4f8802247209e77f69e089799b3d83c13a4/src/include/catalog/pg_type.dat#L74-L78) is a type name identifier and will work. However, [`int`](https://github.com/postgres/postgres/blob/69edf4f8802247209e77f69e089799b3d83c13a4/src/include/parser/kwlist.h#L213) is a keyword and will not work. You can either use type name identifiers or you can construct custom member using `sql.fragment` tag, e.g.
 
 ```ts
-await connection.query(sql`
-  SELECT (${sql.array([1, 2, 3], sql`int[]`)})
+await connection.query(sql.unsafe`
+  SELECT (${sql.array([1, 2, 3], sql.fragment`int[]`)})
 `);
 ```
 
@@ -1705,15 +1683,15 @@ Unlike `sql.join`, `sql.array` generates a stable query of a predictable length,
 Example:
 
 ```ts
-sql`SELECT id FROM foo WHERE id IN (${sql.join([1, 2, 3], sql`, `)})`;
-sql`SELECT id FROM foo WHERE id NOT IN (${sql.join([1, 2, 3], sql`, `)})`;
+sql.typeAlias('id')`SELECT id FROM foo WHERE id IN (${sql.join([1, 2, 3], sql.fragment`, `)})`;
+sql.typeAlias('id')`SELECT id FROM foo WHERE id NOT IN (${sql.join([1, 2, 3], sql.fragment`, `)})`;
 ```
 
 Is equivalent to:
 
 ```ts
-sql`SELECT id FROM foo WHERE id = ANY(${sql.array([1, 2, 3], 'int4')})`;
-sql`SELECT id FROM foo WHERE id != ALL(${sql.array([1, 2, 3], 'int4')})`;
+sql.typeAlias('id')`SELECT id FROM foo WHERE id = ANY(${sql.array([1, 2, 3], 'int4')})`;
+sql.typeAlias('id')`SELECT id FROM foo WHERE id != ALL(${sql.array([1, 2, 3], 'int4')})`;
 ```
 
 Furthermore, unlike `sql.join`, `sql.array` can be used with an empty array of values. In short, `sql.array` should be preferred over `sql.join` when possible.
@@ -1731,7 +1709,7 @@ Furthermore, unlike `sql.join`, `sql.array` can be used with an empty array of v
 Binds binary ([`bytea`](https://www.postgresql.org/docs/current/datatype-binary.html)) data, e.g.
 
 ```ts
-await connection.query(sql`
+await connection.query(sql.unsafe`
   SELECT ${sql.binary(Buffer.from('foo'))}
 `);
 ```
@@ -1760,7 +1738,7 @@ Produces:
 Inserts a date, e.g.
 
 ```ts
-await connection.query(sql`
+await connection.query(sql.unsafe`
   SELECT ${sql.date(new Date('2022-08-19T03:27:24.951Z'))}
 `);
 ```
@@ -1789,7 +1767,7 @@ Produces:
 [Delimited identifiers](https://www.postgresql.org/docs/current/static/sql-syntax-lexical.html#SQL-SYNTAX-IDENTIFIERS) are created by enclosing an arbitrary sequence of characters in double-quotes ("). To create a delimited identifier, create an `sql` tag function placeholder value using `sql.identifier`, e.g.
 
 ```ts
-sql`
+sql.unsafe`
   SELECT 1
   FROM ${sql.identifier(['bar', 'baz'])}
 `;
@@ -1825,7 +1803,7 @@ Produces:
 Inserts an [interval](https://www.postgresql.org/docs/current/datatype-datetime.html#DATATYPE-INTERVAL-INPUT), e.g.
 
 ```ts
-sql`
+sql.unsafe`
   SELECT 1
   FROM ${sql.interval({days: 3})}
 `;
@@ -1858,7 +1836,7 @@ You can use `sql.interval` exactly how you would use PostgreSQL [`make_interval`
 If you need a dynamic interval (e.g. X days), you can achieve this using multiplication, e.g.
 
 ```ts
-sql`
+sql.unsafe`
   SELECT ${2} * interval '1 day'
 `
 ```
@@ -1868,7 +1846,7 @@ The above is equivalent to `interval '2 days'`.
 You could also use `make_interval()` directly, e.g.
 
 ```ts
-sql`
+sql.unsafe`
   SELECT make_interval("days" => ${2})
 `
 ```
@@ -1889,8 +1867,8 @@ sql`
 Concatenates SQL expressions using `glue` separator, e.g.
 
 ```ts
-await connection.query(sql`
-  SELECT ${sql.join([1, 2, 3], sql`, `)}
+await connection.query(sql.unsafe`
+  SELECT ${sql.join([1, 2, 3], sql.fragment`, `)}
 `);
 ```
 
@@ -1912,8 +1890,8 @@ Produces:
 Boolean expressions:
 
 ```ts
-sql`
-  SELECT ${sql.join([1, 2], sql` AND `)}
+sql.unsafe`
+  SELECT ${sql.join([1, 2], sql.fragment` AND `)}
 `
 
 // SELECT $1 AND $2
@@ -1922,8 +1900,8 @@ sql`
 Tuple:
 
 ```ts
-sql`
-  SELECT (${sql.join([1, 2], sql`, `)})
+sql.unsafe`
+  SELECT (${sql.join([1, 2], sql.fragment`, `)})
 `
 
 // SELECT ($1, $2)
@@ -1932,13 +1910,13 @@ sql`
 Tuple list:
 
 ```ts
-sql`
+sql.unsafe`
   SELECT ${sql.join(
     [
-      sql`(${sql.join([1, 2], sql`, `)})`,
-      sql`(${sql.join([3, 4], sql`, `)})`,
+      sql.fragment`(${sql.join([1, 2], sql.fragment`, `)})`,
+      sql.fragment`(${sql.join([3, 4], sql.fragment`, `)})`,
     ],
-    sql`, `
+    sql.fragment`, `
   )}
 `
 
@@ -1958,7 +1936,7 @@ sql`
 Serializes value and binds it as a JSON string literal, e.g.
 
 ```ts
-await connection.query(sql`
+await connection.query(sql.unsafe`
   SELECT (${sql.json([1, 2, 3])})
 `);
 ```
@@ -1987,7 +1965,7 @@ Produces:
 Serializes value and binds it as a JSON binary, e.g.
 
 ```ts
-await connection.query(sql`
+await connection.query(sql.unsafe`
   SELECT (${sql.jsonb([1, 2, 3])})
 `);
 ```
@@ -2018,7 +1996,7 @@ Produces:
 Escapes and interpolates a literal value into a query.
 
 ```ts
-await connection.query(sql`
+await connection.query(sql.unsafe`
   CREATE USER "foo" WITH PASSWORD ${sql.literalValue('bar')}
 `);
 ```
@@ -2044,7 +2022,7 @@ Produces:
 Inserts a timestamp, e.g.
 
 ```ts
-await connection.query(sql`
+await connection.query(sql.unsafe`
   SELECT ${sql.timestamp(new Date('2022-08-19T03:27:24.951Z'))}
 `);
 ```
@@ -2074,7 +2052,7 @@ Produces:
 Creates an `unnest` expressions, e.g.
 
 ```ts
-await connection.query(sql`
+await connection.query(sql.unsafe`
   SELECT bar, baz
   FROM ${sql.unnest(
     [
@@ -2112,7 +2090,7 @@ If `columnType` array member type is `string`, it will treat it as a type name i
 If `columnType` array member type is `SqlToken`, it will inline type name without quotes, e.g.
 
 ```ts
-await connection.query(sql`
+await connection.query(sql.unsafe`
   SELECT bar, baz
   FROM ${sql.unnest(
     [
@@ -2120,8 +2098,8 @@ await connection.query(sql`
       [2, 'bar']
     ],
     [
-      sql`integer`,
-      sql`text`
+      sql.fragment`integer`,
+      sql.fragment`text`
     ]
   )} AS foo(bar, baz)
 `);
@@ -2148,7 +2126,7 @@ Produces:
 If `columnType` array member type is `[...string[], TypeNameIdentifier]`, it will act as [`sql.identifier`](#user-content-sqlidentifier), e.g.
 
 ```ts
-await connection.query(sql`
+await connection.query(sql.unsafe`
   SELECT bar, baz
   FROM ${sql.unnest(
     [
@@ -2195,7 +2173,7 @@ Returns result rows.
 Example:
 
 ```ts
-const rows = await connection.any(sql`SELECT foo`);
+const rows = await connection.any(sql.unsafe`SELECT foo`);
 ```
 
 `#any` is similar to `#query` except that it returns rows without fields information.
@@ -2211,7 +2189,7 @@ Returns value of the first column of every row in the result set.
 Example:
 
 ```ts
-const fooValues = await connection.anyFirst(sql`SELECT foo`);
+const fooValues = await connection.anyFirst(sql.unsafe`SELECT foo`);
 ```
 
 <a name="user-content-slonik-query-methods-exists"></a>
@@ -2223,7 +2201,7 @@ Returns a boolean value indicating whether query produces results.
 The query that is passed to this function is wrapped in `SELECT exists()` prior to it getting executed, i.e.
 
 ```ts
-pool.exists(sql`
+pool.exists(sql.unsafe`
   SELECT LIMIT 1
 `)
 ```
@@ -2231,7 +2209,7 @@ pool.exists(sql`
 is equivalent to:
 
 ```ts
-pool.oneFirst(sql`
+pool.oneFirst(sql.unsafe`
   SELECT exists(
     SELECT LIMIT 1
   )
@@ -2244,7 +2222,7 @@ pool.oneFirst(sql`
 
 ```ts
 (
-  streamQuery: TaggedTemplateLiteralInvocation,
+  streamQuery: QuerySqlToken,
   tupleList: any[][],
   columnTypes: TypeNameIdentifier[],
 ) => Promise<null>;
@@ -2274,7 +2252,7 @@ const columnTypes = [
 ];
 
 await connection.copyFromBinary(
-  sql`
+  sql.unsafe`
     COPY foo
     (
       id,
@@ -2316,7 +2294,7 @@ Returns result rows.
 Example:
 
 ```ts
-const rows = await connection.many(sql`SELECT foo`);
+const rows = await connection.many(sql.unsafe`SELECT foo`);
 ```
 
 <a name="user-content-slonik-query-methods-manyfirst"></a>
@@ -2331,7 +2309,7 @@ Returns value of the first column of every row in the result set.
 Example:
 
 ```ts
-const fooValues = await connection.many(sql`SELECT foo`);
+const fooValues = await connection.many(sql.unsafe`SELECT foo`);
 ```
 
 <a name="user-content-slonik-query-methods-maybeone"></a>
@@ -2346,7 +2324,7 @@ Selects the first row from the result.
 Example:
 
 ```ts
-const row = await connection.maybeOne(sql`SELECT foo`);
+const row = await connection.maybeOne(sql.unsafe`SELECT foo`);
 
 // row.foo is the result of the `foo` column value of the first row.
 ```
@@ -2364,7 +2342,7 @@ Returns value of the first column from the first row.
 Example:
 
 ```ts
-const foo = await connection.maybeOneFirst(sql`SELECT foo`);
+const foo = await connection.maybeOneFirst(sql.unsafe`SELECT foo`);
 
 // foo is the result of the `foo` column value of the first row.
 ```
@@ -2381,7 +2359,7 @@ Selects the first row from the result.
 Example:
 
 ```ts
-const row = await connection.one(sql`SELECT foo`);
+const row = await connection.one(sql.unsafe`SELECT foo`);
 
 // row.foo is the result of the `foo` column value of the first row.
 ```
@@ -2406,7 +2384,7 @@ Returns value of the first column from the first row.
 Example:
 
 ```ts
-const foo = await connection.oneFirst(sql`SELECT foo`);
+const foo = await connection.oneFirst(sql.unsafe`SELECT foo`);
 
 // foo is the result of the `foo` column value of the first row.
 ```
@@ -2420,7 +2398,7 @@ API and the result shape are equivalent to [`pg#query`](https://github.com/brian
 Example:
 
 ```ts
-await connection.query(sql`SELECT foo`);
+await connection.query(sql.unsafe`SELECT foo`);
 
 // {
 //   command: 'SELECT',
@@ -2444,7 +2422,7 @@ Streams query results.
 Example:
 
 ```ts
-await connection.stream(sql`SELECT foo`, (stream) => {
+await connection.stream(sql.unsafe`SELECT foo`, (stream) => {
   stream.on('data', (datum) => {
     datum;
     // {
@@ -2474,8 +2452,8 @@ Note: Implemented using [`pg-query-stream`](https://github.com/brianc/node-pg-qu
 
 ```ts
 const result = await connection.transaction(async (transactionConnection) => {
-  await transactionConnection.query(sql`INSERT INTO foo (bar) VALUES ('baz')`);
-  await transactionConnection.query(sql`INSERT INTO qux (quux) VALUES ('corge')`);
+  await transactionConnection.query(sql.unsafe`INSERT INTO foo (bar) VALUES ('baz')`);
+  await transactionConnection.query(sql.unsafe`INSERT INTO qux (quux) VALUES ('corge')`);
 
   return 'FOO';
 });
@@ -2491,10 +2469,10 @@ Slonik uses [`SAVEPOINT`](https://www.postgresql.org/docs/current/sql-savepoint.
 
 ```ts
 await connection.transaction(async (t1) => {
-  await t1.query(sql`INSERT INTO foo (bar) VALUES ('baz')`);
+  await t1.query(sql.unsafe`INSERT INTO foo (bar) VALUES ('baz')`);
 
   return t1.transaction((t2) => {
-    return t2.query(sql`INSERT INTO qux (quux) VALUES ('corge')`);
+    return t2.query(sql.unsafe`INSERT INTO qux (quux) VALUES ('corge')`);
   });
 });
 ```
@@ -2513,11 +2491,11 @@ Slonik automatically rollsback to the last savepoint if a query belonging to a t
 
 ```ts
 await connection.transaction(async (t1) => {
-  await t1.query(sql`INSERT INTO foo (bar) VALUES ('baz')`);
+  await t1.query(sql.unsafe`INSERT INTO foo (bar) VALUES ('baz')`);
 
   try {
     await t1.transaction(async (t2) => {
-      await t2.query(sql`INSERT INTO qux (quux) VALUES ('corge')`);
+      await t2.query(sql.unsafe`INSERT INTO qux (quux) VALUES ('corge')`);
 
       return Promise.reject(new Error('foo'));
     });
@@ -2542,13 +2520,13 @@ If error is unhandled, then the entire transaction is rolledback, e.g.
 
 ```ts
 await connection.transaction(async (t1) => {
-  await t1.query(sql`INSERT INTO foo (bar) VALUES ('baz')`);
+  await t1.query(sql.typeAlias('void')`INSERT INTO foo (bar) VALUES ('baz')`);
 
   await t1.transaction(async (t2) => {
-    await t2.query(sql`INSERT INTO qux (quux) VALUES ('corge')`);
+    await t2.query(sql.typeAlias('void')`INSERT INTO qux (quux) VALUES ('corge')`);
 
     await t1.transaction(async (t3) => {
-      await t3.query(sql`INSERT INTO uier (grault) VALUES ('garply')`);
+      await t3.query(sql.typeAlias('void')`INSERT INTO uier (grault) VALUES ('garply')`);
 
       return Promise.reject(new Error('foo'));
     });
@@ -2685,14 +2663,14 @@ If you require to extract meta-data about a specific type of error (e.g. constra
 await pool.connect(async (connection0) => {
   try {
     await pool.connect(async (connection1) => {
-      const backendProcessId = await connection1.oneFirst(sql`SELECT pg_backend_pid()`);
+      const backendProcessId = await connection1.oneFirst(sql.unsafe`SELECT pg_backend_pid()`);
 
       setTimeout(() => {
-        connection0.query(sql`SELECT pg_cancel_backend(${backendProcessId})`)
+        connection0.query(sql.unsafe`SELECT pg_cancel_backend(${backendProcessId})`)
       }, 2000);
 
       try {
-        await connection1.query(sql`SELECT pg_sleep(30)`);
+        await connection1.query(sql.unsafe`SELECT pg_sleep(30)`);
       } catch (error) {
         // This code will not be executed.
       }
@@ -2733,7 +2711,7 @@ import {
 let row;
 
 try {
-  row = await connection.one(sql`SELECT foo`);
+  row = await connection.one(sql.unsafe`SELECT foo`);
 } catch (error) {
   if (error instanceof DataIntegrityError) {
     console.error('There is more than one row matching the select criteria.');
@@ -2763,7 +2741,7 @@ import {
 let row;
 
 try {
-  row = await connection.one(sql`SELECT foo`);
+  row = await connection.one(sql.unsafe`SELECT foo`);
 } catch (error) {
   if (!(error instanceof NotFoundError)) {
     throw error;
@@ -2792,14 +2770,14 @@ It should be safe to use the same connection if `StatementCancelledError` is han
 ```ts
 await pool.connect(async (connection0) => {
   await pool.connect(async (connection1) => {
-    const backendProcessId = await connection1.oneFirst(sql`SELECT pg_backend_pid()`);
+    const backendProcessId = await connection1.oneFirst(sql.unsafe`SELECT pg_backend_pid()`);
 
     setTimeout(() => {
-      connection0.query(sql`SELECT pg_cancel_backend(${backendProcessId})`)
+      connection0.query(sql.unsafe`SELECT pg_cancel_backend(${backendProcessId})`)
     }, 2000);
 
     try {
-      await connection1.query(sql`SELECT pg_sleep(30)`);
+      await connection1.query(sql.unsafe`SELECT pg_sleep(30)`);
     } catch (error) {
       if (error instanceof StatementCancelledError) {
         // Safe to continue using the same connection.
@@ -2870,7 +2848,7 @@ export default async (
   connection: DatabaseConnection,
   code: string
 ): Promise<number> => {
-  return await connection.oneFirst(sql`
+  return await connection.oneFirst(sql.typeAlias('id')`
     SELECT id
     FROM country
     WHERE code = ${code}
@@ -2878,31 +2856,7 @@ export default async (
 };
 ```
 
-The `sql` tag itself can receive a generic type, allowing strong type-checking for query results:
-
-```ts
-type Country = {
-  id: number
-  code: string
-}
-
-const countryQuery = sql<Country>`SELECT id, code FROM country`;
-
-const country = await connection.one(countryQuery);
-
-// ts error: Property 'cod' does not exist on type 'Country'. Did you mean 'code'?
-console.log(country.cod);
-```
-
-It is recommended to give a generic type to the `sql` tag itself, rather than the query method, since each query method uses generic types slightly differently:
-
-```ts
-// bad
-await pool.query<{ foo: string }>(sql`SELECT foo FROM bar`)
-
-// good
-await pool.query(sql<{ foo: string }>`SELECT foo FROM bar`)
-```
+See [runtime validation](#user-content-runtime-validation).
 
 <a name="user-content-slonik-debugging"></a>
 <a name="slonik-debugging"></a>

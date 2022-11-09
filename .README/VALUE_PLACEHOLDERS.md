@@ -9,7 +9,7 @@ import {
   sql
 } from 'slonik'
 
-connection.query(sql`
+connection.query(sql.unsafe`
   SELECT 1
   FROM foo
   WHERE bar = ${'baz'}
@@ -58,8 +58,8 @@ Furthermore, a query object constructed using `sql` tagged template literal is [
 `sql` tagged template literals can be nested, e.g.
 
 ```ts
-const query0 = sql`SELECT ${'foo'} FROM bar`;
-const query1 = sql`SELECT ${'baz'} FROM (${query0})`;
+const query0 = sql.unsafe`SELECT ${'foo'} FROM bar`;
+const query1 = sql.unsafe`SELECT ${'baz'} FROM (${query0})`;
 ```
 
 Produces:

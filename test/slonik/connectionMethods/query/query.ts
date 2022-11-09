@@ -34,7 +34,7 @@ test('ends connection after promise is resolved (explicit connection)', async (t
 
     while (queryCount-- > 0) {
       queries.push(
-        connection.query(sql`SELECT 1`),
+        connection.query(sql.unsafe`SELECT 1`),
       );
     }
 
@@ -63,7 +63,7 @@ test('executes the query and returns the result', async (t) => {
     ],
   });
 
-  const result = await pool.query(sql`SELECT 1`);
+  const result = await pool.query(sql.unsafe`SELECT 1`);
 
   t.deepEqual(result, {
     command: 'SELECT',
@@ -90,7 +90,7 @@ test('adds notices observed during the query execution to the query result objec
     });
   });
 
-  const queryResultPromise = pool.query(sql`SELECT 1`);
+  const queryResultPromise = pool.query(sql.unsafe`SELECT 1`);
 
   await delay(100);
 
@@ -140,7 +140,7 @@ test('maps 23514 error code to CheckIntegrityConstraintViolationError', async (t
 
   pool.querySpy.rejects(createErrorWithCode('23514'));
 
-  const error = await t.throwsAsync(pool.query(sql`SELECT 1`));
+  const error = await t.throwsAsync(pool.query(sql.unsafe`SELECT 1`));
 
   t.true(error instanceof CheckIntegrityConstraintViolationError);
 });
@@ -150,7 +150,7 @@ test('maps 23503 error code to ForeignKeyIntegrityConstraintViolationError', asy
 
   pool.querySpy.rejects(createErrorWithCode('23503'));
 
-  const error = await t.throwsAsync(pool.query(sql`SELECT 1`));
+  const error = await t.throwsAsync(pool.query(sql.unsafe`SELECT 1`));
 
   t.true(error instanceof ForeignKeyIntegrityConstraintViolationError);
 });
@@ -160,7 +160,7 @@ test('maps 23502 error code to NotNullIntegrityConstraintViolationError', async 
 
   pool.querySpy.rejects(createErrorWithCode('23502'));
 
-  const error = await t.throwsAsync(pool.query(sql`SELECT 1`));
+  const error = await t.throwsAsync(pool.query(sql.unsafe`SELECT 1`));
 
   t.true(error instanceof NotNullIntegrityConstraintViolationError);
 });
@@ -170,7 +170,7 @@ test('maps 23505 error code to UniqueIntegrityConstraintViolationError', async (
 
   pool.querySpy.rejects(createErrorWithCode('23505'));
 
-  const error = await t.throwsAsync(pool.query(sql`SELECT 1`));
+  const error = await t.throwsAsync(pool.query(sql.unsafe`SELECT 1`));
 
   t.true(error instanceof UniqueIntegrityConstraintViolationError);
 });
@@ -180,7 +180,7 @@ test('57P01 error causes the connection to be rejected (IMPLICIT_QUERY connectio
 
   pool.querySpy.rejects(createErrorWithCode('57P01'));
 
-  const error = await t.throwsAsync(pool.query(sql`SELECT 1`));
+  const error = await t.throwsAsync(pool.query(sql.unsafe`SELECT 1`));
 
   t.true(error instanceof BackendTerminatedError);
 });
@@ -196,7 +196,7 @@ test.skip('57P01 error causes the connection to be rejected (EXPLICIT connection
 
   const error = await t.throwsAsync(pool.connect(async (connection) => {
     try {
-      await connection.query(sql`SELECT 1`);
+      await connection.query(sql.unsafe`SELECT 1`);
     } catch {
       //
     }

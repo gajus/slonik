@@ -8,6 +8,9 @@ export {
   createDateSqlFragment,
 } from './createDateSqlFragment';
 export {
+  createFragmentSqlFragment,
+} from './createFragmentSqlFragment';
+export {
   createIdentifierSqlFragment,
 } from './createIdentifierSqlFragment';
 export {
@@ -20,8 +23,8 @@ export {
   createListSqlFragment,
 } from './createListSqlFragment';
 export {
-  createSqlSqlFragment,
-} from './createSqlSqlFragment';
+  createQuerySqlFragment,
+} from './createQuerySqlFragment';
 export {
   createTimestampSqlFragment,
 } from './createTimestampSqlFragment';

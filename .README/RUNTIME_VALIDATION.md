@@ -32,7 +32,7 @@ CREATE TABLE "public"."person" (
 and you want to retrieve all persons in the database, along with their `id` and `name`:
 
 ```ts
-connection.any(sql`
+connection.any(sql.unsafe`
   SELECT id, name
   FROM person
 `);

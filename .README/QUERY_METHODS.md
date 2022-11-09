@@ -7,7 +7,7 @@ Returns result rows.
 Example:
 
 ```ts
-const rows = await connection.any(sql`SELECT foo`);
+const rows = await connection.any(sql.unsafe`SELECT foo`);
 ```
 
 `#any` is similar to `#query` except that it returns rows without fields information.
@@ -21,7 +21,7 @@ Returns value of the first column of every row in the result set.
 Example:
 
 ```ts
-const fooValues = await connection.anyFirst(sql`SELECT foo`);
+const fooValues = await connection.anyFirst(sql.unsafe`SELECT foo`);
 ```
 
 ### `exists`
@@ -31,7 +31,7 @@ Returns a boolean value indicating whether query produces results.
 The query that is passed to this function is wrapped in `SELECT exists()` prior to it getting executed, i.e.
 
 ```ts
-pool.exists(sql`
+pool.exists(sql.unsafe`
   SELECT LIMIT 1
 `)
 ```
@@ -39,7 +39,7 @@ pool.exists(sql`
 is equivalent to:
 
 ```ts
-pool.oneFirst(sql`
+pool.oneFirst(sql.unsafe`
   SELECT exists(
     SELECT LIMIT 1
   )
@@ -50,7 +50,7 @@ pool.oneFirst(sql`
 
 ```ts
 (
-  streamQuery: TaggedTemplateLiteralInvocation,
+  streamQuery: QuerySqlToken,
   tupleList: any[][],
   columnTypes: TypeNameIdentifier[],
 ) => Promise<null>;
@@ -80,7 +80,7 @@ const columnTypes = [
 ];
 
 await connection.copyFromBinary(
-  sql`
+  sql.unsafe`
     COPY foo
     (
       id,
@@ -114,7 +114,7 @@ Returns result rows.
 Example:
 
 ```ts
-const rows = await connection.many(sql`SELECT foo`);
+const rows = await connection.many(sql.unsafe`SELECT foo`);
 ```
 
 ### `manyFirst`
@@ -127,7 +127,7 @@ Returns value of the first column of every row in the result set.
 Example:
 
 ```ts
-const fooValues = await connection.many(sql`SELECT foo`);
+const fooValues = await connection.many(sql.unsafe`SELECT foo`);
 ```
 
 ### `maybeOne`
@@ -140,7 +140,7 @@ Selects the first row from the result.
 Example:
 
 ```ts
-const row = await connection.maybeOne(sql`SELECT foo`);
+const row = await connection.maybeOne(sql.unsafe`SELECT foo`);
 
 // row.foo is the result of the `foo` column value of the first row.
 ```
@@ -156,7 +156,7 @@ Returns value of the first column from the first row.
 Example:
 
 ```ts
-const foo = await connection.maybeOneFirst(sql`SELECT foo`);
+const foo = await connection.maybeOneFirst(sql.unsafe`SELECT foo`);
 
 // foo is the result of the `foo` column value of the first row.
 ```
@@ -171,7 +171,7 @@ Selects the first row from the result.
 Example:
 
 ```ts
-const row = await connection.one(sql`SELECT foo`);
+const row = await connection.one(sql.unsafe`SELECT foo`);
 
 // row.foo is the result of the `foo` column value of the first row.
 ```
@@ -194,7 +194,7 @@ Returns value of the first column from the first row.
 Example:
 
 ```ts
-const foo = await connection.oneFirst(sql`SELECT foo`);
+const foo = await connection.oneFirst(sql.unsafe`SELECT foo`);
 
 // foo is the result of the `foo` column value of the first row.
 ```
@@ -206,7 +206,7 @@ API and the result shape are equivalent to [`pg#query`](https://github.com/brian
 Example:
 
 ```ts
-await connection.query(sql`SELECT foo`);
+await connection.query(sql.unsafe`SELECT foo`);
 
 // {
 //   command: 'SELECT',
@@ -228,7 +228,7 @@ Streams query results.
 Example:
 
 ```ts
-await connection.stream(sql`SELECT foo`, (stream) => {
+await connection.stream(sql.unsafe`SELECT foo`, (stream) => {
   stream.on('data', (datum) => {
     datum;
     // {
@@ -256,8 +256,8 @@ Note: Implemented using [`pg-query-stream`](https://github.com/brianc/node-pg-qu
 
 ```ts
 const result = await connection.transaction(async (transactionConnection) => {
-  await transactionConnection.query(sql`INSERT INTO foo (bar) VALUES ('baz')`);
-  await transactionConnection.query(sql`INSERT INTO qux (quux) VALUES ('corge')`);
+  await transactionConnection.query(sql.unsafe`INSERT INTO foo (bar) VALUES ('baz')`);
+  await transactionConnection.query(sql.unsafe`INSERT INTO qux (quux) VALUES ('corge')`);
 
   return 'FOO';
 });
@@ -271,10 +271,10 @@ Slonik uses [`SAVEPOINT`](https://www.postgresql.org/docs/current/sql-savepoint.
 
 ```ts
 await connection.transaction(async (t1) => {
-  await t1.query(sql`INSERT INTO foo (bar) VALUES ('baz')`);
+  await t1.query(sql.unsafe`INSERT INTO foo (bar) VALUES ('baz')`);
 
   return t1.transaction((t2) => {
-    return t2.query(sql`INSERT INTO qux (quux) VALUES ('corge')`);
+    return t2.query(sql.unsafe`INSERT INTO qux (quux) VALUES ('corge')`);
   });
 });
 ```
@@ -293,11 +293,11 @@ Slonik automatically rollsback to the last savepoint if a query belonging to a t
 
 ```ts
 await connection.transaction(async (t1) => {
-  await t1.query(sql`INSERT INTO foo (bar) VALUES ('baz')`);
+  await t1.query(sql.unsafe`INSERT INTO foo (bar) VALUES ('baz')`);
 
   try {
     await t1.transaction(async (t2) => {
-      await t2.query(sql`INSERT INTO qux (quux) VALUES ('corge')`);
+      await t2.query(sql.unsafe`INSERT INTO qux (quux) VALUES ('corge')`);
 
       return Promise.reject(new Error('foo'));
     });
@@ -322,13 +322,13 @@ If error is unhandled, then the entire transaction is rolledback, e.g.
 
 ```ts
 await connection.transaction(async (t1) => {
-  await t1.query(sql`INSERT INTO foo (bar) VALUES ('baz')`);
+  await t1.query(sql.typeAlias('void')`INSERT INTO foo (bar) VALUES ('baz')`);
 
   await t1.transaction(async (t2) => {
-    await t2.query(sql`INSERT INTO qux (quux) VALUES ('corge')`);
+    await t2.query(sql.typeAlias('void')`INSERT INTO qux (quux) VALUES ('corge')`);
 
     await t1.transaction(async (t3) => {
-      await t3.query(sql`INSERT INTO uier (grault) VALUES ('garply')`);
+      await t3.query(sql.typeAlias('void')`INSERT INTO uier (grault) VALUES ('garply')`);
 
       return Promise.reject(new Error('foo'));
     });
