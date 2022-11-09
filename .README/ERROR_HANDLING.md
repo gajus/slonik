@@ -34,14 +34,14 @@ If you require to extract meta-data about a specific type of error (e.g. constra
 await pool.connect(async (connection0) => {
   try {
     await pool.connect(async (connection1) => {
-      const backendProcessId = await connection1.oneFirst(sql.unsafe`SELECT pg_backend_pid()`);
+      const backendProcessId = await connection1.oneFirst(sql.typeAlias('id')`SELECT pg_backend_pid() AS id`);
 
       setTimeout(() => {
-        connection0.query(sql.unsafe`SELECT pg_cancel_backend(${backendProcessId})`)
+        connection0.query(sql.typeAlias('void')`SELECT pg_cancel_backend(${backendProcessId})`)
       }, 2000);
 
       try {
-        await connection1.query(sql.unsafe`SELECT pg_sleep(30)`);
+        await connection1.query(sql.typeAlias('void')`SELECT pg_sleep(30)`);
       } catch (error) {
         // This code will not be executed.
       }
@@ -76,7 +76,7 @@ import {
 let row;
 
 try {
-  row = await connection.one(sql.unsafe`SELECT foo`);
+  row = await connection.one(sql.typeAlias('foo')`SELECT foo`);
 } catch (error) {
   if (error instanceof DataIntegrityError) {
     console.error('There is more than one row matching the select criteria.');
@@ -102,7 +102,7 @@ import {
 let row;
 
 try {
-  row = await connection.one(sql.unsafe`SELECT foo`);
+  row = await connection.one(sql.typeAlias('foo')`SELECT foo`);
 } catch (error) {
   if (!(error instanceof NotFoundError)) {
     throw error;
@@ -127,14 +127,14 @@ It should be safe to use the same connection if `StatementCancelledError` is han
 ```ts
 await pool.connect(async (connection0) => {
   await pool.connect(async (connection1) => {
-    const backendProcessId = await connection1.oneFirst(sql.unsafe`SELECT pg_backend_pid()`);
+    const backendProcessId = await connection1.oneFirst(sql.typeAlias('id')`SELECT pg_backend_pid() AS id`);
 
     setTimeout(() => {
-      connection0.query(sql.unsafe`SELECT pg_cancel_backend(${backendProcessId})`)
+      connection0.query(sql.typeAlias('void')`SELECT pg_cancel_backend(${backendProcessId})`)
     }, 2000);
 
     try {
-      await connection1.query(sql.unsafe`SELECT pg_sleep(30)`);
+      await connection1.query(sql.typeAlias('void')`SELECT pg_sleep(30)`);
     } catch (error) {
       if (error instanceof StatementCancelledError) {
         // Safe to continue using the same connection.

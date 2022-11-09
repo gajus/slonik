@@ -96,7 +96,7 @@ The primary reason for implementing _only_ this connection pooling method is bec
 const main = async () => {
   const connection = await pool.connect();
 
-  await connection.query(sql.unsafe`SELECT foo()`);
+  await connection.query(sql.typeAlias('foo')`SELECT foo()`);
 
   await connection.release();
 };
@@ -115,7 +115,7 @@ const main = async () => {
   let lastExecutionResult;
 
   try {
-    lastExecutionResult = await connection.query(sql.unsafe`SELECT foo()`);
+    lastExecutionResult = await connection.query(sql.typeAlias('foo')`SELECT foo()`);
   } finally {
     await connection.release();
   }
@@ -129,7 +129,7 @@ Slonik abstracts the latter pattern into `pool#connect()` method.
 ```ts
 const main = () => {
   return pool.connect((connection) => {
-    return connection.query(sql.unsafe`SELECT foo()`);
+    return connection.query(sql.typeAlias('foo')`SELECT foo()`);
   });
 };
 ```

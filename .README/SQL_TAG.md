@@ -32,6 +32,9 @@ Slonik documentation assumes that these type aliases are defined:
 ```ts
 const sql = createSqlTag({
   typeAliases: {
+    foo: z.object({
+      foo: z.string(),
+    }),
     id: z.object({
       id: z.number(),
     }),
@@ -41,9 +44,10 @@ const sql = createSqlTag({
 
 const personId = await pool.oneFirst(
   sql.typeAlias('id')`
-  SELECT id
-  FROM person
-`);
+    SELECT id
+    FROM person
+  `
+);
 ```
 
 ### Typing `sql` tag

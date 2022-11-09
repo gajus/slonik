@@ -271,7 +271,7 @@ The primary reason for implementing _only_ this connection pooling method is bec
 const main = async () => {
   const connection = await pool.connect();
 
-  await connection.query(sql.unsafe`SELECT foo()`);
+  await connection.query(sql.typeAlias('foo')`SELECT foo()`);
 
   await connection.release();
 };
@@ -290,7 +290,7 @@ const main = async () => {
   let lastExecutionResult;
 
   try {
-    lastExecutionResult = await connection.query(sql.unsafe`SELECT foo()`);
+    lastExecutionResult = await connection.query(sql.typeAlias('foo')`SELECT foo()`);
   } finally {
     await connection.release();
   }
@@ -304,7 +304,7 @@ Slonik abstracts the latter pattern into `pool#connect()` method.
 ```ts
 const main = () => {
   return pool.connect((connection) => {
-    return connection.query(sql.unsafe`SELECT foo()`);
+    return connection.query(sql.typeAlias('foo')`SELECT foo()`);
   });
 };
 ```
@@ -1502,6 +1502,9 @@ Slonik documentation assumes that these type aliases are defined:
 ```ts
 const sql = createSqlTag({
   typeAliases: {
+    foo: z.object({
+      foo: z.string(),
+    }),
     id: z.object({
       id: z.number(),
     }),
@@ -1511,9 +1514,10 @@ const sql = createSqlTag({
 
 const personId = await pool.oneFirst(
   sql.typeAlias('id')`
-  SELECT id
-  FROM person
-`);
+    SELECT id
+    FROM person
+  `
+);
 ```
 
 <a name="user-content-slonik-sql-tag-typing-sql-tag"></a>
@@ -2265,7 +2269,7 @@ Returns result rows.
 Example:
 
 ```ts
-const rows = await connection.any(sql.unsafe`SELECT foo`);
+const rows = await connection.any(sql.typeAlias('foo')`SELECT foo`);
 ```
 
 `#any` is similar to `#query` except that it returns rows without fields information.
@@ -2281,7 +2285,7 @@ Returns value of the first column of every row in the result set.
 Example:
 
 ```ts
-const fooValues = await connection.anyFirst(sql.unsafe`SELECT foo`);
+const fooValues = await connection.anyFirst(sql.typeAlias('foo')`SELECT foo`);
 ```
 
 <a name="user-content-slonik-query-methods-exists"></a>
@@ -2293,8 +2297,9 @@ Returns a boolean value indicating whether query produces results.
 The query that is passed to this function is wrapped in `SELECT exists()` prior to it getting executed, i.e.
 
 ```ts
-pool.exists(sql.unsafe`
-  SELECT LIMIT 1
+pool.exists(sql.typeAlias('void')`
+  SELECT
+  LIMIT 1
 `)
 ```
 
@@ -2303,7 +2308,8 @@ is equivalent to:
 ```ts
 pool.oneFirst(sql.unsafe`
   SELECT exists(
-    SELECT LIMIT 1
+    SELECT
+    LIMIT 1
   )
 `)
 ```
@@ -2386,7 +2392,7 @@ Returns result rows.
 Example:
 
 ```ts
-const rows = await connection.many(sql.unsafe`SELECT foo`);
+const rows = await connection.many(sql.typeAlias('foo')`SELECT foo`);
 ```
 
 <a name="user-content-slonik-query-methods-manyfirst"></a>
@@ -2401,7 +2407,7 @@ Returns value of the first column of every row in the result set.
 Example:
 
 ```ts
-const fooValues = await connection.many(sql.unsafe`SELECT foo`);
+const fooValues = await connection.many(sql.typeAlias('foo')`SELECT foo`);
 ```
 
 <a name="user-content-slonik-query-methods-maybeone"></a>
@@ -2416,7 +2422,7 @@ Selects the first row from the result.
 Example:
 
 ```ts
-const row = await connection.maybeOne(sql.unsafe`SELECT foo`);
+const row = await connection.maybeOne(sql.typeAlias('foo')`SELECT foo`);
 
 // row.foo is the result of the `foo` column value of the first row.
 ```
@@ -2434,7 +2440,7 @@ Returns value of the first column from the first row.
 Example:
 
 ```ts
-const foo = await connection.maybeOneFirst(sql.unsafe`SELECT foo`);
+const foo = await connection.maybeOneFirst(sql.typeAlias('foo')`SELECT foo`);
 
 // foo is the result of the `foo` column value of the first row.
 ```
@@ -2451,7 +2457,7 @@ Selects the first row from the result.
 Example:
 
 ```ts
-const row = await connection.one(sql.unsafe`SELECT foo`);
+const row = await connection.one(sql.typeAlias('foo')`SELECT foo`);
 
 // row.foo is the result of the `foo` column value of the first row.
 ```
@@ -2476,7 +2482,7 @@ Returns value of the first column from the first row.
 Example:
 
 ```ts
-const foo = await connection.oneFirst(sql.unsafe`SELECT foo`);
+const foo = await connection.oneFirst(sql.typeAlias('foo')`SELECT foo`);
 
 // foo is the result of the `foo` column value of the first row.
 ```
@@ -2490,7 +2496,7 @@ API and the result shape are equivalent to [`pg#query`](https://github.com/brian
 Example:
 
 ```ts
-await connection.query(sql.unsafe`SELECT foo`);
+await connection.query(sql.typeAlias('foo')`SELECT foo`);
 
 // {
 //   command: 'SELECT',
@@ -2514,7 +2520,7 @@ Streams query results.
 Example:
 
 ```ts
-await connection.stream(sql.unsafe`SELECT foo`, (stream) => {
+await connection.stream(sql.typeAlias('foo')`SELECT foo`, (stream) => {
   stream.on('data', (datum) => {
     datum;
     // {
@@ -2755,14 +2761,14 @@ If you require to extract meta-data about a specific type of error (e.g. constra
 await pool.connect(async (connection0) => {
   try {
     await pool.connect(async (connection1) => {
-      const backendProcessId = await connection1.oneFirst(sql.unsafe`SELECT pg_backend_pid()`);
+      const backendProcessId = await connection1.oneFirst(sql.typeAlias('id')`SELECT pg_backend_pid() AS id`);
 
       setTimeout(() => {
-        connection0.query(sql.unsafe`SELECT pg_cancel_backend(${backendProcessId})`)
+        connection0.query(sql.typeAlias('void')`SELECT pg_cancel_backend(${backendProcessId})`)
       }, 2000);
 
       try {
-        await connection1.query(sql.unsafe`SELECT pg_sleep(30)`);
+        await connection1.query(sql.typeAlias('void')`SELECT pg_sleep(30)`);
       } catch (error) {
         // This code will not be executed.
       }
@@ -2803,7 +2809,7 @@ import {
 let row;
 
 try {
-  row = await connection.one(sql.unsafe`SELECT foo`);
+  row = await connection.one(sql.typeAlias('foo')`SELECT foo`);
 } catch (error) {
   if (error instanceof DataIntegrityError) {
     console.error('There is more than one row matching the select criteria.');
@@ -2833,7 +2839,7 @@ import {
 let row;
 
 try {
-  row = await connection.one(sql.unsafe`SELECT foo`);
+  row = await connection.one(sql.typeAlias('foo')`SELECT foo`);
 } catch (error) {
   if (!(error instanceof NotFoundError)) {
     throw error;
@@ -2862,14 +2868,14 @@ It should be safe to use the same connection if `StatementCancelledError` is han
 ```ts
 await pool.connect(async (connection0) => {
   await pool.connect(async (connection1) => {
-    const backendProcessId = await connection1.oneFirst(sql.unsafe`SELECT pg_backend_pid()`);
+    const backendProcessId = await connection1.oneFirst(sql.typeAlias('id')`SELECT pg_backend_pid() AS id`);
 
     setTimeout(() => {
-      connection0.query(sql.unsafe`SELECT pg_cancel_backend(${backendProcessId})`)
+      connection0.query(sql.typeAlias('void')`SELECT pg_cancel_backend(${backendProcessId})`)
     }, 2000);
 
     try {
-      await connection1.query(sql.unsafe`SELECT pg_sleep(30)`);
+      await connection1.query(sql.typeAlias('void')`SELECT pg_sleep(30)`);
     } catch (error) {
       if (error instanceof StatementCancelledError) {
         // Safe to continue using the same connection.
