@@ -1493,7 +1493,9 @@ const sql = createSqlTag();
 <a name="slonik-sql-tag-type-aliases"></a>
 ### Type aliases
 
-You can create a `sql` tag with a predefined set of Zod type aliases that can be later referenced when creating a query with [runtime validation](#user-content-runtime-validation), e.g.
+You can create a `sql` tag with a predefined set of Zod type aliases that can be later referenced when creating a query with [runtime validation](#user-content-runtime-validation).
+
+Slonik documentation assumes that these type aliases are defined:
 
 ```ts
 const sql = createSqlTag({
@@ -1501,6 +1503,7 @@ const sql = createSqlTag({
     id: z.object({
       id: z.number(),
     }),
+    void: z.object({}).strict(),
   }
 })
 
