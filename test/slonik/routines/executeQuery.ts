@@ -6,7 +6,7 @@ import {
 } from 'roarr';
 import * as sinon from 'sinon';
 import {
-  type TaggedTemplateLiteralInvocation,
+  type QuerySqlToken,
 } from '../../../src';
 import {
   InvalidInputError,
@@ -65,7 +65,7 @@ test('throws a descriptive error if query is empty', async (t) => {
       {
         sql: '',
         values: [],
-      } as unknown as TaggedTemplateLiteralInvocation,
+      } as unknown as QuerySqlToken,
       'foo',
       t.context.executionRoutine,
     );
@@ -84,7 +84,7 @@ test('throws a descriptive error if the entire query is a value binding', async 
       {
         sql: '$1',
         values: [],
-      } as unknown as TaggedTemplateLiteralInvocation,
+      } as unknown as QuerySqlToken,
       'foo',
       t.context.executionRoutine,
     );
@@ -119,7 +119,7 @@ test('retries an implicit query that failed due to a transaction error', async (
     {
       sql: 'SELECT 1 AS foo',
       values: [],
-    } as unknown as TaggedTemplateLiteralInvocation,
+    } as unknown as QuerySqlToken,
     'foo',
     executionRoutineStub,
   );
@@ -158,7 +158,7 @@ test('returns the thrown transaction error if the retry limit is reached', async
     {
       sql: 'SELECT 1 AS foo',
       values: [],
-    } as unknown as TaggedTemplateLiteralInvocation,
+    } as unknown as QuerySqlToken,
     'foo',
     executionRoutineStub,
   ));
@@ -197,7 +197,7 @@ test('transaction errors are not handled if the function was called by a transac
     {
       sql: 'SELECT 1 AS foo',
       values: [],
-    } as unknown as TaggedTemplateLiteralInvocation,
+    } as unknown as QuerySqlToken,
     'foo',
     executionRoutineStub,
   ));

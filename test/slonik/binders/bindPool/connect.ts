@@ -13,7 +13,7 @@ const sql = createSqlTag();
 test('release connection after promise is resolved (implicit connection)', async (t) => {
   const pool = await createPool();
 
-  await pool.query(sql`SELECT 1`);
+  await pool.query(sql.unsafe`SELECT 1`);
 
   t.is(pool.connectSpy.callCount, 1);
   t.is(pool.releaseSpy.callCount, 1);
@@ -105,7 +105,7 @@ test('if `beforePoolConnection` returns pool object, then the returned pool obje
     ],
   });
 
-  await pool1.query(sql`SELECT 1`);
+  await pool1.query(sql.unsafe`SELECT 1`);
 
   t.is(pool0.connectSpy.callCount, 1);
   t.is(pool0.releaseSpy.callCount, 1);
@@ -130,7 +130,7 @@ test('if `beforePoolConnection` returns pool object, then the returned pool obje
   });
 
   await pool1.transaction(async (connection) => {
-    return await connection.query(sql`SELECT 1`);
+    return await connection.query(sql.unsafe`SELECT 1`);
   });
 
   t.is(pool0.connectSpy.callCount, 1);
@@ -156,7 +156,7 @@ test('if `beforePoolConnection` returns pool object, then the returned pool obje
   });
 
   await pool1.connect(async (connection) => {
-    return await connection.query(sql`SELECT 1`);
+    return await connection.query(sql.unsafe`SELECT 1`);
   });
 
   t.is(pool0.connectSpy.callCount, 1);
@@ -179,7 +179,7 @@ test('if `beforePoolConnection` returns null, then the current pool object is us
     ],
   });
 
-  await pool.query(sql`SELECT 1`);
+  await pool.query(sql.unsafe`SELECT 1`);
 
   t.is(pool.connectSpy.callCount, 1);
   t.is(pool.releaseSpy.callCount, 1);

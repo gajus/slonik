@@ -5,11 +5,12 @@ import {
   createArraySqlFragment,
   createBinarySqlFragment,
   createDateSqlFragment,
+  createFragmentSqlFragment,
   createIdentifierSqlFragment,
   createIntervalSqlFragment,
   createJsonSqlFragment,
   createListSqlFragment,
-  createSqlSqlFragment,
+  createQuerySqlFragment,
   createTimestampSqlFragment,
   createUnnestSqlFragment,
 } from '../sqlFragmentFactories';
@@ -22,7 +23,8 @@ import {
   JsonBinaryToken,
   JsonToken,
   ListToken,
-  SqlToken,
+  QueryToken,
+  FragmentToken,
   TimestampToken,
   UnnestToken,
 } from '../tokens';
@@ -38,6 +40,8 @@ export const createSqlTokenSqlFragment = (token: SqlTokenType, greatestParameter
     return createBinarySqlFragment(token, greatestParameterPosition);
   } else if (token.type === DateToken) {
     return createDateSqlFragment(token, greatestParameterPosition);
+  } else if (token.type === FragmentToken) {
+    return createFragmentSqlFragment(token, greatestParameterPosition);
   } else if (token.type === IdentifierToken) {
     return createIdentifierSqlFragment(token);
   } else if (token.type === IntervalToken) {
@@ -48,8 +52,8 @@ export const createSqlTokenSqlFragment = (token: SqlTokenType, greatestParameter
     return createJsonSqlFragment(token, greatestParameterPosition, false);
   } else if (token.type === ListToken) {
     return createListSqlFragment(token, greatestParameterPosition);
-  } else if (token.type === SqlToken) {
-    return createSqlSqlFragment(token, greatestParameterPosition);
+  } else if (token.type === QueryToken) {
+    return createQuerySqlFragment(token, greatestParameterPosition);
   } else if (token.type === TimestampToken) {
     return createTimestampSqlFragment(token, greatestParameterPosition);
   } else if (token.type === UnnestToken) {

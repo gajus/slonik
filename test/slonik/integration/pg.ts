@@ -24,7 +24,7 @@ test('returns expected query result object (NOTICE)', async (t) => {
     PgPool,
   });
 
-  await pool.query(sql`
+  await pool.query(sql.unsafe`
     CREATE OR REPLACE FUNCTION test_notice
       (
         v_test INTEGER
@@ -45,7 +45,7 @@ test('returns expected query result object (NOTICE)', async (t) => {
     $$;
   `);
 
-  const result = await pool.query(sql`SELECT * FROM test_notice(${10});`);
+  const result = await pool.query(sql.unsafe`SELECT * FROM test_notice(${10});`);
 
   t.is(result.notices.length, 4);
 
@@ -55,13 +55,14 @@ test('returns expected query result object (NOTICE)', async (t) => {
 test('streams rows', async (t) => {
   const pool = await createPool(t.context.dsn);
 
-  await pool.query(sql`
-    INSERT INTO person (name) VALUES ('foo'), ('bar'), ('baz')
+  await pool.query(sql.unsafe`
+    INSERT INTO person (name)
+    VALUES ('foo'), ('bar'), ('baz')
   `);
 
   const messages: Array<Record<string, unknown>> = [];
 
-  await pool.stream(sql`
+  await pool.stream(sql.unsafe`
     SELECT name
     FROM person
   `, (stream) => {
@@ -112,13 +113,13 @@ test('streams rows', async (t) => {
 test('streams rows with different batchSize', async (t) => {
   const pool = await createPool(t.context.dsn);
 
-  await pool.query(sql`
+  await pool.query(sql.unsafe`
     INSERT INTO person (name) VALUES ('foo'), ('bar'), ('baz')
   `);
 
   const messages: Array<Record<string, unknown>> = [];
 
-  await pool.stream(sql`
+  await pool.stream(sql.unsafe`
     SELECT name
     FROM person
   `, (stream) => {
@@ -180,7 +181,7 @@ test('applies type parsers to streamed rows', async (t) => {
     ],
   });
 
-  await pool.query(sql`
+  await pool.query(sql.unsafe`
     INSERT INTO person
       (name, birth_date)
     VALUES
@@ -191,7 +192,7 @@ test('applies type parsers to streamed rows', async (t) => {
 
   const messages: Array<Record<string, unknown>> = [];
 
-  await pool.stream(sql`
+  await pool.stream(sql.unsafe`
     SELECT birth_date
     FROM person
     ORDER BY birth_date ASC
@@ -243,14 +244,15 @@ test('applies type parsers to streamed rows', async (t) => {
 test('streams over a transaction', async (t) => {
   const pool = await createPool(t.context.dsn);
 
-  await pool.query(sql`
-    INSERT INTO person (name) VALUES ('foo'), ('bar'), ('baz')
+  await pool.query(sql.unsafe`
+    INSERT INTO person (name)
+    VALUES ('foo'), ('bar'), ('baz')
   `);
 
   const messages: Array<Record<string, unknown>> = [];
 
   await pool.transaction(async (transaction) => {
-    await transaction.stream(sql`
+    await transaction.stream(sql.unsafe`
       SELECT name
       FROM person
     `, (stream) => {
@@ -303,7 +305,7 @@ test('copies from binary stream', async (t) => {
   const pool = await createPool(t.context.dsn);
 
   await pool.copyFromBinary(
-    sql`
+    sql.unsafe`
       COPY person
       (
         name
@@ -326,7 +328,7 @@ test('copies from binary stream', async (t) => {
     ],
   );
 
-  t.deepEqual(await pool.anyFirst(sql`
+  t.deepEqual(await pool.anyFirst(sql.unsafe`
     SELECT name
     FROM person
   `), [
@@ -341,13 +343,13 @@ test('copies from binary stream', async (t) => {
 test('frees connection after destroying a stream', async (t) => {
   const pool = await createPool(t.context.dsn);
 
-  await pool.stream(sql`
+  await pool.stream(sql.unsafe`
     SELECT * FROM GENERATE_SERIES(1, 100)
   `, (stream) => {
     stream.destroy();
   });
 
-  t.deepEqual(await pool.anyFirst(sql`
+  t.deepEqual(await pool.anyFirst(sql.unsafe`
     SELECT TRUE
   `), [
     true,
@@ -359,13 +361,13 @@ test('frees connection after destroying a stream', async (t) => {
 test('frees connection after destroying a stream with an error', async (t) => {
   const pool = await createPool(t.context.dsn);
 
-  await pool.stream(sql`
+  await pool.stream(sql.unsafe`
     SELECT * FROM GENERATE_SERIES(1, 100)
   `, (stream) => {
     stream.destroy(new Error('Foo'));
   });
 
-  t.deepEqual(await pool.anyFirst(sql`
+  t.deepEqual(await pool.anyFirst(sql.unsafe`
     SELECT TRUE
   `), [
     true,
@@ -377,7 +379,7 @@ test('frees connection after destroying a stream with an error', async (t) => {
 test('throws error on syntax errors', async (t) => {
   const pool = await createPool(t.context.dsn);
 
-  const error = await t.throwsAsync(pool.stream(sql`NONSENSE NOT REALLY SQL`, () => {
+  const error = await t.throwsAsync(pool.stream(sql.unsafe`NONSENSE NOT REALLY sql.fragment`, () => {
     t.false('We should not have got this far!');
   }));
 

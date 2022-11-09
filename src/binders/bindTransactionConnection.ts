@@ -2,9 +2,6 @@ import {
   type PoolClient as PgPoolClient,
 } from 'pg';
 import {
-  assertSqlSqlToken,
-} from '../assertions';
-import {
   any,
   anyFirst,
   exists,
@@ -43,7 +40,6 @@ export const bindTransactionConnection = (
 
   return {
     any: (slonikSql) => {
-      assertSqlSqlToken(slonikSql);
       assertTransactionDepth();
 
       return any(
@@ -54,7 +50,6 @@ export const bindTransactionConnection = (
       );
     },
     anyFirst: (slonikSql) => {
-      assertSqlSqlToken(slonikSql);
       assertTransactionDepth();
 
       return anyFirst(
@@ -65,7 +60,6 @@ export const bindTransactionConnection = (
       );
     },
     exists: async (slonikSql) => {
-      assertSqlSqlToken(slonikSql);
       assertTransactionDepth();
 
       return await exists(
@@ -76,7 +70,6 @@ export const bindTransactionConnection = (
       );
     },
     many: (slonikSql) => {
-      assertSqlSqlToken(slonikSql);
       assertTransactionDepth();
 
       return many(
@@ -87,7 +80,6 @@ export const bindTransactionConnection = (
       );
     },
     manyFirst: (slonikSql) => {
-      assertSqlSqlToken(slonikSql);
       assertTransactionDepth();
 
       return manyFirst(
@@ -98,7 +90,6 @@ export const bindTransactionConnection = (
       );
     },
     maybeOne: (slonikSql) => {
-      assertSqlSqlToken(slonikSql);
       assertTransactionDepth();
 
       return maybeOne(
@@ -109,7 +100,6 @@ export const bindTransactionConnection = (
       );
     },
     maybeOneFirst: (slonikSql) => {
-      assertSqlSqlToken(slonikSql);
       assertTransactionDepth();
 
       return maybeOneFirst(
@@ -120,7 +110,6 @@ export const bindTransactionConnection = (
       );
     },
     one: (slonikSql) => {
-      assertSqlSqlToken(slonikSql);
       assertTransactionDepth();
 
       return one(
@@ -131,7 +120,6 @@ export const bindTransactionConnection = (
       );
     },
     oneFirst: (slonikSql) => {
-      assertSqlSqlToken(slonikSql);
       assertTransactionDepth();
 
       return oneFirst(
@@ -142,7 +130,6 @@ export const bindTransactionConnection = (
       );
     },
     query: (slonikSql) => {
-      assertSqlSqlToken(slonikSql);
       assertTransactionDepth();
 
       return queryMethod(
@@ -153,7 +140,6 @@ export const bindTransactionConnection = (
       );
     },
     stream: async (slonikSql, streamHandler) => {
-      assertSqlSqlToken(slonikSql);
       assertTransactionDepth();
 
       return await stream(

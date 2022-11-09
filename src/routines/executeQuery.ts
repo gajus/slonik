@@ -37,7 +37,7 @@ import {
   type QueryId,
   type QueryResult,
   type QueryResultRow,
-  type TaggedTemplateLiteralInvocation,
+  type QuerySqlToken,
 } from '../types';
 import {
   createQueryId,
@@ -123,25 +123,21 @@ export const executeQuery = async (
   connectionLogger: Logger,
   connection: PgPoolClient,
   clientConfiguration: ClientConfiguration,
-  slonikSqlRename: TaggedTemplateLiteralInvocation,
+  query: QuerySqlToken,
   inheritedQueryId: QueryId | undefined,
   executionRoutine: ExecutionRoutineType,
 ): Promise<QueryResult<Record<string, PrimitiveValueExpression>>> => {
-  // TODO rename
-  const slonikSql = slonikSqlRename.sql;
-  const values = slonikSqlRename.values;
-
   const poolClientState = getPoolClientState(connection);
 
   if (poolClientState.terminated) {
     throw new BackendTerminatedError(poolClientState.terminated);
   }
 
-  if (slonikSql.trim() === '') {
+  if (query.sql.trim() === '') {
     throw new InvalidInputError('Unexpected SQL input. Query cannot be empty.');
   }
 
-  if (slonikSql.trim() === '$1') {
+  if (query.sql.trim() === '$1') {
     throw new InvalidInputError('Unexpected SQL input. Query cannot be empty. Found only value binding.');
   }
 
@@ -171,8 +167,8 @@ export const executeQuery = async (
   });
 
   const originalQuery = {
-    sql: slonikSql,
-    values,
+    sql: query.sql,
+    values: query.values,
   };
 
   let actualQuery = {
@@ -186,7 +182,7 @@ export const executeQuery = async (
     poolId: poolClientState.poolId,
     queryId,
     queryInputTime,
-    resultParser: slonikSqlRename.parser,
+    resultParser: query.parser,
     sandbox: {},
     stackTrace,
     transactionId: poolClientState.transactionId,
