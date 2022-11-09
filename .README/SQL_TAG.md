@@ -32,6 +32,7 @@ Slonik documentation assumes that these type aliases are defined:
 ```ts
 const sql = createSqlTag({
   typeAliases: {
+    // `foo` is a documentation specific example
     foo: z.object({
       foo: z.string(),
     }),
@@ -41,13 +42,22 @@ const sql = createSqlTag({
     void: z.object({}).strict(),
   }
 })
+```
 
+These are documentation specific examples that you are not expected to blindly copy. However, `id` and `void` are recommended aliases as they reflect common patterns, e.g.
+
+```ts
 const personId = await pool.oneFirst(
   sql.typeAlias('id')`
     SELECT id
     FROM person
   `
 );
+
+await pool.query(sql.typeAlias('void')`
+  INSERT INTO person_view (person_id)
+  VALUES (${personId})
+`);
 ```
 
 ### Typing `sql` tag
