@@ -8,16 +8,16 @@ If this is your first time using Slonik, read [Dynamically generating SQL querie
 
 ```ts
 (
-  values: PrimitiveValueExpression[],
-  memberType: TypeNameIdentifier | SqlToken
-) => ArraySqlToken;
+  values: readonly PrimitiveValueExpression[],
+  memberType: SqlFragment | TypeNameIdentifier,
+) => ArraySqlToken,
 ```
 
 Creates an array value binding, e.g.
 
 ```ts
-await connection.query(sql.unsafe`
-  SELECT (${sql.array([1, 2, 3], 'int4')})
+await connection.query(sql.typeAlias('id')`
+  SELECT (${sql.array([1, 2, 3], 'int4')}) AS id
 `);
 ```
 
@@ -41,8 +41,8 @@ Produces:
 If `memberType` is a string (`TypeNameIdentifier`), then it is treated as a type name identifier and will be quoted using double quotes, i.e. `sql.array([1, 2, 3], 'int4')` is equivalent to `$1::"int4"[]`. The implication is that keywords that are often used interchangeably with type names are not going to work, e.g. [`int4`](https://github.com/postgres/postgres/blob/69edf4f8802247209e77f69e089799b3d83c13a4/src/include/catalog/pg_type.dat#L74-L78) is a type name identifier and will work. However, [`int`](https://github.com/postgres/postgres/blob/69edf4f8802247209e77f69e089799b3d83c13a4/src/include/parser/kwlist.h#L213) is a keyword and will not work. You can either use type name identifiers or you can construct custom member using `sql.fragment` tag, e.g.
 
 ```ts
-await connection.query(sql.unsafe`
-  SELECT (${sql.array([1, 2, 3], sql.fragment`int[]`)})
+await connection.query(sql.typeAlias('id')`
+  SELECT (${sql.array([1, 2, 3], sql.fragment`int[]`)}) AS id
 `);
 ```
 
@@ -71,15 +71,31 @@ Unlike `sql.join`, `sql.array` generates a stable query of a predictable length,
 Example:
 
 ```ts
-sql.typeAlias('id')`SELECT id FROM foo WHERE id IN (${sql.join([1, 2, 3], sql.fragment`, `)})`;
-sql.typeAlias('id')`SELECT id FROM foo WHERE id NOT IN (${sql.join([1, 2, 3], sql.fragment`, `)})`;
+sql.typeAlias('id')`
+  SELECT id
+  FROM foo
+  WHERE id IN (${sql.join([1, 2, 3], sql.fragment`, `)})
+`;
+sql.typeAlias('id')`
+  SELECT id
+  FROM foo
+  WHERE id NOT IN (${sql.join([1, 2, 3], sql.fragment`, `)})
+`;
 ```
 
 Is equivalent to:
 
 ```ts
-sql.typeAlias('id')`SELECT id FROM foo WHERE id = ANY(${sql.array([1, 2, 3], 'int4')})`;
-sql.typeAlias('id')`SELECT id FROM foo WHERE id != ALL(${sql.array([1, 2, 3], 'int4')})`;
+sql.typeAlias('id')`
+  SELECT id
+  FROM foo
+  WHERE id = ANY(${sql.array([1, 2, 3], 'int4')})
+`;
+sql.typeAlias('id')`
+  SELECT id
+  FROM foo
+  WHERE id != ALL(${sql.array([1, 2, 3], 'int4')})
+`;
 ```
 
 Furthermore, unlike `sql.join`, `sql.array` can be used with an empty array of values. In short, `sql.array` should be preferred over `sql.join` when possible.
@@ -137,6 +153,46 @@ Produces:
   ]
 }
 ```
+
+### `sql.fragment`
+
+```ts
+(
+  template: TemplateStringsArray,
+  ...values: ValueExpression[]
+) => SqlFragment;
+```
+
+A SQL fragment, e.g.
+
+```ts
+sql.fragment`FOO`
+```
+
+Produces:
+
+```ts
+{
+  sql: 'FOO',
+  values: []
+}
+```
+
+SQL fragments can be used to build more complex queries, e.g.
+
+```ts
+const whereFragment = sql.fragment`
+  WHERE bar = 'baz';
+`;
+
+sql.typeAlias('id')`
+  SELECT id
+  FROM foo
+  ${whereFragment}
+`
+```
+
+The only difference between queries and fragments is that fragments are untyped and they cannot be used as inputs to query methods (use `sql.type` instead).
 
 ### `sql.identifier`
 
@@ -529,13 +585,13 @@ Produces:
 
 ```ts
 (
-  tuples: ReadonlyArray<readonly any[]>,
-  columnTypes:  Array<[...string[], TypeNameIdentifier]> | Array<SqlSqlToken | TypeNameIdentifier>
-): UnnestSqlToken;
+  template: TemplateStringsArray,
+  ...values: ValueExpression[]
+) => QuerySqlToken;
 ```
 
 Creates a query with Zod `any` type. The TypeScript type of the result of such query is `any`.
 
 `sql.unsafe` is effectively a short-cut to `sql.type(z.any())`.
 
-Your production code should not have instances of `sql.unsafe`. Instead, you should be using `sql.type` or `sql.typeAlias`.
+Your production code should not have instances of `sql.unsafe`. The only valid use case for `sql.unsafe` is as a short-cut during the development. Instead, you should be using `sql.type`, `sql.typeAlias` or `sql.fragment`.
