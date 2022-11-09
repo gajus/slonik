@@ -120,6 +120,7 @@ Note: Using this project does not require TypeScript. It is a regular ES6 module
         * [`sql.literalValue`](#user-content-slonik-query-building-sql-literalvalue)
         * [`sql.timestamp`](#user-content-slonik-query-building-sql-timestamp)
         * [`sql.unnest`](#user-content-slonik-query-building-sql-unnest)
+        * [`sql.unsafe`](#user-content-slonik-query-building-sql-unsafe)
     * [Query methods](#user-content-slonik-query-methods)
         * [`any`](#user-content-slonik-query-methods-any)
         * [`anyFirst`](#user-content-slonik-query-methods-anyfirst)
@@ -2162,6 +2163,22 @@ Produces:
 }
 ```
 
+<a name="user-content-slonik-query-building-sql-unsafe"></a>
+<a name="slonik-query-building-sql-unsafe"></a>
+### <code>sql.unsafe</code>
+
+```ts
+(
+  tuples: ReadonlyArray<readonly any[]>,
+  columnTypes:  Array<[...string[], TypeNameIdentifier]> | Array<SqlSqlToken | TypeNameIdentifier>
+): UnnestSqlToken;
+```
+
+Creates a query with Zod `any` type. The TypeScript type of the result of such query is `any`.
+
+`sql.unsafe` is effectively a short-cut to `sql.type(z.any())`.
+
+Your production code should not have instances of `sql.unsafe`. Instead, you should be using `sql.type` or `sql.typeAlias`.
 
 <a name="user-content-slonik-query-methods"></a>
 <a name="slonik-query-methods"></a>

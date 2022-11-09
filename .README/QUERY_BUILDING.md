@@ -524,3 +524,18 @@ Produces:
   ]
 }
 ```
+
+### `sql.unsafe`
+
+```ts
+(
+  tuples: ReadonlyArray<readonly any[]>,
+  columnTypes:  Array<[...string[], TypeNameIdentifier]> | Array<SqlSqlToken | TypeNameIdentifier>
+): UnnestSqlToken;
+```
+
+Creates a query with Zod `any` type. The TypeScript type of the result of such query is `any`.
+
+`sql.unsafe` is effectively a short-cut to `sql.type(z.any())`.
+
+Your production code should not have instances of `sql.unsafe`. Instead, you should be using `sql.type` or `sql.typeAlias`.
