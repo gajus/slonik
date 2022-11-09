@@ -205,8 +205,8 @@ The only difference between queries and fragments is that fragments are untyped 
 [Delimited identifiers](https://www.postgresql.org/docs/current/static/sql-syntax-lexical.html#SQL-SYNTAX-IDENTIFIERS) are created by enclosing an arbitrary sequence of characters in double-quotes ("). To create a delimited identifier, create an `sql` tag function placeholder value using `sql.identifier`, e.g.
 
 ```ts
-sql.unsafe`
-  SELECT 1
+sql.typeAlias('id')`
+  SELECT 1 AS id
   FROM ${sql.identifier(['bar', 'baz'])}
 `;
 ```
@@ -239,8 +239,8 @@ Produces:
 Inserts an [interval](https://www.postgresql.org/docs/current/datatype-datetime.html#DATATYPE-INTERVAL-INPUT), e.g.
 
 ```ts
-sql.unsafe`
-  SELECT 1
+sql.typeAlias('id')`
+  SELECT 1 AS id
   FROM ${sql.interval({days: 3})}
 `;
 ```
@@ -590,8 +590,21 @@ Produces:
 ) => QuerySqlToken;
 ```
 
-Creates a query with Zod `any` type. The TypeScript type of the result of such query is `any`.
+Creates a query with Zod `any` type. The result of such a query has TypeScript type `any`.
 
-`sql.unsafe` is effectively a short-cut to `sql.type(z.any())`.
+```ts
+const result = await connection.one(sql.unsafe`
+  SELECT foo
+  FROM bar
+`);
 
-Your production code should not have instances of `sql.unsafe`. The only valid use case for `sql.unsafe` is as a short-cut during the development. Instead, you should be using `sql.type`, `sql.typeAlias` or `sql.fragment`.
+// `result` type is `any`
+```
+
+`sql.unsafe` is effectively a shortcut to `sql.type(z.any())`.
+
+`sql.unsafe` is as a convenience method for development. Your production code must not use `sql.unsafe`. Instead,
+
+* Use `sql.type` to type the query result
+* Use `sql.typeAlias` to alias an existing type
+* Use `sql.fragment` if you are writing a fragment of a query
