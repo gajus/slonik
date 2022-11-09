@@ -35,7 +35,7 @@
     "@types/pg-copy-streams": "^1.2.1",
     "@types/sinon": "^10.0.13",
     "@types/through2": "^2.0.36",
-    "ava": "^4.3.3",
+    "ava": "^5.0.1",
     "coveralls": "^3.1.1",
     "delay": "^5.0.0",
     "eslint": "^8.23.1",
