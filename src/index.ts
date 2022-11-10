@@ -36,6 +36,7 @@ export type {
   QueryResultRowColumn,
   QuerySqlToken,
   SerializableValue,
+  SqlFragment,
   SqlTag,
   SqlToken,
   TypeNameIdentifier,
