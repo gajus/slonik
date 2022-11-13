@@ -9,15 +9,17 @@ import {
   type SqlFragment,
 } from '../types';
 
-const IntervalInput = z.object({
-  days: z.number().optional(),
-  hours: z.number().optional(),
-  minutes: z.number().optional(),
-  months: z.number().optional(),
-  seconds: z.number().optional(),
-  weeks: z.number().optional(),
-  years: z.number().optional(),
-}).strict();
+const IntervalInput = z
+  .object({
+    days: z.number().optional(),
+    hours: z.number().optional(),
+    minutes: z.number().optional(),
+    months: z.number().optional(),
+    seconds: z.number().optional(),
+    weeks: z.number().optional(),
+    years: z.number().optional(),
+  })
+  .strict();
 
 const intervalFragments = [
   'years',
@@ -28,13 +30,23 @@ const intervalFragments = [
   'seconds',
 ];
 
-export const createIntervalSqlFragment = (token: IntervalSqlToken, greatestParameterPosition: number): SqlFragment => {
+const tokenMap = {
+  minutes: 'mins',
+  seconds: 'secs',
+};
+
+export const createIntervalSqlFragment = (
+  token: IntervalSqlToken,
+  greatestParameterPosition: number,
+): SqlFragment => {
   let intervalInput;
 
   try {
     intervalInput = IntervalInput.parse(token.interval);
   } catch {
-    throw new InvalidInputError('Interval input must not contain unknown properties.');
+    throw new InvalidInputError(
+      'Interval input must not contain unknown properties.',
+    );
   }
 
   const values: number[] = [];
@@ -47,7 +59,13 @@ export const createIntervalSqlFragment = (token: IntervalSqlToken, greatestParam
     if (value !== undefined) {
       values.push(value);
 
-      intervalTokens.push(intervalFragment + ' => $' + String(greatestParameterPosition + values.length));
+      const mappedToken = tokenMap[intervalFragment] ?? intervalFragment;
+
+      intervalTokens.push(
+        mappedToken +
+          ' => $' +
+          String(greatestParameterPosition + values.length),
+      );
     }
   }
 
