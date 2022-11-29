@@ -109,7 +109,7 @@ const createFragment = (
 };
 
 export const createSqlTag = <
-  K extends keyof Z,
+  K extends PropertyKey,
   P extends ZodTypeAny,
   Z extends Record<K, P>
 >(configuration: {
