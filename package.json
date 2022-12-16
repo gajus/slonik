@@ -7,7 +7,6 @@
   "dependencies": {
     "concat-stream": "^2.0.0",
     "es6-error": "^4.1.1",
-    "fast-safe-stringify": "^2.1.1",
     "get-stack-trace": "^2.1.1",
     "hyperid": "^2.3.1",
     "is-plain-object": "^5.0.0",
@@ -22,6 +21,7 @@
     "postgres-array": "^3.0.1",
     "postgres-interval": "^4.0.0",
     "roarr": "^7.14.0",
+    "safe-stable-stringify": "^2.4.1",
     "serialize-error": "^8.0.0",
     "through2": "^4.0.2",
     "zod": "^3.19.1"

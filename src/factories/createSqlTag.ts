@@ -1,4 +1,3 @@
-import safeStringify from 'fast-safe-stringify';
 import {
   z,
   type ZodTypeAny,
@@ -43,6 +42,7 @@ import {
   type ValueExpression,
 } from '../types';
 import {
+  safeStringify,
   escapeLiteralValue,
   isPrimitiveValueExpression,
   isSqlToken,

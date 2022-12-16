@@ -1,4 +1,3 @@
-import safeStringify from 'fast-safe-stringify';
 import {
   Logger,
 } from '../Logger';
@@ -8,6 +7,9 @@ import {
 import {
   type PrimitiveValueExpression,
 } from '../types';
+import {
+  safeStringify,
+} from '../utilities';
 
 const log = Logger.child({
   namespace: 'createPrimitiveValueExpressions',
