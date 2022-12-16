@@ -1,6 +1,5 @@
-import anyTest from 'ava';
-import type {
-  TestInterface,
+import anyTest, {
+  type TestFn,
 } from 'ava';
 import {
   ROARR,
@@ -9,10 +8,10 @@ import {
   createSqlTag,
 } from '../../../../src/factories/createSqlTag';
 import {
-  SqlToken,
+  FragmentToken,
 } from '../../../../src/tokens';
 
-const test = anyTest as TestInterface<{
+const test = anyTest as TestFn<{
   logs: unknown[],
 }>;
 
@@ -27,21 +26,21 @@ test.beforeEach((t) => {
 });
 
 test('creates an object describing a query', (t) => {
-  const query = sql`SELECT 1`;
+  const query = sql.fragment`SELECT 1`;
 
   t.deepEqual(query, {
     sql: 'SELECT 1',
-    type: SqlToken,
+    type: FragmentToken,
     values: [],
   });
 });
 
 test('creates an object describing query value bindings', (t) => {
-  const query = sql`SELECT ${'foo'}`;
+  const query = sql.fragment`SELECT ${'foo'}`;
 
   t.deepEqual(query, {
     sql: 'SELECT $1',
-    type: SqlToken,
+    type: FragmentToken,
     values: [
       'foo',
     ],
@@ -49,11 +48,11 @@ test('creates an object describing query value bindings', (t) => {
 });
 
 test('creates an object describing query value bindings (multiple)', (t) => {
-  const query = sql`SELECT ${'foo'}, ${'bar'}`;
+  const query = sql.fragment`SELECT ${'foo'}, ${'bar'}`;
 
   t.deepEqual(query, {
     sql: 'SELECT $1, $2',
-    type: SqlToken,
+    type: FragmentToken,
     values: [
       'foo',
       'bar',
@@ -62,12 +61,12 @@ test('creates an object describing query value bindings (multiple)', (t) => {
 });
 
 test('nests sql templates', (t) => {
-  const query0 = sql`SELECT ${'foo'} FROM bar`;
-  const query1 = sql`SELECT ${'baz'} FROM (${query0})`;
+  const query0 = sql.fragment`SELECT ${'foo'} FROM bar`;
+  const query1 = sql.fragment`SELECT ${'baz'} FROM (${query0})`;
 
   t.deepEqual(query1, {
     sql: 'SELECT $1 FROM (SELECT $2 FROM bar)',
-    type: SqlToken,
+    type: FragmentToken,
     values: [
       'baz',
       'foo',
@@ -78,16 +77,16 @@ test('nests sql templates', (t) => {
 test('throws if bound an undefined value', (t) => {
   const error = t.throws(() => {
     // @ts-expect-error
-    sql`SELECT ${undefined}`;
+    sql.fragment`SELECT ${undefined}`;
   });
 
-  t.is(error.message, 'SQL tag cannot be bound an undefined value.');
+  t.is(error?.message, 'SQL tag cannot be bound an undefined value.');
 });
 
 test.serial.skip('logs all bound values if one is undefined', (t) => {
   t.throws(() => {
     // @ts-expect-error
-    sql`SELECT ${undefined}`;
+    sql.fragment`SELECT ${undefined}`;
   });
 
   const targetMessage = t.context.logs.find((message: any) => {
@@ -103,7 +102,7 @@ test.serial.skip('logs all bound values if one is undefined', (t) => {
 });
 
 test('the sql property is immutable', (t) => {
-  const query = sql`SELECT 1`;
+  const query = sql.fragment`SELECT 1`;
 
   t.throws(() => {
     // @ts-expect-error

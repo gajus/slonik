@@ -1,13 +1,12 @@
 {
-  "extends": "canonical/ava",
+  "extends": [
+    "canonical/ava"
+  ],
   "rules": {
+    "@babel/no-unused-expressions": 0,
+    "@typescript-eslint/ban-ts-comment": 0,
     "@typescript-eslint/no-explicit-any": 0,
     "@typescript-eslint/no-unused-expressions": 0,
-    "ava/use-test": 0,
-    "filenames/match-regex": 0,
-    "flowtype/no-flow-fix-me-comments": 0,
-    "id-length": 0,
-    "max-nested-callbacks": 0,
-    "require-await": 0
+    "ava/use-test": 0
   }
 }

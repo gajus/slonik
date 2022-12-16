@@ -5,18 +5,23 @@ import {
   createPrimitiveValueExpressions,
   createSqlTokenSqlFragment,
 } from '../factories';
-import type {
-  SqlFragmentType,
-  ListSqlTokenType,
+import {
+  type PrimitiveValueExpression,
+
+  type SqlFragment,
+  type ListSqlToken,
 } from '../types';
 import {
   isPrimitiveValueExpression,
   isSqlToken,
 } from '../utilities';
 
-export const createListSqlFragment = (token: ListSqlTokenType, greatestParameterPosition: number): SqlFragmentType => {
-  const values = [];
-  const placeholders = [];
+export const createListSqlFragment = (
+  token: ListSqlToken,
+  greatestParameterPosition: number,
+): SqlFragment => {
+  const values: PrimitiveValueExpression[] = [];
+  const placeholders: Array<PrimitiveValueExpression | null> = [];
 
   let placeholderIndex = greatestParameterPosition;
 
@@ -41,7 +46,6 @@ export const createListSqlFragment = (token: ListSqlTokenType, greatestParameter
   }
 
   return {
-    // @ts-expect-error
     sql: placeholders.join(token.glue.sql),
     values: createPrimitiveValueExpressions(values),
   };

@@ -1,8 +1,8 @@
 import {
   DataIntegrityError,
 } from '../errors';
-import type {
-  InternalQueryMethodType,
+import {
+  type InternalQueryMethod,
 } from '../types';
 import {
   createQueryId,
@@ -11,17 +11,17 @@ import {
   many,
 } from './many';
 
-export const manyFirst: InternalQueryMethodType<any> = async (log, connection, clientConfigurationType, rawSql, values, inheritedQueryId) => {
+export const manyFirst: InternalQueryMethod = async (log, connection, clientConfigurationType, query, inheritedQueryId) => {
   const queryId = inheritedQueryId ?? createQueryId();
 
-  const rows = await many(log, connection, clientConfigurationType, rawSql, values, queryId);
+  const rows = await many(log, connection, clientConfigurationType, query, queryId);
 
   if (rows.length === 0) {
     log.error({
       queryId,
     }, 'DataIntegrityError');
 
-    throw new DataIntegrityError();
+    throw new DataIntegrityError(query);
   }
 
   const keys = Object.keys(rows[0] as Record<string, unknown>);
@@ -31,7 +31,7 @@ export const manyFirst: InternalQueryMethodType<any> = async (log, connection, c
       queryId,
     }, 'DataIntegrityError');
 
-    throw new DataIntegrityError();
+    throw new DataIntegrityError(query);
   }
 
   const firstColumnName = keys[0];

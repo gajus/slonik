@@ -1,5 +1,5 @@
 import test from 'ava';
-import sinon from 'sinon';
+import * as sinon from 'sinon';
 import {
   createPool,
 } from '../../../../helpers/createPool';
@@ -7,7 +7,7 @@ import {
 test('`beforePoolConnection` is called before `connect`', async (t) => {
   const beforePoolConnection = sinon.stub();
 
-  const pool = createPool({
+  const pool = await createPool({
     interceptors: [
       {
         beforePoolConnection,
@@ -15,9 +15,9 @@ test('`beforePoolConnection` is called before `connect`', async (t) => {
     ],
   });
 
-  await pool.connect(() => {
-    return Promise.resolve('foo');
+  await pool.connect(async () => {
+    return 'foo';
   });
 
-  t.assert(beforePoolConnection.calledBefore(pool.connectSpy));
+  t.true(beforePoolConnection.calledBefore(pool.connectSpy));
 });

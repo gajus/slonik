@@ -1,28 +1,37 @@
-import TypeOverrides from 'pg/lib/type-overrides';
+import {
+  type Client as PgClient,
+} from 'pg';
+import {
+  getTypeParser,
+} from 'pg-types';
 import {
   parse as parseArray,
 } from 'postgres-array';
-import type {
-  InternalDatabaseConnectionType,
-  TypeParserType,
+import {
+  type TypeParser,
 } from '../types';
 
-export const createTypeOverrides = async (connection: InternalDatabaseConnectionType, typeParsers: readonly TypeParserType[]): Promise<any> => {
-  const typeOverrides = new TypeOverrides();
+type PostgresType = {
+  oid: string,
+  typarray: string,
+  typname: string,
+};
 
-  if (typeParsers.length === 0) {
-    return typeOverrides;
-  }
-
+export const createTypeOverrides = async (
+  pool: PgClient,
+  typeParsers: readonly TypeParser[],
+) => {
   const typeNames = typeParsers.map((typeParser) => {
     return typeParser.name;
   });
 
-  const postgresTypes: any[] = (
-    await connection.query('SELECT oid, typarray, typname FROM pg_type WHERE typname = ANY($1::text[])', [
+  const postgresTypes: PostgresType[] = (
+    await pool.query('SELECT oid, typarray, typname FROM pg_type WHERE typname = ANY($1::text[])', [
       typeNames,
     ])
   ).rows;
+
+  const parsers = {};
 
   for (const typeParser of typeParsers) {
     const postgresType = postgresTypes.find((maybeTargetPostgresType) => {
@@ -33,19 +42,25 @@ export const createTypeOverrides = async (connection: InternalDatabaseConnection
       throw new Error('Database type "' + typeParser.name + '" not found.');
     }
 
-    typeOverrides.setTypeParser(postgresType.oid, (value) => {
+    parsers[postgresType.oid] = (value) => {
       return typeParser.parse(value);
-    });
+    };
 
     if (postgresType.typarray) {
-      typeOverrides.setTypeParser(postgresType.typarray, (arrayValue) => {
+      parsers[postgresType.typarray] = (arrayValue) => {
         return parseArray(arrayValue)
           .map((value) => {
             return typeParser.parse(value);
           });
-      });
+      };
     }
   }
 
-  return typeOverrides;
+  return (oid: number) => {
+    if (parsers[oid]) {
+      return parsers[oid];
+    }
+
+    return getTypeParser(oid);
+  };
 };

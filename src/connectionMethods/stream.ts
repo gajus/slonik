@@ -1,39 +1,31 @@
-/* eslint-disable promise/prefer-await-to-callbacks */
-
-import type Stream from 'stream';
+import {
+  type Readable,
+} from 'stream';
 import through from 'through2';
 import {
   QueryStream,
 } from '../QueryStream';
 import {
-  UnexpectedStateError,
-} from '../errors';
-import {
   executeQuery,
 } from '../routines';
-import type {
-  InterceptorType,
-  InternalStreamFunctionType,
+import {
+  type Interceptor,
+  type InternalStreamFunction,
 } from '../types';
 
-export const stream: InternalStreamFunctionType = async (connectionLogger, connection, clientConfiguration, rawSql, values, streamHandler) => {
-  return executeQuery(
+export const stream: InternalStreamFunction = async (connectionLogger, connection, clientConfiguration, slonikSql, streamHandler, uid, options) => {
+  return await executeQuery(
     connectionLogger,
     connection,
     clientConfiguration,
-    rawSql,
-    values,
+    slonikSql,
     undefined,
-    (finalConnection, finalSql, finalValues, executionContext, actualQuery) => {
-      if (connection.native) {
-        throw new UnexpectedStateError('Result cursors do not work with the native driver. Use JavaScript driver.');
-      }
+    async (finalConnection, finalSql, finalValues, executionContext, actualQuery) => {
+      const query = new QueryStream(finalSql, finalValues, options);
 
-      const query = new QueryStream(finalSql, finalValues);
+      const queryStream: Readable = finalConnection.query(query);
 
-      const queryStream: Stream = finalConnection.query(query);
-
-      const rowTransformers: Array<NonNullable<InterceptorType['transformRow']>> = [];
+      const rowTransformers: Array<NonNullable<Interceptor['transformRow']>> = [];
 
       for (const interceptor of clientConfiguration.interceptors) {
         if (interceptor.transformRow) {
@@ -41,12 +33,12 @@ export const stream: InternalStreamFunctionType = async (connectionLogger, conne
         }
       }
 
-      return new Promise((resolve, reject) => {
+      return await new Promise((resolve, reject) => {
         queryStream.on('error', (error: Error) => {
           reject(error);
         });
 
-        const transformedStream = queryStream.pipe(through.obj(function (datum: any, enc: any, callback: any) {
+        const transformedStream = queryStream.pipe(through.obj(function (datum, enc, callback) {
           let finalRow = datum.row;
 
           if (rowTransformers.length) {
@@ -55,7 +47,7 @@ export const stream: InternalStreamFunctionType = async (connectionLogger, conne
             }
           }
 
-          // eslint-disable-next-line fp/no-this, babel/no-invalid-this
+          // eslint-disable-next-line @babel/no-invalid-this
           this.push({
             fields: datum.fields,
             row: finalRow,
@@ -65,17 +57,37 @@ export const stream: InternalStreamFunctionType = async (connectionLogger, conne
         }));
 
         transformedStream.on('end', () => {
-          // @ts-expect-error
-          resolve({});
+          resolve({
+            command: 'SELECT',
+            fields: [],
+            notices: [],
+            rowCount: 0,
+            rows: [],
+          });
         });
 
         // Invoked if stream is destroyed using transformedStream.destroy().
         transformedStream.on('close', () => {
-          // @ts-expect-error
-          resolve({});
+          if (!queryStream.destroyed) {
+            queryStream.destroy();
+          }
+
+          resolve({
+            command: 'SELECT',
+            fields: [],
+            notices: [],
+            rowCount: 0,
+            rows: [],
+          });
         });
 
-        streamHandler(transformedStream);
+        transformedStream.on('error', (error: Error) => {
+          queryStream.destroy(error);
+        });
+
+        transformedStream.once('readable', () => {
+          streamHandler(transformedStream);
+        });
       });
     },
   );

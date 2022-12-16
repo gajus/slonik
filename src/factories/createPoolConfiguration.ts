@@ -1,62 +1,86 @@
+/* eslint-disable canonical/id-match */
+
 import {
-  parse as parseConnectionString,
-} from 'pg-connection-string';
-import type {
-  ConnectionOptions,
-} from 'pg-connection-string';
+  type PoolConfig,
+} from 'pg';
 import {
   Logger as log,
 } from '../Logger';
-import type {
-  ClientConfigurationType,
+import {
+  type ClientConfiguration,
 } from '../types';
+import {
+  parseDsn,
+} from '../utilities';
 
-export const createPoolConfiguration = (connectionUri: string, clientConfiguration: ClientConfigurationType): ConnectionOptions => {
-  // @todo: make this not any. A few properties which don't exist on the interface are being set below
-  const poolConfiguration: any = parseConnectionString(connectionUri);
+export const createPoolConfiguration = (dsn: string, clientConfiguration: ClientConfiguration): PoolConfig => {
+  const connectionOptions = parseDsn(dsn);
 
-  // @see https://node-postgres.com/api/pool
-  poolConfiguration.connectionTimeoutMillis = clientConfiguration.connectionTimeout;
-  poolConfiguration.idleTimeoutMillis = clientConfiguration.idleTimeout;
-  poolConfiguration.max = clientConfiguration.maximumPoolSize;
+  const poolConfiguration: PoolConfig = {
+    application_name: connectionOptions.applicationName,
+    database: connectionOptions.databaseName,
+    host: connectionOptions.host,
+    password: connectionOptions.password,
+    port: connectionOptions.port,
+    ssl: false,
+    user: connectionOptions.username,
+  };
 
-  if (clientConfiguration.connectionTimeout === 'DISABLE_TIMEOUT') {
-    poolConfiguration.connectionTimeoutMillis = undefined;
-  } else if (clientConfiguration.connectionTimeout === 0) {
-    log.warn('connectionTimeout=0 sets timeout to 0 milliseconds; use connectionTimeout=DISABLE_TIMEOUT to disable timeout');
-
-    poolConfiguration.connectionTimeoutMillis = 1;
-  }
-
-  if (poolConfiguration.ssl) {
+  if (clientConfiguration.ssl) {
+    poolConfiguration.ssl = clientConfiguration.ssl;
+  } else if (connectionOptions.sslMode === 'disable') {
+    poolConfiguration.ssl = false;
+  } else if (connectionOptions.sslMode === 'require') {
+    poolConfiguration.ssl = true;
+  } else if (connectionOptions.sslMode === 'no-verify') {
     poolConfiguration.ssl = {
       rejectUnauthorized: false,
-      ...poolConfiguration.ssl,
     };
   }
 
-  // Temporary disabled.
-  // There appears to be a bug in node-postgres.
-  // https://github.com/brianc/node-postgres/issues/2103
+  if (clientConfiguration.connectionTimeout !== 'DISABLE_TIMEOUT') {
+    if (clientConfiguration.connectionTimeout === 0) {
+      log.warn('connectionTimeout=0 sets timeout to 0 milliseconds; use connectionTimeout=DISABLE_TIMEOUT to disable timeout');
 
-  // poolConfiguration.idle_in_transaction_session_timeout = clientConfiguration.idleInTransactionSessionTimeout;
-  // poolConfiguration.statement_timeout = clientConfiguration.statementTimeout;
+      poolConfiguration.connectionTimeoutMillis = 1;
+    } else {
+      poolConfiguration.connectionTimeoutMillis = clientConfiguration.connectionTimeout;
+    }
+  }
 
-  // if (clientConfiguration.idleInTransactionSessionTimeout === 'DISABLE_TIMEOUT') {
-  //   poolConfiguration.idle_in_transaction_session_timeout = undefined;
-  // } else if (clientConfiguration.idleInTransactionSessionTimeout === 0) {
-  //   log.warn('idleInTransactionSessionTimeout=0 sets timeout to 0 milliseconds; use idleInTransactionSessionTimeout=DISABLE_TIMEOUT to disable timeout');
+  if (clientConfiguration.statementTimeout !== 'DISABLE_TIMEOUT') {
+    if (clientConfiguration.statementTimeout === 0) {
+      log.warn('statementTimeout=0 sets timeout to 0 milliseconds; use statementTimeout=DISABLE_TIMEOUT to disable timeout');
 
-  //   poolConfiguration.idle_in_transaction_session_timeout = 1;
-  // }
+      poolConfiguration.statement_timeout = 1;
+    } else {
+      poolConfiguration.statement_timeout = clientConfiguration.statementTimeout;
+    }
+  }
 
-  // if (clientConfiguration.statementTimeout === 'DISABLE_TIMEOUT') {
-  //   poolConfiguration.statement_timeout = undefined;
-  // } else if (clientConfiguration.statementTimeout === 0) {
-  //   log.warn('statementTimeout=0 sets timeout to 0 milliseconds; use statementTimeout=DISABLE_TIMEOUT to disable timeout');
+  if (clientConfiguration.idleTimeout !== 'DISABLE_TIMEOUT') {
+    if (clientConfiguration.idleTimeout === 0) {
+      log.warn('idleTimeout=0 sets timeout to 0 milliseconds; use idleTimeout=DISABLE_TIMEOUT to disable timeout');
 
-  //   poolConfiguration.statement_timeout = 1;
-  // }
+      poolConfiguration.idleTimeoutMillis = 1;
+    } else {
+      poolConfiguration.idleTimeoutMillis = clientConfiguration.idleTimeout;
+    }
+  }
 
-  return poolConfiguration as ConnectionOptions;
+  if (clientConfiguration.idleInTransactionSessionTimeout !== 'DISABLE_TIMEOUT') {
+    if (clientConfiguration.idleInTransactionSessionTimeout === 0) {
+      log.warn('idleInTransactionSessionTimeout=0 sets timeout to 0 milliseconds; use idleInTransactionSessionTimeout=DISABLE_TIMEOUT to disable timeout');
+
+      poolConfiguration.idle_in_transaction_session_timeout = 1;
+    } else {
+      poolConfiguration.idle_in_transaction_session_timeout = clientConfiguration.idleInTransactionSessionTimeout;
+    }
+  }
+
+  if (clientConfiguration.maximumPoolSize) {
+    poolConfiguration.max = clientConfiguration.maximumPoolSize;
+  }
+
+  return poolConfiguration;
 };

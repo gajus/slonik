@@ -1,8 +1,8 @@
-import type {
-  ConnectionContextType,
+import {
+  type ConnectionContext,
 } from '../../src/types';
 
-export const createConnectionContext = (): ConnectionContextType => {
+export const createConnectionContext = (): ConnectionContext => {
   return {
     connectionId: '1',
 

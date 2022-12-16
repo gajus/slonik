@@ -1,6 +1,6 @@
 import {
-  assertSqlSqlToken,
-} from '../assertions';
+  type PoolClient as PgPoolClient,
+} from 'pg';
 import {
   any,
   anyFirst,
@@ -15,168 +15,151 @@ import {
   stream,
   query as queryMethod,
 } from '../connectionMethods';
-import type {
-  ClientConfigurationType,
-  DatabaseTransactionConnectionType,
-  InternalDatabaseConnectionType,
-  Logger,
+import {
+  getPoolClientState,
+} from '../state';
+import {
+  type ClientConfiguration,
+  type DatabaseTransactionConnection,
+  type Logger,
 } from '../types';
 
 export const bindTransactionConnection = (
   parentLog: Logger,
-  connection: InternalDatabaseConnectionType,
-  clientConfiguration: ClientConfigurationType,
+  connection: PgPoolClient,
+  clientConfiguration: ClientConfiguration,
   transactionDepth: number,
-): DatabaseTransactionConnectionType => {
+): DatabaseTransactionConnection => {
+  const poolClientState = getPoolClientState(connection);
+
   const assertTransactionDepth = () => {
-    if (transactionDepth !== connection.connection.slonik.transactionDepth) {
+    if (transactionDepth !== poolClientState.transactionDepth) {
       throw new Error('Cannot run a query using parent transaction.');
     }
   };
 
   return {
-    any: (query) => {
-      assertSqlSqlToken(query);
+    any: (slonikSql) => {
       assertTransactionDepth();
 
       return any(
         parentLog,
         connection,
         clientConfiguration,
-        query.sql,
-        query.values,
+        slonikSql,
       );
     },
-    anyFirst: (query) => {
-      assertSqlSqlToken(query);
+    anyFirst: (slonikSql) => {
       assertTransactionDepth();
 
       return anyFirst(
         parentLog,
         connection,
         clientConfiguration,
-        query.sql,
-        query.values,
+        slonikSql,
       );
     },
-    exists: (query) => {
-      assertSqlSqlToken(query);
+    exists: async (slonikSql) => {
       assertTransactionDepth();
 
-      return exists(
+      return await exists(
         parentLog,
         connection,
         clientConfiguration,
-        query.sql,
-        query.values,
+        slonikSql,
       );
     },
-    many: (query) => {
-      assertSqlSqlToken(query);
+    many: (slonikSql) => {
       assertTransactionDepth();
 
       return many(
         parentLog,
         connection,
         clientConfiguration,
-        query.sql,
-        query.values,
+        slonikSql,
       );
     },
-    manyFirst: (query) => {
-      assertSqlSqlToken(query);
+    manyFirst: (slonikSql) => {
       assertTransactionDepth();
 
       return manyFirst(
         parentLog,
         connection,
         clientConfiguration,
-        query.sql,
-        query.values,
+        slonikSql,
       );
     },
-    maybeOne: (query) => {
-      assertSqlSqlToken(query);
+    maybeOne: (slonikSql) => {
       assertTransactionDepth();
 
       return maybeOne(
         parentLog,
         connection,
         clientConfiguration,
-        query.sql,
-        query.values,
+        slonikSql,
       );
     },
-    maybeOneFirst: (query) => {
-      assertSqlSqlToken(query);
+    maybeOneFirst: (slonikSql) => {
       assertTransactionDepth();
 
       return maybeOneFirst(
         parentLog,
         connection,
         clientConfiguration,
-        query.sql,
-        query.values,
+        slonikSql,
       );
     },
-    one: (query) => {
-      assertSqlSqlToken(query);
+    one: (slonikSql) => {
       assertTransactionDepth();
 
       return one(
         parentLog,
         connection,
         clientConfiguration,
-        query.sql,
-        query.values,
+        slonikSql,
       );
     },
-    oneFirst: (query) => {
-      assertSqlSqlToken(query);
+    oneFirst: (slonikSql) => {
       assertTransactionDepth();
 
       return oneFirst(
         parentLog,
         connection,
         clientConfiguration,
-        query.sql,
-        query.values,
+        slonikSql,
       );
     },
-    query: (query) => {
-      assertSqlSqlToken(query);
+    query: (slonikSql) => {
       assertTransactionDepth();
 
       return queryMethod(
         parentLog,
         connection,
         clientConfiguration,
-        query.sql,
-        query.values,
+        slonikSql,
       );
     },
-    stream: (query, streamHandler) => {
-      assertSqlSqlToken(query);
+    stream: async (slonikSql, streamHandler) => {
       assertTransactionDepth();
 
-      return stream(
+      return await stream(
         parentLog,
         connection,
         clientConfiguration,
-        query.sql,
-        query.values,
+        slonikSql,
         streamHandler,
       );
     },
-    transaction: (handler) => {
+    transaction: async (handler, transactionRetryLimit) => {
       assertTransactionDepth();
 
-      return nestedTransaction(
+      return await nestedTransaction(
         parentLog,
         connection,
         clientConfiguration,
         handler,
         transactionDepth,
+        transactionRetryLimit,
       );
     },
   };

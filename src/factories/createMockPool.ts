@@ -4,13 +4,13 @@ import {
 import {
   bindPool,
 } from '../binders/bindPool';
-import type {
-  ClientConfigurationInputType,
-  DatabasePoolType,
-  MockPoolOverridesType,
-  PrimitiveValueExpressionType,
-  QueryResultRowType,
-  QueryResultType,
+import {
+  poolStateMap,
+} from '../state';
+import {
+  type ClientConfigurationInput,
+  type DatabasePool,
+  type MockPoolOverrides,
 } from '../types';
 import {
   createUid,
@@ -20,9 +20,9 @@ import {
 } from './createClientConfiguration';
 
 export const createMockPool = (
-  overrides: MockPoolOverridesType,
-  clientConfigurationInput?: ClientConfigurationInputType,
-): DatabasePoolType => {
+  overrides: MockPoolOverrides,
+  clientConfigurationInput?: ClientConfigurationInput,
+): DatabasePool => {
   const clientConfiguration = createClientConfiguration(clientConfigurationInput);
 
   const poolId = createUid();
@@ -34,29 +34,24 @@ export const createMockPool = (
   const pool = {
     connect: () => {
       const connection = {
-        connection: {
-          slonik: {
-            connectionId: createUid(),
-            mock: true,
-            terminated: null,
-            transactionDepth: null,
-          },
-        },
         off: () => {},
         on: () => {},
         query: overrides.query,
         release: () => {},
-      };
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      } as any;
 
       return connection;
     },
-    slonik: {
-      ended: false,
-      mock: true,
-      poolId,
-      typeOverrides: null,
-    },
-  };
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  } as any;
+
+  poolStateMap.set(pool, {
+    ended: false,
+    mock: true,
+    poolId,
+    typeOverrides: null,
+  });
 
   return bindPool(
     poolLog,

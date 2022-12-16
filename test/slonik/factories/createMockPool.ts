@@ -1,5 +1,5 @@
 import test from 'ava';
-import sinon from 'sinon';
+import * as sinon from 'sinon';
 import {
   DataIntegrityError,
   sql,
@@ -28,7 +28,7 @@ test('executes a mock query (pool.query)', async (t) => {
 
   const pool = createMockPool(overrides);
 
-  const results = await pool.query(sql`
+  const results = await pool.query(sql.unsafe`
     SELECT ${'foo'}
   `);
 
@@ -65,7 +65,7 @@ test('create a mock pool and executes a mock query (pool.connect)', async (t) =>
   const pool = createMockPool(overrides);
 
   await pool.connect(async (connection) => {
-    const results = await connection.query(sql`
+    const results = await connection.query(sql.unsafe`
       SELECT ${'foo'}
     `);
 
@@ -101,7 +101,7 @@ test('executes a mock transaction', async (t) => {
   const pool = createMockPool(overrides);
 
   await pool.transaction(async (transaction) => {
-    await transaction.query(sql`
+    await transaction.query(sql.unsafe`
       SELECT ${'foo'}
     `);
   });
@@ -132,7 +132,7 @@ test('executes a mock transaction (nested)', async (t) => {
 
   await pool.transaction(async (transaction0) => {
     await transaction0.transaction(async (transaction1) => {
-      await transaction1.query(sql`
+      await transaction1.query(sql.unsafe`
         SELECT ${'foo'}
       `);
     });
@@ -161,7 +161,7 @@ test('enforces result assertions', async (t) => {
     },
   });
 
-  const error = await t.throwsAsync(pool.one(sql`SELECT 1`));
+  const error = await t.throwsAsync(pool.one(sql.unsafe`SELECT 1`));
 
   t.true(error instanceof DataIntegrityError);
 });
@@ -177,5 +177,5 @@ test('enforces result normalization', async (t) => {
     },
   });
 
-  t.is(await pool.oneFirst(sql`SELECT 1`), 'bar');
+  t.is(await pool.oneFirst(sql.unsafe`SELECT 1`), 'bar');
 });

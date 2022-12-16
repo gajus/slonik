@@ -1,20 +1,41 @@
 const pg = require('pg');
 
-const db = new pg.Pool({
-  max: 4,
+const pool = new pg.Pool({
+  user: 'postgres',
 });
+
+const connect = () => {
+  return new Promise((resolve) => {
+    pool.connect((error, connection) => {
+      resolve(connection);
+    });
+  });
+};
 
 module.exports = {
   name: 'pg',
   tests: {
-    select: () => {
-      return db.query('select 1 as x');
+    select: async () => {
+      const connection = await connect();
+
+      return () => {
+        return connection.query('select 1 as x');
+      };
     },
-    select_arg: () => {
-      return db.query('select $1 as x', [1]);
+    select_arg: async () => {
+      const connection = await connect();
+
+      return () => {
+        return connection.query('select $1 as x', [
+          1,
+        ]);
+      };
     },
-    select_args: () => {
-      return db.query(`select
+    select_args: async () => {
+      const connection = await connect();
+
+      return () => {
+        return connection.query(`select
       $1::int as int,
       $2 as string,
       $3::timestamp with time zone as timestamp,
@@ -23,24 +44,31 @@ module.exports = {
       $6::bytea as bytea,
       $7::jsonb as json
     `, [
-        1,
-        'foo',
-        new Date().toISOString(),
-        null,
-        false,
-        Buffer.from('bar'),
-        JSON.stringify([
-          {
-            foo: 'bar',
-          },
-          {
-            bar: 'baz',
-          },
-        ]),
-      ]);
+          1,
+          'foo',
+          new Date().toISOString(),
+          null,
+          false,
+          Buffer.from('bar'),
+          JSON.stringify([
+            {
+              foo: 'bar',
+            },
+            {
+              bar: 'baz',
+            },
+          ]),
+        ]);
+      };
     },
-    select_where: () => {
-      return db.query('select * from pg_catalog.pg_type where typname = $1', ['bool']);
+    select_where: async () => {
+      const connection = await connect();
+
+      return () => {
+        return connection.query('select * from pg_catalog.pg_type where typname = $1', [
+          'bool',
+        ]);
+      };
     },
   },
   url: 'https://github.com/brianc/node-postgres',

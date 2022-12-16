@@ -4,7 +4,7 @@ import {
 } from '../../../src/utilities/stripArrayNotation';
 
 test('strips array notation', (t) => {
-  t.assert(stripArrayNotation('foo') === 'foo');
-  t.assert(stripArrayNotation('foo[]') === 'foo');
-  t.assert(stripArrayNotation('foo[][]') === 'foo');
+  t.is(stripArrayNotation('foo'), 'foo');
+  t.is(stripArrayNotation('foo[]'), 'foo');
+  t.is(stripArrayNotation('foo[][]'), 'foo');
 });

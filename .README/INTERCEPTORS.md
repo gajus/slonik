@@ -4,17 +4,16 @@ Functionality can be added to Slonik client by adding interceptors (middleware).
 
 Interceptors are configured using [client configuration](#api), e.g.
 
-```js
+```ts
 import {
   createPool
 } from 'slonik';
 
 const interceptors = [];
 
-const connection = createPool('postgres://', {
+const connection = await createPool('postgres://', {
   interceptors
 });
-
 ```
 
 Interceptors are executed in the order they are added.
@@ -25,66 +24,64 @@ Read: [Default interceptors](#default-interceptors).
 
 Interceptor is an object that implements methods that can change the behaviour of the database client at different stages of the connection life-cycle
 
-```js
-type InterceptorType = {
+```ts
+type Interceptor = {
   afterPoolConnection?: (
-    connectionContext: ConnectionContextType,
-    connection: DatabasePoolConnectionType
-  ) => MaybePromiseType<null>,
+    connectionContext: ConnectionContext,
+    connection: DatabasePoolConnection
+  ) => MaybePromise<null>,
   afterQueryExecution?: (
-    queryContext: QueryContextType,
-    query: QueryType,
-    result: QueryResultType<QueryResultRowType>
-  ) => MaybePromiseType<QueryResultType<QueryResultRowType>>,
+    queryContext: QueryContext,
+    query: Query,
+    result: QueryResult<QueryResultRow>
+  ) => MaybePromise<QueryResult<QueryResultRow>>,
   beforePoolConnection?: (
-    connectionContext: ConnectionContextType
-  ) => MaybePromiseType<?DatabasePoolType>,
+    connectionContext: ConnectionContext
+  ) => MaybePromise<?DatabasePool>,
   beforePoolConnectionRelease?: (
-    connectionContext: ConnectionContextType,
-    connection: DatabasePoolConnectionType
-  ) => MaybePromiseType<null>,
+    connectionContext: ConnectionContext,
+    connection: DatabasePoolConnection
+  ) => MaybePromise<null>,
   beforeQueryExecution?: (
-    queryContext: QueryContextType,
-    query: QueryType
-  ) => MaybePromiseType<QueryResultType<QueryResultRowType>> | MaybePromiseType<null>,
+    queryContext: QueryContext,
+    query: Query
+  ) => MaybePromise<QueryResult<QueryResultRow>> | MaybePromise<null>,
   beforeQueryResult?: (
-    queryContext: QueryContextType,
-    query: QueryType,
-    result: QueryResultType<QueryResultRowType>
-  ) => MaybePromiseType<null>,
+    queryContext: QueryContext,
+    query: Query,
+    result: QueryResult<QueryResultRow>
+  ) => MaybePromise<null>,
   beforeTransformQuery?: (
-    queryContext: QueryContextType,
-    query: QueryType
+    queryContext: QueryContext,
+    query: Query
   ) => Promise<null>,
   queryExecutionError?: (
-    queryContext: QueryContextType,
-    query: QueryType,
+    queryContext: QueryContext,
+    query: Query,
     error: SlonikError
-  ) => MaybePromiseType<null>,
+  ) => MaybePromise<null>,
   transformQuery?: (
-    queryContext: QueryContextType,
-    query: QueryType
-  ) => QueryType,
+    queryContext: QueryContext,
+    query: Query
+  ) => Query,
   transformRow?: (
-    queryContext: QueryContextType,
-    query: QueryType,
-    row: QueryResultRowType,
-    fields: FieldType[],
-  ) => QueryResultRowType
+    queryContext: QueryContext,
+    query: Query,
+    row: QueryResultRow,
+    fields: Field[],
+  ) => QueryResultRow
 };
-
 ```
 
 #### `afterPoolConnection`
 
 Executed after a connection is acquired from the connection pool (or a new connection is created), e.g.
 
-```js
-const pool = createPool('postgres://');
+```ts
+const pool = await createPool('postgres://');
 
 // Interceptor is executed here. ↓
 pool.connect();
-
 ```
 
 #### `afterQueryExecution`
@@ -117,7 +114,7 @@ This function can optionally return a pool to another database, causing a connec
 
 Executed before connection is released back to the connection pool, e.g.
 
-```js
+```ts
 const pool = await createPool('postgres://');
 
 pool.connect(async () => {
@@ -125,7 +122,6 @@ pool.connect(async () => {
 
   // Interceptor is executed here. ↓
 });
-
 ```
 
 #### `queryExecutionError`

@@ -1,27 +1,28 @@
 import {
   InvalidConfigurationError,
 } from '../errors';
-import type {
-  ClientConfigurationInputType,
-  ClientConfigurationType,
-  TypeParserType,
+import {
+  type ClientConfigurationInput,
+  type ClientConfiguration,
+  type TypeParser,
 } from '../types';
 import {
   createTypeParserPreset,
 } from './createTypeParserPreset';
 
-export const createClientConfiguration = (clientUserConfigurationInput?: ClientConfigurationInputType): ClientConfigurationType => {
-  const typeParsers: readonly TypeParserType[] = [];
+export const createClientConfiguration = (clientUserConfigurationInput?: ClientConfigurationInput): ClientConfiguration => {
+  const typeParsers: readonly TypeParser[] = [];
 
   const configuration = {
-    captureStackTrace: true,
+    captureStackTrace: false,
     connectionRetryLimit: 3,
-    connectionTimeout: 5000,
-    idleInTransactionSessionTimeout: 60000,
-    idleTimeout: 5000,
+    connectionTimeout: 5_000,
+    idleInTransactionSessionTimeout: 60_000,
+    idleTimeout: 5_000,
     interceptors: [],
     maximumPoolSize: 10,
-    statementTimeout: 60000,
+    queryRetryLimit: 5,
+    statementTimeout: 60_000,
     transactionRetryLimit: 5,
     typeParsers,
 

@@ -2,7 +2,7 @@
 
 All Slonik errors extend from `SlonikError`, i.e. You can catch Slonik specific errors using the following logic.
 
-```js
+```ts
 import {
   SlonikError
 } from 'slonik';
@@ -14,16 +14,15 @@ try {
     // This error is thrown by Slonik.
   }
 }
-
 ```
 
 ### Original `node-postgres` error
 
 When error originates from `node-postgres`, the original error is available under `originalError` property.
 
-This propery is exposed for debugging purposes only. Do not use it for conditional checks – it can change.
+This property is exposed for debugging purposes only. Do not use it for conditional checks – it can change.
 
-If you require to extract meta-data about a specific type of error (e.g. contraint violation name), raise a GitHub issue describing your use case.
+If you require to extract meta-data about a specific type of error (e.g. constraint violation name), raise a GitHub issue describing your use case.
 
 ### Handling `BackendTerminatedError`
 
@@ -31,18 +30,18 @@ If you require to extract meta-data about a specific type of error (e.g. contrai
 
 `BackendTerminatedError` must be handled at the connection level, i.e.
 
-```js
+```ts
 await pool.connect(async (connection0) => {
   try {
     await pool.connect(async (connection1) => {
-      const backendProcessId = await connection1.oneFirst(sql`SELECT pg_backend_pid()`);
+      const backendProcessId = await connection1.oneFirst(sql.typeAlias('id')`SELECT pg_backend_pid() AS id`);
 
       setTimeout(() => {
-        connection0.query(sql`SELECT pg_cancel_backend(${backendProcessId})`)
+        connection0.query(sql.typeAlias('void')`SELECT pg_cancel_backend(${backendProcessId})`)
       }, 2000);
 
       try {
-        await connection1.query(sql`SELECT pg_sleep(30)`);
+        await connection1.query(sql.typeAlias('void')`SELECT pg_sleep(30)`);
       } catch (error) {
         // This code will not be executed.
       }
@@ -55,7 +54,6 @@ await pool.connect(async (connection0) => {
     }
   }
 });
-
 ```
 
 ### Handling `CheckIntegrityConstraintViolationError`
@@ -70,15 +68,15 @@ await pool.connect(async (connection0) => {
 
 To handle the case where the data result does not match the expectations, catch `DataIntegrityError` error.
 
-```js
+```ts
 import {
-  NotFoundError
+  DataIntegrityError
 } from 'slonik';
 
 let row;
 
 try {
-  row = await connection.one(sql`SELECT foo`);
+  row = await connection.one(sql.typeAlias('foo')`SELECT foo`);
 } catch (error) {
   if (error instanceof DataIntegrityError) {
     console.error('There is more than one row matching the select criteria.');
@@ -86,7 +84,6 @@ try {
     throw error;
   }
 }
-
 ```
 
 ### Handling `ForeignKeyIntegrityConstraintViolationError`
@@ -97,7 +94,7 @@ try {
 
 To handle the case where query returns less than one row, catch `NotFoundError` error.
 
-```js
+```ts
 import {
   NotFoundError
 } from 'slonik';
@@ -105,7 +102,7 @@ import {
 let row;
 
 try {
-  row = await connection.one(sql`SELECT foo`);
+  row = await connection.one(sql.typeAlias('foo')`SELECT foo`);
 } catch (error) {
   if (!(error instanceof NotFoundError)) {
     throw error;
@@ -115,7 +112,6 @@ try {
 if (row) {
   // row.foo is the result of the `foo` column value of the first row.
 }
-
 ```
 
 ### Handling `NotNullIntegrityConstraintViolationError`
@@ -128,17 +124,17 @@ if (row) {
 
 It should be safe to use the same connection if `StatementCancelledError` is handled, e.g.
 
-```js
+```ts
 await pool.connect(async (connection0) => {
   await pool.connect(async (connection1) => {
-    const backendProcessId = await connection1.oneFirst(sql`SELECT pg_backend_pid()`);
+    const backendProcessId = await connection1.oneFirst(sql.typeAlias('id')`SELECT pg_backend_pid() AS id`);
 
     setTimeout(() => {
-      connection0.query(sql`SELECT pg_cancel_backend(${backendProcessId})`)
+      connection0.query(sql.typeAlias('void')`SELECT pg_cancel_backend(${backendProcessId})`)
     }, 2000);
 
     try {
-      await connection1.query(sql`SELECT pg_sleep(30)`);
+      await connection1.query(sql.typeAlias('void')`SELECT pg_sleep(30)`);
     } catch (error) {
       if (error instanceof StatementCancelledError) {
         // Safe to continue using the same connection.
@@ -148,7 +144,6 @@ await pool.connect(async (connection0) => {
     }
   });
 });
-
 ```
 
 ### Handling `StatementTimeoutError`

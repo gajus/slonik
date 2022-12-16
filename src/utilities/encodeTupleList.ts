@@ -5,15 +5,15 @@ import createConcatStream from 'concat-stream';
 import {
   rowWriter as createEncoder,
 } from 'pg-copy-streams-binary';
-import type {
-  TypeNameIdentifierType,
+import {
+  type TypeNameIdentifier,
 } from '../types';
 
-export const encodeTupleList = (
+export const encodeTupleList = async (
   tupleList: ReadonlyArray<readonly unknown[]>,
-  columnTypes: readonly TypeNameIdentifierType[],
+  columnTypes: readonly TypeNameIdentifier[],
 ): Promise<Buffer> => {
-  return new Promise((resolve, reject) => {
+  return await new Promise((resolve, reject) => {
     const concatStream = createConcatStream((payloadBuffer) => {
       resolve(payloadBuffer);
     });
@@ -44,7 +44,9 @@ export const encodeTupleList = (
 
       lastTupleSize = tuple.length;
 
-      const payload = new Array(lastTupleSize);
+      const payload = Array.from({
+        length: lastTupleSize,
+      });
 
       let tupleColumnIndex = -1;
 

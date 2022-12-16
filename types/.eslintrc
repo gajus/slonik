@@ -1,0 +1,6 @@
+{
+  "rules": {
+    "import/order": 0,
+    "canonical/filename-match-regex": 0
+  }
+}

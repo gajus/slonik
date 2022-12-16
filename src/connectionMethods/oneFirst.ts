@@ -1,8 +1,8 @@
 import {
   UnexpectedStateError,
 } from '../errors';
-import type {
-  InternalQueryMethodType,
+import {
+  type InternalQueryMethod,
 } from '../types';
 import {
   createQueryId,
@@ -18,15 +18,14 @@ import {
  * @throws NotFoundError If query returns no rows.
  * @throws DataIntegrityError If query returns multiple rows.
  */
-export const oneFirst: InternalQueryMethodType<any> = async (log, connection, clientConfiguration, rawSql, values, inheritedQueryId) => {
+export const oneFirst: InternalQueryMethod = async (log, connection, clientConfiguration, slonikSql, inheritedQueryId) => {
   const queryId = inheritedQueryId ?? createQueryId();
 
-  const row: any = await one(
+  const row = await one(
     log,
     connection,
     clientConfiguration,
-    rawSql,
-    values,
+    slonikSql,
     queryId,
   );
 

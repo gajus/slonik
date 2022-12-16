@@ -1,12 +1,12 @@
-import type {
-  TypeParserType,
+import {
+  type TypeParser,
 } from '../../types';
 
 const dateParser = (value: string) => {
   return value;
 };
 
-export const createDateTypeParser = (): TypeParserType => {
+export const createDateTypeParser = (): TypeParser => {
   return {
     name: 'date',
     parse: dateParser,

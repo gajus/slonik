@@ -6,9 +6,8 @@ Returns result rows.
 
 Example:
 
-```js
-const rows = await connection.any(sql`SELECT foo`);
-
+```ts
+const rows = await connection.any(sql.typeAlias('foo')`SELECT foo`);
 ```
 
 `#any` is similar to `#query` except that it returns rows without fields information.
@@ -21,9 +20,8 @@ Returns value of the first column of every row in the result set.
 
 Example:
 
-```js
-const fooValues = await connection.anyFirst(sql`SELECT foo`);
-
+```ts
+const fooValues = await connection.anyFirst(sql.typeAlias('foo')`SELECT foo`);
 ```
 
 ### `exists`
@@ -32,33 +30,32 @@ Returns a boolean value indicating whether query produces results.
 
 The query that is passed to this function is wrapped in `SELECT exists()` prior to it getting executed, i.e.
 
-```js
-pool.exists(sql`
-  SELECT LIMIT 1
+```ts
+pool.exists(sql.typeAlias('void')`
+  SELECT
+  LIMIT 1
 `)
-
 ```
 
 is equivalent to:
 
-```js
-pool.oneFirst(sql`
+```ts
+pool.oneFirst(sql.unsafe`
   SELECT exists(
-    SELECT LIMIT 1
+    SELECT
+    LIMIT 1
   )
 `)
-
 ```
 
 ### `copyFromBinary`
 
-```js
+```ts
 (
-  streamQuery: TaggedTemplateLiteralInvocationType,
+  streamQuery: QuerySqlToken,
   tupleList: any[][],
-  columnTypes: TypeNameIdentifierType[],
+  columnTypes: TypeNameIdentifier[],
 ) => Promise<null>;
-
 ```
 
 Copies from a binary stream.
@@ -67,7 +64,7 @@ The binary stream is constructed using user supplied `tupleList` and `columnType
 
 Example:
 
-```js
+```ts
 const tupleList = [
   [
     1,
@@ -85,7 +82,7 @@ const columnTypes = [
 ];
 
 await connection.copyFromBinary(
-  sql`
+  sql.unsafe`
     COPY foo
     (
       id,
@@ -96,7 +93,6 @@ await connection.copyFromBinary(
   tupleList,
   columnTypes
 );
-
 ```
 
 #### Limitations
@@ -119,9 +115,8 @@ Returns result rows.
 
 Example:
 
-```js
-const rows = await connection.many(sql`SELECT foo`);
-
+```ts
+const rows = await connection.many(sql.typeAlias('foo')`SELECT foo`);
 ```
 
 ### `manyFirst`
@@ -133,9 +128,8 @@ Returns value of the first column of every row in the result set.
 
 Example:
 
-```js
-const fooValues = await connection.many(sql`SELECT foo`);
-
+```ts
+const fooValues = await connection.many(sql.typeAlias('foo')`SELECT foo`);
 ```
 
 ### `maybeOne`
@@ -147,11 +141,10 @@ Selects the first row from the result.
 
 Example:
 
-```js
-const row = await connection.maybeOne(sql`SELECT foo`);
+```ts
+const row = await connection.maybeOne(sql.typeAlias('foo')`SELECT foo`);
 
 // row.foo is the result of the `foo` column value of the first row.
-
 ```
 
 ### `maybeOneFirst`
@@ -164,11 +157,10 @@ Returns value of the first column from the first row.
 
 Example:
 
-```js
-const foo = await connection.maybeOneFirst(sql`SELECT foo`);
+```ts
+const foo = await connection.maybeOneFirst(sql.typeAlias('foo')`SELECT foo`);
 
 // foo is the result of the `foo` column value of the first row.
-
 ```
 
 ### `one`
@@ -180,11 +172,10 @@ Selects the first row from the result.
 
 Example:
 
-```js
-const row = await connection.one(sql`SELECT foo`);
+```ts
+const row = await connection.one(sql.typeAlias('foo')`SELECT foo`);
 
 // row.foo is the result of the `foo` column value of the first row.
-
 ```
 
 > Note:
@@ -204,11 +195,10 @@ Returns value of the first column from the first row.
 
 Example:
 
-```js
-const foo = await connection.oneFirst(sql`SELECT foo`);
+```ts
+const foo = await connection.oneFirst(sql.typeAlias('foo')`SELECT foo`);
 
 // foo is the result of the `foo` column value of the first row.
-
 ```
 
 ### `query`
@@ -217,8 +207,8 @@ API and the result shape are equivalent to [`pg#query`](https://github.com/brian
 
 Example:
 
-```js
-await connection.query(sql`SELECT foo`);
+```ts
+await connection.query(sql.typeAlias('foo')`SELECT foo`);
 
 // {
 //   command: 'SELECT',
@@ -231,7 +221,6 @@ await connection.query(sql`SELECT foo`);
 //     }
 //   ]
 // }
-
 ```
 
 ### `stream`
@@ -240,8 +229,8 @@ Streams query results.
 
 Example:
 
-```js
-await connection.stream(sql`SELECT foo`, (stream) => {
+```ts
+await connection.stream(sql.typeAlias('foo')`SELECT foo`, (stream) => {
   stream.on('data', (datum) => {
     datum;
     // {
@@ -257,7 +246,6 @@ await connection.stream(sql`SELECT foo`, (stream) => {
     // }
   });
 });
-
 ```
 
 Note: Implemented using [`pg-query-stream`](https://github.com/brianc/node-pg-query-stream).
@@ -268,31 +256,29 @@ Note: Implemented using [`pg-query-stream`](https://github.com/brianc/node-pg-qu
 
 `transaction` method can be used together with `createPool` method. When used to create a transaction from an instance of a pool, a new connection is allocated for the duration of the transaction.
 
-```js
+```ts
 const result = await connection.transaction(async (transactionConnection) => {
-  await transactionConnection.query(sql`INSERT INTO foo (bar) VALUES ('baz')`);
-  await transactionConnection.query(sql`INSERT INTO qux (quux) VALUES ('corge')`);
+  await transactionConnection.query(sql.unsafe`INSERT INTO foo (bar) VALUES ('baz')`);
+  await transactionConnection.query(sql.unsafe`INSERT INTO qux (quux) VALUES ('corge')`);
 
   return 'FOO';
 });
 
 result === 'FOO';
-
 ```
 
 #### Transaction nesting
 
 Slonik uses [`SAVEPOINT`](https://www.postgresql.org/docs/current/sql-savepoint.html) to automatically nest transactions, e.g.
 
-```js
+```ts
 await connection.transaction(async (t1) => {
-  await t1.query(sql`INSERT INTO foo (bar) VALUES ('baz')`);
+  await t1.query(sql.unsafe`INSERT INTO foo (bar) VALUES ('baz')`);
 
   return t1.transaction((t2) => {
-    return t2.query(sql`INSERT INTO qux (quux) VALUES ('corge')`);
+    return t2.query(sql.unsafe`INSERT INTO qux (quux) VALUES ('corge')`);
   });
 });
-
 ```
 
 is equivalent to:
@@ -303,18 +289,17 @@ INSERT INTO foo (bar) VALUES ('baz');
 SAVEPOINT slonik_savepoint_1;
 INSERT INTO qux (quux) VALUES ('corge');
 COMMIT;
-
 ```
 
 Slonik automatically rollsback to the last savepoint if a query belonging to a transaction results in an error, e.g.
 
-```js
+```ts
 await connection.transaction(async (t1) => {
-  await t1.query(sql`INSERT INTO foo (bar) VALUES ('baz')`);
+  await t1.query(sql.unsafe`INSERT INTO foo (bar) VALUES ('baz')`);
 
   try {
     await t1.transaction(async (t2) => {
-      await t2.query(sql`INSERT INTO qux (quux) VALUES ('corge')`);
+      await t2.query(sql.unsafe`INSERT INTO qux (quux) VALUES ('corge')`);
 
       return Promise.reject(new Error('foo'));
     });
@@ -322,7 +307,6 @@ await connection.transaction(async (t1) => {
 
   }
 });
-
 ```
 
 is equivalent to:
@@ -334,26 +318,24 @@ SAVEPOINT slonik_savepoint_1;
 INSERT INTO qux (quux) VALUES ('corge');
 ROLLBACK TO SAVEPOINT slonik_savepoint_1;
 COMMIT;
-
 ```
 
 If error is unhandled, then the entire transaction is rolledback, e.g.
 
-```js
+```ts
 await connection.transaction(async (t1) => {
-  await t1.query(sql`INSERT INTO foo (bar) VALUES ('baz')`);
+  await t1.query(sql.typeAlias('void')`INSERT INTO foo (bar) VALUES ('baz')`);
 
   await t1.transaction(async (t2) => {
-    await t2.query(sql`INSERT INTO qux (quux) VALUES ('corge')`);
+    await t2.query(sql.typeAlias('void')`INSERT INTO qux (quux) VALUES ('corge')`);
 
     await t1.transaction(async (t3) => {
-      await t3.query(sql`INSERT INTO uier (grault) VALUES ('garply')`);
+      await t3.query(sql.typeAlias('void')`INSERT INTO uier (grault) VALUES ('garply')`);
 
       return Promise.reject(new Error('foo'));
     });
   });
 });
-
 ```
 
 is equivalent to:
@@ -368,13 +350,18 @@ INSERT INTO uier (grault) VALUES ('garply');
 ROLLBACK TO SAVEPOINT slonik_savepoint_2;
 ROLLBACK TO SAVEPOINT slonik_savepoint_1;
 ROLLBACK;
-
 ```
 
 #### Transaction retrying
 
 Transactions that are failing with [Transaction Rollback](https://www.postgresql.org/docs/current/errcodes-appendix.html) class errors are automatically retried.
 
-A failing transaction will be rolled back and all queries up to the failing query will be replayed.
+A failing transaction will be rolled back and the callback function passed to the transaction method call will be executed again. Nested transactions are also retried until the retry limit is reached. If the nested transaction keeps failing with a [Transaction Rollback](https://www.postgresql.org/docs/current/errcodes-appendix.html) error, then the parent transaction will be retried until the retry limit is reached.
 
-How many times a transaction is retried is controlled using `transactionRetryLimit` configuration (default: 5).
+How many times a transaction is retried is controlled using `transactionRetryLimit` configuration (default: 5) and the `transactionRetryLimit` parameter of the `transaction` method (default: undefined). If a `transactionRetryLimit` is given to the method call then it is used otherwise the `transactionRetryLimit` configuration is used.
+
+#### Query retrying
+
+A single query (not part of a transaction) failing with a [Transaction Rollback](https://www.postgresql.org/docs/current/errcodes-appendix.html) class error is automatically retried.
+
+How many times it is retried is controlled by using the `queryRetryLimit` configuration (default: 5).

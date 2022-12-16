@@ -12,7 +12,7 @@ import {
 const sql = createSqlTag();
 
 test('returns the query results rows', async (t) => {
-  const pool = createPool();
+  const pool = await createPool();
 
   pool.querySpy.returns({
     rows: [
@@ -25,7 +25,7 @@ test('returns the query results rows', async (t) => {
     ],
   });
 
-  const result = await pool.many(sql`SELECT 1`);
+  const result = await pool.many(sql.unsafe`SELECT 1`);
 
   t.deepEqual(result, [
     {
@@ -38,13 +38,13 @@ test('returns the query results rows', async (t) => {
 });
 
 test('throws an error if no rows are returned', async (t) => {
-  const pool = createPool();
+  const pool = await createPool();
 
   pool.querySpy.returns({
     rows: [],
   });
 
-  const error = await t.throwsAsync(pool.many(sql`SELECT 1`));
+  const error = await t.throwsAsync(pool.many(sql.unsafe`SELECT 1`));
 
   t.true(error instanceof NotFoundError);
 });

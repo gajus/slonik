@@ -14,17 +14,26 @@ export {
   escapeIdentifier,
 } from './escapeIdentifier';
 export {
+  escapeLiteralValue,
+} from './escapeLiteralValue';
+export {
+  sanitizeObject,
+} from './sanitizeObject';
+export {
   isPrimitiveValueExpression,
 } from './isPrimitiveValueExpression';
 export {
   isSqlToken,
 } from './isSqlToken';
 export {
-  normaliseQueryValues,
-} from './normaliseQueryValues';
+  parseDsn,
+} from './parseDsn';
 export {
-  removeCommentedOutBindings,
-} from './removeCommentedOutBindings';
+  safeStringify,
+} from './safeStringify';
+export {
+  stringifyDsn,
+} from './stringifyDsn';
 export {
   stripArrayNotation,
 } from './stripArrayNotation';

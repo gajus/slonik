@@ -1,13 +1,16 @@
-// eslint-disable-next-line import/order
 import {
   getStackTrace,
 } from 'get-stack-trace';
-
-// @ts-expect-error
-import Deferred from 'promise-deferred';
+import Deferred from 'p-defer';
+import {
+  type PoolClient as PgPoolClient,
+} from 'pg';
 import {
   serializeError,
 } from 'serialize-error';
+import {
+  TRANSACTION_ROLLBACK_ERROR_PREFIX,
+} from '../constants';
 import {
   BackendTerminatedError,
   CheckIntegrityConstraintViolationError,
@@ -16,52 +19,51 @@ import {
   NotNullIntegrityConstraintViolationError,
   StatementCancelledError,
   StatementTimeoutError,
+  TupleMovedToAnotherPartitionError,
   UnexpectedStateError,
   UniqueIntegrityConstraintViolationError,
-  TupleMovedToAnotherPartitionError,
 } from '../errors';
-import type {
-  ClientConfigurationType,
-  InternalDatabaseConnectionType,
-  Logger,
-  NoticeType,
-  PrimitiveValueExpressionType,
-  QueryContextType,
-  QueryIdType,
-  QueryResultRowType,
-  QueryResultType,
-  QueryType,
+import {
+  getPoolClientState,
+} from '../state';
+import {
+  type ClientConfiguration,
+  type Interceptor,
+  type Logger,
+  type Notice,
+  type PrimitiveValueExpression,
+  type Query,
+  type QueryContext,
+  type QueryId,
+  type QueryResult,
+  type QueryResultRow,
+  type QuerySqlToken,
 } from '../types';
 import {
   createQueryId,
-  normaliseQueryValues,
-  removeCommentedOutBindings,
 } from '../utilities';
 
-type GenericQueryResult = QueryResultType<QueryResultRowType>;
+type GenericQueryResult = QueryResult<QueryResultRow>;
 
 type ExecutionRoutineType = (
-  connection: InternalDatabaseConnectionType,
+  connection: PgPoolClient,
   sql: string,
-  values: readonly PrimitiveValueExpressionType[],
-  queryContext: QueryContextType,
-  query: QueryType,
+  values: readonly PrimitiveValueExpression[],
+  queryContext: QueryContext,
+  query: Query,
 ) => Promise<GenericQueryResult>;
 
-type TransactionQueryType = {
-  readonly executionContext: QueryContextType,
+type TransactionQuery = {
+  readonly executionContext: QueryContext,
   readonly executionRoutine: ExecutionRoutineType,
   readonly sql: string,
-  readonly values: readonly PrimitiveValueExpressionType[],
+  readonly values: readonly PrimitiveValueExpression[],
 };
 
-// @see https://www.postgresql.org/docs/current/errcodes-appendix.html
-const TRANSACTION_ROLLBACK_ERROR_PREFIX = '40';
-
-const retryTransaction = async (
+const retryQuery = async (
   connectionLogger: Logger,
-  connection: InternalDatabaseConnectionType,
-  transactionQueries: readonly TransactionQueryType[],
+  connection: PgPoolClient,
+  query: TransactionQuery,
   retryLimit: number,
 ) => {
   let result: GenericQueryResult;
@@ -73,34 +75,31 @@ const retryTransaction = async (
     attempt++;
 
     try {
-      // @todo Respect SAVEPOINTs.
-      await connection.query('ROLLBACK');
-      await connection.query('BEGIN');
+      connectionLogger.trace({
+        attempt,
+        queryId: query.executionContext.queryId,
+      }, 'retrying query');
 
-      for (const transactionQuery of transactionQueries) {
-        connectionLogger.trace({
-          attempt,
-          queryId: transactionQuery.executionContext.queryId,
-        }, 'retrying query');
+      result = await query.executionRoutine(
+        connection,
+        query.sql,
 
-        result = await transactionQuery.executionRoutine(
-          connection,
-          transactionQuery.sql,
+        // @todo Refresh execution context to reflect that the query has been re-tried.
+        query.values,
 
-          // @todo Refresh execution context to reflect that the query has been re-tried.
-          normaliseQueryValues(transactionQuery.values, connection.native),
+        // This (probably) requires changing `queryId` and `queryInputTime`.
+        // It should be needed only for the last query (because other queries will not be processed by the middlewares).
+        query.executionContext,
+        {
+          sql: query.sql,
+          values: query.values,
+        },
+      );
 
-          // This (probably) requires changing `queryId` and `queryInputTime`.
-          // It should be needed only for the last query (because other queries will not be processed by the middlewares).
-          transactionQuery.executionContext,
-          {
-            sql: transactionQuery.sql,
-            values: transactionQuery.values,
-          },
-        );
-      }
+      // If the attempt succeeded break out of the loop
+      break;
     } catch (error) {
-      if (typeof error.code === 'string' && error.code.startsWith(TRANSACTION_ROLLBACK_ERROR_PREFIX)) {
+      if (typeof error.code === 'string' && error.code.startsWith(TRANSACTION_ROLLBACK_ERROR_PREFIX) && remainingRetries > 0) {
         continue;
       }
 
@@ -112,42 +111,53 @@ const retryTransaction = async (
   return result!;
 };
 
+type StackCrumb = {
+  columnNumber: number,
+  fileName: string,
+  functionName: string | null,
+  lineNumber: number,
+};
+
 // eslint-disable-next-line complexity
 export const executeQuery = async (
   connectionLogger: Logger,
-  connection: InternalDatabaseConnectionType,
-  clientConfiguration: ClientConfigurationType,
-  rawSql: string,
-  values: readonly PrimitiveValueExpressionType[],
-  inheritedQueryId?: QueryIdType,
-  executionRoutine?: ExecutionRoutineType,
-): Promise<QueryResultType<Record<string, PrimitiveValueExpressionType>>> => {
-  if (connection.connection.slonik.terminated) {
-    throw new BackendTerminatedError(connection.connection.slonik.terminated);
+  connection: PgPoolClient,
+  clientConfiguration: ClientConfiguration,
+  query: QuerySqlToken,
+  inheritedQueryId: QueryId | undefined,
+  executionRoutine: ExecutionRoutineType,
+): Promise<QueryResult<Record<string, PrimitiveValueExpression>>> => {
+  const poolClientState = getPoolClientState(connection);
+
+  if (poolClientState.terminated) {
+    throw new BackendTerminatedError(poolClientState.terminated);
   }
 
-  if (rawSql.trim() === '') {
+  if (query.sql.trim() === '') {
     throw new InvalidInputError('Unexpected SQL input. Query cannot be empty.');
   }
 
-  if (rawSql.trim() === '$1') {
+  if (query.sql.trim() === '$1') {
     throw new InvalidInputError('Unexpected SQL input. Query cannot be empty. Found only value binding.');
   }
 
   const queryInputTime = process.hrtime.bigint();
 
-  let stackTrace = null;
+  let stackTrace: StackCrumb[] | null = null;
 
   if (clientConfiguration.captureStackTrace) {
     const callSites = await getStackTrace();
 
-    stackTrace = callSites.map((callSite) => {
-      return {
+    stackTrace = [];
+
+    for (const callSite of callSites) {
+      stackTrace.push({
         columnNumber: callSite.columnNumber,
         fileName: callSite.fileName,
+        functionName: callSite.functionName,
         lineNumber: callSite.lineNumber,
-      };
-    });
+      });
+    }
   }
 
   const queryId = inheritedQueryId ?? createQueryId();
@@ -157,24 +167,25 @@ export const executeQuery = async (
   });
 
   const originalQuery = {
-    sql: rawSql,
-    values,
+    sql: query.sql,
+    values: query.values,
   };
 
   let actualQuery = {
     ...originalQuery,
   };
 
-  const executionContext: QueryContextType = {
-    connectionId: connection.connection.slonik.connectionId,
+  const executionContext: QueryContext = {
+    connectionId: poolClientState.connectionId,
     log,
     originalQuery,
-    poolId: connection.connection.slonik.poolId,
+    poolId: poolClientState.poolId,
     queryId,
     queryInputTime,
+    resultParser: query.parser,
     sandbox: {},
     stackTrace,
-    transactionId: connection.connection.slonik.transactionId,
+    transactionId: poolClientState.transactionId,
   };
 
   for (const interceptor of clientConfiguration.interceptors) {
@@ -192,8 +203,6 @@ export const executeQuery = async (
     }
   }
 
-  actualQuery = removeCommentedOutBindings(actualQuery);
-
   let result: GenericQueryResult | null;
 
   for (const interceptor of clientConfiguration.interceptors) {
@@ -208,49 +217,51 @@ export const executeQuery = async (
     }
   }
 
-  const notices: NoticeType[] = [];
+  const notices: Notice[] = [];
 
-  const noticeListener = (notice: NoticeType) => {
+  const noticeListener = (notice: Notice) => {
     notices.push(notice);
   };
 
-  const activeQuery = new Deferred();
+  const activeQuery = Deferred();
 
-  const blockingPromise = connection.connection.slonik.activeQuery?.promise ?? null;
+  const blockingPromise = poolClientState.activeQuery?.promise ?? null;
 
-  connection.connection.slonik.activeQuery = activeQuery;
+  poolClientState.activeQuery = activeQuery;
 
   await blockingPromise;
 
   connection.on('notice', noticeListener);
 
+  const queryWithContext = {
+    executionContext,
+    executionRoutine,
+    sql: actualQuery.sql,
+    values: actualQuery.values,
+  };
+
   try {
     try {
       try {
-        if (connection.connection.slonik.transactionQueries) {
-          connection.connection.slonik.transactionQueries.push({
-            executionContext,
-            executionRoutine,
-            sql: actualQuery.sql,
-            values: actualQuery.values,
-          });
-        }
-
-        // @ts-expect-error
         result = await executionRoutine(
           connection,
           actualQuery.sql,
-          normaliseQueryValues(actualQuery.values, connection.native),
+          actualQuery.values,
           executionContext,
           actualQuery,
         );
       } catch (error) {
-        if (typeof error.code === 'string' && error.code.startsWith(TRANSACTION_ROLLBACK_ERROR_PREFIX) && clientConfiguration.transactionRetryLimit > 0) {
-          result = await retryTransaction(
+        const shouldRetry = typeof error.code === 'string' &&
+          error.code.startsWith(TRANSACTION_ROLLBACK_ERROR_PREFIX) &&
+          clientConfiguration.queryRetryLimit > 0;
+
+        // Transactions errors in queries that are part of a transaction are handled by the transaction/nestedTransaction functions
+        if (shouldRetry && !poolClientState.transactionId) {
+          result = await retryQuery(
             connectionLogger,
             connection,
-            connection.connection.slonik.transactionQueries,
-            clientConfiguration.transactionRetryLimit,
+            queryWithContext,
+            clientConfiguration.queryRetryLimit,
           );
         } else {
           throw error;
@@ -264,7 +275,7 @@ export const executeQuery = async (
       // 'Connection terminated' refers to node-postgres error.
       // @see https://github.com/brianc/node-postgres/blob/eb076db5d47a29c19d3212feac26cd7b6d257a95/lib/client.js#L199
       if (error.code === '57P01' || error.message === 'Connection terminated') {
-        connection.connection.slonik.terminated = error;
+        poolClientState.terminated = error;
 
         throw new BackendTerminatedError(error);
       }
@@ -324,7 +335,7 @@ export const executeQuery = async (
     throw new UnexpectedStateError();
   }
 
-  // @ts-expect-error
+  // @ts-expect-error -- We want to keep notices as readonly for consumer, but write to it here.
   result.notices = notices;
 
   for (const interceptor of clientConfiguration.interceptors) {
@@ -335,14 +346,22 @@ export const executeQuery = async (
 
   // Stream does not have `rows` in the result object and all rows are already transformed.
   if (result.rows) {
-    for (const interceptor of clientConfiguration.interceptors) {
-      if (interceptor.transformRow) {
-        const transformRow = interceptor.transformRow;
-        const fields = result.fields;
+    const interceptors: Interceptor[] = clientConfiguration.interceptors.slice();
 
-        const rows: readonly QueryResultRowType[] = result.rows.map((row) => {
-          return transformRow(executionContext, actualQuery, row, fields);
-        });
+    for (const interceptor of interceptors) {
+      if (interceptor.transformRow) {
+        const {
+          transformRow,
+        } = interceptor;
+        const {
+          fields,
+        } = result;
+
+        const rows: QueryResultRow[] = [];
+
+        for (const row of result.rows) {
+          rows.push(transformRow(executionContext, actualQuery, row, fields));
+        }
 
         result = {
           ...result,

@@ -1,13 +1,17 @@
+/* eslint-disable node/global-require */
+
 const {
   add,
   complete,
   cycle,
   suite,
 } = require('benny');
+
 const clients = [
   require('./clients/pg'),
   require('./clients/pg-promise'),
   require('./clients/slonik'),
+  require('./clients/postgres'),
 ];
 
 const tests = [
@@ -64,7 +68,11 @@ const tests = [
     ];
 
     for (const test of tests) {
-      row.push(new Intl.NumberFormat('en-US').format(clientResults[client.name][test].ops));
+      if (clientResults[client.name][test].percentSlower) {
+        row.push(new Intl.NumberFormat('en-US').format(clientResults[client.name][test].ops) + ' (-' + clientResults[client.name][test].percentSlower + '%)');
+      } else {
+        row.push(new Intl.NumberFormat('en-US').format(clientResults[client.name][test].ops) + ' ⚡️');
+      }
     }
 
     table.push(
@@ -72,5 +80,6 @@ const tests = [
     );
   }
 
+  // eslint-disable-next-line no-console
   console.log(table.join('\n'));
 })();

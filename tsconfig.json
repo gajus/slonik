@@ -1,23 +1,28 @@
 {
   "compilerOptions": {
+    "allowSyntheticDefaultImports": true,
     "declaration": true,
     "esModuleInterop": true,
     "module": "commonjs",
-    "noEmit": true,
-    "rootDir": ".",
-    "sourceMap": true,
+    "lib": [
+      "es2021"
+    ],
+    "moduleResolution": "node",
+    "noImplicitAny": false,
+    "noImplicitReturns": true,
+    "useUnknownInCatchVariables": false,
+    "outDir": "dist",
+    "skipLibCheck": true,
     "strict": true,
     "target": "es2018"
   },
   "exclude": [
-    "node_modules",
     "dist",
-    "coverage",
-    ".nyc_output",
-    ".git"
+    "node_modules"
   ],
   "include": [
     "src",
-    "test"
+    "test",
+    "types"
   ]
 }

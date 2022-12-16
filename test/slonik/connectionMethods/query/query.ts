@@ -1,6 +1,6 @@
 import test from 'ava';
 import delay from 'delay';
-import sinon from 'sinon';
+import * as sinon from 'sinon';
 import {
   BackendTerminatedError,
   CheckIntegrityConstraintViolationError,
@@ -12,35 +12,29 @@ import {
   createSqlTag,
 } from '../../../../src/factories/createSqlTag';
 import {
+  createErrorWithCode,
+} from '../../../helpers/createErrorWithCode';
+import {
   createPool,
 } from '../../../helpers/createPool';
 
 const sql = createSqlTag();
-
-const createErrorWithCode = (code: string) => {
-  const error = new Error('foo');
-
-  // @ts-expect-error
-  error.code = code;
-
-  return error;
-};
 
 test('ends connection after promise is resolved (explicit connection)', async (t) => {
   const eventHandler = sinon.spy();
 
   process.on('warning', eventHandler);
 
-  const pool = createPool();
+  const pool = await createPool();
 
   await pool.connect(async (connection) => {
     let queryCount = 20;
 
-    const queries = [];
+    const queries: Array<Promise<unknown>> = [];
 
     while (queryCount-- > 0) {
       queries.push(
-        connection.query(sql`SELECT 1`),
+        connection.query(sql.unsafe`SELECT 1`),
       );
     }
 
@@ -55,7 +49,7 @@ test('ends connection after promise is resolved (explicit connection)', async (t
 });
 
 test('executes the query and returns the result', async (t) => {
-  const pool = createPool();
+  const pool = await createPool();
 
   pool.querySpy.returns({
     command: 'SELECT',
@@ -69,7 +63,7 @@ test('executes the query and returns the result', async (t) => {
     ],
   });
 
-  const result = await pool.query(sql`SELECT 1`);
+  const result = await pool.query(sql.unsafe`SELECT 1`);
 
   t.deepEqual(result, {
     command: 'SELECT',
@@ -85,18 +79,18 @@ test('executes the query and returns the result', async (t) => {
 });
 
 test('adds notices observed during the query execution to the query result object', async (t) => {
-  const pool = createPool();
+  const pool = await createPool();
 
   let resolveQuery: any;
 
   pool.querySpy.reset();
-  pool.querySpy.callsFake(() => {
-    return new Promise((resolve) => {
+  pool.querySpy.callsFake(async () => {
+    return await new Promise((resolve) => {
       resolveQuery = resolve;
     });
   });
 
-  const queryResultPromise = pool.query(sql`SELECT 1`);
+  const queryResultPromise = pool.query(sql.unsafe`SELECT 1`);
 
   await delay(100);
 
@@ -142,51 +136,51 @@ test('adds notices observed during the query execution to the query result objec
 });
 
 test('maps 23514 error code to CheckIntegrityConstraintViolationError', async (t) => {
-  const pool = createPool();
+  const pool = await createPool();
 
   pool.querySpy.rejects(createErrorWithCode('23514'));
 
-  const error = await t.throwsAsync(pool.query(sql`SELECT 1`));
+  const error = await t.throwsAsync(pool.query(sql.unsafe`SELECT 1`));
 
   t.true(error instanceof CheckIntegrityConstraintViolationError);
 });
 
 test('maps 23503 error code to ForeignKeyIntegrityConstraintViolationError', async (t) => {
-  const pool = createPool();
+  const pool = await createPool();
 
   pool.querySpy.rejects(createErrorWithCode('23503'));
 
-  const error = await t.throwsAsync(pool.query(sql`SELECT 1`));
+  const error = await t.throwsAsync(pool.query(sql.unsafe`SELECT 1`));
 
   t.true(error instanceof ForeignKeyIntegrityConstraintViolationError);
 });
 
 test('maps 23502 error code to NotNullIntegrityConstraintViolationError', async (t) => {
-  const pool = createPool();
+  const pool = await createPool();
 
   pool.querySpy.rejects(createErrorWithCode('23502'));
 
-  const error = await t.throwsAsync(pool.query(sql`SELECT 1`));
+  const error = await t.throwsAsync(pool.query(sql.unsafe`SELECT 1`));
 
   t.true(error instanceof NotNullIntegrityConstraintViolationError);
 });
 
 test('maps 23505 error code to UniqueIntegrityConstraintViolationError', async (t) => {
-  const pool = createPool();
+  const pool = await createPool();
 
   pool.querySpy.rejects(createErrorWithCode('23505'));
 
-  const error = await t.throwsAsync(pool.query(sql`SELECT 1`));
+  const error = await t.throwsAsync(pool.query(sql.unsafe`SELECT 1`));
 
   t.true(error instanceof UniqueIntegrityConstraintViolationError);
 });
 
 test('57P01 error causes the connection to be rejected (IMPLICIT_QUERY connection)', async (t) => {
-  const pool = createPool();
+  const pool = await createPool();
 
   pool.querySpy.rejects(createErrorWithCode('57P01'));
 
-  const error = await t.throwsAsync(pool.query(sql`SELECT 1`));
+  const error = await t.throwsAsync(pool.query(sql.unsafe`SELECT 1`));
 
   t.true(error instanceof BackendTerminatedError);
 });
@@ -194,7 +188,7 @@ test('57P01 error causes the connection to be rejected (IMPLICIT_QUERY connectio
 // @todo https://github.com/gajus/slonik/issues/39
 // eslint-disable-next-line ava/no-skip-test
 test.skip('57P01 error causes the connection to be rejected (EXPLICIT connection)', async (t) => {
-  const pool = createPool();
+  const pool = await createPool();
 
   pool.querySpy.rejects(createErrorWithCode('57P01'));
 
@@ -202,7 +196,7 @@ test.skip('57P01 error causes the connection to be rejected (EXPLICIT connection
 
   const error = await t.throwsAsync(pool.connect(async (connection) => {
     try {
-      await connection.query(sql`SELECT 1`);
+      await connection.query(sql.unsafe`SELECT 1`);
     } catch {
       //
     }
@@ -211,6 +205,5 @@ test.skip('57P01 error causes the connection to be rejected (EXPLICIT connection
   }));
 
   t.true(error instanceof BackendTerminatedError);
-
-  t.assert(spy.called === false);
+  t.true(spy.called);
 });

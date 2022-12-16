@@ -1,12 +1,12 @@
 # Slonik
 
-[![Travis build status](http://img.shields.io/travis/gajus/slonik/master.svg?style=flat-square)](https://travis-ci.com/gajus/slonik)
+[![Travis build status](http://img.shields.io/travis/gajus/slonik/master.svg?style=flat-square)](https://travis-ci.com/github/gajus/slonik)
 [![Coveralls](https://img.shields.io/coveralls/gajus/slonik.svg?style=flat-square)](https://coveralls.io/github/gajus/slonik)
 [![NPM version](http://img.shields.io/npm/v/slonik.svg?style=flat-square)](https://www.npmjs.org/package/slonik)
 [![Canonical Code Style](https://img.shields.io/badge/code%20style-canonical-blue.svg?style=flat-square)](https://github.com/gajus/canonical)
 [![Twitter Follow](https://img.shields.io/twitter/follow/kuizinas.svg?style=social&label=Follow)](https://twitter.com/kuizinas)
 
-A [battle-tested](#battle-tested) PostgreSQL client with strict types, detailed logging and assertions.
+A [battle-tested](#battle-tested) Node.js PostgreSQL client with strict types, detailed logging and assertions.
 
 ![Tailing Slonik logs](./.README/slonik-log-tailing.gif)
 
@@ -30,6 +30,7 @@ Note: Using this project does not require TypeScript. It is a regular ES6 module
 
 ## Features
 
+* [Runtime validation](#runtime-validation)
 * [Assertions and type safety](#repeating-code-patterns-and-type-safety).
 * [Connection mocking](#mocking-slonik).
 * [Safe connection handling](#protecting-against-unsafe-connection-handling).
@@ -37,6 +38,7 @@ Note: Using this project does not require TypeScript. It is a regular ES6 module
 * [Safe value interpolation](#protecting-against-unsafe-value-interpolation).
 * [Transaction nesting](#transaction-nesting).
 * [Transaction retrying](#transaction-retrying)
+* [Query retrying](#query-retrying)
 * Detailed [logging](#slonik-debugging).
 * [Asynchronous stack trace resolution](#capture-stack-trace).
 * [Middlewares](#slonik-interceptors).
@@ -47,19 +49,21 @@ Note: Using this project does not require TypeScript. It is a regular ES6 module
 
 {"gitdown": "contents"}
 
-## About Slonik
-
 {"gitdown": "include", "file": "./ABOUT_SLONIK.md"}
 
 ## Documentation
 
 {"gitdown": "include", "file": "./USAGE.md"}
 
+{"gitdown": "include", "file": "./LIBRARY_COMPARISON.md"}
+
 {"gitdown": "include", "file": "./TYPE_PARSERS.md"}
 
 {"gitdown": "include", "file": "./INTERCEPTORS.md"}
 
 {"gitdown": "include", "file": "./RECIPES.md"}
+
+{"gitdown": "include", "file": "./RUNTIME_VALIDATION.md"}
 
 {"gitdown": "include", "file": "./SQL_TAG.md"}
 
@@ -69,7 +73,11 @@ Note: Using this project does not require TypeScript. It is a regular ES6 module
 
 {"gitdown": "include", "file": "./QUERY_METHODS.md"}
 
+{"gitdown": "include", "file": "./UTILITIES.md"}
+
 {"gitdown": "include", "file": "./ERROR_HANDLING.md"}
+
+{"gitdown": "include", "file": "./MIGRATIONS.md"}
 
 {"gitdown": "include", "file": "./TYPES.md"}
 
@@ -93,5 +101,15 @@ For more information, refer to the [JavaScript Tagged Template Literal Grammar E
 
 ### VS Code Syntax Highlighting Extension
 
-The [`vscode-sql-template-literal` extension](https://marketplace.visualstudio.com/items?itemName=forbeslindesay.vscode-sql-template-literal) provides syntax highlighting for VS Code:
+The [`vscode-sql-lit` extension](https://marketplace.visualstudio.com/items?itemName=thebearingedge.vscode-sql-lit) provides syntax highlighting for VS Code:
 ![Syntax highlighting in VS Code](./.README/vscode-syntax-highlighting.png)
+
+## Development
+
+Running Slonik tests requires having a local PostgreSQL instance.
+
+The easiest way to setup a temporary instance for testing is using Docker, e.g.
+
+```bash
+docker run --rm -it -e POSTGRES_HOST_AUTH_METHOD=trust -p 5432:5432 postgres
+```

@@ -9,7 +9,7 @@ import {
 const sql = createSqlTag();
 
 test('transforms query', async (t) => {
-  const pool = createPool({
+  const pool = await createPool({
     interceptors: [
       {
         transformQuery: (executionContext, query) => {
@@ -22,7 +22,7 @@ test('transforms query', async (t) => {
     ],
   });
 
-  await pool.query(sql`SELECT 1`);
+  await pool.query(sql.unsafe`SELECT 1`);
 
-  t.assert(pool.querySpy.firstCall.args[0] === 'SELECT 2');
+  t.is(pool.querySpy.firstCall.args[0], 'SELECT 2');
 });

@@ -16,11 +16,11 @@ const getQueries = (spy: sinon.SinonSpy) => {
 };
 
 test('commits successful transaction', async (t) => {
-  const pool = createPool();
+  const pool = await createPool();
 
-  await pool.connect((c1) => {
-    return c1.transaction((t1) => {
-      return t1.query(sql`SELECT 1`);
+  await pool.connect(async (c1) => {
+    return await c1.transaction(async (t1) => {
+      return await t1.query(sql.unsafe`SELECT 1`);
     });
   });
 
@@ -32,13 +32,13 @@ test('commits successful transaction', async (t) => {
 });
 
 test('rollsback unsuccessful transaction', async (t) => {
-  const pool = createPool();
+  const pool = await createPool();
 
   await t.throwsAsync(pool.connect(async (c1) => {
     await c1.transaction(async (t1) => {
-      await t1.query(sql`SELECT 1`);
+      await t1.query(sql.unsafe`SELECT 1`);
 
-      return Promise.reject(new Error('foo'));
+      return await Promise.reject(new Error('foo'));
     });
   }));
 
@@ -50,13 +50,13 @@ test('rollsback unsuccessful transaction', async (t) => {
 });
 
 test('uses savepoints to nest transactions', async (t) => {
-  const pool = createPool();
+  const pool = await createPool();
 
-  await pool.connect((c1) => {
-    return c1.transaction(async (t1) => {
-      await t1.query(sql`SELECT 1`);
-      await t1.transaction((t2) => {
-        return t2.query(sql`SELECT 2`);
+  await pool.connect(async (c1) => {
+    await c1.transaction(async (t1) => {
+      await t1.query(sql.unsafe`SELECT 1`);
+      await t1.transaction(async (t2) => {
+        return await t2.query(sql.unsafe`SELECT 2`);
       });
     });
   });
@@ -71,16 +71,16 @@ test('uses savepoints to nest transactions', async (t) => {
 });
 
 test('rollsback to the last savepoint', async (t) => {
-  const pool = createPool();
+  const pool = await createPool();
 
   await pool.connect(async (c1) => {
     await c1.transaction(async (t1) => {
-      await t1.query(sql`SELECT 1`);
+      await t1.query(sql.unsafe`SELECT 1`);
 
       await t.throwsAsync(t1.transaction(async (t2) => {
-        await t2.query(sql`SELECT 2`);
+        await t2.query(sql.unsafe`SELECT 2`);
 
-        return Promise.reject(new Error('foo'));
+        return await Promise.reject(new Error('foo'));
       }));
     });
   });
@@ -96,16 +96,16 @@ test('rollsback to the last savepoint', async (t) => {
 });
 
 test('rollsback the entire transaction with multiple savepoints', async (t) => {
-  const pool = createPool();
+  const pool = await createPool();
 
-  await pool.connect((c1) => {
-    return t.throwsAsync(c1.transaction(async (t1) => {
-      await t1.query(sql`SELECT 1`);
+  await pool.connect(async (c1) => {
+    return await t.throwsAsync(c1.transaction(async (t1) => {
+      await t1.query(sql.unsafe`SELECT 1`);
 
-      return t1.transaction(async (t2) => {
-        await t2.query(sql`SELECT 2`);
+      return await t1.transaction(async (t2) => {
+        await t2.query(sql.unsafe`SELECT 2`);
 
-        return Promise.reject(new Error('foo'));
+        return await Promise.reject(new Error('foo'));
       });
     }));
   });
@@ -121,19 +121,19 @@ test('rollsback the entire transaction with multiple savepoints', async (t) => {
 });
 
 test('rollsback the entire transaction with multiple savepoints (multiple depth layers)', async (t) => {
-  const pool = createPool();
+  const pool = await createPool();
 
-  await pool.connect((c1) => {
-    return t.throwsAsync(c1.transaction(async (t1) => {
-      await t1.query(sql`SELECT 1`);
+  await pool.connect(async (c1) => {
+    return await t.throwsAsync(c1.transaction(async (t1) => {
+      await t1.query(sql.unsafe`SELECT 1`);
 
-      return t1.transaction(async (t2) => {
-        await t2.query(sql`SELECT 2`);
+      return await t1.transaction(async (t2) => {
+        await t2.query(sql.unsafe`SELECT 2`);
 
-        return t2.transaction(async (t3) => {
-          await t3.query(sql`SELECT 3`);
+        return await t2.transaction(async (t3) => {
+          await t3.query(sql.unsafe`SELECT 3`);
 
-          return Promise.reject(new Error('foo'));
+          return await Promise.reject(new Error('foo'));
         });
       });
     }));
@@ -153,36 +153,36 @@ test('rollsback the entire transaction with multiple savepoints (multiple depth 
 });
 
 test('throws an error if an attempt is made to create a new transaction before the last transaction is completed', async (t) => {
-  const pool = createPool();
+  const pool = await createPool();
 
-  const connection = pool.connect((c1) => {
-    return Promise.race([
-      c1.transaction(() => {
-        return delay(1000);
+  const connection = pool.connect(async (c1) => {
+    await Promise.race([
+      c1.transaction(async () => {
+        await delay(1_000);
       }),
-      c1.transaction(() => {
-        return delay(1000);
+      c1.transaction(async () => {
+        await delay(1_000);
       }),
     ]);
   });
 
   const error = await t.throwsAsync(connection);
 
-  t.is(error.message, 'Cannot use the same connection to start a new transaction before completing the last transaction.');
+  t.is(error?.message, 'Cannot use the same connection to start a new transaction before completing the last transaction.');
 });
 
 test('throws an error if an attempt is made to execute a query using the parent transaction before the current transaction is completed', async (t) => {
-  const pool = createPool();
+  const pool = await createPool();
 
-  const connection = pool.connect((c1) => {
-    return c1.transaction((t1) => {
-      return t1.transaction(() => {
-        return t1.query(sql`SELECT 1`);
+  const connection = pool.connect(async (c1) => {
+    return await c1.transaction(async (t1) => {
+      return await t1.transaction(async () => {
+        return await t1.query(sql.unsafe`SELECT 1`);
       });
     });
   });
 
   const error = await t.throwsAsync(connection);
 
-  t.is(error.message, 'Cannot run a query using parent transaction.');
+  t.is(error?.message, 'Cannot run a query using parent transaction.');
 });

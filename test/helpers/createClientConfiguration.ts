@@ -1,17 +1,18 @@
-import type {
-  ClientConfigurationType,
+import {
+  type ClientConfiguration,
 } from '../../src/types';
 
-export const createClientConfiguration = (): ClientConfigurationType => {
+export const createClientConfiguration = (): ClientConfiguration => {
   return {
     captureStackTrace: true,
     connectionRetryLimit: 3,
-    connectionTimeout: 5000,
-    idleInTransactionSessionTimeout: 60000,
-    idleTimeout: 5000,
+    connectionTimeout: 5_000,
+    idleInTransactionSessionTimeout: 60_000,
+    idleTimeout: 5_000,
     interceptors: [],
     maximumPoolSize: 10,
-    statementTimeout: 60000,
+    queryRetryLimit: 5,
+    statementTimeout: 60_000,
     transactionRetryLimit: 5,
     typeParsers: [],
   };

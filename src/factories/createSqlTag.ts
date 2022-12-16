@@ -1,4 +1,8 @@
 import {
+  z,
+  type ZodTypeAny,
+} from 'zod';
+import {
   Logger,
 } from '../Logger';
 import {
@@ -7,30 +11,39 @@ import {
 import {
   ArrayToken,
   BinaryToken,
+  DateToken,
+  FragmentToken,
   IdentifierToken,
+  IntervalToken,
+  JsonBinaryToken,
   JsonToken,
   ListToken,
-  SqlToken,
+  QueryToken,
+  TimestampToken,
   UnnestToken,
 } from '../tokens';
-import type {
-  ArraySqlTokenType,
-  BinarySqlTokenType,
-  IdentifierSqlTokenType,
-  JsonSqlTokenType,
-  ListSqlTokenType,
-  PrimitiveValueExpressionType,
-  QueryResultRowType,
-  SerializableValueType,
-  SqlSqlTokenType,
-  SqlTaggedTemplateType,
-  SqlTokenType,
-  TypeNameIdentifierType,
-  UnnestSqlColumnType,
-  UnnestSqlTokenType,
-  ValueExpressionType,
+import {
+  type ArraySqlToken,
+  type BinarySqlToken,
+  type DateSqlToken,
+  type IdentifierSqlToken,
+  type IntervalInput,
+  type IntervalSqlToken,
+  type JsonBinarySqlToken,
+  type JsonSqlToken,
+  type ListSqlToken,
+  type PrimitiveValueExpression,
+  type SerializableValue,
+  type SqlFragment,
+  type SqlToken as SqlTokenType,
+  type TimestampSqlToken,
+  type TypeNameIdentifier,
+  type UnnestSqlToken,
+  type ValueExpression,
 } from '../types';
 import {
+  safeStringify,
+  escapeLiteralValue,
   isPrimitiveValueExpression,
   isSqlToken,
 } from '../utilities';
@@ -42,13 +55,13 @@ const log = Logger.child({
   namespace: 'sql',
 });
 
-const sql: SqlTaggedTemplateType = (
+const createFragment = (
   parts: readonly string[],
-  ...values: readonly ValueExpressionType[]
-): SqlSqlTokenType => {
+  values: readonly ValueExpression[],
+) => {
   let rawSql = '';
 
-  const parameterValues = [];
+  const parameterValues: PrimitiveValueExpression[] = [];
 
   let index = 0;
 
@@ -64,8 +77,8 @@ const sql: SqlTaggedTemplateType = (
     if (token === undefined) {
       log.debug({
         index,
-        parts,
-        values,
+        parts: JSON.parse(safeStringify(parts)),
+        values: JSON.parse(safeStringify(values)),
       }, 'bound values');
 
       throw new InvalidInputError('SQL tag cannot be bound an undefined value.');
@@ -82,88 +95,170 @@ const sql: SqlTaggedTemplateType = (
       log.error({
         constructedSql: rawSql,
         index,
-        offendingToken: token,
+        offendingToken: JSON.parse(safeStringify(token)),
       }, 'unexpected value expression');
 
       throw new TypeError('Unexpected value expression.');
     }
   }
 
-  const query: SqlTokenType = {
+  return {
     sql: rawSql,
-    type: SqlToken,
     values: parameterValues,
   };
-
-  Object.defineProperty(query, 'sql', {
-    configurable: false,
-    enumerable: true,
-    writable: false,
-  });
-
-  return query;
 };
 
-sql.array = (
-  values: readonly PrimitiveValueExpressionType[],
-  memberType: SqlTokenType | TypeNameIdentifierType | string,
-): ArraySqlTokenType => {
+export const createSqlTag = <
+  K extends PropertyKey,
+  P extends ZodTypeAny,
+  Z extends Record<K, P>
+>(configuration: {
+  typeAliases?: Z,
+} = {}) => {
+  const typeAliases = configuration.typeAliases;
+
   return {
-    memberType,
-    type: ArrayToken,
-    values,
-  };
-};
+    array: (
+      values: readonly PrimitiveValueExpression[],
+      memberType: SqlTokenType | TypeNameIdentifier,
+    ): ArraySqlToken => {
+      return Object.freeze({
+        memberType,
+        type: ArrayToken,
+        values,
+      });
+    },
+    binary: (
+      data: Buffer,
+    ): BinarySqlToken => {
+      return Object.freeze({
+        data,
+        type: BinaryToken,
+      });
+    },
+    date: (
+      date: Date,
+    ): DateSqlToken => {
+      return Object.freeze({
+        date,
+        type: DateToken,
+      });
+    },
+    fragment: (
+      parts: readonly string[],
+      ...args: readonly ValueExpression[]
+    ) => {
+      return Object.freeze({
+        ...createFragment(parts, args),
+        type: FragmentToken,
+      });
+    },
+    identifier: (
+      names: readonly string[],
+    ): IdentifierSqlToken => {
+      return Object.freeze({
+        names,
+        type: IdentifierToken,
+      });
+    },
+    interval: (
+      interval: IntervalInput,
+    ): IntervalSqlToken => {
+      return Object.freeze({
+        interval,
+        type: IntervalToken,
+      });
+    },
+    join: (
+      members: readonly ValueExpression[],
+      glue: SqlFragment,
+    ): ListSqlToken => {
+      return Object.freeze({
+        glue,
+        members,
+        type: ListToken,
+      });
+    },
+    json: (
+      value: SerializableValue,
+    ): JsonSqlToken => {
+      return Object.freeze({
+        type: JsonToken,
+        value,
+      });
+    },
+    jsonb: (
+      value: SerializableValue,
+    ): JsonBinarySqlToken => {
+      return Object.freeze({
+        type: JsonBinaryToken,
+        value,
+      });
+    },
+    literalValue: (
+      value: string,
+    ): SqlFragment => {
+      return Object.freeze({
+        sql: escapeLiteralValue(value),
+        type: FragmentToken,
+        values: [],
+      });
+    },
+    timestamp: (
+      date: Date,
+    ): TimestampSqlToken => {
+      return Object.freeze({
+        date,
+        type: TimestampToken,
+      });
+    },
+    type: <T extends ZodTypeAny>(parser: T) => {
+      return (
+        parts: readonly string[],
+        ...args: readonly ValueExpression[]
+      ) => {
+        return Object.freeze({
+          ...createFragment(parts, args),
+          parser,
+          type: QueryToken,
+        });
+      };
+    },
+    typeAlias: <Y extends keyof Z>(parserAlias: Y) => {
+      if (!typeAliases?.[parserAlias]) {
+        throw new Error('Type alias "' + String(parserAlias) + '" does not exist.');
+      }
 
-sql.binary = (
-  data: Buffer,
-): BinarySqlTokenType => {
-  return {
-    data,
-    type: BinaryToken,
+      return (
+        parts: readonly string[],
+        ...args: readonly ValueExpression[]
+      ) => {
+        return Object.freeze({
+          ...createFragment(parts, args),
+          parser: typeAliases[parserAlias],
+          type: QueryToken,
+        });
+      };
+    },
+    unnest: (
+      tuples: ReadonlyArray<readonly PrimitiveValueExpression[]>,
+      columnTypes: Array<[...string[], TypeNameIdentifier]> | Array<SqlFragment | TypeNameIdentifier>,
+    ): UnnestSqlToken => {
+      return Object.freeze({
+        columnTypes,
+        tuples,
+        type: UnnestToken,
+      });
+    },
+    unsafe: (
+      parts: readonly string[],
+      ...args: readonly ValueExpression[]
+    ) => {
+      return Object.freeze({
+        ...createFragment(parts, args),
+        parser: z.any(),
+        type: QueryToken,
+      });
+    },
   };
-};
-
-sql.identifier = (
-  names: readonly string[],
-): IdentifierSqlTokenType => {
-  return {
-    names,
-    type: IdentifierToken,
-  };
-};
-
-sql.json = (
-  value: SerializableValueType,
-): JsonSqlTokenType => {
-  return {
-    type: JsonToken,
-    value,
-  };
-};
-
-sql.join = (
-  members: readonly ValueExpressionType[],
-  glue: SqlTokenType,
-): ListSqlTokenType => {
-  return {
-    glue,
-    members,
-    type: ListToken,
-  };
-};
-
-sql.unnest = (
-  tuples: ReadonlyArray<readonly PrimitiveValueExpressionType[]>,
-  columnTypes: readonly UnnestSqlColumnType[],
-): UnnestSqlTokenType => {
-  return {
-    columnTypes,
-    tuples,
-    type: UnnestToken,
-  };
-};
-
-export const createSqlTag = <T extends QueryResultRowType = QueryResultRowType>(): SqlTaggedTemplateType<T> => {
-  return sql;
 };

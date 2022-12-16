@@ -5,13 +5,10 @@ import {
   from,
 } from 'pg-copy-streams';
 import {
-  UnexpectedStateError,
-} from '../errors';
-import {
   executeQuery,
 } from '../routines';
-import type {
-  InternalCopyFromBinaryFunctionType,
+import {
+  type InternalCopyFromBinaryFunction,
 } from '../types';
 import {
   encodeTupleList,
@@ -26,41 +23,40 @@ const bufferToStream = (buffer: Buffer) => {
   return stream;
 };
 
-export const copyFromBinary: InternalCopyFromBinaryFunctionType = async (
+export const copyFromBinary: InternalCopyFromBinaryFunction = async (
   connectionLogger,
   connection,
   clientConfiguration,
-  rawSql,
-  boundValues,
+  slonikSql,
   tupleList,
   columnTypes,
 ) => {
-  if (connection.connection.slonik.native) {
-    throw new UnexpectedStateError('COPY streams do not work with the native driver. Use JavaScript driver.');
-  }
-
   const payloadBuffer = await encodeTupleList(tupleList, columnTypes);
 
-  return executeQuery(
+  return await executeQuery(
     connectionLogger,
     connection,
     clientConfiguration,
-    rawSql,
-    boundValues,
+    slonikSql,
     undefined,
-    (finalConnection, finalSql) => {
+    async (finalConnection, finalSql) => {
       const copyFromBinaryStream = finalConnection.query(from(finalSql));
 
       bufferToStream(payloadBuffer).pipe(copyFromBinaryStream);
 
-      return new Promise((resolve, reject) => {
+      return await new Promise((resolve, reject) => {
         copyFromBinaryStream.on('error', (error: Error) => {
           reject(error);
         });
 
         copyFromBinaryStream.on('finish', () => {
-          // @ts-expect-error
-          resolve({});
+          resolve({
+            command: 'COPY',
+            fields: [],
+            notices: [],
+            rowCount: 0,
+            rows: [],
+          });
         });
       });
     },

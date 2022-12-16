@@ -1,12 +1,13 @@
 import {
+  UnexpectedStateError,
   InvalidInputError,
 } from '../errors';
 import {
   createSqlTokenSqlFragment,
 } from '../factories';
-import type {
-  ArraySqlTokenType,
-  SqlFragmentType,
+import {
+  type ArraySqlToken,
+  type SqlFragment,
 } from '../types';
 import {
   escapeIdentifier,
@@ -14,7 +15,7 @@ import {
   isSqlToken,
 } from '../utilities';
 
-export const createArraySqlFragment = (token: ArraySqlTokenType, greatestParameterPosition: number): SqlFragmentType => {
+export const createArraySqlFragment = (token: ArraySqlToken, greatestParameterPosition: number): SqlFragment => {
   let placeholderIndex = greatestParameterPosition;
 
   for (const value of token.values) {
@@ -39,25 +40,25 @@ export const createArraySqlFragment = (token: ArraySqlTokenType, greatestParamet
 
   let sql = '$' + String(placeholderIndex) + '::';
 
-  if (isSqlToken(token.memberType) && token.memberType.type === 'SLONIK_TOKEN_SQL') {
-    const sqlFragment = createSqlTokenSqlFragment(token.memberType, placeholderIndex);
+  if (isSqlToken(token.memberType) && token.memberType.type === 'SLONIK_TOKEN_FRAGMENT') {
+    const sqlFragment = createSqlTokenSqlFragment(
+      token.memberType,
+      placeholderIndex,
+    );
 
-    placeholderIndex += sqlFragment.values.length;
-
-    // @ts-expect-error (is this right?)
-    values.push(...sqlFragment.values);
+    if (sqlFragment.values.length > 0) {
+      throw new UnexpectedStateError('Type is not expected to have a value binding.');
+    }
 
     sql += sqlFragment.sql;
   } else if (typeof token.memberType === 'string') {
     sql += escapeIdentifier(token.memberType) + '[]';
   } else {
-    throw new InvalidInputError('Unsupported `memberType`. `memberType` must be a string or SqlToken of "SLONIK_TOKEN_SQL" type.');
+    throw new InvalidInputError('Unsupported `memberType`. `memberType` must be a string or SqlToken of "SLONIK_TOKEN_FRAGMENT" type.');
   }
 
   return {
     sql,
-
-    // @ts-expect-error
     values,
   };
 };

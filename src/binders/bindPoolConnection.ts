@@ -1,6 +1,6 @@
 import {
-  assertSqlSqlToken,
-} from '../assertions';
+  type PoolClient as PgPoolClient,
+} from 'pg';
 import {
   any,
   anyFirst,
@@ -16,160 +16,126 @@ import {
   stream,
   transaction,
 } from '../connectionMethods';
-import type {
-  ClientConfigurationType,
-  DatabasePoolConnectionType,
-  InternalDatabaseConnectionType,
-  Logger,
+import {
+  type ClientConfiguration,
+  type DatabasePoolConnection,
+  type Logger,
 } from '../types';
 
 export const bindPoolConnection = (
   parentLog: Logger,
-  connection: InternalDatabaseConnectionType,
-  clientConfiguration: ClientConfigurationType,
-): DatabasePoolConnectionType => {
+  connection: PgPoolClient,
+  clientConfiguration: ClientConfiguration,
+): DatabasePoolConnection => {
   return {
-    any: (query) => {
-      assertSqlSqlToken(query);
-
+    any: (slonikSql) => {
       return any(
         parentLog,
         connection,
         clientConfiguration,
-        query.sql,
-        query.values,
+        slonikSql,
       );
     },
-    anyFirst: (query) => {
-      assertSqlSqlToken(query);
-
+    anyFirst: (slonikSql) => {
       return anyFirst(
         parentLog,
         connection,
         clientConfiguration,
-        query.sql,
-        query.values,
+        slonikSql,
       );
     },
-    copyFromBinary: (query, values, columnTypes) => {
-      assertSqlSqlToken(query);
-
-      return copyFromBinary(
+    copyFromBinary: async (slonikSql, values, columnTypes) => {
+      return await copyFromBinary(
         parentLog,
         connection,
         clientConfiguration,
-        query.sql,
-        query.values,
+        slonikSql,
         values,
         columnTypes,
       );
     },
-    exists: (query) => {
-      assertSqlSqlToken(query);
-
-      return exists(
+    exists: async (slonikSql) => {
+      return await exists(
         parentLog,
         connection,
         clientConfiguration,
-        query.sql,
-        query.values,
+        slonikSql,
       );
     },
-    many: (query) => {
-      assertSqlSqlToken(query);
-
+    many: (slonikSql) => {
       return many(
         parentLog,
         connection,
         clientConfiguration,
-        query.sql,
-        query.values,
+        slonikSql,
       );
     },
-    manyFirst: (query) => {
-      assertSqlSqlToken(query);
-
+    manyFirst: (slonikSql) => {
       return manyFirst(
         parentLog,
         connection,
         clientConfiguration,
-        query.sql,
-        query.values,
+        slonikSql,
       );
     },
-    maybeOne: (query) => {
-      assertSqlSqlToken(query);
-
+    maybeOne: (slonikSql) => {
       return maybeOne(
         parentLog,
         connection,
         clientConfiguration,
-        query.sql,
-        query.values,
+        slonikSql,
       );
     },
-    maybeOneFirst: (query) => {
-      assertSqlSqlToken(query);
-
+    maybeOneFirst: (slonikSql) => {
       return maybeOneFirst(
         parentLog,
         connection,
         clientConfiguration,
-        query.sql,
-        query.values,
+        slonikSql,
       );
     },
-    one: (query) => {
-      assertSqlSqlToken(query);
-
+    one: (slonikSql) => {
       return one(
         parentLog,
         connection,
         clientConfiguration,
-        query.sql,
-        query.values,
+        slonikSql,
       );
     },
-    oneFirst: (query) => {
-      assertSqlSqlToken(query);
-
+    oneFirst: (slonikSql) => {
       return oneFirst(
         parentLog,
         connection,
         clientConfiguration,
-        query.sql,
-        query.values,
+        slonikSql,
       );
     },
-    query: (query) => {
-      assertSqlSqlToken(query);
-
+    query: (slonikSql) => {
       return queryMethod(
         parentLog,
         connection,
         clientConfiguration,
-        query.sql,
-        query.values,
+        slonikSql,
       );
     },
-    stream: (query, streamHandler) => {
-      assertSqlSqlToken(query);
-
-      return stream(
+    stream: async (slonikSql, streamHandler, config) => {
+      return await stream(
         parentLog,
         connection,
         clientConfiguration,
-        query.sql,
-        query.values,
+        slonikSql,
         streamHandler,
+        undefined,
+        config,
       );
     },
-    transaction: (handler) => {
-      return transaction(
+    transaction: async (handler, transactionRetryLimit) => {
+      return await transaction(
         parentLog,
         connection,
         clientConfiguration,
         handler,
+        transactionRetryLimit,
       );
     },
   };

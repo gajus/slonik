@@ -1,6 +1,6 @@
-/* eslint-disable import/no-namespace */
-
-import * as pgClient from 'pg';
+import {
+  Pool as PgPool,
+} from 'pg';
 import {
   createPool,
   sql,
@@ -12,19 +12,19 @@ import {
 
 const {
   test,
-} = createTestRunner(pgClient, 'pg');
+} = createTestRunner(PgPool, 'pg');
 
 createIntegrationTests(
   test,
-  pgClient,
+  PgPool,
 );
 
 test('returns expected query result object (NOTICE)', async (t) => {
-  const pool = createPool(t.context.dsn, {
-    pgClient,
+  const pool = await createPool(t.context.dsn, {
+    PgPool,
   });
 
-  await pool.query(sql`
+  await pool.query(sql.unsafe`
     CREATE OR REPLACE FUNCTION test_notice
       (
         v_test INTEGER
@@ -45,7 +45,7 @@ test('returns expected query result object (NOTICE)', async (t) => {
     $$;
   `);
 
-  const result = await pool.query(sql`SELECT * FROM test_notice(${10});`);
+  const result = await pool.query(sql.unsafe`SELECT * FROM test_notice(${10});`);
 
   t.is(result.notices.length, 4);
 
@@ -53,15 +53,16 @@ test('returns expected query result object (NOTICE)', async (t) => {
 });
 
 test('streams rows', async (t) => {
-  const pool = createPool(t.context.dsn);
+  const pool = await createPool(t.context.dsn);
 
-  await pool.query(sql`
-    INSERT INTO person (name) VALUES ('foo'), ('bar'), ('baz')
+  await pool.query(sql.unsafe`
+    INSERT INTO person (name)
+    VALUES ('foo'), ('bar'), ('baz')
   `);
 
   const messages: Array<Record<string, unknown>> = [];
 
-  await pool.stream(sql`
+  await pool.stream(sql.unsafe`
     SELECT name
     FROM person
   `, (stream) => {
@@ -108,8 +109,68 @@ test('streams rows', async (t) => {
 
   await pool.end();
 });
+
+test('streams rows with different batchSize', async (t) => {
+  const pool = await createPool(t.context.dsn);
+
+  await pool.query(sql.unsafe`
+    INSERT INTO person (name) VALUES ('foo'), ('bar'), ('baz')
+  `);
+
+  const messages: Array<Record<string, unknown>> = [];
+
+  await pool.stream(sql.unsafe`
+    SELECT name
+    FROM person
+  `, (stream) => {
+    stream.on('data', (datum) => {
+      messages.push(datum);
+    });
+  }, {
+    batchSize: 1,
+  });
+
+  t.deepEqual(messages, [
+    {
+      fields: [
+        {
+          dataTypeId: 25,
+          name: 'name',
+        },
+      ],
+      row: {
+        name: 'foo',
+      },
+    },
+    {
+      fields: [
+        {
+          dataTypeId: 25,
+          name: 'name',
+        },
+      ],
+      row: {
+        name: 'bar',
+      },
+    },
+    {
+      fields: [
+        {
+          dataTypeId: 25,
+          name: 'name',
+        },
+      ],
+      row: {
+        name: 'baz',
+      },
+    },
+  ]);
+
+  await pool.end();
+});
+
 test('applies type parsers to streamed rows', async (t) => {
-  const pool = createPool(t.context.dsn, {
+  const pool = await createPool(t.context.dsn, {
     typeParsers: [
       {
         name: 'date',
@@ -120,7 +181,7 @@ test('applies type parsers to streamed rows', async (t) => {
     ],
   });
 
-  await pool.query(sql`
+  await pool.query(sql.unsafe`
     INSERT INTO person
       (name, birth_date)
     VALUES
@@ -131,7 +192,7 @@ test('applies type parsers to streamed rows', async (t) => {
 
   const messages: Array<Record<string, unknown>> = [];
 
-  await pool.stream(sql`
+  await pool.stream(sql.unsafe`
     SELECT birth_date
     FROM person
     ORDER BY birth_date ASC
@@ -145,51 +206,53 @@ test('applies type parsers to streamed rows', async (t) => {
     {
       fields: [
         {
-          dataTypeId: 1082,
+          dataTypeId: 1_082,
           name: 'birth_date',
         },
       ],
       row: {
-        birth_date: 1990,
+        birth_date: 1_990,
       },
     },
     {
       fields: [
         {
-          dataTypeId: 1082,
+          dataTypeId: 1_082,
           name: 'birth_date',
         },
       ],
       row: {
-        birth_date: 1991,
+        birth_date: 1_991,
       },
     },
     {
       fields: [
         {
-          dataTypeId: 1082,
+          dataTypeId: 1_082,
           name: 'birth_date',
         },
       ],
       row: {
-        birth_date: 1992,
+        birth_date: 1_992,
       },
     },
   ]);
 
   await pool.end();
 });
-test('streams over a transaction', async (t) => {
-  const pool = createPool(t.context.dsn);
 
-  await pool.query(sql`
-    INSERT INTO person (name) VALUES ('foo'), ('bar'), ('baz')
+test('streams over a transaction', async (t) => {
+  const pool = await createPool(t.context.dsn);
+
+  await pool.query(sql.unsafe`
+    INSERT INTO person (name)
+    VALUES ('foo'), ('bar'), ('baz')
   `);
 
   const messages: Array<Record<string, unknown>> = [];
 
-  await pool.transaction(async (trxn) => {
-    await trxn.stream(sql`
+  await pool.transaction(async (transaction) => {
+    await transaction.stream(sql.unsafe`
       SELECT name
       FROM person
     `, (stream) => {
@@ -234,6 +297,94 @@ test('streams over a transaction', async (t) => {
       },
     },
   ]);
+
+  await pool.end();
+});
+
+test('copies from binary stream', async (t) => {
+  const pool = await createPool(t.context.dsn);
+
+  await pool.copyFromBinary(
+    sql.unsafe`
+      COPY person
+      (
+        name
+      )
+      FROM STDIN BINARY
+    `,
+    [
+      [
+        'foo',
+      ],
+      [
+        'bar',
+      ],
+      [
+        'baz',
+      ],
+    ],
+    [
+      'text',
+    ],
+  );
+
+  t.deepEqual(await pool.anyFirst(sql.unsafe`
+    SELECT name
+    FROM person
+  `), [
+    'foo',
+    'bar',
+    'baz',
+  ]);
+
+  await pool.end();
+});
+
+test('frees connection after destroying a stream', async (t) => {
+  const pool = await createPool(t.context.dsn);
+
+  await pool.stream(sql.unsafe`
+    SELECT * FROM GENERATE_SERIES(1, 100)
+  `, (stream) => {
+    stream.destroy();
+  });
+
+  t.deepEqual(await pool.anyFirst(sql.unsafe`
+    SELECT TRUE
+  `), [
+    true,
+  ]);
+
+  await pool.end();
+});
+
+test('frees connection after destroying a stream with an error', async (t) => {
+  const pool = await createPool(t.context.dsn);
+
+  await pool.stream(sql.unsafe`
+    SELECT * FROM GENERATE_SERIES(1, 100)
+  `, (stream) => {
+    stream.destroy(new Error('Foo'));
+  });
+
+  t.deepEqual(await pool.anyFirst(sql.unsafe`
+    SELECT TRUE
+  `), [
+    true,
+  ]);
+
+  await pool.end();
+});
+
+test('throws error on syntax errors', async (t) => {
+  const pool = await createPool(t.context.dsn);
+
+  const error = await t.throwsAsync(pool.stream(sql.unsafe`NONSENSE NOT REALLY sql.fragment`, () => {
+    t.false('We should not have got this far!');
+  }));
+
+  t.true(error instanceof Error);
+  t.deepEqual(error?.message, 'syntax error at or near "NONSENSE"');
 
   await pool.end();
 });

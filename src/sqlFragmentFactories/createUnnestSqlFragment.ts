@@ -1,9 +1,10 @@
 import {
   InvalidInputError,
 } from '../errors';
-import type {
-  SqlFragmentType,
-  UnnestSqlTokenType,
+import {
+  type SqlFragment,
+  type UnnestSqlToken,
+  type PrimitiveValueExpression,
 } from '../types';
 import {
   countArrayDimensions,
@@ -12,32 +13,42 @@ import {
   stripArrayNotation,
 } from '../utilities';
 
-export const createUnnestSqlFragment = (token: UnnestSqlTokenType, greatestParameterPosition: number): SqlFragmentType => {
-  const columnTypes = token.columnTypes;
+export const createUnnestSqlFragment = (token: UnnestSqlToken, greatestParameterPosition: number): SqlFragment => {
+  const {
+    columnTypes,
+  } = token;
 
-  const values = [];
+  const values: PrimitiveValueExpression[] = [];
 
-  const unnestBindings = [];
-  const unnestSqlTokens = [];
+  const unnestBindings: PrimitiveValueExpression[][] = [];
+  const unnestSqlTokens: string[] = [];
 
   let columnIndex = 0;
 
   let placeholderIndex = greatestParameterPosition;
 
   while (columnIndex < columnTypes.length) {
-    let columnType = columnTypes[columnIndex];
-    let columnTypeIsIdentifier = typeof columnType !== 'string';
+    const typeMember = columnTypes[columnIndex];
 
-    if (typeof columnType !== 'string') {
-      columnTypeIsIdentifier = true;
-      columnType = columnType.map((identifierName) => {
+    let columnType = columnTypes[columnIndex];
+    let columnTypeIsIdentifier;
+
+    if (typeof typeMember === 'string') {
+      columnType = typeMember;
+      columnTypeIsIdentifier = false;
+    } else if (Array.isArray(typeMember)) {
+      columnType = typeMember.map((identifierName) => {
         if (typeof identifierName !== 'string') {
-          throw new InvalidInputError('sql.unnest column identifier name array member type must be a string.');
+          throw new InvalidInputError('sql.unnest column identifier name array member type must be a string (type name identifier) or a SQL token.');
         }
 
         return escapeIdentifier(identifierName);
       })
         .join('.');
+      columnTypeIsIdentifier = true;
+    } else {
+      columnType = typeMember.sql;
+      columnTypeIsIdentifier = true;
     }
 
     unnestSqlTokens.push(
@@ -73,12 +84,19 @@ export const createUnnestSqlFragment = (token: UnnestSqlTokenType, greatestParam
         throw new InvalidInputError('Invalid unnest tuple member type. Must be a primitive value expression.');
       }
 
-      // @ts-expect-error
-      unnestBindings[tupleColumnIndex++].push(tupleValue);
+      const tupleBindings = unnestBindings[tupleColumnIndex++];
+
+      if (!tupleBindings) {
+        throw new Error('test');
+      }
+
+      tupleBindings.push(tupleValue);
     }
   }
 
-  values.push(...unnestBindings);
+  values.push(
+    ...unnestBindings,
+  );
 
   const sql = 'unnest(' + unnestSqlTokens.join(', ') + ')';
 

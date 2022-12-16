@@ -1,34 +1,50 @@
-import type {
-  QueryResult,
+import {
+  type QueryResult as PgQueryResult,
 } from 'pg';
 import {
   executeQuery,
 } from '../routines';
-import type {
-  InternalQueryMethodType,
-  NoticeType,
-  QueryResultType,
+import {
+  type Field,
+  type InternalQueryMethod,
+  type Notice,
+  type QueryResult,
 } from '../types';
 
-export const query: InternalQueryMethodType<any> = async (connectionLogger, connection, clientConfiguration, rawSql, values, inheritedQueryId) => {
-  return executeQuery(
+export const query: InternalQueryMethod = async (
+  connectionLogger,
+  connection,
+  clientConfiguration,
+  slonikSql,
+  inheritedQueryId,
+) => {
+  return await executeQuery(
     connectionLogger,
     connection,
     clientConfiguration,
-    rawSql,
-    values,
+    slonikSql,
     inheritedQueryId,
     async (finalConnection, finalSql, finalValues) => {
-      const result: QueryResult & {notices?: NoticeType[], } = await finalConnection.query(finalSql, finalValues);
+      const result: PgQueryResult & {notices?: Notice[], } = await finalConnection.query(
+        finalSql,
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        finalValues as any[],
+      );
 
-      return {
-        command: result.command as QueryResultType<unknown>['command'],
-        fields: (result.fields || []).map((field) => {
-          return {
+      const fields: Field[] = [];
+
+      if (result.fields) {
+        for (const field of result.fields) {
+          fields.push({
             dataTypeId: field.dataTypeID,
             name: field.name,
-          };
-        }),
+          });
+        }
+      }
+
+      return {
+        command: result.command as QueryResult<unknown>['command'],
+        fields,
         notices: result.notices ?? [],
         rowCount: result.rowCount || 0,
         rows: result.rows || [],

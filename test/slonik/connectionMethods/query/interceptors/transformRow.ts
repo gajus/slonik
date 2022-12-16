@@ -9,7 +9,7 @@ import {
 const sql = createSqlTag();
 
 test('overrides result row', async (t) => {
-  const pool = createPool({
+  const pool = await createPool({
     interceptors: [
       {
         transformRow: () => {
@@ -32,7 +32,7 @@ test('overrides result row', async (t) => {
     ],
   });
 
-  const result = await pool.query(sql`SELECT 1`);
+  const result = await pool.query(sql.unsafe`SELECT 1`);
 
   t.deepEqual(result, {
     command: 'SELECT',

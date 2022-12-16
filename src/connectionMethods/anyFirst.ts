@@ -1,8 +1,8 @@
 import {
   DataIntegrityError,
 } from '../errors';
-import type {
-  InternalQueryMethodType,
+import {
+  type InternalQueryMethod,
 } from '../types';
 import {
   createQueryId,
@@ -11,10 +11,10 @@ import {
   any,
 } from './any';
 
-export const anyFirst: InternalQueryMethodType<any> = async (log, connection, clientConfigurationType, rawSql, values, inheritedQueryId) => {
+export const anyFirst: InternalQueryMethod = async (log, connection, clientConfigurationType, query, inheritedQueryId) => {
   const queryId = inheritedQueryId ?? createQueryId();
 
-  const rows = await any(log, connection, clientConfigurationType, rawSql, values, queryId);
+  const rows = await any(log, connection, clientConfigurationType, query, queryId);
 
   if (rows.length === 0) {
     return [];
@@ -29,7 +29,7 @@ export const anyFirst: InternalQueryMethodType<any> = async (log, connection, cl
       queryId,
     }, 'result row has no columns');
 
-    throw new DataIntegrityError();
+    throw new DataIntegrityError(query);
   }
 
   const firstColumnName = keys[0];

@@ -1,14 +1,12 @@
-/* eslint-disable @typescript-eslint/explicit-member-accessibility */
-/* eslint-disable fp/no-class */
-/* eslint-disable fp/no-this */
-/* eslint-disable id-match */
-/* eslint-disable promise/prefer-await-to-callbacks */
+/* eslint-disable canonical/id-match */
 
 import {
+  type ReadableOptions,
+
   Readable,
 } from 'stream';
-import type {
-  QueryResult,
+import {
+  type QueryResult,
 } from 'pg';
 import Cursor from 'pg-cursor';
 
@@ -17,30 +15,29 @@ import Cursor from 'pg-cursor';
  * @see https://github.com/brianc/node-pg-query-stream/issues/51
  */
 export class QueryStream extends Readable {
-  _reading: boolean;
+  public _reading: boolean;
 
-  _closed: boolean;
+  public _closed: boolean;
 
-  _result: any;
+  public _result: unknown;
 
-  cursor: any;
+  public cursor: typeof Cursor;
 
-  batchSize: number;
+  public batchSize: number;
 
-  handleRowDescription: Function;
+  public handleRowDescription: Function;
 
-  handlePortalSuspended: Function;
+  public handlePortalSuspended: Function;
 
-  handleDataRow: Function;
+  public handleDataRow: Function;
 
-  handleCommandComplete: Function;
+  public handleCommandComplete: Function;
 
-  handleReadyForQuery: Function;
+  public handleReadyForQuery: Function;
 
-  handleError: Function;
+  public handleError: Function;
 
-  // @ts-expect-error
-  constructor (text, values, options?) {
+  public constructor (text: unknown, values: unknown, options?: ReadableOptions & {batchSize?: number, }) {
     super({
       objectMode: true,
       ...options,
@@ -48,7 +45,7 @@ export class QueryStream extends Readable {
     this.cursor = new Cursor(text, values);
     this._reading = false;
     this._closed = false;
-    this.batchSize = (options || {}).batchSize || 100;
+    this.batchSize = options?.batchSize ?? 100;
 
     // delegate Submittable callbacks to cursor
     this.handleRowDescription = this.cursor.handleRowDescription.bind(this.cursor);
@@ -62,25 +59,21 @@ export class QueryStream extends Readable {
     this._result = this.cursor._result;
   }
 
-  submit (connection: Object) {
+  public submit (connection: Object) {
     this.cursor.submit(connection);
   }
 
-  close (callback: Function) {
+  public _destroy (error: Error, callback: Function) {
     this._closed = true;
 
-    // eslint-disable-next-line unicorn/consistent-function-scoping
-    const close = () => {
-      this.emit('close');
-    };
-
-    this.cursor.close(callback || close);
+    this.cursor.close(callback);
   }
 
-  _read (size: number) {
+  public _read (size: number) {
     if (this._reading || this._closed) {
       return;
     }
+
     this._reading = true;
     const readAmount = Math.max(size, this.batchSize);
     this.cursor.read(readAmount, (error: Error, rows: unknown[], result: QueryResult) => {

@@ -1,8 +1,8 @@
 import {
   NotFoundError,
 } from '../errors';
-import type {
-  InternalQueryMethodType,
+import {
+  type InternalQueryMethod,
 } from '../types';
 import {
   createQueryId,
@@ -16,19 +16,19 @@ import {
  *
  * @throws NotFoundError If query returns no rows.
  */
-export const many: InternalQueryMethodType<any> = async (log, connection, clientConfiguration, rawSql, values, inheritedQueryId) => {
+export const many: InternalQueryMethod = async (log, connection, clientConfiguration, slonikQuery, inheritedQueryId) => {
   const queryId = inheritedQueryId ?? createQueryId();
 
   const {
     rows,
-  } = await query(log, connection, clientConfiguration, rawSql, values, queryId);
+  } = await query(log, connection, clientConfiguration, slonikQuery, queryId);
 
   if (rows.length === 0) {
     log.error({
       queryId,
     }, 'NotFoundError');
 
-    throw new NotFoundError();
+    throw new NotFoundError(slonikQuery);
   }
 
   return rows;

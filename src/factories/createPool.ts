@@ -1,8 +1,7 @@
-import type {
-  EventEmitter,
-} from 'events';
-import pgClient from 'pg';
-import type pgTypes from 'pg';
+import {
+  Client as PgClient,
+  Pool as PgPool,
+} from 'pg';
 import {
   serializeError,
 } from 'serialize-error';
@@ -12,9 +11,15 @@ import {
 import {
   bindPool,
 } from '../binders/bindPool';
-import type {
-  ClientConfigurationInputType,
-  DatabasePoolType,
+import {
+  createTypeOverrides,
+} from '../routines';
+import {
+  poolStateMap,
+} from '../state';
+import {
+  type ClientConfigurationInput,
+  type DatabasePool,
 } from '../types';
 import {
   createUid,
@@ -29,10 +34,10 @@ import {
 /**
  * @param connectionUri PostgreSQL [Connection URI](https://www.postgresql.org/docs/current/libpq-connect.html#LIBPQ-CONNSTRING).
  */
-export const createPool = (
+export const createPool = async (
   connectionUri: string,
-  clientConfigurationInput?: ClientConfigurationInputType,
-): DatabasePoolType => {
+  clientConfigurationInput?: ClientConfigurationInput,
+): Promise<DatabasePool> => {
   const clientConfiguration = createClientConfiguration(clientConfigurationInput);
 
   const poolId = createUid();
@@ -43,52 +48,52 @@ export const createPool = (
 
   const poolConfiguration = createPoolConfiguration(connectionUri, clientConfiguration);
 
-  let pg: Exclude<typeof pgTypes.native, null>;
+  let Pool = clientConfiguration.PgPool;
 
-  if (clientConfiguration.pgClient) {
-    pg = clientConfiguration.pgClient;
-  } else {
-    pg = pgClient;
+  if (!Pool) {
+    Pool = PgPool;
   }
 
-  type ModifiedPool = EventEmitter & Omit<pgTypes.Pool, 'on'> & {
-    slonik?: unknown,
-  };
+  if (!Pool) {
+    throw new Error('Unexpected state.');
+  }
 
-  const pool: ModifiedPool = new pg.Pool(poolConfiguration as unknown as pgTypes.PoolConfig);
+  const setupClient = new PgClient({
+    connectionTimeoutMillis: poolConfiguration.connectionTimeoutMillis,
+    database: poolConfiguration.database,
+    host: poolConfiguration.host,
+    password: poolConfiguration.password,
+    port: poolConfiguration.port,
+    ssl: poolConfiguration.ssl,
+    user: poolConfiguration.user,
+  });
 
-  pool.slonik = {
+  await setupClient.connect();
+
+  const getTypeParser = await createTypeOverrides(
+    setupClient,
+    clientConfiguration.typeParsers,
+  );
+
+  await setupClient.end();
+
+  const pool: PgPool = new Pool({
+    ...poolConfiguration,
+    types: {
+      getTypeParser,
+    },
+  });
+
+  poolStateMap.set(pool, {
     ended: false,
     mock: false,
     poolId,
     typeOverrides: null,
-  };
-
-  // istanbul ignore next
-  pool.on('error', (error) => {
-    if (!error.client.connection.slonik.terminated) {
-      poolLog.error({
-        error: serializeError(error),
-      }, 'client connection error');
-    }
   });
 
   // istanbul ignore next
-  pool.on('connect', (client: EventEmitter & {connection: any, processID: string, }) => {
-    client.connection = client.connection || {};
-
-    client.connection.slonik = {
-      connectionId: createUid(),
-      mock: false,
-      terminated: null,
-      transactionDepth: null,
-    };
-
+  pool.on('connect', (client) => {
     client.on('error', (error) => {
-      if (error.message.includes('Connection terminated unexpectedly') || error.message.includes('server closed the connection unexpectedly')) {
-        client.connection.slonik.terminated = error;
-      }
-
       poolLog.error({
         error: serializeError(error),
       }, 'client error');
@@ -104,7 +109,6 @@ export const createPool = (
     });
 
     poolLog.debug({
-      processId: client.processID,
       stats: {
         idleConnectionCount: pool.idleCount,
         totalConnectionCount: pool.totalCount,
@@ -114,9 +118,8 @@ export const createPool = (
   });
 
   // istanbul ignore next
-  pool.on('acquire', (client) => {
+  pool.on('acquire', () => {
     poolLog.debug({
-      processId: client.processID,
       stats: {
         idleConnectionCount: pool.idleCount,
         totalConnectionCount: pool.totalCount,
@@ -126,9 +129,8 @@ export const createPool = (
   });
 
   // istanbul ignore next
-  pool.on('remove', (client) => {
+  pool.on('remove', () => {
     poolLog.debug({
-      processId: client.processID,
       stats: {
         idleConnectionCount: pool.idleCount,
         totalConnectionCount: pool.totalCount,

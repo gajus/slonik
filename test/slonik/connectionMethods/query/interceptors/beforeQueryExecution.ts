@@ -9,7 +9,7 @@ import {
 const sql = createSqlTag();
 
 test('short-circuits the query execution', async (t) => {
-  const pool = createPool({
+  const pool = await createPool({
     interceptors: [
       {
         beforeQueryExecution: () => {
@@ -37,7 +37,7 @@ test('short-circuits the query execution', async (t) => {
     ],
   });
 
-  const result = await pool.query(sql`SELECT 1`);
+  const result = await pool.query(sql.unsafe`SELECT 1`);
 
   t.deepEqual(result, {
     command: 'SELECT',
@@ -53,7 +53,7 @@ test('short-circuits the query execution', async (t) => {
 });
 
 test('executes query if "beforeQuery" does not return results', async (t) => {
-  const pool = createPool({
+  const pool = await createPool({
     interceptors: [
       {
         beforeQueryExecution: () => {
@@ -75,7 +75,7 @@ test('executes query if "beforeQuery" does not return results', async (t) => {
     ],
   });
 
-  const result = await pool.query(sql`SELECT 1`);
+  const result = await pool.query(sql.unsafe`SELECT 1`);
 
   t.deepEqual(result, {
     command: 'SELECT',
