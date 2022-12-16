@@ -9,9 +9,6 @@ import {
   serializeError,
 } from 'serialize-error';
 import {
-  type ZodTypeAny,
-} from 'zod';
-import {
   TRANSACTION_ROLLBACK_ERROR_PREFIX,
 } from '../constants';
 import {
@@ -20,7 +17,6 @@ import {
   ForeignKeyIntegrityConstraintViolationError,
   InvalidInputError,
   NotNullIntegrityConstraintViolationError,
-  SchemaValidationError,
   StatementCancelledError,
   StatementTimeoutError,
   TupleMovedToAnotherPartitionError,
@@ -41,11 +37,10 @@ import {
   type QueryId,
   type QueryResult,
   type QueryResultRow,
-  type TaggedTemplateLiteralInvocation,
+  type QuerySqlToken,
 } from '../types';
 import {
   createQueryId,
-  sanitizeObject,
 } from '../utilities';
 
 type GenericQueryResult = QueryResult<QueryResultRow>;
@@ -63,34 +58,6 @@ type TransactionQuery = {
   readonly executionRoutine: ExecutionRoutineType,
   readonly sql: string,
   readonly values: readonly PrimitiveValueExpression[],
-};
-
-const createParseInterceptor = (parser: ZodTypeAny): Interceptor => {
-  return {
-    transformRow: (executionContext, actualQuery, row) => {
-      const {
-        log,
-      } = executionContext;
-
-      const validationResult = parser.safeParse(row);
-
-      if (!validationResult.success) {
-        log.error({
-          error: serializeError(validationResult.error),
-          row: sanitizeObject(row),
-          sql: actualQuery.sql,
-        }, 'row failed validation');
-
-        throw new SchemaValidationError(
-          actualQuery,
-          sanitizeObject(row),
-          validationResult.error.issues,
-        );
-      }
-
-      return validationResult.data as QueryResultRow;
-    },
-  };
 };
 
 const retryQuery = async (
@@ -156,25 +123,21 @@ export const executeQuery = async (
   connectionLogger: Logger,
   connection: PgPoolClient,
   clientConfiguration: ClientConfiguration,
-  slonikSqlRename: TaggedTemplateLiteralInvocation,
+  query: QuerySqlToken,
   inheritedQueryId: QueryId | undefined,
   executionRoutine: ExecutionRoutineType,
 ): Promise<QueryResult<Record<string, PrimitiveValueExpression>>> => {
-  // TODO rename
-  const slonikSql = slonikSqlRename.sql;
-  const values = slonikSqlRename.values;
-
   const poolClientState = getPoolClientState(connection);
 
   if (poolClientState.terminated) {
     throw new BackendTerminatedError(poolClientState.terminated);
   }
 
-  if (slonikSql.trim() === '') {
+  if (query.sql.trim() === '') {
     throw new InvalidInputError('Unexpected SQL input. Query cannot be empty.');
   }
 
-  if (slonikSql.trim() === '$1') {
+  if (query.sql.trim() === '$1') {
     throw new InvalidInputError('Unexpected SQL input. Query cannot be empty. Found only value binding.');
   }
 
@@ -185,14 +148,16 @@ export const executeQuery = async (
   if (clientConfiguration.captureStackTrace) {
     const callSites = await getStackTrace();
 
-    stackTrace = callSites.map((callSite) => {
-      return {
+    stackTrace = [];
+
+    for (const callSite of callSites) {
+      stackTrace.push({
         columnNumber: callSite.columnNumber,
         fileName: callSite.fileName,
         functionName: callSite.functionName,
         lineNumber: callSite.lineNumber,
-      };
-    });
+      });
+    }
   }
 
   const queryId = inheritedQueryId ?? createQueryId();
@@ -202,8 +167,8 @@ export const executeQuery = async (
   });
 
   const originalQuery = {
-    sql: slonikSql,
-    values,
+    sql: query.sql,
+    values: query.values,
   };
 
   let actualQuery = {
@@ -217,6 +182,7 @@ export const executeQuery = async (
     poolId: poolClientState.poolId,
     queryId,
     queryInputTime,
+    resultParser: query.parser,
     sandbox: {},
     stackTrace,
     transactionId: poolClientState.transactionId,
@@ -380,17 +346,7 @@ export const executeQuery = async (
 
   // Stream does not have `rows` in the result object and all rows are already transformed.
   if (result.rows) {
-    const {
-      parser,
-    } = slonikSqlRename;
-
     const interceptors: Interceptor[] = clientConfiguration.interceptors.slice();
-
-    if (parser) {
-      interceptors.push(
-        createParseInterceptor(parser),
-      );
-    }
 
     for (const interceptor of interceptors) {
       if (interceptor.transformRow) {
@@ -401,9 +357,11 @@ export const executeQuery = async (
           fields,
         } = result;
 
-        const rows: readonly QueryResultRow[] = result.rows.map((row) => {
-          return transformRow(executionContext, actualQuery, row, fields);
-        });
+        const rows: QueryResultRow[] = [];
+
+        for (const row of result.rows) {
+          rows.push(transformRow(executionContext, actualQuery, row, fields));
+        }
 
         result = {
           ...result,

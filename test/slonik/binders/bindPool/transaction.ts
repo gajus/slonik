@@ -20,7 +20,7 @@ test('commits successful transaction', async (t) => {
 
   await pool.connect(async (c1) => {
     return await c1.transaction(async (t1) => {
-      return await t1.query(sql`SELECT 1`);
+      return await t1.query(sql.unsafe`SELECT 1`);
     });
   });
 
@@ -36,7 +36,7 @@ test('rollsback unsuccessful transaction', async (t) => {
 
   await t.throwsAsync(pool.connect(async (c1) => {
     await c1.transaction(async (t1) => {
-      await t1.query(sql`SELECT 1`);
+      await t1.query(sql.unsafe`SELECT 1`);
 
       return await Promise.reject(new Error('foo'));
     });
@@ -54,9 +54,9 @@ test('uses savepoints to nest transactions', async (t) => {
 
   await pool.connect(async (c1) => {
     await c1.transaction(async (t1) => {
-      await t1.query(sql`SELECT 1`);
+      await t1.query(sql.unsafe`SELECT 1`);
       await t1.transaction(async (t2) => {
-        return await t2.query(sql`SELECT 2`);
+        return await t2.query(sql.unsafe`SELECT 2`);
       });
     });
   });
@@ -75,10 +75,10 @@ test('rollsback to the last savepoint', async (t) => {
 
   await pool.connect(async (c1) => {
     await c1.transaction(async (t1) => {
-      await t1.query(sql`SELECT 1`);
+      await t1.query(sql.unsafe`SELECT 1`);
 
       await t.throwsAsync(t1.transaction(async (t2) => {
-        await t2.query(sql`SELECT 2`);
+        await t2.query(sql.unsafe`SELECT 2`);
 
         return await Promise.reject(new Error('foo'));
       }));
@@ -100,10 +100,10 @@ test('rollsback the entire transaction with multiple savepoints', async (t) => {
 
   await pool.connect(async (c1) => {
     return await t.throwsAsync(c1.transaction(async (t1) => {
-      await t1.query(sql`SELECT 1`);
+      await t1.query(sql.unsafe`SELECT 1`);
 
       return await t1.transaction(async (t2) => {
-        await t2.query(sql`SELECT 2`);
+        await t2.query(sql.unsafe`SELECT 2`);
 
         return await Promise.reject(new Error('foo'));
       });
@@ -125,13 +125,13 @@ test('rollsback the entire transaction with multiple savepoints (multiple depth 
 
   await pool.connect(async (c1) => {
     return await t.throwsAsync(c1.transaction(async (t1) => {
-      await t1.query(sql`SELECT 1`);
+      await t1.query(sql.unsafe`SELECT 1`);
 
       return await t1.transaction(async (t2) => {
-        await t2.query(sql`SELECT 2`);
+        await t2.query(sql.unsafe`SELECT 2`);
 
         return await t2.transaction(async (t3) => {
-          await t3.query(sql`SELECT 3`);
+          await t3.query(sql.unsafe`SELECT 3`);
 
           return await Promise.reject(new Error('foo'));
         });
@@ -177,7 +177,7 @@ test('throws an error if an attempt is made to execute a query using the parent 
   const connection = pool.connect(async (c1) => {
     return await c1.transaction(async (t1) => {
       return await t1.transaction(async () => {
-        return await t1.query(sql`SELECT 1`);
+        return await t1.query(sql.unsafe`SELECT 1`);
       });
     });
   });

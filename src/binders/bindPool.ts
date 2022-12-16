@@ -2,9 +2,6 @@ import {
   type Pool as PgPool,
 } from 'pg';
 import {
-  assertSqlSqlToken,
-} from '../assertions';
-import {
   transaction,
 } from '../connectionMethods';
 import {
@@ -17,7 +14,6 @@ import {
   type ClientConfiguration,
   type DatabasePool,
   type Logger,
-  type TaggedTemplateLiteralInvocation,
 } from '../types';
 
 export const bindPool = (
@@ -26,7 +22,7 @@ export const bindPool = (
   clientConfiguration: ClientConfiguration,
 ): DatabasePool => {
   return {
-    any: async (query: TaggedTemplateLiteralInvocation) => {
+    any: async (query) => {
       return await createConnection(
         parentLog,
         pool,
@@ -45,7 +41,7 @@ export const bindPool = (
         query,
       );
     },
-    anyFirst: async (query: TaggedTemplateLiteralInvocation) => {
+    anyFirst: async (query) => {
       return await createConnection(
         parentLog,
         pool,
@@ -84,8 +80,6 @@ export const bindPool = (
       );
     },
     copyFromBinary: async (copyQuery, values, columnTypes) => {
-      assertSqlSqlToken(copyQuery);
-
       return await createConnection(
         parentLog,
         pool,
@@ -118,7 +112,7 @@ export const bindPool = (
 
       await pool.end();
     },
-    exists: async (query: TaggedTemplateLiteralInvocation) => {
+    exists: async (query) => {
       return await createConnection(
         parentLog,
         pool,
@@ -147,7 +141,7 @@ export const bindPool = (
         waitingClientCount: pool.waitingCount,
       };
     },
-    many: async (query: TaggedTemplateLiteralInvocation) => {
+    many: async (query) => {
       return await createConnection(
         parentLog,
         pool,
@@ -166,7 +160,7 @@ export const bindPool = (
         query,
       );
     },
-    manyFirst: async (query: TaggedTemplateLiteralInvocation) => {
+    manyFirst: async (query) => {
       return await createConnection(
         parentLog,
         pool,
@@ -185,7 +179,7 @@ export const bindPool = (
         query,
       );
     },
-    maybeOne: async (query: TaggedTemplateLiteralInvocation) => {
+    maybeOne: async (query) => {
       return await createConnection(
         parentLog,
         pool,
@@ -204,7 +198,7 @@ export const bindPool = (
         query,
       );
     },
-    maybeOneFirst: async (query: TaggedTemplateLiteralInvocation) => {
+    maybeOneFirst: async (query) => {
       return await createConnection(
         parentLog,
         pool,
@@ -223,7 +217,7 @@ export const bindPool = (
         query,
       );
     },
-    one: async (query: TaggedTemplateLiteralInvocation) => {
+    one: async (query) => {
       return await createConnection(
         parentLog,
         pool,
@@ -242,7 +236,7 @@ export const bindPool = (
         query,
       );
     },
-    oneFirst: async (query: TaggedTemplateLiteralInvocation) => {
+    oneFirst: async (query) => {
       return await createConnection(
         parentLog,
         pool,
@@ -261,7 +255,7 @@ export const bindPool = (
         query,
       );
     },
-    query: async (query: TaggedTemplateLiteralInvocation) => {
+    query: async (query) => {
       return await createConnection(
         parentLog,
         pool,
@@ -281,8 +275,6 @@ export const bindPool = (
       );
     },
     stream: async (streamQuery, streamHandler, config) => {
-      assertSqlSqlToken(streamQuery);
-
       return await createConnection(
         parentLog,
         pool,

@@ -25,7 +25,7 @@ test('returns the query results rows', async (t) => {
     ],
   });
 
-  const result = await pool.many(sql`SELECT 1`);
+  const result = await pool.many(sql.unsafe`SELECT 1`);
 
   t.deepEqual(result, [
     {
@@ -44,7 +44,7 @@ test('throws an error if no rows are returned', async (t) => {
     rows: [],
   });
 
-  const error = await t.throwsAsync(pool.many(sql`SELECT 1`));
+  const error = await t.throwsAsync(pool.many(sql.unsafe`SELECT 1`));
 
   t.true(error instanceof NotFoundError);
 });

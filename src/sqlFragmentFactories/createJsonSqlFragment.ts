@@ -1,4 +1,3 @@
-import safeStringify from 'fast-safe-stringify';
 import {
   isPlainObject,
 } from 'is-plain-object';
@@ -16,6 +15,9 @@ import {
   type JsonSqlToken,
   type SqlFragment,
 } from '../types';
+import {
+  safeStringify,
+} from '../utilities';
 
 const log = Logger.child({
   namespace: 'createJsonSqlFragment',

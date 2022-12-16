@@ -2,9 +2,6 @@ import {
   type PoolClient as PgPoolClient,
 } from 'pg';
 import {
-  assertSqlSqlToken,
-} from '../assertions';
-import {
   any,
   anyFirst,
   copyFromBinary,
@@ -32,8 +29,6 @@ export const bindPoolConnection = (
 ): DatabasePoolConnection => {
   return {
     any: (slonikSql) => {
-      assertSqlSqlToken(slonikSql);
-
       return any(
         parentLog,
         connection,
@@ -42,8 +37,6 @@ export const bindPoolConnection = (
       );
     },
     anyFirst: (slonikSql) => {
-      assertSqlSqlToken(slonikSql);
-
       return anyFirst(
         parentLog,
         connection,
@@ -52,8 +45,6 @@ export const bindPoolConnection = (
       );
     },
     copyFromBinary: async (slonikSql, values, columnTypes) => {
-      assertSqlSqlToken(slonikSql);
-
       return await copyFromBinary(
         parentLog,
         connection,
@@ -64,8 +55,6 @@ export const bindPoolConnection = (
       );
     },
     exists: async (slonikSql) => {
-      assertSqlSqlToken(slonikSql);
-
       return await exists(
         parentLog,
         connection,
@@ -74,8 +63,6 @@ export const bindPoolConnection = (
       );
     },
     many: (slonikSql) => {
-      assertSqlSqlToken(slonikSql);
-
       return many(
         parentLog,
         connection,
@@ -84,8 +71,6 @@ export const bindPoolConnection = (
       );
     },
     manyFirst: (slonikSql) => {
-      assertSqlSqlToken(slonikSql);
-
       return manyFirst(
         parentLog,
         connection,
@@ -94,8 +79,6 @@ export const bindPoolConnection = (
       );
     },
     maybeOne: (slonikSql) => {
-      assertSqlSqlToken(slonikSql);
-
       return maybeOne(
         parentLog,
         connection,
@@ -104,8 +87,6 @@ export const bindPoolConnection = (
       );
     },
     maybeOneFirst: (slonikSql) => {
-      assertSqlSqlToken(slonikSql);
-
       return maybeOneFirst(
         parentLog,
         connection,
@@ -114,8 +95,6 @@ export const bindPoolConnection = (
       );
     },
     one: (slonikSql) => {
-      assertSqlSqlToken(slonikSql);
-
       return one(
         parentLog,
         connection,
@@ -124,8 +103,6 @@ export const bindPoolConnection = (
       );
     },
     oneFirst: (slonikSql) => {
-      assertSqlSqlToken(slonikSql);
-
       return oneFirst(
         parentLog,
         connection,
@@ -134,8 +111,6 @@ export const bindPoolConnection = (
       );
     },
     query: (slonikSql) => {
-      assertSqlSqlToken(slonikSql);
-
       return queryMethod(
         parentLog,
         connection,
@@ -144,8 +119,6 @@ export const bindPoolConnection = (
       );
     },
     stream: async (slonikSql, streamHandler, config) => {
-      assertSqlSqlToken(slonikSql);
-
       return await stream(
         parentLog,
         connection,

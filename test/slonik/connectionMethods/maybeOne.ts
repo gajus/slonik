@@ -22,7 +22,7 @@ test('returns the first row', async (t) => {
     ],
   });
 
-  const result = await pool.maybeOne(sql`SELECT 1`);
+  const result = await pool.maybeOne(sql.unsafe`SELECT 1`);
 
   t.deepEqual(result, {
     foo: 1,
@@ -36,7 +36,7 @@ test('returns null if no results', async (t) => {
     rows: [],
   });
 
-  const result = await pool.maybeOne(sql`SELECT 1`);
+  const result = await pool.maybeOne(sql.unsafe`SELECT 1`);
 
   t.is(result, null);
 });
@@ -55,7 +55,7 @@ test('throws an error if more than one row is returned', async (t) => {
     ],
   });
 
-  const error = await t.throwsAsync(pool.maybeOne(sql`SELECT 1`));
+  const error = await t.throwsAsync(pool.maybeOne(sql.unsafe`SELECT 1`));
 
   t.true(error instanceof DataIntegrityError);
 });

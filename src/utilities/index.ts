@@ -29,6 +29,9 @@ export {
   parseDsn,
 } from './parseDsn';
 export {
+  safeStringify,
+} from './safeStringify';
+export {
   stringifyDsn,
 } from './stringifyDsn';
 export {

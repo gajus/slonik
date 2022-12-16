@@ -6,7 +6,6 @@ import {
   z,
 } from 'zod';
 import {
-  type SchemaValidationError,
   DataIntegrityError,
   NotFoundError,
   UnexpectedStateError,
@@ -31,7 +30,7 @@ test('returns value of the first column from the first row', async (t) => {
     ],
   });
 
-  const result = await pool.oneFirst(sql`SELECT 1`);
+  const result = await pool.oneFirst(sql.unsafe`SELECT 1`);
 
   t.is(result, 1);
 });
@@ -43,7 +42,7 @@ test('throws an error if no rows are returned', async (t) => {
     rows: [],
   });
 
-  const error = await t.throwsAsync(pool.oneFirst(sql`SELECT 1`));
+  const error = await t.throwsAsync(pool.oneFirst(sql.unsafe`SELECT 1`));
 
   t.true(error instanceof NotFoundError);
 });
@@ -62,7 +61,7 @@ test('throws an error if more than one row is returned', async (t) => {
     ],
   });
 
-  const error = await t.throwsAsync(pool.oneFirst(sql`SELECT 1`));
+  const error = await t.throwsAsync(pool.oneFirst(sql.unsafe`SELECT 1`));
 
   t.true(error instanceof DataIntegrityError);
 });
@@ -79,7 +78,7 @@ test('throws an error if more than one column is returned', async (t) => {
     ],
   });
 
-  const error = await t.throwsAsync(pool.oneFirst(sql`SELECT 1`));
+  const error = await t.throwsAsync(pool.oneFirst(sql.unsafe`SELECT 1`));
 
   t.true(error instanceof UnexpectedStateError);
 });
@@ -106,40 +105,4 @@ test('describes zod object associated with the query', async (t) => {
   expectTypeOf(result).toMatchTypeOf<number>();
 
   t.is(result, 1);
-});
-
-test('throws an error if object does match the zod object shape', async (t) => {
-  const pool = await createPool();
-
-  pool.querySpy.returns({
-    rows: [
-      {
-        foo: '1',
-      },
-    ],
-  });
-
-  const zodObject = z.object({
-    foo: z.number(),
-  });
-
-  const query = sql.type(zodObject)`SELECT 1`;
-
-  const error = await t.throwsAsync<SchemaValidationError>(pool.oneFirst(query));
-
-  t.is(error?.sql, 'SELECT 1');
-  t.deepEqual(error?.row, {
-    foo: '1',
-  });
-  t.deepEqual(error?.issues, [
-    {
-      code: 'invalid_type',
-      expected: 'number',
-      message: 'Expected number, received string',
-      path: [
-        'foo',
-      ],
-      received: 'string',
-    },
-  ]);
 });

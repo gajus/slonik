@@ -8,16 +8,16 @@ If this is your first time using Slonik, read [Dynamically generating SQL querie
 
 ```ts
 (
-  values: PrimitiveValueExpression[],
-  memberType: TypeNameIdentifier | SqlToken
-) => ArraySqlToken;
+  values: readonly PrimitiveValueExpression[],
+  memberType: SqlFragment | TypeNameIdentifier,
+) => ArraySqlToken,
 ```
 
 Creates an array value binding, e.g.
 
 ```ts
-await connection.query(sql`
-  SELECT (${sql.array([1, 2, 3], 'int4')})
+await connection.query(sql.typeAlias('id')`
+  SELECT (${sql.array([1, 2, 3], 'int4')}) AS id
 `);
 ```
 
@@ -38,11 +38,11 @@ Produces:
 
 #### `sql.array` `memberType`
 
-If `memberType` is a string (`TypeNameIdentifier`), then it is treated as a type name identifier and will be quoted using double quotes, i.e. `sql.array([1, 2, 3], 'int4')` is equivalent to `$1::"int4"[]`. The implication is that keywords that are often used interchangeably with type names are not going to work, e.g. [`int4`](https://github.com/postgres/postgres/blob/69edf4f8802247209e77f69e089799b3d83c13a4/src/include/catalog/pg_type.dat#L74-L78) is a type name identifier and will work. However, [`int`](https://github.com/postgres/postgres/blob/69edf4f8802247209e77f69e089799b3d83c13a4/src/include/parser/kwlist.h#L213) is a keyword and will not work. You can either use type name identifiers or you can construct custom member using `sql` tag, e.g.
+If `memberType` is a string (`TypeNameIdentifier`), then it is treated as a type name identifier and will be quoted using double quotes, i.e. `sql.array([1, 2, 3], 'int4')` is equivalent to `$1::"int4"[]`. The implication is that keywords that are often used interchangeably with type names are not going to work, e.g. [`int4`](https://github.com/postgres/postgres/blob/69edf4f8802247209e77f69e089799b3d83c13a4/src/include/catalog/pg_type.dat#L74-L78) is a type name identifier and will work. However, [`int`](https://github.com/postgres/postgres/blob/69edf4f8802247209e77f69e089799b3d83c13a4/src/include/parser/kwlist.h#L213) is a keyword and will not work. You can either use type name identifiers or you can construct custom member using `sql.fragment` tag, e.g.
 
 ```ts
-await connection.query(sql`
-  SELECT (${sql.array([1, 2, 3], sql`int[]`)})
+await connection.query(sql.typeAlias('id')`
+  SELECT (${sql.array([1, 2, 3], sql.fragment`int[]`)}) AS id
 `);
 ```
 
@@ -71,15 +71,31 @@ Unlike `sql.join`, `sql.array` generates a stable query of a predictable length,
 Example:
 
 ```ts
-sql`SELECT id FROM foo WHERE id IN (${sql.join([1, 2, 3], sql`, `)})`;
-sql`SELECT id FROM foo WHERE id NOT IN (${sql.join([1, 2, 3], sql`, `)})`;
+sql.typeAlias('id')`
+  SELECT id
+  FROM foo
+  WHERE id IN (${sql.join([1, 2, 3], sql.fragment`, `)})
+`;
+sql.typeAlias('id')`
+  SELECT id
+  FROM foo
+  WHERE id NOT IN (${sql.join([1, 2, 3], sql.fragment`, `)})
+`;
 ```
 
 Is equivalent to:
 
 ```ts
-sql`SELECT id FROM foo WHERE id = ANY(${sql.array([1, 2, 3], 'int4')})`;
-sql`SELECT id FROM foo WHERE id != ALL(${sql.array([1, 2, 3], 'int4')})`;
+sql.typeAlias('id')`
+  SELECT id
+  FROM foo
+  WHERE id = ANY(${sql.array([1, 2, 3], 'int4')})
+`;
+sql.typeAlias('id')`
+  SELECT id
+  FROM foo
+  WHERE id != ALL(${sql.array([1, 2, 3], 'int4')})
+`;
 ```
 
 Furthermore, unlike `sql.join`, `sql.array` can be used with an empty array of values. In short, `sql.array` should be preferred over `sql.join` when possible.
@@ -95,7 +111,7 @@ Furthermore, unlike `sql.join`, `sql.array` can be used with an empty array of v
 Binds binary ([`bytea`](https://www.postgresql.org/docs/current/datatype-binary.html)) data, e.g.
 
 ```ts
-await connection.query(sql`
+await connection.query(sql.unsafe`
   SELECT ${sql.binary(Buffer.from('foo'))}
 `);
 ```
@@ -122,7 +138,7 @@ Produces:
 Inserts a date, e.g.
 
 ```ts
-await connection.query(sql`
+await connection.query(sql.unsafe`
   SELECT ${sql.date(new Date('2022-08-19T03:27:24.951Z'))}
 `);
 ```
@@ -138,6 +154,46 @@ Produces:
 }
 ```
 
+### `sql.fragment`
+
+```ts
+(
+  template: TemplateStringsArray,
+  ...values: ValueExpression[]
+) => SqlFragment;
+```
+
+A SQL fragment, e.g.
+
+```ts
+sql.fragment`FOO`
+```
+
+Produces:
+
+```ts
+{
+  sql: 'FOO',
+  values: []
+}
+```
+
+SQL fragments can be used to build more complex queries, e.g.
+
+```ts
+const whereFragment = sql.fragment`
+  WHERE bar = 'baz';
+`;
+
+sql.typeAlias('id')`
+  SELECT id
+  FROM foo
+  ${whereFragment}
+`
+```
+
+The only difference between queries and fragments is that fragments are untyped and they cannot be used as inputs to query methods (use `sql.type` instead).
+
 ### `sql.identifier`
 
 ```ts
@@ -149,8 +205,8 @@ Produces:
 [Delimited identifiers](https://www.postgresql.org/docs/current/static/sql-syntax-lexical.html#SQL-SYNTAX-IDENTIFIERS) are created by enclosing an arbitrary sequence of characters in double-quotes ("). To create a delimited identifier, create an `sql` tag function placeholder value using `sql.identifier`, e.g.
 
 ```ts
-sql`
-  SELECT 1
+sql.typeAlias('id')`
+  SELECT 1 AS id
   FROM ${sql.identifier(['bar', 'baz'])}
 `;
 ```
@@ -183,8 +239,8 @@ Produces:
 Inserts an [interval](https://www.postgresql.org/docs/current/datatype-datetime.html#DATATYPE-INTERVAL-INPUT), e.g.
 
 ```ts
-sql`
-  SELECT 1
+sql.typeAlias('id')`
+  SELECT 1 AS id
   FROM ${sql.interval({days: 3})}
 `;
 ```
@@ -214,7 +270,7 @@ You can use `sql.interval` exactly how you would use PostgreSQL [`make_interval`
 If you need a dynamic interval (e.g. X days), you can achieve this using multiplication, e.g.
 
 ```ts
-sql`
+sql.unsafe`
   SELECT ${2} * interval '1 day'
 `
 ```
@@ -224,7 +280,7 @@ The above is equivalent to `interval '2 days'`.
 You could also use `make_interval()` directly, e.g.
 
 ```ts
-sql`
+sql.unsafe`
   SELECT make_interval("days" => ${2})
 `
 ```
@@ -243,8 +299,8 @@ sql`
 Concatenates SQL expressions using `glue` separator, e.g.
 
 ```ts
-await connection.query(sql`
-  SELECT ${sql.join([1, 2, 3], sql`, `)}
+await connection.query(sql.unsafe`
+  SELECT ${sql.join([1, 2, 3], sql.fragment`, `)}
 `);
 ```
 
@@ -266,8 +322,8 @@ Produces:
 Boolean expressions:
 
 ```ts
-sql`
-  SELECT ${sql.join([1, 2], sql` AND `)}
+sql.unsafe`
+  SELECT ${sql.join([1, 2], sql.fragment` AND `)}
 `
 
 // SELECT $1 AND $2
@@ -276,8 +332,8 @@ sql`
 Tuple:
 
 ```ts
-sql`
-  SELECT (${sql.join([1, 2], sql`, `)})
+sql.unsafe`
+  SELECT (${sql.join([1, 2], sql.fragment`, `)})
 `
 
 // SELECT ($1, $2)
@@ -286,13 +342,13 @@ sql`
 Tuple list:
 
 ```ts
-sql`
+sql.unsafe`
   SELECT ${sql.join(
     [
-      sql`(${sql.join([1, 2], sql`, `)})`,
-      sql`(${sql.join([3, 4], sql`, `)})`,
+      sql.fragment`(${sql.join([1, 2], sql.fragment`, `)})`,
+      sql.fragment`(${sql.join([3, 4], sql.fragment`, `)})`,
     ],
-    sql`, `
+    sql.fragment`, `
   )}
 `
 
@@ -310,7 +366,7 @@ sql`
 Serializes value and binds it as a JSON string literal, e.g.
 
 ```ts
-await connection.query(sql`
+await connection.query(sql.unsafe`
   SELECT (${sql.json([1, 2, 3])})
 `);
 ```
@@ -337,7 +393,7 @@ Produces:
 Serializes value and binds it as a JSON binary, e.g.
 
 ```ts
-await connection.query(sql`
+await connection.query(sql.unsafe`
   SELECT (${sql.jsonb([1, 2, 3])})
 `);
 ```
@@ -366,7 +422,7 @@ Produces:
 Escapes and interpolates a literal value into a query.
 
 ```ts
-await connection.query(sql`
+await connection.query(sql.unsafe`
   CREATE USER "foo" WITH PASSWORD ${sql.literalValue('bar')}
 `);
 ```
@@ -390,7 +446,7 @@ Produces:
 Inserts a timestamp, e.g.
 
 ```ts
-await connection.query(sql`
+await connection.query(sql.unsafe`
   SELECT ${sql.timestamp(new Date('2022-08-19T03:27:24.951Z'))}
 `);
 ```
@@ -418,7 +474,7 @@ Produces:
 Creates an `unnest` expressions, e.g.
 
 ```ts
-await connection.query(sql`
+await connection.query(sql.unsafe`
   SELECT bar, baz
   FROM ${sql.unnest(
     [
@@ -456,7 +512,7 @@ If `columnType` array member type is `string`, it will treat it as a type name i
 If `columnType` array member type is `SqlToken`, it will inline type name without quotes, e.g.
 
 ```ts
-await connection.query(sql`
+await connection.query(sql.unsafe`
   SELECT bar, baz
   FROM ${sql.unnest(
     [
@@ -464,8 +520,8 @@ await connection.query(sql`
       [2, 'bar']
     ],
     [
-      sql`integer`,
-      sql`text`
+      sql.fragment`integer`,
+      sql.fragment`text`
     ]
   )} AS foo(bar, baz)
 `);
@@ -492,7 +548,7 @@ Produces:
 If `columnType` array member type is `[...string[], TypeNameIdentifier]`, it will act as [`sql.identifier`](#sqlidentifier), e.g.
 
 ```ts
-await connection.query(sql`
+await connection.query(sql.unsafe`
   SELECT bar, baz
   FROM ${sql.unnest(
     [
@@ -524,3 +580,31 @@ Produces:
   ]
 }
 ```
+
+### `sql.unsafe`
+
+```ts
+(
+  template: TemplateStringsArray,
+  ...values: ValueExpression[]
+) => QuerySqlToken;
+```
+
+Creates a query with Zod `any` type. The result of such a query has TypeScript type `any`.
+
+```ts
+const result = await connection.one(sql.unsafe`
+  SELECT foo
+  FROM bar
+`);
+
+// `result` type is `any`
+```
+
+`sql.unsafe` is effectively a shortcut to `sql.type(z.any())`.
+
+`sql.unsafe` is as a convenience method for development. Your production code must not use `sql.unsafe`. Instead,
+
+* Use `sql.type` to type the query result
+* Use `sql.typeAlias` to alias an existing type
+* Use `sql.fragment` if you are writing a fragment of a query

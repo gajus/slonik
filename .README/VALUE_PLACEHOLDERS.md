@@ -9,8 +9,8 @@ import {
   sql
 } from 'slonik'
 
-connection.query(sql`
-  SELECT 1
+connection.query(sql.typeAlias('id')`
+  SELECT 1 AS id
   FROM foo
   WHERE bar = ${'baz'}
 `);
@@ -19,7 +19,7 @@ connection.query(sql`
 The above is equivalent to evaluating:
 
 ```sql
-SELECT 1
+SELECT 1 AS id
 FROM foo
 WHERE bar = $1
 
@@ -35,7 +35,7 @@ There is an internal mechanism that checks to see if query was created using `sq
 
 ```ts
 const query = {
-  sql: 'SELECT 1 FROM foo WHERE bar = $1',
+  sql: 'SELECT 1 AS id FROM foo WHERE bar = $1',
   type: 'SQL',
   values: [
     'baz'
@@ -58,8 +58,8 @@ Furthermore, a query object constructed using `sql` tagged template literal is [
 `sql` tagged template literals can be nested, e.g.
 
 ```ts
-const query0 = sql`SELECT ${'foo'} FROM bar`;
-const query1 = sql`SELECT ${'baz'} FROM (${query0})`;
+const query0 = sql.unsafe`SELECT ${'foo'} FROM bar`;
+const query1 = sql.unsafe`SELECT ${'baz'} FROM (${query0})`;
 ```
 
 Produces:

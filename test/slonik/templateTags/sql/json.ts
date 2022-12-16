@@ -3,19 +3,19 @@ import {
   createSqlTag,
 } from '../../../../src/factories/createSqlTag';
 import {
-  SqlToken,
+  FragmentToken,
 } from '../../../../src/tokens';
 
 const sql = createSqlTag();
 
 test('creates a value list (object)', (t) => {
-  const query = sql`SELECT ${sql.json({
+  const query = sql.fragment`SELECT ${sql.json({
     foo: 'bar',
   })}`;
 
   t.deepEqual(query, {
     sql: 'SELECT $1::json',
-    type: SqlToken,
+    type: FragmentToken,
     values: [
       '{"foo":"bar"}',
     ],
@@ -23,7 +23,7 @@ test('creates a value list (object)', (t) => {
 });
 
 test('creates a value list (array)', (t) => {
-  const query = sql`SELECT ${sql.json([
+  const query = sql.fragment`SELECT ${sql.json([
     {
       foo: 'bar',
     },
@@ -31,7 +31,7 @@ test('creates a value list (array)', (t) => {
 
   t.deepEqual(query, {
     sql: 'SELECT $1::json',
-    type: SqlToken,
+    type: FragmentToken,
     values: [
       '[{"foo":"bar"}]',
     ],
@@ -39,11 +39,11 @@ test('creates a value list (array)', (t) => {
 });
 
 test('stringifies NULL to \'null\'::json', (t) => {
-  const query = sql`SELECT ${sql.json(null)}`;
+  const query = sql.fragment`SELECT ${sql.json(null)}`;
 
   t.deepEqual(query, {
     sql: 'SELECT $1::json',
-    type: SqlToken,
+    type: FragmentToken,
     values: [
       'null',
     ],
@@ -51,11 +51,11 @@ test('stringifies NULL to \'null\'::json', (t) => {
 });
 
 test('JSON encodes string values', (t) => {
-  const query = sql`SELECT ${sql.json('example string')}`;
+  const query = sql.fragment`SELECT ${sql.json('example string')}`;
 
   t.deepEqual(query, {
     sql: 'SELECT $1::json',
-    type: SqlToken,
+    type: FragmentToken,
     values: [
       '"example string"',
     ],
@@ -63,11 +63,11 @@ test('JSON encodes string values', (t) => {
 });
 
 test('JSON encodes numeric values', (t) => {
-  const query = sql`SELECT ${sql.json(1_234)}`;
+  const query = sql.fragment`SELECT ${sql.json(1_234)}`;
 
   t.deepEqual(query, {
     sql: 'SELECT $1::json',
-    type: SqlToken,
+    type: FragmentToken,
     values: [
       '1234',
     ],
@@ -75,11 +75,11 @@ test('JSON encodes numeric values', (t) => {
 });
 
 test('JSON encodes boolean values', (t) => {
-  const query = sql`SELECT ${sql.json(true)}`;
+  const query = sql.fragment`SELECT ${sql.json(true)}`;
 
   t.deepEqual(query, {
     sql: 'SELECT $1::json',
-    type: SqlToken,
+    type: FragmentToken,
     values: [
       'true',
     ],
@@ -89,7 +89,7 @@ test('JSON encodes boolean values', (t) => {
 test('throws if payload is undefined', (t) => {
   const error = t.throws(() => {
     // @ts-expect-error
-    sql`SELECT ${sql.json(undefined)}`;
+    sql.fragment`SELECT ${sql.json(undefined)}`;
   });
 
   t.is(error?.message, 'JSON payload must not be undefined.');
@@ -98,7 +98,7 @@ test('throws if payload is undefined', (t) => {
 test('throws if payload cannot be stringified (non-primitive object)', (t) => {
   const error = t.throws(() => {
     // @ts-expect-error
-    sql`SELECT ${sql.json(() => {})}`;
+    sql.fragment`SELECT ${sql.json(() => {})}`;
   });
 
   t.is(error?.message, 'JSON payload must be a primitive value or a plain object.');
@@ -110,11 +110,11 @@ test('Object types with optional properties are allowed', (t) => {
     foo: 'bar',
   };
 
-  const query = sql`SELECT ${sql.json(testValue)}`;
+  const query = sql.fragment`SELECT ${sql.json(testValue)}`;
 
   t.deepEqual(query, {
     sql: 'SELECT $1::json',
-    type: SqlToken,
+    type: FragmentToken,
     values: [
       '{"foo":"bar"}',
     ],

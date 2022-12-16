@@ -3,7 +3,7 @@ import {
 } from '../errors';
 import {
   type InternalQueryMethod,
-  type TaggedTemplateLiteralInvocation,
+  type QuerySqlToken,
 } from '../types';
 import {
   createQueryId,
@@ -24,7 +24,7 @@ export const exists: InternalQueryMethod<Promise<boolean>> = async (log, connect
     {
       sql: 'SELECT EXISTS(' + slonikQuery.sql + ')',
       values: slonikQuery.values,
-    } as TaggedTemplateLiteralInvocation,
+    } as QuerySqlToken,
     queryId,
   );
 

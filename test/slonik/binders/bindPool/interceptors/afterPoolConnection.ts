@@ -54,7 +54,7 @@ test('`connectionType` is "IMPLICIT_QUERY" when a query method is used to create
     ],
   });
 
-  await pool.query(sql`SELECT 1`);
+  await pool.query(sql.unsafe`SELECT 1`);
 
   t.is(afterPoolConnection.firstCall.args[0].connectionType, 'IMPLICIT_QUERY');
 });

@@ -28,9 +28,6 @@ import {
 import {
   Logger,
 } from '../../src/Logger';
-import {
-  type SchemaValidationError,
-} from '../../src/errors';
 
 const POSTGRES_DSN = process.env.POSTGRES_DSN ?? 'postgres@localhost:5432';
 
@@ -74,17 +71,17 @@ export const createTestRunner = (PgPool: new (poolConfig: PoolConfig) => PgPoolT
     });
 
     await pool0.connect(async (connection) => {
-      await connection.query(sql`
+      await connection.query(sql.unsafe`
         SELECT pg_terminate_backend(pid)
         FROM pg_stat_activity
         WHERE
           pid != pg_backend_pid() AND
           datname = 'slonik_test'
       `);
-      await connection.query(sql`DROP DATABASE IF EXISTS ${sql.identifier([
+      await connection.query(sql.unsafe`DROP DATABASE IF EXISTS ${sql.identifier([
         TEST_DATABASE_NAME,
       ])}`);
-      await connection.query(sql`CREATE DATABASE ${sql.identifier([
+      await connection.query(sql.unsafe`CREATE DATABASE ${sql.identifier([
         TEST_DATABASE_NAME,
       ])}`);
     });
@@ -97,7 +94,7 @@ export const createTestRunner = (PgPool: new (poolConfig: PoolConfig) => PgPoolT
     });
 
     await pool1.connect(async (connection) => {
-      await connection.query(sql`
+      await connection.query(sql.unsafe`
         CREATE TABLE person (
           id SERIAL PRIMARY KEY,
           name text,
@@ -119,14 +116,14 @@ export const createTestRunner = (PgPool: new (poolConfig: PoolConfig) => PgPoolT
 
     try {
       await pool.connect(async (connection) => {
-        await connection.query(sql`
+        await connection.query(sql.unsafe`
           SELECT pg_terminate_backend(pid)
           FROM pg_stat_activity
           WHERE
             pid != pg_backend_pid() AND
             datname = 'slonik_test'
         `);
-        await connection.query(sql`DROP DATABASE IF EXISTS ${sql.identifier([
+        await connection.query(sql.unsafe`DROP DATABASE IF EXISTS ${sql.identifier([
           t.context.testDatabaseName,
         ])}`);
       });
@@ -153,7 +150,7 @@ export const createIntegrationTests = (
       PgPool,
     });
 
-    const persons = await pool.any(sql`
+    const persons = await pool.any(sql.unsafe`
       INSERT INTO person
       (
         name,
@@ -214,7 +211,7 @@ export const createIntegrationTests = (
       PgPool,
     });
 
-    await pool.query(sql`
+    await pool.query(sql.unsafe`
       SELECT 1
     `);
 
@@ -239,7 +236,7 @@ export const createIntegrationTests = (
       throw new Error('Expected connection object');
     }
 
-    await t.throwsAsync(firstConnection.oneFirst(sql`SELECT 1`));
+    await t.throwsAsync(firstConnection.oneFirst(sql.unsafe`SELECT 1`));
   });
 
   test('validates results using zod (passes)', async (t) => {
@@ -260,35 +257,13 @@ export const createIntegrationTests = (
     await pool.end();
   });
 
-  test('validates results using zod (fails)', async (t) => {
-    const pool = await createPool(t.context.dsn, {
-      PgPool,
-    });
-
-    const error = await t.throwsAsync<SchemaValidationError>(pool.one(sql.type(z.object({
-      foo: z.number(),
-    }))`
-      SELECT 'bar' foo
-    `));
-
-    if (!error) {
-      throw new Error('Expected SchemaValidationError');
-    }
-
-    t.like(error.issues[0], {
-      code: 'invalid_type',
-    });
-
-    await pool.end();
-  });
-
   // We have to test serialization due to the use of different drivers (pg and postgres).
   test('serializes json', async (t) => {
     const pool = await createPool(t.context.dsn, {
       PgPool,
     });
 
-    const result = await pool.oneFirst(sql`
+    const result = await pool.oneFirst(sql.unsafe`
       SELECT ${sql.json({
     bar: 'baz',
   })} foo
@@ -307,7 +282,7 @@ export const createIntegrationTests = (
       typeParsers: [],
     });
 
-    const result = await pool.oneFirst(sql`
+    const result = await pool.oneFirst(sql.unsafe`
       SELECT 1::numeric foo
     `);
 
@@ -324,7 +299,7 @@ export const createIntegrationTests = (
       ],
     });
 
-    const result = await pool.oneFirst(sql`
+    const result = await pool.oneFirst(sql.unsafe`
       SELECT 1::numeric foo
     `);
 
@@ -338,7 +313,7 @@ export const createIntegrationTests = (
       PgPool,
     });
 
-    const result = await pool.query(sql`
+    const result = await pool.query(sql.unsafe`
       SELECT ${sql.array([
     Buffer.from('foo'),
   ], 'bytea')} "names"
@@ -371,7 +346,7 @@ export const createIntegrationTests = (
       PgPool,
     });
 
-    const result = await pool.query(sql`
+    const result = await pool.query(sql.unsafe`
       INSERT INTO person
       (
         name
@@ -409,7 +384,7 @@ export const createIntegrationTests = (
       PgPool,
     });
 
-    await pool.query(sql`
+    await pool.query(sql.unsafe`
       INSERT INTO person
       (
         name
@@ -422,7 +397,7 @@ export const createIntegrationTests = (
         name
     `);
 
-    const result = await pool.query(sql`
+    const result = await pool.query(sql.unsafe`
       UPDATE person
       SET
         name = 'bar'
@@ -456,7 +431,7 @@ export const createIntegrationTests = (
       PgPool,
     });
 
-    await pool.query(sql`
+    await pool.query(sql.unsafe`
       INSERT INTO person
       (
         name
@@ -469,7 +444,7 @@ export const createIntegrationTests = (
         name
     `);
 
-    const result = await pool.query(sql`
+    const result = await pool.query(sql.unsafe`
       DELETE FROM person
       WHERE name = 'foo'
       RETURNING
@@ -502,15 +477,15 @@ export const createIntegrationTests = (
     });
 
     const error = await t.throwsAsync(pool.connect(async (connection) => {
-      const connectionPid = await connection.oneFirst(sql`
+      const connectionPid = await connection.oneFirst(sql.unsafe`
         SELECT pg_backend_pid()
       `);
 
       setTimeout(() => {
-        void pool.query(sql`SELECT pg_terminate_backend(${connectionPid})`);
+        void pool.query(sql.unsafe`SELECT pg_terminate_backend(${connectionPid})`);
       }, 100);
 
-      await connection.query(sql`SELECT pg_sleep(2)`);
+      await connection.query(sql.unsafe`SELECT pg_sleep(2)`);
     }));
 
     t.true(error instanceof BackendTerminatedError);
@@ -524,15 +499,15 @@ export const createIntegrationTests = (
     });
 
     const error = await t.throwsAsync(pool.connect(async (connection) => {
-      const connectionPid = await connection.oneFirst(sql`
+      const connectionPid = await connection.oneFirst(sql.unsafe`
         SELECT pg_backend_pid()
       `);
 
       setTimeout(() => {
-        void pool.query(sql`SELECT pg_cancel_backend(${connectionPid})`);
+        void pool.query(sql.unsafe`SELECT pg_cancel_backend(${connectionPid})`);
       }, 100);
 
-      await connection.query(sql`SELECT pg_sleep(2)`);
+      await connection.query(sql.unsafe`SELECT pg_sleep(2)`);
     }));
 
     t.true(error instanceof StatementCancelledError);
@@ -546,11 +521,11 @@ export const createIntegrationTests = (
     });
 
     const error = await t.throwsAsync(pool.connect(async (connection) => {
-      await connection.query(sql`
+      await connection.query(sql.unsafe`
         SET statement_timeout=100
       `);
 
-      await connection.query(sql`SELECT pg_sleep(1)`);
+      await connection.query(sql.unsafe`SELECT pg_sleep(1)`);
     }));
 
     t.true(error instanceof StatementTimeoutError);
@@ -564,12 +539,12 @@ export const createIntegrationTests = (
     });
 
     await pool.connect(async (connection) => {
-      await connection.query(sql`SET idle_in_transaction_session_timeout=500`);
+      await connection.query(sql.unsafe`SET idle_in_transaction_session_timeout=500`);
 
       const error = await t.throwsAsync(connection.transaction(async (transaction) => {
         await delay(1_000);
 
-        await transaction.query(sql`SELECT 1`);
+        await transaction.query(sql.unsafe`SELECT 1`);
       }));
 
       t.true(error instanceof BackendTerminatedError);
@@ -584,7 +559,7 @@ export const createIntegrationTests = (
     });
 
     await pool.connect(async (connection) => {
-      await connection.query(sql`SET idle_in_transaction_session_timeout=500`);
+      await connection.query(sql.unsafe`SET idle_in_transaction_session_timeout=500`);
 
       const error = await t.throwsAsync(connection.transaction(async () => {
         await delay(1_000);
@@ -628,7 +603,7 @@ export const createIntegrationTests = (
 
     const payload = 'foobarbazqux';
 
-    await pool.query(sql`
+    await pool.query(sql.unsafe`
       INSERT INTO person
       (
         payload
@@ -639,7 +614,7 @@ export const createIntegrationTests = (
       )
     `);
 
-    const result = await pool.oneFirst<Buffer>(sql`
+    const result = await pool.oneFirst(sql.unsafe`
       SELECT payload
       FROM person
     `);
@@ -656,13 +631,13 @@ export const createIntegrationTests = (
     });
 
     await pool.connect(async (connection) => {
-      const originalStatementTimeout = await connection.oneFirst(sql`SHOW statement_timeout`);
+      const originalStatementTimeout = await connection.oneFirst(sql.unsafe`SHOW statement_timeout`);
 
       t.not(originalStatementTimeout, '50ms');
 
-      await connection.query(sql`SET statement_timeout=50`);
+      await connection.query(sql.unsafe`SET statement_timeout=50`);
 
-      const statementTimeout = await connection.oneFirst(sql`SHOW statement_timeout`);
+      const statementTimeout = await connection.oneFirst(sql.unsafe`SHOW statement_timeout`);
 
       t.is(statementTimeout, '50ms');
     });
@@ -683,7 +658,7 @@ export const createIntegrationTests = (
     const queue: Array<Promise<unknown>> = [];
 
     while (index--) {
-      queue.push(pool.query(sql`SELECT 1`));
+      queue.push(pool.query(sql.unsafe`SELECT 1`));
     }
 
     await Promise.all(queue);
@@ -729,7 +704,7 @@ export const createIntegrationTests = (
       waitingClientCount: 0,
     });
 
-    await pool.query(sql`
+    await pool.query(sql.unsafe`
       SELECT 1
     `);
 
@@ -802,19 +777,19 @@ export const createIntegrationTests = (
     });
 
     await Promise.all([
-      pool.query(sql`
+      pool.query(sql.unsafe`
         SELECT 1
       `),
-      pool.query(sql`
+      pool.query(sql.unsafe`
         SELECT 1
       `),
-      pool.query(sql`
+      pool.query(sql.unsafe`
         SELECT 1
       `),
-      pool.query(sql`
+      pool.query(sql.unsafe`
         SELECT 1
       `),
-      pool.query(sql`
+      pool.query(sql.unsafe`
         SELECT 1
       `),
     ]);
@@ -879,7 +854,7 @@ export const createIntegrationTests = (
       waitingClientCount: 0,
     });
 
-    const error = await t.throwsAsync(pool.query(sql`SELECT pg_sleep(2000)`));
+    const error = await t.throwsAsync(pool.query(sql.unsafe`SELECT pg_sleep(2000)`));
 
     t.true(error instanceof StatementTimeoutError);
 
@@ -893,13 +868,13 @@ export const createIntegrationTests = (
       PgPool,
     });
 
-    const firstPersonId = await pool.oneFirst(sql`
+    const firstPersonId = await pool.oneFirst(sql.unsafe`
       INSERT INTO person (name)
       VALUES ('foo')
       RETURNING id
     `);
 
-    const secondPersonId = await pool.oneFirst(sql`
+    const secondPersonId = await pool.oneFirst(sql.unsafe`
       INSERT INTO person (name)
       VALUES ('bar')
       RETURNING id
@@ -915,11 +890,11 @@ export const createIntegrationTests = (
 
     const updatePerson: (...args: any) => any = async (firstUpdateId, firstUpdateName, secondUpdateId, secondUpdateName, delayDeadlock) => {
       await pool.transaction(async (transaction) => {
-        await transaction.query(sql`
+        await transaction.query(sql.unsafe`
           SET deadlock_timeout='1s'
         `);
 
-        await transaction.query(sql`
+        await transaction.query(sql.unsafe`
           UPDATE person
           SET name = ${firstUpdateName}
           WHERE id = ${firstUpdateId}
@@ -935,7 +910,7 @@ export const createIntegrationTests = (
 
         await deadlock;
 
-        await transaction.query(sql`
+        await transaction.query(sql.unsafe`
           UPDATE person
           SET name = ${secondUpdateName}
           WHERE id = ${secondUpdateId}
@@ -949,7 +924,7 @@ export const createIntegrationTests = (
     ]));
 
     t.is(
-      await pool.oneFirst(sql`
+      await pool.oneFirst(sql.unsafe`
         SELECT name
         FROM person
         WHERE id = ${firstPersonId}
@@ -958,7 +933,7 @@ export const createIntegrationTests = (
     );
 
     t.is(
-      await pool.oneFirst(sql`
+      await pool.oneFirst(sql.unsafe`
         SELECT name
         FROM person
         WHERE id = ${secondPersonId}
@@ -974,7 +949,7 @@ export const createIntegrationTests = (
       PgPool,
     });
 
-    await pool.query(sql`
+    await pool.query(sql.unsafe`
       INSERT INTO person
       (
         name,
@@ -986,7 +961,7 @@ export const createIntegrationTests = (
         ('bar', '2020-01-03')
     `);
 
-    const result = await pool.query(sql`
+    const result = await pool.query(sql.unsafe`
       SELECT
         p1.name,
         array_agg(p1.birth_date) birth_dates
@@ -1034,7 +1009,7 @@ export const createIntegrationTests = (
     });
 
     t.true(
-      await pool.exists(sql`
+      await pool.exists(sql.unsafe`
         SELECT LIMIT 1
       `),
     );
@@ -1048,7 +1023,7 @@ export const createIntegrationTests = (
     });
 
     t.false(
-      await pool.exists(sql`
+      await pool.exists(sql.unsafe`
         SELECT LIMIT 0
       `),
     );
@@ -1061,7 +1036,7 @@ export const createIntegrationTests = (
       PgPool,
     });
 
-    const result = await pool.query(sql`
+    const result = await pool.query(sql.unsafe`
       SELECT 1 "name"
     `);
 
@@ -1090,7 +1065,7 @@ export const createIntegrationTests = (
       PgPool,
     });
 
-    await pool.query(sql`
+    await pool.query(sql.unsafe`
       CREATE OR REPLACE FUNCTION error_notice
         (
           v_test INTEGER
@@ -1111,7 +1086,7 @@ export const createIntegrationTests = (
     `);
 
     try {
-      await pool.query(sql`SELECT * FROM error_notice(${10});`);
+      await pool.query(sql.unsafe`SELECT * FROM error_notice(${10});`);
     } catch (error: any) {
       if (error?.notices) {
         t.is(error.notices.length, 5);
@@ -1126,13 +1101,13 @@ export const createIntegrationTests = (
       PgPool,
     });
 
-    await pool.query(sql`
+    await pool.query(sql.unsafe`
       INSERT INTO person (id)
       VALUES (1)
     `);
 
     const error = await t.throwsAsync(async () => {
-      return await pool.query(sql`
+      return await pool.query(sql.unsafe`
         INSERT INTO person (id)
         VALUES (1)
       `);
@@ -1155,17 +1130,17 @@ export const createIntegrationTests = (
     });
 
     await pool.connect(async (connection) => {
-      await connection.query(sql`CREATE TABLE foo (a int, b text) PARTITION BY LIST(a)`);
-      await connection.query(sql`CREATE TABLE foo1 PARTITION OF foo FOR VALUES IN (1)`);
-      await connection.query(sql`CREATE TABLE foo2 PARTITION OF foo FOR VALUES IN (2)`);
-      await connection.query(sql`INSERT INTO foo VALUES (1, 'ABC')`);
+      await connection.query(sql.unsafe`CREATE TABLE foo (a int, b text) PARTITION BY LIST(a)`);
+      await connection.query(sql.unsafe`CREATE TABLE foo1 PARTITION OF foo FOR VALUES IN (1)`);
+      await connection.query(sql.unsafe`CREATE TABLE foo2 PARTITION OF foo FOR VALUES IN (2)`);
+      await connection.query(sql.unsafe`INSERT INTO foo VALUES (1, 'ABC')`);
     });
     await pool.connect(async (connection1) => {
       await pool.connect(async (connection2) => {
-        await connection1.query(sql`BEGIN`);
-        await connection2.query(sql`BEGIN`);
-        await connection1.query(sql`UPDATE foo SET a = 2 WHERE a = 1`);
-        connection2.query(sql`UPDATE foo SET b = 'XYZ'`).catch((error) => {
+        await connection1.query(sql.unsafe`BEGIN`);
+        await connection2.query(sql.unsafe`BEGIN`);
+        await connection1.query(sql.unsafe`UPDATE foo SET a = 2 WHERE a = 1`);
+        connection2.query(sql.unsafe`UPDATE foo SET b = 'XYZ'`).catch((error) => {
           t.is(
             error.message,
             'Tuple moved to another partition due to concurrent update. ' + String(error?.originalError?.message),
@@ -1175,8 +1150,8 @@ export const createIntegrationTests = (
 
         // Ensures that query is processed before concurrent commit is called.
         await delay(1_000);
-        await connection1.query(sql`COMMIT`);
-        await connection2.query(sql`COMMIT`);
+        await connection1.query(sql.unsafe`COMMIT`);
+        await connection2.query(sql.unsafe`COMMIT`);
       });
     });
 
@@ -1188,13 +1163,13 @@ export const createIntegrationTests = (
       PgPool,
     });
 
-    await pool.query(sql`
+    await pool.query(sql.unsafe`
       CREATE TABLE invalid_input_error_test (
         id uuid NOT NULL PRIMARY KEY DEFAULT '00000000-0000-0000-0000-000000000000'
       );
     `);
 
-    const error = await t.throwsAsync(pool.query(sql`SELECT * FROM invalid_input_error_test where id = '1';`));
+    const error = await t.throwsAsync(pool.query(sql.unsafe`SELECT * FROM invalid_input_error_test where id = '1';`));
 
     t.true(error instanceof InvalidInputError);
   });

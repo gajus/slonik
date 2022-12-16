@@ -24,7 +24,7 @@ import {
   type DatabasePool,
   type DatabasePoolConnection,
   type Logger,
-  type TaggedTemplateLiteralInvocation,
+  type QuerySqlToken,
 } from '../types';
 import {
   createUid,
@@ -78,7 +78,7 @@ export const createConnection = async (
   connectionType: Connection,
   connectionHandler: ConnectionHandlerType,
   poolHandler: PoolHandlerType,
-  query: TaggedTemplateLiteralInvocation | null = null,
+  query: QuerySqlToken | null = null,
 ) => {
   const poolState = getPoolState(pool);
 

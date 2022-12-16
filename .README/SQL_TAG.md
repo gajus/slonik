@@ -25,46 +25,41 @@ const sql = createSqlTag();
 
 ### Type aliases
 
-You can create a `sql` tag with a predefined set of Zod type aliases that can be later referenced when creating a query with [runtime validation](#runtime-validation), e.g.
+You can create a `sql` tag with a predefined set of Zod type aliases that can be later referenced when creating a query with [runtime validation](#runtime-validation).
+
+Slonik documentation assumes that these type aliases are defined:
 
 ```ts
 const sql = createSqlTag({
   typeAliases: {
+    // `foo` is a documentation specific example
+    foo: z.object({
+      foo: z.string(),
+    }),
     id: z.object({
       id: z.number(),
     }),
+    void: z.object({}).strict(),
   }
 })
+```
 
+These are documentation specific examples that you are not expected to blindly copy. However, `id` and `void` are recommended aliases as they reflect common patterns, e.g.
+
+```ts
 const personId = await pool.oneFirst(
   sql.typeAlias('id')`
-  SELECT id
-  FROM person
+    SELECT id
+    FROM person
+  `
+);
+
+await pool.query(sql.typeAlias('void')`
+  INSERT INTO person_view (person_id)
+  VALUES (${personId})
 `);
 ```
 
 ### Typing `sql` tag
 
-`sql` has a generic interface, meaning that you can supply it with the type that represents the expected result of the query, e.g.
-
-```ts
-type Person = {
-  id: number,
-  name: string,
-};
-
-const query = sql<Person>`
-  SELECT id, name
-  FROM person
-`;
-
-// onePerson has a type of Person
-const onePerson = await connection.one(query);
-
-// persons has a type of Person[]
-const persons = await connection.many(query);
-```
-
-As you see, query helper methods (`one`, `many`, etc.) infer the result type based on the type associated with the `sql` tag instance.
-
-However, you should avoid passing types directly to `sql` and instead use [runtime validation](#runtime-validation). Runtime validation produces typed `sql` tags, but also validates the results of the query.
+See [runtime validation](#runtime-validation).
