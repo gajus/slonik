@@ -1344,7 +1344,7 @@ import {
 } from 'slonik';
 try {
 } catch (error) {
-  if (error extends SchemaValidationError) {
+  if (error instanceof SchemaValidationError) {
     // Handle scheme validation error
   }
 }
@@ -1471,7 +1471,7 @@ createPool('postgresql://', {
 `sql` tag serves two purposes:
 
 * It is used to construct queries with bound parameter values (see [Value placeholders](#user-content-value-placeholders)).
-* It used to generate dynamic query fragments (see [Query building](#user-content-query-building)).
+* It is used to generate dynamic query fragments (see [Query building](#user-content-query-building)).
 
 `sql` tag can be imported from Slonik package:
 
