@@ -23,11 +23,14 @@
     "roarr": "^7.14.1",
     "safe-stable-stringify": "^2.4.1",
     "serialize-error": "^8.0.0",
-    "through2": "^4.0.2",
-    "zod": "^3.19.1"
+    "through2": "^4.0.2"
+  },
+  "peerDependencies": {
+    "zod": "^3"
   },
   "description": "A Node.js PostgreSQL client with strict types, detailed logging and assertions.",
   "devDependencies": {
+    "zod": "^3.19.1",
     "@semantic-release/commit-analyzer": "^9.0.2",
     "@semantic-release/github": "^8.0.6",
     "@semantic-release/npm": "^9.0.1",
