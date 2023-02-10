@@ -1,4 +1,10 @@
-import stringify from 'safe-stable-stringify';
+import { configure } from 'safe-stable-stringify';
+
+const stringify = configure({
+  strict: true,
+  circularValue: '[Circular]',
+  bigint: true
+});
 
 export const safeStringify = (
   subject: unknown,
