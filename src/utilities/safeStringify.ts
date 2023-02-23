@@ -1,9 +1,11 @@
-import { configure } from 'safe-stable-stringify';
+import {
+  configure,
+} from 'safe-stable-stringify';
 
 const stringify = configure({
-  strict: true,
+  bigint: true,
   circularValue: '[Circular]',
-  bigint: true
+  strict: true,
 });
 
 export const safeStringify = (
