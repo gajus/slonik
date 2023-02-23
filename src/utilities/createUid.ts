@@ -1,10 +1,7 @@
-import createHyperidGenerator from 'hyperid';
-
-const generateHyperid = createHyperidGenerator({
-  fixedLength: false,
-  urlSafe: true,
-});
+import {
+  randomUUID,
+} from 'crypto';
 
 export const createUid = (): string => {
-  return generateHyperid();
+  return randomUUID();
 };
