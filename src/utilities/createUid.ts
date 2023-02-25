@@ -3,5 +3,5 @@ import {
 } from 'crypto';
 
 export const createUid = (): string => {
-  return randomUUID();
+  return randomUUID().split('-', 1)[0];
 };
