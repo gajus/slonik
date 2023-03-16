@@ -69,7 +69,7 @@
     "types"
   ],
   "license": "BSD-3-Clause",
-  "main": "./dist/src/index.js",
+  "main": "./dist/index.js",
   "name": "slonik",
   "nyc": {
     "all": true,
@@ -96,11 +96,11 @@
     "url": "https://github.com/gajus/slonik"
   },
   "scripts": {
-    "build": "rm -fr ./dist && tsc",
+    "build": "rm -fr ./dist && tsc --project ./tsconfig.build.json",
     "create-readme": "gitdown ./.README/README.md --output-file ./README.md",
     "lint": "eslint --cache ./src ./test && tsc --noEmit",
     "test": "nyc ava --verbose --serial"
   },
-  "types": "./dist/src/index.d.ts",
+  "types": "./dist/index.d.ts",
   "version": "0.0.0-development"
 }
