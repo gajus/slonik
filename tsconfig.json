@@ -1,8 +1,9 @@
 {
   "compilerOptions": {
     "allowSyntheticDefaultImports": true,
-    "declaration": true,
+    "declaration": false,
     "esModuleInterop": true,
+    "sourceMap": true,
     "module": "commonjs",
     "lib": [
       "es2021"

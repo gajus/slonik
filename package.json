@@ -101,6 +101,6 @@
     "lint": "eslint --cache ./src ./test && tsc --noEmit",
     "test": "nyc ava --verbose --serial"
   },
-  "types": "./dist/index.d.ts",
+  "types": "./src/index.ts",
   "version": "0.0.0-development"
 }
