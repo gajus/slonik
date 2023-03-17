@@ -3,6 +3,7 @@
     "allowSyntheticDefaultImports": true,
     "declaration": true,
     "declarationMap": true,
+    "sourceMap": true,
     "esModuleInterop": true,
     "module": "commonjs",
     "lib": [
