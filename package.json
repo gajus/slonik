@@ -68,6 +68,10 @@
     "promise",
     "types"
   ],
+  "files": [
+    "./src",
+    "./dist"
+  ],
   "license": "BSD-3-Clause",
   "main": "./dist/index.js",
   "name": "slonik",
