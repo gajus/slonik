@@ -1129,9 +1129,8 @@ export const createIntegrationTests = (
 
     t.is(
       error?.message,
-
-      // @ts-expect-error
       'Query violates a unique integrity constraint. ' +
+        // @ts-expect-error
         String(error?.originalError?.message),
     );
 
