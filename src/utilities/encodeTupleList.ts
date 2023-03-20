@@ -1,7 +1,7 @@
 import { type TypeNameIdentifier } from '../types';
 import createConcatStream from 'concat-stream';
+import { Readable } from 'node:stream';
 import { rowWriter as createEncoder } from 'pg-copy-streams-binary';
-import { Readable } from 'stream';
 
 export const encodeTupleList = async (
   tupleList: ReadonlyArray<readonly unknown[]>,

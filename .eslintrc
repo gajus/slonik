@@ -1,39 +1,13 @@
 {
+  "extends": "canonical/auto",
   "ignorePatterns": [
     "package-lock.json"
   ],
   "overrides": [
     {
-      "extends": [
-        "canonical",
-        "canonical/node",
-        "canonical/prettier"
-      ],
-      "files": "*.js",
-      "rules": {
-        "unicorn/prevent-abbreviations": 0
-      }
-    },
-    {
-      "files": "*.d.ts",
-      "rules": {
-        "filenames/match-regex": 0
-      }
-    },
-    {
-      "extends": [
-        "canonical",
-        "canonical/typescript",
-        "canonical/prettier"
-      ],
       "files": "*.ts",
-      "parserOptions": {
-        "project": "./tsconfig.json"
-      },
       "rules": {
-        "@typescript-eslint/no-unnecessary-condition": 0,
-        "require-atomic-updates": 0,
-        "unicorn/prevent-abbreviations": 0
+        "import/no-cycle": 0
       }
     }
   ],

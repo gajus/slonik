@@ -1,5 +1,7 @@
 import { type SlonikError } from './errors';
 import type * as tokens from './tokens';
+import { type Readable, type ReadableOptions } from 'node:stream';
+import { type ConnectionOptions as TlsConnectionOptions } from 'node:tls';
 import {
   type Pool as PgPool,
   type PoolClient as PgPoolClient,
@@ -7,8 +9,6 @@ import {
 } from 'pg';
 import { type NoticeMessage as Notice } from 'pg-protocol/dist/messages';
 import { type Logger } from 'roarr';
-import { type Readable, type ReadableOptions } from 'stream';
-import { type ConnectionOptions as TlsConnectionOptions } from 'tls';
 import { type z, type ZodTypeAny } from 'zod';
 
 /**

@@ -3,20 +3,20 @@
     "allowSyntheticDefaultImports": true,
     "declaration": true,
     "declarationMap": true,
-    "sourceMap": true,
     "esModuleInterop": true,
-    "module": "commonjs",
     "lib": [
       "es2021"
     ],
+    "module": "commonjs",
     "moduleResolution": "node",
     "noImplicitAny": false,
     "noImplicitReturns": true,
-    "useUnknownInCatchVariables": false,
     "outDir": "dist",
     "skipLibCheck": true,
+    "sourceMap": true,
     "strict": true,
-    "target": "es2018"
+    "target": "es2018",
+    "useUnknownInCatchVariables": false
   },
   "include": [
     "src",

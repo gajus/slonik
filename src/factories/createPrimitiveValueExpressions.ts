@@ -10,8 +10,8 @@ const log = Logger.child({
 export const createPrimitiveValueExpressions = (
   values: readonly unknown[],
 ): readonly PrimitiveValueExpression[] => {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const primitiveValueExpressions: Array<
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     any[] | Buffer | boolean | number | string | null
   > = [];
 

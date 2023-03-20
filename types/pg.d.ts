@@ -1,15 +1,16 @@
-/* eslint-disable @typescript-eslint/unified-signatures */
-/* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable @typescript-eslint/explicit-member-accessibility */
 /* eslint-disable @typescript-eslint/method-signature-style */
 /* eslint-disable @typescript-eslint/no-explicit-any */
+/* eslint-disable @typescript-eslint/no-unused-vars */
+/* eslint-disable @typescript-eslint/unified-signatures */
+/* eslint-disable unicorn/prevent-abbreviations */
 
 declare module 'pg' {
-  import events from 'events';
+  import events from 'node:events';
+  import type stream from 'node:stream';
+  import { type ConnectionOptions } from 'node:tls';
   import { type NoticeMessage } from 'pg-protocol/dist/messages';
   import type pgTypes from 'pg-types';
-  import type stream from 'stream';
-  import { type ConnectionOptions } from 'tls';
 
   export type ClientConfig = {
     application_name?: string | undefined;
@@ -142,8 +143,8 @@ declare module 'pg' {
 
     query(text: string): void;
 
-    describe(msg: MessageConfig, more: boolean): void;
-    close(msg: MessageConfig, more: boolean): void;
+    describe(message: MessageConfig, more: boolean): void;
+    close(message: MessageConfig, more: boolean): void;
 
     flush(): void;
     sync(): void;
@@ -170,7 +171,7 @@ declare module 'pg' {
     connect(): Promise<PoolClient>;
     connect(
       callback: (
-        err: Error,
+        error: Error,
         client: PoolClient,
         done: (release?: any) => void,
       ) => void,
@@ -193,21 +194,21 @@ declare module 'pg' {
     ): Promise<QueryResult<R>>;
     query<R extends any[] = any[], I extends any[] = any[]>(
       queryConfig: QueryArrayConfig<I>,
-      callback: (err: Error, result: QueryArrayResult<R>) => void,
+      callback: (error: Error, result: QueryArrayResult<R>) => void,
     ): void;
     query<R extends QueryResultRow = any, I extends any[] = any[]>(
       queryTextOrConfig: QueryConfig<I> | string,
-      callback: (err: Error, result: QueryResult<R>) => void,
+      callback: (error: Error, result: QueryResult<R>) => void,
     ): void;
     query<R extends QueryResultRow = any, I extends any[] = any[]>(
       queryText: string,
       values: I,
-      callback: (err: Error, result: QueryResult<R>) => void,
+      callback: (error: Error, result: QueryResult<R>) => void,
     ): void;
 
     on(
       event: 'error',
-      listener: (err: Error, client: PoolClient) => void,
+      listener: (error: Error, client: PoolClient) => void,
     ): this;
     on(
       event: 'acquire' | 'connect' | 'remove',
@@ -224,7 +225,7 @@ declare module 'pg' {
     constructor(config?: ClientConfig | string);
 
     connect(): Promise<void>;
-    connect(callback: (err: Error) => void): void;
+    connect(callback: (error: Error) => void): void;
 
     query<T extends Submittable>(queryStream: T): T;
     query<R extends any[] = any[], I extends any[] = any[]>(
@@ -240,16 +241,16 @@ declare module 'pg' {
     ): Promise<QueryResult<R>>;
     query<R extends any[] = any[], I extends any[] = any[]>(
       queryConfig: QueryArrayConfig<I>,
-      callback: (err: Error, result: QueryArrayResult<R>) => void,
+      callback: (error: Error, result: QueryArrayResult<R>) => void,
     ): void;
     query<R extends QueryResultRow = any, I extends any[] = any[]>(
       queryTextOrConfig: QueryConfig<I> | string,
-      callback: (err: Error, result: QueryResult<R>) => void,
+      callback: (error: Error, result: QueryResult<R>) => void,
     ): void;
     query<R extends QueryResultRow = any, I extends any[] = any[]>(
       queryText: string,
       values: any[],
-      callback: (err: Error, result: QueryResult<R>) => void,
+      callback: (error: Error, result: QueryResult<R>) => void,
     ): void;
 
     copyFrom(queryText: string): stream.Writable;
@@ -258,12 +259,12 @@ declare module 'pg' {
     pauseDrain(): void;
     resumeDrain(): void;
 
-    escapeIdentifier(str: string): string;
-    escapeLiteral(str: string): string;
+    escapeIdentifier(string_: string): string;
+    escapeLiteral(string_: string): string;
 
     on(event: 'drain', listener: () => void): this;
     on(event: 'end', listener: () => void): this;
-    on(event: 'error', listener: (err: Error) => void): this;
+    on(event: 'error', listener: (error: Error) => void): this;
     on(event: 'notice', listener: (notice: NoticeMessage) => void): this;
     on(event: 'notification', listener: (message: Notification) => void): this;
 
@@ -290,11 +291,11 @@ declare module 'pg' {
     constructor(config?: ClientConfig | string);
 
     end(): Promise<void>;
-    end(callback: (err: Error) => void): void;
+    end(callback: (error: Error) => void): void;
   }
 
   export type PoolClient = ClientBase & {
-    release(err?: Error | boolean): void;
+    release(error?: Error | boolean): void;
   };
 
   export class Query<R extends QueryResultRow = any, I extends any[] = any>
@@ -307,12 +308,12 @@ declare module 'pg' {
       event: 'row',
       listener: (row: R, result?: ResultBuilder<R>) => void,
     ): this;
-    on(event: 'error', listener: (err: Error) => void): this;
+    on(event: 'error', listener: (error: Error) => void): this;
     on(event: 'end', listener: (result: ResultBuilder<R>) => void): this;
   }
 
   export class Events extends events.EventEmitter {
-    on(event: 'error', listener: (err: Error, client: Client) => void): this;
+    on(event: 'error', listener: (error: Error, client: Client) => void): this;
   }
 
   export const types: typeof pgTypes;

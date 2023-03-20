@@ -2,7 +2,7 @@ import { bindPool } from '../../src/binders/bindPool';
 import { poolStateMap } from '../../src/state';
 import { type ClientConfigurationInput } from '../../src/types';
 import { Logger as log } from './Logger';
-import EventEmitter from 'events';
+import EventEmitter from 'node:events';
 import * as sinon from 'sinon';
 
 const defaultConfiguration = {

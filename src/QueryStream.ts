@@ -1,8 +1,8 @@
 /* eslint-disable canonical/id-match */
 
+import { Readable, type ReadableOptions } from 'node:stream';
 import { type QueryResult } from 'pg';
 import Cursor from 'pg-cursor';
-import { Readable, type ReadableOptions } from 'stream';
 
 /**
  * @see https://github.com/brianc/node-pg-query-stream

@@ -1,25 +1,8 @@
 jobs:
-  lint:
-    runs-on: ubuntu-latest
-    environment: release
-    name: Lint
-    steps:
-      - name: setup repository
-        uses: actions/checkout@v2
-        with:
-          fetch-depth: 0
-      - name: setup node.js
-        uses: actions/setup-node@v2
-        with:
-          node-version: "18"
-          cache: "npm"
-      - run: npm ci
-      - run: npm run lint
-    timeout-minutes: 10
   build:
-    runs-on: ubuntu-latest
     environment: release
     name: Build
+    runs-on: ubuntu-latest
     steps:
       - name: setup repository
         uses: actions/checkout@v2
@@ -28,17 +11,34 @@ jobs:
       - name: setup node.js
         uses: actions/setup-node@v2
         with:
-          node-version: "18"
-          cache: "npm"
+          cache: 'npm'
+          node-version: '18'
       - run: npm ci
       - run: npm run build
+    timeout-minutes: 10
+  lint:
+    environment: release
+    name: Lint
+    runs-on: ubuntu-latest
+    steps:
+      - name: setup repository
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+      - name: setup node.js
+        uses: actions/setup-node@v2
+        with:
+          cache: 'npm'
+          node-version: '18'
+      - run: npm ci
+      - run: npm run lint
     timeout-minutes: 10
   test:
     env:
       TEST_ONLY_NON_INTEGRATION: 'true'
-    runs-on: ubuntu-latest
     environment: release
     name: Test
+    runs-on: ubuntu-latest
     steps:
       - name: setup repository
         uses: actions/checkout@v2
@@ -47,31 +47,31 @@ jobs:
       - name: setup node.js
         uses: actions/setup-node@v2
         with:
-          node-version: "18"
-          cache: "npm"
+          cache: 'npm'
+          node-version: '18'
       - run: npm ci
       - run: npm run test
     timeout-minutes: 10
   test-pg-integration:
     env:
       TEST_ONLY_PG_INTEGRATION: 'true'
+    environment: release
+    name: Test "pg" integration
+    runs-on: ubuntu-latest
     services:
       postgres:
-        image: postgres
         env:
+          POSTGRES_DB: postgres
           POSTGRES_PASSWORD: postgres
           POSTGRES_USER: postgres
-          POSTGRES_DB: postgres
-        ports:
-          - 5432:5432
+        image: postgres
         options: >-
           --health-cmd pg_isready
           --health-interval 10s
           --health-timeout 5s
           --health-retries 5
-    runs-on: ubuntu-latest
-    environment: release
-    name: Test "pg" integration
+        ports:
+          - 5432:5432
     steps:
       - name: setup repository
         uses: actions/checkout@v2
@@ -80,33 +80,33 @@ jobs:
       - name: setup node.js
         uses: actions/setup-node@v2
         with:
-          node-version: "18"
-          cache: "npm"
+          cache: 'npm'
+          node-version: '18'
       - run: npm ci
-      - run: npm run test
-        env:
+      - env:
           POSTGRES_DSN: postgres:postgres@localhost:5432
+        run: npm run test
     timeout-minutes: 10
   test-postgres-integration:
     env:
       TEST_ONLY_POSTGRES_INTEGRATION: 'true'
+    environment: release
+    name: Test "postgres" integration
+    runs-on: ubuntu-latest
     services:
       postgres:
-        image: postgres
         env:
+          POSTGRES_DB: postgres
           POSTGRES_PASSWORD: postgres
           POSTGRES_USER: postgres
-          POSTGRES_DB: postgres
-        ports:
-          - 5432:5432
+        image: postgres
         options: >-
           --health-cmd pg_isready
           --health-interval 10s
           --health-timeout 5s
           --health-retries 5
-    runs-on: ubuntu-latest
-    environment: release
-    name: Test "postgres" integration
+        ports:
+          - 5432:5432
     steps:
       - name: setup repository
         uses: actions/checkout@v2
@@ -115,12 +115,12 @@ jobs:
       - name: setup node.js
         uses: actions/setup-node@v2
         with:
-          node-version: "18"
-          cache: "npm"
+          cache: 'npm'
+          node-version: '18'
       - run: npm ci
-      - run: npm run test
-        env:
+      - env:
           POSTGRES_DSN: postgres:postgres@localhost:5432
+        run: npm run test
     timeout-minutes: 10
 name: Test and build
 on:
@@ -128,12 +128,12 @@ on:
     branches:
       - main
     paths-ignore:
-      - ".editorconfig"
-      - ".husky/**"
-      - ".lintstagedrc.js"
-      - ".mergify.yml"
-      - ".nvmrc"
-      - "README.md"
+      - '.editorconfig'
+      - '.husky/**'
+      - '.lintstagedrc.js'
+      - '.mergify.yml'
+      - '.nvmrc'
+      - 'README.md'
     types:
       - opened
       - synchronize

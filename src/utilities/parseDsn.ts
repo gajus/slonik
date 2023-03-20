@@ -1,6 +1,6 @@
 import { Logger } from '../Logger';
 import { type ConnectionOptions } from '../types';
-import { URL } from 'url';
+import { URL } from 'node:url';
 
 const log = Logger.child({
   namespace: 'parseDsn',

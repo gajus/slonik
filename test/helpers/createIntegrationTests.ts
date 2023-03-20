@@ -18,6 +18,7 @@ import { serializeError } from 'serialize-error';
 import * as sinon from 'sinon';
 import { z } from 'zod';
 
+// eslint-disable-next-line node/no-process-env
 const POSTGRES_DSN = process.env.POSTGRES_DSN ?? 'postgres@localhost:5432';
 
 const log = Logger.child({
