@@ -1,7 +1,4 @@
 import {
-  type PoolClient as PgPoolClient,
-} from 'pg';
-import {
   any,
   anyFirst,
   exists,
@@ -12,17 +9,16 @@ import {
   nestedTransaction,
   one,
   oneFirst,
-  stream,
   query as queryMethod,
+  stream,
 } from '../connectionMethods';
-import {
-  getPoolClientState,
-} from '../state';
+import { getPoolClientState } from '../state';
 import {
   type ClientConfiguration,
   type DatabaseTransactionConnection,
   type Logger,
 } from '../types';
+import { type PoolClient as PgPoolClient } from 'pg';
 
 export const bindTransactionConnection = (
   parentLog: Logger,
@@ -42,22 +38,12 @@ export const bindTransactionConnection = (
     any: (slonikSql) => {
       assertTransactionDepth();
 
-      return any(
-        parentLog,
-        connection,
-        clientConfiguration,
-        slonikSql,
-      );
+      return any(parentLog, connection, clientConfiguration, slonikSql);
     },
     anyFirst: (slonikSql) => {
       assertTransactionDepth();
 
-      return anyFirst(
-        parentLog,
-        connection,
-        clientConfiguration,
-        slonikSql,
-      );
+      return anyFirst(parentLog, connection, clientConfiguration, slonikSql);
     },
     exists: async (slonikSql) => {
       assertTransactionDepth();
@@ -72,32 +58,17 @@ export const bindTransactionConnection = (
     many: (slonikSql) => {
       assertTransactionDepth();
 
-      return many(
-        parentLog,
-        connection,
-        clientConfiguration,
-        slonikSql,
-      );
+      return many(parentLog, connection, clientConfiguration, slonikSql);
     },
     manyFirst: (slonikSql) => {
       assertTransactionDepth();
 
-      return manyFirst(
-        parentLog,
-        connection,
-        clientConfiguration,
-        slonikSql,
-      );
+      return manyFirst(parentLog, connection, clientConfiguration, slonikSql);
     },
     maybeOne: (slonikSql) => {
       assertTransactionDepth();
 
-      return maybeOne(
-        parentLog,
-        connection,
-        clientConfiguration,
-        slonikSql,
-      );
+      return maybeOne(parentLog, connection, clientConfiguration, slonikSql);
     },
     maybeOneFirst: (slonikSql) => {
       assertTransactionDepth();
@@ -112,32 +83,17 @@ export const bindTransactionConnection = (
     one: (slonikSql) => {
       assertTransactionDepth();
 
-      return one(
-        parentLog,
-        connection,
-        clientConfiguration,
-        slonikSql,
-      );
+      return one(parentLog, connection, clientConfiguration, slonikSql);
     },
     oneFirst: (slonikSql) => {
       assertTransactionDepth();
 
-      return oneFirst(
-        parentLog,
-        connection,
-        clientConfiguration,
-        slonikSql,
-      );
+      return oneFirst(parentLog, connection, clientConfiguration, slonikSql);
     },
     query: (slonikSql) => {
       assertTransactionDepth();
 
-      return queryMethod(
-        parentLog,
-        connection,
-        clientConfiguration,
-        slonikSql,
-      );
+      return queryMethod(parentLog, connection, clientConfiguration, slonikSql);
     },
     stream: async (slonikSql, streamHandler) => {
       assertTransactionDepth();

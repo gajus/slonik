@@ -1,6 +1,4 @@
-import {
-  UnexpectedStateError,
-} from '../errors';
+import { UnexpectedStateError } from '../errors';
 import {
   ArrayToken,
   BinaryToken,
@@ -16,12 +14,8 @@ import {
   TimestampToken,
   UnnestToken,
 } from '../tokens';
-import {
-  type SqlToken as SqlTokenType,
-} from '../types';
-import {
-  hasOwnProperty,
-} from './hasOwnProperty';
+import { type SqlToken as SqlTokenType } from '../types';
+import { hasOwnProperty } from './hasOwnProperty';
 
 const Tokens = [
   ArrayToken,
@@ -45,7 +39,9 @@ export const isSqlToken = (subject: unknown): subject is SqlTokenType => {
   }
 
   if (!hasOwnProperty(subject, 'type')) {
-    throw new UnexpectedStateError('Expected token to include "type" property.');
+    throw new UnexpectedStateError(
+      'Expected token to include "type" property.',
+    );
   }
 
   if (typeof subject.type !== 'string') {

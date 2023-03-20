@@ -1,18 +1,10 @@
-import anyTest, {
-  type TestFn,
-} from 'ava';
-import {
-  ROARR,
-} from 'roarr';
-import {
-  z,
-} from 'zod';
-import {
-  createSqlTag,
-} from '../../../../src/factories/createSqlTag';
+import { createSqlTag } from '../../../../src/factories/createSqlTag';
+import anyTest, { type TestFn } from 'ava';
+import { ROARR } from 'roarr';
+import { z } from 'zod';
 
 const test = anyTest as TestFn<{
-  logs: unknown[],
+  logs: unknown[];
 }>;
 
 test.beforeEach((t) => {

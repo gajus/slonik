@@ -1,12 +1,8 @@
 /* eslint-disable ava/max-asserts */
 
+import { createSqlTag } from '../../../../src/factories/createSqlTag';
+import { createPool } from '../../../helpers/createPool';
 import test from 'ava';
-import {
-  createSqlTag,
-} from '../../../../src/factories/createSqlTag';
-import {
-  createPool,
-} from '../../../helpers/createPool';
 
 const sql = createSqlTag();
 
@@ -23,9 +19,11 @@ test('release connection after promise is resolved (implicit connection)', async
 test('ends connection after promise is rejected', async (t) => {
   const pool = await createPool();
 
-  await t.throwsAsync(pool.connect(async () => {
-    return await Promise.reject(new Error('foo'));
-  }));
+  await t.throwsAsync(
+    pool.connect(async () => {
+      return await Promise.reject(new Error('foo'));
+    }),
+  );
 
   t.is(pool.connectSpy.callCount, 1);
   t.is(pool.releaseSpy.callCount, 1);
@@ -43,9 +41,11 @@ test('does not connect if `beforePoolConnection` throws an error', async (t) => 
     ],
   });
 
-  await t.throwsAsync(pool.connect(async () => {
-    return null;
-  }));
+  await t.throwsAsync(
+    pool.connect(async () => {
+      return null;
+    }),
+  );
 
   t.is(pool.connectSpy.callCount, 0);
   t.is(pool.releaseSpy.callCount, 0);
@@ -63,9 +63,11 @@ test('ends connection if `afterPoolConnection` throws an error', async (t) => {
     ],
   });
 
-  await t.throwsAsync(pool.connect(async () => {
-    return null;
-  }));
+  await t.throwsAsync(
+    pool.connect(async () => {
+      return null;
+    }),
+  );
 
   t.is(pool.connectSpy.callCount, 1);
   t.is(pool.releaseSpy.callCount, 1);
@@ -83,9 +85,11 @@ test('ends connection if `beforePoolConnectionRelease` throws an error', async (
     ],
   });
 
-  await t.throwsAsync(pool.connect(async () => {
-    return null;
-  }));
+  await t.throwsAsync(
+    pool.connect(async () => {
+      return null;
+    }),
+  );
 
   t.is(pool.connectSpy.callCount, 1);
   t.is(pool.releaseSpy.callCount, 1);

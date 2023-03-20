@@ -1,11 +1,7 @@
+import { createSqlTag } from '../../../../../src/factories/createSqlTag';
+import { createPool } from '../../../../helpers/createPool';
 import test from 'ava';
 import * as sinon from 'sinon';
-import {
-  createSqlTag,
-} from '../../../../../src/factories/createSqlTag';
-import {
-  createPool,
-} from '../../../../helpers/createPool';
 
 const sql = createSqlTag();
 
@@ -13,9 +9,7 @@ test('`afterPoolConnection` is called after `connect`', async (t) => {
   const afterPoolConnection = sinon.stub();
 
   const pool = await createPool({
-    interceptors: [
-      {},
-    ],
+    interceptors: [{}],
   });
 
   await pool.connect(async () => {
@@ -74,5 +68,8 @@ test('`connectionType` is "IMPLICIT_TRANSACTION" when `transaction` is used to c
     return 'foo';
   });
 
-  t.is(afterPoolConnection.firstCall.args[0].connectionType, 'IMPLICIT_TRANSACTION');
+  t.is(
+    afterPoolConnection.firstCall.args[0].connectionType,
+    'IMPLICIT_TRANSACTION',
+  );
 });

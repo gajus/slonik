@@ -1,13 +1,7 @@
+import { DataIntegrityError } from '../../../src/errors';
+import { createSqlTag } from '../../../src/factories/createSqlTag';
+import { createPool } from '../../helpers/createPool';
 import test from 'ava';
-import {
-  DataIntegrityError,
-} from '../../../src/errors';
-import {
-  createSqlTag,
-} from '../../../src/factories/createSqlTag';
-import {
-  createPool,
-} from '../../helpers/createPool';
 
 const sql = createSqlTag();
 
@@ -39,10 +33,7 @@ test('returns first column values of the query result rows', async (t) => {
 
   const result = await pool.anyFirst(sql.unsafe`SELECT 1`);
 
-  t.deepEqual(result, [
-    1,
-    2,
-  ]);
+  t.deepEqual(result, [1, 2]);
 });
 
 test('throws an error if more than one column is returned', async (t) => {

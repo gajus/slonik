@@ -1,14 +1,8 @@
 /* eslint-disable canonical/id-match */
 
-import {
-  type ReadableOptions,
-
-  Readable,
-} from 'stream';
-import {
-  type QueryResult,
-} from 'pg';
+import { type QueryResult } from 'pg';
 import Cursor from 'pg-cursor';
+import { Readable, type ReadableOptions } from 'stream';
 
 /**
  * @see https://github.com/brianc/node-pg-query-stream
@@ -37,7 +31,11 @@ export class QueryStream extends Readable {
 
   public handleError: Function;
 
-  public constructor (text: unknown, values: unknown, options?: ReadableOptions & {batchSize?: number, }) {
+  public constructor(
+    text: unknown,
+    values: unknown,
+    options?: ReadableOptions & { batchSize?: number },
+  ) {
     super({
       objectMode: true,
       ...options,
@@ -48,22 +46,30 @@ export class QueryStream extends Readable {
     this.batchSize = options?.batchSize ?? 100;
 
     // delegate Submittable callbacks to cursor
-    this.handleRowDescription = this.cursor.handleRowDescription.bind(this.cursor);
+    this.handleRowDescription = this.cursor.handleRowDescription.bind(
+      this.cursor,
+    );
     this.handleDataRow = this.cursor.handleDataRow.bind(this.cursor);
-    this.handlePortalSuspended = this.cursor.handlePortalSuspended.bind(this.cursor);
-    this.handleCommandComplete = this.cursor.handleCommandComplete.bind(this.cursor);
-    this.handleReadyForQuery = this.cursor.handleReadyForQuery.bind(this.cursor);
+    this.handlePortalSuspended = this.cursor.handlePortalSuspended.bind(
+      this.cursor,
+    );
+    this.handleCommandComplete = this.cursor.handleCommandComplete.bind(
+      this.cursor,
+    );
+    this.handleReadyForQuery = this.cursor.handleReadyForQuery.bind(
+      this.cursor,
+    );
     this.handleError = this.cursor.handleError.bind(this.cursor);
 
     // pg client sets types via _result property
     this._result = this.cursor._result;
   }
 
-  public submit (connection: Object) {
+  public submit(connection: Object) {
     this.cursor.submit(connection);
   }
 
-  public _destroy (error: Error, onDestroy: Function) {
+  public _destroy(error: Error, onDestroy: Function) {
     this._closed = true;
 
     this.cursor.close(() => {
@@ -71,50 +77,53 @@ export class QueryStream extends Readable {
     });
   }
 
-  public _read (size: number) {
+  public _read(size: number) {
     if (this._reading || this._closed) {
       return;
     }
 
     this._reading = true;
     const readAmount = Math.max(size, this.batchSize);
-    this.cursor.read(readAmount, (error: Error, rows: unknown[], result: QueryResult) => {
-      if (this._closed) {
-        return;
-      }
+    this.cursor.read(
+      readAmount,
+      (error: Error, rows: unknown[], result: QueryResult) => {
+        if (this._closed) {
+          return;
+        }
 
-      if (error) {
-        this.destroy(error);
+        if (error) {
+          this.destroy(error);
 
-        return;
-      }
+          return;
+        }
 
-      if (!rows.length) {
-        this._closed = true;
+        if (!rows.length) {
+          this._closed = true;
 
-        setImmediate(() => {
-          this.emit('close');
-        });
+          setImmediate(() => {
+            this.emit('close');
+          });
 
-        this.push(null);
+          this.push(null);
 
-        return;
-      }
+          return;
+        }
 
-      // push each row into the stream
-      this._reading = false;
+        // push each row into the stream
+        this._reading = false;
 
-      for (const row of rows) {
-        this.push({
-          fields: (result.fields || []).map((field) => {
-            return {
-              dataTypeId: field.dataTypeID,
-              name: field.name,
-            };
-          }),
-          row,
-        });
-      }
-    });
+        for (const row of rows) {
+          this.push({
+            fields: (result.fields || []).map((field) => {
+              return {
+                dataTypeId: field.dataTypeID,
+                name: field.name,
+              };
+            }),
+            row,
+          });
+        }
+      },
+    );
   }
 }

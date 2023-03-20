@@ -1,8 +1,5 @@
+import { parseDsn, stringifyDsn } from '../../../src/utilities';
 import test from 'ava';
-import {
-  parseDsn,
-  stringifyDsn,
-} from '../../../src/utilities';
 
 const dsns = [
   'postgresql://',

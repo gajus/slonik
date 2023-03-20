@@ -6,7 +6,8 @@
     {
       "extends": [
         "canonical",
-        "canonical/node"
+        "canonical/node",
+        "canonical/prettier"
       ],
       "files": "*.js",
       "rules": {
@@ -22,7 +23,8 @@
     {
       "extends": [
         "canonical",
-        "canonical/typescript"
+        "canonical/typescript",
+        "canonical/prettier"
       ],
       "files": "*.ts",
       "parserOptions": {

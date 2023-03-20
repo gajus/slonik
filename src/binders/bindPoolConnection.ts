@@ -1,7 +1,4 @@
 import {
-  type PoolClient as PgPoolClient,
-} from 'pg';
-import {
   any,
   anyFirst,
   copyFromBinary,
@@ -21,6 +18,7 @@ import {
   type DatabasePoolConnection,
   type Logger,
 } from '../types';
+import { type PoolClient as PgPoolClient } from 'pg';
 
 export const bindPoolConnection = (
   parentLog: Logger,
@@ -29,20 +27,10 @@ export const bindPoolConnection = (
 ): DatabasePoolConnection => {
   return {
     any: (slonikSql) => {
-      return any(
-        parentLog,
-        connection,
-        clientConfiguration,
-        slonikSql,
-      );
+      return any(parentLog, connection, clientConfiguration, slonikSql);
     },
     anyFirst: (slonikSql) => {
-      return anyFirst(
-        parentLog,
-        connection,
-        clientConfiguration,
-        slonikSql,
-      );
+      return anyFirst(parentLog, connection, clientConfiguration, slonikSql);
     },
     copyFromBinary: async (slonikSql, values, columnTypes) => {
       return await copyFromBinary(
@@ -63,28 +51,13 @@ export const bindPoolConnection = (
       );
     },
     many: (slonikSql) => {
-      return many(
-        parentLog,
-        connection,
-        clientConfiguration,
-        slonikSql,
-      );
+      return many(parentLog, connection, clientConfiguration, slonikSql);
     },
     manyFirst: (slonikSql) => {
-      return manyFirst(
-        parentLog,
-        connection,
-        clientConfiguration,
-        slonikSql,
-      );
+      return manyFirst(parentLog, connection, clientConfiguration, slonikSql);
     },
     maybeOne: (slonikSql) => {
-      return maybeOne(
-        parentLog,
-        connection,
-        clientConfiguration,
-        slonikSql,
-      );
+      return maybeOne(parentLog, connection, clientConfiguration, slonikSql);
     },
     maybeOneFirst: (slonikSql) => {
       return maybeOneFirst(
@@ -95,28 +68,13 @@ export const bindPoolConnection = (
       );
     },
     one: (slonikSql) => {
-      return one(
-        parentLog,
-        connection,
-        clientConfiguration,
-        slonikSql,
-      );
+      return one(parentLog, connection, clientConfiguration, slonikSql);
     },
     oneFirst: (slonikSql) => {
-      return oneFirst(
-        parentLog,
-        connection,
-        clientConfiguration,
-        slonikSql,
-      );
+      return oneFirst(parentLog, connection, clientConfiguration, slonikSql);
     },
     query: (slonikSql) => {
-      return queryMethod(
-        parentLog,
-        connection,
-        clientConfiguration,
-        slonikSql,
-      );
+      return queryMethod(parentLog, connection, clientConfiguration, slonikSql);
     },
     stream: async (slonikSql, streamHandler, config) => {
       return await stream(

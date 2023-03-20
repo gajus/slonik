@@ -1,6 +1,4 @@
-import {
-  type TypeParser,
-} from '../types';
+import { type TypeParser } from '../types';
 import {
   createBigintTypeParser,
   createDateTypeParser,

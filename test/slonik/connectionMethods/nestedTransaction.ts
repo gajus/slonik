@@ -1,14 +1,8 @@
+import { createClientConfiguration } from '../../helpers/createClientConfiguration';
+import { createErrorWithCode } from '../../helpers/createErrorWithCode';
+import { createPool } from '../../helpers/createPool';
 import test from 'ava';
 import * as sinon from 'sinon';
-import {
-  createClientConfiguration,
-} from '../../helpers/createClientConfiguration';
-import {
-  createErrorWithCode,
-} from '../../helpers/createErrorWithCode';
-import {
-  createPool,
-} from '../../helpers/createPool';
 
 test('creates a savepoint', async (t) => {
   const pool = await createPool();
@@ -24,21 +18,27 @@ test('creates a savepoint', async (t) => {
 test('rollbacks unsuccessful nested transaction', async (t) => {
   const pool = await createPool();
 
-  await t.throwsAsync(pool.transaction(async (transactionConnection) => {
-    return await transactionConnection.transaction(async () => {
-      return await Promise.reject(new Error('foo'));
-    });
-  }));
+  await t.throwsAsync(
+    pool.transaction(async (transactionConnection) => {
+      return await transactionConnection.transaction(async () => {
+        return await Promise.reject(new Error('foo'));
+      });
+    }),
+  );
 
   t.is(pool.querySpy.getCall(1).args[0], 'SAVEPOINT slonik_savepoint_1');
-  t.is(pool.querySpy.getCall(2).args[0], 'ROLLBACK TO SAVEPOINT slonik_savepoint_1');
+  t.is(
+    pool.querySpy.getCall(2).args[0],
+    'ROLLBACK TO SAVEPOINT slonik_savepoint_1',
+  );
 });
 
 test('retries a nested transaction that failed due to a transaction error', async (t) => {
   const pool = await createPool(createClientConfiguration());
   const handlerStub = sinon.stub();
 
-  handlerStub.onFirstCall()
+  handlerStub
+    .onFirstCall()
     .rejects(createErrorWithCode('40P01'))
     .onSecondCall()
     .resolves({
@@ -75,7 +75,8 @@ test('commits successful transaction with retries', async (t) => {
   const pool = await createPool(createClientConfiguration());
   const handlerStub = sinon.stub();
 
-  handlerStub.onFirstCall()
+  handlerStub
+    .onFirstCall()
     .rejects(createErrorWithCode('40P01'))
     .onSecondCall()
     .resolves({
@@ -95,7 +96,10 @@ test('commits successful transaction with retries', async (t) => {
   });
 
   t.is(pool.querySpy.getCall(1).args[0], 'SAVEPOINT slonik_savepoint_1');
-  t.is(pool.querySpy.getCall(2).args[0], 'ROLLBACK TO SAVEPOINT slonik_savepoint_1');
+  t.is(
+    pool.querySpy.getCall(2).args[0],
+    'ROLLBACK TO SAVEPOINT slonik_savepoint_1',
+  );
   t.is(pool.querySpy.getCall(3).args[0], 'SAVEPOINT slonik_savepoint_1');
   t.is(pool.querySpy.getCall(4).args[0], 'COMMIT');
 });
@@ -106,14 +110,17 @@ test('returns the thrown transaction error if the retry limit is reached', async
   const pool = await createPool(clientConfiguration);
   const handlerStub = sinon.stub();
 
-  handlerStub.onFirstCall()
+  handlerStub
+    .onFirstCall()
     .rejects(createErrorWithCode('40P01'))
     .onSecondCall()
     .rejects(createErrorWithCode('40P01'));
 
-  const error: any = await t.throwsAsync(pool.transaction(async (transactionConnection) => {
-    return await transactionConnection.transaction(handlerStub, 1);
-  }, 0));
+  const error: any = await t.throwsAsync(
+    pool.transaction(async (transactionConnection) => {
+      return await transactionConnection.transaction(handlerStub, 1);
+    }, 0),
+  );
 
   t.is(handlerStub.callCount, 2);
 
@@ -125,17 +132,26 @@ test('rollbacks unsuccessful nested transaction with retries', async (t) => {
   const pool = await createPool(createClientConfiguration());
   const handlerStub = sinon.stub();
 
-  handlerStub.onFirstCall()
+  handlerStub
+    .onFirstCall()
     .rejects(createErrorWithCode('40P01'))
     .onSecondCall()
     .rejects(createErrorWithCode('40P01'));
 
-  await t.throwsAsync(pool.transaction(async (transactionConnection) => {
-    return await transactionConnection.transaction(handlerStub, 1);
-  }, 0));
+  await t.throwsAsync(
+    pool.transaction(async (transactionConnection) => {
+      return await transactionConnection.transaction(handlerStub, 1);
+    }, 0),
+  );
 
   t.is(pool.querySpy.getCall(1).args[0], 'SAVEPOINT slonik_savepoint_1');
-  t.is(pool.querySpy.getCall(2).args[0], 'ROLLBACK TO SAVEPOINT slonik_savepoint_1');
+  t.is(
+    pool.querySpy.getCall(2).args[0],
+    'ROLLBACK TO SAVEPOINT slonik_savepoint_1',
+  );
   t.is(pool.querySpy.getCall(3).args[0], 'SAVEPOINT slonik_savepoint_1');
-  t.is(pool.querySpy.getCall(4).args[0], 'ROLLBACK TO SAVEPOINT slonik_savepoint_1');
+  t.is(
+    pool.querySpy.getCall(4).args[0],
+    'ROLLBACK TO SAVEPOINT slonik_savepoint_1',
+  );
 });

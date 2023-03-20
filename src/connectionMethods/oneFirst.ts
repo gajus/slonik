@@ -1,15 +1,7 @@
-import {
-  UnexpectedStateError,
-} from '../errors';
-import {
-  type InternalQueryMethod,
-} from '../types';
-import {
-  createQueryId,
-} from '../utilities';
-import {
-  one,
-} from './one';
+import { UnexpectedStateError } from '../errors';
+import { type InternalQueryMethod } from '../types';
+import { createQueryId } from '../utilities';
+import { one } from './one';
 
 /**
  * Makes a query and expects exactly one result.
@@ -18,7 +10,13 @@ import {
  * @throws NotFoundError If query returns no rows.
  * @throws DataIntegrityError If query returns multiple rows.
  */
-export const oneFirst: InternalQueryMethod = async (log, connection, clientConfiguration, slonikSql, inheritedQueryId) => {
+export const oneFirst: InternalQueryMethod = async (
+  log,
+  connection,
+  clientConfiguration,
+  slonikSql,
+  inheritedQueryId,
+) => {
   const queryId = inheritedQueryId ?? createQueryId();
 
   const row = await one(
@@ -32,9 +30,12 @@ export const oneFirst: InternalQueryMethod = async (log, connection, clientConfi
   const keys = Object.keys(row);
 
   if (keys.length > 1) {
-    log.error({
-      queryId,
-    }, 'DataIntegrityError');
+    log.error(
+      {
+        queryId,
+      },
+      'DataIntegrityError',
+    );
 
     throw new UnexpectedStateError();
   }

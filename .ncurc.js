@@ -1,5 +1,3 @@
 module.exports = {
-  reject: [
-    'husky',
-  ],
+  reject: ['husky'],
 };

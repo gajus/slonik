@@ -1,10 +1,8 @@
+import { InvalidInputError } from '../errors';
 import {
-  InvalidInputError,
-} from '../errors';
-import {
+  type PrimitiveValueExpression,
   type SqlFragment,
   type UnnestSqlToken,
-  type PrimitiveValueExpression,
 } from '../types';
 import {
   countArrayDimensions,
@@ -13,10 +11,11 @@ import {
   stripArrayNotation,
 } from '../utilities';
 
-export const createUnnestSqlFragment = (token: UnnestSqlToken, greatestParameterPosition: number): SqlFragment => {
-  const {
-    columnTypes,
-  } = token;
+export const createUnnestSqlFragment = (
+  token: UnnestSqlToken,
+  greatestParameterPosition: number,
+): SqlFragment => {
+  const { columnTypes } = token;
 
   const values: PrimitiveValueExpression[] = [];
 
@@ -37,13 +36,16 @@ export const createUnnestSqlFragment = (token: UnnestSqlToken, greatestParameter
       columnType = typeMember;
       columnTypeIsIdentifier = false;
     } else if (Array.isArray(typeMember)) {
-      columnType = typeMember.map((identifierName) => {
-        if (typeof identifierName !== 'string') {
-          throw new InvalidInputError('sql.unnest column identifier name array member type must be a string (type name identifier) or a SQL token.');
-        }
+      columnType = typeMember
+        .map((identifierName) => {
+          if (typeof identifierName !== 'string') {
+            throw new InvalidInputError(
+              'sql.unnest column identifier name array member type must be a string (type name identifier) or a SQL token.',
+            );
+          }
 
-        return escapeIdentifier(identifierName);
-      })
+          return escapeIdentifier(identifierName);
+        })
         .join('.');
       columnTypeIsIdentifier = true;
     } else {
@@ -53,10 +55,12 @@ export const createUnnestSqlFragment = (token: UnnestSqlToken, greatestParameter
 
     unnestSqlTokens.push(
       '$' +
-      String(++placeholderIndex) +
-      '::' +
-      (columnTypeIsIdentifier ? stripArrayNotation(columnType) : escapeIdentifier(stripArrayNotation(columnType))) +
-      '[]'.repeat(countArrayDimensions(columnType) + 1),
+        String(++placeholderIndex) +
+        '::' +
+        (columnTypeIsIdentifier
+          ? stripArrayNotation(columnType)
+          : escapeIdentifier(stripArrayNotation(columnType))) +
+        '[]'.repeat(countArrayDimensions(columnType) + 1),
     );
 
     unnestBindings[columnIndex] = [];
@@ -67,8 +71,13 @@ export const createUnnestSqlFragment = (token: UnnestSqlToken, greatestParameter
   let lastTupleSize;
 
   for (const tupleValues of token.tuples) {
-    if (typeof lastTupleSize === 'number' && lastTupleSize !== tupleValues.length) {
-      throw new Error('Each tuple in a list of tuples must have an equal number of members.');
+    if (
+      typeof lastTupleSize === 'number' &&
+      lastTupleSize !== tupleValues.length
+    ) {
+      throw new Error(
+        'Each tuple in a list of tuples must have an equal number of members.',
+      );
     }
 
     if (tupleValues.length !== columnTypes.length) {
@@ -80,8 +89,14 @@ export const createUnnestSqlFragment = (token: UnnestSqlToken, greatestParameter
     let tupleColumnIndex = 0;
 
     for (const tupleValue of tupleValues) {
-      if (!Array.isArray(tupleValue) && !isPrimitiveValueExpression(tupleValue) && !Buffer.isBuffer(tupleValue)) {
-        throw new InvalidInputError('Invalid unnest tuple member type. Must be a primitive value expression.');
+      if (
+        !Array.isArray(tupleValue) &&
+        !isPrimitiveValueExpression(tupleValue) &&
+        !Buffer.isBuffer(tupleValue)
+      ) {
+        throw new InvalidInputError(
+          'Invalid unnest tuple member type. Must be a primitive value expression.',
+        );
       }
 
       const tupleBindings = unnestBindings[tupleColumnIndex++];
@@ -94,9 +109,7 @@ export const createUnnestSqlFragment = (token: UnnestSqlToken, greatestParameter
     }
   }
 
-  values.push(
-    ...unnestBindings,
-  );
+  values.push(...unnestBindings);
 
   const sql = 'unnest(' + unnestSqlTokens.join(', ') + ')';
 

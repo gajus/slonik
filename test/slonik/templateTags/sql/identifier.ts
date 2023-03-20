@@ -1,24 +1,16 @@
+import { createSqlTag } from '../../../../src/factories/createSqlTag';
+import { FragmentToken } from '../../../../src/tokens';
 import test from 'ava';
-import {
-  createSqlTag,
-} from '../../../../src/factories/createSqlTag';
-import {
-  FragmentToken,
-} from '../../../../src/tokens';
 
 const sql = createSqlTag();
 
 test('creates an object describing a query with inlined identifiers', (t) => {
-  const query = sql.fragment`SELECT ${'foo'} FROM ${sql.identifier([
-    'bar',
-  ])}`;
+  const query = sql.fragment`SELECT ${'foo'} FROM ${sql.identifier(['bar'])}`;
 
   t.deepEqual(query, {
     sql: 'SELECT $1 FROM "bar"',
     type: FragmentToken,
-    values: [
-      'foo',
-    ],
+    values: ['foo'],
   });
 });
 
@@ -31,9 +23,7 @@ test('creates an object describing a query with inlined identifiers (specifier)'
   t.deepEqual(query, {
     sql: 'SELECT $1 FROM "bar"."baz"',
     type: FragmentToken,
-    values: [
-      'foo',
-    ],
+    values: ['foo'],
   });
 });
 

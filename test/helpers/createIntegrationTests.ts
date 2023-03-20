@@ -1,33 +1,22 @@
-import anyTest, {
-  type TestFn,
-} from 'ava';
-import delay from 'delay';
 import {
-  type PoolConfig,
-  type Pool as PgPoolType,
-} from 'pg';
-import {
-  serializeError,
-} from 'serialize-error';
-import * as sinon from 'sinon';
-import {
-  z,
-} from 'zod';
-import {
-  type DatabasePoolConnection,
   BackendTerminatedError,
+  createNumericTypeParser,
   createPool,
+  type DatabasePoolConnection,
   InvalidInputError,
   sql,
   StatementCancelledError,
   StatementTimeoutError,
   TupleMovedToAnotherPartitionError,
   UnexpectedStateError,
-  createNumericTypeParser,
 } from '../../src';
-import {
-  Logger,
-} from '../../src/Logger';
+import { Logger } from '../../src/Logger';
+import anyTest, { type TestFn } from 'ava';
+import delay from 'delay';
+import { type Pool as PgPoolType, type PoolConfig } from 'pg';
+import { serializeError } from 'serialize-error';
+import * as sinon from 'sinon';
+import { z } from 'zod';
 
 const POSTGRES_DSN = process.env.POSTGRES_DSN ?? 'postgres@localhost:5432';
 
@@ -36,29 +25,24 @@ const log = Logger.child({
 });
 
 type TestContextType = {
-  dsn: string,
-  testDatabaseName: string,
+  dsn: string;
+  testDatabaseName: string;
 };
 
-export const createTestRunner = (PgPool: new (poolConfig: PoolConfig) => PgPoolType, name: string) => {
+export const createTestRunner = (
+  PgPool: new (poolConfig: PoolConfig) => PgPoolType,
+  name: string,
+) => {
   let testId = 0;
 
   const test = anyTest as TestFn<TestContextType>;
-  const {
-    beforeEach,
-  } = test;
-  const {
-    afterEach,
-  } = test;
+  const { beforeEach } = test;
+  const { afterEach } = test;
 
   beforeEach(async (t) => {
     ++testId;
 
-    const TEST_DATABASE_NAME = [
-      'slonik_test',
-      name,
-      String(testId),
-    ].join('_');
+    const TEST_DATABASE_NAME = ['slonik_test', name, String(testId)].join('_');
 
     t.context = {
       dsn: 'postgresql://' + POSTGRES_DSN + '/' + TEST_DATABASE_NAME,
@@ -78,12 +62,14 @@ export const createTestRunner = (PgPool: new (poolConfig: PoolConfig) => PgPoolT
           pid != pg_backend_pid() AND
           datname = 'slonik_test'
       `);
-      await connection.query(sql.unsafe`DROP DATABASE IF EXISTS ${sql.identifier([
-        TEST_DATABASE_NAME,
-      ])}`);
-      await connection.query(sql.unsafe`CREATE DATABASE ${sql.identifier([
-        TEST_DATABASE_NAME,
-      ])}`);
+      await connection.query(
+        sql.unsafe`DROP DATABASE IF EXISTS ${sql.identifier([
+          TEST_DATABASE_NAME,
+        ])}`,
+      );
+      await connection.query(
+        sql.unsafe`CREATE DATABASE ${sql.identifier([TEST_DATABASE_NAME])}`,
+      );
     });
 
     await pool0.end();
@@ -123,14 +109,19 @@ export const createTestRunner = (PgPool: new (poolConfig: PoolConfig) => PgPoolT
             pid != pg_backend_pid() AND
             datname = 'slonik_test'
         `);
-        await connection.query(sql.unsafe`DROP DATABASE IF EXISTS ${sql.identifier([
-          t.context.testDatabaseName,
-        ])}`);
+        await connection.query(
+          sql.unsafe`DROP DATABASE IF EXISTS ${sql.identifier([
+            t.context.testDatabaseName,
+          ])}`,
+        );
       });
     } catch (error) {
-      log.error({
-        error: serializeError(error),
-      }, 'could not clean up database');
+      log.error(
+        {
+          error: serializeError(error),
+        },
+        'could not clean up database',
+      );
     }
 
     await pool.end();
@@ -158,15 +149,11 @@ export const createIntegrationTests = (
       )
       SELECT *
       FROM jsonb_to_recordset(${sql.jsonb([
-    {
-      name: 'foo',
-      tags: [
-        'a',
-        'b',
-        'c',
-      ],
-    },
-  ])}) AS t(name text, tags text[])
+        {
+          name: 'foo',
+          tags: ['a', 'b', 'c'],
+        },
+      ])}) AS t(name text, tags text[])
       RETURNING
         name,
         tags
@@ -175,11 +162,7 @@ export const createIntegrationTests = (
     t.deepEqual(persons, [
       {
         name: 'foo',
-        tags: [
-          'a',
-          'b',
-          'c',
-        ],
+        tags: ['a', 'b', 'c'],
       },
     ]);
 
@@ -244,9 +227,11 @@ export const createIntegrationTests = (
       PgPool,
     });
 
-    const result = await pool.one(sql.type(z.object({
-      foo: z.string(),
-    }))`
+    const result = await pool.one(sql.type(
+      z.object({
+        foo: z.string(),
+      }),
+    )`
       SELECT 'bar' foo
     `);
 
@@ -265,8 +250,8 @@ export const createIntegrationTests = (
 
     const result = await pool.oneFirst(sql.unsafe`
       SELECT ${sql.json({
-    bar: 'baz',
-  })} foo
+        bar: 'baz',
+      })} foo
     `);
 
     t.like(result, {
@@ -294,9 +279,7 @@ export const createIntegrationTests = (
   test('parses numerics as floats', async (t) => {
     const pool = await createPool(t.context.dsn, {
       PgPool,
-      typeParsers: [
-        createNumericTypeParser(),
-      ],
+      typeParsers: [createNumericTypeParser()],
     });
 
     const result = await pool.oneFirst(sql.unsafe`
@@ -314,9 +297,7 @@ export const createIntegrationTests = (
     });
 
     const result = await pool.query(sql.unsafe`
-      SELECT ${sql.array([
-    Buffer.from('foo'),
-  ], 'bytea')} "names"
+      SELECT ${sql.array([Buffer.from('foo')], 'bytea')} "names"
     `);
 
     t.deepEqual(result, {
@@ -331,9 +312,7 @@ export const createIntegrationTests = (
       rowCount: 1,
       rows: [
         {
-          names: [
-            Buffer.from('foo'),
-          ],
+          names: [Buffer.from('foo')],
         },
       ],
     });
@@ -476,17 +455,21 @@ export const createIntegrationTests = (
       PgPool,
     });
 
-    const error = await t.throwsAsync(pool.connect(async (connection) => {
-      const connectionPid = await connection.oneFirst(sql.unsafe`
+    const error = await t.throwsAsync(
+      pool.connect(async (connection) => {
+        const connectionPid = await connection.oneFirst(sql.unsafe`
         SELECT pg_backend_pid()
       `);
 
-      setTimeout(() => {
-        void pool.query(sql.unsafe`SELECT pg_terminate_backend(${connectionPid})`);
-      }, 100);
+        setTimeout(() => {
+          void pool.query(
+            sql.unsafe`SELECT pg_terminate_backend(${connectionPid})`,
+          );
+        }, 100);
 
-      await connection.query(sql.unsafe`SELECT pg_sleep(2)`);
-    }));
+        await connection.query(sql.unsafe`SELECT pg_sleep(2)`);
+      }),
+    );
 
     t.true(error instanceof BackendTerminatedError);
 
@@ -498,17 +481,21 @@ export const createIntegrationTests = (
       PgPool,
     });
 
-    const error = await t.throwsAsync(pool.connect(async (connection) => {
-      const connectionPid = await connection.oneFirst(sql.unsafe`
+    const error = await t.throwsAsync(
+      pool.connect(async (connection) => {
+        const connectionPid = await connection.oneFirst(sql.unsafe`
         SELECT pg_backend_pid()
       `);
 
-      setTimeout(() => {
-        void pool.query(sql.unsafe`SELECT pg_cancel_backend(${connectionPid})`);
-      }, 100);
+        setTimeout(() => {
+          void pool.query(
+            sql.unsafe`SELECT pg_cancel_backend(${connectionPid})`,
+          );
+        }, 100);
 
-      await connection.query(sql.unsafe`SELECT pg_sleep(2)`);
-    }));
+        await connection.query(sql.unsafe`SELECT pg_sleep(2)`);
+      }),
+    );
 
     t.true(error instanceof StatementCancelledError);
 
@@ -520,13 +507,15 @@ export const createIntegrationTests = (
       PgPool,
     });
 
-    const error = await t.throwsAsync(pool.connect(async (connection) => {
-      await connection.query(sql.unsafe`
+    const error = await t.throwsAsync(
+      pool.connect(async (connection) => {
+        await connection.query(sql.unsafe`
         SET statement_timeout=100
       `);
 
-      await connection.query(sql.unsafe`SELECT pg_sleep(1)`);
-    }));
+        await connection.query(sql.unsafe`SELECT pg_sleep(1)`);
+      }),
+    );
 
     t.true(error instanceof StatementTimeoutError);
 
@@ -539,13 +528,17 @@ export const createIntegrationTests = (
     });
 
     await pool.connect(async (connection) => {
-      await connection.query(sql.unsafe`SET idle_in_transaction_session_timeout=500`);
+      await connection.query(
+        sql.unsafe`SET idle_in_transaction_session_timeout=500`,
+      );
 
-      const error = await t.throwsAsync(connection.transaction(async (transaction) => {
-        await delay(1_000);
+      const error = await t.throwsAsync(
+        connection.transaction(async (transaction) => {
+          await delay(1_000);
 
-        await transaction.query(sql.unsafe`SELECT 1`);
-      }));
+          await transaction.query(sql.unsafe`SELECT 1`);
+        }),
+      );
 
       t.true(error instanceof BackendTerminatedError);
     });
@@ -559,11 +552,15 @@ export const createIntegrationTests = (
     });
 
     await pool.connect(async (connection) => {
-      await connection.query(sql.unsafe`SET idle_in_transaction_session_timeout=500`);
+      await connection.query(
+        sql.unsafe`SET idle_in_transaction_session_timeout=500`,
+      );
 
-      const error = await t.throwsAsync(connection.transaction(async () => {
-        await delay(1_000);
-      }));
+      const error = await t.throwsAsync(
+        connection.transaction(async () => {
+          await delay(1_000);
+        }),
+      );
 
       t.true(error instanceof BackendTerminatedError);
     });
@@ -576,22 +573,27 @@ export const createIntegrationTests = (
       PgPool,
     });
 
-    const error = await t.throwsAsync(pool.connect(async (connection) => {
-      await Promise.all([
-        connection.transaction(async () => {
-          await delay(1_000);
-        }),
-        connection.transaction(async () => {
-          await delay(1_000);
-        }),
-        connection.transaction(async () => {
-          await delay(1_000);
-        }),
-      ]);
-    }));
+    const error = await t.throwsAsync(
+      pool.connect(async (connection) => {
+        await Promise.all([
+          connection.transaction(async () => {
+            await delay(1_000);
+          }),
+          connection.transaction(async () => {
+            await delay(1_000);
+          }),
+          connection.transaction(async () => {
+            await delay(1_000);
+          }),
+        ]);
+      }),
+    );
 
     t.true(error instanceof UnexpectedStateError);
-    t.is(error?.message, 'Cannot use the same connection to start a new transaction before completing the last transaction.');
+    t.is(
+      error?.message,
+      'Cannot use the same connection to start a new transaction before completing the last transaction.',
+    );
 
     await pool.end();
   });
@@ -631,13 +633,17 @@ export const createIntegrationTests = (
     });
 
     await pool.connect(async (connection) => {
-      const originalStatementTimeout = await connection.oneFirst(sql.unsafe`SHOW statement_timeout`);
+      const originalStatementTimeout = await connection.oneFirst(
+        sql.unsafe`SHOW statement_timeout`,
+      );
 
       t.not(originalStatementTimeout, '50ms');
 
       await connection.query(sql.unsafe`SET statement_timeout=50`);
 
-      const statementTimeout = await connection.oneFirst(sql.unsafe`SHOW statement_timeout`);
+      const statementTimeout = await connection.oneFirst(
+        sql.unsafe`SHOW statement_timeout`,
+      );
 
       t.is(statementTimeout, '50ms');
     });
@@ -827,9 +833,11 @@ export const createIntegrationTests = (
       waitingClientCount: 0,
     });
 
-    const error = await t.throwsAsync(pool.transaction(async () => {
-      await delay(2_000);
-    }));
+    const error = await t.throwsAsync(
+      pool.transaction(async () => {
+        await delay(2_000);
+      }),
+    );
 
     t.true(error instanceof BackendTerminatedError);
 
@@ -854,7 +862,9 @@ export const createIntegrationTests = (
       waitingClientCount: 0,
     });
 
-    const error = await t.throwsAsync(pool.query(sql.unsafe`SELECT pg_sleep(2000)`));
+    const error = await t.throwsAsync(
+      pool.query(sql.unsafe`SELECT pg_sleep(2000)`),
+    );
 
     t.true(error instanceof StatementTimeoutError);
 
@@ -888,7 +898,13 @@ export const createIntegrationTests = (
       resolveDeadlock = resolve;
     });
 
-    const updatePerson: (...args: any) => any = async (firstUpdateId, firstUpdateName, secondUpdateId, secondUpdateName, delayDeadlock) => {
+    const updatePerson: (...args: any) => any = async (
+      firstUpdateId,
+      firstUpdateName,
+      secondUpdateId,
+      secondUpdateName,
+      delayDeadlock,
+    ) => {
       await pool.transaction(async (transaction) => {
         await transaction.query(sql.unsafe`
           SET deadlock_timeout='1s'
@@ -918,10 +934,12 @@ export const createIntegrationTests = (
       });
     };
 
-    await t.notThrowsAsync(Promise.all([
-      updatePerson(firstPersonId, 'foo 0', secondPersonId, 'foo 1', 50),
-      updatePerson(secondPersonId, 'bar 0', firstPersonId, 'bar 1', 0),
-    ]));
+    await t.notThrowsAsync(
+      Promise.all([
+        updatePerson(firstPersonId, 'foo 0', secondPersonId, 'foo 1', 50),
+        updatePerson(secondPersonId, 'bar 0', firstPersonId, 'bar 1', 0),
+      ]),
+    );
 
     t.is(
       await pool.oneFirst(sql.unsafe`
@@ -985,16 +1003,11 @@ export const createIntegrationTests = (
       rowCount: 2,
       rows: [
         {
-          birth_dates: [
-            '2020-01-03',
-          ],
+          birth_dates: ['2020-01-03'],
           name: 'bar',
         },
         {
-          birth_dates: [
-            '2020-01-01',
-            '2020-01-02',
-          ],
+          birth_dates: ['2020-01-01', '2020-01-02'],
           name: 'foo',
         },
       ],
@@ -1117,7 +1130,8 @@ export const createIntegrationTests = (
       error?.message,
 
       // @ts-expect-error
-      'Query violates a unique integrity constraint. ' + String(error?.originalError?.message),
+      'Query violates a unique integrity constraint. ' +
+        String(error?.originalError?.message),
     );
 
     await pool.end();
@@ -1130,9 +1144,15 @@ export const createIntegrationTests = (
     });
 
     await pool.connect(async (connection) => {
-      await connection.query(sql.unsafe`CREATE TABLE foo (a int, b text) PARTITION BY LIST(a)`);
-      await connection.query(sql.unsafe`CREATE TABLE foo1 PARTITION OF foo FOR VALUES IN (1)`);
-      await connection.query(sql.unsafe`CREATE TABLE foo2 PARTITION OF foo FOR VALUES IN (2)`);
+      await connection.query(
+        sql.unsafe`CREATE TABLE foo (a int, b text) PARTITION BY LIST(a)`,
+      );
+      await connection.query(
+        sql.unsafe`CREATE TABLE foo1 PARTITION OF foo FOR VALUES IN (1)`,
+      );
+      await connection.query(
+        sql.unsafe`CREATE TABLE foo2 PARTITION OF foo FOR VALUES IN (2)`,
+      );
       await connection.query(sql.unsafe`INSERT INTO foo VALUES (1, 'ABC')`);
     });
     await pool.connect(async (connection1) => {
@@ -1140,13 +1160,16 @@ export const createIntegrationTests = (
         await connection1.query(sql.unsafe`BEGIN`);
         await connection2.query(sql.unsafe`BEGIN`);
         await connection1.query(sql.unsafe`UPDATE foo SET a = 2 WHERE a = 1`);
-        connection2.query(sql.unsafe`UPDATE foo SET b = 'XYZ'`).catch((error) => {
-          t.is(
-            error.message,
-            'Tuple moved to another partition due to concurrent update. ' + String(error?.originalError?.message),
-          );
-          t.true(error instanceof TupleMovedToAnotherPartitionError);
-        });
+        connection2
+          .query(sql.unsafe`UPDATE foo SET b = 'XYZ'`)
+          .catch((error) => {
+            t.is(
+              error.message,
+              'Tuple moved to another partition due to concurrent update. ' +
+                String(error?.originalError?.message),
+            );
+            t.true(error instanceof TupleMovedToAnotherPartitionError);
+          });
 
         // Ensures that query is processed before concurrent commit is called.
         await delay(1_000);
@@ -1169,7 +1192,11 @@ export const createIntegrationTests = (
       );
     `);
 
-    const error = await t.throwsAsync(pool.query(sql.unsafe`SELECT * FROM invalid_input_error_test where id = '1';`));
+    const error = await t.throwsAsync(
+      pool.query(
+        sql.unsafe`SELECT * FROM invalid_input_error_test where id = '1';`,
+      ),
+    );
 
     t.true(error instanceof InvalidInputError);
   });

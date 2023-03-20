@@ -1,24 +1,18 @@
+import { bindPool } from '../../src/binders/bindPool';
+import { poolStateMap } from '../../src/state';
+import { type ClientConfigurationInput } from '../../src/types';
+import { Logger as log } from './Logger';
 import EventEmitter from 'events';
 import * as sinon from 'sinon';
-import {
-  bindPool,
-} from '../../src/binders/bindPool';
-import {
-  poolStateMap,
-} from '../../src/state';
-import {
-  type ClientConfigurationInput,
-} from '../../src/types';
-import {
-  Logger as log,
-} from './Logger';
 
 const defaultConfiguration = {
   interceptors: [],
   typeParsers: [],
 };
 
-export const createPool = async (clientConfiguration: ClientConfigurationInput = defaultConfiguration) => {
+export const createPool = async (
+  clientConfiguration: ClientConfigurationInput = defaultConfiguration,
+) => {
   const eventEmitter = new EventEmitter();
 
   const connection = {
@@ -61,24 +55,20 @@ export const createPool = async (clientConfiguration: ClientConfigurationInput =
   const releaseSpy: sinon.SinonSpy = sinon.spy(connection, 'release');
   const removeSpy: sinon.SinonSpy = sinon.spy(internalPool, '_remove');
 
-  const pool = bindPool(
-    log,
-    internalPool,
-    {
-      captureStackTrace: false,
-      connectionRetryLimit: 1,
-      connectionTimeout: 5_000,
-      idleInTransactionSessionTimeout: 5_000,
-      idleTimeout: 5_000,
-      interceptors: [],
-      maximumPoolSize: 1,
-      queryRetryLimit: 1,
-      statementTimeout: 5_000,
-      transactionRetryLimit: 1,
-      typeParsers: [],
-      ...clientConfiguration,
-    },
-  );
+  const pool = bindPool(log, internalPool, {
+    captureStackTrace: false,
+    connectionRetryLimit: 1,
+    connectionTimeout: 5_000,
+    idleInTransactionSessionTimeout: 5_000,
+    idleTimeout: 5_000,
+    interceptors: [],
+    maximumPoolSize: 1,
+    queryRetryLimit: 1,
+    statementTimeout: 5_000,
+    transactionRetryLimit: 1,
+    typeParsers: [],
+    ...clientConfiguration,
+  });
 
   return {
     ...pool,

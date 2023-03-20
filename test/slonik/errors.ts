@@ -1,12 +1,15 @@
-import test from 'ava';
 import {
   IntegrityConstraintViolationError,
   StatementCancelledError,
 } from '../../src';
+import test from 'ava';
 
 test('IntegrityConstraintViolationError default message', (t) => {
   t.is(
-    new IntegrityConstraintViolationError(new Error('original error message'), 'test-constraint').message,
+    new IntegrityConstraintViolationError(
+      new Error('original error message'),
+      'test-constraint',
+    ).message,
     'Query violates an integrity constraint. original error message',
   );
 });

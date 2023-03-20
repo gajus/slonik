@@ -1,14 +1,8 @@
+import { createClientConfiguration } from '../../helpers/createClientConfiguration';
+import { createErrorWithCode } from '../../helpers/createErrorWithCode';
+import { createPool } from '../../helpers/createPool';
 import test from 'ava';
 import * as sinon from 'sinon';
-import {
-  createClientConfiguration,
-} from '../../helpers/createClientConfiguration';
-import {
-  createErrorWithCode,
-} from '../../helpers/createErrorWithCode';
-import {
-  createPool,
-} from '../../helpers/createPool';
 
 test('commits successful transaction', async (t) => {
   const pool = await createPool();
@@ -22,9 +16,11 @@ test('commits successful transaction', async (t) => {
 test('rollbacks unsuccessful transaction', async (t) => {
   const pool = await createPool();
 
-  await t.throwsAsync(pool.transaction(async () => {
-    return await Promise.reject(new Error('foo'));
-  }));
+  await t.throwsAsync(
+    pool.transaction(async () => {
+      return await Promise.reject(new Error('foo'));
+    }),
+  );
 
   t.is(pool.querySpy.getCall(0).args[0], 'START TRANSACTION');
   t.is(pool.querySpy.getCall(1).args[0], 'ROLLBACK');
@@ -34,7 +30,8 @@ test('retries a transaction that failed due to a transaction error', async (t) =
   const pool = await createPool(createClientConfiguration());
   const handlerStub = sinon.stub();
 
-  handlerStub.onFirstCall()
+  handlerStub
+    .onFirstCall()
     .rejects(createErrorWithCode('40P01'))
     .onSecondCall()
     .resolves({
@@ -69,7 +66,8 @@ test('commits successful transaction with retries', async (t) => {
   const pool = await createPool(createClientConfiguration());
   const handlerStub = sinon.stub();
 
-  handlerStub.onFirstCall()
+  handlerStub
+    .onFirstCall()
     .rejects(createErrorWithCode('40P01'))
     .onSecondCall()
     .resolves({
@@ -96,7 +94,8 @@ test('returns the thrown transaction error if the retry limit is reached', async
   const pool = await createPool(createClientConfiguration());
   const handlerStub = sinon.stub();
 
-  handlerStub.onFirstCall()
+  handlerStub
+    .onFirstCall()
     .rejects(createErrorWithCode('40P01'))
     .onSecondCall()
     .rejects(createErrorWithCode('40P01'));
@@ -113,7 +112,8 @@ test('rollbacks unsuccessful transaction with retries', async (t) => {
   const pool = await createPool(createClientConfiguration());
   const handlerStub = sinon.stub();
 
-  handlerStub.onFirstCall()
+  handlerStub
+    .onFirstCall()
     .rejects(createErrorWithCode('40P01'))
     .onSecondCall()
     .rejects(createErrorWithCode('40P01'));

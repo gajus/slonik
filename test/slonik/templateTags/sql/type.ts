@@ -1,10 +1,6 @@
+import { createSqlTag } from '../../../../src/factories/createSqlTag';
 import test from 'ava';
-import {
-  z,
-} from 'zod';
-import {
-  createSqlTag,
-} from '../../../../src/factories/createSqlTag';
+import { z } from 'zod';
 
 const sql = createSqlTag();
 

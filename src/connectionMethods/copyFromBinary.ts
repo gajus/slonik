@@ -1,18 +1,8 @@
-import {
-  Duplex,
-} from 'stream';
-import {
-  from,
-} from 'pg-copy-streams';
-import {
-  executeQuery,
-} from '../routines';
-import {
-  type InternalCopyFromBinaryFunction,
-} from '../types';
-import {
-  encodeTupleList,
-} from '../utilities';
+import { executeQuery } from '../routines';
+import { type InternalCopyFromBinaryFunction } from '../types';
+import { encodeTupleList } from '../utilities';
+import { from } from 'pg-copy-streams';
+import { Duplex } from 'stream';
 
 const bufferToStream = (buffer: Buffer) => {
   const stream = new Duplex();

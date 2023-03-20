@@ -1,10 +1,6 @@
+import { createSqlTag } from '../../../../src/factories/createSqlTag';
+import { FragmentToken } from '../../../../src/tokens';
 import test from 'ava';
-import {
-  createSqlTag,
-} from '../../../../src/factories/createSqlTag';
-import {
-  FragmentToken,
-} from '../../../../src/tokens';
 
 const sql = createSqlTag();
 
@@ -16,9 +12,7 @@ test('creates a value list (object)', (t) => {
   t.deepEqual(query, {
     sql: 'SELECT $1::json',
     type: FragmentToken,
-    values: [
-      '{"foo":"bar"}',
-    ],
+    values: ['{"foo":"bar"}'],
   });
 });
 
@@ -32,21 +26,17 @@ test('creates a value list (array)', (t) => {
   t.deepEqual(query, {
     sql: 'SELECT $1::json',
     type: FragmentToken,
-    values: [
-      '[{"foo":"bar"}]',
-    ],
+    values: ['[{"foo":"bar"}]'],
   });
 });
 
-test('stringifies NULL to \'null\'::json', (t) => {
+test("stringifies NULL to 'null'::json", (t) => {
   const query = sql.fragment`SELECT ${sql.json(null)}`;
 
   t.deepEqual(query, {
     sql: 'SELECT $1::json',
     type: FragmentToken,
-    values: [
-      'null',
-    ],
+    values: ['null'],
   });
 });
 
@@ -56,9 +46,7 @@ test('JSON encodes string values', (t) => {
   t.deepEqual(query, {
     sql: 'SELECT $1::json',
     type: FragmentToken,
-    values: [
-      '"example string"',
-    ],
+    values: ['"example string"'],
   });
 });
 
@@ -68,9 +56,7 @@ test('JSON encodes numeric values', (t) => {
   t.deepEqual(query, {
     sql: 'SELECT $1::json',
     type: FragmentToken,
-    values: [
-      '1234',
-    ],
+    values: ['1234'],
   });
 });
 
@@ -80,9 +66,7 @@ test('JSON encodes boolean values', (t) => {
   t.deepEqual(query, {
     sql: 'SELECT $1::json',
     type: FragmentToken,
-    values: [
-      'true',
-    ],
+    values: ['true'],
   });
 });
 
@@ -101,11 +85,14 @@ test('throws if payload cannot be stringified (non-primitive object)', (t) => {
     sql.fragment`SELECT ${sql.json(() => {})}`;
   });
 
-  t.is(error?.message, 'JSON payload must be a primitive value or a plain object.');
+  t.is(
+    error?.message,
+    'JSON payload must be a primitive value or a plain object.',
+  );
 });
 
 test('Object types with optional properties are allowed', (t) => {
-  type TypeWithOptionalProperty = { foo: string, opt?: string, };
+  type TypeWithOptionalProperty = { foo: string; opt?: string };
   const testValue: TypeWithOptionalProperty = {
     foo: 'bar',
   };
@@ -115,8 +102,6 @@ test('Object types with optional properties are allowed', (t) => {
   t.deepEqual(query, {
     sql: 'SELECT $1::json',
     type: FragmentToken,
-    values: [
-      '{"foo":"bar"}',
-    ],
+    values: ['{"foo":"bar"}'],
   });
 });

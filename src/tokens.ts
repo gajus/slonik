@@ -1,6 +1,7 @@
 export const ArrayToken = 'SLONIK_TOKEN_ARRAY' as const;
 export const BinaryToken = 'SLONIK_TOKEN_BINARY' as const;
-export const ComparisonPredicateToken = 'SLONIK_TOKEN_COMPARISON_PREDICATE' as const;
+export const ComparisonPredicateToken =
+  'SLONIK_TOKEN_COMPARISON_PREDICATE' as const;
 export const DateToken = 'SLONIK_TOKEN_DATE' as const;
 export const FragmentToken = 'SLONIK_TOKEN_FRAGMENT' as const;
 export const IdentifierToken = 'SLONIK_TOKEN_IDENTIFIER' as const;

@@ -1,23 +1,18 @@
-import {
-  DataIntegrityError,
-} from '../errors';
-import {
-  type InternalQueryMethod,
-  type QuerySqlToken,
-} from '../types';
-import {
-  createQueryId,
-} from '../utilities';
-import {
-  query,
-} from './query';
+import { DataIntegrityError } from '../errors';
+import { type InternalQueryMethod, type QuerySqlToken } from '../types';
+import { createQueryId } from '../utilities';
+import { query } from './query';
 
-export const exists: InternalQueryMethod<Promise<boolean>> = async (log, connection, clientConfiguration, slonikQuery, inheritedQueryId) => {
+export const exists: InternalQueryMethod<Promise<boolean>> = async (
+  log,
+  connection,
+  clientConfiguration,
+  slonikQuery,
+  inheritedQueryId,
+) => {
   const queryId = inheritedQueryId ?? createQueryId();
 
-  const {
-    rows,
-  } = await query(
+  const { rows } = await query(
     log,
     connection,
     clientConfiguration,
@@ -29,9 +24,12 @@ export const exists: InternalQueryMethod<Promise<boolean>> = async (log, connect
   );
 
   if (rows.length !== 1) {
-    log.error({
-      queryId,
-    }, 'DataIntegrityError');
+    log.error(
+      {
+        queryId,
+      },
+      'DataIntegrityError',
+    );
 
     throw new DataIntegrityError(slonikQuery);
   }

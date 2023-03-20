@@ -1,10 +1,6 @@
+import { createSqlTag } from '../../../../src/factories/createSqlTag';
+import { FragmentToken } from '../../../../src/tokens';
 import test from 'ava';
-import {
-  createSqlTag,
-} from '../../../../src/factories/createSqlTag';
-import {
-  FragmentToken,
-} from '../../../../src/tokens';
 
 const sql = createSqlTag();
 
@@ -31,14 +27,7 @@ test('creates an interval', (t) => {
   t.deepEqual(query, {
     sql: 'SELECT make_interval(years => $1, months => $2, days => $3, hours => $4, mins => $5, secs => $6)',
     type: FragmentToken,
-    values: [
-      1,
-      2,
-      3,
-      4,
-      5,
-      6,
-    ],
+    values: [1, 2, 3, 4, 5, 6],
   });
 });
 

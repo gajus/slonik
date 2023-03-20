@@ -1,16 +1,4 @@
-import {
-  getStackTrace,
-} from 'get-stack-trace';
-import Deferred from 'p-defer';
-import {
-  type PoolClient as PgPoolClient,
-} from 'pg';
-import {
-  serializeError,
-} from 'serialize-error';
-import {
-  TRANSACTION_ROLLBACK_ERROR_PREFIX,
-} from '../constants';
+import { TRANSACTION_ROLLBACK_ERROR_PREFIX } from '../constants';
 import {
   BackendTerminatedError,
   CheckIntegrityConstraintViolationError,
@@ -23,9 +11,7 @@ import {
   UnexpectedStateError,
   UniqueIntegrityConstraintViolationError,
 } from '../errors';
-import {
-  getPoolClientState,
-} from '../state';
+import { getPoolClientState } from '../state';
 import {
   type ClientConfiguration,
   type Interceptor,
@@ -39,9 +25,11 @@ import {
   type QueryResultRow,
   type QuerySqlToken,
 } from '../types';
-import {
-  createQueryId,
-} from '../utilities';
+import { createQueryId } from '../utilities';
+import { getStackTrace } from 'get-stack-trace';
+import Deferred from 'p-defer';
+import { type PoolClient as PgPoolClient } from 'pg';
+import { serializeError } from 'serialize-error';
 
 type GenericQueryResult = QueryResult<QueryResultRow>;
 
@@ -54,10 +42,10 @@ type ExecutionRoutineType = (
 ) => Promise<GenericQueryResult>;
 
 type TransactionQuery = {
-  readonly executionContext: QueryContext,
-  readonly executionRoutine: ExecutionRoutineType,
-  readonly sql: string,
-  readonly values: readonly PrimitiveValueExpression[],
+  readonly executionContext: QueryContext;
+  readonly executionRoutine: ExecutionRoutineType;
+  readonly sql: string;
+  readonly values: readonly PrimitiveValueExpression[];
 };
 
 const retryQuery = async (
@@ -75,10 +63,13 @@ const retryQuery = async (
     attempt++;
 
     try {
-      connectionLogger.trace({
-        attempt,
-        queryId: query.executionContext.queryId,
-      }, 'retrying query');
+      connectionLogger.trace(
+        {
+          attempt,
+          queryId: query.executionContext.queryId,
+        },
+        'retrying query',
+      );
 
       result = await query.executionRoutine(
         connection,
@@ -99,7 +90,11 @@ const retryQuery = async (
       // If the attempt succeeded break out of the loop
       break;
     } catch (error) {
-      if (typeof error.code === 'string' && error.code.startsWith(TRANSACTION_ROLLBACK_ERROR_PREFIX) && remainingRetries > 0) {
+      if (
+        typeof error.code === 'string' &&
+        error.code.startsWith(TRANSACTION_ROLLBACK_ERROR_PREFIX) &&
+        remainingRetries > 0
+      ) {
         continue;
       }
 
@@ -112,10 +107,10 @@ const retryQuery = async (
 };
 
 type StackCrumb = {
-  columnNumber: number,
-  fileName: string,
-  functionName: string | null,
-  lineNumber: number,
+  columnNumber: number;
+  fileName: string;
+  functionName: string | null;
+  lineNumber: number;
 };
 
 // eslint-disable-next-line complexity
@@ -138,7 +133,9 @@ export const executeQuery = async (
   }
 
   if (query.sql.trim() === '$1') {
-    throw new InvalidInputError('Unexpected SQL input. Query cannot be empty. Found only value binding.');
+    throw new InvalidInputError(
+      'Unexpected SQL input. Query cannot be empty. Found only value binding.',
+    );
   }
 
   const queryInputTime = process.hrtime.bigint();
@@ -190,10 +187,7 @@ export const executeQuery = async (
 
   for (const interceptor of clientConfiguration.interceptors) {
     if (interceptor.beforeTransformQuery) {
-      await interceptor.beforeTransformQuery(
-        executionContext,
-        actualQuery,
-      );
+      await interceptor.beforeTransformQuery(executionContext, actualQuery);
     }
   }
 
@@ -207,10 +201,15 @@ export const executeQuery = async (
 
   for (const interceptor of clientConfiguration.interceptors) {
     if (interceptor.beforeQueryExecution) {
-      result = await interceptor.beforeQueryExecution(executionContext, actualQuery);
+      result = await interceptor.beforeQueryExecution(
+        executionContext,
+        actualQuery,
+      );
 
       if (result) {
-        log.info('beforeQueryExecution interceptor produced a result; short-circuiting query execution using beforeQueryExecution result');
+        log.info(
+          'beforeQueryExecution interceptor produced a result; short-circuiting query execution using beforeQueryExecution result',
+        );
 
         return result;
       }
@@ -251,7 +250,8 @@ export const executeQuery = async (
           actualQuery,
         );
       } catch (error) {
-        const shouldRetry = typeof error.code === 'string' &&
+        const shouldRetry =
+          typeof error.code === 'string' &&
           error.code.startsWith(TRANSACTION_ROLLBACK_ERROR_PREFIX) &&
           clientConfiguration.queryRetryLimit > 0;
 
@@ -268,9 +268,12 @@ export const executeQuery = async (
         }
       }
     } catch (error) {
-      log.error({
-        error: serializeError(error),
-      }, 'execution routine produced an error');
+      log.error(
+        {
+          error: serializeError(error),
+        },
+        'execution routine produced an error',
+      );
 
       // 'Connection terminated' refers to node-postgres error.
       // @see https://github.com/brianc/node-postgres/blob/eb076db5d47a29c19d3212feac26cd7b6d257a95/lib/client.js#L199
@@ -284,7 +287,10 @@ export const executeQuery = async (
         throw new InvalidInputError(error);
       }
 
-      if (error.code === '57014' && error.message.includes('canceling statement due to statement timeout')) {
+      if (
+        error.code === '57014' &&
+        error.message.includes('canceling statement due to statement timeout')
+      ) {
         throw new StatementTimeoutError(error);
       }
 
@@ -292,24 +298,39 @@ export const executeQuery = async (
         throw new StatementCancelledError(error);
       }
 
-      if (error.message === 'tuple to be locked was already moved to another partition due to concurrent update') {
+      if (
+        error.message ===
+        'tuple to be locked was already moved to another partition due to concurrent update'
+      ) {
         throw new TupleMovedToAnotherPartitionError(error);
       }
 
       if (error.code === '23502') {
-        throw new NotNullIntegrityConstraintViolationError(error, error.constraint);
+        throw new NotNullIntegrityConstraintViolationError(
+          error,
+          error.constraint,
+        );
       }
 
       if (error.code === '23503') {
-        throw new ForeignKeyIntegrityConstraintViolationError(error, error.constraint);
+        throw new ForeignKeyIntegrityConstraintViolationError(
+          error,
+          error.constraint,
+        );
       }
 
       if (error.code === '23505') {
-        throw new UniqueIntegrityConstraintViolationError(error, error.constraint);
+        throw new UniqueIntegrityConstraintViolationError(
+          error,
+          error.constraint,
+        );
       }
 
       if (error.code === '23514') {
-        throw new CheckIntegrityConstraintViolationError(error, error.constraint);
+        throw new CheckIntegrityConstraintViolationError(
+          error,
+          error.constraint,
+        );
       }
 
       error.notices = notices;
@@ -323,7 +344,12 @@ export const executeQuery = async (
   } catch (error) {
     for (const interceptor of clientConfiguration.interceptors) {
       if (interceptor.queryExecutionError) {
-        await interceptor.queryExecutionError(executionContext, actualQuery, error, notices);
+        await interceptor.queryExecutionError(
+          executionContext,
+          actualQuery,
+          error,
+          notices,
+        );
       }
     }
 
@@ -340,22 +366,23 @@ export const executeQuery = async (
 
   for (const interceptor of clientConfiguration.interceptors) {
     if (interceptor.afterQueryExecution) {
-      await interceptor.afterQueryExecution(executionContext, actualQuery, result);
+      await interceptor.afterQueryExecution(
+        executionContext,
+        actualQuery,
+        result,
+      );
     }
   }
 
   // Stream does not have `rows` in the result object and all rows are already transformed.
   if (result.rows) {
-    const interceptors: Interceptor[] = clientConfiguration.interceptors.slice();
+    const interceptors: Interceptor[] =
+      clientConfiguration.interceptors.slice();
 
     for (const interceptor of interceptors) {
       if (interceptor.transformRow) {
-        const {
-          transformRow,
-        } = interceptor;
-        const {
-          fields,
-        } = result;
+        const { transformRow } = interceptor;
+        const { fields } = result;
 
         const rows: QueryResultRow[] = [];
 
@@ -373,7 +400,11 @@ export const executeQuery = async (
 
   for (const interceptor of clientConfiguration.interceptors) {
     if (interceptor.beforeQueryResult) {
-      await interceptor.beforeQueryResult(executionContext, actualQuery, result);
+      await interceptor.beforeQueryResult(
+        executionContext,
+        actualQuery,
+        result,
+      );
     }
   }
 

@@ -1,10 +1,6 @@
+import { createClientConfiguration } from '../../../src/factories/createClientConfiguration';
+import { createTypeParserPreset } from '../../../src/factories/createTypeParserPreset';
 import test from 'ava';
-import {
-  createClientConfiguration,
-} from '../../../src/factories/createClientConfiguration';
-import {
-  createTypeParserPreset,
-} from '../../../src/factories/createTypeParserPreset';
 
 const defaultConfiguration = {
   captureStackTrace: false,
@@ -46,9 +42,7 @@ test('overrides provided properties', (t) => {
     }),
     {
       ...defaultConfiguration,
-      interceptors: [
-        'foo',
-      ],
+      interceptors: ['foo'],
     },
   );
 
@@ -61,9 +55,7 @@ test('overrides provided properties', (t) => {
     }),
     {
       ...defaultConfiguration,
-      typeParsers: [
-        'foo',
-      ],
+      typeParsers: ['foo'],
     },
   );
 });

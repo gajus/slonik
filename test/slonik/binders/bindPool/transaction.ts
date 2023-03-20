@@ -1,11 +1,7 @@
+import { createSqlTag } from '../../../../src/factories/createSqlTag';
+import { createPool } from '../../../helpers/createPool';
 import test from 'ava';
 import delay from 'delay';
-import {
-  createSqlTag,
-} from '../../../../src/factories/createSqlTag';
-import {
-  createPool,
-} from '../../../helpers/createPool';
 
 const sql = createSqlTag();
 
@@ -34,13 +30,15 @@ test('commits successful transaction', async (t) => {
 test('rollsback unsuccessful transaction', async (t) => {
   const pool = await createPool();
 
-  await t.throwsAsync(pool.connect(async (c1) => {
-    await c1.transaction(async (t1) => {
-      await t1.query(sql.unsafe`SELECT 1`);
+  await t.throwsAsync(
+    pool.connect(async (c1) => {
+      await c1.transaction(async (t1) => {
+        await t1.query(sql.unsafe`SELECT 1`);
 
-      return await Promise.reject(new Error('foo'));
-    });
-  }));
+        return await Promise.reject(new Error('foo'));
+      });
+    }),
+  );
 
   t.deepEqual(getQueries(pool.querySpy), [
     'START TRANSACTION',
@@ -77,11 +75,13 @@ test('rollsback to the last savepoint', async (t) => {
     await c1.transaction(async (t1) => {
       await t1.query(sql.unsafe`SELECT 1`);
 
-      await t.throwsAsync(t1.transaction(async (t2) => {
-        await t2.query(sql.unsafe`SELECT 2`);
+      await t.throwsAsync(
+        t1.transaction(async (t2) => {
+          await t2.query(sql.unsafe`SELECT 2`);
 
-        return await Promise.reject(new Error('foo'));
-      }));
+          return await Promise.reject(new Error('foo'));
+        }),
+      );
     });
   });
 
@@ -99,15 +99,17 @@ test('rollsback the entire transaction with multiple savepoints', async (t) => {
   const pool = await createPool();
 
   await pool.connect(async (c1) => {
-    return await t.throwsAsync(c1.transaction(async (t1) => {
-      await t1.query(sql.unsafe`SELECT 1`);
+    return await t.throwsAsync(
+      c1.transaction(async (t1) => {
+        await t1.query(sql.unsafe`SELECT 1`);
 
-      return await t1.transaction(async (t2) => {
-        await t2.query(sql.unsafe`SELECT 2`);
+        return await t1.transaction(async (t2) => {
+          await t2.query(sql.unsafe`SELECT 2`);
 
-        return await Promise.reject(new Error('foo'));
-      });
-    }));
+          return await Promise.reject(new Error('foo'));
+        });
+      }),
+    );
   });
 
   t.deepEqual(getQueries(pool.querySpy), [
@@ -124,19 +126,21 @@ test('rollsback the entire transaction with multiple savepoints (multiple depth 
   const pool = await createPool();
 
   await pool.connect(async (c1) => {
-    return await t.throwsAsync(c1.transaction(async (t1) => {
-      await t1.query(sql.unsafe`SELECT 1`);
+    return await t.throwsAsync(
+      c1.transaction(async (t1) => {
+        await t1.query(sql.unsafe`SELECT 1`);
 
-      return await t1.transaction(async (t2) => {
-        await t2.query(sql.unsafe`SELECT 2`);
+        return await t1.transaction(async (t2) => {
+          await t2.query(sql.unsafe`SELECT 2`);
 
-        return await t2.transaction(async (t3) => {
-          await t3.query(sql.unsafe`SELECT 3`);
+          return await t2.transaction(async (t3) => {
+            await t3.query(sql.unsafe`SELECT 3`);
 
-          return await Promise.reject(new Error('foo'));
+            return await Promise.reject(new Error('foo'));
+          });
         });
-      });
-    }));
+      }),
+    );
   });
 
   t.deepEqual(getQueries(pool.querySpy), [
@@ -168,7 +172,10 @@ test('throws an error if an attempt is made to create a new transaction before t
 
   const error = await t.throwsAsync(connection);
 
-  t.is(error?.message, 'Cannot use the same connection to start a new transaction before completing the last transaction.');
+  t.is(
+    error?.message,
+    'Cannot use the same connection to start a new transaction before completing the last transaction.',
+  );
 });
 
 test('throws an error if an attempt is made to execute a query using the parent transaction before the current transaction is completed', async (t) => {

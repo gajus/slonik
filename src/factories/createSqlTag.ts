@@ -1,13 +1,5 @@
-import {
-  z,
-  type ZodTypeAny,
-} from 'zod';
-import {
-  Logger,
-} from '../Logger';
-import {
-  InvalidInputError,
-} from '../errors';
+import { InvalidInputError } from '../errors';
+import { Logger } from '../Logger';
 import {
   ArrayToken,
   BinaryToken,
@@ -42,14 +34,13 @@ import {
   type ValueExpression,
 } from '../types';
 import {
-  safeStringify,
   escapeLiteralValue,
   isPrimitiveValueExpression,
   isSqlToken,
+  safeStringify,
 } from '../utilities';
-import {
-  createSqlTokenSqlFragment,
-} from './createSqlTokenSqlFragment';
+import { createSqlTokenSqlFragment } from './createSqlTokenSqlFragment';
+import { z, type ZodTypeAny } from 'zod';
 
 const log = Logger.child({
   namespace: 'sql',
@@ -75,28 +66,39 @@ const createFragment = (
     }
 
     if (token === undefined) {
-      log.debug({
-        index,
-        parts: JSON.parse(safeStringify(parts)),
-        values: JSON.parse(safeStringify(values)),
-      }, 'bound values');
+      log.debug(
+        {
+          index,
+          parts: JSON.parse(safeStringify(parts)),
+          values: JSON.parse(safeStringify(values)),
+        },
+        'bound values',
+      );
 
-      throw new InvalidInputError('SQL tag cannot be bound an undefined value.');
+      throw new InvalidInputError(
+        'SQL tag cannot be bound an undefined value.',
+      );
     } else if (isPrimitiveValueExpression(token)) {
       rawSql += '$' + String(parameterValues.length + 1);
 
       parameterValues.push(token);
     } else if (isSqlToken(token)) {
-      const sqlFragment = createSqlTokenSqlFragment(token, parameterValues.length);
+      const sqlFragment = createSqlTokenSqlFragment(
+        token,
+        parameterValues.length,
+      );
 
       rawSql += sqlFragment.sql;
       parameterValues.push(...sqlFragment.values);
     } else {
-      log.error({
-        constructedSql: rawSql,
-        index,
-        offendingToken: JSON.parse(safeStringify(token)),
-      }, 'unexpected value expression');
+      log.error(
+        {
+          constructedSql: rawSql,
+          index,
+          offendingToken: JSON.parse(safeStringify(token)),
+        },
+        'unexpected value expression',
+      );
 
       throw new TypeError('Unexpected value expression.');
     }
@@ -111,10 +113,12 @@ const createFragment = (
 export const createSqlTag = <
   K extends PropertyKey,
   P extends ZodTypeAny,
-  Z extends Record<K, P>
->(configuration: {
-  typeAliases?: Z,
-} = {}) => {
+  Z extends Record<K, P>,
+>(
+  configuration: {
+    typeAliases?: Z;
+  } = {},
+) => {
   const typeAliases = configuration.typeAliases;
 
   return {
@@ -128,17 +132,13 @@ export const createSqlTag = <
         values,
       });
     },
-    binary: (
-      data: Buffer,
-    ): BinarySqlToken => {
+    binary: (data: Buffer): BinarySqlToken => {
       return Object.freeze({
         data,
         type: BinaryToken,
       });
     },
-    date: (
-      date: Date,
-    ): DateSqlToken => {
+    date: (date: Date): DateSqlToken => {
       return Object.freeze({
         date,
         type: DateToken,
@@ -153,17 +153,13 @@ export const createSqlTag = <
         type: FragmentToken,
       });
     },
-    identifier: (
-      names: readonly string[],
-    ): IdentifierSqlToken => {
+    identifier: (names: readonly string[]): IdentifierSqlToken => {
       return Object.freeze({
         names,
         type: IdentifierToken,
       });
     },
-    interval: (
-      interval: IntervalInput,
-    ): IntervalSqlToken => {
+    interval: (interval: IntervalInput): IntervalSqlToken => {
       return Object.freeze({
         interval,
         type: IntervalToken,
@@ -179,34 +175,26 @@ export const createSqlTag = <
         type: ListToken,
       });
     },
-    json: (
-      value: SerializableValue,
-    ): JsonSqlToken => {
+    json: (value: SerializableValue): JsonSqlToken => {
       return Object.freeze({
         type: JsonToken,
         value,
       });
     },
-    jsonb: (
-      value: SerializableValue,
-    ): JsonBinarySqlToken => {
+    jsonb: (value: SerializableValue): JsonBinarySqlToken => {
       return Object.freeze({
         type: JsonBinaryToken,
         value,
       });
     },
-    literalValue: (
-      value: string,
-    ): SqlFragment => {
+    literalValue: (value: string): SqlFragment => {
       return Object.freeze({
         sql: escapeLiteralValue(value),
         type: FragmentToken,
         values: [],
       });
     },
-    timestamp: (
-      date: Date,
-    ): TimestampSqlToken => {
+    timestamp: (date: Date): TimestampSqlToken => {
       return Object.freeze({
         date,
         type: TimestampToken,
@@ -226,7 +214,9 @@ export const createSqlTag = <
     },
     typeAlias: <Y extends keyof Z>(parserAlias: Y) => {
       if (!typeAliases?.[parserAlias]) {
-        throw new Error('Type alias "' + String(parserAlias) + '" does not exist.');
+        throw new Error(
+          'Type alias "' + String(parserAlias) + '" does not exist.',
+        );
       }
 
       return (
@@ -242,7 +232,9 @@ export const createSqlTag = <
     },
     unnest: (
       tuples: ReadonlyArray<readonly PrimitiveValueExpression[]>,
-      columnTypes: Array<[...string[], TypeNameIdentifier]> | Array<SqlFragment | TypeNameIdentifier>,
+      columnTypes:
+        | Array<[...string[], TypeNameIdentifier]>
+        | Array<SqlFragment | TypeNameIdentifier>,
     ): UnnestSqlToken => {
       return Object.freeze({
         columnTypes,
@@ -250,10 +242,7 @@ export const createSqlTag = <
         type: UnnestToken,
       });
     },
-    unsafe: (
-      parts: readonly string[],
-      ...args: readonly ValueExpression[]
-    ) => {
+    unsafe: (parts: readonly string[], ...args: readonly ValueExpression[]) => {
       return Object.freeze({
         ...createFragment(parts, args),
         parser: z.any(),

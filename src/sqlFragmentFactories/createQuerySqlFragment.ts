@@ -1,18 +1,16 @@
-import {
-  UnexpectedStateError,
-} from '../errors';
-import {
-  type QuerySqlToken,
-  type SqlFragment,
-} from '../types';
+import { UnexpectedStateError } from '../errors';
+import { type QuerySqlToken, type SqlFragment } from '../types';
 
-export const createQuerySqlFragment = (token: QuerySqlToken, greatestParameterPosition: number): SqlFragment => {
+export const createQuerySqlFragment = (
+  token: QuerySqlToken,
+  greatestParameterPosition: number,
+): SqlFragment => {
   let sql = '';
 
   let leastMatchedParameterPosition = Number.POSITIVE_INFINITY;
   let greatestMatchedParameterPosition = 0;
 
-  sql += token.sql.replace(/\$(\d+)/gu, (match, g1) => {
+  sql += token.sql.replaceAll(/\$(\d+)/gu, (match, g1) => {
     const parameterPosition = Number.parseInt(g1, 10);
 
     if (parameterPosition > greatestMatchedParameterPosition) {
@@ -27,10 +25,15 @@ export const createQuerySqlFragment = (token: QuerySqlToken, greatestParameterPo
   });
 
   if (greatestMatchedParameterPosition > token.values.length) {
-    throw new UnexpectedStateError('The greatest parameter position is greater than the number of parameter values.');
+    throw new UnexpectedStateError(
+      'The greatest parameter position is greater than the number of parameter values.',
+    );
   }
 
-  if (leastMatchedParameterPosition !== Number.POSITIVE_INFINITY && leastMatchedParameterPosition !== 1) {
+  if (
+    leastMatchedParameterPosition !== Number.POSITIVE_INFINITY &&
+    leastMatchedParameterPosition !== 1
+  ) {
     throw new UnexpectedStateError('Parameter position must start at 1.');
   }
 

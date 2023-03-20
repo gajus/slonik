@@ -1,25 +1,10 @@
-import {
-  serializeError,
-} from 'serialize-error';
-import {
-  bindTransactionConnection,
-} from '../binders';
-import {
-  TRANSACTION_ROLLBACK_ERROR_PREFIX,
-} from '../constants';
-import {
-  BackendTerminatedError,
-  UnexpectedStateError,
-} from '../errors';
-import {
-  getPoolClientState,
-} from '../state';
-import {
-  type InternalTransactionFunction,
-} from '../types';
-import {
-  createUid,
-} from '../utilities';
+import { bindTransactionConnection } from '../binders';
+import { TRANSACTION_ROLLBACK_ERROR_PREFIX } from '../constants';
+import { BackendTerminatedError, UnexpectedStateError } from '../errors';
+import { getPoolClientState } from '../state';
+import { type InternalTransactionFunction } from '../types';
+import { createUid } from '../utilities';
+import { serializeError } from 'serialize-error';
 
 const execTransaction: InternalTransactionFunction = async (
   parentLog,
@@ -34,16 +19,20 @@ const execTransaction: InternalTransactionFunction = async (
   }
 
   if (typeof poolClientState.transactionDepth !== 'number') {
-    throw new UnexpectedStateError('Cannot execute transaction without knowing the transaction depth.');
+    throw new UnexpectedStateError(
+      'Cannot execute transaction without knowing the transaction depth.',
+    );
   }
 
   try {
-    const result = await handler(bindTransactionConnection(
-      parentLog,
-      connection,
-      clientConfiguration,
-      poolClientState.transactionDepth,
-    ));
+    const result = await handler(
+      bindTransactionConnection(
+        parentLog,
+        connection,
+        clientConfiguration,
+        poolClientState.transactionDepth,
+      ),
+    );
 
     if (poolClientState.terminated) {
       throw new BackendTerminatedError(poolClientState.terminated);
@@ -60,9 +49,12 @@ const execTransaction: InternalTransactionFunction = async (
         await connection.query('ROLLBACK');
       }
 
-      parentLog.error({
-        error: serializeError(error),
-      }, 'rolling back transaction due to an error');
+      parentLog.error(
+        {
+          error: serializeError(error),
+        },
+        'rolling back transaction due to an error',
+      );
     }
 
     throw error;
@@ -71,10 +63,17 @@ const execTransaction: InternalTransactionFunction = async (
 
 type Awaited<T> = T extends PromiseLike<infer U> ? U : T;
 
-const retryTransaction: InternalTransactionFunction = async (parentLog, connection, clientConfiguration, handler, transactionRetryLimit) => {
+const retryTransaction: InternalTransactionFunction = async (
+  parentLog,
+  connection,
+  clientConfiguration,
+  handler,
+  transactionRetryLimit,
+) => {
   const poolClientState = getPoolClientState(connection);
 
-  let remainingRetries = transactionRetryLimit ?? clientConfiguration.transactionRetryLimit;
+  let remainingRetries =
+    transactionRetryLimit ?? clientConfiguration.transactionRetryLimit;
   let attempt = 0;
   let result: Awaited<ReturnType<typeof handler>>;
 
@@ -82,17 +81,29 @@ const retryTransaction: InternalTransactionFunction = async (parentLog, connecti
     attempt++;
 
     try {
-      parentLog.trace({
-        attempt,
-        transactionId: poolClientState.transactionId,
-      }, 'retrying transaction');
+      parentLog.trace(
+        {
+          attempt,
+          transactionId: poolClientState.transactionId,
+        },
+        'retrying transaction',
+      );
 
-      result = await execTransaction(parentLog, connection, clientConfiguration, handler);
+      result = await execTransaction(
+        parentLog,
+        connection,
+        clientConfiguration,
+        handler,
+      );
 
       // If the attempt succeeded break out of the loop
       break;
     } catch (error) {
-      if (typeof error.code === 'string' && error.code.startsWith(TRANSACTION_ROLLBACK_ERROR_PREFIX) && remainingRetries > 0) {
+      if (
+        typeof error.code === 'string' &&
+        error.code.startsWith(TRANSACTION_ROLLBACK_ERROR_PREFIX) &&
+        remainingRetries > 0
+      ) {
         continue;
       }
 
@@ -104,11 +115,19 @@ const retryTransaction: InternalTransactionFunction = async (parentLog, connecti
   return result!;
 };
 
-export const transaction: InternalTransactionFunction = async (parentLog, connection, clientConfiguration, handler, transactionRetryLimit) => {
+export const transaction: InternalTransactionFunction = async (
+  parentLog,
+  connection,
+  clientConfiguration,
+  handler,
+  transactionRetryLimit,
+) => {
   const poolClientState = getPoolClientState(connection);
 
   if (poolClientState.transactionDepth !== null) {
-    throw new UnexpectedStateError('Cannot use the same connection to start a new transaction before completing the last transaction.');
+    throw new UnexpectedStateError(
+      'Cannot use the same connection to start a new transaction before completing the last transaction.',
+    );
   }
 
   poolClientState.transactionDepth = 0;
@@ -121,12 +140,22 @@ export const transaction: InternalTransactionFunction = async (parentLog, connec
   try {
     return await execTransaction(log, connection, clientConfiguration, handler);
   } catch (error) {
-    const transactionRetryLimitToUse = transactionRetryLimit ?? clientConfiguration.transactionRetryLimit;
+    const transactionRetryLimitToUse =
+      transactionRetryLimit ?? clientConfiguration.transactionRetryLimit;
 
-    const shouldRetry = typeof error.code === 'string' && error.code.startsWith(TRANSACTION_ROLLBACK_ERROR_PREFIX) && transactionRetryLimitToUse > 0;
+    const shouldRetry =
+      typeof error.code === 'string' &&
+      error.code.startsWith(TRANSACTION_ROLLBACK_ERROR_PREFIX) &&
+      transactionRetryLimitToUse > 0;
 
     if (shouldRetry) {
-      return await retryTransaction(log, connection, clientConfiguration, handler, transactionRetryLimit);
+      return await retryTransaction(
+        log,
+        connection,
+        clientConfiguration,
+        handler,
+        transactionRetryLimit,
+      );
     } else {
       throw error;
     }

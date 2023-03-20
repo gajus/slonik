@@ -1,6 +1,4 @@
-import {
-  type QueryContext,
-} from '../../src/types';
+import { type QueryContext } from '../../src/types';
 
 export const createQueryContext = (): QueryContext => {
   return {

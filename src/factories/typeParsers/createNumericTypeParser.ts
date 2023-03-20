@@ -1,6 +1,4 @@
-import {
-  type TypeParser,
-} from '../../types';
+import { type TypeParser } from '../../types';
 
 const numericParser = (value: string) => {
   return Number.parseFloat(value);

@@ -1,7 +1,5 @@
+import { countArrayDimensions } from '../../../src/utilities/countArrayDimensions';
 import test from 'ava';
-import {
-  countArrayDimensions,
-} from '../../../src/utilities/countArrayDimensions';
 
 test('returns the number of array dimensions', (t) => {
   t.is(countArrayDimensions('foo'), 0);

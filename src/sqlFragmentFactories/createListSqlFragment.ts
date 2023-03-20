@@ -1,20 +1,14 @@
-import {
-  InvalidInputError,
-} from '../errors';
+import { InvalidInputError } from '../errors';
 import {
   createPrimitiveValueExpressions,
   createSqlTokenSqlFragment,
 } from '../factories';
 import {
-  type PrimitiveValueExpression,
-
-  type SqlFragment,
   type ListSqlToken,
+  type PrimitiveValueExpression,
+  type SqlFragment,
 } from '../types';
-import {
-  isPrimitiveValueExpression,
-  isSqlToken,
-} from '../utilities';
+import { isPrimitiveValueExpression, isSqlToken } from '../utilities';
 
 export const createListSqlFragment = (
   token: ListSqlToken,
@@ -41,7 +35,9 @@ export const createListSqlFragment = (
 
       values.push(member);
     } else {
-      throw new InvalidInputError('Invalid list member type. Must be a SQL token or a primitive value expression.');
+      throw new InvalidInputError(
+        'Invalid list member type. Must be a SQL token or a primitive value expression.',
+      );
     }
   }
 

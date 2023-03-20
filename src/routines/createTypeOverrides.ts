@@ -1,20 +1,12 @@
-import {
-  type Client as PgClient,
-} from 'pg';
-import {
-  getTypeParser,
-} from 'pg-types';
-import {
-  parse as parseArray,
-} from 'postgres-array';
-import {
-  type TypeParser,
-} from '../types';
+import { type TypeParser } from '../types';
+import { type Client as PgClient } from 'pg';
+import { getTypeParser } from 'pg-types';
+import { parse as parseArray } from 'postgres-array';
 
 type PostgresType = {
-  oid: string,
-  typarray: string,
-  typname: string,
+  oid: string;
+  typarray: string;
+  typname: string;
 };
 
 export const createTypeOverrides = async (
@@ -26,9 +18,10 @@ export const createTypeOverrides = async (
   });
 
   const postgresTypes: PostgresType[] = (
-    await pool.query('SELECT oid, typarray, typname FROM pg_type WHERE typname = ANY($1::text[])', [
-      typeNames,
-    ])
+    await pool.query(
+      'SELECT oid, typarray, typname FROM pg_type WHERE typname = ANY($1::text[])',
+      [typeNames],
+    )
   ).rows;
 
   const parsers = {};
@@ -48,10 +41,9 @@ export const createTypeOverrides = async (
 
     if (postgresType.typarray) {
       parsers[postgresType.typarray] = (arrayValue) => {
-        return parseArray(arrayValue)
-          .map((value) => {
-            return typeParser.parse(value);
-          });
+        return parseArray(arrayValue).map((value) => {
+          return typeParser.parse(value);
+        });
       };
     }
   }

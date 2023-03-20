@@ -1,16 +1,14 @@
+import { InvalidConfigurationError } from '../errors';
 import {
-  InvalidConfigurationError,
-} from '../errors';
-import {
-  type ClientConfigurationInput,
   type ClientConfiguration,
+  type ClientConfigurationInput,
   type TypeParser,
 } from '../types';
-import {
-  createTypeParserPreset,
-} from './createTypeParserPreset';
+import { createTypeParserPreset } from './createTypeParserPreset';
 
-export const createClientConfiguration = (clientUserConfigurationInput?: ClientConfigurationInput): ClientConfiguration => {
+export const createClientConfiguration = (
+  clientUserConfigurationInput?: ClientConfigurationInput,
+): ClientConfiguration => {
   const typeParsers: readonly TypeParser[] = [];
 
   const configuration = {
@@ -30,7 +28,9 @@ export const createClientConfiguration = (clientUserConfigurationInput?: ClientC
   };
 
   if (configuration.maximumPoolSize < 1) {
-    throw new InvalidConfigurationError('maximumPoolSize must be equal to or greater than 1.');
+    throw new InvalidConfigurationError(
+      'maximumPoolSize must be equal to or greater than 1.',
+    );
   }
 
   if (!configuration.typeParsers || configuration.typeParsers === typeParsers) {

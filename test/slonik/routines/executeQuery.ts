@@ -1,33 +1,15 @@
-import anyTest, {
-  type TestFn,
-} from 'ava';
-import {
-  Roarr,
-} from 'roarr';
+import { type QuerySqlToken } from '../../../src';
+import { InvalidInputError } from '../../../src/errors';
+import { executeQuery } from '../../../src/routines/executeQuery';
+import { poolClientStateMap } from '../../../src/state';
+import { createClientConfiguration } from '../../helpers/createClientConfiguration';
+import { createErrorWithCode } from '../../helpers/createErrorWithCode';
+import anyTest, { type TestFn } from 'ava';
+import { Roarr } from 'roarr';
 import * as sinon from 'sinon';
-import {
-  type QuerySqlToken,
-} from '../../../src';
-import {
-  InvalidInputError,
-} from '../../../src/errors';
-import {
-  executeQuery,
-} from '../../../src/routines/executeQuery';
-import {
-  poolClientStateMap,
-} from '../../../src/state';
-import {
-  createClientConfiguration,
-} from '../../helpers/createClientConfiguration';
-import {
-  createErrorWithCode,
-} from '../../helpers/createErrorWithCode';
 
 const test = anyTest as TestFn<any>;
-const {
-  beforeEach,
-} = test;
+const { beforeEach } = test;
 
 const createConnectionStub = () => {
   return {
@@ -36,8 +18,8 @@ const createConnectionStub = () => {
         terminated: null,
       },
     },
-    off () {},
-    on () {},
+    off() {},
+    on() {},
   } as any;
 };
 
@@ -91,13 +73,17 @@ test('throws a descriptive error if the entire query is a value binding', async 
   });
 
   t.true(error instanceof InvalidInputError);
-  t.is(error?.message, 'Unexpected SQL input. Query cannot be empty. Found only value binding.');
+  t.is(
+    error?.message,
+    'Unexpected SQL input. Query cannot be empty. Found only value binding.',
+  );
 });
 
 test('retries an implicit query that failed due to a transaction error', async (t) => {
   const executionRoutineStub = sinon.stub();
 
-  executionRoutineStub.onFirstCall()
+  executionRoutineStub
+    .onFirstCall()
     .rejects(createErrorWithCode('40P01'))
     .onSecondCall()
     .resolves({
@@ -141,27 +127,30 @@ test('retries an implicit query that failed due to a transaction error', async (
 test('returns the thrown transaction error if the retry limit is reached', async (t) => {
   const executionRoutineStub = sinon.stub();
 
-  executionRoutineStub.onFirstCall()
+  executionRoutineStub
+    .onFirstCall()
     .rejects(createErrorWithCode('40P01'))
     .onSecondCall()
     .rejects(createErrorWithCode('40P01'));
 
   const clientConfiguration = createClientConfiguration();
 
-  const error: any = await t.throwsAsync(executeQuery(
-    t.context.logger,
-    t.context.connection,
-    {
-      ...clientConfiguration,
-      queryRetryLimit: 1,
-    },
-    {
-      sql: 'SELECT 1 AS foo',
-      values: [],
-    } as unknown as QuerySqlToken,
-    'foo',
-    executionRoutineStub,
-  ));
+  const error: any = await t.throwsAsync(
+    executeQuery(
+      t.context.logger,
+      t.context.connection,
+      {
+        ...clientConfiguration,
+        queryRetryLimit: 1,
+      },
+      {
+        sql: 'SELECT 1 AS foo',
+        values: [],
+      } as unknown as QuerySqlToken,
+      'foo',
+      executionRoutineStub,
+    ),
+  );
 
   t.is(executionRoutineStub.callCount, 2);
   t.true(error instanceof Error);
@@ -182,25 +171,26 @@ test('transaction errors are not handled if the function was called by a transac
 
   const executionRoutineStub = sinon.stub();
 
-  executionRoutineStub.onFirstCall()
-    .rejects(createErrorWithCode('40P01'));
+  executionRoutineStub.onFirstCall().rejects(createErrorWithCode('40P01'));
 
   const clientConfiguration = createClientConfiguration();
 
-  const error: any = await t.throwsAsync(executeQuery(
-    t.context.logger,
-    connection,
-    {
-      ...clientConfiguration,
-      queryRetryLimit: 1,
-    },
-    {
-      sql: 'SELECT 1 AS foo',
-      values: [],
-    } as unknown as QuerySqlToken,
-    'foo',
-    executionRoutineStub,
-  ));
+  const error: any = await t.throwsAsync(
+    executeQuery(
+      t.context.logger,
+      connection,
+      {
+        ...clientConfiguration,
+        queryRetryLimit: 1,
+      },
+      {
+        sql: 'SELECT 1 AS foo',
+        values: [],
+      } as unknown as QuerySqlToken,
+      'foo',
+      executionRoutineStub,
+    ),
+  );
 
   t.is(executionRoutineStub.callCount, 1);
   t.true(error instanceof Error);

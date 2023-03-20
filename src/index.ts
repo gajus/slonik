@@ -1,9 +1,35 @@
-import {
-  createSqlTag,
-} from './factories';
+import { createSqlTag } from './factories';
 
 export const sql = createSqlTag();
 
+export {
+  BackendTerminatedError,
+  CheckIntegrityConstraintViolationError,
+  ConnectionError,
+  DataIntegrityError,
+  ForeignKeyIntegrityConstraintViolationError,
+  IntegrityConstraintViolationError,
+  InvalidConfigurationError,
+  InvalidInputError,
+  NotFoundError,
+  NotNullIntegrityConstraintViolationError,
+  SchemaValidationError,
+  SlonikError,
+  StatementCancelledError,
+  StatementTimeoutError,
+  TupleMovedToAnotherPartitionError,
+  UnexpectedStateError,
+  UniqueIntegrityConstraintViolationError,
+} from './errors';
+export {
+  createMockPool,
+  createMockQueryResult,
+  createPool,
+  createSqlTag,
+  createSqlTokenSqlFragment,
+  createTypeParserPreset,
+} from './factories';
+export * from './factories/typeParsers';
 export type {
   ArraySqlToken,
   BinarySqlToken,
@@ -44,36 +70,4 @@ export type {
   UnnestSqlToken,
   ValueExpression,
 } from './types';
-export {
-  createMockPool,
-  createMockQueryResult,
-  createPool,
-  createSqlTag,
-  createSqlTokenSqlFragment,
-  createTypeParserPreset,
-} from './factories';
-export {
-  isSqlToken,
-  parseDsn,
-  stringifyDsn,
-} from './utilities';
-export * from './factories/typeParsers';
-export {
-  BackendTerminatedError,
-  CheckIntegrityConstraintViolationError,
-  ConnectionError,
-  DataIntegrityError,
-  ForeignKeyIntegrityConstraintViolationError,
-  IntegrityConstraintViolationError,
-  InvalidConfigurationError,
-  InvalidInputError,
-  NotFoundError,
-  NotNullIntegrityConstraintViolationError,
-  SchemaValidationError,
-  SlonikError,
-  StatementCancelledError,
-  StatementTimeoutError,
-  TupleMovedToAnotherPartitionError,
-  UnexpectedStateError,
-  UniqueIntegrityConstraintViolationError,
-} from './errors';
+export { isSqlToken, parseDsn, stringifyDsn } from './utilities';

@@ -1,6 +1,4 @@
-import {
-  configure,
-} from 'safe-stable-stringify';
+import { configure } from 'safe-stable-stringify';
 
 const stringify = configure({
   bigint: true,
@@ -11,10 +9,10 @@ const stringify = configure({
 export const safeStringify = (
   subject: unknown,
   replacer?:
-  | Array<number | string>
-  | ((key: string, value: unknown) => unknown)
-  | null
-  | undefined,
+    | Array<number | string>
+    | ((key: string, value: unknown) => unknown)
+    | null
+    | undefined,
   space?: number | string,
 ): string => {
   const result = stringify(subject, replacer, space);

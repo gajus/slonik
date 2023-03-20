@@ -1,15 +1,7 @@
-import {
-  DataIntegrityError,
-} from '../errors';
-import {
-  type InternalQueryMethod,
-} from '../types';
-import {
-  createQueryId,
-} from '../utilities';
-import {
-  maybeOne,
-} from './maybeOne';
+import { DataIntegrityError } from '../errors';
+import { type InternalQueryMethod } from '../types';
+import { createQueryId } from '../utilities';
+import { maybeOne } from './maybeOne';
 
 /**
  * Makes a query and expects exactly one result.
@@ -17,7 +9,13 @@ import {
  *
  * @throws DataIntegrityError If query returns multiple rows.
  */
-export const maybeOneFirst: InternalQueryMethod = async (log, connection, clientConfiguration, query, inheritedQueryId) => {
+export const maybeOneFirst: InternalQueryMethod = async (
+  log,
+  connection,
+  clientConfiguration,
+  query,
+  inheritedQueryId,
+) => {
   const queryId = inheritedQueryId ?? createQueryId();
 
   const row = await maybeOne(
@@ -35,9 +33,12 @@ export const maybeOneFirst: InternalQueryMethod = async (log, connection, client
   const keys = Object.keys(row);
 
   if (keys.length !== 1) {
-    log.error({
-      queryId,
-    }, 'DataIntegrityError');
+    log.error(
+      {
+        queryId,
+      },
+      'DataIntegrityError',
+    );
 
     throw new DataIntegrityError(query);
   }

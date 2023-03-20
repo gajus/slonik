@@ -1,6 +1,3 @@
-import test from 'ava';
-import delay from 'delay';
-import * as sinon from 'sinon';
 import {
   BackendTerminatedError,
   CheckIntegrityConstraintViolationError,
@@ -8,15 +5,12 @@ import {
   NotNullIntegrityConstraintViolationError,
   UniqueIntegrityConstraintViolationError,
 } from '../../../../src/errors';
-import {
-  createSqlTag,
-} from '../../../../src/factories/createSqlTag';
-import {
-  createErrorWithCode,
-} from '../../../helpers/createErrorWithCode';
-import {
-  createPool,
-} from '../../../helpers/createPool';
+import { createSqlTag } from '../../../../src/factories/createSqlTag';
+import { createErrorWithCode } from '../../../helpers/createErrorWithCode';
+import { createPool } from '../../../helpers/createPool';
+import test from 'ava';
+import delay from 'delay';
+import * as sinon from 'sinon';
 
 const sql = createSqlTag();
 
@@ -33,9 +27,7 @@ test('ends connection after promise is resolved (explicit connection)', async (t
     const queries: Array<Promise<unknown>> = [];
 
     while (queryCount-- > 0) {
-      queries.push(
-        connection.query(sql.unsafe`SELECT 1`),
-      );
+      queries.push(connection.query(sql.unsafe`SELECT 1`));
     }
 
     await Promise.all(queries);
@@ -122,10 +114,7 @@ test('adds notices observed during the query execution to the query result objec
   t.deepEqual(await queryResultPromise, {
     command: 'SELECT',
     fields: [],
-    notices: [
-      'foo',
-      'bar',
-    ] as any[],
+    notices: ['foo', 'bar'] as any[],
     rowCount: 1,
     rows: [
       {
@@ -194,15 +183,17 @@ test.skip('57P01 error causes the connection to be rejected (EXPLICIT connection
 
   const spy = sinon.spy();
 
-  const error = await t.throwsAsync(pool.connect(async (connection) => {
-    try {
-      await connection.query(sql.unsafe`SELECT 1`);
-    } catch {
-      //
-    }
+  const error = await t.throwsAsync(
+    pool.connect(async (connection) => {
+      try {
+        await connection.query(sql.unsafe`SELECT 1`);
+      } catch {
+        //
+      }
 
-    spy();
-  }));
+      spy();
+    }),
+  );
 
   t.true(error instanceof BackendTerminatedError);
   t.true(spy.called);

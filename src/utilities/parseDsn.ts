@@ -1,12 +1,6 @@
-import {
-  URL,
-} from 'url';
-import {
-  Logger,
-} from '../Logger';
-import {
-  type ConnectionOptions,
-} from '../types';
+import { Logger } from '../Logger';
+import { type ConnectionOptions } from '../types';
+import { URL } from 'url';
 
 const log = Logger.child({
   namespace: 'parseDsn',
@@ -30,7 +24,9 @@ export const parseDsn = (dsn: string): ConnectionOptions => {
   }
 
   if (url.pathname && url.pathname !== '/') {
-    connectionOptions.databaseName = decodeURIComponent(url.pathname.split('/')[1]);
+    connectionOptions.databaseName = decodeURIComponent(
+      url.pathname.split('/')[1],
+    );
   }
 
   if (url.username) {
@@ -48,9 +44,12 @@ export const parseDsn = (dsn: string): ConnectionOptions => {
   } = Object.fromEntries(url.searchParams);
 
   if (Object.keys(unsupportedOptions).length > 0) {
-    log.warn({
-      unsupportedOptions,
-    }, 'unsupported DSN parameters');
+    log.warn(
+      {
+        unsupportedOptions,
+      },
+      'unsupported DSN parameters',
+    );
   }
 
   if (applicationName) {

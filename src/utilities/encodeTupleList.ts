@@ -1,13 +1,7 @@
-import {
-  Readable,
-} from 'stream';
+import { type TypeNameIdentifier } from '../types';
 import createConcatStream from 'concat-stream';
-import {
-  rowWriter as createEncoder,
-} from 'pg-copy-streams-binary';
-import {
-  type TypeNameIdentifier,
-} from '../types';
+import { rowWriter as createEncoder } from 'pg-copy-streams-binary';
+import { Readable } from 'stream';
 
 export const encodeTupleList = async (
   tupleList: ReadonlyArray<readonly unknown[]>,
@@ -35,7 +29,9 @@ export const encodeTupleList = async (
 
     for (const tuple of tupleList) {
       if (typeof lastTupleSize === 'number' && lastTupleSize !== tuple.length) {
-        throw new Error('Each tuple in a list of tuples must have an equal number of members.');
+        throw new Error(
+          'Each tuple in a list of tuples must have an equal number of members.',
+        );
       }
 
       if (tuple.length !== columnTypes.length) {

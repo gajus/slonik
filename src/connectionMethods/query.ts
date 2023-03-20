@@ -1,15 +1,11 @@
-import {
-  type QueryResult as PgQueryResult,
-} from 'pg';
-import {
-  executeQuery,
-} from '../routines';
+import { executeQuery } from '../routines';
 import {
   type Field,
   type InternalQueryMethod,
   type Notice,
   type QueryResult,
 } from '../types';
+import { type QueryResult as PgQueryResult } from 'pg';
 
 export const query: InternalQueryMethod = async (
   connectionLogger,
@@ -25,11 +21,12 @@ export const query: InternalQueryMethod = async (
     slonikSql,
     inheritedQueryId,
     async (finalConnection, finalSql, finalValues) => {
-      const result: PgQueryResult & {notices?: Notice[], } = await finalConnection.query(
-        finalSql,
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        finalValues as any[],
-      );
+      const result: PgQueryResult & { notices?: Notice[] } =
+        await finalConnection.query(
+          finalSql,
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          finalValues as any[],
+        );
 
       const fields: Field[] = [];
 

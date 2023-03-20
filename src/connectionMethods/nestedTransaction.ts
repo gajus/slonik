@@ -1,21 +1,9 @@
-import {
-  serializeError,
-} from 'serialize-error';
-import {
-  bindTransactionConnection,
-} from '../binders';
-import {
-  TRANSACTION_ROLLBACK_ERROR_PREFIX,
-} from '../constants';
-import {
-  getPoolClientState,
-} from '../state';
-import {
-  type InternalNestedTransactionFunction,
-} from '../types';
-import {
-  createUid,
-} from '../utilities';
+import { bindTransactionConnection } from '../binders';
+import { TRANSACTION_ROLLBACK_ERROR_PREFIX } from '../constants';
+import { getPoolClientState } from '../state';
+import { type InternalNestedTransactionFunction } from '../types';
+import { createUid } from '../utilities';
+import { serializeError } from 'serialize-error';
 
 const execNestedTransaction: InternalNestedTransactionFunction = async (
   parentLog,
@@ -27,26 +15,35 @@ const execNestedTransaction: InternalNestedTransactionFunction = async (
   const poolClientState = getPoolClientState(connection);
 
   if (poolClientState.mock === false) {
-    await connection.query('SAVEPOINT slonik_savepoint_' + String(newTransactionDepth));
+    await connection.query(
+      'SAVEPOINT slonik_savepoint_' + String(newTransactionDepth),
+    );
   }
 
   try {
-    const result = await handler(bindTransactionConnection(
-      parentLog,
-      connection,
-      clientConfiguration,
-      newTransactionDepth,
-    ));
+    const result = await handler(
+      bindTransactionConnection(
+        parentLog,
+        connection,
+        clientConfiguration,
+        newTransactionDepth,
+      ),
+    );
 
     return result;
   } catch (error) {
     if (poolClientState.mock === false) {
-      await connection.query('ROLLBACK TO SAVEPOINT slonik_savepoint_' + String(newTransactionDepth));
+      await connection.query(
+        'ROLLBACK TO SAVEPOINT slonik_savepoint_' + String(newTransactionDepth),
+      );
     }
 
-    parentLog.error({
-      error: serializeError(error),
-    }, 'rolling back transaction due to an error');
+    parentLog.error(
+      {
+        error: serializeError(error),
+      },
+      'rolling back transaction due to an error',
+    );
 
     throw error;
   }
@@ -64,7 +61,8 @@ const retryNestedTransaction: InternalNestedTransactionFunction = async (
 ) => {
   const poolClientState = getPoolClientState(connection);
 
-  let remainingRetries = transactionRetryLimit ?? clientConfiguration.transactionRetryLimit;
+  let remainingRetries =
+    transactionRetryLimit ?? clientConfiguration.transactionRetryLimit;
   let attempt = 0;
   let result: Awaited<ReturnType<typeof handler>>;
 
@@ -72,17 +70,30 @@ const retryNestedTransaction: InternalNestedTransactionFunction = async (
     attempt++;
 
     try {
-      parentLog.trace({
-        attempt,
-        parentTransactionId: poolClientState.transactionId,
-      }, 'retrying nested transaction');
+      parentLog.trace(
+        {
+          attempt,
+          parentTransactionId: poolClientState.transactionId,
+        },
+        'retrying nested transaction',
+      );
 
-      result = await execNestedTransaction(parentLog, connection, clientConfiguration, handler, transactionDepth);
+      result = await execNestedTransaction(
+        parentLog,
+        connection,
+        clientConfiguration,
+        handler,
+        transactionDepth,
+      );
 
       // If the attempt succeeded break out of the loop
       break;
     } catch (error) {
-      if (typeof error.code === 'string' && error.code.startsWith(TRANSACTION_ROLLBACK_ERROR_PREFIX) && remainingRetries > 0) {
+      if (
+        typeof error.code === 'string' &&
+        error.code.startsWith(TRANSACTION_ROLLBACK_ERROR_PREFIX) &&
+        remainingRetries > 0
+      ) {
         continue;
       }
 
@@ -113,14 +124,31 @@ export const nestedTransaction: InternalNestedTransactionFunction = async (
   try {
     poolClientState.transactionDepth = newTransactionDepth;
 
-    return await execNestedTransaction(log, connection, clientConfiguration, handler, newTransactionDepth);
+    return await execNestedTransaction(
+      log,
+      connection,
+      clientConfiguration,
+      handler,
+      newTransactionDepth,
+    );
   } catch (error) {
-    const transactionRetryLimitToUse = transactionRetryLimit ?? clientConfiguration.transactionRetryLimit;
+    const transactionRetryLimitToUse =
+      transactionRetryLimit ?? clientConfiguration.transactionRetryLimit;
 
-    const shouldRetry = typeof error.code === 'string' && error.code.startsWith(TRANSACTION_ROLLBACK_ERROR_PREFIX) && transactionRetryLimitToUse > 0;
+    const shouldRetry =
+      typeof error.code === 'string' &&
+      error.code.startsWith(TRANSACTION_ROLLBACK_ERROR_PREFIX) &&
+      transactionRetryLimitToUse > 0;
 
     if (shouldRetry) {
-      return await retryNestedTransaction(parentLog, connection, clientConfiguration, handler, newTransactionDepth, transactionRetryLimit);
+      return await retryNestedTransaction(
+        parentLog,
+        connection,
+        clientConfiguration,
+        handler,
+        newTransactionDepth,
+        transactionRetryLimit,
+      );
     } else {
       throw error;
     }

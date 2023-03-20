@@ -1,32 +1,23 @@
-import {
-  type DeferredPromise,
-} from 'p-defer';
-import {
-  type Pool as PgPool,
-  type PoolClient as PgClientPool,
-} from 'pg';
-import {
-  UnexpectedStateError,
-} from './errors';
-import {
-  type TypeOverrides,
-} from './types';
+import { UnexpectedStateError } from './errors';
+import { type TypeOverrides } from './types';
+import { type DeferredPromise } from 'p-defer';
+import { type Pool as PgPool, type PoolClient as PgClientPool } from 'pg';
 
 type PoolState = {
-  ended: boolean,
-  mock: boolean,
-  poolId: string,
-  typeOverrides: Promise<TypeOverrides> | null,
+  ended: boolean;
+  mock: boolean;
+  poolId: string;
+  typeOverrides: Promise<TypeOverrides> | null;
 };
 
 type PoolClientState = {
-  activeQuery?: DeferredPromise<unknown>,
-  connectionId: string,
-  mock: boolean,
-  poolId: string,
-  terminated: Error | null,
-  transactionDepth: number | null,
-  transactionId: string | null,
+  activeQuery?: DeferredPromise<unknown>;
+  connectionId: string;
+  mock: boolean;
+  poolId: string;
+  terminated: Error | null;
+  transactionDepth: number | null;
+  transactionId: string | null;
 };
 
 export const poolStateMap = new WeakMap<PgPool, PoolState>();
@@ -43,7 +34,9 @@ export const getPoolState = (pool: PgPool): PoolState => {
   return poolState;
 };
 
-export const getPoolClientState = (poolClient: PgClientPool): PoolClientState => {
+export const getPoolClientState = (
+  poolClient: PgClientPool,
+): PoolClientState => {
   const poolClientState = poolClientStateMap.get(poolClient);
 
   if (!poolClientState) {

@@ -1,48 +1,30 @@
+import { bindPoolConnection } from '../binders';
+import { ConnectionError, UnexpectedStateError } from '../errors';
+import { getPoolClientState, getPoolState, poolClientStateMap } from '../state';
 import {
-  type Pool as PgPool,
-  type PoolClient as PgPoolClient,
-} from 'pg';
-import {
-  serializeError,
-} from 'serialize-error';
-import {
-  bindPoolConnection,
-} from '../binders';
-import {
-  ConnectionError,
-  UnexpectedStateError,
-} from '../errors';
-import {
-  getPoolClientState,
-  getPoolState,
-  poolClientStateMap,
-} from '../state';
-import {
-  type MaybePromise,
   type ClientConfiguration,
   type Connection,
   type DatabasePool,
   type DatabasePoolConnection,
   type Logger,
+  type MaybePromise,
   type QuerySqlToken,
 } from '../types';
-import {
-  createUid,
-} from '../utilities';
+import { createUid } from '../utilities';
+import { type Pool as PgPool, type PoolClient as PgPoolClient } from 'pg';
+import { serializeError } from 'serialize-error';
 
 type ConnectionHandlerType = (
   connectionLog: Logger,
   connection: PgPoolClient,
   boundConnection: DatabasePoolConnection,
-  clientConfiguration: ClientConfiguration
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
+  clientConfiguration: ClientConfiguration,
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
 ) => MaybePromise<any>;
 
 type PoolHandlerType = (pool: DatabasePool) => Promise<unknown>;
 
-const terminatePoolConnection = (
-  connection: PgPoolClient,
-) => {
+const terminatePoolConnection = (connection: PgPoolClient) => {
   // tells the pool to destroy this client
   connection.release(true);
 };
@@ -83,7 +65,9 @@ export const createConnection = async (
   const poolState = getPoolState(pool);
 
   if (poolState.ended) {
-    throw new UnexpectedStateError('Connection pool shutdown has been already initiated. Cannot create a new connection.');
+    throw new UnexpectedStateError(
+      'Connection pool shutdown has been already initiated. Cannot create a new connection.',
+    );
   }
 
   for (const interceptor of clientConfiguration.interceptors) {
@@ -122,10 +106,13 @@ export const createConnection = async (
 
       break;
     } catch (error) {
-      parentLog.error({
-        error: serializeError(error),
-        remainingConnectionRetryLimit,
-      }, 'cannot establish connection');
+      parentLog.error(
+        {
+          error: serializeError(error),
+          remainingConnectionRetryLimit,
+        },
+        'cannot establish connection',
+      );
 
       if (remainingConnectionRetryLimit > 1) {
         parentLog.info('retrying connection');
@@ -143,9 +130,7 @@ export const createConnection = async (
 
   const poolClientState = getPoolClientState(connection);
 
-  const {
-    connectionId,
-  } = poolClientState;
+  const { connectionId } = poolClientState;
 
   const connectionLog = parentLog.child({
     connectionId,
@@ -167,7 +152,10 @@ export const createConnection = async (
   try {
     for (const interceptor of clientConfiguration.interceptors) {
       if (interceptor.afterPoolConnection) {
-        await interceptor.afterPoolConnection(connectionContext, boundConnection);
+        await interceptor.afterPoolConnection(
+          connectionContext,
+          boundConnection,
+        );
       }
     }
   } catch (error) {
@@ -194,7 +182,10 @@ export const createConnection = async (
   try {
     for (const interceptor of clientConfiguration.interceptors) {
       if (interceptor.beforePoolConnectionRelease) {
-        await interceptor.beforePoolConnectionRelease(connectionContext, boundConnection);
+        await interceptor.beforePoolConnectionRelease(
+          connectionContext,
+          boundConnection,
+        );
       }
     }
   } catch (error) {

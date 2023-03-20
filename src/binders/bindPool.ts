@@ -1,20 +1,12 @@
-import {
-  type Pool as PgPool,
-} from 'pg';
-import {
-  transaction,
-} from '../connectionMethods';
-import {
-  createConnection,
-} from '../factories';
-import {
-  getPoolState,
-} from '../state';
+import { transaction } from '../connectionMethods';
+import { createConnection } from '../factories';
+import { getPoolState } from '../state';
 import {
   type ClientConfiguration,
   type DatabasePool,
   type Logger,
 } from '../types';
+import { type Pool as PgPool } from 'pg';
 
 export const bindPool = (
   parentLog: Logger,
@@ -28,11 +20,7 @@ export const bindPool = (
         pool,
         clientConfiguration,
         'IMPLICIT_QUERY',
-        async (
-          connectionLog,
-          connection,
-          boundConnection,
-        ) => {
+        async (connectionLog, connection, boundConnection) => {
           return await boundConnection.any(query);
         },
         async (newPool) => {
@@ -47,11 +35,7 @@ export const bindPool = (
         pool,
         clientConfiguration,
         'IMPLICIT_QUERY',
-        async (
-          connectionLog,
-          connection,
-          boundConnection,
-        ) => {
+        async (connectionLog, connection, boundConnection) => {
           return await boundConnection.anyFirst(query);
         },
         async (newPool) => {
@@ -67,11 +51,7 @@ export const bindPool = (
         pool,
         clientConfiguration,
         'EXPLICIT',
-        async (
-          connectionLog,
-          connection,
-          boundConnection,
-        ) => {
+        async (connectionLog, connection, boundConnection) => {
           return await connectionHandler(boundConnection);
         },
         async (newPool) => {
@@ -85,11 +65,7 @@ export const bindPool = (
         pool,
         clientConfiguration,
         'IMPLICIT_QUERY',
-        async (
-          connectionLog,
-          connection,
-          boundConnection,
-        ) => {
+        async (connectionLog, connection, boundConnection) => {
           return await boundConnection.copyFromBinary(
             copyQuery,
             values,
@@ -97,11 +73,7 @@ export const bindPool = (
           );
         },
         async (newPool) => {
-          return await newPool.copyFromBinary(
-            copyQuery,
-            values,
-            columnTypes,
-          );
+          return await newPool.copyFromBinary(copyQuery, values, columnTypes);
         },
       );
     },
@@ -118,11 +90,7 @@ export const bindPool = (
         pool,
         clientConfiguration,
         'IMPLICIT_QUERY',
-        async (
-          connectionLog,
-          connection,
-          boundConnection,
-        ) => {
+        async (connectionLog, connection, boundConnection) => {
           return await boundConnection.exists(query);
         },
         async (newPool) => {
@@ -147,11 +115,7 @@ export const bindPool = (
         pool,
         clientConfiguration,
         'IMPLICIT_QUERY',
-        async (
-          connectionLog,
-          connection,
-          boundConnection,
-        ) => {
+        async (connectionLog, connection, boundConnection) => {
           return await boundConnection.many(query);
         },
         async (newPool) => {
@@ -166,11 +130,7 @@ export const bindPool = (
         pool,
         clientConfiguration,
         'IMPLICIT_QUERY',
-        async (
-          connectionLog,
-          connection,
-          boundConnection,
-        ) => {
+        async (connectionLog, connection, boundConnection) => {
           return await boundConnection.manyFirst(query);
         },
         async (newPool) => {
@@ -185,11 +145,7 @@ export const bindPool = (
         pool,
         clientConfiguration,
         'IMPLICIT_QUERY',
-        async (
-          connectionLog,
-          connection,
-          boundConnection,
-        ) => {
+        async (connectionLog, connection, boundConnection) => {
           return await boundConnection.maybeOne(query);
         },
         async (newPool) => {
@@ -204,11 +160,7 @@ export const bindPool = (
         pool,
         clientConfiguration,
         'IMPLICIT_QUERY',
-        async (
-          connectionLog,
-          connection,
-          boundConnection,
-        ) => {
+        async (connectionLog, connection, boundConnection) => {
           return await boundConnection.maybeOneFirst(query);
         },
         async (newPool) => {
@@ -223,11 +175,7 @@ export const bindPool = (
         pool,
         clientConfiguration,
         'IMPLICIT_QUERY',
-        async (
-          connectionLog,
-          connection,
-          boundConnection,
-        ) => {
+        async (connectionLog, connection, boundConnection) => {
           return await boundConnection.one(query);
         },
         async (newPool) => {
@@ -242,11 +190,7 @@ export const bindPool = (
         pool,
         clientConfiguration,
         'IMPLICIT_QUERY',
-        async (
-          connectionLog,
-          connection,
-          boundConnection,
-        ) => {
+        async (connectionLog, connection, boundConnection) => {
           return await boundConnection.oneFirst(query);
         },
         async (newPool) => {
@@ -261,11 +205,7 @@ export const bindPool = (
         pool,
         clientConfiguration,
         'IMPLICIT_QUERY',
-        async (
-          connectionLog,
-          connection,
-          boundConnection,
-        ) => {
+        async (connectionLog, connection, boundConnection) => {
           return await boundConnection.query(query);
         },
         async (newPool) => {
@@ -280,12 +220,12 @@ export const bindPool = (
         pool,
         clientConfiguration,
         'IMPLICIT_QUERY',
-        async (
-          connectionLog,
-          connection,
-          boundConnection,
-        ) => {
-          return await boundConnection.stream(streamQuery, streamHandler, config);
+        async (connectionLog, connection, boundConnection) => {
+          return await boundConnection.stream(
+            streamQuery,
+            streamHandler,
+            config,
+          );
         },
         async (newPool) => {
           return await newPool.stream(streamQuery, streamHandler, config);
@@ -300,7 +240,13 @@ export const bindPool = (
         clientConfiguration,
         'IMPLICIT_TRANSACTION',
         async (connectionLog, connection) => {
-          return await transaction(connectionLog, connection, clientConfiguration, transactionHandler, transactionRetryLimit);
+          return await transaction(
+            connectionLog,
+            connection,
+            clientConfiguration,
+            transactionHandler,
+            transactionRetryLimit,
+          );
         },
         async (newPool) => {
           return await newPool.transaction(transactionHandler);

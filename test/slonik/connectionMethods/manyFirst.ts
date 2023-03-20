@@ -1,14 +1,7 @@
+import { DataIntegrityError, NotFoundError } from '../../../src/errors';
+import { createSqlTag } from '../../../src/factories/createSqlTag';
+import { createPool } from '../../helpers/createPool';
 import test from 'ava';
-import {
-  DataIntegrityError,
-  NotFoundError,
-} from '../../../src/errors';
-import {
-  createSqlTag,
-} from '../../../src/factories/createSqlTag';
-import {
-  createPool,
-} from '../../helpers/createPool';
 
 const sql = createSqlTag();
 
@@ -28,10 +21,7 @@ test('returns values of the query result rows', async (t) => {
 
   const result = await pool.manyFirst(sql.unsafe`SELECT 1`);
 
-  t.deepEqual(result, [
-    1,
-    2,
-  ]);
+  t.deepEqual(result, [1, 2]);
 });
 
 test('throws an error if no rows are returned', async (t) => {

@@ -1,13 +1,9 @@
-import {
-  stringify,
-} from 'querystring';
-import {
-  type ConnectionOptions,
-} from '../types';
+import { type ConnectionOptions } from '../types';
+import { stringify } from 'querystring';
 
 type NamedParameters = {
-  application_name?: string,
-  sslmode?: string,
+  application_name?: string;
+  sslmode?: string;
 };
 
 export const stringifyDsn = (connectionOptions: ConnectionOptions): string => {
@@ -21,20 +17,13 @@ export const stringifyDsn = (connectionOptions: ConnectionOptions): string => {
     username,
   } = connectionOptions;
 
-  const tokens = [
-    'postgresql://',
-  ];
+  const tokens = ['postgresql://'];
 
   if (username) {
-    tokens.push(
-      encodeURIComponent(username),
-    );
+    tokens.push(encodeURIComponent(username));
 
     if (password) {
-      tokens.push(
-        ':',
-        encodeURIComponent(password),
-      );
+      tokens.push(':', encodeURIComponent(password));
     }
 
     tokens.push('@');
@@ -43,17 +32,11 @@ export const stringifyDsn = (connectionOptions: ConnectionOptions): string => {
   tokens.push(host ?? '');
 
   if (port) {
-    tokens.push(
-      ':',
-      String(port),
-    );
+    tokens.push(':', String(port));
   }
 
   if (databaseName) {
-    tokens.push(
-      '/',
-      encodeURIComponent(databaseName),
-    );
+    tokens.push('/', encodeURIComponent(databaseName));
   }
 
   const namedParameters: NamedParameters = {};
@@ -68,10 +51,7 @@ export const stringifyDsn = (connectionOptions: ConnectionOptions): string => {
   }
 
   if (Object.keys(namedParameters).length > 0) {
-    tokens.push(
-      '?',
-      stringify(namedParameters as {}),
-    );
+    tokens.push('?', stringify(namedParameters as {}));
   }
 
   return tokens.join('');

@@ -1,29 +1,21 @@
-import {
-  Logger,
-} from '../Logger';
-import {
-  bindPool,
-} from '../binders/bindPool';
-import {
-  poolStateMap,
-} from '../state';
+import { bindPool } from '../binders/bindPool';
+import { Logger } from '../Logger';
+import { poolStateMap } from '../state';
 import {
   type ClientConfigurationInput,
   type DatabasePool,
   type MockPoolOverrides,
 } from '../types';
-import {
-  createUid,
-} from '../utilities';
-import {
-  createClientConfiguration,
-} from './createClientConfiguration';
+import { createUid } from '../utilities';
+import { createClientConfiguration } from './createClientConfiguration';
 
 export const createMockPool = (
   overrides: MockPoolOverrides,
   clientConfigurationInput?: ClientConfigurationInput,
 ): DatabasePool => {
-  const clientConfiguration = createClientConfiguration(clientConfigurationInput);
+  const clientConfiguration = createClientConfiguration(
+    clientConfigurationInput,
+  );
 
   const poolId = createUid();
 
@@ -38,12 +30,12 @@ export const createMockPool = (
         on: () => {},
         query: overrides.query,
         release: () => {},
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
       } as any;
 
       return connection;
     },
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
   } as any;
 
   poolStateMap.set(pool, {
@@ -53,9 +45,5 @@ export const createMockPool = (
     typeOverrides: null,
   });
 
-  return bindPool(
-    poolLog,
-    pool,
-    clientConfiguration,
-  );
+  return bindPool(poolLog, pool, clientConfiguration);
 };

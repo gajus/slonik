@@ -1,9 +1,8 @@
-import {
-  type QueryResultRow,
-  type QueryResult,
-} from '../types';
+import { type QueryResult, type QueryResultRow } from '../types';
 
-export const createMockQueryResult = (rows: readonly QueryResultRow[]): QueryResult<QueryResultRow> => {
+export const createMockQueryResult = (
+  rows: readonly QueryResultRow[],
+): QueryResult<QueryResultRow> => {
   return {
     command: 'SELECT',
     fields: [],

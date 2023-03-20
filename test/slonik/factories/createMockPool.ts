@@ -1,15 +1,8 @@
+import { DataIntegrityError, sql } from '../../../src';
+import { createMockPool } from '../../../src/factories/createMockPool';
+import { createMockQueryResult } from '../../../src/factories/createMockQueryResult';
 import test from 'ava';
 import * as sinon from 'sinon';
-import {
-  DataIntegrityError,
-  sql,
-} from '../../../src';
-import {
-  createMockPool,
-} from '../../../src/factories/createMockPool';
-import {
-  createMockQueryResult,
-} from '../../../src/factories/createMockQueryResult';
 
 test('executes a mock query (pool.query)', async (t) => {
   t.plan(4);
@@ -42,9 +35,7 @@ test('executes a mock query (pool.query)', async (t) => {
 
   t.is(query.firstCall.args[0].trim(), 'SELECT $1');
 
-  t.deepEqual(query.firstCall.args[1], [
-    'foo',
-  ]);
+  t.deepEqual(query.firstCall.args[1], ['foo']);
 });
 
 test('create a mock pool and executes a mock query (pool.connect)', async (t) => {
@@ -80,9 +71,7 @@ test('create a mock pool and executes a mock query (pool.connect)', async (t) =>
 
   t.is(query.firstCall.args[0].trim(), 'SELECT $1');
 
-  t.deepEqual(query.firstCall.args[1], [
-    'foo',
-  ]);
+  t.deepEqual(query.firstCall.args[1], ['foo']);
 });
 
 test('executes a mock transaction', async (t) => {
@@ -110,9 +99,7 @@ test('executes a mock transaction', async (t) => {
 
   t.is(query.firstCall.args[0].trim(), 'SELECT $1');
 
-  t.deepEqual(query.firstCall.args[1], [
-    'foo',
-  ]);
+  t.deepEqual(query.firstCall.args[1], ['foo']);
 });
 
 test('executes a mock transaction (nested)', async (t) => {
@@ -142,9 +129,7 @@ test('executes a mock transaction (nested)', async (t) => {
 
   t.is(query.firstCall.args[0].trim(), 'SELECT $1');
 
-  t.deepEqual(query.firstCall.args[1], [
-    'foo',
-  ]);
+  t.deepEqual(query.firstCall.args[1], ['foo']);
 });
 
 test('enforces result assertions', async (t) => {

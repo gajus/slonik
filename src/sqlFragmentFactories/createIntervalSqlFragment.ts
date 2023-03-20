@@ -1,13 +1,6 @@
-import {
-  z,
-} from 'zod';
-import {
-  InvalidInputError,
-} from '../errors';
-import {
-  type IntervalSqlToken,
-  type SqlFragment,
-} from '../types';
+import { InvalidInputError } from '../errors';
+import { type IntervalSqlToken, type SqlFragment } from '../types';
+import { z } from 'zod';
 
 const IntervalInput = z
   .object({

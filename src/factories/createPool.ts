@@ -1,36 +1,14 @@
-import {
-  Client as PgClient,
-  Pool as PgPool,
-} from 'pg';
+import { bindPool } from '../binders/bindPool';
+import { Logger } from '../Logger';
+import { createTypeOverrides } from '../routines';
+import { poolStateMap } from '../state';
+import { type ClientConfigurationInput, type DatabasePool } from '../types';
+import { createUid } from '../utilities';
+import { createClientConfiguration } from './createClientConfiguration';
+import { createPoolConfiguration } from './createPoolConfiguration';
+import { Client as PgClient, Pool as PgPool } from 'pg';
 import type pgTypes from 'pg-types';
-import {
-  serializeError,
-} from 'serialize-error';
-import {
-  Logger,
-} from '../Logger';
-import {
-  bindPool,
-} from '../binders/bindPool';
-import {
-  createTypeOverrides,
-} from '../routines';
-import {
-  poolStateMap,
-} from '../state';
-import {
-  type ClientConfigurationInput,
-  type DatabasePool,
-} from '../types';
-import {
-  createUid,
-} from '../utilities';
-import {
-  createClientConfiguration,
-} from './createClientConfiguration';
-import {
-  createPoolConfiguration,
-} from './createPoolConfiguration';
+import { serializeError } from 'serialize-error';
 
 /**
  * @param connectionUri PostgreSQL [Connection URI](https://www.postgresql.org/docs/current/libpq-connect.html#LIBPQ-CONNSTRING).
@@ -39,7 +17,9 @@ export const createPool = async (
   connectionUri: string,
   clientConfigurationInput?: ClientConfigurationInput,
 ): Promise<DatabasePool> => {
-  const clientConfiguration = createClientConfiguration(clientConfigurationInput);
+  const clientConfiguration = createClientConfiguration(
+    clientConfigurationInput,
+  );
 
   const poolId = createUid();
 
@@ -47,7 +27,10 @@ export const createPool = async (
     poolId,
   });
 
-  const poolConfiguration = createPoolConfiguration(connectionUri, clientConfiguration);
+  const poolConfiguration = createPoolConfiguration(
+    connectionUri,
+    clientConfiguration,
+  );
 
   let Pool = clientConfiguration.PgPool;
 
@@ -97,54 +80,65 @@ export const createPool = async (
   // istanbul ignore next
   pool.on('connect', (client) => {
     client.on('error', (error) => {
-      poolLog.error({
-        error: serializeError(error),
-      }, 'client error');
+      poolLog.error(
+        {
+          error: serializeError(error),
+        },
+        'client error',
+      );
     });
 
     client.on('notice', (notice) => {
-      poolLog.info({
-        notice: {
-          level: notice.name,
-          message: notice.message,
+      poolLog.info(
+        {
+          notice: {
+            level: notice.name,
+            message: notice.message,
+          },
         },
-      }, 'notice message');
+        'notice message',
+      );
     });
 
-    poolLog.debug({
-      stats: {
-        idleConnectionCount: pool.idleCount,
-        totalConnectionCount: pool.totalCount,
-        waitingRequestCount: pool.waitingCount,
+    poolLog.debug(
+      {
+        stats: {
+          idleConnectionCount: pool.idleCount,
+          totalConnectionCount: pool.totalCount,
+          waitingRequestCount: pool.waitingCount,
+        },
       },
-    }, 'created a new client connection');
+      'created a new client connection',
+    );
   });
 
   // istanbul ignore next
   pool.on('acquire', () => {
-    poolLog.debug({
-      stats: {
-        idleConnectionCount: pool.idleCount,
-        totalConnectionCount: pool.totalCount,
-        waitingRequestCount: pool.waitingCount,
+    poolLog.debug(
+      {
+        stats: {
+          idleConnectionCount: pool.idleCount,
+          totalConnectionCount: pool.totalCount,
+          waitingRequestCount: pool.waitingCount,
+        },
       },
-    }, 'client is checked out from the pool');
+      'client is checked out from the pool',
+    );
   });
 
   // istanbul ignore next
   pool.on('remove', () => {
-    poolLog.debug({
-      stats: {
-        idleConnectionCount: pool.idleCount,
-        totalConnectionCount: pool.totalCount,
-        waitingRequestCount: pool.waitingCount,
+    poolLog.debug(
+      {
+        stats: {
+          idleConnectionCount: pool.idleCount,
+          totalConnectionCount: pool.totalCount,
+          waitingRequestCount: pool.waitingCount,
+        },
       },
-    }, 'client connection is closed and removed from the client pool');
+      'client connection is closed and removed from the client pool',
+    );
   });
 
-  return bindPool(
-    poolLog,
-    pool,
-    clientConfiguration,
-  );
+  return bindPool(poolLog, pool, clientConfiguration);
 };

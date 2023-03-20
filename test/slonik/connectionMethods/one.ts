@@ -1,20 +1,9 @@
+import { DataIntegrityError, NotFoundError } from '../../../src/errors';
+import { createSqlTag } from '../../../src/factories/createSqlTag';
+import { createPool } from '../../helpers/createPool';
 import test from 'ava';
-import {
-  expectTypeOf,
-} from 'expect-type';
-import {
-  z,
-} from 'zod';
-import {
-  DataIntegrityError,
-  NotFoundError,
-} from '../../../src/errors';
-import {
-  createSqlTag,
-} from '../../../src/factories/createSqlTag';
-import {
-  createPool,
-} from '../../helpers/createPool';
+import { expectTypeOf } from 'expect-type';
+import { z } from 'zod';
 
 const sql = createSqlTag();
 
@@ -86,7 +75,7 @@ test('describes zod object associated with the query', async (t) => {
 
   const result = await pool.one(query);
 
-  expectTypeOf(result).toMatchTypeOf<{foo: number, }>();
+  expectTypeOf(result).toMatchTypeOf<{ foo: number }>();
 
   t.deepEqual(result, {
     foo: 1,
