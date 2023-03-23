@@ -5,6 +5,7 @@
     "url": "http://gajus.com"
   },
   "dependencies": {
+    "@types/pg": "^8.6.6",
     "concat-stream": "^2.0.0",
     "es6-error": "^4.1.1",
     "get-stack-trace": "^2.1.1",
