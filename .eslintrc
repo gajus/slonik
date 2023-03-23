@@ -1,6 +1,7 @@
 {
   "extends": "canonical/auto",
   "ignorePatterns": [
+    "dist",
     "package-lock.json"
   ],
   "overrides": [
