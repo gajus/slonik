@@ -7,6 +7,5 @@ node_modules
 !.github
 !.gitignore
 !.ncurc.js
-!.npmignore
 !.README
 !.releaserc
