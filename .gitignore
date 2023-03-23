@@ -3,7 +3,6 @@ dist
 node_modules
 *.log
 .*
-!.editorconfig
 !.eslintrc
 !.github
 !.gitignore
