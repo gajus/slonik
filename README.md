@@ -1344,7 +1344,7 @@ import {
 } from 'slonik';
 try {
 } catch (error) {
-  if (error extends SchemaValidationError) {
+  if (error instanceof SchemaValidationError) {
     // Handle scheme validation error
   }
 }
