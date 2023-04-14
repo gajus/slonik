@@ -97,6 +97,7 @@ export const createConnection = async (
 
       poolClientStateMap.set(connection, {
         connectionId: createUid(),
+        ignoreCommit: poolState.ignoreCommit,
         mock: poolState.mock,
         poolId: poolState.poolId,
         terminated: null,
