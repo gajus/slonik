@@ -38,7 +38,10 @@ const execTransaction: InternalTransactionFunction = async (
       throw new BackendTerminatedError(poolClientState.terminated);
     }
 
-    if (poolClientState.mock === false) {
+    if (
+      poolClientState.mock === false &&
+      poolClientState.ignoreCommit === false
+    ) {
       await connection.query('COMMIT');
     }
 

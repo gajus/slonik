@@ -17,6 +17,7 @@ export const createClientConfiguration = (
     connectionTimeout: 5_000,
     idleInTransactionSessionTimeout: 60_000,
     idleTimeout: 5_000,
+    ignoreCommit: false,
     interceptors: [],
     maximumPoolSize: 10,
     queryRetryLimit: 5,

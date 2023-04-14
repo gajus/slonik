@@ -100,6 +100,10 @@ export type ClientConfiguration = {
    */
   readonly idleTimeout: number | 'DISABLE_TIMEOUT';
   /**
+   * Do not send COMMIT after successful transaction. (Default: false)
+   */
+  readonly ignoreCommit: boolean;
+  /**
    * An array of [Slonik interceptors](https://github.com/gajus/slonik#slonik-interceptors).
    */
   readonly interceptors: readonly Interceptor[];

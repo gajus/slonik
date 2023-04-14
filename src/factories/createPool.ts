@@ -72,6 +72,7 @@ export const createPool = async (
 
   poolStateMap.set(pool, {
     ended: false,
+    ignoreCommit: clientConfiguration.ignoreCommit,
     mock: false,
     poolId,
     typeOverrides: null,
