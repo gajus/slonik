@@ -44,7 +44,7 @@ export const createPool = async (
 
   poolStateMap.set(internalPool, {
     ended: false,
-    ignoreCommit: false,
+    ignoreCommitAndRollback: false,
     mock: false,
     poolId: '1',
     typeOverrides: null,
@@ -62,7 +62,7 @@ export const createPool = async (
     connectionTimeout: 5_000,
     idleInTransactionSessionTimeout: 5_000,
     idleTimeout: 5_000,
-    ignoreCommit: false,
+    ignoreCommitAndRollback: false,
     interceptors: [],
     maximumPoolSize: 1,
     queryRetryLimit: 1,

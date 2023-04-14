@@ -5,7 +5,7 @@ import { type Pool as PgPool, type PoolClient as PgClientPool } from 'pg';
 
 type PoolState = {
   ended: boolean;
-  ignoreCommit: boolean;
+  ignoreCommitAndRollback: boolean;
   mock: boolean;
   poolId: string;
   typeOverrides: Promise<TypeOverrides> | null;
@@ -14,7 +14,7 @@ type PoolState = {
 type PoolClientState = {
   activeQuery?: DeferredPromise<unknown>;
   connectionId: string;
-  ignoreCommit: boolean;
+  ignoreCommitAndRollback: boolean;
   mock: boolean;
   poolId: string;
   terminated: Error | null;

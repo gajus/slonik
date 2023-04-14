@@ -8,7 +8,7 @@ const defaultConfiguration = {
   connectionTimeout: 5_000,
   idleInTransactionSessionTimeout: 60_000,
   idleTimeout: 5_000,
-  ignoreCommit: false,
+  ignoreCommitAndRollback: false,
   interceptors: [],
   maximumPoolSize: 10,
   queryRetryLimit: 5,

@@ -102,7 +102,7 @@ export type ClientConfiguration = {
   /**
    * Do not send COMMIT after successful transaction. (Default: false)
    */
-  readonly ignoreCommit: boolean;
+  readonly ignoreCommitAndRollback: boolean;
   /**
    * An array of [Slonik interceptors](https://github.com/gajus/slonik#slonik-interceptors).
    */

@@ -11,7 +11,7 @@ createIntegrationTests(test, PgPool);
 
 test('does not break out of a transaction', async (t) => {
   const pool = await createPool(t.context.dsn, {
-    ignoreCommit: true,
+    ignoreCommitAndRollback: true,
     PgPool,
   });
 

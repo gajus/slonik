@@ -30,7 +30,7 @@ beforeEach((t) => {
 
   poolClientStateMap.set(t.context.connection, {
     connectionId: '1',
-    ignoreCommit: false,
+    ignoreCommitAndRollback: false,
     mock: true,
     poolId: '1',
     terminated: null,
@@ -163,7 +163,7 @@ test('transaction errors are not handled if the function was called by a transac
 
   poolClientStateMap.set(connection, {
     connectionId: '1',
-    ignoreCommit: false,
+    ignoreCommitAndRollback: false,
     mock: true,
     poolId: '1',
     terminated: null,

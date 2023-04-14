@@ -40,7 +40,7 @@ export const createMockPool = (
 
   poolStateMap.set(pool, {
     ended: false,
-    ignoreCommit: true,
+    ignoreCommitAndRollback: true,
     mock: true,
     poolId,
     typeOverrides: null,

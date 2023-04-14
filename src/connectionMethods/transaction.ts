@@ -40,7 +40,7 @@ const execTransaction: InternalTransactionFunction = async (
 
     if (
       poolClientState.mock === false &&
-      poolClientState.ignoreCommit === false
+      poolClientState.ignoreCommitAndRollback === false
     ) {
       await connection.query('COMMIT');
     }
@@ -48,7 +48,10 @@ const execTransaction: InternalTransactionFunction = async (
     return result;
   } catch (error) {
     if (!poolClientState.terminated) {
-      if (poolClientState.mock === false) {
+      if (
+        poolClientState.mock === false &&
+        poolClientState.ignoreCommitAndRollback === false
+      ) {
         await connection.query('ROLLBACK');
       }
 
