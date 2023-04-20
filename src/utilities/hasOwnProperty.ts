@@ -1,6 +1,5 @@
 /**
  * A stricter type guard.
- *
  * @see https://tsplay.dev/WK8zGw
  */
 export const hasOwnProperty = <X extends {}, Y extends PropertyKey>(

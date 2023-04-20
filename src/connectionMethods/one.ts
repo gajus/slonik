@@ -5,7 +5,6 @@ import { query } from './query';
 
 /**
  * Makes a query and expects exactly one result.
- *
  * @throws NotFoundError If query returns no rows.
  * @throws DataIntegrityError If query returns multiple rows.
  */
