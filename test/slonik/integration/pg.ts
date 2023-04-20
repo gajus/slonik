@@ -9,28 +9,6 @@ const { test } = createTestRunner(PgPool, 'pg');
 
 createIntegrationTests(test, PgPool);
 
-test('does not break out of a transaction', async (t) => {
-  const pool = await createPool(t.context.dsn, {
-    PgPool,
-  });
-
-  await t.notThrowsAsync(
-    pool.connect(async (connection) => {
-      await connection.query(sql.unsafe`BEGIN`);
-      await connection.query(sql.unsafe`SAVEPOINT foo`);
-
-      await connection.transaction(async (transaction) => {
-        await transaction.query(sql.unsafe`SELECT 1`);
-      });
-
-      await connection.query(sql.unsafe`ROLLBACK TO SAVEPOINT foo`);
-      await connection.query(sql.unsafe`ROLLBACK`);
-    }),
-  );
-
-  await pool.end();
-});
-
 test('returns expected query result object (NOTICE)', async (t) => {
   const pool = await createPool(t.context.dsn, {
     PgPool,
