@@ -16,18 +16,19 @@ test('creates an empty make_interval invocation', (t) => {
 
 test('creates an interval', (t) => {
   const query = sql.fragment`SELECT ${sql.interval({
-    days: 3,
-    hours: 4,
-    minutes: 5,
+    days: 4,
+    hours: 5,
+    minutes: 6,
     months: 2,
-    seconds: 6,
+    seconds: 7,
+    weeks: 3,
     years: 1,
   })}`;
 
   t.deepEqual(query, {
-    sql: 'SELECT make_interval(years => $1, months => $2, days => $3, hours => $4, mins => $5, secs => $6)',
+    sql: 'SELECT make_interval(years => $1, months => $2, weeks => $3, days => $4, hours => $5, mins => $6, secs => $7)',
     type: FragmentToken,
-    values: [1, 2, 3, 4, 5, 6],
+    values: [1, 2, 3, 4, 5, 6, 7],
   });
 });
 
