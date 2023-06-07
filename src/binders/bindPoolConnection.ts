@@ -1,6 +1,5 @@
 import { any } from '../connectionMethods/any';
 import { anyFirst } from '../connectionMethods/anyFirst';
-import { copyFromBinary } from '../connectionMethods/copyFromBinary';
 import { exists } from '../connectionMethods/exists';
 import { many } from '../connectionMethods/many';
 import { manyFirst } from '../connectionMethods/manyFirst';
@@ -29,16 +28,6 @@ export const bindPoolConnection = (
     },
     anyFirst: (slonikSql) => {
       return anyFirst(parentLog, connection, clientConfiguration, slonikSql);
-    },
-    copyFromBinary: async (slonikSql, values, columnTypes) => {
-      return await copyFromBinary(
-        parentLog,
-        connection,
-        clientConfiguration,
-        slonikSql,
-        values,
-        columnTypes,
-      );
     },
     exists: async (slonikSql) => {
       return await exists(

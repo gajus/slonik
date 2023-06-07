@@ -22,7 +22,7 @@ export const getStackTrace = () => {
   return trail.map((callSite) => {
     return {
       columnNumber: callSite.getColumnNumber(),
-      fileName: callSite.getFileName(),
+      fileName: callSite.getFileName() ?? null,
       functionName: callSite.getFunctionName(),
       lineNumber: callSite.getLineNumber(),
     };

@@ -59,24 +59,6 @@ export const bindPool = (
         },
       );
     },
-    copyFromBinary: async (copyQuery, values, columnTypes) => {
-      return await createConnection(
-        parentLog,
-        pool,
-        clientConfiguration,
-        'IMPLICIT_QUERY',
-        async (connectionLog, connection, boundConnection) => {
-          return await boundConnection.copyFromBinary(
-            copyQuery,
-            values,
-            columnTypes,
-          );
-        },
-        async (newPool) => {
-          return await newPool.copyFromBinary(copyQuery, values, columnTypes);
-        },
-      );
-    },
     end: async () => {
       const poolState = getPoolState(pool);
 

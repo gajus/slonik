@@ -48,65 +48,6 @@ pool.oneFirst(sql.unsafe`
 `)
 ```
 
-### `copyFromBinary`
-
-```ts
-(
-  streamQuery: QuerySqlToken,
-  tupleList: any[][],
-  columnTypes: TypeNameIdentifier[],
-) => Promise<null>;
-```
-
-Copies from a binary stream.
-
-The binary stream is constructed using user supplied `tupleList` and `columnTypes` values.
-
-Example:
-
-```ts
-const tupleList = [
-  [
-    1,
-    'baz'
-  ],
-  [
-    2,
-    'baz'
-  ]
-];
-
-const columnTypes = [
-  'int4',
-  'text'
-];
-
-await connection.copyFromBinary(
-  sql.unsafe`
-    COPY foo
-    (
-      id,
-      baz
-    )
-    FROM STDIN BINARY
-  `,
-  tupleList,
-  columnTypes
-);
-```
-
-#### Limitations
-
-* Tuples cannot contain `NULL` values.
-
-#### Implementation notes
-
-`copyFromBinary` implementation is designed to minimize the query execution time at the cost of increased script memory usage and execution time. This is achieved by separating data encoding from feeding data to PostgreSQL, i.e. all data passed to `copyFromBinary` is first encoded and then fed to PostgreSQL (contrast this to using a stream with encoding transformation to feed data to PostgreSQL).
-
-#### Related documentation
-
-* [`COPY` documentation](https://www.postgresql.org/docs/current/sql-copy.html)
-
 ### `many`
 
 Returns result rows.

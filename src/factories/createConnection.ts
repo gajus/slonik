@@ -33,7 +33,6 @@ const destroyBoundConnection = (boundConnection: DatabasePoolConnection) => {
   const boundConnectionMethods = [
     'any',
     'anyFirst',
-    'copyFromBinary',
     'exists',
     'many',
     'manyFirst',

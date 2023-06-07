@@ -308,32 +308,6 @@ test('streams over a transaction', async (t) => {
   await pool.end();
 });
 
-test('copies from binary stream', async (t) => {
-  const pool = await createPool(t.context.dsn);
-
-  await pool.copyFromBinary(
-    sql.unsafe`
-      COPY person
-      (
-        name
-      )
-      FROM STDIN BINARY
-    `,
-    [['foo'], ['bar'], ['baz']],
-    ['text'],
-  );
-
-  t.deepEqual(
-    await pool.anyFirst(sql.unsafe`
-    SELECT name
-    FROM person
-  `),
-    ['foo', 'bar', 'baz'],
-  );
-
-  await pool.end();
-});
-
 test('frees connection after destroying a stream', async (t) => {
   const pool = await createPool(t.context.dsn);
 

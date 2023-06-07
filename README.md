@@ -126,7 +126,6 @@ Note: Using this project does not require TypeScript. It is a regular ES6 module
         * [`any`](#user-content-slonik-query-methods-any)
         * [`anyFirst`](#user-content-slonik-query-methods-anyfirst)
         * [`exists`](#user-content-slonik-query-methods-exists)
-        * [`copyFromBinary`](#user-content-slonik-query-methods-copyfrombinary)
         * [`many`](#user-content-slonik-query-methods-many)
         * [`manyFirst`](#user-content-slonik-query-methods-manyfirst)
         * [`maybeOne`](#user-content-slonik-query-methods-maybeone)
@@ -2323,73 +2322,6 @@ pool.oneFirst(sql.unsafe`
   )
 `)
 ```
-
-<a name="user-content-slonik-query-methods-copyfrombinary"></a>
-<a name="slonik-query-methods-copyfrombinary"></a>
-### <code>copyFromBinary</code>
-
-```ts
-(
-  streamQuery: QuerySqlToken,
-  tupleList: any[][],
-  columnTypes: TypeNameIdentifier[],
-) => Promise<null>;
-```
-
-Copies from a binary stream.
-
-The binary stream is constructed using user supplied `tupleList` and `columnTypes` values.
-
-Example:
-
-```ts
-const tupleList = [
-  [
-    1,
-    'baz'
-  ],
-  [
-    2,
-    'baz'
-  ]
-];
-
-const columnTypes = [
-  'int4',
-  'text'
-];
-
-await connection.copyFromBinary(
-  sql.unsafe`
-    COPY foo
-    (
-      id,
-      baz
-    )
-    FROM STDIN BINARY
-  `,
-  tupleList,
-  columnTypes
-);
-```
-
-<a name="user-content-slonik-query-methods-copyfrombinary-limitations"></a>
-<a name="slonik-query-methods-copyfrombinary-limitations"></a>
-#### Limitations
-
-* Tuples cannot contain `NULL` values.
-
-<a name="user-content-slonik-query-methods-copyfrombinary-implementation-notes"></a>
-<a name="slonik-query-methods-copyfrombinary-implementation-notes"></a>
-#### Implementation notes
-
-`copyFromBinary` implementation is designed to minimize the query execution time at the cost of increased script memory usage and execution time. This is achieved by separating data encoding from feeding data to PostgreSQL, i.e. all data passed to `copyFromBinary` is first encoded and then fed to PostgreSQL (contrast this to using a stream with encoding transformation to feed data to PostgreSQL).
-
-<a name="user-content-slonik-query-methods-copyfrombinary-related-documentation"></a>
-<a name="slonik-query-methods-copyfrombinary-related-documentation"></a>
-#### Related documentation
-
-* [`COPY` documentation](https://www.postgresql.org/docs/current/sql-copy.html)
 
 <a name="user-content-slonik-query-methods-many"></a>
 <a name="slonik-query-methods-many"></a>
