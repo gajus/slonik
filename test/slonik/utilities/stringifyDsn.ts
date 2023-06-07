@@ -1,4 +1,5 @@
-import { parseDsn, stringifyDsn } from '../../../src/utilities';
+import { parseDsn } from '../../../src/utilities/parseDsn';
+import { stringifyDsn } from '../../../src/utilities/stringifyDsn';
 import test from 'ava';
 
 const dsns = [

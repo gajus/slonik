@@ -1,4 +1,4 @@
-import { escapeIdentifier } from '../../../src/utilities';
+import { escapeIdentifier } from '../../../src/utilities/escapeIdentifier';
 import test from 'ava';
 
 test('escapes SQL identifiers', (t) => {

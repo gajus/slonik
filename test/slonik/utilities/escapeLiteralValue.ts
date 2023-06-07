@@ -1,4 +1,4 @@
-import { escapeLiteralValue } from '../../../src/utilities';
+import { escapeLiteralValue } from '../../../src/utilities/escapeLiteralValue';
 import test from 'ava';
 
 test('escapes SQL literal value', (t) => {
