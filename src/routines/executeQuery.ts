@@ -26,8 +26,8 @@ import {
   type QuerySqlToken,
 } from '../types';
 import { createQueryId } from '../utilities/createQueryId';
+import { defer } from '../utilities/defer';
 import { getStackTrace } from '../utilities/getStackTrace';
-import Deferred from 'p-defer';
 import { type PoolClient as PgPoolClient } from 'pg';
 import { serializeError } from 'serialize-error';
 
@@ -211,7 +211,7 @@ export const executeQuery = async (
     notices.push(notice);
   };
 
-  const activeQuery = Deferred();
+  const activeQuery = defer<null>();
 
   const blockingPromise = poolClientState.activeQuery?.promise ?? null;
 
@@ -328,7 +328,7 @@ export const executeQuery = async (
     } finally {
       connection.off('notice', noticeListener);
 
-      activeQuery.resolve();
+      activeQuery.resolve(null);
     }
   } catch (error) {
     for (const interceptor of clientConfiguration.interceptors) {

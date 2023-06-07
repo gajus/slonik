@@ -1,6 +1,6 @@
 import { UnexpectedStateError } from './errors';
 import { type TypeOverrides } from './types';
-import { type DeferredPromise } from 'p-defer';
+import { type DeferredPromise } from './utilities/defer';
 import { type Pool as PgPool, type PoolClient as PgClientPool } from 'pg';
 
 type PoolState = {
@@ -11,7 +11,7 @@ type PoolState = {
 };
 
 type PoolClientState = {
-  activeQuery?: DeferredPromise<unknown>;
+  activeQuery?: DeferredPromise<null>;
   connectionId: string;
   mock: boolean;
   poolId: string;
