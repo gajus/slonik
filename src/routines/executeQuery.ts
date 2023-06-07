@@ -26,7 +26,7 @@ import {
   type QuerySqlToken,
 } from '../types';
 import { createQueryId } from '../utilities';
-import { getStackTrace } from 'get-stack-trace';
+import { getStackTrace } from '../utilities/getStackTrace';
 import Deferred from 'p-defer';
 import { type PoolClient as PgPoolClient } from 'pg';
 import { serializeError } from 'serialize-error';
@@ -107,10 +107,10 @@ const retryQuery = async (
 };
 
 type StackCrumb = {
-  columnNumber: number;
-  fileName: string;
+  columnNumber: number | null;
+  fileName: string | null;
   functionName: string | null;
-  lineNumber: number;
+  lineNumber: number | null;
 };
 
 // eslint-disable-next-line complexity
@@ -143,18 +143,7 @@ export const executeQuery = async (
   let stackTrace: StackCrumb[] | null = null;
 
   if (clientConfiguration.captureStackTrace) {
-    const callSites = await getStackTrace();
-
-    stackTrace = [];
-
-    for (const callSite of callSites) {
-      stackTrace.push({
-        columnNumber: callSite.columnNumber,
-        fileName: callSite.fileName,
-        functionName: callSite.functionName,
-        lineNumber: callSite.lineNumber,
-      });
-    }
+    stackTrace = getStackTrace();
   }
 
   const queryId = inheritedQueryId ?? createQueryId();
