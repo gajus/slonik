@@ -5,8 +5,8 @@ import {
   type JsonSqlToken,
   type SqlFragment,
 } from '../types';
+import { isPlainObject } from '../utilities/isPlainObject';
 import { safeStringify } from '../utilities/safeStringify';
-import { isPlainObject } from 'is-plain-object';
 import { serializeError } from 'serialize-error';
 
 const log = Logger.child({
