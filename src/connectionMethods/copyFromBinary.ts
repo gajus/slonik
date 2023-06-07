@@ -1,6 +1,6 @@
-import { executeQuery } from '../routines';
+import { executeQuery } from '../routines/executeQuery';
 import { type InternalCopyFromBinaryFunction } from '../types';
-import { encodeTupleList } from '../utilities';
+import { encodeTupleList } from '../utilities/encodeTupleList';
 import { Duplex } from 'node:stream';
 import { from } from 'pg-copy-streams';
 

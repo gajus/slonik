@@ -1,6 +1,6 @@
 import { DataIntegrityError } from '../errors';
 import { type InternalQueryMethod } from '../types';
-import { createQueryId } from '../utilities';
+import { createQueryId } from '../utilities/createQueryId';
 import { maybeOne } from './maybeOne';
 
 /**

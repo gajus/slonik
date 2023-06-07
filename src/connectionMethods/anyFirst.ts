@@ -1,6 +1,6 @@
 import { DataIntegrityError } from '../errors';
 import { type InternalQueryMethod } from '../types';
-import { createQueryId } from '../utilities';
+import { createQueryId } from '../utilities/createQueryId';
 import { any } from './any';
 
 export const anyFirst: InternalQueryMethod = async (

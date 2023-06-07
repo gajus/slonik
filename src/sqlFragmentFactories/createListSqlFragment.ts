@@ -1,14 +1,13 @@
 import { InvalidInputError } from '../errors';
-import {
-  createPrimitiveValueExpressions,
-  createSqlTokenSqlFragment,
-} from '../factories';
+import { createPrimitiveValueExpressions } from '../factories/createPrimitiveValueExpressions';
+import { createSqlTokenSqlFragment } from '../factories/createSqlTokenSqlFragment';
 import {
   type ListSqlToken,
   type PrimitiveValueExpression,
   type SqlFragment,
 } from '../types';
-import { isPrimitiveValueExpression, isSqlToken } from '../utilities';
+import { isPrimitiveValueExpression } from '../utilities/isPrimitiveValueExpression';
+import { isSqlToken } from '../utilities/isSqlToken';
 
 export const createListSqlFragment = (
   token: ListSqlToken,

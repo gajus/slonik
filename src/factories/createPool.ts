@@ -1,9 +1,9 @@
 import { bindPool } from '../binders/bindPool';
 import { Logger } from '../Logger';
-import { createTypeOverrides } from '../routines';
+import { createTypeOverrides } from '../routines/createTypeOverrides';
 import { poolStateMap } from '../state';
 import { type ClientConfigurationInput, type DatabasePool } from '../types';
-import { createUid } from '../utilities';
+import { createUid } from '../utilities/createUid';
 import { createClientConfiguration } from './createClientConfiguration';
 import { createPoolConfiguration } from './createPoolConfiguration';
 import { Client as PgClient, Pool as PgPool } from 'pg';

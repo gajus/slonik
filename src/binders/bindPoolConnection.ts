@@ -1,18 +1,16 @@
-import {
-  any,
-  anyFirst,
-  copyFromBinary,
-  exists,
-  many,
-  manyFirst,
-  maybeOne,
-  maybeOneFirst,
-  one,
-  oneFirst,
-  query as queryMethod,
-  stream,
-  transaction,
-} from '../connectionMethods';
+import { any } from '../connectionMethods/any';
+import { anyFirst } from '../connectionMethods/anyFirst';
+import { copyFromBinary } from '../connectionMethods/copyFromBinary';
+import { exists } from '../connectionMethods/exists';
+import { many } from '../connectionMethods/many';
+import { manyFirst } from '../connectionMethods/manyFirst';
+import { maybeOne } from '../connectionMethods/maybeOne';
+import { maybeOneFirst } from '../connectionMethods/maybeOneFirst';
+import { one } from '../connectionMethods/one';
+import { oneFirst } from '../connectionMethods/oneFirst';
+import { query as queryMethod } from '../connectionMethods/query';
+import { stream } from '../connectionMethods/stream';
+import { transaction } from '../connectionMethods/transaction';
 import {
   type ClientConfiguration,
   type DatabasePoolConnection,

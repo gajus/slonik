@@ -1,5 +1,5 @@
 import { QueryStream } from '../QueryStream';
-import { executeQuery } from '../routines';
+import { executeQuery } from '../routines/executeQuery';
 import { type Interceptor, type InternalStreamFunction } from '../types';
 import { type Readable } from 'node:stream';
 import * as through from 'through2';

@@ -1,17 +1,15 @@
 import { UnexpectedStateError } from '../errors';
-import {
-  createArraySqlFragment,
-  createBinarySqlFragment,
-  createDateSqlFragment,
-  createFragmentSqlFragment,
-  createIdentifierSqlFragment,
-  createIntervalSqlFragment,
-  createJsonSqlFragment,
-  createListSqlFragment,
-  createQuerySqlFragment,
-  createTimestampSqlFragment,
-  createUnnestSqlFragment,
-} from '../sqlFragmentFactories';
+import { createArraySqlFragment } from '../sqlFragmentFactories/createArraySqlFragment';
+import { createBinarySqlFragment } from '../sqlFragmentFactories/createBinarySqlFragment';
+import { createDateSqlFragment } from '../sqlFragmentFactories/createDateSqlFragment';
+import { createFragmentSqlFragment } from '../sqlFragmentFactories/createFragmentSqlFragment';
+import { createIdentifierSqlFragment } from '../sqlFragmentFactories/createIdentifierSqlFragment';
+import { createIntervalSqlFragment } from '../sqlFragmentFactories/createIntervalSqlFragment';
+import { createJsonSqlFragment } from '../sqlFragmentFactories/createJsonSqlFragment';
+import { createListSqlFragment } from '../sqlFragmentFactories/createListSqlFragment';
+import { createQuerySqlFragment } from '../sqlFragmentFactories/createQuerySqlFragment';
+import { createTimestampSqlFragment } from '../sqlFragmentFactories/createTimestampSqlFragment';
+import { createUnnestSqlFragment } from '../sqlFragmentFactories/createUnnestSqlFragment';
 import {
   ArrayToken,
   BinaryToken,

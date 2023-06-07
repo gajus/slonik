@@ -4,12 +4,10 @@ import {
   type SqlFragment,
   type UnnestSqlToken,
 } from '../types';
-import {
-  countArrayDimensions,
-  escapeIdentifier,
-  isPrimitiveValueExpression,
-  stripArrayNotation,
-} from '../utilities';
+import { countArrayDimensions } from '../utilities/countArrayDimensions';
+import { escapeIdentifier } from '../utilities/escapeIdentifier';
+import { isPrimitiveValueExpression } from '../utilities/isPrimitiveValueExpression';
+import { stripArrayNotation } from '../utilities/stripArrayNotation';
 
 export const createUnnestSqlFragment = (
   token: UnnestSqlToken,

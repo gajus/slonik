@@ -33,12 +33,10 @@ import {
   type UnnestSqlToken,
   type ValueExpression,
 } from '../types';
-import {
-  escapeLiteralValue,
-  isPrimitiveValueExpression,
-  isSqlToken,
-  safeStringify,
-} from '../utilities';
+import { escapeLiteralValue } from '../utilities/escapeLiteralValue';
+import { isPrimitiveValueExpression } from '../utilities/isPrimitiveValueExpression';
+import { isSqlToken } from '../utilities/isSqlToken';
+import { safeStringify } from '../utilities/safeStringify';
 import { createSqlTokenSqlFragment } from './createSqlTokenSqlFragment';
 import { z, type ZodTypeAny } from 'zod';
 

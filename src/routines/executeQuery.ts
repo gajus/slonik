@@ -25,7 +25,7 @@ import {
   type QueryResultRow,
   type QuerySqlToken,
 } from '../types';
-import { createQueryId } from '../utilities';
+import { createQueryId } from '../utilities/createQueryId';
 import { getStackTrace } from '../utilities/getStackTrace';
 import Deferred from 'p-defer';
 import { type PoolClient as PgPoolClient } from 'pg';

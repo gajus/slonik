@@ -1,8 +1,8 @@
-import { bindTransactionConnection } from '../binders';
+import { bindTransactionConnection } from '../binders/bindTransactionConnection';
 import { TRANSACTION_ROLLBACK_ERROR_PREFIX } from '../constants';
 import { getPoolClientState } from '../state';
 import { type InternalNestedTransactionFunction } from '../types';
-import { createUid } from '../utilities';
+import { createUid } from '../utilities/createUid';
 import { serializeError } from 'serialize-error';
 
 const execNestedTransaction: InternalNestedTransactionFunction = async (

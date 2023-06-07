@@ -1,11 +1,9 @@
 import { InvalidInputError, UnexpectedStateError } from '../errors';
-import { createSqlTokenSqlFragment } from '../factories';
+import { createSqlTokenSqlFragment } from '../factories/createSqlTokenSqlFragment';
 import { type ArraySqlToken, type SqlFragment } from '../types';
-import {
-  escapeIdentifier,
-  isPrimitiveValueExpression,
-  isSqlToken,
-} from '../utilities';
+import { escapeIdentifier } from '../utilities/escapeIdentifier';
+import { isPrimitiveValueExpression } from '../utilities/isPrimitiveValueExpression';
+import { isSqlToken } from '../utilities/isSqlToken';
 
 export const createArraySqlFragment = (
   token: ArraySqlToken,

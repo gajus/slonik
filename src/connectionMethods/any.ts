@@ -1,5 +1,5 @@
 import { type InternalQueryMethod } from '../types';
-import { createQueryId } from '../utilities';
+import { createQueryId } from '../utilities/createQueryId';
 import { query } from './query';
 
 /**

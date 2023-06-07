@@ -1,7 +1,7 @@
 import { UnexpectedStateError } from '../errors';
 import { Logger } from '../Logger';
 import { type PrimitiveValueExpression } from '../types';
-import { safeStringify } from '../utilities';
+import { safeStringify } from '../utilities/safeStringify';
 
 const log = Logger.child({
   namespace: 'createPrimitiveValueExpressions',

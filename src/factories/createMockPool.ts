@@ -6,7 +6,7 @@ import {
   type DatabasePool,
   type MockPoolOverrides,
 } from '../types';
-import { createUid } from '../utilities';
+import { createUid } from '../utilities/createUid';
 import { createClientConfiguration } from './createClientConfiguration';
 
 export const createMockPool = (

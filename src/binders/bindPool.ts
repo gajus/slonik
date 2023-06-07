@@ -1,5 +1,5 @@
-import { transaction } from '../connectionMethods';
-import { createConnection } from '../factories';
+import { transaction } from '../connectionMethods/transaction';
+import { createConnection } from '../factories/createConnection';
 import { getPoolState } from '../state';
 import {
   type ClientConfiguration,

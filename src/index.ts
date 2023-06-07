@@ -1,4 +1,4 @@
-import { createSqlTag } from './factories';
+import { createSqlTag } from './factories/createSqlTag';
 
 export const sql = createSqlTag();
 
@@ -21,15 +21,18 @@ export {
   UnexpectedStateError,
   UniqueIntegrityConstraintViolationError,
 } from './errors';
-export {
-  createMockPool,
-  createMockQueryResult,
-  createPool,
-  createSqlTag,
-  createSqlTokenSqlFragment,
-  createTypeParserPreset,
-} from './factories';
-export * from './factories/typeParsers';
+export { createMockPool } from './factories/createMockPool';
+export { createMockQueryResult } from './factories/createMockQueryResult';
+export { createPool } from './factories/createPool';
+export { createSqlTag } from './factories/createSqlTag';
+export { createSqlTokenSqlFragment } from './factories/createSqlTokenSqlFragment';
+export { createTypeParserPreset } from './factories/createTypeParserPreset';
+export { createBigintTypeParser } from './factories/typeParsers/createBigintTypeParser';
+export { createDateTypeParser } from './factories/typeParsers/createDateTypeParser';
+export { createIntervalTypeParser } from './factories/typeParsers/createIntervalTypeParser';
+export { createNumericTypeParser } from './factories/typeParsers/createNumericTypeParser';
+export { createTimestampTypeParser } from './factories/typeParsers/createTimestampTypeParser';
+export { createTimestampWithTimeZoneTypeParser } from './factories/typeParsers/createTimestampWithTimeZoneTypeParser';
 export type {
   ArraySqlToken,
   BinarySqlToken,
@@ -70,4 +73,6 @@ export type {
   UnnestSqlToken,
   ValueExpression,
 } from './types';
-export { isSqlToken, parseDsn, stringifyDsn } from './utilities';
+export { isSqlToken } from './utilities/isSqlToken';
+export { parseDsn } from './utilities/parseDsn';
+export { stringifyDsn } from './utilities/stringifyDsn';

@@ -5,7 +5,7 @@ import {
   type JsonSqlToken,
   type SqlFragment,
 } from '../types';
-import { safeStringify } from '../utilities';
+import { safeStringify } from '../utilities/safeStringify';
 import { isPlainObject } from 'is-plain-object';
 import { serializeError } from 'serialize-error';
 

@@ -2,7 +2,7 @@
 
 import { Logger as log } from '../Logger';
 import { type ClientConfiguration } from '../types';
-import { parseDsn } from '../utilities';
+import { parseDsn } from '../utilities/parseDsn';
 import { type PoolConfig } from 'pg';
 
 export const createPoolConfiguration = (

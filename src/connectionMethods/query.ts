@@ -1,4 +1,4 @@
-import { executeQuery } from '../routines';
+import { executeQuery } from '../routines/executeQuery';
 import {
   type Field,
   type InternalQueryMethod,

@@ -1,17 +1,15 @@
-import {
-  any,
-  anyFirst,
-  exists,
-  many,
-  manyFirst,
-  maybeOne,
-  maybeOneFirst,
-  nestedTransaction,
-  one,
-  oneFirst,
-  query as queryMethod,
-  stream,
-} from '../connectionMethods';
+import { any } from '../connectionMethods/any';
+import { anyFirst } from '../connectionMethods/anyFirst';
+import { exists } from '../connectionMethods/exists';
+import { many } from '../connectionMethods/many';
+import { manyFirst } from '../connectionMethods/manyFirst';
+import { maybeOne } from '../connectionMethods/maybeOne';
+import { maybeOneFirst } from '../connectionMethods/maybeOneFirst';
+import { nestedTransaction } from '../connectionMethods/nestedTransaction';
+import { one } from '../connectionMethods/one';
+import { oneFirst } from '../connectionMethods/oneFirst';
+import { query as queryMethod } from '../connectionMethods/query';
+import { stream } from '../connectionMethods/stream';
 import { getPoolClientState } from '../state';
 import {
   type ClientConfiguration,

@@ -244,10 +244,10 @@ export type ConnectionContext = {
 };
 
 type CallSite = {
-  readonly columnNumber: number;
+  readonly columnNumber: number | null;
   readonly fileName: string | null;
   readonly functionName: string | null;
-  readonly lineNumber: number;
+  readonly lineNumber: number | null;
 };
 
 export type IntervalInput = {

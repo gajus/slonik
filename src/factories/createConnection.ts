@@ -1,4 +1,4 @@
-import { bindPoolConnection } from '../binders';
+import { bindPoolConnection } from '../binders/bindPoolConnection';
 import { ConnectionError, UnexpectedStateError } from '../errors';
 import { getPoolClientState, getPoolState, poolClientStateMap } from '../state';
 import {
@@ -10,7 +10,7 @@ import {
   type MaybePromise,
   type QuerySqlToken,
 } from '../types';
-import { createUid } from '../utilities';
+import { createUid } from '../utilities/createUid';
 import { type Pool as PgPool, type PoolClient as PgPoolClient } from 'pg';
 import { serializeError } from 'serialize-error';
 
