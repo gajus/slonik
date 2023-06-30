@@ -64,7 +64,10 @@ test('throws if bound an undefined value', (t) => {
     sql.fragment`SELECT ${undefined}`;
   });
 
-  t.is(error?.message, 'SQL tag cannot be bound an undefined value.');
+  t.is(
+    error?.message,
+    'SQL tag cannot be bound to undefined value at index 1.',
+  );
 });
 
 test.serial.skip('logs all bound values if one is undefined', (t) => {

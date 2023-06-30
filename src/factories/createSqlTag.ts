@@ -74,7 +74,7 @@ const createFragment = (
       );
 
       throw new InvalidInputError(
-        'SQL tag cannot be bound an undefined value.',
+        `SQL tag cannot be bound to undefined value at index ${index}.`,
       );
     } else if (isPrimitiveValueExpression(token)) {
       rawSql += '$' + String(parameterValues.length + 1);
