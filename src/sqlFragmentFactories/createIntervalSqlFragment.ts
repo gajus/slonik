@@ -17,6 +17,7 @@ const IntervalInput = z
 const intervalFragments = [
   'years',
   'months',
+  'weeks',
   'days',
   'hours',
   'minutes',
