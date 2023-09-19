@@ -5,11 +5,11 @@
     "url": "http://gajus.com"
   },
   "dependencies": {
-    "@types/pg": "^8.10.1",
+    "@types/pg": "^8.10.2",
     "concat-stream": "^2.0.0",
     "es6-error": "^4.1.1",
     "iso8601-duration": "^1.3.0",
-    "pg": "^8.11.0",
+    "pg": "^8.11.3",
     "pg-cursor": "^2.10.0",
     "pg-protocol": "^1.6.0",
     "pg-types": "^4.0.1",
