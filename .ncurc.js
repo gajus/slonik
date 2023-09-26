@@ -1,3 +1,1 @@
-module.exports = {
-  reject: ['husky'],
-};
+module.exports = {};

@@ -6,6 +6,7 @@ node_modules
 !.eslintrc
 !.github
 !.gitignore
+!.husky
 !.ncurc.js
 !.README
 !.releaserc

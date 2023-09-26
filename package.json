@@ -35,7 +35,7 @@
     "eslint-config-canonical": "^41.0.5",
     "expect-type": "^0.15.0",
     "gitdown": "^3.1.5",
-    "husky": "^4.3.6",
+    "husky": "^8.0.3",
     "nyc": "^15.1.0",
     "pg-native": "^3.0.1",
     "postgres": "^3.3.5",
@@ -53,12 +53,6 @@
     "./src",
     "./dist"
   ],
-  "husky": {
-    "hooks": {
-      "pre-commit": "npm run lint && npm run test && npm run build",
-      "pre-push": "gitdown ./.README/README.md --output-file ./README.md --check"
-    }
-  },
   "keywords": [
     "postgresql",
     "promise",
