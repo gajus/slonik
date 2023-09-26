@@ -17,6 +17,12 @@ export const parseDsn = (dsn: string): ConnectionOptions => {
 
   if (url.host) {
     connectionOptions.host = decodeURIComponent(url.hostname);
+  } else if (url.searchParams.has('host')) {
+    const host = url.searchParams.get('host');
+
+    if (typeof host === 'string' && host) {
+      connectionOptions.host = host;
+    }
   }
 
   if (url.port) {

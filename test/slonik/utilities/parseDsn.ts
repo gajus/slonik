@@ -48,3 +48,17 @@ test(
     username: 'db_user',
   },
 );
+
+// https://github.com/gajus/slonik/issues/468#issuecomment-1736020990
+// cspell: disable-next-line
+test('postgresql://%2Fvar%2Flib%2Fpostgresql/database-name', testParse, {
+  databaseName: 'database-name',
+  host: '/var/lib/postgresql',
+});
+
+// https://github.com/gajus/slonik/issues/468#issuecomment-1736020990
+// cspell: disable-next-line
+test('postgresql:///database-name?host=/var/lib/postgresql', testParse, {
+  databaseName: 'database-name',
+  host: '/var/lib/postgresql',
+});
