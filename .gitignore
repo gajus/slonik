@@ -7,6 +7,5 @@ node_modules
 !.github
 !.gitignore
 !.husky
-!.ncurc.js
 !.README
 !.releaserc
