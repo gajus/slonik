@@ -38,10 +38,11 @@ test('postgresql://fo%2Fo:b%2Far@localhost/ba%2Fz', testParse, {
   username: 'fo/o',
 });
 test(
-  'postgresql://db_user:db_password@%2Fcloudsql%2Fproject-id%3Aregion-id1%3Acloudsqlinstance-name/dbname',
+  // cspell: disable-next-line
+  'postgresql://db_user:db_password@%2Fcloudsql%2Fproject-id%3Aregion-id1%3Acloudsqlinstance-name/database-name',
   testParse,
   {
-    databaseName: 'dbname',
+    databaseName: 'database-name',
     host: '/cloudsql/project-id:region-id1:cloudsqlinstance-name',
     password: 'db_password',
     username: 'db_user',

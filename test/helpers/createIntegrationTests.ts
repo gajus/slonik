@@ -660,6 +660,7 @@ export const createIntegrationTests = (
       PgPool,
     });
 
+    // cspell:disable-next-line
     const payload = 'foobarbazqux';
 
     await pool.query(sql.unsafe`

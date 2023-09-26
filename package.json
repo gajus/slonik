@@ -27,6 +27,7 @@
     "@types/sinon": "^10.0.15",
     "@types/through2": "^2.0.38",
     "ava": "^5.3.0",
+    "cspell": "^7.3.6",
     "delay": "^5.0.0",
     "eslint": "^8.41.0",
     "eslint-config-canonical": "^41.0.5",
@@ -89,10 +90,11 @@
   "scripts": {
     "build": "rm -fr ./dist && tsc --project ./tsconfig.build.json",
     "create-readme": "gitdown ./.README/README.md --output-file ./README.md",
+    "lint:cspell": "cspell . --no-progress --gitignore",
     "lint:eslint": "eslint --cache ./src ./test",
     "lint:knip": "knip",
     "lint:tsc": "tsc --noEmit",
-    "lint": "npm run lint:eslint && npm run lint:knip && npm run lint:tsc",
+    "lint": "npm run lint:cspell && npm run lint:eslint && npm run lint:knip && npm run lint:tsc",
     "test": "nyc ava --verbose --serial"
   },
   "types": "./dist/index.d.ts",
