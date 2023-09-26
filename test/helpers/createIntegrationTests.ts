@@ -3,6 +3,7 @@ import {
   createNumericTypeParser,
   createPool,
   type DatabasePoolConnection,
+  InputSyntaxError,
   InvalidInputError,
   sql,
   StatementCancelledError,
@@ -139,6 +140,20 @@ export const createIntegrationTests = (
   test: TestFn<TestContextType>,
   PgPool: new () => PgPoolType,
 ) => {
+  test('produces syntax error with the original SQL', async (t) => {
+    const pool = await createPool(t.context.dsn, {
+      PgPool,
+    });
+
+    const error: InputSyntaxError | undefined = await t.throwsAsync(
+      pool.any(sql.unsafe`SELECT WHERE`),
+    );
+
+    t.true(error instanceof InputSyntaxError);
+
+    t.is(error?.sql, 'SELECT WHERE');
+  });
+
   test('retrieves correct infinity values (with timezone)', async (t) => {
     const pool = await createPool(t.context.dsn, {
       PgPool,

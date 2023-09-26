@@ -3,6 +3,7 @@ import {
   BackendTerminatedError,
   CheckIntegrityConstraintViolationError,
   ForeignKeyIntegrityConstraintViolationError,
+  InputSyntaxError,
   InvalidInputError,
   NotNullIntegrityConstraintViolationError,
   StatementCancelledError,
@@ -320,6 +321,10 @@ export const executeQuery = async (
           error,
           error.constraint,
         );
+      }
+
+      if (error.code === '42601') {
+        throw new InputSyntaxError(error, actualQuery);
       }
 
       error.notices = notices;

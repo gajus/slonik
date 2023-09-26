@@ -24,6 +24,18 @@ export class InvalidConfigurationError extends SlonikError {}
 
 export class InvalidInputError extends SlonikError {}
 
+export class InputSyntaxError extends SlonikError {
+  public sql: string;
+
+  public constructor(error: Error, query: Query) {
+    super(error.message, {
+      cause: error,
+    });
+
+    this.sql = query.sql;
+  }
+}
+
 export class UnexpectedStateError extends SlonikError {}
 
 export class ConnectionError extends SlonikError {}

@@ -8,6 +8,7 @@ export {
   ConnectionError,
   DataIntegrityError,
   ForeignKeyIntegrityConstraintViolationError,
+  InputSyntaxError,
   IntegrityConstraintViolationError,
   InvalidConfigurationError,
   InvalidInputError,
