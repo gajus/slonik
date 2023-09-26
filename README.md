@@ -453,6 +453,13 @@ postgresql://foo:bar@localhost
 postgresql://foo@localhost/bar?application_name=baz
 ```
 
+Unix-domain socket connection is chosen if the host part is either empty or looks like an absolute path name.
+
+```text
+postgresql:///dbname?host=/var/lib/postgresql
+postgresql://%2Fvar%2Flib%2Fpostgresql/dbname
+```
+
 Other configurations are available through the [`clientConfiguration` parameter](https://github.com/gajus/slonik#api).
 
 <a name="user-content-slonik-usage-create-connection"></a>
