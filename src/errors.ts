@@ -1,7 +1,7 @@
 import {
   type PrimitiveValueExpression,
   type Query,
-  type SerializableValue,
+  type QueryResultRow,
 } from './types';
 import ExtendableError from 'es6-error';
 import { type ZodIssue } from 'zod';
@@ -86,11 +86,11 @@ export class SchemaValidationError extends SlonikError {
 
   public values: readonly PrimitiveValueExpression[];
 
-  public row: SerializableValue;
+  public row: QueryResultRow;
 
   public issues: ZodIssue[];
 
-  public constructor(query: Query, row: SerializableValue, issues: ZodIssue[]) {
+  public constructor(query: Query, row: QueryResultRow, issues: ZodIssue[]) {
     super('Query returned rows that do not conform with the schema.');
 
     this.sql = query.sql;
