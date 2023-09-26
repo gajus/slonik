@@ -139,6 +139,42 @@ export const createIntegrationTests = (
   test: TestFn<TestContextType>,
   PgPool: new () => PgPoolType,
 ) => {
+  test.only('properly handles terminated connections', async (t) => {
+    const pool = await createPool(t.context.dsn, {
+      PgPool,
+    });
+
+    let targetPid;
+
+    setTimeout(() => {
+      if (!targetPid) {
+        throw new Error('Expected target PID to be set');
+      }
+
+      console.log('terminatinating active backend %s', targetPid);
+
+      void pool.query(sql.unsafe`
+        SELECT pg_terminate_backend(${targetPid})
+      `);
+    }, 200);
+
+    let targetQuery;
+
+    await pool.connect(async (connection) => {
+      targetPid = await connection.oneFirst(sql.unsafe`
+        SELECT pg_backend_pid()
+      `);
+
+      await delay(1_000);
+
+      targetQuery = connection.query(sql.unsafe`
+        SELECT 1
+      `);
+    });
+
+    await t.throwsAsync(targetQuery);
+  });
+
   test('retrieves correct infinity values (with timezone)', async (t) => {
     const pool = await createPool(t.context.dsn, {
       PgPool,

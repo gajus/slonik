@@ -52,7 +52,18 @@ export const createPool = async (
     user: poolConfiguration.user,
   });
 
+  // https://github.com/gajus/slonik/issues/471
+  // setupClient.on('error', (error) => {
+  //   poolLog.error(
+  //     {
+  //       error: serializeError(error),
+  //     },
+  //     'setup client error',
+  //   );
+  // });
+
   let getTypeParser: typeof pgTypes.getTypeParser;
+
   try {
     await setupClient.connect();
     getTypeParser = await createTypeOverrides(
@@ -69,6 +80,16 @@ export const createPool = async (
       getTypeParser,
     },
   });
+
+  // // https://github.com/gajus/slonik/issues/471
+  // pool.on('error', (error) => {
+  //   poolLog.error(
+  //     {
+  //       error: serializeError(error),
+  //     },
+  //     'client error',
+  //   );
+  // });
 
   poolStateMap.set(pool, {
     ended: false,
