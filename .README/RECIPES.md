@@ -81,7 +81,7 @@ const pool = await createPool('postgres://main', {
         // This is a convention for the edge-cases where a SELECT query includes a volatile function.
         // Adding a @volatile comment anywhere into the query bypasses the read-only route, e.g.
         // sql.unsafe`
-        //   # @volatile
+        //   /* @volatile */
         //   SELECT write_log()
         // `
         if (connectionContext.query?.sql.includes('@volatile')) {
