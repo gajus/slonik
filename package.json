@@ -36,6 +36,7 @@
     "expect-type": "^0.15.0",
     "gitdown": "^3.1.5",
     "husky": "^8.0.3",
+    "knip": "^2.29.0",
     "nyc": "^15.1.0",
     "pg-native": "^3.0.1",
     "postgres": "^3.3.5",
@@ -91,7 +92,10 @@
   "scripts": {
     "build": "rm -fr ./dist && tsc --project ./tsconfig.build.json",
     "create-readme": "gitdown ./.README/README.md --output-file ./README.md",
-    "lint": "eslint --cache ./src ./test && tsc --noEmit",
+    "lint:eslint": "eslint --cache ./src ./test",
+    "lint:knip": "knip",
+    "lint:tsc": "tsc --noEmit",
+    "lint": "npm run lint:eslint && npm run lint:knip && npm run lint:tsc",
     "test": "nyc ava --verbose --serial"
   },
   "types": "./dist/index.d.ts",
