@@ -65,6 +65,9 @@ export class QueryStream extends Readable {
     this._result = this.cursor._result;
   }
 
+  /**
+   * @public
+   */
   public submit(connection: Object) {
     this.cursor.submit(connection);
   }

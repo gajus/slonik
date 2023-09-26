@@ -57,7 +57,7 @@ export type QueryId = string;
 
 export type MaybePromise<T> = Promise<T> | T;
 
-export type StreamHandler = (stream: Readable) => void;
+type StreamHandler = (stream: Readable) => void;
 
 export type Connection = 'EXPLICIT' | 'IMPLICIT_QUERY' | 'IMPLICIT_TRANSACTION';
 
@@ -131,9 +131,9 @@ export type ClientConfiguration = {
 
 export type ClientConfigurationInput = Partial<ClientConfiguration>;
 
-export type QueryStreamConfig = ReadableOptions & { batchSize?: number };
+type QueryStreamConfig = ReadableOptions & { batchSize?: number };
 
-export type StreamFunction = (
+type StreamFunction = (
   sql: QuerySqlToken,
   streamHandler: StreamHandler,
   config?: QueryStreamConfig,
@@ -160,7 +160,7 @@ export type DatabaseTransactionConnection = CommonQueryMethods & {
   readonly stream: StreamFunction;
 };
 
-export type TransactionFunction<T> = (
+type TransactionFunction<T> = (
   connection: DatabaseTransactionConnection,
 ) => Promise<T>;
 
@@ -172,7 +172,7 @@ export type ConnectionRoutine<T> = (
   connection: DatabasePoolConnection,
 ) => Promise<T>;
 
-export type PoolState = {
+type PoolState = {
   readonly activeConnectionCount: number;
   readonly ended: boolean;
   readonly idleConnectionCount: number;
@@ -367,10 +367,6 @@ export type SqlToken =
 
 export type ValueExpression = PrimitiveValueExpression | SqlFragment | SqlToken;
 
-export type NamedAssignment = {
-  readonly [key: string]: ValueExpression;
-};
-
 export type SqlTag<Z extends Record<string, ZodTypeAny>> = {
   array: (
     values: readonly PrimitiveValueExpression[],
@@ -456,15 +452,15 @@ export type InternalNestedTransactionFunction = <T>(
   transactionRetryLimit?: number,
 ) => Promise<T>;
 
-export type QueryAnyFirstFunction = <T extends ZodTypeAny>(
+type QueryAnyFirstFunction = <T extends ZodTypeAny>(
   sql: QuerySqlToken<T>,
   values?: PrimitiveValueExpression[],
 ) => Promise<ReadonlyArray<z.infer<T>[keyof z.infer<T>]>>;
-export type QueryAnyFunction = <T extends ZodTypeAny>(
+type QueryAnyFunction = <T extends ZodTypeAny>(
   sql: QuerySqlToken<T>,
   values?: PrimitiveValueExpression[],
 ) => Promise<ReadonlyArray<z.infer<T>>>;
-export type QueryExistsFunction = <T extends ZodTypeAny>(
+type QueryExistsFunction = <T extends ZodTypeAny>(
   sql: QuerySqlToken<T>,
   values?: PrimitiveValueExpression[],
 ) => Promise<boolean>;
@@ -472,27 +468,27 @@ export type QueryFunction = <T extends ZodTypeAny>(
   sql: QuerySqlToken<T>,
   values?: PrimitiveValueExpression[],
 ) => Promise<QueryResult<z.infer<T>>>;
-export type QueryManyFirstFunction = <T extends ZodTypeAny>(
+type QueryManyFirstFunction = <T extends ZodTypeAny>(
   sql: QuerySqlToken<T>,
   values?: PrimitiveValueExpression[],
 ) => Promise<ReadonlyArray<z.infer<T>[keyof z.infer<T>]>>;
-export type QueryManyFunction = <T extends ZodTypeAny>(
+type QueryManyFunction = <T extends ZodTypeAny>(
   sql: QuerySqlToken<T>,
   values?: PrimitiveValueExpression[],
 ) => Promise<ReadonlyArray<z.infer<T>>>;
-export type QueryMaybeOneFirstFunction = <T extends ZodTypeAny>(
+type QueryMaybeOneFirstFunction = <T extends ZodTypeAny>(
   sql: QuerySqlToken<T>,
   values?: PrimitiveValueExpression[],
 ) => Promise<z.infer<T>[keyof z.infer<T>] | null>;
-export type QueryMaybeOneFunction = <T extends ZodTypeAny>(
+type QueryMaybeOneFunction = <T extends ZodTypeAny>(
   sql: QuerySqlToken<T>,
   values?: PrimitiveValueExpression[],
 ) => Promise<z.infer<T> | null>;
-export type QueryOneFirstFunction = <T extends ZodTypeAny>(
+type QueryOneFirstFunction = <T extends ZodTypeAny>(
   sql: QuerySqlToken<T>,
   values?: PrimitiveValueExpression[],
 ) => Promise<z.infer<T>[keyof z.infer<T>]>;
-export type QueryOneFunction = <T extends ZodTypeAny>(
+type QueryOneFunction = <T extends ZodTypeAny>(
   sql: QuerySqlToken<T>,
   values?: PrimitiveValueExpression[],
 ) => Promise<z.infer<T>>;

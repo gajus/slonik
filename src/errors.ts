@@ -8,7 +8,7 @@ import { type ZodIssue } from 'zod';
 
 export class SlonikError extends ExtendableError {}
 
-export class WrappedPGError extends SlonikError {
+class WrappedPGError extends SlonikError {
   public readonly message!: string;
 
   public readonly originalError: Error;
