@@ -29,7 +29,6 @@
     "@types/sinon": "^10.0.15",
     "@types/through2": "^2.0.38",
     "ava": "^5.3.0",
-    "coveralls": "^3.1.1",
     "delay": "^5.0.0",
     "eslint": "^8.41.0",
     "eslint-config-canonical": "^41.0.5",
