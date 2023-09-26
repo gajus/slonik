@@ -87,7 +87,9 @@ export const createTestRunner = (
           name text,
           tags text[],
           birth_date date,
-          payload bytea
+          payload bytea,
+          updated_no_tz_at timestamp without time zone NOT NULL DEFAULT now(),
+          updated_at timestamp with time zone NOT NULL DEFAULT now()
         )
       `);
     });
@@ -137,6 +139,60 @@ export const createIntegrationTests = (
   test: TestFn<TestContextType>,
   PgPool: new () => PgPoolType,
 ) => {
+  test('retrieves correct infinity values (with timezone)', async (t) => {
+    const pool = await createPool(t.context.dsn, {
+      PgPool,
+    });
+
+    await pool.any(sql.unsafe`
+      INSERT INTO person (name, updated_at) VALUES ('foo', 'infinity'), ('bar', '-infinity');
+    `);
+
+    const result = await pool.any(sql.unsafe`
+      SELECT name, updated_at
+      FROM person
+      ORDER BY name ASC;
+    `);
+
+    t.deepEqual(result, [
+      {
+        name: 'bar',
+        updated_at: Number.NEGATIVE_INFINITY,
+      },
+      {
+        name: 'foo',
+        updated_at: Number.POSITIVE_INFINITY,
+      },
+    ]);
+  });
+
+  test('retrieves correct infinity values (without timezone)', async (t) => {
+    const pool = await createPool(t.context.dsn, {
+      PgPool,
+    });
+
+    await pool.any(sql.unsafe`
+      INSERT INTO person (name, updated_no_tz_at) VALUES ('foo', 'infinity'), ('bar', '-infinity');
+    `);
+
+    const result = await pool.any(sql.unsafe`
+      SELECT name, updated_no_tz_at
+      FROM person
+      ORDER BY name ASC;
+    `);
+
+    t.deepEqual(result, [
+      {
+        name: 'bar',
+        updated_no_tz_at: Number.NEGATIVE_INFINITY,
+      },
+      {
+        name: 'foo',
+        updated_no_tz_at: Number.POSITIVE_INFINITY,
+      },
+    ]);
+  });
+
   test('inserting records using jsonb_to_recordset', async (t) => {
     const pool = await createPool(t.context.dsn, {
       PgPool,
