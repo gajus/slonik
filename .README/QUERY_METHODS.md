@@ -189,8 +189,6 @@ await connection.stream(sql.typeAlias('foo')`SELECT foo`, (stream) => {
 });
 ```
 
-Note: Implemented using [`pg-query-stream`](https://github.com/brianc/node-pg-query-stream).
-
 ### `transaction`
 
 `transaction` method is used wrap execution of queries in `START TRANSACTION` and `COMMIT` or `ROLLBACK`. `COMMIT` is called if the transaction handler returns a promise that resolves; `ROLLBACK` is called otherwise.

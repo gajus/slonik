@@ -2480,8 +2480,6 @@ await connection.stream(sql.typeAlias('foo')`SELECT foo`, (stream) => {
 });
 ```
 
-Note: Implemented using [`pg-query-stream`](https://github.com/brianc/node-pg-query-stream).
-
 <a name="user-content-slonik-query-methods-transaction"></a>
 <a name="slonik-query-methods-transaction"></a>
 ### <code>transaction</code>
