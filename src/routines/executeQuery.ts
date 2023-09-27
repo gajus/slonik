@@ -28,7 +28,7 @@ import {
 } from '../types';
 import { createQueryId } from '../utilities/createQueryId';
 import { defer } from '../utilities/defer';
-import { getStackTrace } from '../utilities/getStackTrace';
+import { getStackTrace } from 'get-stack-trace';
 import { type PoolClient as PgPoolClient } from 'pg';
 import { serializeError } from 'serialize-error';
 
