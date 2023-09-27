@@ -3,7 +3,7 @@ import { type TypeOverrides } from './types';
 import { type DeferredPromise } from './utilities/defer';
 import { type Pool as PgPool, type PoolClient as PgClientPool } from 'pg';
 
-type PoolState = {
+export type PoolState = {
   ended: boolean;
   mock: boolean;
   poolId: string;
