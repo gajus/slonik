@@ -51,40 +51,16 @@ const destroyBoundConnection = (boundConnection: DatabasePoolConnection) => {
   }
 };
 
-export const createConnection = async (
+const establishConnection = async (
   parentLog: Logger,
   pool: PgPool,
-  clientConfiguration: ClientConfiguration,
-  connectionType: Connection,
-  connectionHandler: ConnectionHandlerType,
-  poolHandler: PoolHandlerType,
-  query: QuerySqlToken | null = null,
+  connectionRetryLimit: number,
 ) => {
   const poolState = getPoolState(pool);
 
-  if (poolState.ended) {
-    throw new UnexpectedStateError(
-      'Connection pool shutdown has been already initiated. Cannot create a new connection.',
-    );
-  }
-
-  for (const interceptor of clientConfiguration.interceptors) {
-    if (interceptor.beforePoolConnection) {
-      const maybeNewPool = await interceptor.beforePoolConnection({
-        log: parentLog,
-        poolId: poolState.poolId,
-        query,
-      });
-
-      if (maybeNewPool) {
-        return await poolHandler(maybeNewPool);
-      }
-    }
-  }
-
   let connection: PgPoolClient;
 
-  let remainingConnectionRetryLimit = clientConfiguration.connectionRetryLimit;
+  let remainingConnectionRetryLimit = connectionRetryLimit;
 
   // eslint-disable-next-line no-constant-condition
   while (true) {
@@ -125,6 +101,46 @@ export const createConnection = async (
   if (!connection) {
     throw new UnexpectedStateError('Connection handle is not present.');
   }
+
+  return connection;
+};
+
+export const createConnection = async (
+  parentLog: Logger,
+  pool: PgPool,
+  clientConfiguration: ClientConfiguration,
+  connectionType: Connection,
+  connectionHandler: ConnectionHandlerType,
+  poolHandler: PoolHandlerType,
+  query: QuerySqlToken | null = null,
+) => {
+  const poolState = getPoolState(pool);
+
+  if (poolState.ended) {
+    throw new UnexpectedStateError(
+      'Connection pool shutdown has been already initiated. Cannot create a new connection.',
+    );
+  }
+
+  for (const interceptor of clientConfiguration.interceptors) {
+    if (interceptor.beforePoolConnection) {
+      const maybeNewPool = await interceptor.beforePoolConnection({
+        log: parentLog,
+        poolId: poolState.poolId,
+        query,
+      });
+
+      if (maybeNewPool) {
+        return await poolHandler(maybeNewPool);
+      }
+    }
+  }
+
+  const connection = await establishConnection(
+    parentLog,
+    pool,
+    clientConfiguration.connectionRetryLimit,
+  );
 
   const poolClientState = getPoolClientState(connection);
 

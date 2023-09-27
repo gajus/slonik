@@ -53,8 +53,10 @@ export const createPool = async (
   });
 
   let getTypeParser: typeof pgTypes.getTypeParser;
+
   try {
     await setupClient.connect();
+
     getTypeParser = await createTypeOverrides(
       setupClient,
       clientConfiguration.typeParsers,
