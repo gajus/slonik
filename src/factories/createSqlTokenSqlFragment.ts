@@ -56,5 +56,5 @@ export const createSqlTokenSqlFragment = (
     return createUnnestSqlFragment(token, greatestParameterPosition);
   }
 
-  throw new UnexpectedStateError();
+  throw new UnexpectedStateError('Unexpected token type.');
 };

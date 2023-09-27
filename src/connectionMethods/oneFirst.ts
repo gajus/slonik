@@ -36,7 +36,9 @@ export const oneFirst: InternalQueryMethod = async (
       'DataIntegrityError',
     );
 
-    throw new UnexpectedStateError();
+    throw new UnexpectedStateError(
+      'Expected query to return one result, but received multiple results.',
+    );
   }
 
   return row[keys[0]];
