@@ -19,8 +19,7 @@ type ConnectionHandlerType = (
   connection: PgPoolClient,
   boundConnection: DatabasePoolConnection,
   clientConfiguration: ClientConfiguration,
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-) => MaybePromise<any>;
+) => MaybePromise<unknown>;
 
 type PoolHandlerType = (pool: DatabasePool) => Promise<unknown>;
 
