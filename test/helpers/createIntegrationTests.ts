@@ -140,6 +140,25 @@ export const createIntegrationTests = (
   test: TestFn<TestContextType>,
   PgPool: new () => PgPoolType,
 ) => {
+  test('properly handles terminated connections', async (t) => {
+    const pool = await createPool(t.context.dsn, {
+      PgPool,
+    });
+
+    await Promise.all([
+      pool.connect(() => Promise.resolve()),
+      pool.connect(() => Promise.resolve()),
+    ]);
+
+    await t.notThrowsAsync(
+      pool.query(sql.unsafe`
+        SELECT pg_terminate_backend(pid)
+        FROM pg_stat_activity
+        WHERE pid != pg_backend_pid()
+      `),
+    );
+  });
+
   test('produces syntax error with the original SQL', async (t) => {
     const pool = await createPool(t.context.dsn, {
       PgPool,

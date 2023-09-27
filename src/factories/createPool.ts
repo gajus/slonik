@@ -72,6 +72,16 @@ export const createPool = async (
     },
   });
 
+  // https://github.com/gajus/slonik/issues/471
+  pool.on('error', (error) => {
+    poolLog.error(
+      {
+        error: serializeError(error),
+      },
+      'client error',
+    );
+  });
+
   poolStateMap.set(pool, {
     ended: false,
     mock: false,
