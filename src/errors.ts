@@ -6,17 +6,16 @@ import {
 import ExtendableError from 'es6-error';
 import { type ZodIssue } from 'zod';
 
-export class SlonikError extends ExtendableError {}
+export class SlonikError extends ExtendableError {
+  public readonly message: string;
 
-class WrappedPGError extends SlonikError {
-  public readonly message!: string;
+  public readonly cause?: Error;
 
-  public readonly originalError: Error;
+  public constructor(message: string, options?: { cause?: Error }) {
+    super(message);
 
-  public constructor(originalError: Error, message: string) {
-    super(`${message} ${originalError.message}`);
-
-    this.originalError = originalError;
+    this.message = message || this.constructor.name;
+    this.cause = options?.cause;
   }
 }
 
@@ -40,30 +39,31 @@ export class UnexpectedStateError extends SlonikError {}
 
 export class ConnectionError extends SlonikError {}
 
-export class StatementCancelledError extends WrappedPGError {
-  public constructor(error: Error, message = 'Statement has been cancelled.') {
-    super(error, message);
-  }
-}
-
-export class StatementTimeoutError extends StatementCancelledError {
+export class StatementCancelledError extends SlonikError {
   public constructor(error: Error) {
-    super(error, 'Statement has been cancelled due to a statement_timeout.');
+    super('Statement has been cancelled.', { cause: error });
   }
 }
 
-export class BackendTerminatedError extends WrappedPGError {
+export class StatementTimeoutError extends SlonikError {
   public constructor(error: Error) {
-    super(error, 'Backend has been terminated.');
+    super('Statement has been cancelled due to a statement_timeout.', {
+      cause: error,
+    });
   }
 }
 
-export class TupleMovedToAnotherPartitionError extends WrappedPGError {
-  public constructor(
-    error: Error,
-    message = 'Tuple moved to another partition due to concurrent update.',
-  ) {
-    super(error, message);
+export class BackendTerminatedError extends SlonikError {
+  public constructor(error: Error) {
+    super('Backend has been terminated.', { cause: error });
+  }
+}
+
+export class TupleMovedToAnotherPartitionError extends SlonikError {
+  public constructor(error: Error) {
+    super('Tuple moved to another partition due to concurrent update.', {
+      cause: error,
+    });
   }
 }
 
@@ -86,7 +86,7 @@ export class DataIntegrityError extends SlonikError {
   public values: readonly PrimitiveValueExpression[];
 
   public constructor(query: Query) {
-    super('Query returns an unexpected result.');
+    super('Query returned an unexpected result.');
 
     this.sql = query.sql;
     this.values = query.values;
@@ -112,17 +112,28 @@ export class SchemaValidationError extends SlonikError {
   }
 }
 
-export class IntegrityConstraintViolationError extends WrappedPGError {
+type IntegrityConstraintViolationErrorCause = Error & {
+  constraint: string;
+};
+
+export class IntegrityConstraintViolationError extends SlonikError {
   public constraint: string;
 
-  public constructor(
-    error: Error,
-    constraint: string,
-    message = 'Query violates an integrity constraint.',
-  ) {
-    super(error, message);
+  public cause?: Error;
 
-    this.constraint = constraint;
+  public constructor(
+    message: string,
+    error: IntegrityConstraintViolationErrorCause,
+  ) {
+    super(message, { cause: error });
+
+    if (!error.constraint) {
+      throw new Error(
+        'IntegrityConstraintViolationError requires constraint name.',
+      );
+    }
+
+    this.constraint = error.constraint;
   }
 }
 
@@ -130,29 +141,25 @@ export class IntegrityConstraintViolationError extends WrappedPGError {
 // @see https://www.postgresql.org/docs/9.4/static/errcodes-appendix.html
 
 export class NotNullIntegrityConstraintViolationError extends IntegrityConstraintViolationError {
-  public constructor(error: Error, constraint: string) {
-    super(error, constraint, 'Query violates a not NULL integrity constraint.');
+  public constructor(error: IntegrityConstraintViolationErrorCause) {
+    super('Query violates a not NULL integrity constraint.', error);
   }
 }
 
 export class ForeignKeyIntegrityConstraintViolationError extends IntegrityConstraintViolationError {
-  public constructor(error: Error, constraint: string) {
-    super(
-      error,
-      constraint,
-      'Query violates a foreign key integrity constraint.',
-    );
+  public constructor(error: IntegrityConstraintViolationErrorCause) {
+    super('Query violates a foreign key integrity constraint.', error);
   }
 }
 
 export class UniqueIntegrityConstraintViolationError extends IntegrityConstraintViolationError {
-  public constructor(error: Error, constraint: string) {
-    super(error, constraint, 'Query violates a unique integrity constraint.');
+  public constructor(error: IntegrityConstraintViolationErrorCause) {
+    super('Query violates a unique integrity constraint.', error);
   }
 }
 
 export class CheckIntegrityConstraintViolationError extends IntegrityConstraintViolationError {
-  public constructor(error: Error, constraint: string) {
-    super(error, constraint, 'Query violates a check integrity constraint.');
+  public constructor(error: IntegrityConstraintViolationErrorCause) {
+    super('Query violates a check integrity constraint.', error);
   }
 }

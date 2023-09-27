@@ -296,31 +296,19 @@ export const executeQuery = async (
       }
 
       if (error.code === '23502') {
-        throw new NotNullIntegrityConstraintViolationError(
-          error,
-          error.constraint,
-        );
+        throw new NotNullIntegrityConstraintViolationError(error);
       }
 
       if (error.code === '23503') {
-        throw new ForeignKeyIntegrityConstraintViolationError(
-          error,
-          error.constraint,
-        );
+        throw new ForeignKeyIntegrityConstraintViolationError(error);
       }
 
       if (error.code === '23505') {
-        throw new UniqueIntegrityConstraintViolationError(
-          error,
-          error.constraint,
-        );
+        throw new UniqueIntegrityConstraintViolationError(error);
       }
 
       if (error.code === '23514') {
-        throw new CheckIntegrityConstraintViolationError(
-          error,
-          error.constraint,
-        );
+        throw new CheckIntegrityConstraintViolationError(error);
       }
 
       if (error.code === '42601') {
@@ -352,7 +340,7 @@ export const executeQuery = async (
   }
 
   if (!result) {
-    throw new UnexpectedStateError();
+    throw new UnexpectedStateError('Expected query result to be returned.');
   }
 
   // @ts-expect-error -- We want to keep notices as readonly for consumer, but write to it here.

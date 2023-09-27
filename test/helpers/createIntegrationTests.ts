@@ -1182,33 +1182,6 @@ export const createIntegrationTests = (
     await pool.end();
   });
 
-  test('error messages include original pg error', async (t) => {
-    const pool = await createPool(t.context.dsn, {
-      PgPool,
-    });
-
-    await pool.query(sql.unsafe`
-      INSERT INTO person (id)
-      VALUES (1)
-    `);
-
-    const error = await t.throwsAsync(async () => {
-      return await pool.query(sql.unsafe`
-        INSERT INTO person (id)
-        VALUES (1)
-      `);
-    });
-
-    t.is(
-      error?.message,
-      'Query violates a unique integrity constraint. ' +
-        // @ts-expect-error
-        String(error?.originalError?.message),
-    );
-
-    await pool.end();
-  });
-
   test('Tuple moved to another partition due to concurrent update error handled', async (t) => {
     const pool = await createPool(t.context.dsn, {
       PgPool,
@@ -1237,8 +1210,7 @@ export const createIntegrationTests = (
           .catch((error) => {
             t.is(
               error.message,
-              'Tuple moved to another partition due to concurrent update. ' +
-                String(error?.originalError?.message),
+              'Tuple moved to another partition due to concurrent update.',
             );
             t.true(error instanceof TupleMovedToAnotherPartitionError);
           });
