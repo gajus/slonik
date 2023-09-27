@@ -4,6 +4,20 @@ import { createMockQueryResult } from '../../../src/factories/createMockQueryRes
 import test from 'ava';
 import * as sinon from 'sinon';
 
+test('ends pool', async (t) => {
+  const pool = createMockPool({
+    query: async () => {
+      return createMockQueryResult([]);
+    },
+  });
+
+  t.false(pool.getPoolState().ended);
+
+  await pool.end();
+
+  t.true(pool.getPoolState().ended);
+});
+
 test('executes a mock query (pool.query)', async (t) => {
   t.plan(4);
 

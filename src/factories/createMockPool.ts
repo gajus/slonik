@@ -8,6 +8,7 @@ import {
 } from '../types';
 import { createUid } from '../utilities/createUid';
 import { createClientConfiguration } from './createClientConfiguration';
+import { type Pool as PgPool, type PoolClient as PgClientPool } from 'pg';
 
 export const createMockPool = (
   overrides: MockPoolOverrides,
@@ -30,13 +31,12 @@ export const createMockPool = (
         on: () => {},
         query: overrides.query,
         release: () => {},
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      } as any;
+      } as unknown as PgClientPool;
 
       return connection;
     },
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  } as any;
+    end: async () => {},
+  } as unknown as PgPool;
 
   poolStateMap.set(pool, {
     ended: false,
