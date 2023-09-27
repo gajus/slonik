@@ -114,9 +114,9 @@ export const createConnection = async (
   poolHandler: PoolHandlerType,
   query: QuerySqlToken | null = null,
 ) => {
-  const poolState = getPoolState(pool);
+  const { ended, poolId } = getPoolState(pool);
 
-  if (poolState.ended) {
+  if (ended) {
     throw new UnexpectedStateError(
       'Connection pool shutdown has been already initiated. Cannot create a new connection.',
     );
@@ -126,7 +126,7 @@ export const createConnection = async (
     if (interceptor.beforePoolConnection) {
       const maybeNewPool = await interceptor.beforePoolConnection({
         log: parentLog,
-        poolId: poolState.poolId,
+        poolId,
         query,
       });
 
@@ -142,9 +142,7 @@ export const createConnection = async (
     clientConfiguration.connectionRetryLimit,
   );
 
-  const poolClientState = getPoolClientState(connection);
-
-  const { connectionId } = poolClientState;
+  const { connectionId } = getPoolClientState(connection);
 
   const connectionLog = parentLog.child({
     connectionId,
@@ -154,7 +152,7 @@ export const createConnection = async (
     connectionId,
     connectionType,
     log: connectionLog,
-    poolId: poolState.poolId,
+    poolId,
   };
 
   const boundConnection = bindPoolConnection(
