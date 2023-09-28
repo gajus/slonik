@@ -5,6 +5,7 @@ import {
   type DatabasePoolConnection,
   InputSyntaxError,
   InvalidInputError,
+  NotNullIntegrityConstraintViolationError,
   sql,
   StatementCancelledError,
   StatementTimeoutError,
@@ -85,7 +86,7 @@ export const createTestRunner = (
       await connection.query(sql.unsafe`
         CREATE TABLE person (
           id SERIAL PRIMARY KEY,
-          name text,
+          name text NOT NULL,
           tags text[],
           birth_date date,
           payload bytea,
@@ -140,6 +141,23 @@ export const createIntegrationTests = (
   test: TestFn<TestContextType>,
   PgPool: new () => PgPoolType,
 ) => {
+  test('NotNullIntegrityConstraintViolationError identifies the table and column', async (t) => {
+    const pool = await createPool(t.context.dsn, {
+      PgPool,
+    });
+
+    const error: NotNullIntegrityConstraintViolationError | undefined =
+      await t.throwsAsync(
+        pool.any(sql.unsafe`
+      INSERT INTO person (name) VALUES (null)
+    `),
+      );
+
+    t.true(error instanceof NotNullIntegrityConstraintViolationError);
+    t.is(error?.table, 'person');
+    t.is(error?.column, 'name');
+  });
+
   test('properly handles terminated connections', async (t) => {
     const pool = await createPool(t.context.dsn, {
       PgPool,
@@ -700,10 +718,12 @@ export const createIntegrationTests = (
     await pool.query(sql.unsafe`
       INSERT INTO person
       (
+        name,
         payload
       )
       VALUES
       (
+        'foo',
         ${sql.binary(Buffer.from(payload))}
       )
     `);

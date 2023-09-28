@@ -113,11 +113,17 @@ export class SchemaValidationError extends SlonikError {
 }
 
 type IntegrityConstraintViolationErrorCause = Error & {
-  constraint: string;
+  column?: string;
+  constraint?: string;
+  table?: string;
 };
 
 export class IntegrityConstraintViolationError extends SlonikError {
-  public constraint: string;
+  public constraint: string | null;
+
+  public column: string | null;
+
+  public table: string | null;
 
   public cause?: Error;
 
@@ -127,13 +133,11 @@ export class IntegrityConstraintViolationError extends SlonikError {
   ) {
     super(message, { cause: error });
 
-    if (!error.constraint) {
-      throw new Error(
-        'IntegrityConstraintViolationError requires constraint name.',
-      );
-    }
+    this.constraint = error.constraint ?? null;
 
-    this.constraint = error.constraint;
+    this.column = error.column ?? null;
+
+    this.table = error.table ?? null;
   }
 }
 
