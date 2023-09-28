@@ -9,8 +9,6 @@ type PostgresType = {
   typname: string;
 };
 
-export type TypeOverrides = (oid: number) => ReturnType<typeof getTypeParser>;
-
 export const createTypeOverrides = async (
   connection: PoolClient,
   typeParsers: readonly TypeParser[],
