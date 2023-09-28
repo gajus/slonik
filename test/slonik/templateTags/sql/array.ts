@@ -14,6 +14,21 @@ test('binds an empty array', (t) => {
   });
 });
 
+test('binds bigint', (t) => {
+  const query = sql.fragment`SELECT ${sql.array(
+    // eslint-disable-next-line unicorn/numeric-separators-style
+    [9007199254740999n],
+    'int8',
+  )}`;
+
+  t.deepEqual(query, {
+    sql: 'SELECT $1::"int8"[]',
+    type: FragmentToken,
+    // eslint-disable-next-line unicorn/numeric-separators-style
+    values: [[BigInt(9007199254740999n)]],
+  });
+});
+
 test('binds an array with multiple values', (t) => {
   const query = sql.fragment`SELECT ${sql.array([1, 2, 3], 'int4')}`;
 

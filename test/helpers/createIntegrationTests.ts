@@ -141,6 +141,19 @@ export const createIntegrationTests = (
   test: TestFn<TestContextType>,
   PgPool: new () => PgPoolType,
 ) => {
+  test('inserts and retrieves bigint', async (t) => {
+    const pool = await createPool(t.context.dsn, {
+      PgPool,
+    });
+    const result = await pool.oneFirst(sql.unsafe`
+      SELECT ${BigInt(9_007_199_254_740_999n)}::bigint
+    `);
+
+    t.is(result, BigInt(9_007_199_254_740_999n));
+
+    await pool.end();
+  });
+
   test('NotNullIntegrityConstraintViolationError identifies the table and column', async (t) => {
     const pool = await createPool(t.context.dsn, {
       PgPool,
