@@ -1,8 +1,7 @@
-import { QueryStream } from '../QueryStream';
 import { executeQuery } from '../routines/executeQuery';
 import { type Interceptor, type InternalStreamFunction } from '../types';
-import { type Readable } from 'node:stream';
-import * as through from 'through2';
+import { type Readable, Transform } from 'node:stream';
+import QueryStream from 'pg-query-stream';
 
 export const stream: InternalStreamFunction = async (
   connectionLogger,
@@ -26,9 +25,36 @@ export const stream: InternalStreamFunction = async (
       executionContext,
       actualQuery,
     ) => {
-      const query = new QueryStream(finalSql, finalValues, options);
+      const streamEndResultRow = {
+        command: 'SELECT',
+        fields: [],
+        notices: [],
+        rowCount: 0,
+        rows: [],
+      } as const;
+
+      const query = new QueryStream(
+        finalSql,
+        finalValues as unknown[],
+        options,
+      );
 
       const queryStream: Readable = finalConnection.query(query);
+
+      let fields: Array<{
+        dataTypeId: number;
+        name: string;
+      }> = [];
+
+      // @ts-expect-error – https://github.com/brianc/node-postgres/issues/3015
+      finalConnection.connection.once('rowDescription', (rowDescription) => {
+        fields = rowDescription.fields.map((field) => {
+          return {
+            dataTypeId: field.dataTypeID,
+            name: field.name,
+          };
+        });
+      });
 
       const rowTransformers: Array<NonNullable<Interceptor['transformRow']>> =
         [];
@@ -39,14 +65,11 @@ export const stream: InternalStreamFunction = async (
         }
       }
 
-      return await new Promise((resolve, reject) => {
-        queryStream.on('error', (error: Error) => {
-          reject(error);
-        });
-
-        const transformedStream = queryStream.pipe(
-          through.obj(function (datum, enc, callback) {
-            let finalRow = datum.row;
+      return new Promise((resolve, reject) => {
+        const transformStream = new Transform({
+          objectMode: true,
+          transform(datum, enc, callback) {
+            let finalRow = datum;
 
             if (rowTransformers.length) {
               for (const rowTransformer of rowTransformers) {
@@ -54,53 +77,50 @@ export const stream: InternalStreamFunction = async (
                   executionContext,
                   actualQuery,
                   finalRow,
-                  datum.fields,
+                  fields,
                 );
               }
             }
 
             // eslint-disable-next-line @babel/no-invalid-this
             this.push({
-              fields: datum.fields,
+              fields,
               row: finalRow,
             });
 
             callback();
-          }),
-        );
-
-        transformedStream.on('end', () => {
-          resolve({
-            command: 'SELECT',
-            fields: [],
-            notices: [],
-            rowCount: 0,
-            rows: [],
-          });
+          },
         });
 
-        // Invoked if stream is destroyed using transformedStream.destroy().
-        transformedStream.on('close', () => {
+        transformStream.on('newListener', (event) => {
+          if (event === 'data') {
+            queryStream.pipe(transformStream);
+          }
+        });
+
+        transformStream.on('end', () => {
+          resolve(streamEndResultRow);
+        });
+
+        transformStream.on('close', () => {
           if (!queryStream.destroyed) {
             queryStream.destroy();
           }
 
-          resolve({
-            command: 'SELECT',
-            fields: [],
-            notices: [],
-            rowCount: 0,
-            rows: [],
-          });
+          resolve(streamEndResultRow);
         });
 
-        transformedStream.on('error', (error: Error) => {
+        transformStream.on('error', (error: Error) => {
+          reject(error);
+
           queryStream.destroy(error);
         });
 
-        transformedStream.once('readable', () => {
-          streamHandler(transformedStream);
+        queryStream.on('error', (error: Error) => {
+          transformStream.destroy(error);
         });
+
+        streamHandler(transformStream);
       });
     },
   );
