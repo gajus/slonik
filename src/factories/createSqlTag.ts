@@ -87,7 +87,10 @@ const createFragment = (
       );
 
       rawSql += sqlFragment.sql;
-      parameterValues.push(...sqlFragment.values);
+
+      for (const value of sqlFragment.values) {
+        parameterValues.push(value);
+      }
     } else {
       log.error(
         {
