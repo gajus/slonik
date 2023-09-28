@@ -433,12 +433,12 @@ export type InternalQueryMethod<R = any> = (
   uid?: QueryId,
 ) => R;
 
-export type InternalStreamFunction = (
+export type InternalStreamFunction = <T>(
   log: Logger,
   connection: PgPoolClient,
   clientConfiguration: ClientConfiguration,
   slonikSql: QuerySqlToken,
-  streamHandler: StreamHandler,
+  streamHandler: StreamHandler<T>,
   uid?: QueryId,
   config?: QueryStreamConfig,
 ) => Promise<Record<string, unknown>>;
