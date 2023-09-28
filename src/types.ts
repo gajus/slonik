@@ -57,7 +57,15 @@ export type QueryId = string;
 
 export type MaybePromise<T> = Promise<T> | T;
 
-type StreamHandler = (stream: Readable) => void;
+// eslint-disable-next-line @typescript-eslint/consistent-type-definitions
+interface TypedReadable<T> extends Readable {
+  // eslint-disable-next-line @typescript-eslint/method-signature-style
+  on(event: 'data', listener: (chunk: T) => void): this;
+  // eslint-disable-next-line @typescript-eslint/method-signature-style
+  on(event: string | symbol, listener: (...args: any[]) => void): this;
+}
+
+type StreamHandler<T> = (stream: TypedReadable<T>) => void;
 
 export type Connection = 'EXPLICIT' | 'IMPLICIT_QUERY' | 'IMPLICIT_TRANSACTION';
 
@@ -133,9 +141,9 @@ export type ClientConfigurationInput = Partial<ClientConfiguration>;
 
 type QueryStreamConfig = ReadableOptions & { batchSize?: number };
 
-type StreamFunction = (
-  sql: QuerySqlToken,
-  streamHandler: StreamHandler,
+type StreamFunction = <T extends ZodTypeAny>(
+  sql: QuerySqlToken<T>,
+  streamHandler: StreamHandler<z.infer<T>>,
   config?: QueryStreamConfig,
 ) => Promise<Record<string, unknown> | null>;
 

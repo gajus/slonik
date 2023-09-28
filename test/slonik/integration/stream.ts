@@ -2,6 +2,7 @@ import { createPool, sql, StatementTimeoutError } from '../../../src';
 import { createTestRunner } from '../../helpers/createIntegrationTests';
 import { Pool as PgPool } from 'pg';
 import * as sinon from 'sinon';
+import { z } from 'zod';
 
 const { test } = createTestRunner(PgPool, 'pg');
 
@@ -75,10 +76,14 @@ test('streams rows', async (t) => {
   const messages: Array<Record<string, unknown>> = [];
 
   await pool.stream(
-    sql.unsafe`
-    SELECT name
-    FROM person
-  `,
+    sql.type(
+      z.object({
+        name: z.string(),
+      }),
+    )`
+      SELECT name
+      FROM person
+    `,
     (stream) => {
       stream.on('data', (datum) => {
         messages.push(datum);
