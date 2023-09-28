@@ -353,6 +353,7 @@ export type UnnestSqlToken = {
 
 export type PrimitiveValueExpression =
   | Buffer
+  | bigint
   | boolean
   | number
   | string
