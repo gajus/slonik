@@ -62,6 +62,7 @@ test('executes the query and returns the result', async (t) => {
         foo: 1,
       },
     ],
+    type: 'QueryResult',
   });
 
   const result = await pool.query(sql.unsafe`SELECT 1`);
@@ -76,6 +77,7 @@ test('executes the query and returns the result', async (t) => {
         foo: 1,
       },
     ],
+    type: 'QueryResult',
   });
 });
 
@@ -114,6 +116,7 @@ test('adds notices observed during the query execution to the query result objec
         foo: 1,
       },
     ],
+    type: 'QueryResult',
   });
 
   await delay(100);
@@ -130,6 +133,7 @@ test('adds notices observed during the query execution to the query result objec
         foo: 1,
       },
     ],
+    type: 'QueryResult',
   });
 });
 

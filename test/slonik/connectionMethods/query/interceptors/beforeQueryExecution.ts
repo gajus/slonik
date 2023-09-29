@@ -19,6 +19,7 @@ test('short-circuits the query execution', async (t) => {
                 foo: 2,
               },
             ],
+            type: 'QueryResult',
           };
         },
       },
@@ -45,6 +46,7 @@ test('short-circuits the query execution', async (t) => {
         foo: 2,
       },
     ],
+    type: 'QueryResult',
   });
 });
 
@@ -69,6 +71,7 @@ test('executes query if "beforeQuery" does not return results', async (t) => {
         foo: 1,
       },
     ],
+    type: 'QueryResult',
   });
 
   const result = await pool.query(sql.unsafe`SELECT 1`);
@@ -83,5 +86,6 @@ test('executes query if "beforeQuery" does not return results', async (t) => {
         foo: 1,
       },
     ],
+    type: 'QueryResult',
   });
 });

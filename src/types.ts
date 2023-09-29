@@ -84,6 +84,7 @@ export type QueryResult<T> = {
   readonly notices: readonly Notice[];
   readonly rowCount: number;
   readonly rows: readonly T[];
+  readonly type: 'QueryResult';
 };
 
 export type ClientConfiguration = {
@@ -145,11 +146,16 @@ export type ClientConfigurationInput = Partial<ClientConfiguration>;
 
 export type QueryStreamConfig = ReadableOptions & { batchSize?: number };
 
+export type StreamResult = {
+  notices: readonly Notice[];
+  type: 'StreamResult';
+};
+
 type StreamFunction = <T extends ZodTypeAny>(
   sql: QuerySqlToken<T>,
   streamHandler: StreamHandler<z.infer<T>>,
   config?: QueryStreamConfig,
-) => Promise<Record<string, unknown> | null>;
+) => Promise<StreamResult>;
 
 export type CommonQueryMethods = {
   readonly any: QueryAnyFunction;

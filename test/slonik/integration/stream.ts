@@ -340,7 +340,6 @@ test('streams include notices', async (t) => {
     },
   );
 
-  // @ts-expect-error TODO stream result type is wrong
   t.true(result.notices.length === 3);
 
   await pool.end();

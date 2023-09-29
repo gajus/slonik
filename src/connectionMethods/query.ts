@@ -36,6 +36,7 @@ const executionRoutine: ExecutionRoutine = async (
     notices: result.notices ?? [],
     rowCount: result.rowCount || 0,
     rows: result.rows || [],
+    type: 'QueryResult',
   };
 };
 
@@ -53,5 +54,6 @@ export const query: InternalQueryMethod = async (
     slonikSql,
     inheritedQueryId,
     executionRoutine,
+    false,
   );
 };

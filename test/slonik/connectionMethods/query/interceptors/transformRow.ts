@@ -26,6 +26,7 @@ test('overrides result row', async (t) => {
         foo: 1,
       },
     ],
+    type: 'QueryResult',
   });
 
   const result = await pool.query(sql.unsafe`SELECT 1`);
@@ -40,5 +41,6 @@ test('overrides result row', async (t) => {
         foo: 2,
       },
     ],
+    type: 'QueryResult',
   });
 });

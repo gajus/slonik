@@ -438,6 +438,7 @@ export const createIntegrationTests = (
           names: [Buffer.from('foo')],
         },
       ],
+      type: 'QueryResult',
     });
 
     await pool.end();
@@ -476,6 +477,7 @@ export const createIntegrationTests = (
           name: 'foo',
         },
       ],
+      type: 'QueryResult',
     });
 
     await pool.end();
@@ -523,6 +525,7 @@ export const createIntegrationTests = (
           name: 'bar',
         },
       ],
+      type: 'QueryResult',
     });
 
     await pool.end();
@@ -568,6 +571,7 @@ export const createIntegrationTests = (
           name: 'foo',
         },
       ],
+      type: 'QueryResult',
     });
 
     await pool.end();
@@ -1137,6 +1141,7 @@ export const createIntegrationTests = (
           name: 'foo',
         },
       ],
+      type: 'QueryResult',
     });
 
     await pool.end();
@@ -1194,6 +1199,7 @@ export const createIntegrationTests = (
           name: 1,
         },
       ],
+      type: 'QueryResult',
     });
 
     await pool.end();

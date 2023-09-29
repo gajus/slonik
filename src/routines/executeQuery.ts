@@ -25,6 +25,7 @@ import {
   type QueryResult,
   type QueryResultRow,
   type QuerySqlToken,
+  type StreamResult,
 } from '../types';
 import { createQueryId } from '../utilities/createQueryId';
 import { defer } from '../utilities/defer';
@@ -32,7 +33,7 @@ import { getStackTrace } from 'get-stack-trace';
 import { type PoolClient as PgPoolClient } from 'pg';
 import { serializeError } from 'serialize-error';
 
-type GenericQueryResult = QueryResult<QueryResultRow>;
+type GenericQueryResult = StreamResult | QueryResult<QueryResultRow>;
 
 export type ExecutionRoutine = (
   connection: PgPoolClient,
@@ -122,7 +123,10 @@ export const executeQuery = async (
   query: QuerySqlToken,
   inheritedQueryId: QueryId | undefined,
   executionRoutine: ExecutionRoutine,
-): Promise<QueryResult<Record<string, PrimitiveValueExpression>>> => {
+  stream: boolean,
+): Promise<
+  StreamResult | QueryResult<Record<string, PrimitiveValueExpression>>
+> => {
   const poolClientState = getPoolClientState(connection);
 
   if (poolClientState.terminated) {
@@ -189,19 +193,21 @@ export const executeQuery = async (
 
   let result: GenericQueryResult | null;
 
-  for (const interceptor of clientConfiguration.interceptors) {
-    if (interceptor.beforeQueryExecution) {
-      result = await interceptor.beforeQueryExecution(
-        executionContext,
-        actualQuery,
-      );
-
-      if (result) {
-        log.info(
-          'beforeQueryExecution interceptor produced a result; short-circuiting query execution using beforeQueryExecution result',
+  if (!stream) {
+    for (const interceptor of clientConfiguration.interceptors) {
+      if (interceptor.beforeQueryExecution) {
+        result = await interceptor.beforeQueryExecution(
+          executionContext,
+          actualQuery,
         );
 
-        return result;
+        if (result) {
+          log.info(
+            'beforeQueryExecution interceptor produced a result; short-circuiting query execution using beforeQueryExecution result',
+          );
+
+          return result;
+        }
       }
     }
   }
@@ -346,18 +352,17 @@ export const executeQuery = async (
   // @ts-expect-error -- We want to keep notices as readonly for consumer, but write to it here.
   result.notices = notices;
 
-  for (const interceptor of clientConfiguration.interceptors) {
-    if (interceptor.afterQueryExecution) {
-      await interceptor.afterQueryExecution(
-        executionContext,
-        actualQuery,
-        result,
-      );
+  if (result.type === 'QueryResult') {
+    for (const interceptor of clientConfiguration.interceptors) {
+      if (interceptor.afterQueryExecution) {
+        await interceptor.afterQueryExecution(
+          executionContext,
+          actualQuery,
+          result,
+        );
+      }
     }
-  }
 
-  // Stream does not have `rows` in the result object and all rows are already transformed.
-  if (result.rows) {
     const interceptors: Interceptor[] =
       clientConfiguration.interceptors.slice();
 
@@ -378,15 +383,15 @@ export const executeQuery = async (
         };
       }
     }
-  }
 
-  for (const interceptor of clientConfiguration.interceptors) {
-    if (interceptor.beforeQueryResult) {
-      await interceptor.beforeQueryResult(
-        executionContext,
-        actualQuery,
-        result,
-      );
+    for (const interceptor of clientConfiguration.interceptors) {
+      if (interceptor.beforeQueryResult) {
+        await interceptor.beforeQueryResult(
+          executionContext,
+          actualQuery,
+          result,
+        );
+      }
     }
   }
 

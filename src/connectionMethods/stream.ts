@@ -79,14 +79,6 @@ const createExecutionRoutine = <T>(
   streamOptions?: QueryStreamConfig,
 ): ExecutionRoutine => {
   return async (connection, sql, values, executionContext, actualQuery) => {
-    const streamEndResultRow = {
-      command: 'SELECT',
-      fields: [],
-      notices: [],
-      rowCount: 0,
-      rows: [],
-    } as const;
-
     const queryStream: Readable = connection.query(
       new QueryStream(sql, values as unknown[], streamOptions),
     );
@@ -102,7 +94,10 @@ const createExecutionRoutine = <T>(
 
     await pipeline(queryStream, transformStream);
 
-    return streamEndResultRow;
+    return {
+      notices: [],
+      type: 'StreamResult',
+    };
   };
 };
 
@@ -122,5 +117,6 @@ export const stream: InternalStreamFunction = async (
     slonikSql,
     undefined,
     createExecutionRoutine(clientConfiguration, onStream, streamOptions),
+    true,
   );
 };
