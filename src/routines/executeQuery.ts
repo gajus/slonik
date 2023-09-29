@@ -34,7 +34,7 @@ import { serializeError } from 'serialize-error';
 
 type GenericQueryResult = QueryResult<QueryResultRow>;
 
-type ExecutionRoutineType = (
+type ExecutionRoutine = (
   connection: PgPoolClient,
   sql: string,
   values: readonly PrimitiveValueExpression[],
@@ -44,7 +44,7 @@ type ExecutionRoutineType = (
 
 type TransactionQuery = {
   readonly executionContext: QueryContext;
-  readonly executionRoutine: ExecutionRoutineType;
+  readonly executionRoutine: ExecutionRoutine;
   readonly sql: string;
   readonly values: readonly PrimitiveValueExpression[];
 };
@@ -121,7 +121,7 @@ export const executeQuery = async (
   clientConfiguration: ClientConfiguration,
   query: QuerySqlToken,
   inheritedQueryId: QueryId | undefined,
-  executionRoutine: ExecutionRoutineType,
+  executionRoutine: ExecutionRoutine,
 ): Promise<QueryResult<Record<string, PrimitiveValueExpression>>> => {
   const poolClientState = getPoolClientState(connection);
 
