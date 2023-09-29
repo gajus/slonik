@@ -308,6 +308,44 @@ test('reading stream using row transform interceptors', async (t) => {
   await pool.end();
 });
 
+test('streams include notices', async (t) => {
+  const pool = await createPool(t.context.dsn);
+
+  await pool.query(sql.unsafe`
+    CREATE OR REPLACE FUNCTION test_notice
+      (
+        v_test INTEGER
+      ) RETURNS BOOLEAN
+      LANGUAGE plpgsql
+    AS
+    $$
+    BEGIN
+
+      RAISE NOTICE '1. TEST NOTICE [%]',v_test;
+      RAISE NOTICE '2. TEST NOTICE [%]',v_test;
+      RAISE NOTICE '3. TEST NOTICE [%]',v_test;
+
+      RETURN TRUE;
+    END;
+    $$;
+    `);
+
+  const result = await pool.stream(
+    sql.unsafe`
+      SELECT *
+      FROM test_notice(${10})
+    `,
+    (stream) => {
+      stream.on('data', () => {});
+    },
+  );
+
+  // @ts-expect-error TODO stream result type is wrong
+  t.true(result.notices.length === 3);
+
+  await pool.end();
+});
+
 test('streams rows with different batchSize', async (t) => {
   const pool = await createPool(t.context.dsn);
 
