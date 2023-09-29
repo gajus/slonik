@@ -65,7 +65,7 @@ interface TypedReadable<T> extends Readable {
   on(event: string | symbol, listener: (...args: any[]) => void): this;
 }
 
-type StreamHandler<T> = (stream: TypedReadable<T>) => void;
+export type StreamHandler<T> = (stream: TypedReadable<T>) => void;
 
 export type Connection = 'EXPLICIT' | 'IMPLICIT_QUERY' | 'IMPLICIT_TRANSACTION';
 
@@ -139,7 +139,7 @@ export type ClientConfiguration = {
 
 export type ClientConfigurationInput = Partial<ClientConfiguration>;
 
-type QueryStreamConfig = ReadableOptions & { batchSize?: number };
+export type QueryStreamConfig = ReadableOptions & { batchSize?: number };
 
 type StreamFunction = <T extends ZodTypeAny>(
   sql: QuerySqlToken<T>,

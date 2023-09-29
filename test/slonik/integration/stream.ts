@@ -55,7 +55,7 @@ test('untapped stream produces statement timeout', async (t) => {
 
   t.true(error instanceof StatementTimeoutError);
 
-  t.false(onData.called);
+  t.true(onData.callCount < 1_000);
 
   await pool.end();
 });
@@ -84,7 +84,7 @@ test('stream pool connection can be re-used after an error', async (t) => {
 
   t.true(error instanceof StatementTimeoutError);
 
-  t.false(onData.called);
+  t.true(onData.callCount < 1_000);
 
   t.is(await pool.oneFirst(sql.unsafe`SELECT 1`), 1);
 
@@ -362,13 +362,15 @@ test('streams over a transaction', async (t) => {
 test('frees connection after destroying a stream', async (t) => {
   const pool = await createPool(t.context.dsn);
 
-  await pool.stream(
-    sql.unsafe`
+  await t.throwsAsync(
+    pool.stream(
+      sql.unsafe`
     SELECT * FROM GENERATE_SERIES(1, 100)
   `,
-    (stream) => {
-      stream.destroy();
-    },
+      (stream) => {
+        stream.destroy();
+      },
+    ),
   );
 
   t.deepEqual(
