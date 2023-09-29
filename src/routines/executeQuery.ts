@@ -34,7 +34,7 @@ import { serializeError } from 'serialize-error';
 
 type GenericQueryResult = QueryResult<QueryResultRow>;
 
-type ExecutionRoutine = (
+export type ExecutionRoutine = (
   connection: PgPoolClient,
   sql: string,
   values: readonly PrimitiveValueExpression[],
