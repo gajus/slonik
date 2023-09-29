@@ -6,6 +6,32 @@ import { z } from 'zod';
 
 const { test } = createTestRunner(PgPool, 'pg');
 
+test('reading stream after a delay', async (t) => {
+  const pool = await createPool(t.context.dsn, {
+    statementTimeout: 1_000,
+  });
+
+  const onData = sinon.spy();
+
+  await t.notThrowsAsync(
+    pool.stream(
+      sql.unsafe`
+      SELECT *
+      FROM GENERATE_SERIES(1, 1000)
+    `,
+      (stream) => {
+        setTimeout(() => {
+          stream.on('data', onData);
+        }, 500);
+      },
+    ),
+  );
+
+  t.true(onData.called);
+
+  await pool.end();
+});
+
 test('untapped stream produces statement timeout', async (t) => {
   const pool = await createPool(t.context.dsn, {
     statementTimeout: 100,
