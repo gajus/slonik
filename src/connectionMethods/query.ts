@@ -1,5 +1,4 @@
-import { type ExecutionRoutine } from '../routines/executeQuery';
-import { executeQuery } from '../routines/executeQuery';
+import { executeQuery, type ExecutionRoutine } from '../routines/executeQuery';
 import {
   type Field,
   type InternalQueryMethod,
