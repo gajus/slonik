@@ -25,7 +25,7 @@
     "@semantic-release/github": "^9.2.1",
     "@semantic-release/npm": "^11.0.0",
     "@types/sinon": "^10.0.15",
-    "ava": "^5.3.0",
+    "ava": "^5.3.1",
     "cspell": "^7.3.6",
     "delay": "^5.0.0",
     "eslint": "^8.50.0",
