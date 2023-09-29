@@ -62,7 +62,7 @@ interface TypedReadable<T> extends Readable {
   // eslint-disable-next-line @typescript-eslint/method-signature-style
   on(
     event: 'data',
-    listener: (chunk: { fields: readonly Field[]; row: T }) => void,
+    listener: (chunk: { data: T; fields: readonly Field[] }) => void,
   ): this;
   // eslint-disable-next-line @typescript-eslint/method-signature-style
   on(event: string | symbol, listener: (...args: any[]) => void): this;

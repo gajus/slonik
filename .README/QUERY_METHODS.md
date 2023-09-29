@@ -172,18 +172,18 @@ Example:
 
 ```ts
 await connection.stream(sql.typeAlias('foo')`SELECT foo`, (stream) => {
-  stream.on('data', (datum) => {
-    datum;
+  stream.on('data', (row) => {
+    row;
     // {
+    //   data: {
+    //     foo: 'bar'
+    //   },
     //   fields: [
     //     {
     //       name: 'foo',
     //       dataTypeId: 23,
     //     }
-    //   ],
-    //   row: {
-    //     foo: 'bar'
-    //   }
+    //   ]
     // }
   });
 });

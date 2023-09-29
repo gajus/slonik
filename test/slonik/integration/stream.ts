@@ -119,37 +119,37 @@ test('streams rows', async (t) => {
 
   t.deepEqual(messages, [
     {
-      fields: [
-        {
-          dataTypeId: 25,
-          name: 'name',
-        },
-      ],
-      row: {
+      data: {
         name: 'foo',
       },
-    },
-    {
       fields: [
         {
           dataTypeId: 25,
           name: 'name',
         },
       ],
-      row: {
+    },
+    {
+      data: {
         name: 'bar',
       },
-    },
-    {
       fields: [
         {
           dataTypeId: 25,
           name: 'name',
         },
       ],
-      row: {
+    },
+    {
+      data: {
         name: 'baz',
       },
+      fields: [
+        {
+          dataTypeId: 25,
+          name: 'name',
+        },
+      ],
     },
   ]);
 
@@ -179,7 +179,7 @@ test('streams rows (check types)', async (t) => {
       stream.on('data', (datum) => {
         // This test was added because earlier types did not accurately reflect stream outputs.
         // By accessing a property of the stream result we ensure that the stream outputs match the types.
-        names.push(datum.row.name);
+        names.push(datum.data.name);
       });
     },
   );
@@ -215,37 +215,37 @@ test('streams rows with different batchSize', async (t) => {
 
   t.deepEqual(messages, [
     {
-      fields: [
-        {
-          dataTypeId: 25,
-          name: 'name',
-        },
-      ],
-      row: {
+      data: {
         name: 'foo',
       },
-    },
-    {
       fields: [
         {
           dataTypeId: 25,
           name: 'name',
         },
       ],
-      row: {
+    },
+    {
+      data: {
         name: 'bar',
       },
-    },
-    {
       fields: [
         {
           dataTypeId: 25,
           name: 'name',
         },
       ],
-      row: {
+    },
+    {
+      data: {
         name: 'baz',
       },
+      fields: [
+        {
+          dataTypeId: 25,
+          name: 'name',
+        },
+      ],
     },
   ]);
 
@@ -292,37 +292,37 @@ test('applies type parsers to streamed rows', async (t) => {
 
   t.deepEqual(messages, [
     {
-      fields: [
-        {
-          dataTypeId: 1_082,
-          name: 'birth_date',
-        },
-      ],
-      row: {
+      data: {
         birth_date: 1_990,
       },
-    },
-    {
       fields: [
         {
           dataTypeId: 1_082,
           name: 'birth_date',
         },
       ],
-      row: {
+    },
+    {
+      data: {
         birth_date: 1_991,
       },
-    },
-    {
       fields: [
         {
           dataTypeId: 1_082,
           name: 'birth_date',
         },
       ],
-      row: {
+    },
+    {
+      data: {
         birth_date: 1_992,
       },
+      fields: [
+        {
+          dataTypeId: 1_082,
+          name: 'birth_date',
+        },
+      ],
     },
   ]);
 
@@ -355,37 +355,37 @@ test('streams over a transaction', async (t) => {
 
   t.deepEqual(messages, [
     {
-      fields: [
-        {
-          dataTypeId: 25,
-          name: 'name',
-        },
-      ],
-      row: {
+      data: {
         name: 'foo',
       },
-    },
-    {
       fields: [
         {
           dataTypeId: 25,
           name: 'name',
         },
       ],
-      row: {
+    },
+    {
+      data: {
         name: 'bar',
       },
-    },
-    {
       fields: [
         {
           dataTypeId: 25,
           name: 'name',
         },
       ],
-      row: {
+    },
+    {
+      data: {
         name: 'baz',
       },
+      fields: [
+        {
+          dataTypeId: 25,
+          name: 'name',
+        },
+      ],
     },
   ]);
 
