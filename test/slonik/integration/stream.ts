@@ -1,4 +1,9 @@
-import { createPool, sql, StatementTimeoutError } from '../../../src';
+import {
+  createBigintTypeParser,
+  createPool,
+  sql,
+  StatementTimeoutError,
+} from '../../../src';
 import { createTestRunner } from '../../helpers/createIntegrationTests';
 import { Pool as PgPool } from 'pg';
 import * as sinon from 'sinon';
@@ -216,6 +221,46 @@ test('streams rows using AsyncIterator', async (t) => {
   );
 
   t.deepEqual(names, ['foo', 'bar', 'baz']);
+
+  await pool.end();
+});
+
+test('reading stream using custom type parsers', async (t) => {
+  const pool = await createPool(t.context.dsn, {
+    typeParsers: [createBigintTypeParser()],
+  });
+
+  await pool.query(sql.unsafe`
+    INSERT INTO person (name, molecules)
+    VALUES 
+      ('foo', ${BigInt('6022000000000000000')}),
+      ('bar', ${BigInt('6022000000000000001')}),
+      ('baz', ${BigInt('6022000000000000002')})
+  `);
+
+  const persons: bigint[] = [];
+
+  await pool.stream(
+    sql.type(
+      z.object({
+        molecules: z.bigint(),
+      }),
+    )`
+      SELECT molecules
+      FROM person
+    `,
+    (stream) => {
+      stream.on('data', (datum) => {
+        persons.push(datum.data.molecules);
+      });
+    },
+  );
+
+  t.deepEqual(persons, [
+    BigInt('6022000000000000000'),
+    BigInt('6022000000000000001'),
+    BigInt('6022000000000000002'),
+  ]);
 
   await pool.end();
 });

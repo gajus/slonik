@@ -90,6 +90,7 @@ export const createTestRunner = (
           tags text[],
           birth_date date,
           payload bytea,
+          molecules int8,
           updated_no_tz_at timestamp without time zone NOT NULL DEFAULT now(),
           updated_at timestamp with time zone NOT NULL DEFAULT now()
         )
