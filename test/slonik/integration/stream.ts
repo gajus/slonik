@@ -265,6 +265,49 @@ test('reading stream using custom type parsers', async (t) => {
   await pool.end();
 });
 
+test('reading stream using row transform interceptors', async (t) => {
+  const pool = await createPool(t.context.dsn, {
+    interceptors: [
+      {
+        transformRow: (context, query, row) => {
+          return {
+            ...row,
+            // @ts-expect-error - we know it exists
+            name: row.name.toUpperCase(),
+          };
+        },
+      },
+    ],
+  });
+
+  await pool.query(sql.unsafe`
+    INSERT INTO person (name)
+    VALUES ('foo'), ('bar'), ('baz')
+  `);
+
+  const names: string[] = [];
+
+  await pool.stream(
+    sql.type(
+      z.object({
+        name: z.string(),
+      }),
+    )`
+      SELECT name
+      FROM person
+    `,
+    (stream) => {
+      stream.on('data', (datum) => {
+        names.push(datum.data.name);
+      });
+    },
+  );
+
+  t.deepEqual(names, ['FOO', 'BAR', 'BAZ']);
+
+  await pool.end();
+});
+
 test('streams rows with different batchSize', async (t) => {
   const pool = await createPool(t.context.dsn);
 
