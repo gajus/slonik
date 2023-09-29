@@ -1,7 +1,29 @@
 import { executeQuery } from '../routines/executeQuery';
 import { type Interceptor, type InternalStreamFunction } from '../types';
 import { type Readable, Transform } from 'node:stream';
+import { type PoolClient } from 'pg';
 import QueryStream from 'pg-query-stream';
+
+type Field = {
+  dataTypeId: number;
+  name: string;
+};
+
+const getFields = (connection: PoolClient): Promise<readonly Field[]> => {
+  return new Promise((resolve) => {
+    // @ts-expect-error – https://github.com/brianc/node-postgres/issues/3015
+    connection.connection.once('rowDescription', (rowDescription) => {
+      resolve(
+        rowDescription.fields.map((field) => {
+          return {
+            dataTypeId: field.dataTypeID,
+            name: field.name,
+          };
+        }),
+      );
+    });
+  });
+};
 
 export const stream: InternalStreamFunction = async (
   connectionLogger,
@@ -41,20 +63,7 @@ export const stream: InternalStreamFunction = async (
 
       const queryStream: Readable = finalConnection.query(query);
 
-      let fields: Array<{
-        dataTypeId: number;
-        name: string;
-      }> = [];
-
-      // @ts-expect-error – https://github.com/brianc/node-postgres/issues/3015
-      finalConnection.connection.once('rowDescription', (rowDescription) => {
-        fields = rowDescription.fields.map((field) => {
-          return {
-            dataTypeId: field.dataTypeID,
-            name: field.name,
-          };
-        });
-      });
+      const fields = await getFields(finalConnection);
 
       const rowTransformers: Array<NonNullable<Interceptor['transformRow']>> =
         [];
