@@ -189,6 +189,37 @@ test('streams rows (check types)', async (t) => {
   await pool.end();
 });
 
+test('streams rows using AsyncIterator', async (t) => {
+  const pool = await createPool(t.context.dsn);
+
+  await pool.query(sql.unsafe`
+    INSERT INTO person (name)
+    VALUES ('foo'), ('bar'), ('baz')
+  `);
+
+  const names: string[] = [];
+
+  await pool.stream(
+    sql.type(
+      z.object({
+        name: z.string(),
+      }),
+    )`
+      SELECT name
+      FROM person
+    `,
+    async (stream) => {
+      for await (const row of stream) {
+        names.push(row.data.name);
+      }
+    },
+  );
+
+  t.deepEqual(names, ['foo', 'bar', 'baz']);
+
+  await pool.end();
+});
+
 test('streams rows with different batchSize', async (t) => {
   const pool = await createPool(t.context.dsn);
 

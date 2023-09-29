@@ -57,15 +57,16 @@ export type QueryId = string;
 
 export type MaybePromise<T> = Promise<T> | T;
 
+type StreamDataEvent<T> = { data: T; fields: readonly Field[] };
+
 // eslint-disable-next-line @typescript-eslint/consistent-type-definitions
 interface TypedReadable<T> extends Readable {
   // eslint-disable-next-line @typescript-eslint/method-signature-style
-  on(
-    event: 'data',
-    listener: (chunk: { data: T; fields: readonly Field[] }) => void,
-  ): this;
+  on(event: 'data', listener: (chunk: StreamDataEvent<T>) => void): this;
   // eslint-disable-next-line @typescript-eslint/method-signature-style
   on(event: string | symbol, listener: (...args: any[]) => void): this;
+
+  [Symbol.asyncIterator]: () => AsyncIterableIterator<StreamDataEvent<T>>;
 }
 
 export type StreamHandler<T> = (stream: TypedReadable<T>) => void;

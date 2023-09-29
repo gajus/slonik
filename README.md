@@ -2486,6 +2486,27 @@ await connection.stream(sql.typeAlias('foo')`SELECT foo`, (stream) => {
 });
 ```
 
+You can also using the [AsyncIterable](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/AsyncIterator) interface:
+
+```ts
+await connection.stream(sql.typeAlias('foo')`SELECT foo`, async (stream) => {
+  for await (const row of stream) {
+    row;
+    // {
+    //   data: {
+    //     foo: 'bar'
+    //   },
+    //   fields: [
+    //     {
+    //       name: 'foo',
+    //       dataTypeId: 23,
+    //     }
+    //   ]
+    // }
+  }
+});
+```
+
 <a name="user-content-slonik-query-methods-transaction"></a>
 <a name="slonik-query-methods-transaction"></a>
 ### <code>transaction</code>
