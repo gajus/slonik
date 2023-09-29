@@ -110,7 +110,7 @@ export const stream: InternalStreamFunction = async (
   uid,
   streamOptions,
 ) => {
-  return await executeQuery(
+  const result = await executeQuery(
     connectionLogger,
     connection,
     clientConfiguration,
@@ -119,4 +119,10 @@ export const stream: InternalStreamFunction = async (
     createExecutionRoutine(clientConfiguration, onStream, streamOptions),
     true,
   );
+
+  if (result.type === 'QueryResult') {
+    throw new Error('Query result cannot be returned in a streaming context.');
+  }
+
+  return result;
 };

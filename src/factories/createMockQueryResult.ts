@@ -9,5 +9,6 @@ export const createMockQueryResult = (
     notices: [],
     rowCount: rows.length,
     rows,
+    type: 'QueryResult',
   };
 };

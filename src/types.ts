@@ -452,7 +452,7 @@ export type InternalStreamFunction = <T>(
   streamHandler: StreamHandler<T>,
   uid?: QueryId,
   config?: QueryStreamConfig,
-) => Promise<Record<string, unknown>>;
+) => Promise<StreamResult>;
 
 export type InternalTransactionFunction = <T>(
   log: Logger,
