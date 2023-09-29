@@ -2,6 +2,7 @@ import { type ExecutionRoutine } from '../routines/executeQuery';
 import { executeQuery } from '../routines/executeQuery';
 import {
   type ClientConfiguration,
+  type Field,
   type Interceptor,
   type InternalStreamFunction,
   type Query,
@@ -13,11 +14,6 @@ import { type Readable, Transform } from 'node:stream';
 import { pipeline } from 'node:stream/promises';
 import { type PoolClient } from 'pg';
 import QueryStream from 'pg-query-stream';
-
-type Field = {
-  dataTypeId: number;
-  name: string;
-};
 
 type RowTransformer = NonNullable<Interceptor['transformRow']>;
 

@@ -156,6 +156,39 @@ test('streams rows', async (t) => {
   await pool.end();
 });
 
+test('streams rows (check types)', async (t) => {
+  const pool = await createPool(t.context.dsn);
+
+  await pool.query(sql.unsafe`
+    INSERT INTO person (name)
+    VALUES ('foo'), ('bar'), ('baz')
+  `);
+
+  const names: string[] = [];
+
+  await pool.stream(
+    sql.type(
+      z.object({
+        name: z.string(),
+      }),
+    )`
+      SELECT name
+      FROM person
+    `,
+    (stream) => {
+      stream.on('data', (datum) => {
+        // This test was added because earlier types did not accurately reflect stream outputs.
+        // By accessing a property of the stream result we ensure that the stream outputs match the types.
+        names.push(datum.row.name);
+      });
+    },
+  );
+
+  t.deepEqual(names, ['foo', 'bar', 'baz']);
+
+  await pool.end();
+});
+
 test('streams rows with different batchSize', async (t) => {
   const pool = await createPool(t.context.dsn);
 
