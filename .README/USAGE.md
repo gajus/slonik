@@ -50,6 +50,8 @@ import {
 const pool = await createPool('postgres://');
 ```
 
+> **Note:** If you are new to Slonik, then you should read [Integrating Slonik with Express.js](https://dev.to/gajus/integrating-slonik-with-expressjs-33kn).
+
 Instance of Slonik connection pool can be then used to create a new connection, e.g.
 
 ```ts
