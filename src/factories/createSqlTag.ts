@@ -38,7 +38,7 @@ import { isPrimitiveValueExpression } from '../utilities/isPrimitiveValueExpress
 import { isSqlToken } from '../utilities/isSqlToken';
 import { safeStringify } from '../utilities/safeStringify';
 import { createSqlTokenSqlFragment } from './createSqlTokenSqlFragment';
-import { z, type ZodTypeAny } from 'zod';
+import { z, type ZodType, type ZodTypeAny } from 'zod';
 
 const log = Logger.child({
   namespace: 'sql',
@@ -243,10 +243,14 @@ export const createSqlTag = <
         type: UnnestToken,
       });
     },
-    unsafe: (parts: readonly string[], ...args: readonly ValueExpression[]) => {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    unsafe: <Row = any>(
+      parts: readonly string[],
+      ...args: readonly ValueExpression[]
+    ) => {
       return Object.freeze({
         ...createFragment(parts, args),
-        parser: z.any(),
+        parser: z.any() as ZodType<Row>,
         type: QueryToken,
       });
     },

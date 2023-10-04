@@ -116,4 +116,10 @@ export const queryMethods = async (): Promise<void> => {
   expectTypeOf(
     await client.any(sql.type(FooBarRow)`select 'x' x, 123 y`),
   ).toEqualTypeOf<ReadonlyArray<{ x: string; y: number }>>();
+
+  expectTypeOf(await client.one(sql.unsafe`select 'x' as foo`)).toBeAny();
+
+  expectTypeOf(
+    await client.one(sql.unsafe<{ foo: string }>`select 'x' as foo`),
+  ).toEqualTypeOf<{ foo: string }>();
 };

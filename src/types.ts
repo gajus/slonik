@@ -9,7 +9,7 @@ import {
 } from 'pg';
 import { type NoticeMessage as Notice } from 'pg-protocol/dist/messages';
 import { type Logger } from 'roarr';
-import { type z, type ZodTypeAny } from 'zod';
+import { type z, type ZodType, type ZodTypeAny } from 'zod';
 
 /**
  * @see https://www.postgresql.org/docs/current/libpq-connect.html#LIBPQ-PARAMKEYWORDS
@@ -429,10 +429,11 @@ export type SqlTag<Z extends Record<string, ZodTypeAny>> = {
       | Array<[...string[], TypeNameIdentifier]>
       | Array<SqlFragment | TypeNameIdentifier>,
   ) => UnnestSqlToken;
-  unsafe: (
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  unsafe: <Row = any>(
     template: TemplateStringsArray,
     ...values: ValueExpression[]
-  ) => QuerySqlToken;
+  ) => QuerySqlToken<ZodType<Row>>;
 };
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
