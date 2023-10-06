@@ -2712,7 +2712,7 @@ try {
 <a name="slonik-error-handling-original-node-postgres-error"></a>
 ### Original <code>node-postgres</code> error
 
-When error originates from `node-postgres`, the original error is available under `originalError` property.
+When error originates from `node-postgres`, the original error is available under [`cause` property](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Error/cause).
 
 This property is exposed for debugging purposes only. Do not use it for conditional checks – it can change.
 
