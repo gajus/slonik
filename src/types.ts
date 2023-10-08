@@ -245,7 +245,7 @@ export type PoolContext = {
  * @property log Instance of Roarr logger with bound connection context parameters.
  * @property poolId Unique connection pool ID.
  */
-export type ConnectionContext = {
+type ConnectionContext = {
   readonly connectionId: string;
   readonly connectionType: Connection;
   readonly log: Logger;
