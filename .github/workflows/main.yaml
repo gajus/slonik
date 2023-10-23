@@ -22,8 +22,6 @@ jobs:
     needs:
       - lint
       - test
-      - test-pg-integration
-      - test-postgres-integration
     runs-on: ubuntu-latest
     steps:
       - name: setup repository
@@ -43,7 +41,7 @@ jobs:
         run: npx semantic-release
   test:
     env:
-      TEST_ONLY: 'utilities'
+      TEST_ONLY: '${{ matrix.test_only }}'
     environment: release
     name: Test
     runs-on: ubuntu-latest
@@ -60,76 +58,14 @@ jobs:
       - run: npm ci
       - run: npm run test
     timeout-minutes: 10
-  test-pg-integration:
-    env:
-      TEST_ONLY: 'pg-integration'
-    environment: release
-    name: Test "pg" integration
-    runs-on: ubuntu-latest
-    services:
-      postgres:
-        env:
-          POSTGRES_DB: postgres
-          POSTGRES_PASSWORD: postgres
-          POSTGRES_USER: postgres
-        image: postgres
-        options: >-
-          --health-cmd pg_isready
-          --health-interval 10s
-          --health-timeout 5s
-          --health-retries 5
-        ports:
-          - 5432:5432
-    steps:
-      - name: setup repository
-        uses: actions/checkout@v2
-        with:
-          fetch-depth: 0
-      - name: setup node.js
-        uses: actions/setup-node@v2
-        with:
-          cache: 'npm'
-          node-version: '18'
-      - run: npm ci
-      - env:
-          POSTGRES_DSN: postgres:postgres@localhost:5432
-        run: npm run test
-    timeout-minutes: 10
-  test-postgres-integration:
-    env:
-      TEST_ONLY: 'postgres-integration'
-    environment: release
-    name: Test "postgres" integration
-    runs-on: ubuntu-latest
-    services:
-      postgres:
-        env:
-          POSTGRES_DB: postgres
-          POSTGRES_PASSWORD: postgres
-          POSTGRES_USER: postgres
-        image: postgres
-        options: >-
-          --health-cmd pg_isready
-          --health-interval 10s
-          --health-timeout 5s
-          --health-retries 5
-        ports:
-          - 5432:5432
-    steps:
-      - name: setup repository
-        uses: actions/checkout@v2
-        with:
-          fetch-depth: 0
-      - name: setup node.js
-        uses: actions/setup-node@v2
-        with:
-          cache: 'npm'
-          node-version: '18'
-      - run: npm ci
-      - env:
-          POSTGRES_DSN: postgres:postgres@localhost:5432
-        run: npm run test
-    timeout-minutes: 10
+    strategy:
+      fail-fast: false
+      matrix:
+        test_only:
+          - utilities
+          - pg-integration
+          - postgres-integration
+      max-parallel: 3
 name: Lint, build and release
 on:
   push:
