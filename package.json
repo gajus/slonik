@@ -24,6 +24,7 @@
     "@semantic-release/commit-analyzer": "^11.0.0",
     "@semantic-release/github": "^9.2.1",
     "@semantic-release/npm": "^11.0.0",
+    "@types/node": "^18.15.3",
     "@types/sinon": "^10.0.20",
     "ava": "^5.3.1",
     "cspell": "^7.3.8",
@@ -45,7 +46,7 @@
     "zod": "^3.22.4"
   },
   "engines": {
-    "node": ">=10.0"
+    "node": ">=18"
   },
   "files": [
     "./src",
