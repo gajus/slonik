@@ -35,7 +35,7 @@ jobs:
     timeout-minutes: 10
   test:
     environment: release
-    name: Test
+    name: 'Test node_version:${{ matrix.node_version }} test_only:${{ matrix.test_only }}'
     runs-on: ubuntu-latest
     services:
       postgres:
@@ -60,7 +60,7 @@ jobs:
         uses: actions/setup-node@v2
         with:
           cache: 'npm'
-          node-version: '18'
+          node-version: '${{ matrix.node_version }}'
       - run: npm ci
       - env:
           POSTGRES_DSN: postgres:postgres@localhost:5432
@@ -73,6 +73,9 @@ jobs:
           - utilities
           - pg-integration
           - postgres-integration
+        node_version:
+          - 18
+          - 20
       max-parallel: 3
     timeout-minutes: 10
 name: Test and build
