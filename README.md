@@ -3042,5 +3042,5 @@ Running Slonik tests requires having a local PostgreSQL instance.
 The easiest way to setup a temporary instance for testing is using Docker, e.g.
 
 ```bash
-docker run --rm -it -e POSTGRES_HOST_AUTH_METHOD=trust -p 5432:5432 postgres -N 1000
+docker run --name slonik-test --rm -it -e POSTGRES_HOST_AUTH_METHOD=trust -p 5432:5432 postgres -N 1000
 ```
