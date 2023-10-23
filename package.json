@@ -5,7 +5,7 @@
     "url": "http://gajus.com"
   },
   "dependencies": {
-    "@types/pg": "^8.10.2",
+    "@types/pg": "^8.10.7",
     "es6-error": "^4.1.1",
     "get-stack-trace": "^3.1.1",
     "iso8601-duration": "^1.3.0",
@@ -14,8 +14,8 @@
     "pg-query-stream": "^4.5.3",
     "pg-types": "^4.0.1",
     "postgres-array": "^3.0.2",
-    "postgres-interval": "^4.0.0",
-    "roarr": "^7.15.0",
+    "postgres-interval": "^4.0.1",
+    "roarr": "^7.15.1",
     "safe-stable-stringify": "^2.4.3",
     "serialize-error": "^8.0.0"
   },
@@ -24,25 +24,25 @@
     "@semantic-release/commit-analyzer": "^11.0.0",
     "@semantic-release/github": "^9.2.1",
     "@semantic-release/npm": "^11.0.0",
-    "@types/sinon": "^10.0.15",
+    "@types/sinon": "^10.0.20",
     "ava": "^5.3.1",
-    "cspell": "^7.3.6",
+    "cspell": "^7.3.8",
     "delay": "^5.0.0",
-    "eslint": "^8.50.0",
-    "eslint-config-canonical": "^41.2.3",
+    "eslint": "^8.52.0",
+    "eslint-config-canonical": "^42.1.0",
     "expect-type": "^0.15.0",
     "gitdown": "^3.1.5",
     "husky": "^8.0.3",
-    "knip": "^2.32.4",
+    "knip": "^2.38.0",
     "nyc": "^15.1.0",
     "pg-native": "^3.0.1",
-    "postgres": "^3.3.5",
+    "postgres": "^3.4.0",
     "postgres-bridge": "^1.14.0",
     "semantic-release": "^22.0.5",
     "sinon": "^15.1.0",
     "ts-node": "^10.9.1",
     "typescript": "^5.2.2",
-    "zod": "^3.21.4"
+    "zod": "^3.22.4"
   },
   "engines": {
     "node": ">=10.0"
