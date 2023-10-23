@@ -82,6 +82,7 @@ jobs:
         node_version:
           - 18
           - 20
+          - 21
       max-parallel: 3
     timeout-minutes: 10
 name: Lint, build and release
