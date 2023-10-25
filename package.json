@@ -32,6 +32,7 @@
     "eslint": "^8.52.0",
     "eslint-config-canonical": "^42.1.0",
     "expect-type": "^0.15.0",
+    "get-port": "^5.1.1",
     "gitdown": "^3.1.5",
     "husky": "^8.0.3",
     "knip": "^2.38.0",
