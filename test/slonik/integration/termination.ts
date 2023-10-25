@@ -1,6 +1,10 @@
 /* eslint-disable no-console */
 
-import { BackendTerminatedError, createPool, sql } from '../../../src';
+import {
+  BackendTerminatedUnexpectedlyError,
+  createPool,
+  sql,
+} from '../../../src';
 import test from 'ava';
 import getPort from 'get-port';
 import { execSync, spawn } from 'node:child_process';
@@ -89,5 +93,5 @@ test('handles unexpected backend termination', async (t) => {
 
   const error = await t.throwsAsync(pool.query(sql.unsafe`SELECT pg_sleep(2)`));
 
-  t.true(error instanceof BackendTerminatedError);
+  t.true(error instanceof BackendTerminatedUnexpectedlyError);
 });

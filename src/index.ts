@@ -4,6 +4,7 @@ export const sql = createSqlTag();
 
 export {
   BackendTerminatedError,
+  BackendTerminatedUnexpectedlyError,
   CheckIntegrityConstraintViolationError,
   ConnectionError,
   DataIntegrityError,
