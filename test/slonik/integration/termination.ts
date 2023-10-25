@@ -1,6 +1,6 @@
 /* eslint-disable no-console */
 
-import { createPool, sql } from '../../../src';
+import { BackendTerminatedError, createPool, sql } from '../../../src';
 import test from 'ava';
 import getPort from 'get-port';
 import { execSync, spawn } from 'node:child_process';
@@ -87,5 +87,7 @@ test('handles unexpected backend termination', async (t) => {
   // eslint-disable-next-line promise/prefer-await-to-then
   setTimeout(1_000).then(terminate);
 
-  await pool.query(sql.unsafe`SELECT pg_sleep(2)`);
+  const error = await t.throwsAsync(pool.query(sql.unsafe`SELECT pg_sleep(2)`));
+
+  t.true(error instanceof BackendTerminatedError);
 });

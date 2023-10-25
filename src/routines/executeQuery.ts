@@ -273,7 +273,11 @@ export const executeQuery = async (
 
       // 'Connection terminated' refers to node-postgres error.
       // @see https://github.com/brianc/node-postgres/blob/eb076db5d47a29c19d3212feac26cd7b6d257a95/lib/client.js#L199
-      if (error.code === '57P01' || error.message === 'Connection terminated') {
+      if (
+        error.code === '57P01' ||
+        error.message === 'Connection terminated' ||
+        error.message === 'Connection terminated unexpectedly'
+      ) {
         poolClientState.terminated = error;
 
         throw new BackendTerminatedError(error);
