@@ -53,6 +53,12 @@ export class StatementTimeoutError extends SlonikError {
   }
 }
 
+export class BackendTerminatedUnexpectedlyError extends SlonikError {
+  public constructor(error: Error) {
+    super('Backend has been terminated unexpectedly.', { cause: error });
+  }
+}
+
 export class BackendTerminatedError extends SlonikError {
   public constructor(error: Error) {
     super('Backend has been terminated.', { cause: error });
