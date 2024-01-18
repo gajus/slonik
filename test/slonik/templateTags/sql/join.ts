@@ -66,6 +66,19 @@ test('offsets positional parameter indexes', (t) => {
   });
 });
 
+test('supports bigint', (t) => {
+  const query = sql.fragment`SELECT ${1n}, ${sql.join(
+    [sql.fragment`to_timestamp(${2n})`, 3n],
+    sql.fragment`, `,
+  )}, ${4n}`;
+
+  t.deepEqual(query, {
+    sql: 'SELECT $1, to_timestamp($2), $3, $4',
+    type: FragmentToken,
+    values: [1n, 2n, 3n, 4n],
+  });
+});
+
 test('nests expressions', (t) => {
   const query = sql.fragment`SELECT ${sql.join(
     [
