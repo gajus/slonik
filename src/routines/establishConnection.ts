@@ -47,7 +47,9 @@ export const establishConnection = async (
 
         continue;
       } else {
-        throw new ConnectionError(error.message);
+        throw new ConnectionError(error.message, {
+          cause: error,
+        });
       }
     }
   }

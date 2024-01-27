@@ -13,11 +13,11 @@ Run tests:
 npm run test
 
 # Run all non-integration tests
-TEST_ONLY_NON_INTEGRATION=true npm run test
+TEST_ONLY="utilities" npm run test
 
 # Run all "pg" integration tests
-TEST_ONLY_PG_INTEGRATION=true npm run test
+TEST_ONLY="pg-integration" npm run test
 
 # Run all "postgres" integration tests
-TEST_ONLY_POSTGRES_INTEGRATION=true npm run test
+TEST_ONLY="postgres-integration" npm run test
 ```
