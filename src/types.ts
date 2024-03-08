@@ -554,7 +554,7 @@ export type Interceptor = {
     query: Query,
     row: QueryResultRow,
     fields: readonly Field[],
-  ) => QueryResultRow;
+  ) => MaybePromise<QueryResultRow>;
 };
 
 export type IdentifierNormalizer = (identifierName: string) => string;

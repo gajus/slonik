@@ -54,7 +54,7 @@ type Interceptor = {
   beforeTransformQuery?: (
     queryContext: QueryContext,
     query: Query
-  ) => Promise<null>,
+  ) => MaybePromise<null>,
   queryExecutionError?: (
     queryContext: QueryContext,
     query: Query,
@@ -69,7 +69,7 @@ type Interceptor = {
     query: Query,
     row: QueryResultRow,
     fields: Field[],
-  ) => QueryResultRow
+  ) => MaybePromise<QueryResultRow>
 };
 ```
 

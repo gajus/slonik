@@ -375,11 +375,11 @@ export const executeQuery = async (
         const { transformRow } = interceptor;
         const { fields } = result;
 
-        const rows: QueryResultRow[] = [];
-
-        for (const row of result.rows) {
-          rows.push(transformRow(executionContext, actualQuery, row, fields));
-        }
+        const rows: QueryResultRow[] = await Promise.all(
+          result.rows.map(
+            row => transformRow(executionContext, actualQuery, row, fields)
+          )
+        );
 
         result = {
           ...result,

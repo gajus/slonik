@@ -92,13 +92,13 @@ Note: Using this project does not require TypeScript. It is a regular ES6 module
         * [Building Utility Statements](#user-content-slonik-recipes-building-utility-statements)
     * [Runtime validation](#user-content-slonik-runtime-validation)
         * [Motivation](#user-content-slonik-runtime-validation-motivation)
+        * [Result parser interceptor](#user-content-slonik-runtime-validation-result-parser-interceptor)
         * [Example use of `sql.type`](#user-content-slonik-runtime-validation-example-use-of-sql-type)
         * [Performance penalty](#user-content-slonik-runtime-validation-performance-penalty)
         * [Unknown keys](#user-content-slonik-runtime-validation-unknown-keys)
         * [Handling schema validation errors](#user-content-slonik-runtime-validation-handling-schema-validation-errors)
         * [Inferring types](#user-content-slonik-runtime-validation-inferring-types)
         * [Transforming results](#user-content-slonik-runtime-validation-transforming-results)
-        * [Result parser interceptor](#user-content-slonik-runtime-validation-result-parser-interceptor)
     * [`sql` tag](#user-content-slonik-sql-tag)
         * [Type aliases](#user-content-slonik-sql-tag-type-aliases)
         * [Typing `sql` tag](#user-content-slonik-sql-tag-typing-sql-tag)
@@ -983,7 +983,7 @@ type Interceptor = {
   beforeTransformQuery?: (
     queryContext: QueryContext,
     query: Query
-  ) => Promise<null>,
+  ) => MaybePromise<null>,
   queryExecutionError?: (
     queryContext: QueryContext,
     query: Query,
@@ -998,7 +998,7 @@ type Interceptor = {
     query: Query,
     row: QueryResultRow,
     fields: Field[],
-  ) => QueryResultRow
+  ) => MaybePromise<QueryResultRow>
 };
 ```
 
@@ -1248,8 +1248,8 @@ Slonik integrates [zod](https://github.com/colinhacks/zod) to provide runtime qu
 
 Validating queries requires to:
 
-1. Define a Zod [object](https://github.com/colinhacks/zod#objects) and passing it to `sql.type` tagged template (see below)
-1. Add a [result parser interceptor](#user-content-result-parser-interceptor)
+1. Add a [result parser interceptor](#user-content-result-parser-interceptor) during slonik initiialization
+1. For every query define a Zod [object](https://github.com/colinhacks/zod#objects) and pass it to `sql.type` tagged template ([see below](#user-content-example-use-of-sqltype))
 
 <a name="user-content-slonik-runtime-validation-motivation"></a>
 <a name="slonik-runtime-validation-motivation"></a>
@@ -1262,6 +1262,61 @@ The problem is that once you deploy the application, the database schema might c
 In contrast, by using runtime checks, you can ensure that the contract between your codebase and the database is always respected. If there is a breaking change, the application fails with a loud error that is easy to debug.
 
 By using `zod`, we get the best of both worlds: type safety and runtime checks.
+
+<a name="user-content-slonik-runtime-validation-result-parser-interceptor"></a>
+<a name="slonik-runtime-validation-result-parser-interceptor"></a>
+### Result parser interceptor
+
+Slonik works without the interceptor, but it doesn't validate the query results. To validate results, you must implement an interceptor that parses the results.
+
+For context, when Zod parsing was first introduced to Slonik, it was enabled for all queries by default. However, I eventually realized that the baked-in implementation is not going to suit everyone's needs. For this reason, I decided to take out the built-in interceptor in favor of providing examples for common use cases. What follows is based on the original default implementation.
+
+```ts
+import {
+  type Interceptor,
+  type QueryResultRow,
+  SchemaValidationError,
+} from "slonik";
+
+const createResultParserInterceptor = (): Interceptor => {
+  return {
+    // If you are not going to transform results using Zod, then you should use `afterQueryExecution` instead.
+    // Future versions of Zod will provide a more efficient parser when parsing without transformations.
+    // You can even combine the two – use `afterQueryExecution` to validate results, and (conditionally)
+    // transform results as needed in `transformRow`.
+    transformRow: async (executionContext, actualQuery, row) => {
+      const { log, resultParser } = executionContext;
+
+      if (!resultParser) {
+        return row;
+      }
+
+      // It is recommended (but not required) to parse async to avoid blocking the event loop during validation
+      const validationResult = await resultParser.safeParseAsync(row);
+
+      if (!validationResult.success) {
+        throw new SchemaValidationError(
+          actualQuery,
+          row,
+          validationResult.error.issues
+        );
+      }
+
+      return validationResult.data as QueryResultRow;
+    },
+  };
+};
+```
+
+To use it, simply add it as a middleware:
+
+```ts
+import { createPool } from "slonik";
+
+createPool("postgresql://", {
+  interceptors: [createResultParserInterceptor()],
+});
+```
 
 <a name="user-content-slonik-runtime-validation-example-use-of-sql-type"></a>
 <a name="slonik-runtime-validation-example-use-of-sql-type"></a>
@@ -1409,66 +1464,6 @@ t.deepEqual(result, {
 });
 ```
 
-<a name="user-content-slonik-runtime-validation-result-parser-interceptor"></a>
-<a name="slonik-runtime-validation-result-parser-interceptor"></a>
-### Result parser interceptor
-
-Slonik works without the interceptor, but it doesn't validate the query results. To validate results, you must implement an interceptor that parses the results.
-
-For context, when Zod parsing was first introduced to Slonik, it was enabled for all queries by default. However, I eventually realized that the baked-in implementation is not going to suit everyone's needs. For this reason, I decided to take out the built-in interceptor in favor of providing examples for common use cases. What follows is the original default implementation.
-
-```ts
-import {
-  type Interceptor,
-  type QueryResultRow,
-  SchemaValidationError,
-} from 'slonik';
-
-const createResultParserInterceptor = (): Interceptor => {
-  return {
-    // If you are not going to transform results using Zod, then you should use `afterQueryExecution` instead.
-    // Future versions of Zod will provide a more efficient parser when parsing without transformations.
-    // You can even combine the two – use `afterQueryExecution` to validate results, and (conditionally)
-    // transform results as needed in `transformRow`.
-    transformRow: (executionContext, actualQuery, row) => {
-      const {
-        log,
-        resultParser,
-      } = executionContext;
-
-      if (!resultParser) {
-        return row;
-      }
-
-      const validationResult = resultParser.safeParse(row);
-
-      if (!validationResult.success) {
-        throw new SchemaValidationError(
-          actualQuery,
-          row,
-          validationResult.error.issues,
-        );
-      }
-
-      return validationResult.data as QueryResultRow;
-    },
-  };
-};
-```
-
-To use it, simply add it as a middleware:
-
-```ts
-import {
-  createPool,
-} from 'slonik';
-
-createPool('postgresql://', {
-  interceptors: [
-    createResultParserInterceptor(),
-  ]
-});
-```
 
 <a name="user-content-slonik-sql-tag"></a>
 <a name="slonik-sql-tag"></a>
