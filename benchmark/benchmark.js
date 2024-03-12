@@ -1,4 +1,4 @@
-/* eslint-disable node/global-require */
+/* eslint-disable n/global-require */
 
 const {
   add,

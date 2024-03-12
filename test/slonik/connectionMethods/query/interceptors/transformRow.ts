@@ -45,7 +45,7 @@ test('overrides result row (sync)', async (t) => {
   });
 });
 
-test('overrides result row (async)', async t => {
+test('overrides result row (async)', async (t) => {
   const pool = await createPool({
     interceptors: [
       {
