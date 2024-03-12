@@ -47,7 +47,7 @@ const createTransformStream = (
 
   return new Transform({
     objectMode: true,
-    transform(datum, enc, callback) {
+    async transform(datum, enc, callback) {
       if (!fields) {
         callback(new Error('Fields not available'));
 
@@ -56,10 +56,9 @@ const createTransformStream = (
 
       let finalRow = datum;
 
-      if (rowTransformers.length) {
-        for (const rowTransformer of rowTransformers) {
-          finalRow = rowTransformer(queryContext, query, finalRow, fields);
-        }
+      // apply row transformers. Note this is done sequentially, as one transformer's result will be passed to the next.
+      for (const rowTransformer of rowTransformers) {
+        finalRow = await rowTransformer(queryContext, query, finalRow, fields);
       }
 
       // eslint-disable-next-line @babel/no-invalid-this
