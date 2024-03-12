@@ -18,6 +18,7 @@ import {
   type ArraySqlToken,
   type BinarySqlToken,
   type DateSqlToken,
+  type FragmentSqlToken,
   type IdentifierSqlToken,
   type IntervalInput,
   type IntervalSqlToken,
@@ -148,7 +149,7 @@ export const createSqlTag = <
     fragment: (
       parts: readonly string[],
       ...args: readonly ValueExpression[]
-    ) => {
+    ): FragmentSqlToken => {
       return Object.freeze({
         ...createFragment(parts, args),
         type: FragmentToken,
