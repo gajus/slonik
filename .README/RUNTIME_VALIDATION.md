@@ -125,7 +125,21 @@ Just to give an idea, in our sample of data, it takes sub 0.1ms to validate 1 ro
 
 ### Unknown keys
 
-Slonik disallows unknown keys, i.e. query that returns `{foo: 'bar', baz: 'qux'}` with `z.object({foo: z.string()})` schema will produce `SchemaValidationError` error.
+By default Zod object schemas strip unknown keys. If you want to disallow unknown keys, you can add [`.strict()`](https://zod.dev/?id=strict) to your schema:  
+
+```ts
+z.object({ foo: z.string() }).strict()
+```
+
+Using the [recommended parser pattern](#result-parser-interceptor), this will produce a `SchemaValidationError`, when a query result includes unknown keys.
+
+Conversely you can allow unknown keys to be passed through by using [`.passthrough()`](https://zod.dev/?id=passthrough):
+
+```ts
+z.object({ foo: z.string() }).passthrough();
+```
+
+_Note_: Using `.passthrough()` is not recommended as it reduces type safety and may lead to unexpected behaviour.
 
 ### Handling schema validation errors
 
