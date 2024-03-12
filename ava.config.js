@@ -1,6 +1,6 @@
 const {
   TEST_ONLY,
-  // eslint-disable-next-line node/no-process-env
+  // eslint-disable-next-line n/no-process-env
 } = process.env;
 
 module.exports = () => {
