@@ -15,7 +15,7 @@
     "pg-types": "^4.0.1",
     "postgres-array": "^3.0.2",
     "postgres-interval": "^4.0.1",
-    "roarr": "^7.18.3",
+    "roarr": "^7.21.1",
     "safe-stable-stringify": "^2.4.3",
     "serialize-error": "^8.0.0"
   },
