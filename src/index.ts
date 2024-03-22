@@ -56,6 +56,7 @@ export type {
   JsonBinarySqlToken,
   JsonSqlToken,
   ListSqlToken,
+  MaybePromise,
   MockPoolOverrides,
   PoolContext,
   PrimitiveValueExpression,
