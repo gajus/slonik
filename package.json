@@ -91,7 +91,7 @@
     "create-readme": "gitdown ./.README/README.md --output-file ./README.md",
     "lint": "npm run lint:cspell && npm run lint:eslint && npm run lint:knip && npm run lint:tsc",
     "lint:cspell": "cspell . --no-progress --gitignore",
-    "lint:eslint": "eslint --cache ./src ./test",
+    "lint:eslint": "eslint --cache ./src",
     "lint:knip": "knip",
     "lint:tsc": "tsc --noEmit",
     "test": "nyc ava --verbose --serial"
