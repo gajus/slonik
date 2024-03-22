@@ -12,7 +12,7 @@ jobs:
         uses: actions/setup-node@v4
         with:
           cache: 'npm'
-          node-version: '18'
+          node-version: '20'
       - run: npm ci
       - run: npm run lint
     timeout-minutes: 10
@@ -32,7 +32,7 @@ jobs:
         uses: actions/setup-node@v4
         with:
           cache: 'npm'
-          node-version: '18'
+          node-version: '20'
       - run: npm ci
       - run: npm run build
       - env:
@@ -80,7 +80,6 @@ jobs:
           - pg-integration
           - postgres-integration
         node_version:
-          - 18
           - 20
       max-parallel: 3
     timeout-minutes: 10
