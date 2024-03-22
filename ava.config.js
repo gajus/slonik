@@ -4,18 +4,18 @@ const {
 } = process.env;
 
 module.exports = () => {
-  let files = ['test/slonik/**/*'];
+  let files = ['src/**/*.test.ts', '!src/types.test.ts'];
 
   if (TEST_ONLY === 'utilities') {
-    files = ['test/slonik/**/*', '!test/slonik/integration'];
+    files = ['src/**/*.test.ts', '!src/integration.test'];
   }
 
   if (TEST_ONLY === 'pg-integration') {
-    files = ['test/slonik/integration/pg.ts'];
+    files = ['src/integration.test/integration/pg.test.ts'];
   }
 
   if (TEST_ONLY === 'postgres-integration') {
-    files = ['test/slonik/integration/postgres.ts'];
+    files = ['src/integration.test/integration/postgres.test.ts'];
   }
 
   return {

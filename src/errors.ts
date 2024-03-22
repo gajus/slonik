@@ -3,10 +3,9 @@ import {
   type Query,
   type QueryResultRow,
 } from './types';
-import ExtendableError from 'es6-error';
 import { type ZodIssue } from 'zod';
 
-export class SlonikError extends ExtendableError {
+export class SlonikError extends Error {
   public readonly message: string;
 
   public readonly cause?: Error;

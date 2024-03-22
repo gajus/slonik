@@ -10,6 +10,12 @@
       "rules": {
         "import/no-cycle": 0
       }
+    },
+    {
+      "files": "*.test.ts",
+      "rules": {
+        "id-length": 0
+      }
     }
   ],
   "root": true
