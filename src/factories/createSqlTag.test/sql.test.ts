@@ -58,6 +58,40 @@ test('nests sql templates', (t) => {
   });
 });
 
+test('copes with plaintext passwords', (t) => {
+  const query0 = sql.fragment`UPDATE user SET password='secret' WHERE id=1`;
+  const query1 = sql.fragment`${query0} RETURNING *`;
+
+  t.deepEqual(query1, {
+    sql: "UPDATE user SET password='secret' WHERE id=1 RETURNING *",
+    type: FragmentToken,
+    values: [],
+  });
+});
+
+test('copes with bcrypt passwords', (t) => {
+  const query0 = sql.fragment`UPDATE user SET password='$2b$04$RemfBKMzMQh05ehFOmn6Y.qy7oSIECm2RR83kNbIIncu5lhxFps6C' WHERE id=1`;
+  const query1 = sql.fragment`${query0} RETURNING *`;
+
+  t.deepEqual(query1, {
+    sql: "UPDATE user SET password='$2b$04$RemfBKMzMQh05ehFOmn6Y.qy7oSIECm2RR83kNbIIncu5lhxFps6C' WHERE id=1 RETURNING *",
+    type: FragmentToken,
+    values: [],
+  });
+});
+
+test('copes with money in strings', (t) => {
+  const query0 = sql.fragment`UPDATE item SET price='$5' WHERE id=1`;
+  const query1 = sql.fragment`${query0} RETURNING *`;
+
+  t.deepEqual(query1, {
+    sql: "UPDATE item SET price='$5' WHERE id=1 RETURNING *",
+    type: FragmentToken,
+    values: [],
+  });
+});
+
+
 test('throws if bound an undefined value', (t) => {
   const error = t.throws(() => {
     // @ts-expect-error - intentional
