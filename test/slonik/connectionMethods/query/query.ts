@@ -9,7 +9,7 @@ import { createSqlTag } from '../../../../src/factories/createSqlTag';
 import { createErrorWithCode } from '../../../helpers/createErrorWithCode';
 import { createPool } from '../../../helpers/createPool';
 import test from 'ava';
-import delay from 'delay';
+import { setTimeout as delay } from 'node:timers/promises';
 import * as sinon from 'sinon';
 
 export const createErrorWithCodeAndConstraint = (code: string) => {

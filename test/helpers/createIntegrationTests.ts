@@ -14,7 +14,7 @@ import {
 } from '../../src';
 import { Logger } from '../../src/Logger';
 import anyTest, { type TestFn } from 'ava';
-import delay from 'delay';
+import { setTimeout as delay } from 'node:timers/promises';
 import { type Pool as PgPoolType, type PoolConfig } from 'pg';
 import { serializeError } from 'serialize-error';
 import * as sinon from 'sinon';

@@ -1,7 +1,7 @@
 import { createSqlTag } from '../../../../src/factories/createSqlTag';
 import { createPool } from '../../../helpers/createPool';
 import test from 'ava';
-import delay from 'delay';
+import { setTimeout as delay } from 'node:timers/promises';
 
 const sql = createSqlTag();
 
