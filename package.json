@@ -39,7 +39,7 @@
     "pg-native": "^3.0.1",
     "postgres": "^3.4.0",
     "postgres-bridge": "^1.14.0",
-    "semantic-release": "^22.0.5",
+    "semantic-release": "^23.0.5",
     "sinon": "^15.1.0",
     "ts-node": "^10.9.1",
     "typescript": "^5.4.3",
