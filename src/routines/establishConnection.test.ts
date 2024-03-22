@@ -1,6 +1,6 @@
 import { Logger } from '../Logger';
-import { establishConnection } from './establishConnection';
 import { type PoolState, poolStateMap } from '../state';
+import { establishConnection } from './establishConnection';
 import test from 'ava';
 import { type Pool as PgPool } from 'pg';
 import * as sinon from 'sinon';

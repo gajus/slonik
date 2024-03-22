@@ -125,7 +125,7 @@ test('returns the thrown transaction error if the retry limit is reached', async
   t.is(handlerStub.callCount, 2);
 
   t.true(error instanceof Error);
-  t.is(error.code, '40P01');
+  t.is(error?.code, '40P01');
 });
 
 test('rollbacks unsuccessful nested transaction with retries', async (t) => {

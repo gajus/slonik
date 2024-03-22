@@ -82,7 +82,7 @@ test('throws if array member is not a primitive value expression', (t) => {
   const error = t.throws(() => {
     sql.fragment`SELECT ${sql.array(
       [
-        // @ts-expect-error
+        // @ts-expect-error - intentional
         () => {},
       ],
       'int',

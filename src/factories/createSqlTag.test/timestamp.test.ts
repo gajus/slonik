@@ -18,7 +18,7 @@ test('binds a timestamp', (t) => {
 
 test('throws if not instance of Date', (t) => {
   const error = t.throws(() => {
-    // @ts-expect-error
+    // @ts-expect-error - intentional
     sql.fragment`SELECT ${sql.timestamp(1)}`;
   });
 

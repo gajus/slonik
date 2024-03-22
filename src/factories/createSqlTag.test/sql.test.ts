@@ -60,7 +60,7 @@ test('nests sql templates', (t) => {
 
 test('throws if bound an undefined value', (t) => {
   const error = t.throws(() => {
-    // @ts-expect-error
+    // @ts-expect-error - intentional
     sql.fragment`SELECT ${undefined}`;
   });
 
@@ -72,7 +72,7 @@ test('throws if bound an undefined value', (t) => {
 
 test.serial.skip('logs all bound values if one is undefined', (t) => {
   t.throws(() => {
-    // @ts-expect-error
+    // @ts-expect-error - intentional
     sql.fragment`SELECT ${undefined}`;
   });
 
@@ -89,7 +89,7 @@ test('the sql property is immutable', (t) => {
   const query = sql.fragment`SELECT 1`;
 
   t.throws(() => {
-    // @ts-expect-error
+    // @ts-expect-error This is intentional.
     query.sql = 'SELECT 2';
   });
 });

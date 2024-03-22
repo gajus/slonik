@@ -1,3 +1,5 @@
+/* eslint-disable id-length */
+
 import {
   BackendTerminatedError,
   createNumericTypeParser,
@@ -11,8 +13,8 @@ import {
   StatementTimeoutError,
   TupleMovedToAnotherPartitionError,
   UnexpectedStateError,
-} from '../../src';
-import { Logger } from '../../src/Logger';
+} from '..';
+import { Logger } from '../Logger';
 import anyTest, { type TestFn } from 'ava';
 import { setTimeout as delay } from 'node:timers/promises';
 import { type Pool as PgPoolType, type PoolConfig } from 'pg';
@@ -1022,12 +1024,14 @@ export const createIntegrationTests = (
 
     let transactionCount = 0;
 
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     let resolveDeadlock: any;
 
     const deadlock = new Promise((resolve) => {
       resolveDeadlock = resolve;
     });
 
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const updatePerson: (...args: any) => any = async (
       firstUpdateId,
       firstUpdateName,
@@ -1232,6 +1236,7 @@ export const createIntegrationTests = (
 
     try {
       await pool.query(sql.unsafe`SELECT * FROM error_notice(${10});`);
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (error: any) {
       if (error?.notices) {
         t.is(error.notices.length, 5);

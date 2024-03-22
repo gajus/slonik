@@ -45,7 +45,7 @@ test('cannot alias unknown fields', (t) => {
   });
 
   t.throws(() => {
-    // @ts-expect-error
+    // @ts-expect-error - intentional
     sql.typeAlias('void')`
       SELECT 1 id
     `;

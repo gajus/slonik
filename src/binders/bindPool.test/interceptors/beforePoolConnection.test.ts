@@ -1,4 +1,4 @@
-import { createPool } from '../../../../helpers/createPool';
+import { createPool } from '../../../helpers/createPool';
 import test from 'ava';
 import * as sinon from 'sinon';
 

@@ -1,6 +1,6 @@
-import { bindPool } from '../../src/binders/bindPool';
-import { poolStateMap } from '../../src/state';
-import { type ClientConfigurationInput } from '../../src/types';
+import { bindPool } from '../binders/bindPool';
+import { poolStateMap } from '../state';
+import { type ClientConfigurationInput } from '../types';
 import { Logger as log } from './Logger';
 import EventEmitter from 'node:events';
 import * as sinon from 'sinon';
@@ -40,7 +40,7 @@ export const createPool = async (
     connect: () => {
       return connection;
     },
-  } as any;
+  };
 
   poolStateMap.set(internalPool, {
     ended: false,

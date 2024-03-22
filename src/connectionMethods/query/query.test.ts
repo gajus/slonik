@@ -1,5 +1,3 @@
-import { createErrorWithCode } from '../../../test/helpers/createErrorWithCode';
-import { createPool } from '../../../test/helpers/createPool';
 import {
   BackendTerminatedError,
   CheckIntegrityConstraintViolationError,
@@ -8,6 +6,8 @@ import {
   UniqueIntegrityConstraintViolationError,
 } from '../../errors';
 import { createSqlTag } from '../../factories/createSqlTag';
+import { createErrorWithCode } from '../../helpers/createErrorWithCode';
+import { createPool } from '../../helpers/createPool';
 import test from 'ava';
 import { setTimeout as delay } from 'node:timers/promises';
 import * as sinon from 'sinon';
@@ -15,7 +15,7 @@ import * as sinon from 'sinon';
 export const createErrorWithCodeAndConstraint = (code: string) => {
   const error = createErrorWithCode(code);
 
-  // @ts-expect-error
+  // @ts-expect-error – This is a test helper.
   error.constraint = 'foo';
 
   return error;

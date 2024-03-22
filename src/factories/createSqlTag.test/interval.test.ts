@@ -35,7 +35,7 @@ test('creates an interval', (t) => {
 test('throws if contains unknown properties', (t) => {
   const error = t.throws(() => {
     sql.fragment`SELECT ${sql.interval({
-      // @ts-expect-error
+      // @ts-expect-error - intentional
       foo: 'bar',
     })}`;
   });

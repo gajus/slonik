@@ -30,7 +30,7 @@ test('creates an object describing a query with inlined identifiers (specifier)'
 test('throws if an identifier name array member type is not a string', (t) => {
   const error = t.throws(() => {
     sql.fragment`${sql.identifier([
-      // @ts-expect-error
+      // @ts-expect-error - intentional
       () => {},
     ])}`;
   });

@@ -36,7 +36,7 @@ test('overrides provided properties', (t) => {
   t.deepEqual(
     createClientConfiguration({
       interceptors: [
-        // @ts-expect-error
+        // @ts-expect-error - This is a test helper.
         'foo',
       ],
     }),
@@ -49,7 +49,7 @@ test('overrides provided properties', (t) => {
   t.deepEqual(
     createClientConfiguration({
       typeParsers: [
-        // @ts-expect-error
+        // @ts-expect-error - This is a test helper.
         'foo',
       ],
     }),

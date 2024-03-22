@@ -1,5 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
-
 /**
  * Functions in this file are never actually run - they are purely
  * a type-level tests to ensure the typings don't regress.
