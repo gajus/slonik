@@ -1347,4 +1347,45 @@ export const createIntegrationTests = (
       ['foo'],
     );
   });
+
+  test.only('replicate issue #542', async (t) => {
+    const pool = await createPool(t.context.dsn, {
+      PgPool,
+    });
+
+    await pool.connect(async (databaseConn) => {
+      await databaseConn.query(
+        sql.unsafe`CREATE TABLE IF NOT EXISTS A1 (col1 text)`,
+      );
+      await databaseConn.query(
+        sql.unsafe`CREATE TABLE IF NOT EXISTS A2 (col1 text)`,
+      );
+      await databaseConn.query(
+        sql.unsafe`CREATE TABLE IF NOT EXISTS A3 (col1 text)`,
+      );
+      await databaseConn.query(
+        sql.unsafe`CREATE TABLE IF NOT EXISTS A4 (col1 text)`,
+      );
+      await databaseConn.query(
+        sql.unsafe`CREATE TABLE IF NOT EXISTS A5(col1 text)`,
+      );
+      await databaseConn.query(
+        sql.unsafe`CREATE TABLE IF NOT EXISTS A6 (col1 text)`,
+      );
+      await databaseConn.query(
+        sql.unsafe`CREATE TABLE IF NOT EXISTS A7 (col1 text)`,
+      );
+      await databaseConn.query(
+        sql.unsafe`CREATE TABLE IF NOT EXISTS A8 (col1 text)`,
+      );
+      await databaseConn.query(
+        sql.unsafe`CREATE TABLE IF NOT EXISTS A9 (col1 text)`,
+      );
+      await databaseConn.query(
+        sql.unsafe`CREATE TABLE IF NOT EXISTS A10 (col1 text)`,
+      );
+    });
+
+    t.true(true);
+  });
 };
