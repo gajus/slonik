@@ -27,7 +27,7 @@
     "@types/node": "^18.15.3",
     "@types/sinon": "^10.0.20",
     "ava": "^5.3.1",
-    "cspell": "^7.3.8",
+    "cspell": "^8.6.0",
     "eslint": "^8.57.0",
     "eslint-config-canonical": "^42.8.1",
     "expect-type": "^0.15.0",
