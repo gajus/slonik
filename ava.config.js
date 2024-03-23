@@ -4,7 +4,7 @@ const {
 } = process.env;
 
 module.exports = () => {
-  let files = ['src/**/*.test.ts', '!src/types.test.ts'];
+  let files = ['src/**/*.test.ts'];
 
   if (TEST_ONLY === 'utilities') {
     files = ['src/**/*.test.ts', '!src/integration.test'];
