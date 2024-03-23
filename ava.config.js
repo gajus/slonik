@@ -11,11 +11,11 @@ module.exports = () => {
   }
 
   if (TEST_ONLY === 'pg-integration') {
-    files = ['src/integration.test/integration/pg.test.ts'];
+    files = ['src/integration.test/pg.test.ts'];
   }
 
   if (TEST_ONLY === 'postgres-integration') {
-    files = ['src/integration.test/integration/postgres.test.ts'];
+    files = ['src/integration.test/postgres.test.ts'];
   }
 
   return {
