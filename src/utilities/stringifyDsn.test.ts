@@ -11,6 +11,7 @@ const dsns = [
   'postgresql://foo:bar@localhost',
   'postgresql://foo@localhost/bar',
   'postgresql://foo@localhost/bar?application_name=foo',
+  'postgresql://foo@localhost/bar?options=-c%20search_path%3Dfoo',
   'postgresql://foo@localhost/bar?sslmode=no-verify',
   'postgresql://fo%2Fo:b%2Far@localhost/ba%2Fz',
 ];

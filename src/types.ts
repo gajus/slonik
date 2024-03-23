@@ -18,6 +18,7 @@ export type ConnectionOptions = {
   applicationName?: string;
   databaseName?: string;
   host?: string;
+  options?: string;
   password?: string;
   port?: number;
   sslMode?: 'disable' | 'no-verify' | 'require';

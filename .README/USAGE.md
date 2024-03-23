@@ -13,6 +13,7 @@ Supported parameters:
 |Name|Meaning|Default|
 |---|---|---|
 |`application_name`|[`application_name`](https://www.postgresql.org/docs/current/libpq-connect.html#LIBPQ-CONNECT-APPLICATION-NAME)||
+|`options`|[`options`](https://www.postgresql.org/docs/current/libpq-connect.html#LIBPQ-CONNECT-OPTIONS)||
 |`sslmode`|[`sslmode`](https://www.postgresql.org/docs/current/libpq-connect.html#LIBPQ-CONNECT-SSLMODE) (supported values: `disable`, `no-verify`, `require`)|`disable`|
 
 Note that unless listed above, other [libpq parameters](https://www.postgresql.org/docs/current/libpq-connect.html#LIBPQ-PARAMKEYWORDS) are not supported.
