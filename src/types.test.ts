@@ -5,8 +5,13 @@
 
 import { createPool, createSqlTag } from '.';
 import { type QueryResult } from './types';
+import test from 'ava';
 import { expectTypeOf } from 'expect-type';
 import { z } from 'zod';
+
+test('ok', (t) => {
+  t.true(true);
+});
 
 const ZodRow = z.object({
   bar: z.boolean(),

@@ -1,13 +1,13 @@
 {
   "$schema": "https://unpkg.com/knip@2/schema.json",
   "entry": [
-    "src/index.ts",
-    "test/types.ts"
+    "src/index.ts!",
+    "src/**/*.test.ts"
   ],
   "ignoreDependencies": [
     "husky"
   ],
   "project": [
-    "{src,test}/**/*.ts"
+    "src/**/*.ts"
   ]
 }
