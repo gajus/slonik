@@ -90,6 +90,7 @@ Note: Using this project does not require TypeScript. It is a regular ES6 module
         * [Inserting large number of rows](#user-content-slonik-recipes-inserting-large-number-of-rows)
         * [Routing queries to different connections](#user-content-slonik-recipes-routing-queries-to-different-connections)
         * [Building Utility Statements](#user-content-slonik-recipes-building-utility-statements)
+        * [Inserting vector data](#user-content-slonik-recipes-inserting-vector-data)
     * [Runtime validation](#user-content-slonik-runtime-validation)
         * [Motivation](#user-content-slonik-runtime-validation-motivation)
         * [Result parser interceptor](#user-content-slonik-runtime-validation-result-parser-interceptor)
@@ -1238,6 +1239,31 @@ await connection.query(sql.typeAlias('void')`
 `);
 ```
 
+<a name="user-content-slonik-recipes-inserting-vector-data"></a>
+<a name="slonik-recipes-inserting-vector-data"></a>
+### Inserting vector data
+
+If you are using [`pgvector`](https://github.com/pgvector/pgvector) and need to insert vector data, you can use the following helper function:
+
+```ts
+const vector = (embeddings: number[]) => {
+  return sql.fragment`${sql.array(
+    Array.from(embeddings),
+    sql.fragment`real[]`,
+  )}::vector`;
+};
+```
+
+Now you can use the `vector` helper function to insert vector data:
+
+```ts
+await connection.query(sql.typeAlias('void')`
+  INSERT INTO embeddings (id, vector)
+  VALUES (1, ${vector(embedding.data)})
+`);
+```
+
+You can also use the [`pgvector` NPM package](https://github.com/pgvector/pgvector-node/?tab=readme-ov-file#slonik) to achieve the same result.
 
 <a name="user-content-slonik-runtime-validation"></a>
 <a name="slonik-runtime-validation"></a>

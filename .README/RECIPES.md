@@ -120,3 +120,27 @@ await connection.query(sql.typeAlias('void')`
   WITH PASSWORD ${sql.literalValue('bar')}
 `);
 ```
+
+### Inserting vector data
+
+If you are using [`pgvector`](https://github.com/pgvector/pgvector) and need to insert vector data, you can use the following helper function:
+
+```ts
+const vector = (embeddings: number[]) => {
+  return sql.fragment`${sql.array(
+    Array.from(embeddings),
+    sql.fragment`real[]`,
+  )}::vector`;
+};
+```
+
+Now you can use the `vector` helper function to insert vector data:
+
+```ts
+await connection.query(sql.typeAlias('void')`
+  INSERT INTO embeddings (id, vector)
+  VALUES (1, ${vector(embedding.data)})
+`);
+```
+
+You can also use the [`pgvector` NPM package](https://github.com/pgvector/pgvector-node/?tab=readme-ov-file#slonik) to achieve the same result.
