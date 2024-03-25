@@ -40,7 +40,8 @@ export const createPool = async (
     connect: () => {
       return connection;
     },
-  };
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  } as any;
 
   poolStateMap.set(internalPool, {
     ended: false,

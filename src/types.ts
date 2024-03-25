@@ -18,6 +18,7 @@ export type ConnectionOptions = {
   applicationName?: string;
   databaseName?: string;
   host?: string;
+  options?: string;
   password?: string;
   port?: number;
   sslMode?: 'disable' | 'no-verify' | 'require';
@@ -51,7 +52,8 @@ export type SerializableValue =
   | {
       [key: string]: SerializableValue;
     }
-  | null;
+  | null
+  | undefined;
 
 export type QueryId = string;
 

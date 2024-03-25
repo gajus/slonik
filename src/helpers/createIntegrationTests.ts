@@ -1308,4 +1308,66 @@ export const createIntegrationTests = (
 
     t.true(error instanceof InvalidInputError);
   });
+
+  test('terminates transaction if any of the queries fails', async (t) => {
+    const pool = await createPool(t.context.dsn, {
+      PgPool,
+    });
+
+    await pool.any(sql.unsafe`
+      INSERT INTO person (name) VALUES ('foo');
+    `);
+
+    await t.throwsAsync(
+      pool.transaction(async (transaction) => {
+        // We want to ensure that data is not committed if any of the queries fails.
+        await transaction.any(sql.unsafe`
+          INSERT INTO person (name) VALUES ('bar');
+        `);
+
+        try {
+          await transaction.any(sql.unsafe`
+            INSERT INTO person (name) VALUES (null);
+          `);
+        } catch {
+          // ...
+        }
+
+        // We want to ensure that the transaction connection cannot be used after the transaction has been terminated.
+        await transaction.any(sql.unsafe`
+          INSERT INTO person (name) VALUES ('baz');
+        `);
+      }),
+    );
+
+    t.deepEqual(
+      await pool.manyFirst(sql.unsafe`
+        SELECT name FROM person
+      `),
+      ['foo'],
+    );
+  });
+
+  test('command line options are passed to the underlying connection', async (t) => {
+    const options = encodeURIComponent('-c search_path=test_schema');
+    const pool = await createPool(t.context.dsn + '?options=' + options, {
+      PgPool,
+    });
+
+    await pool.query(sql.unsafe`
+      CREATE SCHEMA test_schema;
+    `);
+
+    // The table should be created within test_schema due to the search_path option.
+    await pool.query(sql.unsafe`
+      CREATE TABLE test_table (id SERIAL PRIMARY KEY);
+    `);
+
+    // The table we created will be the only one in the test_schema.
+    const tableName = await pool.oneFirst(sql.unsafe`
+      SELECT table_name FROM information_schema.tables WHERE table_schema = 'test_schema'
+    `);
+
+    t.is(tableName, 'test_table');
+  });
 };

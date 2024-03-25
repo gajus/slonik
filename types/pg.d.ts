@@ -21,6 +21,7 @@ declare module 'pg' {
     idle_in_transaction_session_timeout?: number | undefined;
     keepAlive?: boolean | undefined;
     keepAliveInitialDelayMillis?: number | undefined;
+    options?: string | undefined;
     parseInputDatesAsUTC?: boolean | undefined;
     password?: string | (() => Promise<string> | string) | undefined;
     port?: number | undefined;

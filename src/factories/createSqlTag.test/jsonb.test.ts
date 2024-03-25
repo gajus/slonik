@@ -72,7 +72,6 @@ test('JSON encodes boolean values', (t) => {
 
 test('throws if payload is undefined', (t) => {
   const error = t.throws(() => {
-    // @ts-expect-error - intentional
     sql.fragment`SELECT ${sql.jsonb(undefined)}`;
   });
 
