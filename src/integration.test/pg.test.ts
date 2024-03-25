@@ -1,17 +1,17 @@
 import { createPool, sql } from '..';
+import { NativePostgresPool } from '../classes/NativePostgres';
 import {
   createIntegrationTests,
   createTestRunner,
 } from '../helpers/createIntegrationTests';
-import { Pool as PgPool } from 'pg';
 
-const { test } = createTestRunner(PgPool, 'pg');
+const { test } = createTestRunner(NativePostgresPool, 'pg');
 
-createIntegrationTests(test, PgPool);
+createIntegrationTests(test, NativePostgresPool);
 
 test('returns expected query result object (NOTICE)', async (t) => {
   const pool = await createPool(t.context.dsn, {
-    PgPool,
+    PgPool: NativePostgresPool,
   });
 
   await pool.query(sql.unsafe`

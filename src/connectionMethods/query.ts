@@ -1,3 +1,4 @@
+import { type NativePostgresQueryResult } from '../classes/NativePostgres';
 import { executeQuery, type ExecutionRoutine } from '../routines/executeQuery';
 import {
   type Field,
@@ -5,14 +6,13 @@ import {
   type Notice,
   type QueryResult,
 } from '../types';
-import { type QueryResult as PgQueryResult } from 'pg';
 
 const executionRoutine: ExecutionRoutine = async (
   finalConnection,
   finalSql,
   finalValues,
 ) => {
-  const result: PgQueryResult & { notices?: Notice[] } =
+  const result: NativePostgresQueryResult & { notices?: Notice[] } =
     await finalConnection.query(
       finalSql,
       // eslint-disable-next-line @typescript-eslint/no-explicit-any

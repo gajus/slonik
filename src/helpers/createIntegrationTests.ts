@@ -14,10 +14,13 @@ import {
   TupleMovedToAnotherPartitionError,
   UnexpectedStateError,
 } from '..';
+import {
+  type NativePostgresPool,
+  type NativePostgresPoolConfiguration,
+} from '../classes/NativePostgres';
 import { Logger } from '../Logger';
 import anyTest, { type TestFn } from 'ava';
 import { setTimeout as delay } from 'node:timers/promises';
-import { type Pool as PgPoolType, type PoolConfig } from 'pg';
 import { serializeError } from 'serialize-error';
 import * as sinon from 'sinon';
 import { z } from 'zod';
@@ -35,7 +38,9 @@ type TestContextType = {
 };
 
 export const createTestRunner = (
-  PgPool: new (poolConfig: PoolConfig) => PgPoolType,
+  PgPool: new (
+    poolConfig: NativePostgresPoolConfiguration,
+  ) => NativePostgresPool,
   name: string,
 ) => {
   let testId = 0;
@@ -142,7 +147,7 @@ export const createTestRunner = (
 
 export const createIntegrationTests = (
   test: TestFn<TestContextType>,
-  PgPool: new () => PgPoolType,
+  PgPool: new () => NativePostgresPool,
 ) => {
   test('inserts and retrieves bigint', async (t) => {
     const pool = await createPool(t.context.dsn, {

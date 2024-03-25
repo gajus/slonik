@@ -1,8 +1,8 @@
+import { type NativePostgresPool } from '../classes/NativePostgres';
 import { Logger } from '../Logger';
 import { type PoolState, poolStateMap } from '../state';
 import { establishConnection } from './establishConnection';
 import test from 'ava';
-import { type Pool as PgPool } from 'pg';
 import * as sinon from 'sinon';
 
 test('attempts to connection X times', async (t) => {
@@ -10,14 +10,17 @@ test('attempts to connection X times', async (t) => {
     connect: sinon.stub(),
   };
 
-  poolStateMap.set(pool as unknown as PgPool, {} as unknown as PoolState);
+  poolStateMap.set(
+    pool as unknown as NativePostgresPool,
+    {} as unknown as PoolState,
+  );
 
   const connectionRetryLimit = 3;
 
   await t.throwsAsync(
     establishConnection(
       Logger,
-      pool as unknown as PgPool,
+      pool as unknown as NativePostgresPool,
       connectionRetryLimit,
     ),
   );
@@ -30,14 +33,17 @@ test('does not attempt to retry connection when set to 0', async (t) => {
     connect: sinon.stub(),
   };
 
-  poolStateMap.set(pool as unknown as PgPool, {} as unknown as PoolState);
+  poolStateMap.set(
+    pool as unknown as NativePostgresPool,
+    {} as unknown as PoolState,
+  );
 
   const connectionRetryLimit = 0;
 
   await t.throwsAsync(
     establishConnection(
       Logger,
-      pool as unknown as PgPool,
+      pool as unknown as NativePostgresPool,
       connectionRetryLimit,
     ),
   );

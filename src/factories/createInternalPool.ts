@@ -1,12 +1,15 @@
+import {
+  type NativePostgresPool,
+  type NativePostgresPoolConfiguration,
+} from '../classes/NativePostgres';
 import { Logger } from '../Logger';
 import { poolStateMap } from '../state';
 import { createUid } from '../utilities/createUid';
-import { type Pool as PgPool, type PoolConfig } from 'pg';
 import { serializeError } from 'serialize-error';
 
 export const createInternalPool = (
-  Pool: new (poolConfig: PoolConfig) => PgPool,
-  poolConfiguration: PoolConfig,
+  Pool: new (poolConfig: NativePostgresPoolConfiguration) => NativePostgresPool,
+  poolConfiguration: NativePostgresPoolConfiguration,
 ) => {
   const poolId = createUid();
 
@@ -14,7 +17,7 @@ export const createInternalPool = (
     poolId,
   });
 
-  const pool: PgPool = new Pool({
+  const pool: NativePostgresPool = new Pool({
     ...poolConfiguration,
   });
 

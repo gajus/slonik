@@ -1,12 +1,12 @@
+import {
+  type NativePostgresPool,
+  type NativePostgresPoolClient,
+  type NativePostgresPoolConfiguration,
+} from './classes/NativePostgres';
 import { type SlonikError } from './errors';
 import type * as tokens from './tokens';
 import { type Readable, type ReadableOptions } from 'node:stream';
 import { type ConnectionOptions as TlsConnectionOptions } from 'node:tls';
-import {
-  type Pool as PgPool,
-  type PoolClient as PgPoolClient,
-  type PoolConfig,
-} from 'pg';
 import { type NoticeMessage as Notice } from 'pg-protocol/dist/messages';
 import { type Logger } from 'roarr';
 import { type z, type ZodTypeAny } from 'zod';
@@ -93,7 +93,9 @@ export type ClientConfiguration = {
   /**
    * Override the underlying PostgreSQL driver. *
    */
-  readonly PgPool?: new (poolConfig: PoolConfig) => PgPool;
+  readonly PgPool?: new (
+    poolConfig: NativePostgresPoolConfiguration,
+  ) => NativePostgresPool;
   /**
    * Dictates whether to capture stack trace before executing query. Middlewares access stack trace through query execution context. (Default: true)
    */
@@ -440,7 +442,7 @@ export type SqlTag<Z extends Record<string, ZodTypeAny>> = {
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export type InternalQueryMethod<R = any> = (
   log: Logger,
-  connection: PgPoolClient,
+  connection: NativePostgresPoolClient,
   clientConfiguration: ClientConfiguration,
   slonikSql: QuerySqlToken,
   uid?: QueryId,
@@ -448,7 +450,7 @@ export type InternalQueryMethod<R = any> = (
 
 export type InternalStreamFunction = <T>(
   log: Logger,
-  connection: PgPoolClient,
+  connection: NativePostgresPoolClient,
   clientConfiguration: ClientConfiguration,
   slonikSql: QuerySqlToken,
   streamHandler: StreamHandler<T>,
@@ -458,7 +460,7 @@ export type InternalStreamFunction = <T>(
 
 export type InternalTransactionFunction = <T>(
   log: Logger,
-  connection: PgPoolClient,
+  connection: NativePostgresPoolClient,
   clientConfiguration: ClientConfiguration,
   handler: TransactionFunction<T>,
   transactionRetryLimit?: number,
@@ -466,7 +468,7 @@ export type InternalTransactionFunction = <T>(
 
 export type InternalNestedTransactionFunction = <T>(
   log: Logger,
-  connection: PgPoolClient,
+  connection: NativePostgresPoolClient,
   clientConfiguration: ClientConfiguration,
   handler: TransactionFunction<T>,
   transactionDepth: number,

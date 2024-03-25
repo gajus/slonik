@@ -1,18 +1,21 @@
+import {
+  type NativePostgresPool,
+  type NativePostgresPoolClient,
+} from '../classes/NativePostgres';
 import { ConnectionError, UnexpectedStateError } from '../errors';
 import { getPoolState, poolClientStateMap } from '../state';
 import { type Logger } from '../types';
 import { createUid } from '../utilities/createUid';
-import { type Pool as PgPool, type PoolClient as PgPoolClient } from 'pg';
 import { serializeError } from 'serialize-error';
 
 export const establishConnection = async (
   parentLog: Logger,
-  pool: PgPool,
+  pool: NativePostgresPool,
   connectionRetryLimit: number,
 ) => {
   const poolState = getPoolState(pool);
 
-  let connection: PgPoolClient;
+  let connection: NativePostgresPoolClient;
 
   let remainingConnectionRetryLimit = connectionRetryLimit + 1;
 

@@ -1,4 +1,8 @@
 import { bindPool } from '../binders/bindPool';
+import {
+  type NativePostgresPool,
+  type NativePostgresPoolClient,
+} from '../classes/NativePostgres';
 import { Logger } from '../Logger';
 import { poolStateMap } from '../state';
 import {
@@ -8,7 +12,6 @@ import {
 } from '../types';
 import { createUid } from '../utilities/createUid';
 import { createClientConfiguration } from './createClientConfiguration';
-import { type Pool as PgPool, type PoolClient as PgClientPool } from 'pg';
 
 export const createMockPool = (
   overrides: MockPoolOverrides,
@@ -31,12 +34,12 @@ export const createMockPool = (
         on: () => {},
         query: overrides.query,
         release: () => {},
-      } as unknown as PgClientPool;
+      } as unknown as NativePostgresPoolClient;
 
       return connection;
     },
     end: async () => {},
-  } as unknown as PgPool;
+  } as unknown as NativePostgresPool;
 
   poolStateMap.set(pool, {
     ended: false,

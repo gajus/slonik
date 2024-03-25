@@ -1,5 +1,5 @@
+import { type NativePostgresPoolClient } from '../classes/NativePostgres';
 import { type TypeParser } from '../types';
-import { type PoolClient } from 'pg';
 import { getTypeParser } from 'pg-types';
 import { parse as parseArray } from 'postgres-array';
 
@@ -10,7 +10,7 @@ type PostgresType = {
 };
 
 export const createTypeOverrides = async (
-  connection: PoolClient,
+  connection: NativePostgresPoolClient,
   typeParsers: readonly TypeParser[],
 ) => {
   const typeNames = typeParsers.map((typeParser) => {

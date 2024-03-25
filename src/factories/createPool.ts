@@ -1,4 +1,5 @@
 import { bindPool } from '../binders/bindPool';
+import { NativePostgresPool } from '../classes/NativePostgres';
 import { Logger } from '../Logger';
 import { createTypeOverrides } from '../routines/createTypeOverrides';
 import { getPoolState } from '../state';
@@ -6,7 +7,6 @@ import { type ClientConfigurationInput, type DatabasePool } from '../types';
 import { createClientConfiguration } from './createClientConfiguration';
 import { createInternalPool } from './createInternalPool';
 import { createPoolConfiguration } from './createPoolConfiguration';
-import { Pool as PgPool } from 'pg';
 import type pgTypes from 'pg-types';
 
 /**
@@ -28,7 +28,7 @@ export const createPool = async (
   let Pool = clientConfiguration.PgPool;
 
   if (!Pool) {
-    Pool = PgPool;
+    Pool = NativePostgresPool;
   }
 
   if (!Pool) {

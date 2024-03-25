@@ -1,3 +1,4 @@
+import { type NativePostgresPool } from '../classes/NativePostgres';
 import { transaction } from '../connectionMethods/transaction';
 import { createConnection } from '../factories/createConnection';
 import { getPoolState } from '../state';
@@ -6,11 +7,10 @@ import {
   type DatabasePool,
   type Logger,
 } from '../types';
-import { type Pool as PgPool } from 'pg';
 
 export const bindPool = (
   parentLog: Logger,
-  pool: PgPool,
+  pool: NativePostgresPool,
   clientConfiguration: ClientConfiguration,
 ): DatabasePool => {
   return {

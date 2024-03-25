@@ -1,3 +1,4 @@
+import { type NativePostgresPoolClient } from '../classes/NativePostgres';
 import { executeQuery, type ExecutionRoutine } from '../routines/executeQuery';
 import {
   type ClientConfiguration,
@@ -11,13 +12,12 @@ import {
 } from '../types';
 import { type Readable, Transform } from 'node:stream';
 import { pipeline } from 'node:stream/promises';
-import { type PoolClient } from 'pg';
 import QueryStream from 'pg-query-stream';
 
 type RowTransformer = NonNullable<Interceptor['transformRow']>;
 
 const createTransformStream = (
-  connection: PoolClient,
+  connection: NativePostgresPoolClient,
   clientConfiguration: ClientConfiguration,
   queryContext: QueryContext,
   query: Query,

@@ -1,7 +1,10 @@
+import {
+  type NativePostgresPool,
+  type NativePostgresPoolClient,
+} from './classes/NativePostgres';
 import { UnexpectedStateError } from './errors';
 import { type TypeOverrides } from './types';
 import { type DeferredPromise } from './utilities/defer';
-import { type Pool as PgPool, type PoolClient as PgClientPool } from 'pg';
 
 export type PoolState = {
   ended: boolean;
@@ -20,11 +23,14 @@ type PoolClientState = {
   transactionId: string | null;
 };
 
-export const poolStateMap = new WeakMap<PgPool, PoolState>();
+export const poolStateMap = new WeakMap<NativePostgresPool, PoolState>();
 
-export const poolClientStateMap = new WeakMap<PgClientPool, PoolClientState>();
+export const poolClientStateMap = new WeakMap<
+  NativePostgresPoolClient,
+  PoolClientState
+>();
 
-export const getPoolState = (pool: PgPool): PoolState => {
+export const getPoolState = (pool: NativePostgresPool): PoolState => {
   const poolState = poolStateMap.get(pool);
 
   if (!poolState) {
@@ -35,7 +41,7 @@ export const getPoolState = (pool: PgPool): PoolState => {
 };
 
 export const getPoolClientState = (
-  poolClient: PgClientPool,
+  poolClient: NativePostgresPoolClient,
 ): PoolClientState => {
   const poolClientState = poolClientStateMap.get(poolClient);
 

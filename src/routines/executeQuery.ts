@@ -1,3 +1,4 @@
+import { type NativePostgresPoolClient } from '../classes/NativePostgres';
 import { TRANSACTION_ROLLBACK_ERROR_PREFIX } from '../constants';
 import {
   BackendTerminatedError,
@@ -31,13 +32,12 @@ import {
 import { createQueryId } from '../utilities/createQueryId';
 import { defer } from '../utilities/defer';
 import { getStackTrace } from 'get-stack-trace';
-import { type PoolClient as PgPoolClient } from 'pg';
 import { serializeError } from 'serialize-error';
 
 type GenericQueryResult = StreamResult | QueryResult<QueryResultRow>;
 
 export type ExecutionRoutine = (
-  connection: PgPoolClient,
+  connection: NativePostgresPoolClient,
   sql: string,
   values: readonly PrimitiveValueExpression[],
   queryContext: QueryContext,
@@ -53,7 +53,7 @@ type TransactionQuery = {
 
 const retryQuery = async (
   connectionLogger: Logger,
-  connection: PgPoolClient,
+  connection: NativePostgresPoolClient,
   query: TransactionQuery,
   retryLimit: number,
 ) => {
@@ -119,7 +119,7 @@ type StackCrumb = {
 // eslint-disable-next-line complexity
 export const executeQuery = async (
   connectionLogger: Logger,
-  connection: PgPoolClient,
+  connection: NativePostgresPoolClient,
   clientConfiguration: ClientConfiguration,
   query: QuerySqlToken,
   inheritedQueryId: QueryId | undefined,

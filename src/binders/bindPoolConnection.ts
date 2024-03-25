@@ -1,3 +1,4 @@
+import { type NativePostgresPoolClient } from '../classes/NativePostgres';
 import { any } from '../connectionMethods/any';
 import { anyFirst } from '../connectionMethods/anyFirst';
 import { exists } from '../connectionMethods/exists';
@@ -15,11 +16,10 @@ import {
   type DatabasePoolConnection,
   type Logger,
 } from '../types';
-import { type PoolClient as PgPoolClient } from 'pg';
 
 export const bindPoolConnection = (
   parentLog: Logger,
-  connection: PgPoolClient,
+  connection: NativePostgresPoolClient,
   clientConfiguration: ClientConfiguration,
 ): DatabasePoolConnection => {
   return {

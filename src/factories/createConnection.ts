@@ -1,4 +1,8 @@
 import { bindPoolConnection } from '../binders/bindPoolConnection';
+import {
+  type NativePostgresPool,
+  type NativePostgresPoolClient,
+} from '../classes/NativePostgres';
 import { UnexpectedStateError } from '../errors';
 import { establishConnection } from '../routines/establishConnection';
 import { getPoolClientState, getPoolState } from '../state';
@@ -11,18 +15,17 @@ import {
   type MaybePromise,
   type QuerySqlToken,
 } from '../types';
-import { type Pool as PgPool, type PoolClient as PgPoolClient } from 'pg';
 
 type ConnectionHandlerType = (
   connectionLog: Logger,
-  connection: PgPoolClient,
+  connection: NativePostgresPoolClient,
   boundConnection: DatabasePoolConnection,
   clientConfiguration: ClientConfiguration,
 ) => MaybePromise<unknown>;
 
 type PoolHandlerType = (pool: DatabasePool) => Promise<unknown>;
 
-const terminatePoolConnection = (connection: PgPoolClient) => {
+const terminatePoolConnection = (connection: NativePostgresPoolClient) => {
   // tells the pool to destroy this client
   connection.release(true);
 };
@@ -52,7 +55,7 @@ const destroyBoundConnection = (boundConnection: DatabasePoolConnection) => {
 
 export const createConnection = async (
   parentLog: Logger,
-  pool: PgPool,
+  pool: NativePostgresPool,
   clientConfiguration: ClientConfiguration,
   connectionType: Connection,
   connectionHandler: ConnectionHandlerType,

@@ -1,17 +1,17 @@
 /* eslint-disable canonical/id-match */
 
+import { type NativePostgresPoolConfiguration } from '../classes/NativePostgres';
 import { Logger as log } from '../Logger';
 import { type ClientConfiguration } from '../types';
 import { parseDsn } from '../utilities/parseDsn';
-import { type PoolConfig } from 'pg';
 
 export const createPoolConfiguration = (
   dsn: string,
   clientConfiguration: ClientConfiguration,
-): PoolConfig => {
+): NativePostgresPoolConfiguration => {
   const connectionOptions = parseDsn(dsn);
 
-  const poolConfiguration: PoolConfig = {
+  const poolConfiguration: NativePostgresPoolConfiguration = {
     application_name: connectionOptions.applicationName,
     database: connectionOptions.databaseName,
     host: connectionOptions.host,
