@@ -93,3 +93,68 @@ test('the sql property is immutable', (t) => {
     query.sql = 'SELECT 2';
   });
 });
+
+/**
+ * https://github.com/gajus/slonik/pull/552
+ */
+test('copes with dollar-number in table name', (t) => {
+  const query0 = sql.fragment`discounted_to_$1 (offer_id INTEGER)`;
+  const query1 = sql.fragment`CREATE TABLE ${query0}`;
+
+  t.deepEqual(query1, {
+    sql: 'CREATE TABLE discounted_to_$1 (offer_id INTEGER)',
+    type: FragmentToken,
+    values: [],
+  });
+});
+
+/**
+ * https://github.com/gajus/slonik/pull/552
+ */
+test('copes with dollar-number in column name (CREATE TABLE)', (t) => {
+  const query0 = sql.fragment`offers (discounted_to_$1 BOOLEAN)`;
+  const query1 = sql.fragment`CREATE TABLE ${query0}`;
+
+  t.deepEqual(query1, {
+    sql: 'CREATE TABLE offers (discounted_to_$1 BOOLEAN)',
+    type: FragmentToken,
+    values: [],
+  });
+});
+
+/**
+ * https://github.com/gajus/slonik/pull/552
+ */
+test('copes with dollar-number in column name (SELECT)', (t) => {
+  const query0 = sql.fragment`"discounted_to_$1" IS TRUE`;
+  const query1 = sql.fragment`SELECT * FROM offers WHERE ${query0}`;
+
+  t.deepEqual(query1, {
+    sql: 'SELECT * FROM offers WHERE "discounted_to_$1" IS TRUE',
+    type: FragmentToken,
+    values: [],
+  });
+});
+
+/**
+ * https://github.com/gajus/slonik/pull/552
+ */
+test('copes with dollar-number in function definitions', (t) => {
+  // example function from https://www.postgresql.org/docs/current/sql-createfunction.html
+  const query0 = sql.fragment`add(integer, integer) RETURNS integer
+      AS 'select $1 + $2;'
+      LANGUAGE SQL
+      IMMUTABLE
+      RETURNS NULL ON NULL INPUT`;
+  const query1 = sql.fragment`CREATE FUNCTION ${query0}`;
+
+  t.deepEqual(query1, {
+    sql: `CREATE FUNCTION add(integer, integer) RETURNS integer
+      AS 'select $1 + $2;'
+      LANGUAGE SQL
+      IMMUTABLE
+      RETURNS NULL ON NULL INPUT`,
+    type: FragmentToken,
+    values: [],
+  });
+});
