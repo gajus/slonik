@@ -272,9 +272,7 @@ Slonik sets aggressive timeouts by default. These timeouts are designed to provi
 
 #### Known limitations of using pg-native with Slonik
 
-* notice logs are not captured in `notices` query result property (`notice` event is never fired on connection instance).
-* cannot combine multiple commands into a single statement (pg-native limitation [#88](https://github.com/brianc/node-pg-native/issues/88))
-* does not support streams.
+`pg-native` is not officially supported by Slonik.
 
 ### Checking out a client from the connection pool
 

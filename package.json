@@ -35,7 +35,6 @@
     "husky": "^9.0.11",
     "knip": "^5.5.0",
     "nyc": "^15.1.0",
-    "pg-native": "^3.0.1",
     "postgres": "^3.4.4",
     "postgres-bridge": "^1.14.0",
     "semantic-release": "^23.0.5",
