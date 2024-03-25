@@ -26,7 +26,7 @@ test('creates an interval', (t) => {
   })}`;
 
   t.deepEqual(query, {
-    sql: 'SELECT make_interval(years => $1, months => $2, weeks => $3, days => $4, hours => $5, mins => $6, secs => $7)',
+    sql: 'SELECT make_interval(years => $slonik_1, months => $slonik_2, weeks => $slonik_3, days => $slonik_4, hours => $slonik_5, mins => $slonik_6, secs => $slonik_7)',
     type: FragmentToken,
     values: [1, 2, 3, 4, 5, 6, 7],
   });

@@ -1,5 +1,6 @@
 import { InvalidInputError } from '../errors';
 import { type DateSqlToken, type SqlFragment } from '../types';
+import { formatSlonikPlaceholder } from '../utilities/formatSlonikPlaceholder';
 
 export const createDateSqlFragment = (
   token: DateSqlToken,
@@ -12,7 +13,7 @@ export const createDateSqlFragment = (
   }
 
   return {
-    sql: '$' + String(greatestParameterPosition + 1) + '::date',
+    sql: formatSlonikPlaceholder(greatestParameterPosition + 1) + '::date',
     values: [token.date.toISOString().slice(0, 10)],
   };
 };

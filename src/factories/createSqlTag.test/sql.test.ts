@@ -31,7 +31,7 @@ test('creates an object describing query value bindings', (t) => {
   const query = sql.fragment`SELECT ${'foo'}`;
 
   t.deepEqual(query, {
-    sql: 'SELECT $1',
+    sql: 'SELECT $slonik_1',
     type: FragmentToken,
     values: ['foo'],
   });
@@ -41,7 +41,7 @@ test('creates an object describing query value bindings (multiple)', (t) => {
   const query = sql.fragment`SELECT ${'foo'}, ${'bar'}`;
 
   t.deepEqual(query, {
-    sql: 'SELECT $1, $2',
+    sql: 'SELECT $slonik_1, $slonik_2',
     type: FragmentToken,
     values: ['foo', 'bar'],
   });
@@ -52,7 +52,7 @@ test('nests sql templates', (t) => {
   const query1 = sql.fragment`SELECT ${'baz'} FROM (${query0})`;
 
   t.deepEqual(query1, {
-    sql: 'SELECT $1 FROM (SELECT $2 FROM bar)',
+    sql: 'SELECT $slonik_1 FROM (SELECT $slonik_2 FROM bar)',
     type: FragmentToken,
     values: ['baz', 'foo'],
   });

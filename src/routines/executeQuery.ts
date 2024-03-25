@@ -159,7 +159,7 @@ export const executeQuery = async (
   });
 
   const originalQuery = {
-    sql: query.sql,
+    sql: query.sql.replaceAll('$slonik_', '$'),
     values: query.values,
   };
 

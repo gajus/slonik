@@ -14,7 +14,7 @@ test('creates an unnest expression using primitive values (type name identifier)
   )}`;
 
   t.deepEqual(query, {
-    sql: 'SELECT * FROM unnest($1::"int4"[], $2::"int4"[], $3::"int4"[])',
+    sql: 'SELECT * FROM unnest($slonik_1::"int4"[], $slonik_2::"int4"[], $slonik_3::"int4"[])',
     type: FragmentToken,
     values: [
       [1, 4],
@@ -34,7 +34,7 @@ test('creates an unnest expression using primitive values (sql token)', (t) => {
   )}`;
 
   t.deepEqual(query, {
-    sql: 'SELECT * FROM unnest($1::integer[], $2::integer[], $3::integer[])',
+    sql: 'SELECT * FROM unnest($slonik_1::integer[], $slonik_2::integer[], $slonik_3::integer[])',
     type: FragmentToken,
     values: [
       [1, 4],
@@ -57,7 +57,7 @@ test('treats type as sql.identifier', (t) => {
   )} AS foo(bar, baz)`;
 
   t.deepEqual(query, {
-    sql: 'SELECT bar, baz FROM unnest($1::"foo"."int4"[], $2::"foo"."int4"[]) AS foo(bar, baz)',
+    sql: 'SELECT bar, baz FROM unnest($slonik_1::"foo"."int4"[], $slonik_2::"foo"."int4"[]) AS foo(bar, baz)',
     type: FragmentToken,
     values: [
       [1, 2],
@@ -76,7 +76,7 @@ test('creates an unnest expression using arrays', (t) => {
   )}`;
 
   t.deepEqual(query, {
-    sql: 'SELECT * FROM unnest($1::"int4"[], $2::"int4"[], $3::"int4"[])',
+    sql: 'SELECT * FROM unnest($slonik_1::"int4"[], $slonik_2::"int4"[], $slonik_3::"int4"[])',
     type: FragmentToken,
     values: [
       [1, 4],
@@ -96,7 +96,7 @@ test('creates incremental alias names if no alias names are provided', (t) => {
   )}`;
 
   t.deepEqual(query, {
-    sql: 'SELECT * FROM unnest($1::"int4"[], $2::"int4"[], $3::"int4"[])',
+    sql: 'SELECT * FROM unnest($slonik_1::"int4"[], $slonik_2::"int4"[], $slonik_3::"int4"[])',
     type: FragmentToken,
     values: [
       [1, 4],
@@ -113,7 +113,7 @@ test('recognizes an array of arrays array', (t) => {
   )}`;
 
   t.deepEqual(query, {
-    sql: 'SELECT * FROM unnest($1::"int4"[][])',
+    sql: 'SELECT * FROM unnest($slonik_1::"int4"[][])',
     type: FragmentToken,
     values: [[[[1], [2], [3]]]],
   });

@@ -8,7 +8,7 @@ test('creates a list of values', (t) => {
   const query = sql.fragment`SELECT (${sql.join([1, 2, 3], sql.fragment`, `)})`;
 
   t.deepEqual(query, {
-    sql: 'SELECT ($1, $2, $3)',
+    sql: 'SELECT ($slonik_1, $slonik_2, $slonik_3)',
     type: FragmentToken,
     values: [1, 2, 3],
   });
@@ -34,7 +34,7 @@ test('interpolates SQL tokens', (t) => {
   )})`;
 
   t.deepEqual(query, {
-    sql: 'SELECT ($1, foo, $2)',
+    sql: 'SELECT ($slonik_1, foo, $slonik_2)',
     type: FragmentToken,
     values: [1, 3],
   });
@@ -47,7 +47,7 @@ test('interpolates SQL tokens with bound values', (t) => {
   )}`;
 
   t.deepEqual(query, {
-    sql: 'SELECT $1, to_timestamp($2), $3, $4',
+    sql: 'SELECT $slonik_1, to_timestamp($slonik_2), $slonik_3, $slonik_4',
     type: FragmentToken,
     values: [1, 2, 3, 4],
   });
@@ -60,7 +60,7 @@ test('offsets positional parameter indexes', (t) => {
   )}, ${3}`;
 
   t.deepEqual(query, {
-    sql: 'SELECT $1, $2, to_timestamp($3), $4, $5, $6',
+    sql: 'SELECT $slonik_1, $slonik_2, to_timestamp($slonik_3), $slonik_4, $slonik_5, $slonik_6',
     type: FragmentToken,
     values: [1, 1, 2, 3, 4, 3],
   });
@@ -73,7 +73,7 @@ test('supports bigint', (t) => {
   )}, ${4n}`;
 
   t.deepEqual(query, {
-    sql: 'SELECT $1, to_timestamp($2), $3, $4',
+    sql: 'SELECT $slonik_1, to_timestamp($slonik_2), $slonik_3, $slonik_4',
     type: FragmentToken,
     values: [1n, 2n, 3n, 4n],
   });
@@ -89,7 +89,7 @@ test('nests expressions', (t) => {
   )}`;
 
   t.deepEqual(query, {
-    sql: 'SELECT ($1, $2), ($3, $4)',
+    sql: 'SELECT ($slonik_1, $slonik_2), ($slonik_3, $slonik_4)',
     type: FragmentToken,
     values: [1, 2, 3, 4],
   });
@@ -103,7 +103,7 @@ test('binary join expressions', (t) => {
   )})`;
 
   t.deepEqual(query, {
-    sql: 'SELECT ($1, $2)',
+    sql: 'SELECT ($slonik_1, $slonik_2)',
     type: FragmentToken,
     values: ['a', data],
   });

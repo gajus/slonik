@@ -1,5 +1,6 @@
 import { InvalidInputError } from '../errors';
 import { type BinarySqlToken, type SqlFragment } from '../types';
+import { formatSlonikPlaceholder } from '../utilities/formatSlonikPlaceholder';
 
 export const createBinarySqlFragment = (
   token: BinarySqlToken,
@@ -10,7 +11,7 @@ export const createBinarySqlFragment = (
   }
 
   return {
-    sql: '$' + String(greatestParameterPosition + 1),
+    sql: formatSlonikPlaceholder(greatestParameterPosition + 1),
     values: [token.data],
   };
 };

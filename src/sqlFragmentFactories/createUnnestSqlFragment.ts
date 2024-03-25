@@ -6,6 +6,7 @@ import {
 } from '../types';
 import { countArrayDimensions } from '../utilities/countArrayDimensions';
 import { escapeIdentifier } from '../utilities/escapeIdentifier';
+import { formatSlonikPlaceholder } from '../utilities/formatSlonikPlaceholder';
 import { isPrimitiveValueExpression } from '../utilities/isPrimitiveValueExpression';
 import { stripArrayNotation } from '../utilities/stripArrayNotation';
 
@@ -52,8 +53,7 @@ export const createUnnestSqlFragment = (
     }
 
     unnestSqlTokens.push(
-      '$' +
-        String(++placeholderIndex) +
+      formatSlonikPlaceholder(++placeholderIndex) +
         '::' +
         (columnTypeIsIdentifier
           ? stripArrayNotation(columnType)
