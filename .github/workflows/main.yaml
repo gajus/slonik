@@ -52,7 +52,7 @@ jobs:
         image: postgres
         options: >-
           --health-cmd pg_isready
-          --health-interval 10s
+          --health-interval 5s
           --health-timeout 5s
           --health-retries 5
           --name my_postgres_container
@@ -70,7 +70,7 @@ jobs:
             sed -i -e 's/shared_buffers = 128MB/shared_buffers = 2GB/' /var/lib/postgresql/data/postgresql.conf
           EOF
       - run: docker restart --time 0 my_postgres_container
-      - run: sleep 5
+      - run: sleep 10
       - run: docker ps
       - run: docker exec my_postgres_container psql -c 'SHOW max_connections;'
       - name: setup repository
