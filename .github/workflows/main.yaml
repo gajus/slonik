@@ -72,7 +72,7 @@ jobs:
       - run: docker restart --time 0 my_postgres_container
       - run: sleep 10
       - run: docker ps
-      - run: docker exec my_postgres_container psql -u postgres -c 'SHOW max_connections;'
+      - run: docker exec my_postgres_container psql -U postgres -c 'SHOW max_connections;'
       - name: setup repository
         uses: actions/checkout@v4
         with:
