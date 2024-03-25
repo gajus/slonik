@@ -6,6 +6,7 @@ import {
   type PrimitiveValueExpression,
   type SqlFragment,
 } from '../types';
+import { formatSlonikPlaceholder } from '../utilities/formatSlonikPlaceholder';
 import { isPrimitiveValueExpression } from '../utilities/isPrimitiveValueExpression';
 import { isSqlToken } from '../utilities/isSqlToken';
 
@@ -30,7 +31,7 @@ export const createListSqlFragment = (
       placeholderIndex += sqlFragment.values.length;
       values.push(...sqlFragment.values);
     } else if (isPrimitiveValueExpression(member)) {
-      placeholders.push('$' + String(++placeholderIndex));
+      placeholders.push(formatSlonikPlaceholder(++placeholderIndex));
 
       values.push(member);
     } else {

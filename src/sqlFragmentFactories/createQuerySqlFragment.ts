@@ -1,5 +1,7 @@
 import { UnexpectedStateError } from '../errors';
+import { slonikPlaceholderRegexRule } from '../regexRules/slonikPlaceholderRegexRule';
 import { type QuerySqlToken, type SqlFragment } from '../types';
+import { formatSlonikPlaceholder } from '../utilities/formatSlonikPlaceholder';
 
 export const createQuerySqlFragment = (
   token: QuerySqlToken,
@@ -10,7 +12,7 @@ export const createQuerySqlFragment = (
   let leastMatchedParameterPosition = Number.POSITIVE_INFINITY;
   let greatestMatchedParameterPosition = 0;
 
-  sql += token.sql.replaceAll(/\$(\d+)/gu, (match, g1) => {
+  sql += token.sql.replaceAll(slonikPlaceholderRegexRule, (match, g1) => {
     const parameterPosition = Number.parseInt(g1, 10);
 
     if (parameterPosition > greatestMatchedParameterPosition) {
@@ -21,7 +23,9 @@ export const createQuerySqlFragment = (
       leastMatchedParameterPosition = parameterPosition;
     }
 
-    return '$' + String(parameterPosition + greatestParameterPosition);
+    return formatSlonikPlaceholder(
+      parameterPosition + greatestParameterPosition,
+    );
   });
 
   if (greatestMatchedParameterPosition > token.values.length) {

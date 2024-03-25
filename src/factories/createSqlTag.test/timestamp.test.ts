@@ -10,7 +10,7 @@ test('binds a timestamp', (t) => {
   )}`;
 
   t.deepEqual(query, {
-    sql: 'SELECT to_timestamp($1)',
+    sql: 'SELECT to_timestamp($slonik_1)',
     type: FragmentToken,
     values: ['1660879644.951'],
   });

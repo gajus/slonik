@@ -2,6 +2,7 @@ import { InvalidInputError, UnexpectedStateError } from '../errors';
 import { createSqlTokenSqlFragment } from '../factories/createSqlTokenSqlFragment';
 import { type ArraySqlToken, type SqlFragment } from '../types';
 import { escapeIdentifier } from '../utilities/escapeIdentifier';
+import { formatSlonikPlaceholder } from '../utilities/formatSlonikPlaceholder';
 import { isPrimitiveValueExpression } from '../utilities/isPrimitiveValueExpression';
 import { isSqlToken } from '../utilities/isSqlToken';
 
@@ -33,7 +34,7 @@ export const createArraySqlFragment = (
 
   placeholderIndex++;
 
-  let sql = '$' + String(placeholderIndex) + '::';
+  let sql = formatSlonikPlaceholder(placeholderIndex) + '::';
 
   if (
     isSqlToken(token.memberType) &&

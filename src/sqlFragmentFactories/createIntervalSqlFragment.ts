@@ -1,5 +1,6 @@
 import { InvalidInputError } from '../errors';
 import { type IntervalSqlToken, type SqlFragment } from '../types';
+import { formatSlonikPlaceholder } from '../utilities/formatSlonikPlaceholder';
 import { z } from 'zod';
 
 const IntervalInput = z
@@ -57,8 +58,8 @@ export const createIntervalSqlFragment = (
 
       intervalTokens.push(
         mappedToken +
-          ' => $' +
-          String(greatestParameterPosition + values.length),
+          ' => ' +
+          formatSlonikPlaceholder(greatestParameterPosition + values.length),
       );
     }
   }

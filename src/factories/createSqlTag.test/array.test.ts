@@ -8,7 +8,7 @@ test('binds an empty array', (t) => {
   const query = sql.fragment`SELECT ${sql.array([], 'int4')}`;
 
   t.deepEqual(query, {
-    sql: 'SELECT $1::"int4"[]',
+    sql: 'SELECT $slonik_1::"int4"[]',
     type: FragmentToken,
     values: [[]],
   });
@@ -22,7 +22,7 @@ test('binds bigint', (t) => {
   )}`;
 
   t.deepEqual(query, {
-    sql: 'SELECT $1::"int8"[]',
+    sql: 'SELECT $slonik_1::"int8"[]',
     type: FragmentToken,
     // eslint-disable-next-line unicorn/numeric-separators-style
     values: [[BigInt(9007199254740999n)]],
@@ -33,7 +33,7 @@ test('binds an array with multiple values', (t) => {
   const query = sql.fragment`SELECT ${sql.array([1, 2, 3], 'int4')}`;
 
   t.deepEqual(query, {
-    sql: 'SELECT $1::"int4"[]',
+    sql: 'SELECT $slonik_1::"int4"[]',
     type: FragmentToken,
     values: [[1, 2, 3]],
   });
@@ -46,7 +46,7 @@ test('binds an array with bytea values', (t) => {
   )}`;
 
   t.deepEqual(query, {
-    sql: 'SELECT $1::"bytea"[]',
+    sql: 'SELECT $slonik_1::"bytea"[]',
     type: FragmentToken,
     values: [[Buffer.from('foo')]],
   });
@@ -59,7 +59,7 @@ test('offsets positional parameter indexes', (t) => {
   )}, ${3}`;
 
   t.deepEqual(query, {
-    sql: 'SELECT $1, $2::"int4"[], $3',
+    sql: 'SELECT $slonik_1, $slonik_2::"int4"[], $slonik_3',
     type: FragmentToken,
     values: [1, [1, 2, 3], 3],
   });
@@ -72,7 +72,7 @@ test('binds a SQL token', (t) => {
   )}`;
 
   t.deepEqual(query, {
-    sql: 'SELECT $1::int[]',
+    sql: 'SELECT $slonik_1::int[]',
     type: FragmentToken,
     values: [[1, 2, 3]],
   });

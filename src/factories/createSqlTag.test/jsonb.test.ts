@@ -10,7 +10,7 @@ test('creates a value list (object)', (t) => {
   })}`;
 
   t.deepEqual(query, {
-    sql: 'SELECT $1::jsonb',
+    sql: 'SELECT $slonik_1::jsonb',
     type: FragmentToken,
     values: ['{"foo":"bar"}'],
   });
@@ -24,7 +24,7 @@ test('creates a value list (array)', (t) => {
   ])}`;
 
   t.deepEqual(query, {
-    sql: 'SELECT $1::jsonb',
+    sql: 'SELECT $slonik_1::jsonb',
     type: FragmentToken,
     values: ['[{"foo":"bar"}]'],
   });
@@ -34,7 +34,7 @@ test("stringifies NULL to 'null'::jsonb", (t) => {
   const query = sql.fragment`SELECT ${sql.jsonb(null)}`;
 
   t.deepEqual(query, {
-    sql: 'SELECT $1::jsonb',
+    sql: 'SELECT $slonik_1::jsonb',
     type: FragmentToken,
     values: ['null'],
   });
@@ -44,7 +44,7 @@ test('JSON encodes string values', (t) => {
   const query = sql.fragment`SELECT ${sql.jsonb('example string')}`;
 
   t.deepEqual(query, {
-    sql: 'SELECT $1::jsonb',
+    sql: 'SELECT $slonik_1::jsonb',
     type: FragmentToken,
     values: ['"example string"'],
   });
@@ -54,7 +54,7 @@ test('JSON encodes numeric values', (t) => {
   const query = sql.fragment`SELECT ${sql.jsonb(1_234)}`;
 
   t.deepEqual(query, {
-    sql: 'SELECT $1::jsonb',
+    sql: 'SELECT $slonik_1::jsonb',
     type: FragmentToken,
     values: ['1234'],
   });
@@ -64,7 +64,7 @@ test('JSON encodes boolean values', (t) => {
   const query = sql.fragment`SELECT ${sql.jsonb(true)}`;
 
   t.deepEqual(query, {
-    sql: 'SELECT $1::jsonb',
+    sql: 'SELECT $slonik_1::jsonb',
     type: FragmentToken,
     values: ['true'],
   });
@@ -99,7 +99,7 @@ test('Object types with optional properties are allowed', (t) => {
   const query = sql.fragment`SELECT ${sql.jsonb(testValue)}`;
 
   t.deepEqual(query, {
-    sql: 'SELECT $1::jsonb',
+    sql: 'SELECT $slonik_1::jsonb',
     type: FragmentToken,
     values: ['{"foo":"bar"}'],
   });

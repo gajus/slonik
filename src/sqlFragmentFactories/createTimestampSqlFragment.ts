@@ -1,5 +1,6 @@
 import { InvalidInputError } from '../errors';
 import { type SqlFragment, type TimestampSqlToken } from '../types';
+import { formatSlonikPlaceholder } from '../utilities/formatSlonikPlaceholder';
 
 export const createTimestampSqlFragment = (
   token: TimestampSqlToken,
@@ -12,7 +13,10 @@ export const createTimestampSqlFragment = (
   }
 
   return {
-    sql: 'to_timestamp($' + String(greatestParameterPosition + 1) + ')',
+    sql:
+      'to_timestamp(' +
+      formatSlonikPlaceholder(greatestParameterPosition + 1) +
+      ')',
     values: [String(token.date.getTime() / 1_000)],
   };
 };
