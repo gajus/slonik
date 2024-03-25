@@ -51,7 +51,8 @@ export type SerializableValue =
   | {
       [key: string]: SerializableValue;
     }
-  | null;
+  | null
+  | undefined;
 
 export type QueryId = string;
 
