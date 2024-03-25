@@ -31,6 +31,10 @@ test('postgresql://localhost/?&application_name=baz', testParse, {
   applicationName: 'baz',
   host: 'localhost',
 });
+test('postgresql://localhost/?options=-c%20search_path%3Dfoo', testParse, {
+  host: 'localhost',
+  options: '-c search_path=foo',
+});
 test('postgresql://fo%2Fo:b%2Far@localhost/ba%2Fz', testParse, {
   databaseName: 'ba/z',
   host: 'localhost',

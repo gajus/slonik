@@ -44,6 +44,7 @@ export const parseDsn = (dsn: string): ConnectionOptions => {
 
   const {
     application_name: applicationName,
+    options,
     sslmode: sslMode,
     ...unsupportedOptions
   } = Object.fromEntries(url.searchParams);
@@ -59,6 +60,10 @@ export const parseDsn = (dsn: string): ConnectionOptions => {
 
   if (applicationName) {
     connectionOptions.applicationName = applicationName;
+  }
+
+  if (options) {
+    connectionOptions.options = options;
   }
 
   if (sslMode) {

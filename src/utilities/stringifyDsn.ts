@@ -3,6 +3,7 @@ import { stringify } from 'node:querystring';
 
 type NamedParameters = {
   application_name?: string;
+  options?: string;
   sslmode?: string;
 };
 
@@ -11,6 +12,7 @@ export const stringifyDsn = (connectionOptions: ConnectionOptions): string => {
     applicationName,
     databaseName,
     host,
+    options,
     password,
     port,
     sslMode,
@@ -44,6 +46,10 @@ export const stringifyDsn = (connectionOptions: ConnectionOptions): string => {
   if (applicationName) {
     // eslint-disable-next-line canonical/id-match
     namedParameters.application_name = applicationName;
+  }
+
+  if (options) {
+    namedParameters.options = options;
   }
 
   if (sslMode) {
