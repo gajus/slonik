@@ -5,6 +5,7 @@ import {
   type JsonSqlToken,
   type SqlFragment,
 } from '../types';
+import { formatSlonikPlaceholder } from '../utilities/formatSlonikPlaceholder';
 import { isPlainObject } from '../utilities/isPlainObject';
 import { safeStringify } from '../utilities/safeStringify';
 import { serializeError } from 'serialize-error';
@@ -57,8 +58,7 @@ export const createJsonSqlFragment = (
 
   return {
     sql:
-      '$' +
-      String(greatestParameterPosition + 1) +
+      formatSlonikPlaceholder(greatestParameterPosition + 1) +
       '::' +
       (binary ? 'jsonb' : 'json'),
     values: [value],

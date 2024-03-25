@@ -35,6 +35,7 @@ import {
   type ValueExpression,
 } from '../types';
 import { escapeLiteralValue } from '../utilities/escapeLiteralValue';
+import { formatSlonikPlaceholder } from '../utilities/formatSlonikPlaceholder';
 import { isPrimitiveValueExpression } from '../utilities/isPrimitiveValueExpression';
 import { isSqlToken } from '../utilities/isSqlToken';
 import { safeStringify } from '../utilities/safeStringify';
@@ -78,7 +79,7 @@ const createFragment = (
         `SQL tag cannot be bound to undefined value at index ${index}.`,
       );
     } else if (isPrimitiveValueExpression(token)) {
-      rawSql += '$' + String(parameterValues.length + 1);
+      rawSql += formatSlonikPlaceholder(parameterValues.length + 1);
 
       parameterValues.push(token);
     } else if (isSqlToken(token)) {

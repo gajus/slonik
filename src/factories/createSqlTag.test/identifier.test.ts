@@ -8,7 +8,7 @@ test('creates an object describing a query with inlined identifiers', (t) => {
   const query = sql.fragment`SELECT ${'foo'} FROM ${sql.identifier(['bar'])}`;
 
   t.deepEqual(query, {
-    sql: 'SELECT $1 FROM "bar"',
+    sql: 'SELECT $slonik_1 FROM "bar"',
     type: FragmentToken,
     values: ['foo'],
   });
@@ -21,7 +21,7 @@ test('creates an object describing a query with inlined identifiers (specifier)'
   ])}`;
 
   t.deepEqual(query, {
-    sql: 'SELECT $1 FROM "bar"."baz"',
+    sql: 'SELECT $slonik_1 FROM "bar"."baz"',
     type: FragmentToken,
     values: ['foo'],
   });

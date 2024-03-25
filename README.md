@@ -1847,6 +1847,9 @@ sql.typeAlias('id')`
 
 The only difference between queries and fragments is that fragments are untyped and they cannot be used as inputs to query methods (use `sql.type` instead).
 
+> [!WARNING]
+> Due to the way that Slonik internally represents SQL fragments, your query must not contain `$slonik_` literals.
+
 <a name="user-content-slonik-query-building-sql-identifier"></a>
 <a name="slonik-query-building-sql-identifier"></a>
 ### <code>sql.identifier</code>

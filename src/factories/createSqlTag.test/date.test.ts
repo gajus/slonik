@@ -10,7 +10,7 @@ test('binds a date', (t) => {
   )}`;
 
   t.deepEqual(query, {
-    sql: 'SELECT $1::date',
+    sql: 'SELECT $slonik_1::date',
     type: FragmentToken,
     values: ['2022-08-19'],
   });
