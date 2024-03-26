@@ -1375,4 +1375,101 @@ export const createIntegrationTests = (
 
     t.is(tableName, 'test_table');
   });
+
+  test('establishes, reuses, discards pool connections', async (t) => {
+    const pool = await createPool(t.context.dsn, {
+      idleTimeout: 1_000,
+      maximumPoolSize: 5,
+    });
+
+    t.deepEqual(pool.getPoolState(), {
+      activeConnectionCount: 0,
+      ended: false,
+      idleConnectionCount: 0,
+      waitingClientCount: 0,
+    });
+
+    const batch1 = Promise.all([
+      pool.query(sql.unsafe`
+        SELECT pg_sleep(1)
+      `),
+      pool.query(sql.unsafe`
+        SELECT pg_sleep(1)
+      `),
+      pool.query(sql.unsafe`
+        SELECT pg_sleep(1)
+      `),
+      pool.query(sql.unsafe`
+        SELECT pg_sleep(1)
+      `),
+      pool.query(sql.unsafe`
+        SELECT pg_sleep(1)
+      `),
+    ]);
+
+    await delay(100);
+
+    t.deepEqual(pool.getPoolState(), {
+      activeConnectionCount: 5,
+      ended: false,
+      idleConnectionCount: 0,
+      waitingClientCount: 0,
+    });
+
+    const batch2 = Promise.all([
+      pool.query(sql.unsafe`
+        SELECT pg_sleep(1)
+      `),
+      pool.query(sql.unsafe`
+        SELECT pg_sleep(1)
+      `),
+      pool.query(sql.unsafe`
+        SELECT pg_sleep(1)
+      `),
+      pool.query(sql.unsafe`
+        SELECT pg_sleep(1)
+      `),
+      pool.query(sql.unsafe`
+        SELECT pg_sleep(1)
+      `),
+    ]);
+
+    await delay(100);
+
+    t.deepEqual(pool.getPoolState(), {
+      activeConnectionCount: 5,
+      ended: false,
+      idleConnectionCount: 0,
+      waitingClientCount: 5,
+    });
+
+    await batch1;
+
+    t.deepEqual(pool.getPoolState(), {
+      activeConnectionCount: 5,
+      ended: false,
+      idleConnectionCount: 0,
+      waitingClientCount: 0,
+    });
+
+    await batch2;
+
+    t.deepEqual(pool.getPoolState(), {
+      activeConnectionCount: 0,
+      ended: false,
+      idleConnectionCount: 5,
+      waitingClientCount: 0,
+    });
+
+    await delay(1_000);
+
+    t.deepEqual(pool.getPoolState(), {
+      activeConnectionCount: 0,
+      ended: false,
+      idleConnectionCount: 0,
+      waitingClientCount: 0,
+    });
+
+    await pool.end();
+  });
 };
