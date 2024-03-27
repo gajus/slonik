@@ -14,7 +14,7 @@ import {
   TupleMovedToAnotherPartitionError,
   UnexpectedStateError,
 } from '..';
-import { type DriverFactory } from '../factories/createConnectionPool';
+import { type DriverFactory } from '../factories/createDriver';
 import { type TestContextType } from './createTestRunner';
 // eslint-disable-next-line ava/use-test
 import { type TestFn } from 'ava';

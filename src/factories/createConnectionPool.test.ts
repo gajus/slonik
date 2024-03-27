@@ -1,7 +1,8 @@
 /* eslint-disable canonical/id-match */
 
 import { createClientConfiguration } from './createClientConfiguration';
-import { createConnectionPool, createDriver } from './createConnectionPool';
+import { createConnectionPool } from './createConnectionPool';
+import { createDriver } from './createDriver';
 import test from 'ava';
 import { Readable } from 'node:stream';
 import { setTimeout as delay } from 'node:timers/promises';

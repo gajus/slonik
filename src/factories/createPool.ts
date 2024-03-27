@@ -2,10 +2,8 @@ import { bindPool } from '../binders/bindPool';
 import { Logger } from '../Logger';
 import { type ClientConfigurationInput, type DatabasePool } from '../types';
 import { createClientConfiguration } from './createClientConfiguration';
-import {
-  createConnectionPool,
-  type DriverFactory,
-} from './createConnectionPool';
+import { createConnectionPool } from './createConnectionPool';
+import { type DriverFactory } from './createDriver';
 import { createPgDriver } from './createPgDriver';
 import { createPoolConfiguration } from './createPoolConfiguration';
 

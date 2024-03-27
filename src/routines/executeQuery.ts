@@ -13,10 +13,8 @@ import {
   UnexpectedStateError,
   UniqueIntegrityConstraintViolationError,
 } from '../errors';
-import {
-  type ConnectionPoolClient,
-  type DriverNotice,
-} from '../factories/createConnectionPool';
+import { type ConnectionPoolClient } from '../factories/createConnectionPool';
+import { type DriverNotice } from '../factories/createDriver';
 import { getPoolClientState } from '../state';
 import {
   type ClientConfiguration,

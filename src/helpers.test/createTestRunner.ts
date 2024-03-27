@@ -1,5 +1,5 @@
 import { sql } from '..';
-import { type DriverFactory } from '../factories/createConnectionPool';
+import { type DriverFactory } from '../factories/createDriver';
 import { createPool } from '../factories/createPool';
 import anyTest, { type TestFn } from 'ava';
 

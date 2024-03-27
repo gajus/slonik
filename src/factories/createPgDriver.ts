@@ -6,7 +6,7 @@ import {
   type TypeParser,
 } from '../types';
 import { parseDsn } from '../utilities/parseDsn';
-import { createDriver, type DriverCommand } from './createConnectionPool';
+import { createDriver, type DriverCommand } from './createDriver';
 import { Transform } from 'node:stream';
 // eslint-disable-next-line no-restricted-imports
 import {

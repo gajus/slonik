@@ -1,9 +1,9 @@
 import { type SlonikError } from './errors';
+import { type ConnectionPoolClient } from './factories/createConnectionPool';
 import {
-  type ConnectionPoolClient,
   type DriverFactory,
   type DriverNotice,
-} from './factories/createConnectionPool';
+} from './factories/createDriver';
 import type * as tokens from './tokens';
 import { type Readable } from 'node:stream';
 import { type ConnectionOptions as TlsConnectionOptions } from 'node:tls';

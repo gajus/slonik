@@ -1,7 +1,7 @@
 import {
   type DriverNotice,
   type DriverQueryResult,
-} from '../factories/createConnectionPool';
+} from '../factories/createDriver';
 import { executeQuery, type ExecutionRoutine } from '../routines/executeQuery';
 import {
   type Field,
