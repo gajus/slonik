@@ -183,7 +183,7 @@ export const createIntegrationTests = (
     await pool.end();
   });
 
-  test.skip('re-routes query to a different pool', async (t) => {
+  test('re-routes query to a different pool', async (t) => {
     const readOnlyBeforeTransformQuery = sinon.stub().resolves(null);
     const beforeTransformQuery = sinon.stub().throws();
 
@@ -496,7 +496,7 @@ export const createIntegrationTests = (
     await pool.end();
   });
 
-  test.skip('cancelled statement produces StatementCancelledError error', async (t) => {
+  test('cancelled statement produces StatementCancelledError error', async (t) => {
     const pool = await createPool(t.context.dsn, {
       driver,
     });
@@ -522,7 +522,7 @@ export const createIntegrationTests = (
     await pool.end();
   });
 
-  test.skip('statement cancelled because of statement_timeout produces StatementTimeoutError error', async (t) => {
+  test('statement cancelled because of statement_timeout produces StatementTimeoutError error', async (t) => {
     const pool = await createPool(t.context.dsn, {
       driver,
     });
@@ -869,7 +869,7 @@ export const createIntegrationTests = (
 
   // Skipping test because of a bug in node-postgres.
   // @see https://github.com/brianc/node-postgres/issues/2103
-  test.skip('statements are cancelled after `statementTimeout`', async (t) => {
+  test('statements are cancelled after `statementTimeout`', async (t) => {
     t.timeout(5_000);
 
     const pool = await createPool(t.context.dsn, {
@@ -894,7 +894,7 @@ export const createIntegrationTests = (
     await pool.end();
   });
 
-  test.serial.skip('retries failing transactions (deadlock)', async (t) => {
+  test.serial('retries failing transactions (deadlock)', async (t) => {
     t.timeout(2_000);
 
     const pool = await createPool(t.context.dsn, {
@@ -1180,7 +1180,7 @@ export const createIntegrationTests = (
     await pool.end();
   });
 
-  test.skip('throws InvalidInputError in case of invalid bound value', async (t) => {
+  test('throws InvalidInputError in case of invalid bound value', async (t) => {
     const pool = await createPool(t.context.dsn, {
       driver,
     });
