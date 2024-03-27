@@ -260,13 +260,6 @@ export const executeQuery = async (
         }
       }
     } catch (error) {
-      log.error(
-        {
-          error: serializeError(error),
-        },
-        'execution routine produced an error',
-      );
-
       // The driver is responsible for throwing an appropriately wrapped error.
       if (error instanceof BackendTerminatedError) {
         poolClientState.terminated = error;
@@ -296,6 +289,13 @@ export const executeQuery = async (
       activeQuery.resolve(null);
     }
   } catch (error) {
+    log.error(
+      {
+        error: serializeError(error),
+      },
+      'execution routine produced an error',
+    );
+
     for (const interceptor of clientConfiguration.interceptors) {
       if (interceptor.queryExecutionError) {
         await interceptor.queryExecutionError(
