@@ -2,16 +2,10 @@ import { TRANSACTION_ROLLBACK_ERROR_PREFIX } from '../constants';
 import {
   BackendTerminatedError,
   BackendTerminatedUnexpectedlyError,
-  CheckIntegrityConstraintViolationError,
-  ForeignKeyIntegrityConstraintViolationError,
-  InputSyntaxError,
   InvalidInputError,
-  NotNullIntegrityConstraintViolationError,
-  StatementCancelledError,
-  StatementTimeoutError,
+  SlonikError,
   TupleMovedToAnotherPartitionError,
   UnexpectedStateError,
-  UniqueIntegrityConstraintViolationError,
 } from '../errors';
 import { type ConnectionPoolClient } from '../factories/createConnectionPool';
 import { type DriverNotice } from '../factories/createDriver';
@@ -272,58 +266,25 @@ export const executeQuery = async (
         },
         'execution routine produced an error',
       );
-      if (error.message === 'Connection terminated unexpectedly') {
-        throw new BackendTerminatedUnexpectedlyError(error);
-      }
 
-      // 'Connection terminated' refers to node-postgres error.
-      // @see https://github.com/brianc/node-postgres/blob/eb076db5d47a29c19d3212feac26cd7b6d257a95/lib/client.js#L199
-      if (error.code === '57P01' || error.message === 'Connection terminated') {
+      // The driver is responsible for throwing an appropriately wrapped error.
+      if (error instanceof BackendTerminatedError) {
         poolClientState.terminated = error;
-
-        throw new BackendTerminatedError(error);
       }
 
-      if (error.code === '22P02') {
-        throw new InvalidInputError(error);
-      }
+      // If the error has been already handled by the driver, then we should not wrap it again.
+      if (!(error instanceof SlonikError)) {
+        if (error.message === 'Connection terminated unexpectedly') {
+          throw new BackendTerminatedUnexpectedlyError(error);
+        }
 
-      if (
-        error.code === '57014' &&
-        error.message.includes('canceling statement due to statement timeout')
-      ) {
-        throw new StatementTimeoutError(error);
-      }
-
-      if (error.code === '57014') {
-        throw new StatementCancelledError(error);
-      }
-
-      if (
-        error.message ===
-        'tuple to be locked was already moved to another partition due to concurrent update'
-      ) {
-        throw new TupleMovedToAnotherPartitionError(error);
-      }
-
-      if (error.code === '23502') {
-        throw new NotNullIntegrityConstraintViolationError(error);
-      }
-
-      if (error.code === '23503') {
-        throw new ForeignKeyIntegrityConstraintViolationError(error);
-      }
-
-      if (error.code === '23505') {
-        throw new UniqueIntegrityConstraintViolationError(error);
-      }
-
-      if (error.code === '23514') {
-        throw new CheckIntegrityConstraintViolationError(error);
-      }
-
-      if (error.code === '42601') {
-        throw new InputSyntaxError(error, actualQuery);
+        if (
+          error.message.includes(
+            'tuple to be locked was already moved to another partition due to concurrent update',
+          )
+        ) {
+          throw new TupleMovedToAnotherPartitionError(error);
+        }
       }
 
       error.notices = notices;

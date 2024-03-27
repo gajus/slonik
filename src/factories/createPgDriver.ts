@@ -1,8 +1,21 @@
 /* eslint-disable canonical/id-match */
 
 import {
+  BackendTerminatedError,
+  CheckIntegrityConstraintViolationError,
+  ForeignKeyIntegrityConstraintViolationError,
+  InputSyntaxError,
+  InvalidInputError,
+  NotNullIntegrityConstraintViolationError,
+  StatementCancelledError,
+  StatementTimeoutError,
+  UniqueIntegrityConstraintViolationError,
+} from '../errors';
+import {
   type ClientConfiguration,
   type Field,
+  type PrimitiveValueExpression,
+  type Query,
   type TypeParser,
 } from '../types';
 import { parseDsn } from '../utilities/parseDsn';
@@ -12,6 +25,7 @@ import { Transform } from 'node:stream';
 import {
   Client,
   type ClientConfig as NativePostgresClientConfiguration,
+  type DatabaseError,
 } from 'pg';
 import QueryStream from 'pg-query-stream';
 import { getTypeParser as getNativeTypeParser } from 'pg-types';
@@ -152,6 +166,58 @@ const queryTypeOverrides = async (
   return typeOverrides;
 };
 
+const isErrorWithCode = (error: Error): error is DatabaseError => {
+  return 'code' in error;
+};
+
+const wrapError = (error: Error, query: Query) => {
+  if (!isErrorWithCode(error)) {
+    return error;
+  }
+
+  if (error.code === '22P02') {
+    return new InvalidInputError(error.message);
+  }
+
+  if (error.code === '57P01') {
+    return new BackendTerminatedError(error);
+  }
+
+  if (
+    error.code === '57014' &&
+    // The code alone is not enough to distinguish between a statement timeout and a statement cancellation.
+    error.message.includes('canceling statement due to user request')
+  ) {
+    return new StatementCancelledError(error);
+  }
+
+  if (error.code === '57014') {
+    return new StatementTimeoutError(error);
+  }
+
+  if (error.code === '23502') {
+    return new NotNullIntegrityConstraintViolationError(error);
+  }
+
+  if (error.code === '23503') {
+    return new ForeignKeyIntegrityConstraintViolationError(error);
+  }
+
+  if (error.code === '23505') {
+    return new UniqueIntegrityConstraintViolationError(error);
+  }
+
+  if (error.code === '23514') {
+    return new CheckIntegrityConstraintViolationError(error);
+  }
+
+  if (error.code === '42601') {
+    return new InputSyntaxError(error, query);
+  }
+
+  return error;
+};
+
 export const createPgDriver = () => {
   let getTypeParserPromise: Promise<TypeOverrides> | null = null;
 
@@ -190,7 +256,16 @@ export const createPgDriver = () => {
           await client.end();
         },
         query: async (sql, values) => {
-          const result = await client.query(sql, values);
+          let result;
+
+          try {
+            result = await client.query(sql, values as unknown[]);
+          } catch (error) {
+            throw wrapError(error, {
+              sql,
+              values: values as readonly PrimitiveValueExpression[],
+            });
+          }
 
           return {
             command: result.command as DriverCommand,
@@ -244,7 +319,13 @@ export const createPgDriver = () => {
           });
 
           stream.on('error', (error) => {
-            transform.emit('error', error);
+            transform.emit(
+              'error',
+              wrapError(error, {
+                sql,
+                values: values as PrimitiveValueExpression[],
+              }),
+            );
           });
 
           return stream.pipe(transform);

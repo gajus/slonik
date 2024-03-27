@@ -504,8 +504,8 @@ export const createIntegrationTests = (
     const error = await t.throwsAsync(
       pool.connect(async (connection) => {
         const connectionPid = await connection.oneFirst(sql.unsafe`
-        SELECT pg_backend_pid()
-      `);
+          SELECT pg_backend_pid()
+        `);
 
         setTimeout(() => {
           void pool.query(
@@ -1139,7 +1139,7 @@ export const createIntegrationTests = (
     await pool.end();
   });
 
-  test('Tuple moved to another partition due to concurrent update error handled', async (t) => {
+  test('tuple moved to another partition due to concurrent update error handled', async (t) => {
     const pool = await createPool(t.context.dsn, {
       driver,
       queryRetryLimit: 0,
@@ -1165,11 +1165,11 @@ export const createIntegrationTests = (
         connection2
           .query(sql.unsafe`UPDATE foo SET b = 'XYZ'`)
           .catch((error) => {
+            t.true(error instanceof TupleMovedToAnotherPartitionError);
             t.is(
               error.message,
               'Tuple moved to another partition due to concurrent update.',
             );
-            t.true(error instanceof TupleMovedToAnotherPartitionError);
           });
 
         // Ensures that query is processed before concurrent commit is called.
