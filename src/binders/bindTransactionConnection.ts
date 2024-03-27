@@ -1,4 +1,3 @@
-import { type NativePostgresPoolClient } from '../classes/NativePostgres';
 import { any } from '../connectionMethods/any';
 import { anyFirst } from '../connectionMethods/anyFirst';
 import { exists } from '../connectionMethods/exists';
@@ -11,6 +10,7 @@ import { one } from '../connectionMethods/one';
 import { oneFirst } from '../connectionMethods/oneFirst';
 import { query as queryMethod } from '../connectionMethods/query';
 import { stream } from '../connectionMethods/stream';
+import { type ConnectionPoolClient } from '../factories/createConnectionPool';
 import { getPoolClientState } from '../state';
 import {
   type ClientConfiguration,
@@ -20,7 +20,7 @@ import {
 
 export const bindTransactionConnection = (
   parentLog: Logger,
-  connection: NativePostgresPoolClient,
+  connection: ConnectionPoolClient,
   clientConfiguration: ClientConfiguration,
   transactionDepth: number,
 ): DatabaseTransactionConnection => {

@@ -4,7 +4,7 @@ import { randomUUID } from 'node:crypto';
 import EventEmitter from 'node:events';
 import { type StrictEventEmitter } from 'strict-event-emitter-types';
 
-export type Notice = {
+export type DriverNotice = {
   message: string;
 };
 
@@ -14,7 +14,7 @@ type ClientEventEmitter = StrictEventEmitter<
     acquire: () => void;
     destroy: () => void;
     error: (error: Error) => void;
-    notice: (event: Notice) => void;
+    notice: (event: DriverNotice) => void;
     release: () => void;
   }
 >;
@@ -25,8 +25,16 @@ export type ConnectionPoolClientFactory = ({
   clientConfiguration: ClientConfiguration;
 }) => Promise<ConnectionPoolClient>;
 
-type QueryResult = {
-  rows: Array<Record<string, unknown>>;
+type DriverField = {
+  dataTypeId: number;
+  name: string;
+};
+
+export type DriverQueryResult = {
+  readonly command: 'COPY' | 'DELETE' | 'INSERT' | 'SELECT' | 'UPDATE';
+  readonly fields: DriverField[];
+  readonly rowCount: number;
+  readonly rows: Array<Record<string, unknown>>;
 };
 
 // TODO handle destroy
@@ -38,7 +46,7 @@ export type ConnectionPoolClient = {
   isIdle: () => boolean;
   off: ClientEventEmitter['off'];
   on: ClientEventEmitter['on'];
-  query: (query: string, values: unknown[]) => Promise<QueryResult>;
+  query: (query: string, values?: unknown[]) => Promise<DriverQueryResult>;
   release: () => Promise<void>;
   removeListener: ClientEventEmitter['removeListener'];
 };
@@ -51,7 +59,7 @@ export type ConnectionPoolClient = {
 type InternalPoolClient = {
   connect: () => Promise<void>;
   end: () => Promise<void>;
-  query: (query: string, values: unknown[]) => Promise<QueryResult>;
+  query: (query: string, values: unknown[]) => Promise<DriverQueryResult>;
 };
 
 type InternalPoolClientFactorySetup = ({
@@ -81,7 +89,7 @@ export const createPoolClientFactory = (
     let isDestroyed = false;
     let idleTimeout: NodeJS.Timeout | null = null;
 
-    let activeQueryPromise: Promise<QueryResult> | null = null;
+    let activeQueryPromise: Promise<DriverQueryResult> | null = null;
 
     const id = randomUUID();
 

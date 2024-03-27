@@ -2,7 +2,7 @@ import { type SlonikError } from './errors';
 import {
   type ConnectionPoolClient,
   type ConnectionPoolClientFactory,
-  type Notice,
+  type DriverNotice,
 } from './factories/createConnectionPool';
 import type * as tokens from './tokens';
 import { type Readable, type ReadableOptions } from 'node:stream';
@@ -82,7 +82,7 @@ export type Field = {
 export type QueryResult<T> = {
   readonly command: 'COPY' | 'DELETE' | 'INSERT' | 'SELECT' | 'UPDATE';
   readonly fields: readonly Field[];
-  readonly notices: readonly Notice[];
+  readonly notices: readonly DriverNotice[];
   readonly rowCount: number;
   readonly rows: readonly T[];
   readonly type: 'QueryResult';
@@ -152,7 +152,7 @@ export type ClientConfigurationInput = Partial<ClientConfiguration>;
 export type QueryStreamConfig = ReadableOptions & { batchSize?: number };
 
 export type StreamResult = {
-  notices: readonly Notice[];
+  notices: readonly DriverNotice[];
   type: 'StreamResult';
 };
 
@@ -551,7 +551,7 @@ export type Interceptor = {
     queryContext: QueryContext,
     query: Query,
     error: SlonikError,
-    notices: readonly Notice[],
+    notices: readonly DriverNotice[],
   ) => MaybePromise<null>;
   readonly transformQuery?: (queryContext: QueryContext, query: Query) => Query;
   readonly transformRow?: (
@@ -577,4 +577,4 @@ export type TypeOverrides = {
   setTypeParser: (type: string, parser: (value: string) => unknown) => void;
 };
 
-export { NoticeMessage as Notice } from 'pg-protocol/dist/messages';
+export type Notice = DriverNotice;

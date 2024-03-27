@@ -13,7 +13,10 @@ import {
   UnexpectedStateError,
   UniqueIntegrityConstraintViolationError,
 } from '../errors';
-import { type ConnectionPoolClient } from '../factories/createConnectionPool';
+import {
+  type ConnectionPoolClient,
+  type DriverNotice,
+} from '../factories/createConnectionPool';
 import { getPoolClientState } from '../state';
 import {
   type ClientConfiguration,
@@ -213,9 +216,9 @@ export const executeQuery = async (
     }
   }
 
-  const notices: Notice[] = [];
+  const notices: DriverNotice[] = [];
 
-  const noticeListener = (notice: Notice) => {
+  const noticeListener = (notice: DriverNotice) => {
     notices.push(notice);
   };
 
