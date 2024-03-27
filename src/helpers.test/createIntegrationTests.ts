@@ -1559,4 +1559,141 @@ export const createIntegrationTests = (
 
     t.true(error instanceof InvalidInputError);
   });
+
+  test('re-uses connections (implicit)', async (t) => {
+    const pool = await createPool(t.context.dsn, {
+      driver,
+      maximumPoolSize: 1,
+    });
+
+    const firstConnectionPid = await pool.oneFirst(sql.unsafe`
+      SELECT pg_backend_pid();
+    `);
+
+    const secondConnectionPid = await pool.oneFirst(sql.unsafe`
+      SELECT pg_backend_pid();
+    `);
+
+    t.is(firstConnectionPid, secondConnectionPid);
+  });
+
+  test('re-uses connections (explicit)', async (t) => {
+    const pool = await createPool(t.context.dsn, {
+      driver,
+      maximumPoolSize: 1,
+    });
+
+    let firstConnectionPid: number | undefined;
+
+    await pool.connect(async (connection) => {
+      firstConnectionPid = await connection.oneFirst(sql.unsafe`
+        SELECT pg_backend_pid();
+      `);
+    });
+
+    let secondConnectionPid: number | undefined;
+
+    await pool.connect(async (connection) => {
+      secondConnectionPid = await connection.oneFirst(sql.unsafe`
+        SELECT pg_backend_pid();
+      `);
+    });
+
+    t.is(firstConnectionPid, secondConnectionPid);
+  });
+
+  test('re-uses connections (transaction)', async (t) => {
+    const pool = await createPool(t.context.dsn, {
+      driver,
+      maximumPoolSize: 1,
+    });
+
+    let firstConnectionPid: number | undefined;
+
+    await pool.transaction(async (transaction) => {
+      firstConnectionPid = await transaction.oneFirst(sql.unsafe`
+        SELECT pg_backend_pid();
+      `);
+    });
+
+    let secondConnectionPid: number | undefined;
+
+    await pool.transaction(async (transaction) => {
+      secondConnectionPid = await transaction.oneFirst(sql.unsafe`
+        SELECT pg_backend_pid();
+      `);
+    });
+
+    t.is(firstConnectionPid, secondConnectionPid);
+  });
+
+  test('queues requests when the pool is full', async (t) => {
+    t.timeout(10_000);
+
+    const pool = await createPool(t.context.dsn, {
+      driver,
+      maximumPoolSize: 1,
+    });
+
+    const startTime = Date.now();
+
+    await Promise.all([
+      await pool.query(sql.unsafe`
+        SELECT pg_sleep(0.1)
+      `),
+      await pool.query(sql.unsafe`
+        SELECT pg_sleep(0.1)
+      `),
+    ]);
+
+    t.true(Date.now() - startTime >= 200);
+  });
+
+  test('does not re-use connection if there was an error', async (t) => {
+    const pool = await createPool(t.context.dsn, {
+      driver,
+      maximumPoolSize: 1,
+    });
+
+    const firstConnectionPid = await pool.oneFirst(sql.unsafe`
+      SELECT pg_backend_pid();
+    `);
+
+    await t.throwsAsync(
+      pool.query(sql.unsafe`
+        SELECT 1 / 0;
+      `),
+    );
+
+    const secondConnectionPid = await pool.oneFirst(sql.unsafe`
+      SELECT pg_backend_pid();
+    `);
+
+    t.not(firstConnectionPid, secondConnectionPid);
+  });
+
+  test('does not re-use transaction connection if there was an error', async (t) => {
+    const pool = await createPool(t.context.dsn, {
+      driver,
+      maximumPoolSize: 1,
+    });
+
+    const firstConnectionPid = await pool.oneFirst(sql.unsafe`
+      SELECT pg_backend_pid();
+    `);
+
+    await t.throwsAsync(
+      pool.transaction(async (transaction) => {
+        await transaction.query(sql.unsafe`
+          SELECT 1 / 0;
+        `);
+      }),
+    );
+
+    const secondConnectionPid = await pool.oneFirst(sql.unsafe`
+      SELECT pg_backend_pid();
+    `);
+
+    t.not(firstConnectionPid, secondConnectionPid);
+  });
 };
