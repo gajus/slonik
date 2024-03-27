@@ -24,6 +24,7 @@ export const createPool = async (
         transactionDepth: null,
       },
     },
+    destroy: () => {},
     emit: eventEmitter.emit.bind(eventEmitter),
     end: () => {},
     off: eventEmitter.off.bind(eventEmitter),
@@ -35,7 +36,7 @@ export const createPool = async (
   };
 
   const internalPool = {
-    connect: () => {
+    acquire: () => {
       return connection;
     },
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -48,7 +49,7 @@ export const createPool = async (
     typeOverrides: null,
   });
 
-  const connectSpy: sinon.SinonSpy = sinon.spy(internalPool, 'connect');
+  const acquireSpy: sinon.SinonSpy = sinon.spy(internalPool, 'acquire');
   const endSpy: sinon.SinonSpy = sinon.spy(connection, 'end');
   const querySpy: sinon.SinonStub = sinon.stub(connection, 'query').returns({});
   const releaseSpy: sinon.SinonSpy = sinon.spy(connection, 'release');
@@ -71,8 +72,8 @@ export const createPool = async (
 
   return {
     ...pool,
+    acquireSpy,
     connection,
-    connectSpy,
     endSpy,
     querySpy,
     releaseSpy,

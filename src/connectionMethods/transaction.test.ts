@@ -102,6 +102,8 @@ test('returns the thrown transaction error if the retry limit is reached', async
 
   const error: any = await t.throwsAsync(pool.transaction(handlerStub, 1));
 
+  console.log('error', error);
+
   t.is(handlerStub.callCount, 2);
 
   t.true(error instanceof Error);

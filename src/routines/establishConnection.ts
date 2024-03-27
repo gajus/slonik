@@ -50,6 +50,8 @@ export const establishConnection = async (
 
         continue;
       } else {
+        console.log('error', error);
+
         throw new ConnectionError(error.message, {
           cause: error,
         });
