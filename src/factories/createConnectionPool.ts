@@ -2,6 +2,7 @@ import { type ClientConfiguration, type TypedReadable } from '../types';
 import { createUid } from '../utilities/createUid';
 import { defer, type DeferredPromise } from '../utilities/defer';
 import EventEmitter from 'node:events';
+import { setTimeout as delay } from 'node:timers/promises';
 import { type StrictEventEmitter } from 'strict-event-emitter-types';
 
 export type DriverNotice = {
@@ -132,6 +133,13 @@ export const createDriver = (
         eventEmitter.emit('acquire');
       },
       destroy: async () => {
+        if (activeQueryPromise) {
+          await Promise.race([
+            delay(clientConfiguration.gracefulTerminationTimeout),
+            activeQueryPromise,
+          ]);
+        }
+
         if (isDestroyed) {
           return;
         }
@@ -181,9 +189,10 @@ export const createDriver = (
       },
       release: async () => {
         if (activeQueryPromise) {
-          throw new Error(
-            'Cannot release client while there is an active query.',
-          );
+          await Promise.race([
+            delay(clientConfiguration.gracefulTerminationTimeout),
+            activeQueryPromise,
+          ]);
         }
 
         if (!isActive) {

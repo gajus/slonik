@@ -12,7 +12,11 @@ const createSimpleConnectionClientFactory = () => {
       return {
         connect: async () => {},
         end: async () => {},
-        query: async () => {
+        query: async (sql) => {
+          if (sql === 'SELECT pg_sleep(1)') {
+            await delay(1_000);
+          }
+
           return {
             command: 'SELECT',
             fields: [
@@ -172,6 +176,44 @@ test('destroys idle connections', async (t) => {
     activeConnections: 0,
     ended: false,
     idleConnections: 0,
+    waitingClients: 0,
+  });
+});
+
+test('destroys client that goes over the grace period', async (t) => {
+  t.timeout(500);
+
+  const clientConfiguration = createClientConfiguration(
+    'postgres://localhost:5432/test',
+    {
+      gracefulTerminationTimeout: 100,
+    },
+  );
+
+  const connectionPool = createConnectionPool({
+    clientConfiguration,
+    createClient: createSimpleConnectionClientFactory(),
+  });
+
+  const client = await connectionPool.acquire();
+
+  void client.query('SELECT pg_sleep(1)');
+
+  await delay(50);
+
+  t.deepEqual(connectionPool.state(), {
+    activeConnections: 1,
+    ended: false,
+    idleConnections: 0,
+    waitingClients: 0,
+  });
+
+  await client.release();
+
+  t.deepEqual(connectionPool.state(), {
+    activeConnections: 0,
+    ended: false,
+    idleConnections: 1,
     waitingClients: 0,
   });
 });

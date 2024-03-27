@@ -110,6 +110,10 @@ export type ClientConfiguration = {
    */
   readonly driver?: DriverFactory;
   /**
+   * Timeout (in milliseconds) that kicks in after a connection with an active query is requested to end. This is the amount of time that is allowed for query to complete before terminating it. (Default: 5000)
+   */
+  readonly gracefulTerminationTimeout: number;
+  /**
    * Timeout (in milliseconds) after which idle clients are closed. Use 'DISABLE_TIMEOUT' constant to disable the timeout. (Default: 60000)
    */
   readonly idleInTransactionSessionTimeout: number | 'DISABLE_TIMEOUT';
