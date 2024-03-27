@@ -277,6 +277,11 @@ export const createIntegrationTests = (
     await pool.end();
   });
 
+  // The current logic is that whatever is passed to typeParsers
+  // is appended to the default type parser. The default parser
+  // returns numerics as a number. Therefore, this test is failing.
+  // We should consider removing any default type parsers,
+  // and require that user explicitly provide them.
   test.skip('returns numerics as strings by default', async (t) => {
     const pool = await createPool(t.context.dsn, {
       driver,
