@@ -3,6 +3,7 @@
 import { createClientConfiguration } from './createClientConfiguration';
 import { createConnectionPool, createDriver } from './createConnectionPool';
 import test from 'ava';
+import { Readable } from 'node:stream';
 import { setTimeout as delay } from 'node:timers/promises';
 
 const createSimpleConnectionClientFactory = () => {
@@ -27,6 +28,9 @@ const createSimpleConnectionClientFactory = () => {
               },
             ],
           };
+        },
+        stream: () => {
+          return Readable.from([]);
         },
       };
     };
