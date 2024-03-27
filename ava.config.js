@@ -14,10 +14,6 @@ module.exports = () => {
     files = ['src/integration.test/pg.test.ts'];
   }
 
-  if (TEST_ONLY === 'postgres-integration') {
-    files = ['src/integration.test/postgres.test.ts'];
-  }
-
   return {
     extensions: ['ts'],
     files,
