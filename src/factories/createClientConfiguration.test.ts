@@ -6,6 +6,7 @@ const defaultConfiguration = {
   captureStackTrace: false,
   connectionRetryLimit: 3,
   connectionTimeout: 5_000,
+  connectionUri: 'postgres://',
   idleInTransactionSessionTimeout: 60_000,
   idleTimeout: 5_000,
   interceptors: [],
