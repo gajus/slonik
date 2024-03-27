@@ -182,6 +182,9 @@ export const createDriver = (
           return;
         }
 
+        await query('DISCARD ALL');
+
+        // eslint-disable-next-line require-atomic-updates
         isActive = false;
 
         if (clientConfiguration.idleTimeout !== 'DISABLE_TIMEOUT') {

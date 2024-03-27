@@ -1696,4 +1696,31 @@ export const createIntegrationTests = (
 
     t.not(firstConnectionPid, secondConnectionPid);
   });
+
+  test('connections are reset after they are released', async (t) => {
+    const pool = await createPool(t.context.dsn, {
+      driver,
+      maximumPoolSize: 1,
+    });
+
+    await pool.connect(async (connection) => {
+      await connection.query(sql.unsafe`
+        SET slonik.foo = 'bar';
+      `);
+
+      t.is(
+        await connection.oneFirst(sql.unsafe`
+          SELECT current_setting('slonik.foo');
+        `),
+        'bar',
+      );
+    });
+
+    t.is(
+      await pool.oneFirst(sql.unsafe`
+        SELECT current_setting('slonik.foo');
+      `),
+      '',
+    );
+  });
 };
