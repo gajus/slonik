@@ -5,7 +5,6 @@ import {
   type DriverNotice,
 } from './factories/createConnectionPool';
 import type * as tokens from './tokens';
-import { type Readable, type ReadableOptions } from 'node:stream';
 import { type ConnectionOptions as TlsConnectionOptions } from 'node:tls';
 import { type Logger } from 'roarr';
 import { type z, type ZodTypeAny } from 'zod';
@@ -57,20 +56,6 @@ export type SerializableValue =
 export type QueryId = string;
 
 export type MaybePromise<T> = Promise<T> | T;
-
-type StreamDataEvent<T> = { data: T; fields: readonly Field[] };
-
-// eslint-disable-next-line @typescript-eslint/consistent-type-definitions
-interface TypedReadable<T> extends Readable {
-  // eslint-disable-next-line @typescript-eslint/method-signature-style
-  on(event: 'data', listener: (chunk: StreamDataEvent<T>) => void): this;
-  // eslint-disable-next-line @typescript-eslint/method-signature-style
-  on(event: string | symbol, listener: (...args: any[]) => void): this;
-
-  [Symbol.asyncIterator]: () => AsyncIterableIterator<StreamDataEvent<T>>;
-}
-
-export type StreamHandler<T> = (stream: TypedReadable<T>) => void;
 
 export type Connection = 'EXPLICIT' | 'IMPLICIT_QUERY' | 'IMPLICIT_TRANSACTION';
 
@@ -149,19 +134,6 @@ export type ClientConfiguration = {
 
 export type ClientConfigurationInput = Partial<ClientConfiguration>;
 
-export type QueryStreamConfig = ReadableOptions & { batchSize?: number };
-
-export type StreamResult = {
-  notices: readonly DriverNotice[];
-  type: 'StreamResult';
-};
-
-type StreamFunction = <T extends ZodTypeAny>(
-  sql: QuerySqlToken<T>,
-  streamHandler: StreamHandler<z.infer<T>>,
-  config?: QueryStreamConfig,
-) => Promise<StreamResult>;
-
 export type CommonQueryMethods = {
   readonly any: QueryAnyFunction;
   readonly anyFirst: QueryAnyFirstFunction;
@@ -179,17 +151,13 @@ export type CommonQueryMethods = {
   ) => Promise<T>;
 };
 
-export type DatabaseTransactionConnection = CommonQueryMethods & {
-  readonly stream: StreamFunction;
-};
+export type DatabaseTransactionConnection = CommonQueryMethods;
 
 type TransactionFunction<T> = (
   connection: DatabaseTransactionConnection,
 ) => Promise<T>;
 
-export type DatabasePoolConnection = CommonQueryMethods & {
-  readonly stream: StreamFunction;
-};
+export type DatabasePoolConnection = CommonQueryMethods;
 
 export type ConnectionRoutine<T> = (
   connection: DatabasePoolConnection,
@@ -207,7 +175,6 @@ export type DatabasePool = CommonQueryMethods & {
   readonly connect: <T>(connectionRoutine: ConnectionRoutine<T>) => Promise<T>;
   readonly end: () => Promise<void>;
   readonly getPoolState: () => PoolState;
-  readonly stream: StreamFunction;
 };
 
 export type DatabaseConnection = DatabasePool | DatabasePoolConnection;
@@ -448,16 +415,6 @@ export type InternalQueryMethod<R = any> = (
   slonikSql: QuerySqlToken,
   uid?: QueryId,
 ) => R;
-
-export type InternalStreamFunction = <T>(
-  log: Logger,
-  connection: ConnectionPoolClient,
-  clientConfiguration: ClientConfiguration,
-  slonikSql: QuerySqlToken,
-  streamHandler: StreamHandler<T>,
-  uid?: QueryId,
-  config?: QueryStreamConfig,
-) => Promise<StreamResult>;
 
 export type InternalTransactionFunction = <T>(
   log: Logger,

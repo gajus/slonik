@@ -29,14 +29,13 @@ import {
   type QueryResult,
   type QueryResultRow,
   type QuerySqlToken,
-  type StreamResult,
 } from '../types';
 import { createQueryId } from '../utilities/createQueryId';
 import { defer } from '../utilities/defer';
 import { getStackTrace } from 'get-stack-trace';
 import { serializeError } from 'serialize-error';
 
-type GenericQueryResult = StreamResult | QueryResult<QueryResultRow>;
+type GenericQueryResult = QueryResult<QueryResultRow>;
 
 export type ExecutionRoutine = (
   connection: ConnectionPoolClient,
@@ -126,10 +125,7 @@ export const executeQuery = async (
   query: QuerySqlToken,
   inheritedQueryId: QueryId | undefined,
   executionRoutine: ExecutionRoutine,
-  stream: boolean,
-): Promise<
-  StreamResult | QueryResult<Record<string, PrimitiveValueExpression>>
-> => {
+): Promise<QueryResult<Record<string, PrimitiveValueExpression>>> => {
   const poolClientState = getPoolClientState(connection);
 
   if (poolClientState.terminated) {
@@ -197,21 +193,19 @@ export const executeQuery = async (
 
   let result: GenericQueryResult | null;
 
-  if (!stream) {
-    for (const interceptor of clientConfiguration.interceptors) {
-      if (interceptor.beforeQueryExecution) {
-        result = await interceptor.beforeQueryExecution(
-          executionContext,
-          actualQuery,
+  for (const interceptor of clientConfiguration.interceptors) {
+    if (interceptor.beforeQueryExecution) {
+      result = await interceptor.beforeQueryExecution(
+        executionContext,
+        actualQuery,
+      );
+
+      if (result) {
+        log.info(
+          'beforeQueryExecution interceptor produced a result; short-circuiting query execution using beforeQueryExecution result',
         );
 
-        if (result) {
-          log.info(
-            'beforeQueryExecution interceptor produced a result; short-circuiting query execution using beforeQueryExecution result',
-          );
-
-          return result;
-        }
+        return result;
       }
     }
   }
