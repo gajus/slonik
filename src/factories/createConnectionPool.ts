@@ -30,10 +30,12 @@ type DriverField = {
   name: string;
 };
 
+export type DriverCommand = 'COPY' | 'DELETE' | 'INSERT' | 'SELECT' | 'UPDATE';
+
 export type DriverQueryResult = {
-  readonly command: 'COPY' | 'DELETE' | 'INSERT' | 'SELECT' | 'UPDATE';
+  readonly command: DriverCommand;
   readonly fields: DriverField[];
-  readonly rowCount: number;
+  readonly rowCount: number | null;
   readonly rows: Array<Record<string, unknown>>;
 };
 

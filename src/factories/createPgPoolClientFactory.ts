@@ -2,7 +2,10 @@
 
 import { type ClientConfiguration, type TypeParser } from '../types';
 import { parseDsn } from '../utilities/parseDsn';
-import { createPoolClientFactory } from './createConnectionPool';
+import {
+  createPoolClientFactory,
+  type DriverCommand,
+} from './createConnectionPool';
 // eslint-disable-next-line no-restricted-imports
 import {
   Client,
@@ -185,7 +188,19 @@ export const createPgPoolClientFactory = () => {
             await client.end();
           },
           query: async (sql, values) => {
-            return await client.query(sql, values);
+            const result = await client.query(sql, values);
+
+            return {
+              command: result.command as DriverCommand,
+              fields: result.fields.map((field) => {
+                return {
+                  dataTypeId: field.dataTypeID,
+                  name: field.name,
+                };
+              }),
+              rowCount: result.rowCount,
+              rows: result.rows,
+            };
           },
         };
       };
