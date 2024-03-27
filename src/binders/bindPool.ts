@@ -76,9 +76,6 @@ export const bindPool = (
         query,
       );
     },
-    state: () => {
-      return pool.state();
-    },
     many: async (query) => {
       return await createConnection(
         parentLog,
@@ -183,6 +180,9 @@ export const bindPool = (
         },
         query,
       );
+    },
+    state: () => {
+      return pool.state();
     },
     transaction: async (transactionHandler, transactionRetryLimit) => {
       return await createConnection(
