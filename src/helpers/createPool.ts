@@ -57,6 +57,7 @@ export const createPool = async (
     captureStackTrace: false,
     connectionRetryLimit: 1,
     connectionTimeout: 5_000,
+    connectionUri: 'postgres://localhost/test',
     idleInTransactionSessionTimeout: 5_000,
     idleTimeout: 5_000,
     interceptors: [],

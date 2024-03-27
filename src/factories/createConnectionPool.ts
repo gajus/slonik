@@ -37,7 +37,6 @@ export type DriverQueryResult = {
   readonly rows: Array<Record<string, unknown>>;
 };
 
-// TODO handle destroy
 export type ConnectionPoolClient = {
   acquire: () => ConnectionPoolClient;
   destroy: () => Promise<void>;

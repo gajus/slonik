@@ -106,7 +106,7 @@ export type ClientConfiguration = {
    */
   readonly connectionTimeout: number | 'DISABLE_TIMEOUT';
   /**
-   * Connection URI, e.g. `postgres://user:password@localhost/mydatabase`.
+   * Connection URI, e.g. `postgres://user:password@localhost/database`.
    */
   readonly connectionUri: string;
   /**
