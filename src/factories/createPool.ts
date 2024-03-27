@@ -3,10 +3,10 @@ import { Logger } from '../Logger';
 import { type ClientConfigurationInput, type DatabasePool } from '../types';
 import { createClientConfiguration } from './createClientConfiguration';
 import {
-  type ConnectionPoolClientFactory,
   createConnectionPool,
+  type DriverFactory,
 } from './createConnectionPool';
-import { createPgPoolClientFactory } from './createPgPoolClientFactory';
+import { createPgDriver } from './createPgDriver';
 import { createPoolConfiguration } from './createPoolConfiguration';
 
 /**
@@ -21,8 +21,8 @@ export const createPool = async (
     clientConfigurationInput,
   );
 
-  const createClient: ConnectionPoolClientFactory =
-    clientConfiguration.client ?? createPgPoolClientFactory();
+  const createClient: DriverFactory =
+    clientConfiguration.driver ?? createPgDriver();
 
   const pool = createConnectionPool({
     clientConfiguration,

@@ -1,16 +1,16 @@
-import { createPgPoolClientFactory } from '../factories/createPgPoolClientFactory';
+import { createPgDriver } from '../factories/createPgDriver';
 import { createPool } from '../factories/createPool';
 import { createErrorWithCode } from '../helpers.test/createErrorWithCode';
 import { createPoolWithSpy } from '../helpers.test/createPoolWithSpy';
 import { createTestRunner } from '../helpers.test/createTestRunner';
 import * as sinon from 'sinon';
 
-const client = createPgPoolClientFactory();
+const driver = createPgDriver();
 
-const { test } = createTestRunner(client, 'pg');
+const { test } = createTestRunner(driver, 'pg');
 
 test('creates a savepoint', async (t) => {
-  const { spy, pool } = await createPoolWithSpy(t.context.dsn, { client });
+  const { spy, pool } = await createPoolWithSpy(t.context.dsn, { driver });
 
   await pool.transaction(async (transactionConnection) => {
     await transactionConnection.transaction(async () => {});
@@ -21,7 +21,7 @@ test('creates a savepoint', async (t) => {
 });
 
 test('rollbacks unsuccessful nested transaction', async (t) => {
-  const { spy, pool } = await createPoolWithSpy(t.context.dsn, { client });
+  const { spy, pool } = await createPoolWithSpy(t.context.dsn, { driver });
 
   await t.throwsAsync(
     pool.transaction(async (transactionConnection) => {
@@ -77,7 +77,7 @@ test('retries a nested transaction that failed due to a transaction error', asyn
 });
 
 test('commits successful transaction with retries', async (t) => {
-  const { spy, pool } = await createPoolWithSpy(t.context.dsn, { client });
+  const { spy, pool } = await createPoolWithSpy(t.context.dsn, { driver });
 
   const handlerStub = sinon.stub();
 
@@ -134,7 +134,7 @@ test('returns the thrown transaction error if the retry limit is reached', async
 });
 
 test('rollbacks unsuccessful nested transaction with retries', async (t) => {
-  const { spy, pool } = await createPoolWithSpy(t.context.dsn, { client });
+  const { spy, pool } = await createPoolWithSpy(t.context.dsn, { driver });
 
   const handlerStub = sinon.stub();
 

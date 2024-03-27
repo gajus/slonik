@@ -1,7 +1,7 @@
 import { type SlonikError } from './errors';
 import {
   type ConnectionPoolClient,
-  type ConnectionPoolClientFactory,
+  type DriverFactory,
   type DriverNotice,
 } from './factories/createConnectionPool';
 import type * as tokens from './tokens';
@@ -79,10 +79,6 @@ export type ClientConfiguration = {
    */
   readonly captureStackTrace: boolean;
   /**
-   * Overrides the default PoolClientFactory. (Default: `createPgPool`)
-   */
-  readonly client?: ConnectionPoolClientFactory;
-  /**
    * Number of times to retry establishing a new connection. (Default: 3)
    */
   readonly connectionRetryLimit: number;
@@ -94,6 +90,10 @@ export type ClientConfiguration = {
    * Connection URI, e.g. `postgres://user:password@localhost/database`.
    */
   readonly connectionUri: string;
+  /**
+   * Overrides the default DriverFactory. (Default: `createPgPool`)
+   */
+  readonly driver?: DriverFactory;
   /**
    * Timeout (in milliseconds) after which idle clients are closed. Use 'DISABLE_TIMEOUT' constant to disable the timeout. (Default: 60000)
    */

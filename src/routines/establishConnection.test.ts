@@ -6,7 +6,7 @@ import * as sinon from 'sinon';
 
 test('attempts to connection X times', async (t) => {
   const pool = {
-    connect: sinon.stub(),
+    acquire: sinon.stub(),
   };
 
   const connectionRetryLimit = 3;
@@ -19,12 +19,12 @@ test('attempts to connection X times', async (t) => {
     ),
   );
 
-  t.is(pool.connect.callCount, connectionRetryLimit);
+  t.is(pool.acquire.callCount, connectionRetryLimit);
 });
 
 test('does not attempt to retry connection when set to 0', async (t) => {
   const pool = {
-    connect: sinon.stub(),
+    acquire: sinon.stub(),
   };
 
   const connectionRetryLimit = 0;
@@ -37,5 +37,5 @@ test('does not attempt to retry connection when set to 0', async (t) => {
     ),
   );
 
-  t.is(pool.connect.callCount, 1);
+  t.is(pool.acquire.callCount, 1);
 });

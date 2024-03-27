@@ -1,18 +1,18 @@
 import { DataIntegrityError } from '../errors';
-import { createPgPoolClientFactory } from '../factories/createPgPoolClientFactory';
+import { createPgDriver } from '../factories/createPgDriver';
 import { createPool } from '../factories/createPool';
 import { createSqlTag } from '../factories/createSqlTag';
 import { createTestRunner } from '../helpers.test/createTestRunner';
 
-const client = createPgPoolClientFactory();
+const driver = createPgDriver();
 
-const { test } = createTestRunner(client, 'pg');
+const { test } = createTestRunner(driver, 'pg');
 
 const sql = createSqlTag();
 
 test('returns the first row', async (t) => {
   const pool = await createPool(t.context.dsn, {
-    client,
+    driver,
   });
 
   const result = await pool.maybeOne(sql.unsafe`
@@ -27,7 +27,7 @@ test('returns the first row', async (t) => {
 
 test('returns null if no results', async (t) => {
   const pool = await createPool(t.context.dsn, {
-    client,
+    driver,
   });
 
   const result = await pool.maybeOne(sql.unsafe`
@@ -41,7 +41,7 @@ test('returns null if no results', async (t) => {
 
 test('throws an error if more than one row is returned', async (t) => {
   const pool = await createPool(t.context.dsn, {
-    client,
+    driver,
   });
 
   const error = await t.throwsAsync(

@@ -1,17 +1,17 @@
-import { createPgPoolClientFactory } from '../../../factories/createPgPoolClientFactory';
+import { createPgDriver } from '../../../factories/createPgDriver';
 import { createSqlTag } from '../../../factories/createSqlTag';
 import { createPoolWithMockedQuery } from '../../../helpers.test/createPoolWithMockedQuery';
 import { createTestRunner } from '../../../helpers.test/createTestRunner';
 
-const client = createPgPoolClientFactory();
+const driver = createPgDriver();
 
-const { test } = createTestRunner(client, 'pg');
+const { test } = createTestRunner(driver, 'pg');
 
 const sql = createSqlTag();
 
 test('overrides result row (sync)', async (t) => {
   const { pool, query } = await createPoolWithMockedQuery(t.context.dsn, {
-    client,
+    driver,
     interceptors: [
       {
         transformRow: () => {
@@ -53,7 +53,7 @@ test('overrides result row (sync)', async (t) => {
 
 test('overrides result row (async)', async (t) => {
   const { pool, query } = await createPoolWithMockedQuery(t.context.dsn, {
-    client,
+    driver,
     interceptors: [
       {
         transformRow: () => {

@@ -19,7 +19,7 @@ type ClientEventEmitter = StrictEventEmitter<
   }
 >;
 
-export type ConnectionPoolClientFactory = ({
+export type DriverFactory = ({
   clientConfiguration,
 }: {
   clientConfiguration: ClientConfiguration;
@@ -73,9 +73,9 @@ type InternalPoolClientFactorySetup = ({
 
 type InternalPoolClientFactory = () => InternalPoolClient;
 
-export const createPoolClientFactory = (
+export const createDriver = (
   setup: InternalPoolClientFactorySetup,
-): ConnectionPoolClientFactory => {
+): DriverFactory => {
   const eventEmitter = new EventEmitter();
 
   return async ({ clientConfiguration }) => {
@@ -214,7 +214,7 @@ export const createConnectionPool = ({
   poolSize = 1,
 }: {
   clientConfiguration: ClientConfiguration;
-  createClient: ConnectionPoolClientFactory;
+  createClient: DriverFactory;
   idleTimeout?: number;
   poolSize?: number;
 }): ConnectionPool => {

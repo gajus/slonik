@@ -14,7 +14,7 @@ import {
   TupleMovedToAnotherPartitionError,
   UnexpectedStateError,
 } from '..';
-import { type ConnectionPoolClientFactory } from '../factories/createConnectionPool';
+import { type DriverFactory } from '../factories/createConnectionPool';
 import { type TestContextType } from './createTestRunner';
 // eslint-disable-next-line ava/use-test
 import { type TestFn } from 'ava';
@@ -24,11 +24,11 @@ import { z } from 'zod';
 
 export const createIntegrationTests = (
   test: TestFn<TestContextType>,
-  client: ConnectionPoolClientFactory,
+  driver: DriverFactory,
 ) => {
   test('inserts and retrieves bigint', async (t) => {
     const pool = await createPool(t.context.dsn, {
-      client,
+      driver,
     });
 
     const result = await pool.oneFirst(sql.unsafe`
@@ -42,7 +42,7 @@ export const createIntegrationTests = (
 
   test('NotNullIntegrityConstraintViolationError identifies the table and column', async (t) => {
     const pool = await createPool(t.context.dsn, {
-      client,
+      driver,
     });
 
     const error: NotNullIntegrityConstraintViolationError | undefined =
@@ -59,7 +59,7 @@ export const createIntegrationTests = (
 
   test.skip('properly handles terminated connections', async (t) => {
     const pool = await createPool(t.context.dsn, {
-      client,
+      driver,
     });
 
     await Promise.all([
@@ -78,7 +78,7 @@ export const createIntegrationTests = (
 
   test('produces syntax error with the original SQL', async (t) => {
     const pool = await createPool(t.context.dsn, {
-      client,
+      driver,
     });
 
     const error: InputSyntaxError | undefined = await t.throwsAsync(
@@ -94,7 +94,7 @@ export const createIntegrationTests = (
 
   test('retrieves correct infinity values (with timezone)', async (t) => {
     const pool = await createPool(t.context.dsn, {
-      client,
+      driver,
     });
 
     await pool.any(sql.unsafe`
@@ -123,7 +123,7 @@ export const createIntegrationTests = (
 
   test('retrieves correct infinity values (without timezone)', async (t) => {
     const pool = await createPool(t.context.dsn, {
-      client,
+      driver,
     });
 
     await pool.any(sql.unsafe`
@@ -152,7 +152,7 @@ export const createIntegrationTests = (
 
   test('inserting records using jsonb_to_recordset', async (t) => {
     const pool = await createPool(t.context.dsn, {
-      client,
+      driver,
     });
 
     const persons = await pool.any(sql.unsafe`
@@ -188,7 +188,7 @@ export const createIntegrationTests = (
     const beforeTransformQuery = sinon.stub().throws();
 
     const readOnlyPool = await createPool(t.context.dsn, {
-      client,
+      driver,
       interceptors: [
         {
           beforeTransformQuery: readOnlyBeforeTransformQuery,
@@ -197,7 +197,7 @@ export const createIntegrationTests = (
     });
 
     const pool = await createPool(t.context.dsn, {
-      client,
+      driver,
       interceptors: [
         {
           beforePoolConnection: () => {
@@ -220,7 +220,7 @@ export const createIntegrationTests = (
 
   test('does not allow to reuse released connection', async (t) => {
     const pool = await createPool(t.context.dsn, {
-      client,
+      driver,
     });
 
     let firstConnection!: DatabasePoolConnection;
@@ -240,7 +240,7 @@ export const createIntegrationTests = (
 
   test('validates results using zod (passes)', async (t) => {
     const pool = await createPool(t.context.dsn, {
-      client,
+      driver,
     });
 
     const result = await pool.one(sql.type(
@@ -261,7 +261,7 @@ export const createIntegrationTests = (
   // We have to test serialization due to the use of different drivers (pg and postgres).
   test('serializes json', async (t) => {
     const pool = await createPool(t.context.dsn, {
-      client,
+      driver,
     });
 
     const result = await pool.oneFirst(sql.unsafe`
@@ -279,7 +279,7 @@ export const createIntegrationTests = (
 
   test.skip('returns numerics as strings by default', async (t) => {
     const pool = await createPool(t.context.dsn, {
-      client,
+      driver,
       typeParsers: [],
     });
 
@@ -294,7 +294,7 @@ export const createIntegrationTests = (
 
   test('parses numerics as floats', async (t) => {
     const pool = await createPool(t.context.dsn, {
-      client,
+      driver,
       typeParsers: [createNumericTypeParser()],
     });
 
@@ -309,7 +309,7 @@ export const createIntegrationTests = (
 
   test('returns expected query result object (array bytea)', async (t) => {
     const pool = await createPool(t.context.dsn, {
-      client,
+      driver,
     });
 
     const result = await pool.query(sql.unsafe`
@@ -339,7 +339,7 @@ export const createIntegrationTests = (
 
   test('returns expected query result object (INSERT)', async (t) => {
     const pool = await createPool(t.context.dsn, {
-      client,
+      driver,
     });
 
     const result = await pool.query(sql.unsafe`
@@ -378,7 +378,7 @@ export const createIntegrationTests = (
 
   test('returns expected query result object (UPDATE)', async (t) => {
     const pool = await createPool(t.context.dsn, {
-      client,
+      driver,
     });
 
     await pool.query(sql.unsafe`
@@ -426,7 +426,7 @@ export const createIntegrationTests = (
 
   test('returns expected query result object (DELETE)', async (t) => {
     const pool = await createPool(t.context.dsn, {
-      client,
+      driver,
     });
 
     await pool.query(sql.unsafe`
@@ -472,7 +472,7 @@ export const createIntegrationTests = (
 
   test('terminated backend produces BackendTerminatedError error', async (t) => {
     const pool = await createPool(t.context.dsn, {
-      client,
+      driver,
     });
 
     const error = await t.throwsAsync(
@@ -498,7 +498,7 @@ export const createIntegrationTests = (
 
   test.skip('cancelled statement produces StatementCancelledError error', async (t) => {
     const pool = await createPool(t.context.dsn, {
-      client,
+      driver,
     });
 
     const error = await t.throwsAsync(
@@ -524,7 +524,7 @@ export const createIntegrationTests = (
 
   test.skip('statement cancelled because of statement_timeout produces StatementTimeoutError error', async (t) => {
     const pool = await createPool(t.context.dsn, {
-      client,
+      driver,
     });
 
     const error = await t.throwsAsync(
@@ -544,7 +544,7 @@ export const createIntegrationTests = (
 
   test.skip('transaction terminated while in an idle state is rejected (at the next transaction query)', async (t) => {
     const pool = await createPool(t.context.dsn, {
-      client,
+      driver,
     });
 
     await pool.connect(async (connection) => {
@@ -568,7 +568,7 @@ export const createIntegrationTests = (
 
   test.skip('connection of transaction terminated while in an idle state is rejected (at the end of the transaction)', async (t) => {
     const pool = await createPool(t.context.dsn, {
-      client,
+      driver,
     });
 
     await pool.connect(async (connection) => {
@@ -590,7 +590,7 @@ export const createIntegrationTests = (
 
   test('throws an error if an attempt is made to make multiple transactions at once using the same connection', async (t) => {
     const pool = await createPool(t.context.dsn, {
-      client,
+      driver,
     });
 
     const error = await t.throwsAsync(
@@ -620,7 +620,7 @@ export const createIntegrationTests = (
 
   test('writes and reads buffers', async (t) => {
     const pool = await createPool(t.context.dsn, {
-      client,
+      driver,
     });
 
     // cspell:disable-next-line
@@ -651,7 +651,7 @@ export const createIntegrationTests = (
 
   test('explicit connection configuration is persisted', async (t) => {
     const pool = await createPool(t.context.dsn, {
-      client,
+      driver,
       maximumPoolSize: 1,
     });
 
@@ -678,7 +678,7 @@ export const createIntegrationTests = (
     t.timeout(10_000);
 
     const pool = await createPool(t.context.dsn, {
-      client,
+      driver,
       maximumPoolSize: 1,
     });
 
@@ -701,7 +701,7 @@ export const createIntegrationTests = (
 
   test('pool.end() resolves when there are no more connections (no connections at start)', async (t) => {
     const pool = await createPool(t.context.dsn, {
-      client,
+      driver,
     });
 
     t.deepEqual(pool.getPoolState(), {
@@ -723,7 +723,7 @@ export const createIntegrationTests = (
 
   test('pool.end() resolves when there are no more connections (implicit connection)', async (t) => {
     const pool = await createPool(t.context.dsn, {
-      client,
+      driver,
     });
 
     t.deepEqual(pool.getPoolState(), {
@@ -756,7 +756,7 @@ export const createIntegrationTests = (
 
   test('pool.end() resolves when there are no more connections (explicit connection holding pool alive)', async (t) => {
     const pool = await createPool(t.context.dsn, {
-      client,
+      driver,
     });
 
     t.deepEqual(pool.getPoolState(), {
@@ -793,7 +793,7 @@ export const createIntegrationTests = (
     t.timeout(1_000);
 
     const pool = await createPool(t.context.dsn, {
-      client,
+      driver,
       idleTimeout: 5_000,
       maximumPoolSize: 5,
     });
@@ -844,7 +844,7 @@ export const createIntegrationTests = (
     t.timeout(10_000);
 
     const pool = await createPool(t.context.dsn, {
-      client,
+      driver,
       idleInTransactionSessionTimeout: 1_000,
       maximumPoolSize: 5,
     });
@@ -873,7 +873,7 @@ export const createIntegrationTests = (
     t.timeout(5_000);
 
     const pool = await createPool(t.context.dsn, {
-      client,
+      driver,
       maximumPoolSize: 5,
       statementTimeout: 1_000,
     });
@@ -898,7 +898,7 @@ export const createIntegrationTests = (
     t.timeout(2_000);
 
     const pool = await createPool(t.context.dsn, {
-      client,
+      driver,
     });
 
     const firstPersonId = await pool.oneFirst(sql.unsafe`
@@ -989,7 +989,7 @@ export const createIntegrationTests = (
 
   test('does not throw an error if running a query with array_agg on dates', async (t) => {
     const pool = await createPool(t.context.dsn, {
-      client,
+      driver,
     });
 
     await pool.query(sql.unsafe`
@@ -1044,7 +1044,7 @@ export const createIntegrationTests = (
 
   test('returns true if returns rows', async (t) => {
     const pool = await createPool(t.context.dsn, {
-      client,
+      driver,
     });
 
     t.true(
@@ -1058,7 +1058,7 @@ export const createIntegrationTests = (
 
   test('returns false if returns rows', async (t) => {
     const pool = await createPool(t.context.dsn, {
-      client,
+      driver,
     });
 
     t.false(
@@ -1072,7 +1072,7 @@ export const createIntegrationTests = (
 
   test('returns expected query result object (SELECT)', async (t) => {
     const pool = await createPool(t.context.dsn, {
-      client,
+      driver,
     });
 
     const result = await pool.query(sql.unsafe`
@@ -1102,7 +1102,7 @@ export const createIntegrationTests = (
 
   test('throw error with notices', async (t) => {
     const pool = await createPool(t.context.dsn, {
-      client,
+      driver,
     });
 
     await pool.query(sql.unsafe`
@@ -1139,7 +1139,7 @@ export const createIntegrationTests = (
 
   test('Tuple moved to another partition due to concurrent update error handled', async (t) => {
     const pool = await createPool(t.context.dsn, {
-      client,
+      driver,
       queryRetryLimit: 0,
     });
 
@@ -1182,7 +1182,7 @@ export const createIntegrationTests = (
 
   test.skip('throws InvalidInputError in case of invalid bound value', async (t) => {
     const pool = await createPool(t.context.dsn, {
-      client,
+      driver,
     });
 
     await pool.query(sql.unsafe`
@@ -1202,7 +1202,7 @@ export const createIntegrationTests = (
 
   test('terminates transaction if any of the queries fails', async (t) => {
     const pool = await createPool(t.context.dsn, {
-      client,
+      driver,
     });
 
     await pool.any(sql.unsafe`
@@ -1243,7 +1243,7 @@ export const createIntegrationTests = (
     const options = encodeURIComponent('-c search_path=test_schema');
 
     const pool = await createPool(t.context.dsn + '?options=' + options, {
-      client,
+      driver,
     });
 
     await pool.query(sql.unsafe`

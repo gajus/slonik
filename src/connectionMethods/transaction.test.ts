@@ -1,16 +1,16 @@
-import { createPgPoolClientFactory } from '../factories/createPgPoolClientFactory';
+import { createPgDriver } from '../factories/createPgDriver';
 import { createPool } from '../factories/createPool';
 import { createErrorWithCode } from '../helpers.test/createErrorWithCode';
 import { createPoolWithSpy } from '../helpers.test/createPoolWithSpy';
 import { createTestRunner } from '../helpers.test/createTestRunner';
 import * as sinon from 'sinon';
 
-const client = createPgPoolClientFactory();
+const driver = createPgDriver();
 
-const { test } = createTestRunner(client, 'pg');
+const { test } = createTestRunner(driver, 'pg');
 
 test('commits successful transaction', async (t) => {
-  const { pool, spy } = await createPoolWithSpy(t.context.dsn, { client });
+  const { pool, spy } = await createPoolWithSpy(t.context.dsn, { driver });
 
   await pool.transaction(async () => {});
 
@@ -19,7 +19,7 @@ test('commits successful transaction', async (t) => {
 });
 
 test('rollbacks unsuccessful transaction', async (t) => {
-  const { pool, spy } = await createPoolWithSpy(t.context.dsn, { client });
+  const { pool, spy } = await createPoolWithSpy(t.context.dsn, { driver });
 
   await t.throwsAsync(
     pool.transaction(async () => {
@@ -70,7 +70,7 @@ test('retries a transaction that failed due to a transaction error', async (t) =
 });
 
 test('commits successful transaction with retries', async (t) => {
-  const { pool, spy } = await createPoolWithSpy(t.context.dsn, { client });
+  const { pool, spy } = await createPoolWithSpy(t.context.dsn, { driver });
 
   const handlerStub = sinon.stub();
 
@@ -117,7 +117,7 @@ test('returns the thrown transaction error if the retry limit is reached', async
 });
 
 test('rollbacks unsuccessful transaction with retries', async (t) => {
-  const { pool, spy } = await createPoolWithSpy(t.context.dsn, { client });
+  const { pool, spy } = await createPoolWithSpy(t.context.dsn, { driver });
   const handlerStub = sinon.stub();
 
   handlerStub

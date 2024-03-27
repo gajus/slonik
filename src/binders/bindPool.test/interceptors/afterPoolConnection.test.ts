@@ -1,13 +1,13 @@
-import { createPgPoolClientFactory } from '../../../factories/createPgPoolClientFactory';
+import { createPgDriver } from '../../../factories/createPgDriver';
 import { createPool } from '../../../factories/createPool';
 import { createSqlTag } from '../../../factories/createSqlTag';
 import { createPoolWithSpy } from '../../../helpers.test/createPoolWithSpy';
 import { createTestRunner } from '../../../helpers.test/createTestRunner';
 import * as sinon from 'sinon';
 
-const client = createPgPoolClientFactory();
+const driver = createPgDriver();
 
-const { test } = createTestRunner(client, 'pg');
+const { test } = createTestRunner(driver, 'pg');
 
 const sql = createSqlTag();
 
@@ -15,7 +15,7 @@ test('`afterPoolConnection` is called after `connect`', async (t) => {
   const afterPoolConnection = sinon.stub();
 
   const { pool, spy } = await createPoolWithSpy(t.context.dsn, {
-    client,
+    driver,
     interceptors: [{}],
   });
 
@@ -30,7 +30,7 @@ test('`connectionType` is "EXPLICIT" when `connect` is used to create connection
   const afterPoolConnection = sinon.stub();
 
   const pool = await createPool(t.context.dsn, {
-    client,
+    driver,
     interceptors: [
       {
         afterPoolConnection,
@@ -49,7 +49,7 @@ test('`connectionType` is "IMPLICIT_QUERY" when a query method is used to create
   const afterPoolConnection = sinon.stub();
 
   const pool = await createPool(t.context.dsn, {
-    client,
+    driver,
     interceptors: [
       {
         afterPoolConnection,
@@ -66,7 +66,7 @@ test('`connectionType` is "IMPLICIT_TRANSACTION" when `transaction` is used to c
   const afterPoolConnection = sinon.stub();
 
   const pool = await createPool(t.context.dsn, {
-    client,
+    driver,
     interceptors: [
       {
         afterPoolConnection,

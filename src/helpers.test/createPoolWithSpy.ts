@@ -5,7 +5,7 @@ import * as sinon from 'sinon';
 
 export const createPoolWithSpy = async (
   dsn: string,
-  { client, ...configuration }: ClientConfigurationInput,
+  { driver, ...configuration }: ClientConfigurationInput,
 ) => {
   const spy = {
     acquire: sinon.spy(),
@@ -17,19 +17,19 @@ export const createPoolWithSpy = async (
   let connection: ConnectionPoolClient;
 
   const pool = await createPool(dsn, {
-    client: async (...args) => {
+    driver: async (...args) => {
       if (connection) {
         return connection;
       }
 
-      if (!client) {
-        throw new Error('Client is required');
+      if (!driver) {
+        throw new Error('Driver is required');
       }
 
       // We are re-using the same connection for all queries
       // as it makes it easier to spy on the connection.
       // eslint-disable-next-line require-atomic-updates
-      connection = await client(...args);
+      connection = await driver(...args);
 
       spy.acquire = sinon.spy(connection, 'acquire');
       spy.destroy = sinon.spy(connection, 'destroy');

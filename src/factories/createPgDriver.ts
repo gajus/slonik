@@ -2,10 +2,7 @@
 
 import { type ClientConfiguration, type TypeParser } from '../types';
 import { parseDsn } from '../utilities/parseDsn';
-import {
-  createPoolClientFactory,
-  type DriverCommand,
-} from './createConnectionPool';
+import { createDriver, type DriverCommand } from './createConnectionPool';
 // eslint-disable-next-line no-restricted-imports
 import {
   Client,
@@ -149,61 +146,59 @@ const queryTypeOverrides = async (
   return typeOverrides;
 };
 
-export const createPgPoolClientFactory = () => {
+export const createPgDriver = () => {
   let getTypeParserPromise: Promise<TypeOverrides> | null = null;
 
-  return createPoolClientFactory(
-    async ({ clientConfiguration, eventEmitter }) => {
-      const pgClientConfiguration =
-        createClientConfiguration(clientConfiguration);
+  return createDriver(async ({ clientConfiguration, eventEmitter }) => {
+    const pgClientConfiguration =
+      createClientConfiguration(clientConfiguration);
 
-      if (!getTypeParserPromise) {
-        getTypeParserPromise = queryTypeOverrides(
-          pgClientConfiguration,
-          clientConfiguration,
-        );
-      }
+    if (!getTypeParserPromise) {
+      getTypeParserPromise = queryTypeOverrides(
+        pgClientConfiguration,
+        clientConfiguration,
+      );
+    }
 
-      // eslint-disable-next-line require-atomic-updates
-      pgClientConfiguration.types = {
-        getTypeParser: await getTypeParserPromise,
+    // eslint-disable-next-line require-atomic-updates
+    pgClientConfiguration.types = {
+      getTypeParser: await getTypeParserPromise,
+    };
+
+    return () => {
+      const client = new Client(pgClientConfiguration);
+
+      client.on('notice', (notice) => {
+        if (notice.message) {
+          eventEmitter.emit('notice', {
+            message: notice.message,
+          });
+        }
+      });
+
+      return {
+        connect: async () => {
+          await client.connect();
+        },
+        end: async () => {
+          await client.end();
+        },
+        query: async (sql, values) => {
+          const result = await client.query(sql, values);
+
+          return {
+            command: result.command as DriverCommand,
+            fields: result.fields.map((field) => {
+              return {
+                dataTypeId: field.dataTypeID,
+                name: field.name,
+              };
+            }),
+            rowCount: result.rowCount,
+            rows: result.rows,
+          };
+        },
       };
-
-      return () => {
-        const client = new Client(pgClientConfiguration);
-
-        client.on('notice', (notice) => {
-          if (notice.message) {
-            eventEmitter.emit('notice', {
-              message: notice.message,
-            });
-          }
-        });
-
-        return {
-          connect: async () => {
-            await client.connect();
-          },
-          end: async () => {
-            await client.end();
-          },
-          query: async (sql, values) => {
-            const result = await client.query(sql, values);
-
-            return {
-              command: result.command as DriverCommand,
-              fields: result.fields.map((field) => {
-                return {
-                  dataTypeId: field.dataTypeID,
-                  name: field.name,
-                };
-              }),
-              rowCount: result.rowCount,
-              rows: result.rows,
-            };
-          },
-        };
-      };
-    },
-  );
+    };
+  });
 };

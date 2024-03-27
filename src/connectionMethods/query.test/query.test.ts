@@ -5,7 +5,7 @@ import {
   NotNullIntegrityConstraintViolationError,
   UniqueIntegrityConstraintViolationError,
 } from '../../errors';
-import { createPgPoolClientFactory } from '../../factories/createPgPoolClientFactory';
+import { createPgDriver } from '../../factories/createPgDriver';
 import { createPool } from '../../factories/createPool';
 import { createSqlTag } from '../../factories/createSqlTag';
 import { createErrorWithCode } from '../../helpers.test/createErrorWithCode';
@@ -13,9 +13,9 @@ import { createPoolWithMockedQuery } from '../../helpers.test/createPoolWithMock
 import { createTestRunner } from '../../helpers.test/createTestRunner';
 import * as sinon from 'sinon';
 
-const client = createPgPoolClientFactory();
+const driver = createPgDriver();
 
-const { test } = createTestRunner(client, 'pg');
+const { test } = createTestRunner(driver, 'pg');
 
 export const createErrorWithCodeAndConstraint = (code: string) => {
   const error = createErrorWithCode(code);
@@ -33,7 +33,7 @@ test('ends connection after promise is resolved (explicit connection)', async (t
 
   process.on('warning', eventHandler);
 
-  const pool = await createPool(t.context.dsn, { client });
+  const pool = await createPool(t.context.dsn, { driver });
 
   await pool.connect(async (connection) => {
     let queryCount = 20;
@@ -51,7 +51,7 @@ test('ends connection after promise is resolved (explicit connection)', async (t
 });
 
 test('executes the query and returns the result', async (t) => {
-  const pool = await createPool(t.context.dsn, { client });
+  const pool = await createPool(t.context.dsn, { driver });
 
   const result = await pool.query(sql.unsafe`
     SELECT *
@@ -79,7 +79,7 @@ test('executes the query and returns the result', async (t) => {
 
 test('maps 23514 error code to CheckIntegrityConstraintViolationError', async (t) => {
   const { pool, query } = await createPoolWithMockedQuery(t.context.dsn, {
-    client,
+    driver,
   });
 
   query.rejects(createErrorWithCodeAndConstraint('23514'));
@@ -91,7 +91,7 @@ test('maps 23514 error code to CheckIntegrityConstraintViolationError', async (t
 
 test('maps 23503 error code to ForeignKeyIntegrityConstraintViolationError', async (t) => {
   const { pool, query } = await createPoolWithMockedQuery(t.context.dsn, {
-    client,
+    driver,
   });
 
   query.rejects(createErrorWithCodeAndConstraint('23503'));
@@ -103,7 +103,7 @@ test('maps 23503 error code to ForeignKeyIntegrityConstraintViolationError', asy
 
 test('maps 23502 error code to NotNullIntegrityConstraintViolationError', async (t) => {
   const { pool, query } = await createPoolWithMockedQuery(t.context.dsn, {
-    client,
+    driver,
   });
 
   query.rejects(createErrorWithCodeAndConstraint('23502'));
@@ -115,7 +115,7 @@ test('maps 23502 error code to NotNullIntegrityConstraintViolationError', async 
 
 test('maps 23505 error code to UniqueIntegrityConstraintViolationError', async (t) => {
   const { pool, query } = await createPoolWithMockedQuery(t.context.dsn, {
-    client,
+    driver,
   });
 
   query.rejects(createErrorWithCodeAndConstraint('23505'));
@@ -127,7 +127,7 @@ test('maps 23505 error code to UniqueIntegrityConstraintViolationError', async (
 
 test('57P01 error causes the connection to be rejected (IMPLICIT_QUERY connection)', async (t) => {
   const { pool, query } = await createPoolWithMockedQuery(t.context.dsn, {
-    client,
+    driver,
   });
 
   query.rejects(createErrorWithCode('57P01'));

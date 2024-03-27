@@ -1,15 +1,12 @@
 /* eslint-disable canonical/id-match */
 
 import { createClientConfiguration } from './createClientConfiguration';
-import {
-  createConnectionPool,
-  createPoolClientFactory,
-} from './createConnectionPool';
+import { createConnectionPool, createDriver } from './createConnectionPool';
 import test from 'ava';
 import { setTimeout as delay } from 'node:timers/promises';
 
 const createSimpleConnectionClientFactory = () => {
-  return createPoolClientFactory(async () => {
+  return createDriver(async () => {
     return () => {
       return {
         connect: async () => {},

@@ -1,17 +1,17 @@
-import { createPgPoolClientFactory } from '../../../factories/createPgPoolClientFactory';
+import { createPgDriver } from '../../../factories/createPgDriver';
 import { createSqlTag } from '../../../factories/createSqlTag';
 import { createPoolWithSpy } from '../../../helpers.test/createPoolWithSpy';
 import { createTestRunner } from '../../../helpers.test/createTestRunner';
 
-const client = createPgPoolClientFactory();
+const driver = createPgDriver();
 
-const { test } = createTestRunner(client, 'pg');
+const { test } = createTestRunner(driver, 'pg');
 
 const sql = createSqlTag();
 
 test('transforms query', async (t) => {
   const { pool, spy } = await createPoolWithSpy(t.context.dsn, {
-    client,
+    driver,
     interceptors: [
       {
         transformQuery: (executionContext, query) => {
