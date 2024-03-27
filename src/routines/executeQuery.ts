@@ -1,4 +1,3 @@
-import { type NativePostgresPoolClient } from '../classes/NativePostgres';
 import { TRANSACTION_ROLLBACK_ERROR_PREFIX } from '../constants';
 import {
   BackendTerminatedError,
@@ -14,12 +13,15 @@ import {
   UnexpectedStateError,
   UniqueIntegrityConstraintViolationError,
 } from '../errors';
+import {
+  type ConnectionPoolClient,
+  type DriverNotice,
+} from '../factories/createConnectionPool';
 import { getPoolClientState } from '../state';
 import {
   type ClientConfiguration,
   type Interceptor,
   type Logger,
-  type Notice,
   type PrimitiveValueExpression,
   type Query,
   type QueryContext,
@@ -37,7 +39,7 @@ import { serializeError } from 'serialize-error';
 type GenericQueryResult = StreamResult | QueryResult<QueryResultRow>;
 
 export type ExecutionRoutine = (
-  connection: NativePostgresPoolClient,
+  connection: ConnectionPoolClient,
   sql: string,
   values: readonly PrimitiveValueExpression[],
   queryContext: QueryContext,
@@ -53,7 +55,7 @@ type TransactionQuery = {
 
 const retryQuery = async (
   connectionLogger: Logger,
-  connection: NativePostgresPoolClient,
+  connection: ConnectionPoolClient,
   query: TransactionQuery,
   retryLimit: number,
 ) => {
@@ -119,12 +121,12 @@ type StackCrumb = {
 // eslint-disable-next-line complexity
 export const executeQuery = async (
   connectionLogger: Logger,
-  connection: NativePostgresPoolClient,
+  connection: ConnectionPoolClient,
   clientConfiguration: ClientConfiguration,
   query: QuerySqlToken,
   inheritedQueryId: QueryId | undefined,
   executionRoutine: ExecutionRoutine,
-  stream: boolean,
+  stream: boolean = false,
 ): Promise<
   StreamResult | QueryResult<Record<string, PrimitiveValueExpression>>
 > => {
@@ -214,9 +216,9 @@ export const executeQuery = async (
     }
   }
 
-  const notices: Notice[] = [];
+  const notices: DriverNotice[] = [];
 
-  const noticeListener = (notice: Notice) => {
+  const noticeListener = (notice: DriverNotice) => {
     notices.push(notice);
   };
 

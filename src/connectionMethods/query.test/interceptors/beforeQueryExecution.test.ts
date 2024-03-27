@@ -1,11 +1,17 @@
+import { createPgDriver } from '../../../factories/createPgDriver';
 import { createSqlTag } from '../../../factories/createSqlTag';
-import { createPool } from '../../../helpers/createPool';
-import test from 'ava';
+import { createPoolWithMockedQuery } from '../../../helpers.test/createPoolWithMockedQuery';
+import { createTestRunner } from '../../../helpers.test/createTestRunner';
+
+const driver = createPgDriver();
+
+const { test } = createTestRunner(driver, 'pg');
 
 const sql = createSqlTag();
 
 test('short-circuits the query execution', async (t) => {
-  const pool = await createPool({
+  const { pool, query } = await createPoolWithMockedQuery(t.context.dsn, {
+    driver,
     interceptors: [
       {
         beforeQueryExecution: () => {
@@ -26,7 +32,7 @@ test('short-circuits the query execution', async (t) => {
     ],
   });
 
-  pool.querySpy.returns({
+  query.returns({
     rows: [
       {
         foo: 1,
@@ -51,7 +57,8 @@ test('short-circuits the query execution', async (t) => {
 });
 
 test('executes query if "beforeQuery" does not return results', async (t) => {
-  const pool = await createPool({
+  const { pool, query } = await createPoolWithMockedQuery(t.context.dsn, {
+    driver,
     interceptors: [
       {
         beforeQueryExecution: () => {
@@ -61,7 +68,7 @@ test('executes query if "beforeQuery" does not return results', async (t) => {
     ],
   });
 
-  pool.querySpy.returns({
+  query.returns({
     command: 'SELECT',
     fields: [],
     notices: [],

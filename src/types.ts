@@ -1,15 +1,28 @@
-import {
-  type NativePostgresPool,
-  type NativePostgresPoolClient,
-  type NativePostgresPoolConfiguration,
-} from './classes/NativePostgres';
 import { type SlonikError } from './errors';
+import {
+  type ConnectionPoolClient,
+  type DriverFactory,
+  type DriverNotice,
+} from './factories/createConnectionPool';
 import type * as tokens from './tokens';
-import { type Readable, type ReadableOptions } from 'node:stream';
+import { type Readable } from 'node:stream';
 import { type ConnectionOptions as TlsConnectionOptions } from 'node:tls';
-import { type NoticeMessage as Notice } from 'pg-protocol/dist/messages';
 import { type Logger } from 'roarr';
 import { type z, type ZodTypeAny } from 'zod';
+
+type StreamDataEvent<T> = { data: T; fields: readonly Field[] };
+
+// eslint-disable-next-line @typescript-eslint/consistent-type-definitions
+export interface TypedReadable<T> extends Readable {
+  // eslint-disable-next-line @typescript-eslint/method-signature-style
+  on(event: 'data', listener: (chunk: StreamDataEvent<T>) => void): this;
+  // eslint-disable-next-line @typescript-eslint/method-signature-style
+  on(event: string | symbol, listener: (...args: any[]) => void): this;
+
+  [Symbol.asyncIterator]: () => AsyncIterableIterator<StreamDataEvent<T>>;
+}
+
+export type StreamHandler<T> = (stream: TypedReadable<T>) => void;
 
 /**
  * @see https://www.postgresql.org/docs/current/libpq-connect.html#LIBPQ-PARAMKEYWORDS
@@ -59,20 +72,6 @@ export type QueryId = string;
 
 export type MaybePromise<T> = Promise<T> | T;
 
-type StreamDataEvent<T> = { data: T; fields: readonly Field[] };
-
-// eslint-disable-next-line @typescript-eslint/consistent-type-definitions
-interface TypedReadable<T> extends Readable {
-  // eslint-disable-next-line @typescript-eslint/method-signature-style
-  on(event: 'data', listener: (chunk: StreamDataEvent<T>) => void): this;
-  // eslint-disable-next-line @typescript-eslint/method-signature-style
-  on(event: string | symbol, listener: (...args: any[]) => void): this;
-
-  [Symbol.asyncIterator]: () => AsyncIterableIterator<StreamDataEvent<T>>;
-}
-
-export type StreamHandler<T> = (stream: TypedReadable<T>) => void;
-
 export type Connection = 'EXPLICIT' | 'IMPLICIT_QUERY' | 'IMPLICIT_TRANSACTION';
 
 export type Field = {
@@ -83,19 +82,13 @@ export type Field = {
 export type QueryResult<T> = {
   readonly command: 'COPY' | 'DELETE' | 'INSERT' | 'SELECT' | 'UPDATE';
   readonly fields: readonly Field[];
-  readonly notices: readonly Notice[];
+  readonly notices: readonly DriverNotice[];
   readonly rowCount: number;
   readonly rows: readonly T[];
   readonly type: 'QueryResult';
 };
 
 export type ClientConfiguration = {
-  /**
-   * Override the underlying PostgreSQL driver. *
-   */
-  readonly PgPool?: new (
-    poolConfig: NativePostgresPoolConfiguration,
-  ) => NativePostgresPool;
   /**
    * Dictates whether to capture stack trace before executing query. Middlewares access stack trace through query execution context. (Default: true)
    */
@@ -108,6 +101,14 @@ export type ClientConfiguration = {
    * Timeout (in milliseconds) after which an error is raised if connection cannot cannot be established. (Default: 5000)
    */
   readonly connectionTimeout: number | 'DISABLE_TIMEOUT';
+  /**
+   * Connection URI, e.g. `postgres://user:password@localhost/database`.
+   */
+  readonly connectionUri: string;
+  /**
+   * Overrides the default DriverFactory. (Default: `createPgPool`)
+   */
+  readonly driver?: DriverFactory;
   /**
    * Timeout (in milliseconds) after which idle clients are closed. Use 'DISABLE_TIMEOUT' constant to disable the timeout. (Default: 60000)
    */
@@ -148,17 +149,14 @@ export type ClientConfiguration = {
 
 export type ClientConfigurationInput = Partial<ClientConfiguration>;
 
-export type QueryStreamConfig = ReadableOptions & { batchSize?: number };
-
 export type StreamResult = {
-  notices: readonly Notice[];
-  type: 'StreamResult';
+  readonly notices: readonly DriverNotice[];
+  readonly type: 'StreamResult';
 };
 
 type StreamFunction = <T extends ZodTypeAny>(
   sql: QuerySqlToken<T>,
   streamHandler: StreamHandler<z.infer<T>>,
-  config?: QueryStreamConfig,
 ) => Promise<StreamResult>;
 
 export type CommonQueryMethods = {
@@ -172,41 +170,37 @@ export type CommonQueryMethods = {
   readonly one: QueryOneFunction;
   readonly oneFirst: QueryOneFirstFunction;
   readonly query: QueryFunction;
+  readonly stream: StreamFunction;
   readonly transaction: <T>(
     handler: TransactionFunction<T>,
     transactionRetryLimit?: number,
   ) => Promise<T>;
 };
 
-export type DatabaseTransactionConnection = CommonQueryMethods & {
-  readonly stream: StreamFunction;
-};
+export type DatabaseTransactionConnection = CommonQueryMethods;
 
 type TransactionFunction<T> = (
   connection: DatabaseTransactionConnection,
 ) => Promise<T>;
 
-export type DatabasePoolConnection = CommonQueryMethods & {
-  readonly stream: StreamFunction;
-};
+export type DatabasePoolConnection = CommonQueryMethods;
 
 export type ConnectionRoutine<T> = (
   connection: DatabasePoolConnection,
 ) => Promise<T>;
 
 type PoolState = {
-  readonly activeConnectionCount: number;
+  readonly activeConnections: number;
   readonly ended: boolean;
-  readonly idleConnectionCount: number;
-  readonly waitingClientCount: number;
+  readonly idleConnections: number;
+  readonly waitingClients: number;
 };
 
 export type DatabasePool = CommonQueryMethods & {
   readonly configuration: ClientConfiguration;
   readonly connect: <T>(connectionRoutine: ConnectionRoutine<T>) => Promise<T>;
   readonly end: () => Promise<void>;
-  readonly getPoolState: () => PoolState;
-  readonly stream: StreamFunction;
+  readonly state: () => PoolState;
 };
 
 export type DatabaseConnection = DatabasePool | DatabasePoolConnection;
@@ -442,7 +436,7 @@ export type SqlTag<Z extends Record<string, ZodTypeAny>> = {
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export type InternalQueryMethod<R = any> = (
   log: Logger,
-  connection: NativePostgresPoolClient,
+  connection: ConnectionPoolClient,
   clientConfiguration: ClientConfiguration,
   slonikSql: QuerySqlToken,
   uid?: QueryId,
@@ -450,17 +444,16 @@ export type InternalQueryMethod<R = any> = (
 
 export type InternalStreamFunction = <T>(
   log: Logger,
-  connection: NativePostgresPoolClient,
+  connection: ConnectionPoolClient,
   clientConfiguration: ClientConfiguration,
   slonikSql: QuerySqlToken,
   streamHandler: StreamHandler<T>,
   uid?: QueryId,
-  config?: QueryStreamConfig,
 ) => Promise<StreamResult>;
 
 export type InternalTransactionFunction = <T>(
   log: Logger,
-  connection: NativePostgresPoolClient,
+  connection: ConnectionPoolClient,
   clientConfiguration: ClientConfiguration,
   handler: TransactionFunction<T>,
   transactionRetryLimit?: number,
@@ -468,7 +461,7 @@ export type InternalTransactionFunction = <T>(
 
 export type InternalNestedTransactionFunction = <T>(
   log: Logger,
-  connection: NativePostgresPoolClient,
+  connection: ConnectionPoolClient,
   clientConfiguration: ClientConfiguration,
   handler: TransactionFunction<T>,
   transactionDepth: number,
@@ -550,7 +543,7 @@ export type Interceptor = {
     queryContext: QueryContext,
     query: Query,
     error: SlonikError,
-    notices: readonly Notice[],
+    notices: readonly DriverNotice[],
   ) => MaybePromise<null>;
   readonly transformQuery?: (queryContext: QueryContext, query: Query) => Query;
   readonly transformRow?: (
@@ -571,9 +564,3 @@ export type MockPoolOverrides = {
 };
 
 export type { Logger } from 'roarr';
-
-export type TypeOverrides = {
-  setTypeParser: (type: string, parser: (value: string) => unknown) => void;
-};
-
-export { NoticeMessage as Notice } from 'pg-protocol/dist/messages';

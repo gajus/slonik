@@ -1,11 +1,7 @@
 import { bindPoolConnection } from '../binders/bindPoolConnection';
-import {
-  type NativePostgresPool,
-  type NativePostgresPoolClient,
-} from '../classes/NativePostgres';
 import { UnexpectedStateError } from '../errors';
 import { establishConnection } from '../routines/establishConnection';
-import { getPoolClientState, getPoolState } from '../state';
+import { getPoolClientState } from '../state';
 import {
   type ClientConfiguration,
   type Connection,
@@ -15,20 +11,19 @@ import {
   type MaybePromise,
   type QuerySqlToken,
 } from '../types';
+import {
+  type ConnectionPool,
+  type ConnectionPoolClient,
+} from './createConnectionPool';
 
 type ConnectionHandlerType = (
   connectionLog: Logger,
-  connection: NativePostgresPoolClient,
+  connection: ConnectionPoolClient,
   boundConnection: DatabasePoolConnection,
   clientConfiguration: ClientConfiguration,
 ) => MaybePromise<unknown>;
 
 type PoolHandlerType = (pool: DatabasePool) => Promise<unknown>;
-
-const terminatePoolConnection = (connection: NativePostgresPoolClient) => {
-  // tells the pool to destroy this client
-  connection.release(true);
-};
 
 const destroyBoundConnection = (boundConnection: DatabasePoolConnection) => {
   const boundConnectionMethods = [
@@ -55,14 +50,16 @@ const destroyBoundConnection = (boundConnection: DatabasePoolConnection) => {
 
 export const createConnection = async (
   parentLog: Logger,
-  pool: NativePostgresPool,
+  pool: ConnectionPool,
   clientConfiguration: ClientConfiguration,
   connectionType: Connection,
   connectionHandler: ConnectionHandlerType,
   poolHandler: PoolHandlerType,
   query: QuerySqlToken | null = null,
 ) => {
-  const { ended, poolId } = getPoolState(pool);
+  const { ended } = pool.state();
+
+  const poolId = pool.id();
 
   if (ended) {
     throw new UnexpectedStateError(
@@ -119,7 +116,7 @@ export const createConnection = async (
       }
     }
   } catch (error) {
-    terminatePoolConnection(connection);
+    await connection.destroy();
 
     throw error;
   }
@@ -134,7 +131,7 @@ export const createConnection = async (
       clientConfiguration,
     );
   } catch (error) {
-    terminatePoolConnection(connection);
+    await connection.destroy();
 
     throw error;
   }
@@ -149,14 +146,14 @@ export const createConnection = async (
       }
     }
   } catch (error) {
-    terminatePoolConnection(connection);
+    await connection.destroy();
 
     throw error;
   }
 
   destroyBoundConnection(boundConnection);
 
-  connection.release();
+  await connection.release();
 
   return result;
 };

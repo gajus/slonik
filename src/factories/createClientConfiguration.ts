@@ -7,6 +7,7 @@ import {
 import { createTypeParserPreset } from './createTypeParserPreset';
 
 export const createClientConfiguration = (
+  connectionUri: string,
   clientUserConfigurationInput?: ClientConfigurationInput,
 ): ClientConfiguration => {
   const typeParsers: readonly TypeParser[] = [];
@@ -15,6 +16,7 @@ export const createClientConfiguration = (
     captureStackTrace: false,
     connectionRetryLimit: 3,
     connectionTimeout: 5_000,
+    connectionUri,
     idleInTransactionSessionTimeout: 60_000,
     idleTimeout: 5_000,
     interceptors: [],

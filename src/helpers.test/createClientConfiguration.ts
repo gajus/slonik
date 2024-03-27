@@ -5,6 +5,7 @@ export const createClientConfiguration = (): ClientConfiguration => {
     captureStackTrace: true,
     connectionRetryLimit: 3,
     connectionTimeout: 5_000,
+    connectionUri: 'postgres://',
     idleInTransactionSessionTimeout: 60_000,
     idleTimeout: 5_000,
     interceptors: [],

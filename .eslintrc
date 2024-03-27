@@ -13,7 +13,7 @@
       }
     },
     {
-      "files": "*.test.ts",
+      "files": ["*.test.ts", "**/*.test/*"],
       "extends": "canonical/ava",
       "rules": {
         "@typescript-eslint/no-explicit-any": 0,

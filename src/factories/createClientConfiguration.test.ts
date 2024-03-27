@@ -6,6 +6,7 @@ const defaultConfiguration = {
   captureStackTrace: false,
   connectionRetryLimit: 3,
   connectionTimeout: 5_000,
+  connectionUri: 'postgres://',
   idleInTransactionSessionTimeout: 60_000,
   idleTimeout: 5_000,
   interceptors: [],
@@ -17,14 +18,14 @@ const defaultConfiguration = {
 };
 
 test('creates default configuration', (t) => {
-  const configuration = createClientConfiguration();
+  const configuration = createClientConfiguration('postgres://', {});
 
   t.deepEqual(configuration, defaultConfiguration);
 });
 
 test('overrides provided properties', (t) => {
   t.deepEqual(
-    createClientConfiguration({
+    createClientConfiguration('postgres://', {
       captureStackTrace: false,
     }),
     {
@@ -34,7 +35,7 @@ test('overrides provided properties', (t) => {
   );
 
   t.deepEqual(
-    createClientConfiguration({
+    createClientConfiguration('postgres://', {
       interceptors: [
         // @ts-expect-error - This is a test helper.
         'foo',
@@ -47,7 +48,7 @@ test('overrides provided properties', (t) => {
   );
 
   t.deepEqual(
-    createClientConfiguration({
+    createClientConfiguration('postgres://', {
       typeParsers: [
         // @ts-expect-error - This is a test helper.
         'foo',
@@ -62,7 +63,7 @@ test('overrides provided properties', (t) => {
 
 test('disables default type parsers', (t) => {
   t.deepEqual(
-    createClientConfiguration({
+    createClientConfiguration('postgres://', {
       typeParsers: [],
     }),
     {

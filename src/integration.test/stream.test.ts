@@ -4,12 +4,14 @@ import {
   sql,
   StatementTimeoutError,
 } from '..';
-import { NativePostgresPool } from '../classes/NativePostgres';
-import { createTestRunner } from '../helpers/createIntegrationTests';
+import { createPgDriver } from '../factories/createPgDriver';
+import { createTestRunner } from '../helpers.test/createTestRunner';
 import * as sinon from 'sinon';
 import { z } from 'zod';
 
-const { test } = createTestRunner(NativePostgresPool, 'pg');
+const driver = createPgDriver();
+
+const { test } = createTestRunner(driver, 'pg');
 
 test('reading stream after a delay', async (t) => {
   const pool = await createPool(t.context.dsn, {
@@ -21,9 +23,9 @@ test('reading stream after a delay', async (t) => {
   await t.notThrowsAsync(
     pool.stream(
       sql.unsafe`
-      SELECT *
-      FROM GENERATE_SERIES(1, 1000)
-    `,
+        SELECT *
+        FROM GENERATE_SERIES(1, 1000)
+      `,
       (stream) => {
         setTimeout(() => {
           stream.on('data', onData);
@@ -384,69 +386,6 @@ test('streams include notices', async (t) => {
   );
 
   t.true(result.notices.length === 3);
-
-  await pool.end();
-});
-
-test('streams rows with different batchSize', async (t) => {
-  const pool = await createPool(t.context.dsn);
-
-  await pool.query(sql.unsafe`
-    INSERT INTO person (name) VALUES ('foo'), ('bar'), ('baz')
-  `);
-
-  const messages: Array<Record<string, unknown>> = [];
-
-  await pool.stream(
-    sql.unsafe`
-    SELECT name
-    FROM person
-  `,
-    (stream) => {
-      stream.on('data', (datum) => {
-        messages.push(datum);
-      });
-    },
-    {
-      batchSize: 1,
-    },
-  );
-
-  t.deepEqual(messages, [
-    {
-      data: {
-        name: 'foo',
-      },
-      fields: [
-        {
-          dataTypeId: 25,
-          name: 'name',
-        },
-      ],
-    },
-    {
-      data: {
-        name: 'bar',
-      },
-      fields: [
-        {
-          dataTypeId: 25,
-          name: 'name',
-        },
-      ],
-    },
-    {
-      data: {
-        name: 'baz',
-      },
-      fields: [
-        {
-          dataTypeId: 25,
-          name: 'name',
-        },
-      ],
-    },
-  ]);
 
   await pool.end();
 });

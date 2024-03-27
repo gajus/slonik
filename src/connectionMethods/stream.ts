@@ -1,23 +1,20 @@
-import { type NativePostgresPoolClient } from '../classes/NativePostgres';
+import { type DriverStreamResult } from '../factories/createConnectionPool';
 import { executeQuery, type ExecutionRoutine } from '../routines/executeQuery';
 import {
   type ClientConfiguration,
-  type Field,
   type Interceptor,
   type InternalStreamFunction,
   type Query,
   type QueryContext,
-  type QueryStreamConfig,
+  type QueryResultRow,
   type StreamHandler,
 } from '../types';
-import { type Readable, Transform } from 'node:stream';
+import { Transform } from 'node:stream';
 import { pipeline } from 'node:stream/promises';
-import QueryStream from 'pg-query-stream';
 
 type RowTransformer = NonNullable<Interceptor['transformRow']>;
 
 const createTransformStream = (
-  connection: NativePostgresPoolClient,
   clientConfiguration: ClientConfiguration,
   queryContext: QueryContext,
   query: Query,
@@ -30,41 +27,37 @@ const createTransformStream = (
     }
   }
 
-  let fields: readonly Field[] = [];
-
-  // `rowDescription` will not fire if the query produces a syntax error.
-  // Also, `rowDescription` won't fire until client starts consuming the stream.
-  // This is why we cannot simply await for `rowDescription` event before starting to pipe the stream.
-  // @ts-expect-error – https://github.com/brianc/node-postgres/issues/3015
-  connection.connection.once('rowDescription', (rowDescription) => {
-    fields = rowDescription.fields.map((field) => {
-      return {
-        dataTypeId: field.dataTypeID,
-        name: field.name,
-      };
-    });
-  });
-
   return new Transform({
     objectMode: true,
-    async transform(datum, enc, callback) {
-      if (!fields) {
-        callback(new Error('Fields not available'));
+    async transform(datum: DriverStreamResult, enc, callback) {
+      if (!datum.row) {
+        callback(new Error('"row" not available'));
 
         return;
       }
 
-      let finalRow = datum;
+      if (!datum.fields) {
+        callback(new Error('"fields" not available'));
+
+        return;
+      }
+
+      let finalRow = datum.row as QueryResultRow;
 
       // apply row transformers. Note this is done sequentially, as one transformer's result will be passed to the next.
       for (const rowTransformer of rowTransformers) {
-        finalRow = await rowTransformer(queryContext, query, finalRow, fields);
+        finalRow = await rowTransformer(
+          queryContext,
+          query,
+          finalRow,
+          datum.fields,
+        );
       }
 
       // eslint-disable-next-line @babel/no-invalid-this
       this.push({
         data: finalRow,
-        fields,
+        fields: datum.fields,
       });
 
       callback();
@@ -75,15 +68,11 @@ const createTransformStream = (
 const createExecutionRoutine = <T>(
   clientConfiguration: ClientConfiguration,
   onStream: StreamHandler<T>,
-  streamOptions?: QueryStreamConfig,
 ): ExecutionRoutine => {
   return async (connection, sql, values, executionContext, actualQuery) => {
-    const queryStream: Readable = connection.query(
-      new QueryStream(sql, values as unknown[], streamOptions),
-    );
+    const queryStream = connection.stream(sql, values as unknown[]);
 
     const transformStream = createTransformStream(
-      connection,
       clientConfiguration,
       executionContext,
       actualQuery,
@@ -107,15 +96,14 @@ export const stream: InternalStreamFunction = async (
   slonikSql,
   onStream,
   uid,
-  streamOptions,
 ) => {
   const result = await executeQuery(
     connectionLogger,
     connection,
     clientConfiguration,
     slonikSql,
-    undefined,
-    createExecutionRoutine(clientConfiguration, onStream, streamOptions),
+    uid,
+    createExecutionRoutine(clientConfiguration, onStream),
     true,
   );
 

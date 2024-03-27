@@ -1,10 +1,13 @@
-import { type NativePostgresQueryResult } from '../classes/NativePostgres';
+import {
+  type DriverNotice,
+  type DriverQueryResult,
+} from '../factories/createConnectionPool';
 import { executeQuery, type ExecutionRoutine } from '../routines/executeQuery';
 import {
   type Field,
   type InternalQueryMethod,
-  type Notice,
   type QueryResult,
+  type QueryResultRow,
 } from '../types';
 
 const executionRoutine: ExecutionRoutine = async (
@@ -12,7 +15,7 @@ const executionRoutine: ExecutionRoutine = async (
   finalSql,
   finalValues,
 ) => {
-  const result: NativePostgresQueryResult & { notices?: Notice[] } =
+  const result: DriverQueryResult & { notices?: DriverNotice[] } =
     await finalConnection.query(
       finalSql,
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -24,7 +27,7 @@ const executionRoutine: ExecutionRoutine = async (
   if (result.fields) {
     for (const field of result.fields) {
       fields.push({
-        dataTypeId: field.dataTypeID,
+        dataTypeId: field.dataTypeId,
         name: field.name,
       });
     }
@@ -35,7 +38,7 @@ const executionRoutine: ExecutionRoutine = async (
     fields,
     notices: result.notices ?? [],
     rowCount: result.rowCount || 0,
-    rows: result.rows || [],
+    rows: (result.rows || []) as QueryResultRow[],
     type: 'QueryResult',
   };
 };
@@ -54,6 +57,5 @@ export const query: InternalQueryMethod = async (
     slonikSql,
     inheritedQueryId,
     executionRoutine,
-    false,
   );
 };

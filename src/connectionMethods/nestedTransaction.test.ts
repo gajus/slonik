@@ -1,22 +1,27 @@
-import { createClientConfiguration } from '../helpers/createClientConfiguration';
-import { createErrorWithCode } from '../helpers/createErrorWithCode';
-import { createPool } from '../helpers/createPool';
-import test from 'ava';
+import { createPgDriver } from '../factories/createPgDriver';
+import { createPool } from '../factories/createPool';
+import { createErrorWithCode } from '../helpers.test/createErrorWithCode';
+import { createPoolWithSpy } from '../helpers.test/createPoolWithSpy';
+import { createTestRunner } from '../helpers.test/createTestRunner';
 import * as sinon from 'sinon';
 
+const driver = createPgDriver();
+
+const { test } = createTestRunner(driver, 'pg');
+
 test('creates a savepoint', async (t) => {
-  const pool = await createPool();
+  const { spy, pool } = await createPoolWithSpy(t.context.dsn, { driver });
 
   await pool.transaction(async (transactionConnection) => {
     await transactionConnection.transaction(async () => {});
   });
 
-  t.is(pool.querySpy.getCall(0).args[0], 'START TRANSACTION');
-  t.is(pool.querySpy.getCall(1).args[0], 'SAVEPOINT slonik_savepoint_1');
+  t.is(spy.query.getCall(0).args[0], 'START TRANSACTION');
+  t.is(spy.query.getCall(1).args[0], 'SAVEPOINT slonik_savepoint_1');
 });
 
 test('rollbacks unsuccessful nested transaction', async (t) => {
-  const pool = await createPool();
+  const { spy, pool } = await createPoolWithSpy(t.context.dsn, { driver });
 
   await t.throwsAsync(
     pool.transaction(async (transactionConnection) => {
@@ -26,15 +31,15 @@ test('rollbacks unsuccessful nested transaction', async (t) => {
     }),
   );
 
-  t.is(pool.querySpy.getCall(1).args[0], 'SAVEPOINT slonik_savepoint_1');
+  t.is(spy.query.getCall(1).args[0], 'SAVEPOINT slonik_savepoint_1');
   t.is(
-    pool.querySpy.getCall(2).args[0],
+    spy.query.getCall(2).args[0],
     'ROLLBACK TO SAVEPOINT slonik_savepoint_1',
   );
 });
 
 test('retries a nested transaction that failed due to a transaction error', async (t) => {
-  const pool = await createPool(createClientConfiguration());
+  const pool = await createPool(t.context.dsn);
   const handlerStub = sinon.stub();
 
   handlerStub
@@ -72,7 +77,8 @@ test('retries a nested transaction that failed due to a transaction error', asyn
 });
 
 test('commits successful transaction with retries', async (t) => {
-  const pool = await createPool(createClientConfiguration());
+  const { spy, pool } = await createPoolWithSpy(t.context.dsn, { driver });
+
   const handlerStub = sinon.stub();
 
   handlerStub
@@ -95,19 +101,18 @@ test('commits successful transaction with retries', async (t) => {
     return await transactionConnection.transaction(handlerStub);
   });
 
-  t.is(pool.querySpy.getCall(1).args[0], 'SAVEPOINT slonik_savepoint_1');
+  t.is(spy.query.getCall(1).args[0], 'SAVEPOINT slonik_savepoint_1');
   t.is(
-    pool.querySpy.getCall(2).args[0],
+    spy.query.getCall(2).args[0],
     'ROLLBACK TO SAVEPOINT slonik_savepoint_1',
   );
-  t.is(pool.querySpy.getCall(3).args[0], 'SAVEPOINT slonik_savepoint_1');
-  t.is(pool.querySpy.getCall(4).args[0], 'COMMIT');
+  t.is(spy.query.getCall(3).args[0], 'SAVEPOINT slonik_savepoint_1');
+  t.is(spy.query.getCall(4).args[0], 'COMMIT');
 });
 
 test('returns the thrown transaction error if the retry limit is reached', async (t) => {
-  const clientConfiguration = createClientConfiguration();
+  const pool = await createPool(t.context.dsn);
 
-  const pool = await createPool(clientConfiguration);
   const handlerStub = sinon.stub();
 
   handlerStub
@@ -129,7 +134,8 @@ test('returns the thrown transaction error if the retry limit is reached', async
 });
 
 test('rollbacks unsuccessful nested transaction with retries', async (t) => {
-  const pool = await createPool(createClientConfiguration());
+  const { spy, pool } = await createPoolWithSpy(t.context.dsn, { driver });
+
   const handlerStub = sinon.stub();
 
   handlerStub
@@ -144,14 +150,14 @@ test('rollbacks unsuccessful nested transaction with retries', async (t) => {
     }, 0),
   );
 
-  t.is(pool.querySpy.getCall(1).args[0], 'SAVEPOINT slonik_savepoint_1');
+  t.is(spy.query.getCall(1).args[0], 'SAVEPOINT slonik_savepoint_1');
   t.is(
-    pool.querySpy.getCall(2).args[0],
+    spy.query.getCall(2).args[0],
     'ROLLBACK TO SAVEPOINT slonik_savepoint_1',
   );
-  t.is(pool.querySpy.getCall(3).args[0], 'SAVEPOINT slonik_savepoint_1');
+  t.is(spy.query.getCall(3).args[0], 'SAVEPOINT slonik_savepoint_1');
   t.is(
-    pool.querySpy.getCall(4).args[0],
+    spy.query.getCall(4).args[0],
     'ROLLBACK TO SAVEPOINT slonik_savepoint_1',
   );
 });

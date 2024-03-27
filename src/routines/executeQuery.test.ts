@@ -1,7 +1,7 @@
 import { type QuerySqlToken } from '..';
 import { InvalidInputError } from '../errors';
-import { createClientConfiguration } from '../helpers/createClientConfiguration';
-import { createErrorWithCode } from '../helpers/createErrorWithCode';
+import { createClientConfiguration } from '../helpers.test/createClientConfiguration';
+import { createErrorWithCode } from '../helpers.test/createErrorWithCode';
 import { poolClientStateMap } from '../state';
 import { executeQuery } from './executeQuery';
 import anyTest, { type TestFn } from 'ava';
@@ -30,7 +30,6 @@ beforeEach((t) => {
 
   poolClientStateMap.set(t.context.connection, {
     connectionId: '1',
-    mock: true,
     poolId: '1',
     terminated: null,
     transactionDepth: null,
@@ -50,7 +49,6 @@ test('throws a descriptive error if query is empty', async (t) => {
       } as unknown as QuerySqlToken,
       'foo',
       t.context.executionRoutine,
-      false,
     );
   });
 
@@ -70,7 +68,6 @@ test('throws a descriptive error if the entire query is a value binding', async 
       } as unknown as QuerySqlToken,
       'foo',
       t.context.executionRoutine,
-      false,
     );
   });
 
@@ -110,7 +107,6 @@ test('retries an implicit query that failed due to a transaction error', async (
     } as unknown as QuerySqlToken,
     'foo',
     executionRoutineStub,
-    false,
   );
 
   t.is(executionRoutineStub.callCount, 2);
@@ -152,7 +148,6 @@ test('returns the thrown transaction error if the retry limit is reached', async
       } as unknown as QuerySqlToken,
       'foo',
       executionRoutineStub,
-      false,
     ),
   );
 
@@ -166,7 +161,6 @@ test('transaction errors are not handled if the function was called by a transac
 
   poolClientStateMap.set(connection, {
     connectionId: '1',
-    mock: true,
     poolId: '1',
     terminated: null,
     transactionDepth: null,
@@ -193,7 +187,6 @@ test('transaction errors are not handled if the function was called by a transac
       } as unknown as QuerySqlToken,
       'foo',
       executionRoutineStub,
-      false,
     ),
   );
 

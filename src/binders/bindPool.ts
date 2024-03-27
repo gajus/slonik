@@ -1,7 +1,6 @@
-import { type NativePostgresPool } from '../classes/NativePostgres';
 import { transaction } from '../connectionMethods/transaction';
 import { createConnection } from '../factories/createConnection';
-import { getPoolState } from '../state';
+import { type ConnectionPool } from '../factories/createConnectionPool';
 import {
   type ClientConfiguration,
   type DatabasePool,
@@ -10,7 +9,7 @@ import {
 
 export const bindPool = (
   parentLog: Logger,
-  pool: NativePostgresPool,
+  pool: ConnectionPool,
   clientConfiguration: ClientConfiguration,
 ): DatabasePool => {
   return {
@@ -60,10 +59,6 @@ export const bindPool = (
       );
     },
     end: async () => {
-      const poolState = getPoolState(pool);
-
-      poolState.ended = true;
-
       await pool.end();
     },
     exists: async (query) => {
@@ -80,16 +75,6 @@ export const bindPool = (
         },
         query,
       );
-    },
-    getPoolState: () => {
-      const poolState = getPoolState(pool);
-
-      return {
-        activeConnectionCount: pool.totalCount - pool.idleCount,
-        ended: poolState.ended,
-        idleConnectionCount: pool.idleCount,
-        waitingClientCount: pool.waitingCount,
-      };
     },
     many: async (query) => {
       return await createConnection(
@@ -196,21 +181,20 @@ export const bindPool = (
         query,
       );
     },
-    stream: async (streamQuery, streamHandler, config) => {
+    state: () => {
+      return pool.state();
+    },
+    stream: async (streamQuery, streamHandler) => {
       return await createConnection(
         parentLog,
         pool,
         clientConfiguration,
         'IMPLICIT_QUERY',
         async (connectionLog, connection, boundConnection) => {
-          return await boundConnection.stream(
-            streamQuery,
-            streamHandler,
-            config,
-          );
+          return await boundConnection.stream(streamQuery, streamHandler);
         },
         async (newPool) => {
-          return await newPool.stream(streamQuery, streamHandler, config);
+          return await newPool.stream(streamQuery, streamHandler);
         },
         streamQuery,
       );

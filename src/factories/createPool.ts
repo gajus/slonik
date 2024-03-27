@@ -1,13 +1,13 @@
 import { bindPool } from '../binders/bindPool';
-import { NativePostgresPool } from '../classes/NativePostgres';
 import { Logger } from '../Logger';
-import { createTypeOverrides } from '../routines/createTypeOverrides';
-import { getPoolState } from '../state';
 import { type ClientConfigurationInput, type DatabasePool } from '../types';
 import { createClientConfiguration } from './createClientConfiguration';
-import { createInternalPool } from './createInternalPool';
+import {
+  createConnectionPool,
+  type DriverFactory,
+} from './createConnectionPool';
+import { createPgDriver } from './createPgDriver';
 import { createPoolConfiguration } from './createPoolConfiguration';
-import type pgTypes from 'pg-types';
 
 /**
  * @param connectionUri PostgreSQL [Connection URI](https://www.postgresql.org/docs/current/libpq-connect.html#LIBPQ-CONNSTRING).
@@ -17,51 +17,22 @@ export const createPool = async (
   clientConfigurationInput?: ClientConfigurationInput,
 ): Promise<DatabasePool> => {
   const clientConfiguration = createClientConfiguration(
+    connectionUri,
     clientConfigurationInput,
   );
 
-  const poolConfiguration = createPoolConfiguration(
-    connectionUri,
+  const createClient: DriverFactory =
+    clientConfiguration.driver ?? createPgDriver();
+
+  const pool = createConnectionPool({
     clientConfiguration,
-  );
-
-  let Pool = clientConfiguration.PgPool;
-
-  if (!Pool) {
-    Pool = NativePostgresPool;
-  }
-
-  if (!Pool) {
-    throw new Error('Unexpected state.');
-  }
-
-  const setupPool = createInternalPool(Pool, poolConfiguration);
-
-  let getTypeParser: typeof pgTypes.getTypeParser;
-
-  try {
-    const connection = await setupPool.connect();
-
-    getTypeParser = await createTypeOverrides(
-      connection,
-      clientConfiguration.typeParsers,
-    );
-
-    await connection.release();
-  } finally {
-    await setupPool.end();
-  }
-
-  const pool = createInternalPool(Pool, {
-    ...poolConfiguration,
-    types: {
-      getTypeParser,
-    },
+    createClient,
+    ...createPoolConfiguration(clientConfiguration),
   });
 
   return bindPool(
     Logger.child({
-      poolId: getPoolState(pool).poolId,
+      poolId: pool.id(),
     }),
     pool,
     clientConfiguration,

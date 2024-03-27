@@ -1,14 +1,21 @@
+import { createPgDriver } from '../../../factories/createPgDriver';
+import { createPool } from '../../../factories/createPool';
 import { createSqlTag } from '../../../factories/createSqlTag';
-import { createPool } from '../../../helpers/createPool';
-import test from 'ava';
+import { createPoolWithSpy } from '../../../helpers.test/createPoolWithSpy';
+import { createTestRunner } from '../../../helpers.test/createTestRunner';
 import * as sinon from 'sinon';
+
+const driver = createPgDriver();
+
+const { test } = createTestRunner(driver, 'pg');
 
 const sql = createSqlTag();
 
 test('`afterPoolConnection` is called after `connect`', async (t) => {
   const afterPoolConnection = sinon.stub();
 
-  const pool = await createPool({
+  const { pool, spy } = await createPoolWithSpy(t.context.dsn, {
+    driver,
     interceptors: [{}],
   });
 
@@ -16,13 +23,14 @@ test('`afterPoolConnection` is called after `connect`', async (t) => {
     return 'foo';
   });
 
-  t.true(pool.connectSpy.calledBefore(afterPoolConnection));
+  t.true(spy.acquire.calledBefore(afterPoolConnection));
 });
 
 test('`connectionType` is "EXPLICIT" when `connect` is used to create connection', async (t) => {
   const afterPoolConnection = sinon.stub();
 
-  const pool = await createPool({
+  const pool = await createPool(t.context.dsn, {
+    driver,
     interceptors: [
       {
         afterPoolConnection,
@@ -40,7 +48,8 @@ test('`connectionType` is "EXPLICIT" when `connect` is used to create connection
 test('`connectionType` is "IMPLICIT_QUERY" when a query method is used to create a connection', async (t) => {
   const afterPoolConnection = sinon.stub();
 
-  const pool = await createPool({
+  const pool = await createPool(t.context.dsn, {
+    driver,
     interceptors: [
       {
         afterPoolConnection,
@@ -56,7 +65,8 @@ test('`connectionType` is "IMPLICIT_QUERY" when a query method is used to create
 test('`connectionType` is "IMPLICIT_TRANSACTION" when `transaction` is used to create a connection', async (t) => {
   const afterPoolConnection = sinon.stub();
 
-  const pool = await createPool({
+  const pool = await createPool(t.context.dsn, {
+    driver,
     interceptors: [
       {
         afterPoolConnection,

@@ -9,14 +9,14 @@
     "get-stack-trace": "^3.1.1",
     "iso8601-duration": "^1.3.0",
     "pg": "^8.11.3",
-    "pg-protocol": "^1.6.0",
     "pg-query-stream": "^4.5.3",
     "pg-types": "^4.0.1",
     "postgres-array": "^3.0.2",
     "postgres-interval": "^4.0.2",
     "roarr": "^7.21.1",
     "safe-stable-stringify": "^2.4.3",
-    "serialize-error": "^8.0.0"
+    "serialize-error": "^8.0.0",
+    "strict-event-emitter-types": "^2.0.0"
   },
   "description": "A Node.js PostgreSQL client with strict types, detailed logging and assertions.",
   "devDependencies": {
@@ -35,8 +35,6 @@
     "husky": "^9.0.11",
     "knip": "^5.5.0",
     "nyc": "^15.1.0",
-    "postgres": "^3.4.4",
-    "postgres-bridge": "^1.14.0",
     "semantic-release": "^23.0.5",
     "sinon": "^15.1.0",
     "ts-node": "^10.9.1",
