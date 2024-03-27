@@ -8,19 +8,29 @@ import {
 import test from 'ava';
 
 const createSimpleConnectionClientFactory = () => {
-  return createPoolClientFactory(() => {
-    return {
-      connect: async () => {},
-      end: async () => {},
-      query: async () => {
-        return {
-          rows: [
-            {
-              id: 1,
-            },
-          ],
-        };
-      },
+  return createPoolClientFactory(async () => {
+    return () => {
+      return {
+        connect: async () => {},
+        end: async () => {},
+        query: async () => {
+          return {
+            command: 'SELECT',
+            fields: [
+              {
+                dataTypeId: 23,
+                name: 'id',
+              },
+            ],
+            rowCount: 1,
+            rows: [
+              {
+                id: 1,
+              },
+            ],
+          };
+        },
+      };
     };
   });
 };
@@ -38,21 +48,23 @@ test('acquires connection', async (t) => {
 
   t.deepEqual(connectionPool.state(), {
     activeConnections: 0,
+    ended: false,
     idleConnections: 0,
-    pendingConnections: 0,
+    waitingClients: 0,
   });
 
   const client = await connectionPool.acquire();
 
   t.deepEqual(connectionPool.state(), {
     activeConnections: 1,
+    ended: false,
     idleConnections: 0,
-    pendingConnections: 0,
+    waitingClients: 0,
   });
 
   const result = await client.query('SELECT 1', []);
 
-  t.deepEqual(result, {
+  t.like(result, {
     rows: [
       {
         id: 1,
@@ -78,8 +90,9 @@ test('releases connection', async (t) => {
 
   t.deepEqual(connectionPool.state(), {
     activeConnections: 0,
+    ended: false,
     idleConnections: 1,
-    pendingConnections: 0,
+    waitingClients: 0,
   });
 });
 
@@ -101,8 +114,9 @@ test('queues connection acquisition', async (t) => {
 
   t.deepEqual(connectionPool.state(), {
     activeConnections: 1,
+    ended: false,
     idleConnections: 0,
-    pendingConnections: 1,
+    waitingClients: 1,
   });
 
   await client1.release();
@@ -111,15 +125,17 @@ test('queues connection acquisition', async (t) => {
 
   t.deepEqual(connectionPool.state(), {
     activeConnections: 1,
+    ended: false,
     idleConnections: 0,
-    pendingConnections: 0,
+    waitingClients: 0,
   });
 
   await client2.release();
 
   t.deepEqual(connectionPool.state(), {
     activeConnections: 0,
+    ended: false,
     idleConnections: 1,
-    pendingConnections: 0,
+    waitingClients: 0,
   });
 });

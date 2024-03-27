@@ -35,8 +35,6 @@ export const createPool = async (
   };
 
   const internalPool = {
-    _pulseQueue: () => {},
-    _remove: () => {},
     connect: () => {
       return connection;
     },
@@ -54,7 +52,6 @@ export const createPool = async (
   const endSpy: sinon.SinonSpy = sinon.spy(connection, 'end');
   const querySpy: sinon.SinonStub = sinon.stub(connection, 'query').returns({});
   const releaseSpy: sinon.SinonSpy = sinon.spy(connection, 'release');
-  const removeSpy: sinon.SinonSpy = sinon.spy(internalPool, '_remove');
 
   const pool = bindPool(log, internalPool, {
     captureStackTrace: false,
@@ -78,6 +75,5 @@ export const createPool = async (
     endSpy,
     querySpy,
     releaseSpy,
-    removeSpy,
   };
 };

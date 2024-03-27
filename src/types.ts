@@ -96,7 +96,7 @@ export type ClientConfiguration = {
   /**
    * Overrides the default PoolClientFactory. (Default: `createPgPool`)
    */
-  readonly client: ConnectionPoolClientFactory;
+  readonly client?: ConnectionPoolClientFactory;
   /**
    * Number of times to retry establishing a new connection. (Default: 3)
    */

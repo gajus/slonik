@@ -4,12 +4,14 @@ import {
   sql,
   StatementTimeoutError,
 } from '..';
-import { NativePostgresPool } from '../classes/NativePostgres';
+import { createPgPoolClientFactory } from '../factories/createPgPoolClientFactory';
 import { createTestRunner } from '../helpers/createIntegrationTests';
 import * as sinon from 'sinon';
 import { z } from 'zod';
 
-const { test } = createTestRunner(NativePostgresPool, 'pg');
+const client = createPgPoolClientFactory();
+
+const { test } = createTestRunner(client, 'pg');
 
 test('reading stream after a delay', async (t) => {
   const pool = await createPool(t.context.dsn, {

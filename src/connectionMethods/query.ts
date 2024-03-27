@@ -7,6 +7,7 @@ import {
   type Field,
   type InternalQueryMethod,
   type QueryResult,
+  type QueryResultRow,
 } from '../types';
 
 const executionRoutine: ExecutionRoutine = async (
@@ -37,7 +38,7 @@ const executionRoutine: ExecutionRoutine = async (
     fields,
     notices: result.notices ?? [],
     rowCount: result.rowCount || 0,
-    rows: result.rows || [],
+    rows: (result.rows || []) as QueryResultRow[],
     type: 'QueryResult',
   };
 };
