@@ -89,9 +89,9 @@ type InternalPoolClientFactory = () => InternalPoolClient;
 export const createDriver = (
   setup: InternalPoolClientFactorySetup,
 ): DriverFactory => {
-  const eventEmitter = new EventEmitter();
-
   return async ({ clientConfiguration }) => {
+    const eventEmitter = new EventEmitter();
+
     const createPoolClient = await setup({
       clientConfiguration,
       eventEmitter,
@@ -149,8 +149,12 @@ export const createDriver = (
       isIdle: () => {
         return !isActive;
       },
-      off: eventEmitter.off.bind(eventEmitter),
-      on: eventEmitter.on.bind(eventEmitter),
+      off: (event, listener) => {
+        return eventEmitter.off(event, listener);
+      },
+      on: (event, listener) => {
+        return eventEmitter.on(event, listener);
+      },
       query: async (sql, values) => {
         if (isDestroyed) {
           throw new Error('Client is destroyed.');
