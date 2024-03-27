@@ -70,20 +70,25 @@ test('throws if bound an undefined value', (t) => {
   );
 });
 
-test.serial.skip('logs all bound values if one is undefined', (t) => {
-  t.throws(() => {
-    // @ts-expect-error - intentional
-    sql.fragment`SELECT ${undefined}`;
+// eslint-disable-next-line n/no-process-env
+if (process.env.ROARR_LOG === '1') {
+  // This test is only valid when ROARR_LOG=1.
+  // TODO find a way to test this without relying on environment variables.
+  test.serial('logs all bound values if one is undefined', (t) => {
+    t.throws(() => {
+      // @ts-expect-error - intentional
+      sql.fragment`SELECT ${undefined}`;
+    });
+
+    const targetMessage = t.context.logs.find((message: any) => {
+      return message.message === 'bound values';
+    }) as any;
+
+    t.truthy(targetMessage);
+
+    t.deepEqual(targetMessage.context.parts, ['SELECT ', '']);
   });
-
-  const targetMessage = t.context.logs.find((message: any) => {
-    return message.message === 'bound values';
-  }) as any;
-
-  t.truthy(targetMessage);
-
-  t.deepEqual(targetMessage.context.parts, ['SELECT ', '']);
-});
+}
 
 test('the sql property is immutable', (t) => {
   const query = sql.fragment`SELECT 1`;
