@@ -150,8 +150,8 @@ export type ClientConfiguration = {
 export type ClientConfigurationInput = Partial<ClientConfiguration>;
 
 export type StreamResult = {
-  notices: readonly DriverNotice[];
-  type: 'StreamResult';
+  readonly notices: readonly DriverNotice[];
+  readonly type: 'StreamResult';
 };
 
 type StreamFunction = <T extends ZodTypeAny>(

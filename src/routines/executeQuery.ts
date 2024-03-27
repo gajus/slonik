@@ -29,13 +29,14 @@ import {
   type QueryResult,
   type QueryResultRow,
   type QuerySqlToken,
+  type StreamResult,
 } from '../types';
 import { createQueryId } from '../utilities/createQueryId';
 import { defer } from '../utilities/defer';
 import { getStackTrace } from 'get-stack-trace';
 import { serializeError } from 'serialize-error';
 
-type GenericQueryResult = QueryResult<QueryResultRow>;
+type GenericQueryResult = StreamResult | QueryResult<QueryResultRow>;
 
 export type ExecutionRoutine = (
   connection: ConnectionPoolClient,
@@ -126,7 +127,9 @@ export const executeQuery = async (
   inheritedQueryId: QueryId | undefined,
   executionRoutine: ExecutionRoutine,
   stream: boolean = false,
-): Promise<QueryResult<Record<string, PrimitiveValueExpression>>> => {
+): Promise<
+  StreamResult | QueryResult<Record<string, PrimitiveValueExpression>>
+> => {
   const poolClientState = getPoolClientState(connection);
 
   if (poolClientState.terminated) {

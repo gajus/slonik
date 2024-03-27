@@ -184,21 +184,17 @@ export const bindPool = (
     state: () => {
       return pool.state();
     },
-    stream: async (streamQuery, streamHandler, config) => {
+    stream: async (streamQuery, streamHandler) => {
       return await createConnection(
         parentLog,
         pool,
         clientConfiguration,
         'IMPLICIT_QUERY',
         async (connectionLog, connection, boundConnection) => {
-          return await boundConnection.stream(
-            streamQuery,
-            streamHandler,
-            config,
-          );
+          return await boundConnection.stream(streamQuery, streamHandler);
         },
         async (newPool) => {
-          return await newPool.stream(streamQuery, streamHandler, config);
+          return await newPool.stream(streamQuery, streamHandler);
         },
         streamQuery,
       );
