@@ -5,9 +5,24 @@ import {
   type DriverNotice,
 } from './factories/createConnectionPool';
 import type * as tokens from './tokens';
+import { type Readable } from 'node:stream';
 import { type ConnectionOptions as TlsConnectionOptions } from 'node:tls';
 import { type Logger } from 'roarr';
 import { type z, type ZodTypeAny } from 'zod';
+
+type StreamDataEvent<T> = { data: T; fields: readonly Field[] };
+
+// eslint-disable-next-line @typescript-eslint/consistent-type-definitions
+export interface TypedReadable<T> extends Readable {
+  // eslint-disable-next-line @typescript-eslint/method-signature-style
+  on(event: 'data', listener: (chunk: StreamDataEvent<T>) => void): this;
+  // eslint-disable-next-line @typescript-eslint/method-signature-style
+  on(event: string | symbol, listener: (...args: any[]) => void): this;
+
+  [Symbol.asyncIterator]: () => AsyncIterableIterator<StreamDataEvent<T>>;
+}
+
+export type StreamHandler<T> = (stream: TypedReadable<T>) => void;
 
 /**
  * @see https://www.postgresql.org/docs/current/libpq-connect.html#LIBPQ-PARAMKEYWORDS
@@ -134,6 +149,16 @@ export type ClientConfiguration = {
 
 export type ClientConfigurationInput = Partial<ClientConfiguration>;
 
+export type StreamResult = {
+  notices: readonly DriverNotice[];
+  type: 'StreamResult';
+};
+
+type StreamFunction = <T extends ZodTypeAny>(
+  sql: QuerySqlToken<T>,
+  streamHandler: StreamHandler<z.infer<T>>,
+) => Promise<StreamResult>;
+
 export type CommonQueryMethods = {
   readonly any: QueryAnyFunction;
   readonly anyFirst: QueryAnyFirstFunction;
@@ -145,6 +170,7 @@ export type CommonQueryMethods = {
   readonly one: QueryOneFunction;
   readonly oneFirst: QueryOneFirstFunction;
   readonly query: QueryFunction;
+  readonly stream: StreamFunction;
   readonly transaction: <T>(
     handler: TransactionFunction<T>,
     transactionRetryLimit?: number,
@@ -415,6 +441,15 @@ export type InternalQueryMethod<R = any> = (
   slonikSql: QuerySqlToken,
   uid?: QueryId,
 ) => R;
+
+export type InternalStreamFunction = <T>(
+  log: Logger,
+  connection: ConnectionPoolClient,
+  clientConfiguration: ClientConfiguration,
+  slonikSql: QuerySqlToken,
+  streamHandler: StreamHandler<T>,
+  uid?: QueryId,
+) => Promise<StreamResult>;
 
 export type InternalTransactionFunction = <T>(
   log: Logger,

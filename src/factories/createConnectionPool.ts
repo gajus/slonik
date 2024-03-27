@@ -1,4 +1,4 @@
-import { type ClientConfiguration } from '../types';
+import { type ClientConfiguration, type TypedReadable } from '../types';
 import { createUid } from '../utilities/createUid';
 import { defer, type DeferredPromise } from '../utilities/defer';
 import EventEmitter from 'node:events';
@@ -39,6 +39,11 @@ export type DriverQueryResult = {
   readonly rows: Array<Record<string, unknown>>;
 };
 
+export type DriverStreamResult = {
+  readonly fields: DriverField[];
+  readonly row: Record<string, unknown>;
+};
+
 export type ConnectionPoolClient = {
   acquire: () => void;
   destroy: () => Promise<void>;
@@ -50,6 +55,10 @@ export type ConnectionPoolClient = {
   query: (query: string, values?: unknown[]) => Promise<DriverQueryResult>;
   release: () => Promise<void>;
   removeListener: ClientEventEmitter['removeListener'];
+  stream: (
+    query: string,
+    values?: unknown[],
+  ) => TypedReadable<DriverStreamResult>;
 };
 
 /**
@@ -60,7 +69,11 @@ export type ConnectionPoolClient = {
 type InternalPoolClient = {
   connect: () => Promise<void>;
   end: () => Promise<void>;
-  query: (query: string, values: unknown[]) => Promise<DriverQueryResult>;
+  query: (query: string, values?: unknown[]) => Promise<DriverQueryResult>;
+  stream: (
+    query: string,
+    values?: unknown[],
+  ) => TypedReadable<DriverStreamResult>;
 };
 
 type InternalPoolClientFactorySetup = ({
@@ -84,7 +97,7 @@ export const createDriver = (
       eventEmitter,
     });
 
-    const { query, connect, end } = createPoolClient();
+    const { query, stream, connect, end } = createPoolClient();
 
     let isActive = false;
     let isDestroyed = false;
@@ -188,6 +201,19 @@ export const createDriver = (
         eventEmitter.emit('release');
       },
       removeListener: eventEmitter.removeListener.bind(eventEmitter),
+      stream: (sql, values) => {
+        if (isDestroyed) {
+          throw new Error('Client is destroyed.');
+        }
+
+        if (!isActive) {
+          throw new Error('Client is not active.');
+        }
+
+        // TODO determine if streaming and do not allow to release the client until the stream is finished
+
+        return stream(sql, values);
+      },
     };
 
     await connect();

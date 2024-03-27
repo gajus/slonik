@@ -8,6 +8,7 @@ import { maybeOneFirst } from '../connectionMethods/maybeOneFirst';
 import { one } from '../connectionMethods/one';
 import { oneFirst } from '../connectionMethods/oneFirst';
 import { query as queryMethod } from '../connectionMethods/query';
+import { stream } from '../connectionMethods/stream';
 import { transaction } from '../connectionMethods/transaction';
 import { type ConnectionPoolClient } from '../factories/createConnectionPool';
 import {
@@ -61,6 +62,16 @@ export const bindPoolConnection = (
     },
     query: (slonikSql) => {
       return queryMethod(parentLog, connection, clientConfiguration, slonikSql);
+    },
+    stream: async (slonikSql, streamHandler) => {
+      return await stream(
+        parentLog,
+        connection,
+        clientConfiguration,
+        slonikSql,
+        streamHandler,
+        undefined,
+      );
     },
     transaction: async (handler, transactionRetryLimit) => {
       return await transaction(

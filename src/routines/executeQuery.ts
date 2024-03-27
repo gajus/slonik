@@ -125,6 +125,7 @@ export const executeQuery = async (
   query: QuerySqlToken,
   inheritedQueryId: QueryId | undefined,
   executionRoutine: ExecutionRoutine,
+  stream: boolean = false,
 ): Promise<QueryResult<Record<string, PrimitiveValueExpression>>> => {
   const poolClientState = getPoolClientState(connection);
 
@@ -193,19 +194,21 @@ export const executeQuery = async (
 
   let result: GenericQueryResult | null;
 
-  for (const interceptor of clientConfiguration.interceptors) {
-    if (interceptor.beforeQueryExecution) {
-      result = await interceptor.beforeQueryExecution(
-        executionContext,
-        actualQuery,
-      );
-
-      if (result) {
-        log.info(
-          'beforeQueryExecution interceptor produced a result; short-circuiting query execution using beforeQueryExecution result',
+  if (!stream) {
+    for (const interceptor of clientConfiguration.interceptors) {
+      if (interceptor.beforeQueryExecution) {
+        result = await interceptor.beforeQueryExecution(
+          executionContext,
+          actualQuery,
         );
 
-        return result;
+        if (result) {
+          log.info(
+            'beforeQueryExecution interceptor produced a result; short-circuiting query execution using beforeQueryExecution result',
+          );
+
+          return result;
+        }
       }
     }
   }
