@@ -50,7 +50,14 @@ const createTypeOverrides = async (
 
   const postgresTypes = (
     await connection.query(
-      'SELECT oid, typarray, typname FROM pg_type WHERE typname = ANY($1::text[])',
+      `
+        SELECT
+          oid,
+          typarray,
+          typname
+        FROM pg_type
+        WHERE typname = ANY($1::text[])
+      `,
       [typeNames],
     )
   ).rows as PostgresType[];
