@@ -529,7 +529,3 @@ export type MockPoolOverrides = {
 };
 
 export type { Logger } from 'roarr';
-
-export type TypeOverrides = {
-  setTypeParser: (type: string, parser: (value: string) => unknown) => void;
-};

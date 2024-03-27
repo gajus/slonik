@@ -1,22 +1,27 @@
 /* eslint-disable ava/max-asserts */
 
+import { createPgPoolClientFactory } from '../../factories/createPgPoolClientFactory';
 import { createSqlTag } from '../../factories/createSqlTag';
-import { createPool } from '../../helpers/createPool';
-import test from 'ava';
+import { createPoolWithSpy } from '../../helpers.test/createPoolWithSpy';
+import { createTestRunner } from '../../helpers.test/createTestRunner';
+
+const client = createPgPoolClientFactory();
+
+const { test } = createTestRunner(client, 'pg');
 
 const sql = createSqlTag();
 
 test('release connection after promise is resolved (implicit connection)', async (t) => {
-  const pool = await createPool();
+  const { pool, spy } = await createPoolWithSpy(t.context.dsn, { client });
 
   await pool.query(sql.unsafe`SELECT 1`);
 
-  t.is(pool.acquireSpy.callCount, 1);
-  t.is(pool.releaseSpy.callCount, 1);
+  t.is(spy.acquire.callCount, 1);
+  t.is(spy.release.callCount, 1);
 });
 
-test('ends connection after promise is rejected', async (t) => {
-  const pool = await createPool();
+test('destroys connection after promise is rejected', async (t) => {
+  const { pool, spy } = await createPoolWithSpy(t.context.dsn, { client });
 
   await t.throwsAsync(
     pool.connect(async () => {
@@ -24,13 +29,13 @@ test('ends connection after promise is rejected', async (t) => {
     }),
   );
 
-  t.is(pool.acquireSpy.callCount, 1);
-  t.is(pool.releaseSpy.callCount, 1);
-  t.true(pool.releaseSpy.calledWith(true));
+  t.is(spy.acquire.callCount, 1);
+  t.is(spy.destroy.callCount, 1);
 });
 
 test('does not connect if `beforePoolConnection` throws an error', async (t) => {
-  const pool = await createPool({
+  const { pool, spy } = await createPoolWithSpy(t.context.dsn, {
+    client,
     interceptors: [
       {
         beforePoolConnection: async () => {
@@ -46,12 +51,13 @@ test('does not connect if `beforePoolConnection` throws an error', async (t) => 
     }),
   );
 
-  t.is(pool.acquireSpy.callCount, 0);
-  t.is(pool.releaseSpy.callCount, 0);
+  t.is(spy.acquire.callCount, 0);
+  t.is(spy.release.callCount, 0);
 });
 
 test('ends connection if `afterPoolConnection` throws an error', async (t) => {
-  const pool = await createPool({
+  const { pool, spy } = await createPoolWithSpy(t.context.dsn, {
+    client,
     interceptors: [
       {
         afterPoolConnection: async () => {
@@ -67,13 +73,13 @@ test('ends connection if `afterPoolConnection` throws an error', async (t) => {
     }),
   );
 
-  t.is(pool.acquireSpy.callCount, 1);
-  t.is(pool.releaseSpy.callCount, 1);
-  t.true(pool.releaseSpy.calledWith(true));
+  t.is(spy.acquire.callCount, 1);
+  t.is(spy.destroy.callCount, 1);
 });
 
 test('ends connection if `beforePoolConnectionRelease` throws an error', async (t) => {
-  const pool = await createPool({
+  const { pool, spy } = await createPoolWithSpy(t.context.dsn, {
+    client,
     interceptors: [
       {
         afterPoolConnection: async () => {
@@ -89,15 +95,17 @@ test('ends connection if `beforePoolConnectionRelease` throws an error', async (
     }),
   );
 
-  t.is(pool.acquireSpy.callCount, 1);
-  t.is(pool.releaseSpy.callCount, 1);
-  t.true(pool.releaseSpy.calledWith(true));
+  t.is(spy.acquire.callCount, 1);
+  t.is(spy.destroy.callCount, 1);
 });
 
 test('if `beforePoolConnection` returns pool object, then the returned pool object is used to create a new connection (IMPLICIT_QUERY)', async (t) => {
-  const pool0 = await createPool();
+  const { pool: pool0, spy: spy0 } = await createPoolWithSpy(t.context.dsn, {
+    client,
+  });
 
-  const pool1 = await createPool({
+  const { pool: pool1, spy: spy1 } = await createPoolWithSpy(t.context.dsn, {
+    client,
     interceptors: [
       {
         beforePoolConnection: () => {
@@ -109,17 +117,20 @@ test('if `beforePoolConnection` returns pool object, then the returned pool obje
 
   await pool1.query(sql.unsafe`SELECT 1`);
 
-  t.is(pool0.acquireSpy.callCount, 1);
-  t.is(pool0.releaseSpy.callCount, 1);
+  t.is(spy0.acquire.callCount, 1);
+  t.is(spy0.release.callCount, 1);
 
-  t.is(pool1.acquireSpy.callCount, 0);
-  t.is(pool1.releaseSpy.callCount, 0);
+  t.is(spy1.acquire.callCount, 0);
+  t.is(spy1.release.callCount, 0);
 });
 
 test('if `beforePoolConnection` returns pool object, then the returned pool object is used to create a connection (IMPLICIT_TRANSACTION)', async (t) => {
-  const pool0 = await createPool();
+  const { pool: pool0, spy: spy0 } = await createPoolWithSpy(t.context.dsn, {
+    client,
+  });
 
-  const pool1 = await createPool({
+  const { pool: pool1, spy: spy1 } = await createPoolWithSpy(t.context.dsn, {
+    client,
     interceptors: [
       {
         beforePoolConnection: () => {
@@ -133,17 +144,20 @@ test('if `beforePoolConnection` returns pool object, then the returned pool obje
     return await connection.query(sql.unsafe`SELECT 1`);
   });
 
-  t.is(pool0.acquireSpy.callCount, 1);
-  t.is(pool0.releaseSpy.callCount, 1);
+  t.is(spy0.acquire.callCount, 1);
+  t.is(spy0.release.callCount, 1);
 
-  t.is(pool1.acquireSpy.callCount, 0);
-  t.is(pool1.releaseSpy.callCount, 0);
+  t.is(spy1.acquire.callCount, 0);
+  t.is(spy1.release.callCount, 0);
 });
 
 test('if `beforePoolConnection` returns pool object, then the returned pool object is used to create a connection (EXPLICIT)', async (t) => {
-  const pool0 = await createPool();
+  const { pool: pool0, spy: spy0 } = await createPoolWithSpy(t.context.dsn, {
+    client,
+  });
 
-  const pool1 = await createPool({
+  const { pool: pool1, spy: spy1 } = await createPoolWithSpy(t.context.dsn, {
+    client,
     interceptors: [
       {
         beforePoolConnection: () => {
@@ -157,15 +171,16 @@ test('if `beforePoolConnection` returns pool object, then the returned pool obje
     return await connection.query(sql.unsafe`SELECT 1`);
   });
 
-  t.is(pool0.acquireSpy.callCount, 1);
-  t.is(pool0.releaseSpy.callCount, 1);
+  t.is(spy0.acquire.callCount, 1);
+  t.is(spy0.release.callCount, 1);
 
-  t.is(pool1.acquireSpy.callCount, 0);
-  t.is(pool1.releaseSpy.callCount, 0);
+  t.is(spy1.acquire.callCount, 0);
+  t.is(spy1.release.callCount, 0);
 });
 
 test('if `beforePoolConnection` returns null, then the current pool object is used to create a connection', async (t) => {
-  const pool = await createPool({
+  const { pool, spy } = await createPoolWithSpy(t.context.dsn, {
+    client,
     interceptors: [
       {
         beforePoolConnection: () => {
@@ -177,6 +192,6 @@ test('if `beforePoolConnection` returns null, then the current pool object is us
 
   await pool.query(sql.unsafe`SELECT 1`);
 
-  t.is(pool.acquireSpy.callCount, 1);
-  t.is(pool.releaseSpy.callCount, 1);
+  t.is(spy.acquire.callCount, 1);
+  t.is(spy.release.callCount, 1);
 });

@@ -1,10 +1,8 @@
 import { sql } from '..';
 import { createPgPoolClientFactory } from '../factories/createPgPoolClientFactory';
 import { createPool } from '../factories/createPool';
-import {
-  createIntegrationTests,
-  createTestRunner,
-} from '../helpers/createIntegrationTests';
+import { createIntegrationTests } from '../helpers.test/createIntegrationTests';
+import { createTestRunner } from '../helpers.test/createTestRunner';
 
 const client = createPgPoolClientFactory();
 

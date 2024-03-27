@@ -1,27 +1,30 @@
 import { createPgPoolClientFactory } from '../../../factories/createPgPoolClientFactory';
+import { createSqlTag } from '../../../factories/createSqlTag';
 import { createPoolWithSpy } from '../../../helpers.test/createPoolWithSpy';
 import { createTestRunner } from '../../../helpers.test/createTestRunner';
-import * as sinon from 'sinon';
 
 const client = createPgPoolClientFactory();
 
 const { test } = createTestRunner(client, 'pg');
 
-test('`beforePoolConnection` is called before `connect`', async (t) => {
-  const beforePoolConnection = sinon.stub();
+const sql = createSqlTag();
 
+test('transforms query', async (t) => {
   const { pool, spy } = await createPoolWithSpy(t.context.dsn, {
     client,
     interceptors: [
       {
-        beforePoolConnection,
+        transformQuery: (executionContext, query) => {
+          return {
+            ...query,
+            sql: 'SELECT 2',
+          };
+        },
       },
     ],
   });
 
-  await pool.connect(async () => {
-    return 'foo';
-  });
+  await pool.query(sql.unsafe`SELECT 1`);
 
-  t.true(beforePoolConnection.calledBefore(spy.acquire));
+  t.is(spy.query.firstCall.args[0], 'SELECT 2');
 });

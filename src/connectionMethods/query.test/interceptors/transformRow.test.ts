@@ -1,11 +1,17 @@
+import { createPgPoolClientFactory } from '../../../factories/createPgPoolClientFactory';
 import { createSqlTag } from '../../../factories/createSqlTag';
-import { createPool } from '../../../helpers/createPool';
-import test from 'ava';
+import { createPoolWithMockedQuery } from '../../../helpers.test/createPoolWithMockedQuery';
+import { createTestRunner } from '../../../helpers.test/createTestRunner';
+
+const client = createPgPoolClientFactory();
+
+const { test } = createTestRunner(client, 'pg');
 
 const sql = createSqlTag();
 
 test('overrides result row (sync)', async (t) => {
-  const pool = await createPool({
+  const { pool, query } = await createPoolWithMockedQuery(t.context.dsn, {
+    client,
     interceptors: [
       {
         transformRow: () => {
@@ -17,7 +23,7 @@ test('overrides result row (sync)', async (t) => {
     ],
   });
 
-  pool.querySpy.returns({
+  query.returns({
     command: 'SELECT',
     fields: [],
     rowCount: 1,
@@ -46,7 +52,8 @@ test('overrides result row (sync)', async (t) => {
 });
 
 test('overrides result row (async)', async (t) => {
-  const pool = await createPool({
+  const { pool, query } = await createPoolWithMockedQuery(t.context.dsn, {
+    client,
     interceptors: [
       {
         transformRow: () => {
@@ -58,7 +65,7 @@ test('overrides result row (async)', async (t) => {
     ],
   });
 
-  pool.querySpy.returns({
+  query.returns({
     command: 'SELECT',
     fields: [],
     rowCount: 1,

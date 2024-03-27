@@ -1,20 +1,25 @@
-import { createClientConfiguration } from '../helpers/createClientConfiguration';
-import { createErrorWithCode } from '../helpers/createErrorWithCode';
-import { createPool } from '../helpers/createPool';
-import test from 'ava';
+import { createPgPoolClientFactory } from '../factories/createPgPoolClientFactory';
+import { createPool } from '../factories/createPool';
+import { createErrorWithCode } from '../helpers.test/createErrorWithCode';
+import { createPoolWithSpy } from '../helpers.test/createPoolWithSpy';
+import { createTestRunner } from '../helpers.test/createTestRunner';
 import * as sinon from 'sinon';
 
+const client = createPgPoolClientFactory();
+
+const { test } = createTestRunner(client, 'pg');
+
 test('commits successful transaction', async (t) => {
-  const pool = await createPool();
+  const { pool, spy } = await createPoolWithSpy(t.context.dsn, { client });
 
   await pool.transaction(async () => {});
 
-  t.is(pool.querySpy.getCall(0).args[0], 'START TRANSACTION');
-  t.is(pool.querySpy.getCall(1).args[0], 'COMMIT');
+  t.is(spy.query.getCall(0).args[0], 'START TRANSACTION');
+  t.is(spy.query.getCall(1).args[0], 'COMMIT');
 });
 
 test('rollbacks unsuccessful transaction', async (t) => {
-  const pool = await createPool();
+  const { pool, spy } = await createPoolWithSpy(t.context.dsn, { client });
 
   await t.throwsAsync(
     pool.transaction(async () => {
@@ -22,12 +27,13 @@ test('rollbacks unsuccessful transaction', async (t) => {
     }),
   );
 
-  t.is(pool.querySpy.getCall(0).args[0], 'START TRANSACTION');
-  t.is(pool.querySpy.getCall(1).args[0], 'ROLLBACK');
+  t.is(spy.query.getCall(0).args[0], 'START TRANSACTION');
+  t.is(spy.query.getCall(1).args[0], 'ROLLBACK');
 });
 
 test('retries a transaction that failed due to a transaction error', async (t) => {
-  const pool = await createPool(createClientConfiguration());
+  const pool = await createPool(t.context.dsn);
+
   const handlerStub = sinon.stub();
 
   handlerStub
@@ -49,6 +55,7 @@ test('retries a transaction that failed due to a transaction error', async (t) =
   const result = await pool.transaction(handlerStub);
 
   t.is(handlerStub.callCount, 2);
+
   t.deepEqual(result, {
     command: 'SELECT',
     fields: [],
@@ -63,7 +70,8 @@ test('retries a transaction that failed due to a transaction error', async (t) =
 });
 
 test('commits successful transaction with retries', async (t) => {
-  const pool = await createPool(createClientConfiguration());
+  const { pool, spy } = await createPoolWithSpy(t.context.dsn, { client });
+
   const handlerStub = sinon.stub();
 
   handlerStub
@@ -84,14 +92,14 @@ test('commits successful transaction with retries', async (t) => {
 
   await pool.transaction(handlerStub);
 
-  t.is(pool.querySpy.getCall(0).args[0], 'START TRANSACTION');
-  t.is(pool.querySpy.getCall(1).args[0], 'ROLLBACK');
-  t.is(pool.querySpy.getCall(2).args[0], 'START TRANSACTION');
-  t.is(pool.querySpy.getCall(3).args[0], 'COMMIT');
+  t.is(spy.query.getCall(0).args[0], 'START TRANSACTION');
+  t.is(spy.query.getCall(1).args[0], 'ROLLBACK');
+  t.is(spy.query.getCall(2).args[0], 'START TRANSACTION');
+  t.is(spy.query.getCall(3).args[0], 'COMMIT');
 });
 
 test('returns the thrown transaction error if the retry limit is reached', async (t) => {
-  const pool = await createPool(createClientConfiguration());
+  const pool = await createPool(t.context.dsn);
   const handlerStub = sinon.stub();
 
   handlerStub
@@ -109,7 +117,7 @@ test('returns the thrown transaction error if the retry limit is reached', async
 });
 
 test('rollbacks unsuccessful transaction with retries', async (t) => {
-  const pool = await createPool(createClientConfiguration());
+  const { pool, spy } = await createPoolWithSpy(t.context.dsn, { client });
   const handlerStub = sinon.stub();
 
   handlerStub
@@ -120,8 +128,8 @@ test('rollbacks unsuccessful transaction with retries', async (t) => {
 
   await t.throwsAsync(pool.transaction(handlerStub, 1));
 
-  t.is(pool.querySpy.getCall(0).args[0], 'START TRANSACTION');
-  t.is(pool.querySpy.getCall(1).args[0], 'ROLLBACK');
-  t.is(pool.querySpy.getCall(2).args[0], 'START TRANSACTION');
-  t.is(pool.querySpy.getCall(3).args[0], 'ROLLBACK');
+  t.is(spy.query.getCall(0).args[0], 'START TRANSACTION');
+  t.is(spy.query.getCall(1).args[0], 'ROLLBACK');
+  t.is(spy.query.getCall(2).args[0], 'START TRANSACTION');
+  t.is(spy.query.getCall(3).args[0], 'ROLLBACK');
 });

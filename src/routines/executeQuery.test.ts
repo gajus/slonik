@@ -1,7 +1,7 @@
 import { type QuerySqlToken } from '..';
 import { InvalidInputError } from '../errors';
-import { createClientConfiguration } from '../helpers/createClientConfiguration';
-import { createErrorWithCode } from '../helpers/createErrorWithCode';
+import { createClientConfiguration } from '../helpers.test/createClientConfiguration';
+import { createErrorWithCode } from '../helpers.test/createErrorWithCode';
 import { poolClientStateMap } from '../state';
 import { executeQuery } from './executeQuery';
 import anyTest, { type TestFn } from 'ava';
