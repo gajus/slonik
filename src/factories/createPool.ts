@@ -1,8 +1,6 @@
 import { bindPool } from '../binders/bindPool';
 import { Logger } from '../Logger';
-import { getPoolState, poolStateMap } from '../state';
 import { type ClientConfigurationInput, type DatabasePool } from '../types';
-import { createUid } from '../utilities/createUid';
 import { createClientConfiguration } from './createClientConfiguration';
 import {
   type ConnectionPoolClientFactory,
@@ -32,20 +30,9 @@ export const createPool = async (
     ...createPoolConfiguration(clientConfiguration),
   });
 
-  // TODO refactor: this is a leftover from the old implementation
-  const poolId = createUid();
-
-  // TODO refactor: this is a leftover from the old implementation
-  poolStateMap.set(pool, {
-    ended: false,
-    mock: false,
-    poolId,
-    typeOverrides: null,
-  });
-
   return bindPool(
     Logger.child({
-      poolId: getPoolState(pool).poolId,
+      poolId: pool.id(),
     }),
     pool,
     clientConfiguration,

@@ -76,7 +76,6 @@ Note: Using this project does not require TypeScript. It is a regular ES6 module
         * [API](#user-content-slonik-usage-api)
         * [Default configuration](#user-content-slonik-usage-default-configuration)
         * [Checking out a client from the connection pool](#user-content-slonik-usage-checking-out-a-client-from-the-connection-pool)
-        * [Mocking Slonik](#user-content-slonik-usage-mocking-slonik)
     * [How are they different?](#user-content-slonik-how-are-they-different)
         * [`pg` vs `slonik`](#user-content-slonik-how-are-they-different-pg-vs-slonik)
         * [`pg-promise` vs `slonik`](#user-content-slonik-how-are-they-different-pg-promise-vs-slonik)
@@ -545,30 +544,30 @@ const main = async () => {
   pool.getPoolState();
 
   // {
-  //   activeConnectionCount: 0,
+  //   activeConnections: 0,
   //   ended: false,
-  //   idleConnectionCount: 0,
-  //   waitingClientCount: 0,
+  //   idleConnections: 0,
+  //   waitingClients: 0,
   // }
 
   await pool.connect(() => {
     pool.getPoolState();
 
     // {
-    //   activeConnectionCount: 1,
+    //   activeConnections: 1,
     //   ended: false,
-    //   idleConnectionCount: 0,
-    //   waitingClientCount: 0,
+    //   idleConnections: 0,
+    //   waitingClients: 0,
     // }
   });
 
   pool.getPoolState();
 
   // {
-  //   activeConnectionCount: 0,
+  //   activeConnections: 0,
   //   ended: false,
-  //   idleConnectionCount: 1,
-  //   waitingClientCount: 0,
+  //   idleConnections: 1,
+  //   waitingClients: 0,
   // }
 
   await pool.end();
@@ -576,10 +575,10 @@ const main = async () => {
   pool.getPoolState();
 
   // {
-  //   activeConnectionCount: 0,
+  //   activeConnections: 0,
   //   ended: true,
-  //   idleConnectionCount: 0,
-  //   waitingClientCount: 0,
+  //   idleConnections: 0,
+  //   waitingClients: 0,
   // }
 };
 
@@ -742,56 +741,7 @@ result;
 
 Connection is released back to the pool after the promise produced by the function supplied to `connect()` method is either resolved or rejected.
 
-Read: [Protecting against unsafe connection handling](#user-content-protecting-against-unsafe-connection-handling)
-
-<a name="user-content-slonik-usage-mocking-slonik"></a>
-<a name="slonik-usage-mocking-slonik"></a>
-### Mocking Slonik
-
-Slonik provides a way to mock queries against the database.
-
-* Use `createMockPool` to create a mock connection.
-* Use `createMockQueryResult` to create a mock query result.
-
-```ts
-import {
-  createMockPool,
-  createMockQueryResult,
-} from 'slonik';
-
-type OverridesType =
-  query: (sql: string, values: PrimitiveValueExpression[],) => Promise<QueryResult<QueryResultRow>>,
-};
-
-createMockPool(overrides: OverridesType): DatabasePool;
-createMockQueryResult(rows: QueryResultRow[]): QueryResult<QueryResultRow>;
-```
-
-Example:
-
-```ts
-import {
-  createMockPool,
-  createMockQueryResult,
-} from 'slonik';
-
-const pool = createMockPool({
-  query: async () => {
-    return createMockQueryResult([
-      {
-        foo: 'bar',
-      },
-    ]);
-  },
-});
-
-await pool.connect(async (connection) => {
-  const results = await connection.query(sql.typeAlias('foo')`
-    SELECT ${'foo'} AS foo
-  `);
-});
-```
-
+Read: [Protecting against unsafe connection handling](#user-content-protecting-against-unsafe-connection-handling).
 
 <a name="user-content-slonik-how-are-they-different"></a>
 <a name="slonik-how-are-they-different"></a>

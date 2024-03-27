@@ -3,7 +3,7 @@ import {
   type ConnectionPool,
   type ConnectionPoolClient,
 } from '../factories/createConnectionPool';
-import { getPoolState, poolClientStateMap } from '../state';
+import { poolClientStateMap } from '../state';
 import { type Logger } from '../types';
 import { createUid } from '../utilities/createUid';
 import { serializeError } from 'serialize-error';
@@ -13,8 +13,6 @@ export const establishConnection = async (
   pool: ConnectionPool,
   connectionRetryLimit: number,
 ) => {
-  const poolState = getPoolState(pool);
-
   let connection: ConnectionPoolClient;
 
   let remainingConnectionRetryLimit = connectionRetryLimit + 1;
@@ -28,8 +26,7 @@ export const establishConnection = async (
 
       poolClientStateMap.set(connection, {
         connectionId: createUid(),
-        mock: poolState.mock,
-        poolId: poolState.poolId,
+        poolId: pool.id(),
         terminated: null,
         transactionDepth: null,
         transactionId: null,

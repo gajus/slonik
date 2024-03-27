@@ -1,7 +1,7 @@
 import { bindPoolConnection } from '../binders/bindPoolConnection';
 import { UnexpectedStateError } from '../errors';
 import { establishConnection } from '../routines/establishConnection';
-import { getPoolClientState, getPoolState } from '../state';
+import { getPoolClientState } from '../state';
 import {
   type ClientConfiguration,
   type Connection,
@@ -57,7 +57,9 @@ export const createConnection = async (
   poolHandler: PoolHandlerType,
   query: QuerySqlToken | null = null,
 ) => {
-  const { ended, poolId } = getPoolState(pool);
+  const { ended } = pool.state();
+
+  const poolId = pool.id();
 
   if (ended) {
     throw new UnexpectedStateError(

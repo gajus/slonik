@@ -14,9 +14,7 @@ const execTransaction: InternalTransactionFunction = async (
 ) => {
   const poolClientState = getPoolClientState(connection);
 
-  if (poolClientState.mock === false) {
-    await connection.query('START TRANSACTION');
-  }
+  await connection.query('START TRANSACTION');
 
   if (typeof poolClientState.transactionDepth !== 'number') {
     throw new UnexpectedStateError(
@@ -38,16 +36,12 @@ const execTransaction: InternalTransactionFunction = async (
       throw new BackendTerminatedError(poolClientState.terminated);
     }
 
-    if (poolClientState.mock === false) {
-      await connection.query('COMMIT');
-    }
+    await connection.query('COMMIT');
 
     return result;
   } catch (error) {
     if (!poolClientState.terminated) {
-      if (poolClientState.mock === false) {
-        await connection.query('ROLLBACK');
-      }
+      await connection.query('ROLLBACK');
 
       parentLog.error(
         {

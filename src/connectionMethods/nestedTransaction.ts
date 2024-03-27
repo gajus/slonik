@@ -12,13 +12,9 @@ const execNestedTransaction: InternalNestedTransactionFunction = async (
   handler,
   newTransactionDepth,
 ) => {
-  const poolClientState = getPoolClientState(connection);
-
-  if (poolClientState.mock === false) {
-    await connection.query(
-      'SAVEPOINT slonik_savepoint_' + String(newTransactionDepth),
-    );
-  }
+  await connection.query(
+    'SAVEPOINT slonik_savepoint_' + String(newTransactionDepth),
+  );
 
   try {
     const result = await handler(
@@ -32,11 +28,9 @@ const execNestedTransaction: InternalNestedTransactionFunction = async (
 
     return result;
   } catch (error) {
-    if (poolClientState.mock === false) {
-      await connection.query(
-        'ROLLBACK TO SAVEPOINT slonik_savepoint_' + String(newTransactionDepth),
-      );
-    }
+    await connection.query(
+      'ROLLBACK TO SAVEPOINT slonik_savepoint_' + String(newTransactionDepth),
+    );
 
     parentLog.error(
       {

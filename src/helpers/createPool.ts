@@ -1,5 +1,4 @@
 import { bindPool } from '../binders/bindPool';
-import { poolStateMap } from '../state';
 import { type ClientConfigurationInput } from '../types';
 import { Logger as log } from './Logger';
 import EventEmitter from 'node:events';
@@ -41,13 +40,6 @@ export const createPool = async (
     },
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
   } as any;
-
-  poolStateMap.set(internalPool, {
-    ended: false,
-    mock: false,
-    poolId: '1',
-    typeOverrides: null,
-  });
 
   const acquireSpy: sinon.SinonSpy = sinon.spy(internalPool, 'acquire');
   const endSpy: sinon.SinonSpy = sinon.spy(connection, 'end');

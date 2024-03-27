@@ -23,7 +23,6 @@ export {
   UnexpectedStateError,
   UniqueIntegrityConstraintViolationError,
 } from './errors';
-export { createMockPool } from './factories/createMockPool';
 export { createMockQueryResult } from './factories/createMockQueryResult';
 export { createPool } from './factories/createPool';
 export { createSqlTag } from './factories/createSqlTag';

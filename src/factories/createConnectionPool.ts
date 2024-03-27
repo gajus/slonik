@@ -1,6 +1,6 @@
 import { type ClientConfiguration } from '../types';
+import { createUid } from '../utilities/createUid';
 import { defer, type DeferredPromise } from '../utilities/defer';
-import { randomUUID } from 'node:crypto';
 import EventEmitter from 'node:events';
 import { type StrictEventEmitter } from 'strict-event-emitter-types';
 
@@ -40,9 +40,9 @@ export type DriverQueryResult = {
 };
 
 export type ConnectionPoolClient = {
-  acquire: () => ConnectionPoolClient;
+  acquire: () => void;
   destroy: () => Promise<void>;
-  id: string;
+  id: () => string;
   isActive: () => boolean;
   isIdle: () => boolean;
   off: ClientEventEmitter['off'];
@@ -92,7 +92,7 @@ export const createPoolClientFactory = (
 
     let activeQueryPromise: Promise<DriverQueryResult> | null = null;
 
-    const id = randomUUID();
+    const id = createUid();
 
     const clearIdleTimeout = () => {
       if (idleTimeout) {
@@ -117,8 +117,6 @@ export const createPoolClientFactory = (
         isActive = true;
 
         eventEmitter.emit('acquire');
-
-        return client;
       },
       destroy: async () => {
         if (isDestroyed) {
@@ -133,7 +131,7 @@ export const createPoolClientFactory = (
 
         await end();
       },
-      id,
+      id: () => id,
       isActive: () => isActive,
       isIdle: () => {
         return !isActive;
@@ -223,7 +221,7 @@ export const createConnectionPool = ({
   const connections: ConnectionPoolClient[] = [];
   const waitingClients: Array<DeferredPromise<ConnectionPoolClient>> = [];
 
-  const id = randomUUID();
+  const id = createUid();
 
   let isEnded = false;
 
@@ -262,7 +260,9 @@ export const createConnectionPool = ({
             return;
           }
 
-          waitingClient.resolve(connection.acquire());
+          connection.acquire();
+
+          waitingClient.resolve(connection);
         };
 
         connection.on('release', onRelease);
@@ -278,7 +278,9 @@ export const createConnectionPool = ({
 
         connections.push(connection);
 
-        return connection.acquire();
+        connection.acquire();
+
+        return connection;
       } else {
         const waitingClient = defer<ConnectionPoolClient>();
 
