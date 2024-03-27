@@ -160,14 +160,14 @@ export const createDriver = (
 
           const result = await activeQueryPromise;
 
-          // eslint-disable-next-line require-atomic-updates
-          activeQueryPromise = null;
-
           return result;
         } catch (error) {
           eventEmitter.emit('error', error);
 
           throw error;
+        } finally {
+          // eslint-disable-next-line require-atomic-updates
+          activeQueryPromise = null;
         }
       },
       release: async () => {

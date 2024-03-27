@@ -347,6 +347,7 @@ export const executeQuery = async (
     }
 
     error.notices = notices;
+
     throw error;
   }
 
