@@ -6,6 +6,7 @@ import {
   createPoolClientFactory,
 } from './createConnectionPool';
 import test from 'ava';
+import { setTimeout as delay } from 'node:timers/promises';
 
 const createSimpleConnectionClientFactory = () => {
   return createPoolClientFactory(async () => {
@@ -136,6 +137,40 @@ test('queues connection acquisition', async (t) => {
     activeConnections: 0,
     ended: false,
     idleConnections: 1,
+    waitingClients: 0,
+  });
+});
+
+test('destroys idle connections', async (t) => {
+  const clientConfiguration = createClientConfiguration(
+    'postgres://localhost:5432/test',
+    {
+      idleTimeout: 100,
+    },
+  );
+
+  const connectionPool = createConnectionPool({
+    clientConfiguration,
+    createClient: createSimpleConnectionClientFactory(),
+  });
+
+  const client = await connectionPool.acquire();
+
+  await client.release();
+
+  t.deepEqual(connectionPool.state(), {
+    activeConnections: 0,
+    ended: false,
+    idleConnections: 1,
+    waitingClients: 0,
+  });
+
+  await delay(200);
+
+  t.deepEqual(connectionPool.state(), {
+    activeConnections: 0,
+    ended: false,
+    idleConnections: 0,
     waitingClients: 0,
   });
 });
