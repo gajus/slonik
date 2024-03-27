@@ -17,5 +17,5 @@ test('`beforePoolConnection` is called before `connect`', async (t) => {
     return 'foo';
   });
 
-  t.true(beforePoolConnection.calledBefore(pool.connectSpy));
+  t.true(beforePoolConnection.calledBefore(pool.acquireSpy));
 });

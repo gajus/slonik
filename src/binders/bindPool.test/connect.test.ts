@@ -11,7 +11,7 @@ test('release connection after promise is resolved (implicit connection)', async
 
   await pool.query(sql.unsafe`SELECT 1`);
 
-  t.is(pool.connectSpy.callCount, 1);
+  t.is(pool.acquireSpy.callCount, 1);
   t.is(pool.releaseSpy.callCount, 1);
 });
 
@@ -24,7 +24,7 @@ test('ends connection after promise is rejected', async (t) => {
     }),
   );
 
-  t.is(pool.connectSpy.callCount, 1);
+  t.is(pool.acquireSpy.callCount, 1);
   t.is(pool.releaseSpy.callCount, 1);
   t.true(pool.releaseSpy.calledWith(true));
 });
@@ -46,7 +46,7 @@ test('does not connect if `beforePoolConnection` throws an error', async (t) => 
     }),
   );
 
-  t.is(pool.connectSpy.callCount, 0);
+  t.is(pool.acquireSpy.callCount, 0);
   t.is(pool.releaseSpy.callCount, 0);
 });
 
@@ -67,7 +67,7 @@ test('ends connection if `afterPoolConnection` throws an error', async (t) => {
     }),
   );
 
-  t.is(pool.connectSpy.callCount, 1);
+  t.is(pool.acquireSpy.callCount, 1);
   t.is(pool.releaseSpy.callCount, 1);
   t.true(pool.releaseSpy.calledWith(true));
 });
@@ -89,7 +89,7 @@ test('ends connection if `beforePoolConnectionRelease` throws an error', async (
     }),
   );
 
-  t.is(pool.connectSpy.callCount, 1);
+  t.is(pool.acquireSpy.callCount, 1);
   t.is(pool.releaseSpy.callCount, 1);
   t.true(pool.releaseSpy.calledWith(true));
 });
@@ -109,10 +109,10 @@ test('if `beforePoolConnection` returns pool object, then the returned pool obje
 
   await pool1.query(sql.unsafe`SELECT 1`);
 
-  t.is(pool0.connectSpy.callCount, 1);
+  t.is(pool0.acquireSpy.callCount, 1);
   t.is(pool0.releaseSpy.callCount, 1);
 
-  t.is(pool1.connectSpy.callCount, 0);
+  t.is(pool1.acquireSpy.callCount, 0);
   t.is(pool1.releaseSpy.callCount, 0);
 });
 
@@ -133,10 +133,10 @@ test('if `beforePoolConnection` returns pool object, then the returned pool obje
     return await connection.query(sql.unsafe`SELECT 1`);
   });
 
-  t.is(pool0.connectSpy.callCount, 1);
+  t.is(pool0.acquireSpy.callCount, 1);
   t.is(pool0.releaseSpy.callCount, 1);
 
-  t.is(pool1.connectSpy.callCount, 0);
+  t.is(pool1.acquireSpy.callCount, 0);
   t.is(pool1.releaseSpy.callCount, 0);
 });
 
@@ -157,10 +157,10 @@ test('if `beforePoolConnection` returns pool object, then the returned pool obje
     return await connection.query(sql.unsafe`SELECT 1`);
   });
 
-  t.is(pool0.connectSpy.callCount, 1);
+  t.is(pool0.acquireSpy.callCount, 1);
   t.is(pool0.releaseSpy.callCount, 1);
 
-  t.is(pool1.connectSpy.callCount, 0);
+  t.is(pool1.acquireSpy.callCount, 0);
   t.is(pool1.releaseSpy.callCount, 0);
 });
 
@@ -177,6 +177,6 @@ test('if `beforePoolConnection` returns null, then the current pool object is us
 
   await pool.query(sql.unsafe`SELECT 1`);
 
-  t.is(pool.connectSpy.callCount, 1);
+  t.is(pool.acquireSpy.callCount, 1);
   t.is(pool.releaseSpy.callCount, 1);
 });

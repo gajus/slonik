@@ -16,7 +16,7 @@ test('`afterPoolConnection` is called after `connect`', async (t) => {
     return 'foo';
   });
 
-  t.true(pool.connectSpy.calledBefore(afterPoolConnection));
+  t.true(pool.acquireSpy.calledBefore(afterPoolConnection));
 });
 
 test('`connectionType` is "EXPLICIT" when `connect` is used to create connection', async (t) => {
