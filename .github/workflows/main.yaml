@@ -93,7 +93,6 @@ jobs:
         test_only:
           - utilities
           - pg-integration
-          - postgres-integration
         node_version:
           - 20
       max-parallel: 3
