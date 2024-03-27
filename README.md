@@ -530,7 +530,7 @@ Note: `pool.end()` does not terminate active connections/ transactions.
 <a name="slonik-usage-describing-the-current-state-of-the-connection-pool"></a>
 ### Describing the current state of the connection pool
 
-Use `pool.getPoolState()` to find out if pool is alive and how many connections are active and idle, and how many clients are waiting for a connection.
+Use `pool.state()` to find out if pool is alive and how many connections are active and idle, and how many clients are waiting for a connection.
 
 ```ts
 import {
@@ -541,7 +541,7 @@ import {
 const pool = await createPool('postgres://');
 
 const main = async () => {
-  pool.getPoolState();
+  pool.state();
 
   // {
   //   activeConnections: 0,
@@ -551,7 +551,7 @@ const main = async () => {
   // }
 
   await pool.connect(() => {
-    pool.getPoolState();
+    pool.state();
 
     // {
     //   activeConnections: 1,
@@ -561,7 +561,7 @@ const main = async () => {
     // }
   });
 
-  pool.getPoolState();
+  pool.state();
 
   // {
   //   activeConnections: 0,
@@ -572,7 +572,7 @@ const main = async () => {
 
   await pool.end();
 
-  pool.getPoolState();
+  pool.state();
 
   // {
   //   activeConnections: 0,

@@ -76,7 +76,7 @@ export const bindPool = (
         query,
       );
     },
-    getPoolState: () => {
+    state: () => {
       return pool.state();
     },
     many: async (query) => {

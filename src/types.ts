@@ -174,7 +174,7 @@ export type DatabasePool = CommonQueryMethods & {
   readonly configuration: ClientConfiguration;
   readonly connect: <T>(connectionRoutine: ConnectionRoutine<T>) => Promise<T>;
   readonly end: () => Promise<void>;
-  readonly getPoolState: () => PoolState;
+  readonly state: () => PoolState;
 };
 
 export type DatabaseConnection = DatabasePool | DatabasePoolConnection;

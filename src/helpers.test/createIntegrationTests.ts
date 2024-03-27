@@ -704,7 +704,7 @@ export const createIntegrationTests = (
       driver,
     });
 
-    t.deepEqual(pool.getPoolState(), {
+    t.deepEqual(pool.state(), {
       activeConnections: 0,
       ended: false,
       idleConnections: 0,
@@ -713,7 +713,7 @@ export const createIntegrationTests = (
 
     await pool.end();
 
-    t.deepEqual(pool.getPoolState(), {
+    t.deepEqual(pool.state(), {
       activeConnections: 0,
       ended: true,
       idleConnections: 0,
@@ -726,7 +726,7 @@ export const createIntegrationTests = (
       driver,
     });
 
-    t.deepEqual(pool.getPoolState(), {
+    t.deepEqual(pool.state(), {
       activeConnections: 0,
       ended: false,
       idleConnections: 0,
@@ -737,7 +737,7 @@ export const createIntegrationTests = (
       SELECT 1
     `);
 
-    t.deepEqual(pool.getPoolState(), {
+    t.deepEqual(pool.state(), {
       activeConnections: 0,
       ended: false,
       idleConnections: 1,
@@ -746,7 +746,7 @@ export const createIntegrationTests = (
 
     await pool.end();
 
-    t.deepEqual(pool.getPoolState(), {
+    t.deepEqual(pool.state(), {
       activeConnections: 0,
       ended: true,
       idleConnections: 0,
@@ -759,7 +759,7 @@ export const createIntegrationTests = (
       driver,
     });
 
-    t.deepEqual(pool.getPoolState(), {
+    t.deepEqual(pool.state(), {
       activeConnections: 0,
       ended: false,
       idleConnections: 0,
@@ -772,7 +772,7 @@ export const createIntegrationTests = (
 
     await delay(100);
 
-    t.deepEqual(pool.getPoolState(), {
+    t.deepEqual(pool.state(), {
       activeConnections: 1,
       ended: false,
       idleConnections: 0,
@@ -781,7 +781,7 @@ export const createIntegrationTests = (
 
     await pool.end();
 
-    t.deepEqual(pool.getPoolState(), {
+    t.deepEqual(pool.state(), {
       activeConnections: 0,
       ended: true,
       idleConnections: 0,
@@ -798,7 +798,7 @@ export const createIntegrationTests = (
       maximumPoolSize: 5,
     });
 
-    t.deepEqual(pool.getPoolState(), {
+    t.deepEqual(pool.state(), {
       activeConnections: 0,
       ended: false,
       idleConnections: 0,
@@ -823,7 +823,7 @@ export const createIntegrationTests = (
       `),
     ]);
 
-    t.deepEqual(pool.getPoolState(), {
+    t.deepEqual(pool.state(), {
       activeConnections: 0,
       ended: false,
       idleConnections: 5,
@@ -832,7 +832,7 @@ export const createIntegrationTests = (
 
     await pool.end();
 
-    t.deepEqual(pool.getPoolState(), {
+    t.deepEqual(pool.state(), {
       activeConnections: 0,
       ended: true,
       idleConnections: 0,
@@ -849,7 +849,7 @@ export const createIntegrationTests = (
       maximumPoolSize: 5,
     });
 
-    t.deepEqual(pool.getPoolState(), {
+    t.deepEqual(pool.state(), {
       activeConnections: 0,
       ended: false,
       idleConnections: 0,
@@ -878,7 +878,7 @@ export const createIntegrationTests = (
       statementTimeout: 1_000,
     });
 
-    t.deepEqual(pool.getPoolState(), {
+    t.deepEqual(pool.state(), {
       activeConnections: 0,
       ended: false,
       idleConnections: 0,
@@ -1271,7 +1271,7 @@ export const createIntegrationTests = (
       maximumPoolSize: 5,
     });
 
-    t.deepEqual(pool.getPoolState(), {
+    t.deepEqual(pool.state(), {
       activeConnections: 0,
       ended: false,
       idleConnections: 0,
@@ -1298,7 +1298,7 @@ export const createIntegrationTests = (
 
     await delay(100);
 
-    t.deepEqual(pool.getPoolState(), {
+    t.deepEqual(pool.state(), {
       activeConnections: 5,
       ended: false,
       idleConnections: 0,
@@ -1325,7 +1325,7 @@ export const createIntegrationTests = (
 
     await delay(100);
 
-    t.deepEqual(pool.getPoolState(), {
+    t.deepEqual(pool.state(), {
       activeConnections: 5,
       ended: false,
       idleConnections: 0,
@@ -1334,7 +1334,7 @@ export const createIntegrationTests = (
 
     await batch1;
 
-    t.deepEqual(pool.getPoolState(), {
+    t.deepEqual(pool.state(), {
       activeConnections: 5,
       ended: false,
       idleConnections: 0,
@@ -1343,7 +1343,7 @@ export const createIntegrationTests = (
 
     await batch2;
 
-    t.deepEqual(pool.getPoolState(), {
+    t.deepEqual(pool.state(), {
       activeConnections: 0,
       ended: false,
       idleConnections: 5,
@@ -1352,7 +1352,7 @@ export const createIntegrationTests = (
 
     await delay(1_000);
 
-    t.deepEqual(pool.getPoolState(), {
+    t.deepEqual(pool.state(), {
       activeConnections: 0,
       ended: false,
       idleConnections: 0,
