@@ -257,13 +257,15 @@ export const createConnectionPool = ({
         throw new Error('Connection pool has ended.');
       }
 
-      // const idleConnection = connections.find((connection) =>
-      //   connection.isIdle(),
-      // );
+      const idleConnection = connections.find((connection) =>
+        connection.isIdle(),
+      );
 
-      // if (idleConnection) {
-      //   return idleConnection.acquire();
-      // }
+      if (idleConnection) {
+        idleConnection.acquire();
+
+        return idleConnection;
+      }
 
       if (connections.length < poolSize) {
         const connection = await createClient({
