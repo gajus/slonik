@@ -132,7 +132,6 @@ Note: Using this project does not require TypeScript. It is a regular ES6 module
         * [`one`](#user-content-slonik-query-methods-one)
         * [`oneFirst`](#user-content-slonik-query-methods-onefirst)
         * [`query`](#user-content-slonik-query-methods-query)
-        * [`stream`](#user-content-slonik-query-methods-stream)
         * [`transaction`](#user-content-slonik-query-methods-transaction)
     * [Utilities](#user-content-slonik-utilities)
         * [`parseDsn`](#user-content-slonik-utilities-parsedsn)
@@ -2495,54 +2494,6 @@ await connection.query(sql.typeAlias('foo')`SELECT foo`);
 //     }
 //   ]
 // }
-```
-
-<a name="user-content-slonik-query-methods-stream"></a>
-<a name="slonik-query-methods-stream"></a>
-### <code>stream</code>
-
-Streams query results.
-
-Example:
-
-```ts
-await connection.stream(sql.typeAlias('foo')`SELECT foo`, (stream) => {
-  stream.on('data', (row) => {
-    row;
-    // {
-    //   data: {
-    //     foo: 'bar'
-    //   },
-    //   fields: [
-    //     {
-    //       name: 'foo',
-    //       dataTypeId: 23,
-    //     }
-    //   ]
-    // }
-  });
-});
-```
-
-You can also using the [AsyncIterable](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/AsyncIterator) interface:
-
-```ts
-await connection.stream(sql.typeAlias('foo')`SELECT foo`, async (stream) => {
-  for await (const row of stream) {
-    row;
-    // {
-    //   data: {
-    //     foo: 'bar'
-    //   },
-    //   fields: [
-    //     {
-    //       name: 'foo',
-    //       dataTypeId: 23,
-    //     }
-    //   ]
-    // }
-  }
-});
 ```
 
 <a name="user-content-slonik-query-methods-transaction"></a>

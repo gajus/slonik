@@ -164,52 +164,6 @@ await connection.query(sql.typeAlias('foo')`SELECT foo`);
 // }
 ```
 
-### `stream`
-
-Streams query results.
-
-Example:
-
-```ts
-await connection.stream(sql.typeAlias('foo')`SELECT foo`, (stream) => {
-  stream.on('data', (row) => {
-    row;
-    // {
-    //   data: {
-    //     foo: 'bar'
-    //   },
-    //   fields: [
-    //     {
-    //       name: 'foo',
-    //       dataTypeId: 23,
-    //     }
-    //   ]
-    // }
-  });
-});
-```
-
-You can also using the [AsyncIterable](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/AsyncIterator) interface:
-
-```ts
-await connection.stream(sql.typeAlias('foo')`SELECT foo`, async (stream) => {
-  for await (const row of stream) {
-    row;
-    // {
-    //   data: {
-    //     foo: 'bar'
-    //   },
-    //   fields: [
-    //     {
-    //       name: 'foo',
-    //       dataTypeId: 23,
-    //     }
-    //   ]
-    // }
-  }
-});
-```
-
 ### `transaction`
 
 `transaction` method is used wrap execution of queries in `START TRANSACTION` and `COMMIT` or `ROLLBACK`. `COMMIT` is called if the transaction handler returns a promise that resolves; `ROLLBACK` is called otherwise.
