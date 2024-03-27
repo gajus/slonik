@@ -16,7 +16,8 @@
     "postgres-interval": "^4.0.2",
     "roarr": "^7.21.1",
     "safe-stable-stringify": "^2.4.3",
-    "serialize-error": "^8.0.0"
+    "serialize-error": "^8.0.0",
+    "strict-event-emitter-types": "^2.0.0"
   },
   "description": "A Node.js PostgreSQL client with strict types, detailed logging and assertions.",
   "devDependencies": {
@@ -35,8 +36,6 @@
     "husky": "^9.0.11",
     "knip": "^5.5.0",
     "nyc": "^15.1.0",
-    "postgres": "^3.4.4",
-    "postgres-bridge": "^1.14.0",
     "semantic-release": "^23.0.5",
     "sinon": "^15.1.0",
     "ts-node": "^10.9.1",

@@ -1,13 +1,12 @@
-import {
-  type NativePostgresPool,
-  type NativePostgresPoolClient,
-  type NativePostgresPoolConfiguration,
-} from './classes/NativePostgres';
 import { type SlonikError } from './errors';
+import {
+  type ConnectionPoolClient,
+  type ConnectionPoolClientFactory,
+  type Notice,
+} from './factories/createConnectionPool';
 import type * as tokens from './tokens';
 import { type Readable, type ReadableOptions } from 'node:stream';
 import { type ConnectionOptions as TlsConnectionOptions } from 'node:tls';
-import { type NoticeMessage as Notice } from 'pg-protocol/dist/messages';
 import { type Logger } from 'roarr';
 import { type z, type ZodTypeAny } from 'zod';
 
@@ -91,15 +90,13 @@ export type QueryResult<T> = {
 
 export type ClientConfiguration = {
   /**
-   * Override the underlying PostgreSQL driver. *
-   */
-  readonly PgPool?: new (
-    poolConfig: NativePostgresPoolConfiguration,
-  ) => NativePostgresPool;
-  /**
    * Dictates whether to capture stack trace before executing query. Middlewares access stack trace through query execution context. (Default: true)
    */
   readonly captureStackTrace: boolean;
+  /**
+   * Overrides the default PoolClientFactory. (Default: `createPgPool`)
+   */
+  readonly client: ConnectionPoolClientFactory;
   /**
    * Number of times to retry establishing a new connection. (Default: 3)
    */
@@ -108,6 +105,10 @@ export type ClientConfiguration = {
    * Timeout (in milliseconds) after which an error is raised if connection cannot cannot be established. (Default: 5000)
    */
   readonly connectionTimeout: number | 'DISABLE_TIMEOUT';
+  /**
+   * Connection URI, e.g. `postgres://user:password@localhost/mydatabase`.
+   */
+  readonly connectionUri: string;
   /**
    * Timeout (in milliseconds) after which idle clients are closed. Use 'DISABLE_TIMEOUT' constant to disable the timeout. (Default: 60000)
    */
@@ -195,10 +196,10 @@ export type ConnectionRoutine<T> = (
 ) => Promise<T>;
 
 type PoolState = {
-  readonly activeConnectionCount: number;
+  readonly activeConnections: number;
   readonly ended: boolean;
-  readonly idleConnectionCount: number;
-  readonly waitingClientCount: number;
+  readonly idleConnections: number;
+  readonly waitingClients: number;
 };
 
 export type DatabasePool = CommonQueryMethods & {
@@ -442,7 +443,7 @@ export type SqlTag<Z extends Record<string, ZodTypeAny>> = {
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export type InternalQueryMethod<R = any> = (
   log: Logger,
-  connection: NativePostgresPoolClient,
+  connection: ConnectionPoolClient,
   clientConfiguration: ClientConfiguration,
   slonikSql: QuerySqlToken,
   uid?: QueryId,
@@ -450,7 +451,7 @@ export type InternalQueryMethod<R = any> = (
 
 export type InternalStreamFunction = <T>(
   log: Logger,
-  connection: NativePostgresPoolClient,
+  connection: ConnectionPoolClient,
   clientConfiguration: ClientConfiguration,
   slonikSql: QuerySqlToken,
   streamHandler: StreamHandler<T>,
@@ -460,7 +461,7 @@ export type InternalStreamFunction = <T>(
 
 export type InternalTransactionFunction = <T>(
   log: Logger,
-  connection: NativePostgresPoolClient,
+  connection: ConnectionPoolClient,
   clientConfiguration: ClientConfiguration,
   handler: TransactionFunction<T>,
   transactionRetryLimit?: number,
@@ -468,7 +469,7 @@ export type InternalTransactionFunction = <T>(
 
 export type InternalNestedTransactionFunction = <T>(
   log: Logger,
-  connection: NativePostgresPoolClient,
+  connection: ConnectionPoolClient,
   clientConfiguration: ClientConfiguration,
   handler: TransactionFunction<T>,
   transactionDepth: number,

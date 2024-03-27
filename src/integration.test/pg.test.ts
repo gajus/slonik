@@ -1,17 +1,20 @@
-import { createPool, sql } from '..';
-import { NativePostgresPool } from '../classes/NativePostgres';
+import { sql } from '..';
+import { createPgPoolClientFactory } from '../factories/createPgPoolClientFactory';
+import { createPool } from '../factories/createPool';
 import {
   createIntegrationTests,
   createTestRunner,
 } from '../helpers/createIntegrationTests';
 
-const { test } = createTestRunner(NativePostgresPool, 'pg');
+const client = createPgPoolClientFactory();
 
-createIntegrationTests(test, NativePostgresPool);
+const { test } = createTestRunner(client, 'pg');
+
+createIntegrationTests(test, client);
 
 test('returns expected query result object (NOTICE)', async (t) => {
   const pool = await createPool(t.context.dsn, {
-    PgPool: NativePostgresPool,
+    client,
   });
 
   await pool.query(sql.unsafe`

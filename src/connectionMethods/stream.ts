@@ -1,4 +1,4 @@
-import { type NativePostgresPoolClient } from '../classes/NativePostgres';
+import { type ConnectionPoolClient } from '../factories/createConnectionPool';
 import { executeQuery, type ExecutionRoutine } from '../routines/executeQuery';
 import {
   type ClientConfiguration,
@@ -17,7 +17,7 @@ import QueryStream from 'pg-query-stream';
 type RowTransformer = NonNullable<Interceptor['transformRow']>;
 
 const createTransformStream = (
-  connection: NativePostgresPoolClient,
+  connection: ConnectionPoolClient,
   clientConfiguration: ClientConfiguration,
   queryContext: QueryContext,
   query: Query,

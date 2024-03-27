@@ -4,8 +4,7 @@
  */
 // eslint-disable-next-line no-restricted-imports
 export {
+  type ClientConfig as NativePostgresClientConfiguration,
   Pool as NativePostgresPool,
-  PoolClient as NativePostgresPoolClient,
-  type PoolConfig as NativePostgresPoolConfiguration,
   type QueryResult as NativePostgresQueryResult,
 } from 'pg';

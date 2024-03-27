@@ -1,13 +1,15 @@
 import { bindPool } from '../binders/bindPool';
-import { NativePostgresPool } from '../classes/NativePostgres';
 import { Logger } from '../Logger';
-import { createTypeOverrides } from '../routines/createTypeOverrides';
-import { getPoolState } from '../state';
+import { getPoolState, poolStateMap } from '../state';
 import { type ClientConfigurationInput, type DatabasePool } from '../types';
+import { createUid } from '../utilities/createUid';
 import { createClientConfiguration } from './createClientConfiguration';
-import { createInternalPool } from './createInternalPool';
+import {
+  type ConnectionPoolClientFactory,
+  createConnectionPool,
+} from './createConnectionPool';
+import { createPgPoolClientFactory } from './createPgPoolClientFactory';
 import { createPoolConfiguration } from './createPoolConfiguration';
-import type pgTypes from 'pg-types';
 
 /**
  * @param connectionUri PostgreSQL [Connection URI](https://www.postgresql.org/docs/current/libpq-connect.html#LIBPQ-CONNSTRING).
@@ -17,46 +19,28 @@ export const createPool = async (
   clientConfigurationInput?: ClientConfigurationInput,
 ): Promise<DatabasePool> => {
   const clientConfiguration = createClientConfiguration(
+    connectionUri,
     clientConfigurationInput,
   );
 
-  const poolConfiguration = createPoolConfiguration(
-    connectionUri,
+  const createClient: ConnectionPoolClientFactory =
+    clientConfiguration.client ?? createPgPoolClientFactory();
+
+  const pool = createConnectionPool({
     clientConfiguration,
-  );
+    createClient,
+    ...createPoolConfiguration(clientConfiguration),
+  });
 
-  let Pool = clientConfiguration.PgPool;
+  // TODO refactor: this is a leftover from the old implementation
+  const poolId = createUid();
 
-  if (!Pool) {
-    Pool = NativePostgresPool;
-  }
-
-  if (!Pool) {
-    throw new Error('Unexpected state.');
-  }
-
-  const setupPool = createInternalPool(Pool, poolConfiguration);
-
-  let getTypeParser: typeof pgTypes.getTypeParser;
-
-  try {
-    const connection = await setupPool.connect();
-
-    getTypeParser = await createTypeOverrides(
-      connection,
-      clientConfiguration.typeParsers,
-    );
-
-    await connection.release();
-  } finally {
-    await setupPool.end();
-  }
-
-  const pool = createInternalPool(Pool, {
-    ...poolConfiguration,
-    types: {
-      getTypeParser,
-    },
+  // TODO refactor: this is a leftover from the old implementation
+  poolStateMap.set(pool, {
+    ended: false,
+    mock: false,
+    poolId,
+    typeOverrides: null,
   });
 
   return bindPool(

@@ -1,8 +1,8 @@
-import {
-  type NativePostgresPool,
-  type NativePostgresPoolClient,
-} from './classes/NativePostgres';
 import { UnexpectedStateError } from './errors';
+import {
+  type ConnectionPool,
+  type ConnectionPoolClient,
+} from './factories/createConnectionPool';
 import { type TypeOverrides } from './types';
 import { type DeferredPromise } from './utilities/defer';
 
@@ -23,14 +23,14 @@ type PoolClientState = {
   transactionId: string | null;
 };
 
-export const poolStateMap = new WeakMap<NativePostgresPool, PoolState>();
+export const poolStateMap = new WeakMap<ConnectionPool, PoolState>();
 
 export const poolClientStateMap = new WeakMap<
-  NativePostgresPoolClient,
+  ConnectionPoolClient,
   PoolClientState
 >();
 
-export const getPoolState = (pool: NativePostgresPool): PoolState => {
+export const getPoolState = (pool: ConnectionPool): PoolState => {
   const poolState = poolStateMap.get(pool);
 
   if (!poolState) {
@@ -41,7 +41,7 @@ export const getPoolState = (pool: NativePostgresPool): PoolState => {
 };
 
 export const getPoolClientState = (
-  poolClient: NativePostgresPoolClient,
+  poolClient: ConnectionPoolClient,
 ): PoolClientState => {
   const poolClientState = poolClientStateMap.get(poolClient);
 

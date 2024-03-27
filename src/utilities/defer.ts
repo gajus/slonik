@@ -1,16 +1,29 @@
-export type DeferredPromise<ValueType> = {
-  promise: Promise<ValueType>;
-  reject: (error: unknown) => void;
-  resolve: (value: ValueType) => void;
+export type DeferredPromise<T> = {
+  promise: Promise<T>;
+  reject: (error: Error) => void;
+  resolve: (value: T) => void;
 };
 
 export const defer = <T>(): DeferredPromise<T> => {
-  const deferred = {} as DeferredPromise<T>;
+  let resolve!: (value: T) => void;
+  let reject!: (error: Error) => void;
 
-  deferred.promise = new Promise((resolve, reject) => {
-    deferred.resolve = resolve;
-    deferred.reject = reject;
+  const promise = new Promise<T>((_resolve, _reject) => {
+    resolve = _resolve;
+    reject = _reject;
   });
 
-  return deferred;
+  if (!resolve) {
+    throw new Error('Expected resolve');
+  }
+
+  if (!reject) {
+    throw new Error('Expected reject');
+  }
+
+  return {
+    promise,
+    reject,
+    resolve,
+  };
 };
