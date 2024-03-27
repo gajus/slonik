@@ -7,6 +7,7 @@ const defaultConfiguration = {
   connectionRetryLimit: 3,
   connectionTimeout: 5_000,
   connectionUri: 'postgres://',
+  gracefulTerminationTimeout: 5_000,
   idleInTransactionSessionTimeout: 60_000,
   idleTimeout: 5_000,
   interceptors: [],
