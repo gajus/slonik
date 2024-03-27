@@ -2,9 +2,11 @@
 
 import {
   BackendTerminatedError,
+  CheckIntegrityConstraintViolationError,
   createNumericTypeParser,
   createPool,
   type DatabasePoolConnection,
+  ForeignKeyIntegrityConstraintViolationError,
   InputSyntaxError,
   InvalidInputError,
   NotNullIntegrityConstraintViolationError,
@@ -13,6 +15,7 @@ import {
   StatementTimeoutError,
   TupleMovedToAnotherPartitionError,
   UnexpectedStateError,
+  UniqueIntegrityConstraintViolationError,
 } from '..';
 import { type DriverFactory } from '../factories/createDriver';
 import { type TestContextType } from './createTestRunner';
@@ -1367,5 +1370,193 @@ export const createIntegrationTests = (
     });
 
     await pool.end();
+  });
+
+  test('throws CheckIntegrityConstraintViolationError if check constraint is violated', async (t) => {
+    const pool = await createPool(t.context.dsn, {
+      driver,
+    });
+
+    await pool.query(sql.unsafe`
+      CREATE TABLE check_constraint_test (
+        id SERIAL PRIMARY KEY,
+        name TEXT CHECK (name = 'foo')
+      );
+    `);
+
+    const error = await t.throwsAsync(
+      pool.query(sql.unsafe`
+        INSERT INTO check_constraint_test (name) VALUES ('bar');
+      `),
+    );
+
+    t.true(error instanceof CheckIntegrityConstraintViolationError);
+  });
+
+  test('throws UniqueIntegrityConstraintViolationError if unique constraint is violated', async (t) => {
+    const pool = await createPool(t.context.dsn, {
+      driver,
+    });
+
+    await pool.query(sql.unsafe`
+      CREATE TABLE unique_constraint_test (
+        id SERIAL PRIMARY KEY,
+        name TEXT UNIQUE
+      );
+    `);
+
+    await pool.query(sql.unsafe`
+      INSERT INTO unique_constraint_test (name) VALUES ('foo');
+    `);
+
+    const error = await t.throwsAsync(
+      pool.query(sql.unsafe`
+        INSERT INTO unique_constraint_test (name) VALUES ('foo');
+      `),
+    );
+
+    t.true(error instanceof UniqueIntegrityConstraintViolationError);
+  });
+
+  test('throws ForeignKeyIntegrityConstraintViolationError if foreign key constraint is violated', async (t) => {
+    const pool = await createPool(t.context.dsn, {
+      driver,
+    });
+
+    await pool.query(sql.unsafe`
+      CREATE TABLE foreign_key_constraint_test_parent (
+        id SERIAL PRIMARY KEY
+      );
+    `);
+
+    await pool.query(sql.unsafe`
+      CREATE TABLE foreign_key_constraint_test_child (
+        id SERIAL PRIMARY KEY,
+        parent_id INTEGER REFERENCES foreign_key_constraint_test_parent (id)
+      );
+    `);
+
+    const error = await t.throwsAsync(
+      pool.query(sql.unsafe`
+        INSERT INTO foreign_key_constraint_test_child (parent_id) VALUES (1);
+      `),
+    );
+
+    t.true(error instanceof ForeignKeyIntegrityConstraintViolationError);
+  });
+
+  test('throws NotNullIntegrityConstraintViolationError if not null constraint is violated', async (t) => {
+    const pool = await createPool(t.context.dsn, {
+      driver,
+    });
+
+    await pool.query(sql.unsafe`
+      CREATE TABLE not_null_constraint_test (
+        id SERIAL PRIMARY KEY,
+        name TEXT NOT NULL
+      );
+    `);
+
+    const error = await t.throwsAsync(
+      pool.query(sql.unsafe`
+        INSERT INTO not_null_constraint_test DEFAULT VALUES;
+      `),
+    );
+
+    t.true(error instanceof NotNullIntegrityConstraintViolationError);
+  });
+
+  test('throws StatementTimeoutError if statement timeout is exceeded', async (t) => {
+    const pool = await createPool(t.context.dsn, {
+      driver,
+    });
+
+    const error = await t.throwsAsync(
+      pool.connect(async (connection) => {
+        await connection.query(sql.unsafe`
+          SET statement_timeout = 1;
+        `);
+
+        await connection.query(sql.unsafe`
+          SELECT pg_sleep(2);
+        `);
+      }),
+    );
+
+    t.true(error instanceof StatementTimeoutError);
+  });
+
+  test('throws StatementCancelledError if statement is cancelled', async (t) => {
+    const pool = await createPool(t.context.dsn, {
+      driver,
+    });
+
+    const error = await t.throwsAsync(
+      pool.connect(async (connection) => {
+        // connection pid
+        const connectionPid = await connection.oneFirst(sql.unsafe`
+          SELECT pg_backend_pid();
+        `);
+
+        setTimeout(() => {
+          void pool.query(
+            sql.unsafe`SELECT pg_cancel_backend(${connectionPid})`,
+          );
+        }, 100);
+
+        await connection.query(sql.unsafe`
+          SELECT pg_sleep(2);
+        `);
+      }),
+    );
+
+    t.true(error instanceof StatementCancelledError);
+  });
+
+  test('throws BackendTerminatedError if backend is terminated', async (t) => {
+    const pool = await createPool(t.context.dsn, {
+      driver,
+    });
+
+    const error = await t.throwsAsync(
+      pool.connect(async (connection) => {
+        // connection pid
+        const connectionPid = await connection.oneFirst(sql.unsafe`
+          SELECT pg_backend_pid();
+        `);
+
+        setTimeout(() => {
+          void pool.query(
+            sql.unsafe`SELECT pg_terminate_backend(${connectionPid})`,
+          );
+        }, 100);
+
+        await connection.query(sql.unsafe`
+          SELECT pg_sleep(2);
+        `);
+      }),
+    );
+
+    t.true(error instanceof BackendTerminatedError);
+  });
+
+  test('throws InvalidInputError if invalid value is bound', async (t) => {
+    const pool = await createPool(t.context.dsn, {
+      driver,
+    });
+
+    await pool.query(sql.unsafe`
+      CREATE TABLE invalid_input_error_test (
+        id uuid NOT NULL PRIMARY KEY DEFAULT '00000000-0000-0000-0000-000000000000'
+      );
+    `);
+
+    const error = await t.throwsAsync(
+      pool.query(
+        sql.unsafe`SELECT * FROM invalid_input_error_test where id = '1';`,
+      ),
+    );
+
+    t.true(error instanceof InvalidInputError);
   });
 };
