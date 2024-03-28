@@ -9,6 +9,7 @@ import {
   NotNullIntegrityConstraintViolationError,
   StatementCancelledError,
   StatementTimeoutError,
+  UnexpectedStateError,
   UniqueIntegrityConstraintViolationError,
 } from '../errors';
 import {
@@ -177,7 +178,11 @@ const isErrorWithCode = (error: Error): error is DatabaseError => {
   return 'code' in error;
 };
 
-const wrapError = (error: Error, query: Query) => {
+// query is not available for connection-level errors.
+// TODO evaluate if we can remove query from the error object.
+// I suspect we should not be even using InputSyntaxError as one of the error types.
+// @see https://github.com/gajus/slonik/issues/557
+const wrapError = (error: Error, query: Query | null) => {
   if (!isErrorWithCode(error)) {
     return error;
   }
@@ -219,6 +224,10 @@ const wrapError = (error: Error, query: Query) => {
   }
 
   if (error.code === '42601') {
+    if (!query) {
+      return new UnexpectedStateError('Expected query to be provided');
+    }
+
     return new InputSyntaxError(error, query);
   }
 
