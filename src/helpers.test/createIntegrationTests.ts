@@ -6,6 +6,7 @@ import {
   createNumericTypeParser,
   createPool,
   type DatabasePoolConnection,
+  type DatabaseTransactionConnection,
   ForeignKeyIntegrityConstraintViolationError,
   InputSyntaxError,
   InvalidInputError,
@@ -1722,5 +1723,161 @@ export const createIntegrationTests = (
       `),
       '',
     );
+  });
+
+  type IsolationLevel =
+    | 'READ UNCOMMITTED'
+    | 'READ COMMITTED'
+    | 'REPEATABLE READ'
+    | 'SERIALIZABLE';
+
+  const setIsolationLevel = async (
+    transaction: DatabaseTransactionConnection,
+    isolationLevel: IsolationLevel,
+  ) => {
+    if (isolationLevel === 'READ UNCOMMITTED') {
+      await transaction.query(sql.unsafe`
+        SET TRANSACTION ISOLATION LEVEL READ UNCOMMITTED;
+      `);
+    } else if (isolationLevel === 'READ COMMITTED') {
+      await transaction.query(sql.unsafe`
+        SET TRANSACTION ISOLATION LEVEL READ COMMITTED;
+      `);
+    } else if (isolationLevel === 'REPEATABLE READ') {
+      await transaction.query(sql.unsafe`
+        SET TRANSACTION ISOLATION LEVEL REPEATABLE READ;
+      `);
+    } else if (isolationLevel === 'SERIALIZABLE') {
+      await transaction.query(sql.unsafe`
+        SET TRANSACTION ISOLATION LEVEL SERIALIZABLE;
+      `);
+    } else {
+      throw new Error('Invalid isolation level');
+    }
+  };
+
+  const testConcurrentTransactions = ({
+    isolationLevel,
+    expectedResult1,
+    expectedResult2,
+  }: {
+    expectedResult1: number;
+    expectedResult2: number;
+    isolationLevel: IsolationLevel;
+  }) => {
+    test.only(
+      'handles concurrent transactions correctly (' + isolationLevel + ')',
+      async (t) => {
+        const pool = await createPool(t.context.dsn, {
+          driver,
+          maximumPoolSize: 2,
+        });
+
+        await pool.query(sql.unsafe`
+          CREATE TABLE IF NOT EXISTS counter(value INT DEFAULT 0);
+        `);
+
+        await pool.query(sql.unsafe`
+          INSERT INTO counter(value) VALUES (0);
+        `);
+
+        t.deepEqual(pool.state(), {
+          activeConnections: 0,
+          ended: false,
+          idleConnections: 1,
+          waitingClients: 0,
+        });
+
+        const transaction1 = pool.transaction(async (transaction) => {
+          await setIsolationLevel(transaction, isolationLevel);
+
+          await delay(50);
+
+          await transaction.query(
+            sql.unsafe`UPDATE counter SET value = value + 1;`,
+          );
+
+          await delay(100);
+
+          return await transaction.oneFirst(
+            sql.unsafe`SELECT value FROM counter;`,
+          );
+        });
+
+        const transaction2 = pool.transaction(async (transaction) => {
+          await setIsolationLevel(transaction, isolationLevel);
+
+          await delay(50);
+
+          await transaction.query(
+            sql.unsafe`UPDATE counter SET value = value + 10;`,
+          );
+
+          await delay(50);
+
+          return await transaction.oneFirst(
+            sql.unsafe`SELECT value FROM counter;`,
+          );
+        });
+
+        await delay(50);
+
+        t.deepEqual(pool.state(), {
+          activeConnections: 2,
+          ended: false,
+          idleConnections: 0,
+          waitingClients: 0,
+        });
+
+        const [result1, result2] = await Promise.all([
+          transaction1,
+          transaction2,
+        ]);
+
+        const finalCounterValue = await pool.oneFirst(
+          sql.unsafe`SELECT value FROM counter;`,
+        );
+
+        t.is(
+          result1,
+          expectedResult1,
+          'transaction 1 completed with an isolated increment',
+        );
+        t.is(
+          result2,
+          expectedResult2,
+          'transaction 2 completed with an isolated increment',
+        );
+        t.is(
+          finalCounterValue,
+          11,
+          'final counter value reflects both transactions',
+        );
+      },
+    );
+  };
+
+  testConcurrentTransactions({
+    expectedResult1: 1,
+    expectedResult2: 11,
+    isolationLevel: 'READ UNCOMMITTED',
+  });
+
+  testConcurrentTransactions({
+    expectedResult1: 1,
+    expectedResult2: 11,
+    isolationLevel: 'READ COMMITTED',
+  });
+
+  testConcurrentTransactions({
+    expectedResult1: 1,
+    expectedResult2: 11,
+    isolationLevel: 'REPEATABLE READ',
+  });
+
+  testConcurrentTransactions({
+    expectedResult1: 1,
+    expectedResult2: 11,
+    isolationLevel: 'SERIALIZABLE',
   });
 };
