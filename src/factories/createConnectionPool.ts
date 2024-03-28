@@ -86,11 +86,6 @@ export const createConnectionPool = ({
 
         const connection = await pendingConnection;
 
-        pendingConnections.splice(
-          pendingConnections.indexOf(pendingConnection),
-          1,
-        );
-
         const onRelease = () => {
           if (!waitingClients.length) {
             return;
@@ -126,6 +121,11 @@ export const createConnectionPool = ({
         connections.push(connection);
 
         connection.acquire();
+
+        pendingConnections.splice(
+          pendingConnections.indexOf(pendingConnection),
+          1,
+        );
 
         return connection;
       } else {
