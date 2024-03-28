@@ -1,5 +1,19 @@
 import { createSqlTag } from './factories/createSqlTag';
 
+export {
+  createDriverFactory,
+  type Driver,
+  type DriverClient,
+  type DriverClientEventEmitter,
+  type DriverCommand,
+  type DriverConfiguration,
+  type DriverEventEmitter,
+  type DriverFactory,
+  type DriverNotice,
+  type DriverQueryResult,
+  type DriverStreamResult,
+} from './factories/createDriverFactory';
+
 export const sql = createSqlTag();
 
 export {

@@ -2,8 +2,8 @@ import { type TypedReadable } from '../types';
 import { createUid } from '../utilities/createUid';
 import { defer, type DeferredPromise } from '../utilities/defer';
 import {
-  type ClientEventEmitter,
   type Driver,
+  type DriverClientEventEmitter,
   type DriverQueryResult,
   type DriverStreamResult,
 } from './createDriverFactory';
@@ -14,11 +14,11 @@ export type ConnectionPoolClient = {
   id: () => string;
   isActive: () => boolean;
   isIdle: () => boolean;
-  off: ClientEventEmitter['off'];
-  on: ClientEventEmitter['on'];
+  off: DriverClientEventEmitter['off'];
+  on: DriverClientEventEmitter['on'];
   query: (query: string, values?: unknown[]) => Promise<DriverQueryResult>;
   release: () => Promise<void>;
-  removeListener: ClientEventEmitter['removeListener'];
+  removeListener: DriverClientEventEmitter['removeListener'];
   stream: (
     query: string,
     values?: unknown[],

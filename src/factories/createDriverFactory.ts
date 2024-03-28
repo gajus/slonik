@@ -30,7 +30,7 @@ export type DriverEventEmitter = StrictEventEmitter<
   }
 >;
 
-export type ClientEventEmitter = StrictEventEmitter<
+export type DriverClientEventEmitter = StrictEventEmitter<
   EventEmitter,
   {
     acquire: () => void;
@@ -47,11 +47,11 @@ export type DriverClient = {
   id: () => string;
   isActive: () => boolean;
   isIdle: () => boolean;
-  off: ClientEventEmitter['off'];
-  on: ClientEventEmitter['on'];
+  off: DriverClientEventEmitter['off'];
+  on: DriverClientEventEmitter['on'];
   query: (query: string, values?: unknown[]) => Promise<DriverQueryResult>;
   release: () => Promise<void>;
-  removeListener: ClientEventEmitter['removeListener'];
+  removeListener: DriverClientEventEmitter['removeListener'];
   stream: (
     query: string,
     values?: unknown[],
@@ -114,7 +114,7 @@ type InternalPoolClientFactory = {
   createPoolClient: ({
     clientEventEmitter,
   }: {
-    clientEventEmitter: ClientEventEmitter;
+    clientEventEmitter: DriverClientEventEmitter;
   }) => Promise<InternalPoolClient>;
 };
 
@@ -129,7 +129,7 @@ export const createDriverFactory = (setup: DriverSetup): DriverFactory => {
 
     return {
       createClient: async () => {
-        const clientEventEmitter: ClientEventEmitter = new EventEmitter();
+        const clientEventEmitter: DriverClientEventEmitter = new EventEmitter();
 
         // eslint-disable-next-line prefer-const
         let destroy: () => Promise<void>;
