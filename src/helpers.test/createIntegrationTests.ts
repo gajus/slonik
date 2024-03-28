@@ -552,52 +552,6 @@ export const createIntegrationTests = (
     await pool.end();
   });
 
-  test.skip('transaction terminated while in an idle state is rejected (at the next transaction query)', async (t) => {
-    const pool = await createPool(t.context.dsn, {
-      driverFactory,
-    });
-
-    await pool.connect(async (connection) => {
-      await connection.query(
-        sql.unsafe`SET idle_in_transaction_session_timeout=500`,
-      );
-
-      const error = await t.throwsAsync(
-        connection.transaction(async (transaction) => {
-          await delay(1_000);
-
-          await transaction.query(sql.unsafe`SELECT 1`);
-        }),
-      );
-
-      t.true(error instanceof BackendTerminatedError);
-    });
-
-    await pool.end();
-  });
-
-  test.skip('connection of transaction terminated while in an idle state is rejected (at the end of the transaction)', async (t) => {
-    const pool = await createPool(t.context.dsn, {
-      driverFactory,
-    });
-
-    await pool.connect(async (connection) => {
-      await connection.query(
-        sql.unsafe`SET idle_in_transaction_session_timeout=500`,
-      );
-
-      const error = await t.throwsAsync(
-        connection.transaction(async () => {
-          await delay(1_000);
-        }),
-      );
-
-      t.true(error instanceof BackendTerminatedError);
-    });
-
-    await pool.end();
-  });
-
   test('throws an error if an attempt is made to make multiple transactions at once using the same connection', async (t) => {
     const pool = await createPool(t.context.dsn, {
       driverFactory,
@@ -850,33 +804,6 @@ export const createIntegrationTests = (
       idleConnections: 0,
       waitingClients: 0,
     });
-  });
-
-  test.skip('idle transactions are terminated after `idleInTransactionSessionTimeout`', async (t) => {
-    t.timeout(10_000);
-
-    const pool = await createPool(t.context.dsn, {
-      driverFactory,
-      idleInTransactionSessionTimeout: 1_000,
-      maximumPoolSize: 5,
-    });
-
-    t.deepEqual(pool.state(), {
-      activeConnections: 0,
-      ended: false,
-      idleConnections: 0,
-      waitingClients: 0,
-    });
-
-    const error = await t.throwsAsync(
-      pool.transaction(async () => {
-        await delay(2_000);
-      }),
-    );
-
-    t.true(error instanceof BackendTerminatedError);
-
-    await pool.end();
   });
 
   // Skipping test because of a bug in node-postgres.
