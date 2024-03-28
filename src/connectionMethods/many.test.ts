@@ -1,18 +1,18 @@
 import { NotFoundError } from '../errors';
-import { createPgDriver } from '../factories/createPgDriver';
+import { createPgDriverFactory } from '../factories/createPgDriverFactory';
 import { createPool } from '../factories/createPool';
 import { createSqlTag } from '../factories/createSqlTag';
 import { createTestRunner } from '../helpers.test/createTestRunner';
 
-const driver = createPgDriver();
+const driverFactory = createPgDriverFactory();
 
-const { test } = createTestRunner(driver, 'pg');
+const { test } = createTestRunner(driverFactory, 'pg');
 
 const sql = createSqlTag();
 
 test('returns the query results rows', async (t) => {
   const pool = await createPool(t.context.dsn, {
-    driver,
+    driverFactory,
   });
 
   const result = await pool.many(sql.unsafe`
@@ -32,7 +32,7 @@ test('returns the query results rows', async (t) => {
 
 test('throws an error if no rows are returned', async (t) => {
   const pool = await createPool(t.context.dsn, {
-    driver,
+    driverFactory,
   });
 
   const error = await t.throwsAsync(

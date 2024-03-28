@@ -1,12 +1,12 @@
-import { type ClientConfiguration, type TypedReadable } from '../types';
+import { type TypedReadable } from '../types';
 import { createUid } from '../utilities/createUid';
 import { defer, type DeferredPromise } from '../utilities/defer';
 import {
   type ClientEventEmitter,
-  type DriverFactory,
+  type Driver,
   type DriverQueryResult,
   type DriverStreamResult,
-} from './createDriver';
+} from './createDriverFactory';
 
 export type ConnectionPoolClient = {
   acquire: () => void;
@@ -38,12 +38,10 @@ export type ConnectionPool = {
 };
 
 export const createConnectionPool = ({
-  clientConfiguration,
-  createClient,
+  driver,
   poolSize = 1,
 }: {
-  clientConfiguration: ClientConfiguration;
-  createClient: DriverFactory;
+  driver: Driver;
   idleTimeout?: number;
   poolSize?: number;
 }): ConnectionPool => {
@@ -71,9 +69,7 @@ export const createConnectionPool = ({
       }
 
       if (connections.length < poolSize) {
-        const connection = await createClient({
-          clientConfiguration,
-        });
+        const connection = await driver.createClient();
 
         const onRelease = () => {
           if (!waitingClients.length) {

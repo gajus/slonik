@@ -5,7 +5,7 @@ import * as sinon from 'sinon';
 
 export const createPoolWithSpy = async (
   dsn: string,
-  { driver, ...configuration }: ClientConfigurationInput,
+  { driverFactory, ...configuration }: ClientConfigurationInput,
 ) => {
   const spy = {
     acquire: sinon.spy(),
@@ -17,26 +17,32 @@ export const createPoolWithSpy = async (
   let connection: ConnectionPoolClient;
 
   const pool = await createPool(dsn, {
-    driver: async (...args) => {
-      if (connection) {
-        return connection;
-      }
-
-      if (!driver) {
+    driverFactory: async (...args) => {
+      if (!driverFactory) {
         throw new Error('Driver is required');
       }
 
-      // We are re-using the same connection for all queries
-      // as it makes it easier to spy on the connection.
-      // eslint-disable-next-line require-atomic-updates
-      connection = await driver(...args);
+      const driver = await driverFactory(...args);
 
-      spy.acquire = sinon.spy(connection, 'acquire');
-      spy.destroy = sinon.spy(connection, 'destroy');
-      spy.query = sinon.spy(connection, 'query');
-      spy.release = sinon.spy(connection, 'release');
+      return {
+        createClient: async () => {
+          if (connection) {
+            return connection;
+          }
 
-      return connection;
+          // We are re-using the same connection for all queries
+          // as it makes it easier to spy on the connection.
+          // eslint-disable-next-line require-atomic-updates
+          connection = await driver.createClient();
+
+          spy.acquire = sinon.spy(connection, 'acquire');
+          spy.destroy = sinon.spy(connection, 'destroy');
+          spy.query = sinon.spy(connection, 'query');
+          spy.release = sinon.spy(connection, 'release');
+
+          return connection;
+        },
+      };
     },
     ...configuration,
   });

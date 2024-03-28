@@ -1,16 +1,18 @@
-import { createPgDriver } from '../factories/createPgDriver';
+import { createPgDriverFactory } from '../factories/createPgDriverFactory';
 import { createPool } from '../factories/createPool';
 import { createErrorWithCode } from '../helpers.test/createErrorWithCode';
 import { createPoolWithSpy } from '../helpers.test/createPoolWithSpy';
 import { createTestRunner } from '../helpers.test/createTestRunner';
 import * as sinon from 'sinon';
 
-const driver = createPgDriver();
+const driverFactory = createPgDriverFactory();
 
-const { test } = createTestRunner(driver, 'pg');
+const { test } = createTestRunner(driverFactory, 'pg');
 
 test('creates a savepoint', async (t) => {
-  const { spy, pool } = await createPoolWithSpy(t.context.dsn, { driver });
+  const { spy, pool } = await createPoolWithSpy(t.context.dsn, {
+    driverFactory,
+  });
 
   await pool.transaction(async (transactionConnection) => {
     await transactionConnection.transaction(async () => {});
@@ -21,7 +23,9 @@ test('creates a savepoint', async (t) => {
 });
 
 test('rollbacks unsuccessful nested transaction', async (t) => {
-  const { spy, pool } = await createPoolWithSpy(t.context.dsn, { driver });
+  const { spy, pool } = await createPoolWithSpy(t.context.dsn, {
+    driverFactory,
+  });
 
   await t.throwsAsync(
     pool.transaction(async (transactionConnection) => {
@@ -77,7 +81,9 @@ test('retries a nested transaction that failed due to a transaction error', asyn
 });
 
 test('commits successful transaction with retries', async (t) => {
-  const { spy, pool } = await createPoolWithSpy(t.context.dsn, { driver });
+  const { spy, pool } = await createPoolWithSpy(t.context.dsn, {
+    driverFactory,
+  });
 
   const handlerStub = sinon.stub();
 
@@ -134,7 +140,9 @@ test('returns the thrown transaction error if the retry limit is reached', async
 });
 
 test('rollbacks unsuccessful nested transaction with retries', async (t) => {
-  const { spy, pool } = await createPoolWithSpy(t.context.dsn, { driver });
+  const { spy, pool } = await createPoolWithSpy(t.context.dsn, {
+    driverFactory,
+  });
 
   const handlerStub = sinon.stub();
 

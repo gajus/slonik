@@ -4,14 +4,14 @@ import {
   sql,
   StatementTimeoutError,
 } from '..';
-import { createPgDriver } from '../factories/createPgDriver';
+import { createPgDriverFactory } from '../factories/createPgDriverFactory';
 import { createTestRunner } from '../helpers.test/createTestRunner';
 import * as sinon from 'sinon';
 import { z } from 'zod';
 
-const driver = createPgDriver();
+const driverFactory = createPgDriverFactory();
 
-const { test } = createTestRunner(driver, 'pg');
+const { test } = createTestRunner(driverFactory, 'pg');
 
 test('reading stream after a delay', async (t) => {
   const pool = await createPool(t.context.dsn, {

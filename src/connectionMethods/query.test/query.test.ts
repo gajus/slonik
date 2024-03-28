@@ -1,13 +1,13 @@
-import { createPgDriver } from '../../factories/createPgDriver';
+import { createPgDriverFactory } from '../../factories/createPgDriverFactory';
 import { createPool } from '../../factories/createPool';
 import { createSqlTag } from '../../factories/createSqlTag';
 import { createErrorWithCode } from '../../helpers.test/createErrorWithCode';
 import { createTestRunner } from '../../helpers.test/createTestRunner';
 import * as sinon from 'sinon';
 
-const driver = createPgDriver();
+const driverFactory = createPgDriverFactory();
 
-const { test } = createTestRunner(driver, 'pg');
+const { test } = createTestRunner(driverFactory, 'pg');
 
 export const createErrorWithCodeAndConstraint = (code: string) => {
   const error = createErrorWithCode(code);
@@ -25,7 +25,7 @@ test('ends connection after promise is resolved (explicit connection)', async (t
 
   process.on('warning', eventHandler);
 
-  const pool = await createPool(t.context.dsn, { driver });
+  const pool = await createPool(t.context.dsn, { driverFactory });
 
   await pool.connect(async (connection) => {
     let queryCount = 20;
@@ -43,7 +43,7 @@ test('ends connection after promise is resolved (explicit connection)', async (t
 });
 
 test('executes the query and returns the result', async (t) => {
-  const pool = await createPool(t.context.dsn, { driver });
+  const pool = await createPool(t.context.dsn, { driverFactory });
 
   const result = await pool.query(sql.unsafe`
     SELECT *

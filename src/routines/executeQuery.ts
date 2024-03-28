@@ -8,7 +8,7 @@ import {
   UnexpectedStateError,
 } from '../errors';
 import { type ConnectionPoolClient } from '../factories/createConnectionPool';
-import { type DriverNotice } from '../factories/createDriver';
+import { type DriverNotice } from '../factories/createDriverFactory';
 import { getPoolClientState } from '../state';
 import {
   type ClientConfiguration,

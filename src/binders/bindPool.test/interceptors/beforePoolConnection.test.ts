@@ -1,17 +1,17 @@
-import { createPgDriver } from '../../../factories/createPgDriver';
+import { createPgDriverFactory } from '../../../factories/createPgDriverFactory';
 import { createPoolWithSpy } from '../../../helpers.test/createPoolWithSpy';
 import { createTestRunner } from '../../../helpers.test/createTestRunner';
 import * as sinon from 'sinon';
 
-const driver = createPgDriver();
+const driverFactory = createPgDriverFactory();
 
-const { test } = createTestRunner(driver, 'pg');
+const { test } = createTestRunner(driverFactory, 'pg');
 
 test('`beforePoolConnection` is called before `connect`', async (t) => {
   const beforePoolConnection = sinon.stub();
 
   const { pool, spy } = await createPoolWithSpy(t.context.dsn, {
-    driver,
+    driverFactory,
     interceptors: [
       {
         beforePoolConnection,

@@ -1,5 +1,5 @@
 import { sql } from '..';
-import { type DriverFactory } from '../factories/createDriver';
+import { type DriverFactory } from '../factories/createDriverFactory';
 import { createPool } from '../factories/createPool';
 import anyTest, { type TestFn } from 'ava';
 
@@ -11,7 +11,10 @@ export type TestContextType = {
   testDatabaseName: string;
 };
 
-export const createTestRunner = (driver: DriverFactory, name: string) => {
+export const createTestRunner = (
+  driverFactory: DriverFactory,
+  name: string,
+) => {
   let testId = 0;
 
   const test = anyTest as TestFn<TestContextType>;
@@ -30,7 +33,7 @@ export const createTestRunner = (driver: DriverFactory, name: string) => {
     };
 
     const pool0 = await createPool('postgresql://' + POSTGRES_DSN, {
-      driver,
+      driverFactory,
       maximumPoolSize: 1,
     });
 
@@ -55,7 +58,7 @@ export const createTestRunner = (driver: DriverFactory, name: string) => {
     await pool0.end();
 
     const pool1 = await createPool(t.context.dsn, {
-      driver,
+      driverFactory,
       maximumPoolSize: 1,
     });
 

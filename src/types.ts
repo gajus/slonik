@@ -3,7 +3,7 @@ import { type ConnectionPoolClient } from './factories/createConnectionPool';
 import {
   type DriverFactory,
   type DriverNotice,
-} from './factories/createDriver';
+} from './factories/createDriverFactory';
 import type * as tokens from './tokens';
 import { type Readable } from 'node:stream';
 import { type ConnectionOptions as TlsConnectionOptions } from 'node:tls';
@@ -106,9 +106,9 @@ export type ClientConfiguration = {
    */
   readonly connectionUri: string;
   /**
-   * Overrides the default DriverFactory. (Default: `createPgPool`)
+   * Overrides the default DriverFactory. (Default: "pg" driver factory)
    */
-  readonly driver?: DriverFactory;
+  readonly driverFactory?: DriverFactory;
   /**
    * Timeout (in milliseconds) that kicks in after a connection with an active query is requested to end. This is the amount of time that is allowed for query to complete before terminating it. (Default: 5000)
    */

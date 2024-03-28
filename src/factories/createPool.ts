@@ -3,8 +3,8 @@ import { Logger } from '../Logger';
 import { type ClientConfigurationInput, type DatabasePool } from '../types';
 import { createClientConfiguration } from './createClientConfiguration';
 import { createConnectionPool } from './createConnectionPool';
-import { type DriverFactory } from './createDriver';
-import { createPgDriver } from './createPgDriver';
+import { type DriverFactory } from './createDriverFactory';
+import { createPgDriverFactory } from './createPgDriverFactory';
 import { createPoolConfiguration } from './createPoolConfiguration';
 
 /**
@@ -19,12 +19,16 @@ export const createPool = async (
     clientConfigurationInput,
   );
 
-  const createClient: DriverFactory =
-    clientConfiguration.driver ?? createPgDriver();
+  const createDriver: DriverFactory =
+    clientConfiguration.driverFactory ?? createPgDriverFactory();
+
+  const driver = await createDriver({
+    // TODO resolve name conflict
+    driverConfiguration: clientConfiguration,
+  });
 
   const pool = createConnectionPool({
-    clientConfiguration,
-    createClient,
+    driver,
     ...createPoolConfiguration(clientConfiguration),
   });
 

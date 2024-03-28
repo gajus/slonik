@@ -3,22 +3,22 @@ import {
   NotFoundError,
   UnexpectedStateError,
 } from '../errors';
-import { createPgDriver } from '../factories/createPgDriver';
+import { createPgDriverFactory } from '../factories/createPgDriverFactory';
 import { createPool } from '../factories/createPool';
 import { createSqlTag } from '../factories/createSqlTag';
 import { createTestRunner } from '../helpers.test/createTestRunner';
 import { expectTypeOf } from 'expect-type';
 import { z } from 'zod';
 
-const driver = createPgDriver();
+const driverFactory = createPgDriverFactory();
 
-const { test } = createTestRunner(driver, 'pg');
+const { test } = createTestRunner(driverFactory, 'pg');
 
 const sql = createSqlTag();
 
 test('returns value of the first column from the first row', async (t) => {
   const pool = await createPool(t.context.dsn, {
-    driver,
+    driverFactory,
   });
 
   const result = await pool.oneFirst(sql.unsafe`
@@ -31,7 +31,7 @@ test('returns value of the first column from the first row', async (t) => {
 
 test('throws an error if no rows are returned', async (t) => {
   const pool = await createPool(t.context.dsn, {
-    driver,
+    driverFactory,
   });
 
   const error = await t.throwsAsync(
@@ -47,7 +47,7 @@ test('throws an error if no rows are returned', async (t) => {
 
 test('throws an error if more than one row is returned', async (t) => {
   const pool = await createPool(t.context.dsn, {
-    driver,
+    driverFactory,
   });
 
   const error = await t.throwsAsync(
@@ -62,7 +62,7 @@ test('throws an error if more than one row is returned', async (t) => {
 
 test('throws an error if more than one column is returned', async (t) => {
   const pool = await createPool(t.context.dsn, {
-    driver,
+    driverFactory,
   });
 
   const error = await t.throwsAsync(
@@ -77,7 +77,7 @@ test('throws an error if more than one column is returned', async (t) => {
 
 test('describes zod object associated with the query', async (t) => {
   const pool = await createPool(t.context.dsn, {
-    driver,
+    driverFactory,
   });
 
   const zodObject = z.object({

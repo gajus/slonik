@@ -1,13 +1,13 @@
-import { createPgDriver } from '../../factories/createPgDriver';
+import { createPgDriverFactory } from '../../factories/createPgDriverFactory';
 import { createPool } from '../../factories/createPool';
 import { createSqlTag } from '../../factories/createSqlTag';
 import { createPoolWithSpy } from '../../helpers.test/createPoolWithSpy';
 import { createTestRunner } from '../../helpers.test/createTestRunner';
 import { setTimeout as delay } from 'node:timers/promises';
 
-const driver = createPgDriver();
+const driverFactory = createPgDriverFactory();
 
-const { test } = createTestRunner(driver, 'pg');
+const { test } = createTestRunner(driverFactory, 'pg');
 
 const sql = createSqlTag();
 
@@ -18,7 +18,9 @@ const getQueries = (spy: sinon.SinonSpy) => {
 };
 
 test('commits successful transaction', async (t) => {
-  const { pool, spy } = await createPoolWithSpy(t.context.dsn, { driver });
+  const { pool, spy } = await createPoolWithSpy(t.context.dsn, {
+    driverFactory,
+  });
 
   await pool.connect(async (c1) => {
     return await c1.transaction(async (t1) => {
@@ -34,7 +36,9 @@ test('commits successful transaction', async (t) => {
 });
 
 test('rollsback unsuccessful transaction', async (t) => {
-  const { pool, spy } = await createPoolWithSpy(t.context.dsn, { driver });
+  const { pool, spy } = await createPoolWithSpy(t.context.dsn, {
+    driverFactory,
+  });
 
   await t.throwsAsync(
     pool.connect(async (c1) => {
@@ -54,7 +58,9 @@ test('rollsback unsuccessful transaction', async (t) => {
 });
 
 test('uses savepoints to nest transactions', async (t) => {
-  const { pool, spy } = await createPoolWithSpy(t.context.dsn, { driver });
+  const { pool, spy } = await createPoolWithSpy(t.context.dsn, {
+    driverFactory,
+  });
 
   await pool.connect(async (c1) => {
     await c1.transaction(async (t1) => {
@@ -75,7 +81,9 @@ test('uses savepoints to nest transactions', async (t) => {
 });
 
 test('rollsback to the last savepoint', async (t) => {
-  const { pool, spy } = await createPoolWithSpy(t.context.dsn, { driver });
+  const { pool, spy } = await createPoolWithSpy(t.context.dsn, {
+    driverFactory,
+  });
 
   await pool.connect(async (c1) => {
     await c1.transaction(async (t1) => {
@@ -102,7 +110,9 @@ test('rollsback to the last savepoint', async (t) => {
 });
 
 test('rollsback the entire transaction with multiple savepoints', async (t) => {
-  const { pool, spy } = await createPoolWithSpy(t.context.dsn, { driver });
+  const { pool, spy } = await createPoolWithSpy(t.context.dsn, {
+    driverFactory,
+  });
 
   await pool.connect(async (c1) => {
     return await t.throwsAsync(
@@ -129,7 +139,9 @@ test('rollsback the entire transaction with multiple savepoints', async (t) => {
 });
 
 test('rollsback the entire transaction with multiple savepoints (multiple depth layers)', async (t) => {
-  const { pool, spy } = await createPoolWithSpy(t.context.dsn, { driver });
+  const { pool, spy } = await createPoolWithSpy(t.context.dsn, {
+    driverFactory,
+  });
 
   await pool.connect(async (c1) => {
     return await t.throwsAsync(
@@ -163,7 +175,7 @@ test('rollsback the entire transaction with multiple savepoints (multiple depth 
 });
 
 test('throws an error if an attempt is made to create a new transaction before the last transaction is completed', async (t) => {
-  const pool = await createPool(t.context.dsn, { driver });
+  const pool = await createPool(t.context.dsn, { driverFactory });
 
   const connection = pool.connect(async (c1) => {
     await Promise.race([
@@ -185,7 +197,7 @@ test('throws an error if an attempt is made to create a new transaction before t
 });
 
 test('throws an error if an attempt is made to execute a query using the parent transaction before the current transaction is completed', async (t) => {
-  const pool = await createPool(t.context.dsn, { driver });
+  const pool = await createPool(t.context.dsn, { driverFactory });
 
   const connection = pool.connect(async (c1) => {
     return await c1.transaction(async (t1) => {

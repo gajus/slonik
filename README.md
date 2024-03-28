@@ -605,7 +605,7 @@ createPool(
  * @property captureStackTrace Dictates whether to capture stack trace before executing query. Middlewares access stack trace through query execution context. (Default: false)
  * @property connectionRetryLimit Number of times to retry establishing a new connection. (Default: 3)
  * @property connectionTimeout Timeout (in milliseconds) after which an error is raised if connection cannot be established. (Default: 5000)
- * @property driver Overrides the default DriverFactory. (Default: `createPgPool`)
+ * @property driverFactory Overrides the default DriverFactory. (Default: "pg" driver factory)
  * @property gracefulTerminationTimeout Timeout (in milliseconds) that kicks in after a connection with an active query is requested to end. This is the amount of time that is allowed for query to complete before terminating it. (Default: 5000)
  * @property idleInTransactionSessionTimeout Timeout (in milliseconds) after which idle clients are closed. Use 'DISABLE_TIMEOUT' constant to disable the timeout. (Default: 60000)
  * @property idleTimeout Timeout (in milliseconds) after which idle clients are closed. Use 'DISABLE_TIMEOUT' constant to disable the timeout. (Default: 5000)
@@ -621,7 +621,7 @@ type ClientConfiguration = {
   captureStackTrace?: boolean,
   connectionRetryLimit?: number,
   connectionTimeout?: number | 'DISABLE_TIMEOUT',
-  driver?: DriverFactory,
+  driverFactory?: DriverFactory,
   gracefulTerminationTimeout?: number,
   idleInTransactionSessionTimeout?: number | 'DISABLE_TIMEOUT',
   idleTimeout?: number | 'DISABLE_TIMEOUT',

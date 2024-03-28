@@ -1,18 +1,18 @@
 import { sql } from '..';
-import { createPgDriver } from '../factories/createPgDriver';
+import { createPgDriverFactory } from '../factories/createPgDriverFactory';
 import { createPool } from '../factories/createPool';
 import { createIntegrationTests } from '../helpers.test/createIntegrationTests';
 import { createTestRunner } from '../helpers.test/createTestRunner';
 
-const driver = createPgDriver();
+const driverFactory = createPgDriverFactory();
 
-const { test } = createTestRunner(driver, 'pg');
+const { test } = createTestRunner(driverFactory, 'pg');
 
-createIntegrationTests(test, driver);
+createIntegrationTests(test, driverFactory);
 
 test('returns expected query result object (NOTICE)', async (t) => {
   const pool = await createPool(t.context.dsn, {
-    driver,
+    driverFactory,
   });
 
   await pool.query(sql.unsafe`

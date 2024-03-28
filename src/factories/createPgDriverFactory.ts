@@ -2,6 +2,7 @@
 
 import {
   BackendTerminatedError,
+  BackendTerminatedUnexpectedlyError,
   CheckIntegrityConstraintViolationError,
   ForeignKeyIntegrityConstraintViolationError,
   IdleTransactionTimeoutError,
@@ -14,14 +15,18 @@ import {
   UniqueIntegrityConstraintViolationError,
 } from '../errors';
 import {
-  type ClientConfiguration,
   type Field,
   type PrimitiveValueExpression,
   type Query,
   type TypeParser,
 } from '../types';
 import { parseDsn } from '../utilities/parseDsn';
-import { createDriver, type DriverCommand } from './createDriver';
+import {
+  createDriverFactory,
+  type DriverCommand,
+  type DriverConfiguration,
+  type DriverFactory,
+} from './createDriverFactory';
 import { Transform } from 'node:stream';
 // eslint-disable-next-line no-restricted-imports
 import {
@@ -98,7 +103,7 @@ const createTypeOverrides = async (
 };
 
 const createClientConfiguration = (
-  clientConfiguration: ClientConfiguration,
+  clientConfiguration: DriverConfiguration,
 ): NativePostgresClientConfiguration => {
   const connectionOptions = parseDsn(clientConfiguration.connectionUri);
 
@@ -159,7 +164,7 @@ const createClientConfiguration = (
 
 const queryTypeOverrides = async (
   pgClientConfiguration: NativePostgresClientConfiguration,
-  clientConfiguration: ClientConfiguration,
+  driverConfiguration: DriverConfiguration,
 ): Promise<TypeOverrides> => {
   const client = new Client(pgClientConfiguration);
 
@@ -167,7 +172,7 @@ const queryTypeOverrides = async (
 
   const typeOverrides = await createTypeOverrides(
     client,
-    clientConfiguration.typeParsers,
+    driverConfiguration.typeParsers,
   );
 
   await client.end();
@@ -184,6 +189,12 @@ const isErrorWithCode = (error: Error): error is DatabaseError => {
 // I suspect we should not be even using InputSyntaxError as one of the error types.
 // @see https://github.com/gajus/slonik/issues/557
 const wrapError = (error: Error, query: Query | null) => {
+  if (
+    error.message.toLowerCase().includes('connection terminated unexpectedly')
+  ) {
+    return new BackendTerminatedUnexpectedlyError(error);
+  }
+
   if (!isErrorWithCode(error)) {
     return error;
   }
@@ -239,131 +250,126 @@ const wrapError = (error: Error, query: Query | null) => {
   return error;
 };
 
-export const createPgDriver = () => {
-  let getTypeParserPromise: Promise<TypeOverrides> | null = null;
-
-  return createDriver(async ({ clientConfiguration, eventEmitter }) => {
-    const pgClientConfiguration =
-      createClientConfiguration(clientConfiguration);
-
-    if (!getTypeParserPromise) {
-      getTypeParserPromise = queryTypeOverrides(
-        pgClientConfiguration,
-        clientConfiguration,
-      );
-    }
+export const createPgDriverFactory = (): DriverFactory => {
+  return createDriverFactory(async ({ driverConfiguration }) => {
+    const clientConfiguration = createClientConfiguration(driverConfiguration);
 
     // eslint-disable-next-line require-atomic-updates
-    pgClientConfiguration.types = {
-      getTypeParser: await getTypeParserPromise,
+    clientConfiguration.types = {
+      getTypeParser: await queryTypeOverrides(
+        clientConfiguration,
+        driverConfiguration,
+      ),
     };
 
-    // We will see this triggered when the connection is terminated, e.g.
-    // "terminates transactions that are idle beyond idleInTransactionSessionTimeout" test.
-    const onError = (error) => {
-      eventEmitter.emit('error', wrapError(error, null));
-    };
+    return {
+      createPoolClient: async ({ clientEventEmitter }) => {
+        const client = new Client(clientConfiguration);
 
-    const onNotice = (notice) => {
-      if (notice.message) {
-        eventEmitter.emit('notice', {
-          message: notice.message,
-        });
-      }
-    };
+        // We will see this triggered when the connection is terminated, e.g.
+        // "terminates transactions that are idle beyond idleInTransactionSessionTimeout" test.
+        const onError = (error) => {
+          clientEventEmitter.emit('error', wrapError(error, null));
+        };
 
-    return () => {
-      const client = new Client(pgClientConfiguration);
-
-      client.on('error', onError);
-      client.on('notice', onNotice);
-
-      return {
-        connect: async () => {
-          await client.connect();
-        },
-        end: async () => {
-          await client.end();
-
-          client.removeListener('error', onError);
-          client.removeListener('notice', onNotice);
-        },
-        query: async (sql, values) => {
-          let result;
-
-          try {
-            result = await client.query(sql, values as unknown[]);
-          } catch (error) {
-            throw wrapError(error, {
-              sql,
-              values: values as readonly PrimitiveValueExpression[],
+        const onNotice = (notice) => {
+          if (notice.message) {
+            clientEventEmitter.emit('notice', {
+              message: notice.message,
             });
           }
+        };
 
-          return {
-            command: result.command as DriverCommand,
-            fields: result.fields.map((field) => {
-              return {
-                dataTypeId: field.dataTypeID,
-                name: field.name,
-              };
-            }),
-            rowCount: result.rowCount,
-            rows: result.rows,
-          };
-        },
-        stream: (sql, values) => {
-          const stream = client.query(
-            new QueryStream(sql, values as unknown[]),
-          );
+        client.on('error', onError);
+        client.on('notice', onNotice);
 
-          let fields: readonly Field[] = [];
+        return {
+          connect: async () => {
+            await client.connect();
+          },
+          end: async () => {
+            await client.end();
 
-          // `rowDescription` will not fire if the query produces a syntax error.
-          // Also, `rowDescription` won't fire until client starts consuming the stream.
-          // This is why we cannot simply await for `rowDescription` event before starting to pipe the stream.
-          // @ts-expect-error – https://github.com/brianc/node-postgres/issues/3015
-          client.connection.once('rowDescription', (rowDescription) => {
-            fields = rowDescription.fields.map((field) => {
-              return {
-                dataTypeId: field.dataTypeID,
-                name: field.name,
-              };
-            });
-          });
+            client.removeListener('error', onError);
+            client.removeListener('notice', onNotice);
+          },
+          query: async (sql, values) => {
+            let result;
 
-          const transform = new Transform({
-            objectMode: true,
-            async transform(datum, enc, callback) {
-              if (!fields) {
-                callback(new Error('Fields not available'));
-
-                return;
-              }
-
-              // eslint-disable-next-line @babel/no-invalid-this
-              this.push({
-                fields,
-                row: datum,
-              });
-
-              callback();
-            },
-          });
-
-          stream.on('error', (error) => {
-            transform.emit(
-              'error',
-              wrapError(error, {
+            try {
+              result = await client.query(sql, values as unknown[]);
+            } catch (error) {
+              throw wrapError(error, {
                 sql,
-                values: values as PrimitiveValueExpression[],
-              }),
-            );
-          });
+                values: values as readonly PrimitiveValueExpression[],
+              });
+            }
 
-          return stream.pipe(transform);
-        },
-      };
+            return {
+              command: result.command as DriverCommand,
+              fields: result.fields.map((field) => {
+                return {
+                  dataTypeId: field.dataTypeID,
+                  name: field.name,
+                };
+              }),
+              rowCount: result.rowCount,
+              rows: result.rows,
+            };
+          },
+          stream: (sql, values) => {
+            const stream = client.query(
+              new QueryStream(sql, values as unknown[]),
+            );
+
+            let fields: readonly Field[] = [];
+
+            // `rowDescription` will not fire if the query produces a syntax error.
+            // Also, `rowDescription` won't fire until client starts consuming the stream.
+            // This is why we cannot simply await for `rowDescription` event before starting to pipe the stream.
+            // @ts-expect-error – https://github.com/brianc/node-postgres/issues/3015
+            client.connection.once('rowDescription', (rowDescription) => {
+              fields = rowDescription.fields.map((field) => {
+                return {
+                  dataTypeId: field.dataTypeID,
+                  name: field.name,
+                };
+              });
+            });
+
+            const transform = new Transform({
+              objectMode: true,
+              async transform(datum, enc, callback) {
+                if (!fields) {
+                  callback(new Error('Fields not available'));
+
+                  return;
+                }
+
+                // eslint-disable-next-line @babel/no-invalid-this
+                this.push({
+                  fields,
+                  row: datum,
+                });
+
+                callback();
+              },
+            });
+
+            stream.on('error', (error) => {
+              transform.emit(
+                'error',
+                wrapError(error, {
+                  sql,
+                  values: values as PrimitiveValueExpression[],
+                }),
+              );
+            });
+
+            return stream.pipe(transform);
+          },
+        };
+      },
     };
   });
 };

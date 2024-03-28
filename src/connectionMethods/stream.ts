@@ -1,4 +1,4 @@
-import { type DriverStreamResult } from '../factories/createDriver';
+import { type DriverStreamResult } from '../factories/createDriverFactory';
 import { executeQuery, type ExecutionRoutine } from '../routines/executeQuery';
 import {
   type ClientConfiguration,
