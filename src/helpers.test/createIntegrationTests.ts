@@ -1697,6 +1697,28 @@ export const createIntegrationTests = (
     );
   });
 
+  test('pool.end() resolves only when pool ends', async (t) => {
+    const pool = await createPool(t.context.dsn, {
+      driverFactory,
+      maximumPoolSize: 1,
+    });
+
+    const promise = pool.query(sql.unsafe`
+      SELECT pg_sleep(0.1);
+    `);
+
+    const startTime = Date.now();
+
+    // Earlier implementation was checking if pool end routine has been initiated,
+    // and was immediately resolving the promise if it was initiated, i.e.
+    // The second call to pool.end() would resolve the promise immediately.
+    await Promise.race([pool.end(), pool.end()]);
+
+    t.true(Date.now() - startTime >= 100);
+
+    await promise;
+  });
+
   test('retains explicit connection beyond the idle timeout', async (t) => {
     const pool = await createPool(t.context.dsn, {
       driverFactory,

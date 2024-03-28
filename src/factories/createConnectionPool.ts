@@ -63,6 +63,46 @@ export const createConnectionPool = ({
 
   let isEnded = false;
 
+  let poolEndPromise: Promise<void> | null = null;
+
+  /**
+   * This function must not throw.
+   */
+  const endPool = async () => {
+    try {
+      await Promise.all(pendingConnections);
+    } catch (error) {
+      logger.error(
+        {
+          error: serializeError(error),
+        },
+        'error in pool termination sequence while waiting for pending connections to be established',
+      );
+    }
+
+    try {
+      await Promise.all(connections.map((connection) => connection.release()));
+    } catch (error) {
+      logger.error(
+        {
+          error: serializeError(error),
+        },
+        'error in pool termination sequence while releasing connections',
+      );
+    }
+
+    try {
+      await Promise.all(connections.map((connection) => connection.destroy()));
+    } catch (error) {
+      logger.error(
+        {
+          error: serializeError(error),
+        },
+        'error in pool termination sequence while destroying connections',
+      );
+    }
+  };
+
   return {
     acquire: async () => {
       if (isEnded) {
@@ -137,48 +177,15 @@ export const createConnectionPool = ({
       }
     },
     end: async () => {
-      if (isEnded) {
-        return;
+      if (poolEndPromise) {
+        return poolEndPromise;
       }
+
+      poolEndPromise = endPool();
 
       isEnded = true;
 
-      try {
-        await Promise.all(pendingConnections);
-      } catch (error) {
-        logger.error(
-          {
-            error: serializeError(error),
-          },
-          'error in pool termination sequence while waiting for pending connections to be established',
-        );
-      }
-
-      try {
-        await Promise.all(
-          connections.map((connection) => connection.release()),
-        );
-      } catch (error) {
-        logger.error(
-          {
-            error: serializeError(error),
-          },
-          'error in pool termination sequence while releasing connections',
-        );
-      }
-
-      try {
-        await Promise.all(
-          connections.map((connection) => connection.destroy()),
-        );
-      } catch (error) {
-        logger.error(
-          {
-            error: serializeError(error),
-          },
-          'error in pool termination sequence while destroying connections',
-        );
-      }
+      return poolEndPromise;
     },
     id: () => {
       return id;
