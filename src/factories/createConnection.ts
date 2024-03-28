@@ -11,6 +11,7 @@ import {
   type MaybePromise,
   type QuerySqlToken,
 } from '../types';
+import { defer } from '../utilities/defer';
 import {
   type ConnectionPool,
   type ConnectionPoolClient,
@@ -45,6 +46,25 @@ const destroyBoundConnection = (boundConnection: DatabasePoolConnection) => {
     boundConnection[boundConnectionMethod] = async () => {
       throw new Error('Cannot use released connection');
     };
+  }
+};
+
+const raceError = async <T>(
+  connection: ConnectionPoolClient,
+  routine: () => Promise<T>,
+): Promise<T> => {
+  const connectionErrorPromise = defer<T>();
+
+  const onError = (error: Error) => {
+    connectionErrorPromise.reject(error);
+  };
+
+  connection.on('error', onError);
+
+  try {
+    return await Promise.race([connectionErrorPromise.promise, routine()]);
+  } finally {
+    connection.removeListener('error', onError);
   }
 };
 
@@ -87,73 +107,75 @@ export const createConnection = async (
     clientConfiguration.connectionRetryLimit,
   );
 
-  const { connectionId } = getPoolClientState(connection);
+  return raceError(connection, async () => {
+    const { connectionId } = getPoolClientState(connection);
 
-  const connectionLog = parentLog.child({
-    connectionId,
-  });
+    const connectionLog = parentLog.child({
+      connectionId,
+    });
 
-  const connectionContext = {
-    connectionId,
-    connectionType,
-    log: connectionLog,
-    poolId,
-  };
+    const connectionContext = {
+      connectionId,
+      connectionType,
+      log: connectionLog,
+      poolId,
+    };
 
-  const boundConnection = bindPoolConnection(
-    connectionLog,
-    connection,
-    clientConfiguration,
-  );
-
-  try {
-    for (const interceptor of clientConfiguration.interceptors) {
-      if (interceptor.afterPoolConnection) {
-        await interceptor.afterPoolConnection(
-          connectionContext,
-          boundConnection,
-        );
-      }
-    }
-  } catch (error) {
-    await connection.destroy();
-
-    throw error;
-  }
-
-  let result;
-
-  try {
-    result = await connectionHandler(
+    const boundConnection = bindPoolConnection(
       connectionLog,
       connection,
-      boundConnection,
       clientConfiguration,
     );
-  } catch (error) {
-    await connection.destroy();
 
-    throw error;
-  }
-
-  try {
-    for (const interceptor of clientConfiguration.interceptors) {
-      if (interceptor.beforePoolConnectionRelease) {
-        await interceptor.beforePoolConnectionRelease(
-          connectionContext,
-          boundConnection,
-        );
+    try {
+      for (const interceptor of clientConfiguration.interceptors) {
+        if (interceptor.afterPoolConnection) {
+          await interceptor.afterPoolConnection(
+            connectionContext,
+            boundConnection,
+          );
+        }
       }
+    } catch (error) {
+      await connection.destroy();
+
+      throw error;
     }
-  } catch (error) {
-    await connection.destroy();
 
-    throw error;
-  }
+    let result;
 
-  destroyBoundConnection(boundConnection);
+    try {
+      result = await connectionHandler(
+        connectionLog,
+        connection,
+        boundConnection,
+        clientConfiguration,
+      );
+    } catch (error) {
+      await connection.destroy();
 
-  await connection.release();
+      throw error;
+    }
 
-  return result;
+    try {
+      for (const interceptor of clientConfiguration.interceptors) {
+        if (interceptor.beforePoolConnectionRelease) {
+          await interceptor.beforePoolConnectionRelease(
+            connectionContext,
+            boundConnection,
+          );
+        }
+      }
+    } catch (error) {
+      await connection.destroy();
+
+      throw error;
+    }
+
+    destroyBoundConnection(boundConnection);
+
+    await connection.release();
+
+    return result;
+  });
 };

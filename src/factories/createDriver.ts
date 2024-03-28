@@ -76,6 +76,10 @@ export const createDriver = (
   return async ({ clientConfiguration }) => {
     const eventEmitter = new EventEmitter();
 
+    eventEmitter.on('error', () => {
+      // TODO I am not clear why this is needed given that `raceError` in `createConnection` is already listening for errors on the connection object.
+    });
+
     const createPoolClient = await setup({
       clientConfiguration,
       eventEmitter,
@@ -161,10 +165,6 @@ export const createDriver = (
           const result = await activeQueryPromise;
 
           return result;
-        } catch (error) {
-          eventEmitter.emit('error', error);
-
-          throw error;
         } finally {
           // eslint-disable-next-line require-atomic-updates
           activeQueryPromise = null;

@@ -253,6 +253,12 @@ export const createPgDriver = () => {
       getTypeParser: await getTypeParserPromise,
     };
 
+    // We will see this triggered when the connection is terminated, e.g.
+    // "terminates transactions that are idle beyond idleInTransactionSessionTimeout" test.
+    const onError = (error) => {
+      eventEmitter.emit('error', wrapError(error, null));
+    };
+
     const onNotice = (notice) => {
       if (notice.message) {
         eventEmitter.emit('notice', {
@@ -264,6 +270,7 @@ export const createPgDriver = () => {
     return () => {
       const client = new Client(pgClientConfiguration);
 
+      client.on('error', onError);
       client.on('notice', onNotice);
 
       return {
@@ -272,6 +279,8 @@ export const createPgDriver = () => {
         },
         end: async () => {
           await client.end();
+
+          client.removeListener('error', onError);
           client.removeListener('notice', onNotice);
         },
         query: async (sql, values) => {
