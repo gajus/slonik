@@ -1765,6 +1765,7 @@ export const createIntegrationTests = (
     const pool = await createPool(t.context.dsn, {
       driverFactory,
       idleInTransactionSessionTimeout: 100,
+      maximumPoolSize: 1,
     });
 
     const error = await t.throwsAsync(
@@ -1774,6 +1775,15 @@ export const createIntegrationTests = (
     );
 
     t.true(error instanceof IdleTransactionTimeoutError);
+
+    // Ensure that the pool is still operational.
+
+    t.is(
+      await pool.oneFirst(sql.unsafe`
+        SELECT 1;
+      `),
+      1,
+    );
   });
 
   type IsolationLevel =

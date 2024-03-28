@@ -1,8 +1,10 @@
+import { Logger } from '../Logger';
 import { type TypedReadable, type TypeParser } from '../types';
 import { createUid } from '../utilities/createUid';
 import EventEmitter from 'node:events';
 import { setTimeout as delay } from 'node:timers/promises';
 import { type ConnectionOptions as TlsConnectionOptions } from 'node:tls';
+import { serializeError } from 'serialize-error';
 import { type StrictEventEmitter } from 'strict-event-emitter-types';
 
 export type DriverConfiguration = {
@@ -120,10 +122,6 @@ export const createDriverFactory = (setup: DriverSetup): DriverFactory => {
   return async ({ driverConfiguration }): Promise<Driver> => {
     const driverEventEmitter: DriverEventEmitter = new EventEmitter();
 
-    driverEventEmitter.on('error', () => {
-      // TODO I am not clear why this is needed given that `raceError` in `createConnection` is already listening for errors on the connection object.
-    });
-
     const { createPoolClient } = await setup({
       driverConfiguration,
       driverEventEmitter,
@@ -132,6 +130,25 @@ export const createDriverFactory = (setup: DriverSetup): DriverFactory => {
     return {
       createClient: async () => {
         const clientEventEmitter: ClientEventEmitter = new EventEmitter();
+
+        // eslint-disable-next-line prefer-const
+        let destroy: () => Promise<void>;
+
+        const onError = (error: Error) => {
+          if (destroy) {
+            void destroy();
+          }
+
+          Logger.warn(
+            {
+              error: serializeError(error),
+              namespace: 'driverClient',
+            },
+            'unhandled driver client error',
+          );
+        };
+
+        clientEventEmitter.on('error', onError);
 
         const { query, stream, connect, end } = await createPoolClient({
           clientEventEmitter,
@@ -153,6 +170,29 @@ export const createDriverFactory = (setup: DriverSetup): DriverFactory => {
           }
         };
 
+        destroy = async () => {
+          if (activeQueryPromise) {
+            await Promise.race([
+              delay(driverConfiguration.gracefulTerminationTimeout),
+              activeQueryPromise,
+            ]);
+          }
+
+          if (isDestroyed) {
+            return;
+          }
+
+          clearIdleTimeout();
+
+          isDestroyed = true;
+
+          clientEventEmitter.emit('destroy');
+
+          await end();
+
+          clientEventEmitter.off('error', onError);
+        };
+
         const client = {
           acquire: () => {
             if (isDestroyed) {
@@ -169,26 +209,7 @@ export const createDriverFactory = (setup: DriverSetup): DriverFactory => {
 
             clientEventEmitter.emit('acquire');
           },
-          destroy: async () => {
-            if (activeQueryPromise) {
-              await Promise.race([
-                delay(driverConfiguration.gracefulTerminationTimeout),
-                activeQueryPromise,
-              ]);
-            }
-
-            if (isDestroyed) {
-              return;
-            }
-
-            clearIdleTimeout();
-
-            isDestroyed = true;
-
-            clientEventEmitter.emit('destroy');
-
-            await end();
-          },
+          destroy,
           id: () => id,
           isActive: () => isActive,
           isIdle: () => {
