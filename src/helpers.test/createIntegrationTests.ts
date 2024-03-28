@@ -1136,14 +1136,13 @@ export const createIntegrationTests = (
       $$;
     `);
 
-    try {
-      await pool.query(sql.unsafe`SELECT * FROM error_notice(${10});`);
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    } catch (error: any) {
-      if (error?.notices) {
-        t.is(error.notices.length, 5);
-      }
-    }
+    const error = await t.throwsAsync(
+      pool.query(sql.unsafe`SELECT * FROM error_notice(${10});`),
+    );
+
+    // TODO why are we adding notices to a foreign error?
+    // @ts-expect-error - this error originates from the driver
+    t.is(error.notices.length, 5);
 
     await pool.end();
   });
