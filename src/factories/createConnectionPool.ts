@@ -122,20 +122,14 @@ export const createConnectionPool = ({
         const connection = await pendingConnection;
 
         const onRelease = () => {
-          if (!waitingClients.length) {
-            return;
-          }
-
-          if (connection.state() !== 'IDLE') {
-            // TODO throw an error if this happens.
-            // The connection was used by another client.
-            return;
-          }
-
           const waitingClient = waitingClients.shift();
 
           if (!waitingClient) {
             return;
+          }
+
+          if (connection.state() !== 'IDLE') {
+            throw new Error('Connection is not idle.');
           }
 
           connection.acquire();
