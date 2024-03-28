@@ -195,6 +195,10 @@ const wrapError = (error: Error, query: Query | null) => {
     return new BackendTerminatedUnexpectedlyError(error);
   }
 
+  if (error.message.toLowerCase().includes('connection terminated')) {
+    return new BackendTerminatedError(error);
+  }
+
   if (!isErrorWithCode(error)) {
     return error;
   }

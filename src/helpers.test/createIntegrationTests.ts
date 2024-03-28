@@ -851,9 +851,31 @@ export const createIntegrationTests = (
 
     await pool.end();
 
+    // If pool is shutdown sooner than it takes to execute the query,
+    // then we'd know that the query was not registered before the pool teardown was initiated.
     t.true(Date.now() - startTime >= 100);
 
     await promise;
+  });
+
+  test('terminates past `gracefulTerminationTimeout`', async (t) => {
+    const pool = await createPool(t.context.dsn, {
+      driverFactory,
+      gracefulTerminationTimeout: 100,
+    });
+
+    // Intentionally not awaiting the promise.
+    const promise = pool.query(
+      sql.unsafe`
+        SELECT pg_sleep(1)
+      `,
+    );
+
+    await pool.end();
+
+    const error = await t.throwsAsync(promise);
+
+    t.true(error instanceof BackendTerminatedError);
   });
 
   test.serial('retries failing transactions (deadlock)', async (t) => {
