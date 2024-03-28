@@ -9,6 +9,7 @@ export {
   ConnectionError,
   DataIntegrityError,
   ForeignKeyIntegrityConstraintViolationError,
+  IdleTransactionTimeoutError,
   InputSyntaxError,
   IntegrityConstraintViolationError,
   InvalidConfigurationError,

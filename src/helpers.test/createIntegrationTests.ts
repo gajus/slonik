@@ -8,6 +8,7 @@ import {
   type DatabasePoolConnection,
   type DatabaseTransactionConnection,
   ForeignKeyIntegrityConstraintViolationError,
+  IdleTransactionTimeoutError,
   InputSyntaxError,
   InvalidInputError,
   NotNullIntegrityConstraintViolationError,
@@ -1758,6 +1759,21 @@ export const createIntegrationTests = (
       }),
       1,
     );
+  });
+
+  test('terminates transactions that are idle beyond idleInTransactionSessionTimeout', async (t) => {
+    const pool = await createPool(t.context.dsn, {
+      driver,
+      idleInTransactionSessionTimeout: 100,
+    });
+
+    const error = await t.throwsAsync(
+      pool.transaction(async () => {
+        await delay(200);
+      }),
+    );
+
+    t.true(error instanceof IdleTransactionTimeoutError);
   });
 
   type IsolationLevel =

@@ -52,6 +52,14 @@ export class StatementTimeoutError extends SlonikError {
   }
 }
 
+export class IdleTransactionTimeoutError extends SlonikError {
+  public constructor(error: Error) {
+    super('Connection terminated due to idle-in-transaction timeout.', {
+      cause: error,
+    });
+  }
+}
+
 export class BackendTerminatedUnexpectedlyError extends SlonikError {
   public constructor(error: Error) {
     super('Backend has been terminated unexpectedly.', { cause: error });

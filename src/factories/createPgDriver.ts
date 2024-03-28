@@ -4,6 +4,7 @@ import {
   BackendTerminatedError,
   CheckIntegrityConstraintViolationError,
   ForeignKeyIntegrityConstraintViolationError,
+  IdleTransactionTimeoutError,
   InputSyntaxError,
   InvalidInputError,
   NotNullIntegrityConstraintViolationError,
@@ -189,6 +190,10 @@ const wrapError = (error: Error, query: Query | null) => {
 
   if (error.code === '22P02') {
     return new InvalidInputError(error.message);
+  }
+
+  if (error.code === '25P03') {
+    return new IdleTransactionTimeoutError(error);
   }
 
   if (error.code === '57P01') {
