@@ -1725,6 +1725,42 @@ export const createIntegrationTests = (
     );
   });
 
+  test('retains explicit connection beyond the idle timeout', async (t) => {
+    const pool = await createPool(t.context.dsn, {
+      driver,
+      idleTimeout: 100,
+    });
+
+    t.is(
+      await pool.connect(async () => {
+        await delay(200);
+
+        return await pool.oneFirst(sql.unsafe`
+          SELECT 1;
+        `);
+      }),
+      1,
+    );
+  });
+
+  test('retains explicit transaction beyond the idle timeout', async (t) => {
+    const pool = await createPool(t.context.dsn, {
+      driver,
+      idleTimeout: 100,
+    });
+
+    t.is(
+      await pool.transaction(async () => {
+        await delay(200);
+
+        return await pool.oneFirst(sql.unsafe`
+          SELECT 1;
+        `);
+      }),
+      1,
+    );
+  });
+
   type IsolationLevel =
     | 'READ UNCOMMITTED'
     | 'READ COMMITTED'
@@ -1765,7 +1801,7 @@ export const createIntegrationTests = (
     expectedResult2: number;
     isolationLevel: IsolationLevel;
   }) => {
-    test.only(
+    test(
       'handles concurrent transactions correctly (' + isolationLevel + ')',
       async (t) => {
         const pool = await createPool(t.context.dsn, {
