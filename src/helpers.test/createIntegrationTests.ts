@@ -62,7 +62,7 @@ export const createIntegrationTests = (
     t.is(error?.column, 'name');
   });
 
-  test.skip('properly handles terminated connections', async (t) => {
+  test('properly handles terminated connections', async (t) => {
     const pool = await createPool(t.context.dsn, {
       driverFactory,
     });
