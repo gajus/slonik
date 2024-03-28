@@ -1,3 +1,4 @@
+import { Logger } from '../Logger';
 import { type TypedReadable } from '../types';
 import { createUid } from '../utilities/createUid';
 import { defer, type DeferredPromise } from '../utilities/defer';
@@ -7,6 +8,11 @@ import {
   type DriverQueryResult,
   type DriverStreamResult,
 } from './createDriverFactory';
+import { serializeError } from 'serialize-error';
+
+const logger = Logger.child({
+  namespace: 'createConnectionPool',
+});
 
 export type ConnectionPoolClient = {
   acquire: () => void;
@@ -137,11 +143,42 @@ export const createConnectionPool = ({
 
       isEnded = true;
 
-      await Promise.all(pendingConnections);
+      try {
+        await Promise.all(pendingConnections);
+      } catch (error) {
+        logger.error(
+          {
+            error: serializeError(error),
+          },
+          'error in pool termination sequence while waiting for pending connections to be established',
+        );
+      }
 
-      await Promise.all(connections.map((connection) => connection.release()));
+      try {
+        await Promise.all(
+          connections.map((connection) => connection.release()),
+        );
+      } catch (error) {
+        logger.error(
+          {
+            error: serializeError(error),
+          },
+          'error in pool termination sequence while releasing connections',
+        );
+      }
 
-      await Promise.all(connections.map((connection) => connection.destroy()));
+      try {
+        await Promise.all(
+          connections.map((connection) => connection.destroy()),
+        );
+      } catch (error) {
+        logger.error(
+          {
+            error: serializeError(error),
+          },
+          'error in pool termination sequence while destroying connections',
+        );
+      }
     },
     id: () => {
       return id;
