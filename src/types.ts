@@ -193,10 +193,13 @@ export type ConnectionRoutine<T> = (
   connection: DatabasePoolConnection,
 ) => Promise<T>;
 
+type PoolStateName = 'LIVE' | 'ENDING' | 'ENDED';
+
 type PoolState = {
-  readonly activeConnections: number;
-  readonly ended: boolean;
+  readonly acquiredConnections: number;
   readonly idleConnections: number;
+  readonly pendingReleaseConnections: number;
+  readonly state: PoolStateName;
   readonly waitingClients: number;
 };
 

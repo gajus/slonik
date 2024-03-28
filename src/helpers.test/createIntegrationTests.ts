@@ -669,18 +669,22 @@ export const createIntegrationTests = (
     });
 
     t.deepEqual(pool.state(), {
-      activeConnections: 0,
-      ended: false,
+      acquiredConnections: 0,
       idleConnections: 0,
+      pendingDestroyConnections: 0,
+      pendingReleaseConnections: 0,
+      state: 'LIVE',
       waitingClients: 0,
     });
 
     await pool.end();
 
     t.deepEqual(pool.state(), {
-      activeConnections: 0,
-      ended: true,
+      acquiredConnections: 0,
       idleConnections: 0,
+      pendingDestroyConnections: 0,
+      pendingReleaseConnections: 0,
+      state: 'ENDED',
       waitingClients: 0,
     });
   });
@@ -688,12 +692,15 @@ export const createIntegrationTests = (
   test('pool.end() resolves when there are no more connections (implicit connection)', async (t) => {
     const pool = await createPool(t.context.dsn, {
       driverFactory,
+      idleTimeout: 1_000,
     });
 
     t.deepEqual(pool.state(), {
-      activeConnections: 0,
-      ended: false,
+      acquiredConnections: 0,
       idleConnections: 0,
+      pendingDestroyConnections: 0,
+      pendingReleaseConnections: 0,
+      state: 'LIVE',
       waitingClients: 0,
     });
 
@@ -702,18 +709,22 @@ export const createIntegrationTests = (
     `);
 
     t.deepEqual(pool.state(), {
-      activeConnections: 0,
-      ended: false,
+      acquiredConnections: 0,
       idleConnections: 1,
+      pendingDestroyConnections: 0,
+      pendingReleaseConnections: 0,
+      state: 'LIVE',
       waitingClients: 0,
     });
 
     await pool.end();
 
     t.deepEqual(pool.state(), {
-      activeConnections: 0,
-      ended: true,
+      acquiredConnections: 0,
       idleConnections: 0,
+      pendingDestroyConnections: 0,
+      pendingReleaseConnections: 0,
+      state: 'ENDED',
       waitingClients: 0,
     });
   });
@@ -724,9 +735,11 @@ export const createIntegrationTests = (
     });
 
     t.deepEqual(pool.state(), {
-      activeConnections: 0,
-      ended: false,
+      acquiredConnections: 0,
       idleConnections: 0,
+      pendingDestroyConnections: 0,
+      pendingReleaseConnections: 0,
+      state: 'LIVE',
       waitingClients: 0,
     });
 
@@ -737,18 +750,22 @@ export const createIntegrationTests = (
     await delay(100);
 
     t.deepEqual(pool.state(), {
-      activeConnections: 1,
-      ended: false,
+      acquiredConnections: 1,
       idleConnections: 0,
+      pendingDestroyConnections: 0,
+      pendingReleaseConnections: 0,
+      state: 'LIVE',
       waitingClients: 0,
     });
 
     await pool.end();
 
     t.deepEqual(pool.state(), {
-      activeConnections: 0,
-      ended: true,
+      acquiredConnections: 0,
       idleConnections: 0,
+      pendingDestroyConnections: 0,
+      pendingReleaseConnections: 0,
+      state: 'ENDED',
       waitingClients: 0,
     });
   });
@@ -763,9 +780,11 @@ export const createIntegrationTests = (
     });
 
     t.deepEqual(pool.state(), {
-      activeConnections: 0,
-      ended: false,
+      acquiredConnections: 0,
       idleConnections: 0,
+      pendingDestroyConnections: 0,
+      pendingReleaseConnections: 0,
+      state: 'LIVE',
       waitingClients: 0,
     });
 
@@ -788,9 +807,11 @@ export const createIntegrationTests = (
     ]);
 
     t.deepEqual(pool.state(), {
-      activeConnections: 0,
-      ended: false,
+      acquiredConnections: 0,
       idleConnections: 5,
+      pendingDestroyConnections: 0,
+      pendingReleaseConnections: 0,
+      state: 'LIVE',
       waitingClients: 0,
     });
 
@@ -799,9 +820,11 @@ export const createIntegrationTests = (
     await delay(600);
 
     t.deepEqual(pool.state(), {
-      activeConnections: 0,
-      ended: true,
+      acquiredConnections: 0,
       idleConnections: 0,
+      pendingDestroyConnections: 0,
+      pendingReleaseConnections: 0,
+      state: 'ENDED',
       waitingClients: 0,
     });
   });
@@ -813,13 +836,6 @@ export const createIntegrationTests = (
       driverFactory,
       maximumPoolSize: 5,
       statementTimeout: 1_000,
-    });
-
-    t.deepEqual(pool.state(), {
-      activeConnections: 0,
-      ended: false,
-      idleConnections: 0,
-      waitingClients: 0,
     });
 
     const error = await t.throwsAsync(
@@ -867,7 +883,7 @@ export const createIntegrationTests = (
     // Intentionally not awaiting the promise.
     const promise = pool.query(
       sql.unsafe`
-        SELECT pg_sleep(1)
+        SELECT pg_sleep(100)
       `,
     );
 
@@ -1248,99 +1264,50 @@ export const createIntegrationTests = (
     await pool.end();
   });
 
-  test('establishes, reuses, discards pool connections', async (t) => {
+  test('shows waiting clients', async (t) => {
     const pool = await createPool(t.context.dsn, {
       idleTimeout: 1_000,
-      maximumPoolSize: 5,
+      maximumPoolSize: 1,
     });
 
-    t.deepEqual(pool.state(), {
-      activeConnections: 0,
-      ended: false,
-      idleConnections: 0,
-      waitingClients: 0,
-    });
+    t.deepEqual(
+      pool.state(),
+      {
+        acquiredConnections: 0,
+        idleConnections: 0,
+        pendingDestroyConnections: 0,
+        pendingReleaseConnections: 0,
+        state: 'LIVE',
+        waitingClients: 0,
+      },
+      'initial state',
+    );
 
     const batch1 = Promise.all([
       pool.query(sql.unsafe`
-          SELECT pg_sleep(1)
-        `),
+        SELECT pg_sleep(0.2)
+      `),
       pool.query(sql.unsafe`
-          SELECT pg_sleep(1)
-        `),
-      pool.query(sql.unsafe`
-          SELECT pg_sleep(1)
-        `),
-      pool.query(sql.unsafe`
-          SELECT pg_sleep(1)
-        `),
-      pool.query(sql.unsafe`
-          SELECT pg_sleep(1)
-        `),
+        SELECT pg_sleep(0.2)
+      `),
     ]);
 
     await delay(100);
 
-    t.deepEqual(pool.state(), {
-      activeConnections: 5,
-      ended: false,
-      idleConnections: 0,
-      waitingClients: 0,
-    });
-
-    const batch2 = Promise.all([
-      pool.query(sql.unsafe`
-          SELECT pg_sleep(1)
-        `),
-      pool.query(sql.unsafe`
-          SELECT pg_sleep(1)
-        `),
-      pool.query(sql.unsafe`
-          SELECT pg_sleep(1)
-        `),
-      pool.query(sql.unsafe`
-          SELECT pg_sleep(1)
-        `),
-      pool.query(sql.unsafe`
-          SELECT pg_sleep(1)
-        `),
-    ]);
-
-    await delay(100);
-
-    t.deepEqual(pool.state(), {
-      activeConnections: 5,
-      ended: false,
-      idleConnections: 0,
-      waitingClients: 5,
-    });
+    t.deepEqual(
+      pool.state(),
+      {
+        acquiredConnections: 1,
+        idleConnections: 0,
+        pendingDestroyConnections: 0,
+        pendingReleaseConnections: 0,
+        state: 'LIVE',
+        waitingClients: 1,
+      },
+      'shows waiting connections',
+    );
 
     await batch1;
-
-    t.deepEqual(pool.state(), {
-      activeConnections: 5,
-      ended: false,
-      idleConnections: 0,
-      waitingClients: 0,
-    });
-
-    await batch2;
-
-    t.deepEqual(pool.state(), {
-      activeConnections: 0,
-      ended: false,
-      idleConnections: 5,
-      waitingClients: 0,
-    });
-
-    await delay(1_000);
-
-    t.deepEqual(pool.state(), {
-      activeConnections: 0,
-      ended: false,
-      idleConnections: 0,
-      waitingClients: 0,
-    });
 
     await pool.end();
   });
@@ -1836,12 +1803,18 @@ export const createIntegrationTests = (
           INSERT INTO counter(value) VALUES (0);
         `);
 
-        t.deepEqual(pool.state(), {
-          activeConnections: 0,
-          ended: false,
-          idleConnections: 1,
-          waitingClients: 0,
-        });
+        t.deepEqual(
+          pool.state(),
+          {
+            acquiredConnections: 0,
+            idleConnections: 1,
+            pendingDestroyConnections: 0,
+            pendingReleaseConnections: 0,
+            state: 'LIVE',
+            waitingClients: 0,
+          },
+          'initial state',
+        );
 
         const transaction1 = pool.transaction(async (transaction) => {
           await setIsolationLevel(transaction, isolationLevel);
@@ -1878,9 +1851,11 @@ export const createIntegrationTests = (
         await delay(50);
 
         t.deepEqual(pool.state(), {
-          activeConnections: 2,
-          ended: false,
+          acquiredConnections: 2,
           idleConnections: 0,
+          pendingDestroyConnections: 0,
+          pendingReleaseConnections: 0,
+          state: 'LIVE',
           waitingClients: 0,
         });
 

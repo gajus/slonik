@@ -5,9 +5,11 @@ import { defer, type DeferredPromise } from '../utilities/defer';
 import {
   type Driver,
   type DriverClientEventEmitter,
+  type DriverClientState,
   type DriverQueryResult,
   type DriverStreamResult,
 } from './createDriverFactory';
+import { setTimeout as delay } from 'node:timers/promises';
 import { serializeError } from 'serialize-error';
 
 const logger = Logger.child({
@@ -18,29 +20,36 @@ export type ConnectionPoolClient = {
   acquire: () => void;
   destroy: () => Promise<void>;
   id: () => string;
-  isActive: () => boolean;
-  isIdle: () => boolean;
   off: DriverClientEventEmitter['off'];
   on: DriverClientEventEmitter['on'];
   query: (query: string, values?: unknown[]) => Promise<DriverQueryResult>;
   release: () => Promise<void>;
   removeListener: DriverClientEventEmitter['removeListener'];
+  state: () => DriverClientState;
   stream: (
     query: string,
     values?: unknown[],
   ) => TypedReadable<DriverStreamResult>;
 };
 
+type ConnectionPoolStateName = 'LIVE' | 'ENDING' | 'ENDED';
+
+/**
+ * @property {number} acquiredConnections - The number of connections that are currently acquired.
+ */
+type ConnectionPoolState = {
+  acquiredConnections: number;
+  idleConnections: number;
+  pendingReleaseConnections: number;
+  state: ConnectionPoolStateName;
+  waitingClients: number;
+};
+
 export type ConnectionPool = {
   acquire: () => Promise<ConnectionPoolClient>;
   end: () => Promise<void>;
   id: () => string;
-  state: () => {
-    activeConnections: number;
-    ended: boolean;
-    idleConnections: number;
-    waitingClients: number;
-  };
+  state: () => ConnectionPoolState;
 };
 
 export const createConnectionPool = ({
@@ -61,13 +70,11 @@ export const createConnectionPool = ({
 
   const id = createUid();
 
+  let isEnding = false;
   let isEnded = false;
 
   let poolEndPromise: Promise<void> | null = null;
 
-  /**
-   * This function must not throw.
-   */
   const endPool = async () => {
     try {
       await Promise.all(pendingConnections);
@@ -80,37 +87,25 @@ export const createConnectionPool = ({
       );
     }
 
-    try {
-      await Promise.all(connections.map((connection) => connection.release()));
-    } catch (error) {
-      logger.error(
-        {
-          error: serializeError(error),
-        },
-        'error in pool termination sequence while releasing connections',
-      );
-    }
+    // This is needed to ensure that all pending connections were assigned a waiting client.
+    // e.g. "waits for all connections to be established before attempting to terminate the pool" test
+    await delay(0);
 
-    try {
-      await Promise.all(connections.map((connection) => connection.destroy()));
-    } catch (error) {
-      logger.error(
-        {
-          error: serializeError(error),
-        },
-        'error in pool termination sequence while destroying connections',
-      );
-    }
+    await Promise.all(connections.map((connection) => connection.destroy()));
   };
 
   return {
     acquire: async () => {
+      if (isEnding) {
+        throw new Error('Connection pool is being terminated.');
+      }
+
       if (isEnded) {
         throw new Error('Connection pool has ended.');
       }
 
-      const idleConnection = connections.find((connection) =>
-        connection.isIdle(),
+      const idleConnection = connections.find(
+        (connection) => connection.state() === 'IDLE',
       );
 
       if (idleConnection) {
@@ -119,7 +114,7 @@ export const createConnectionPool = ({
         return idleConnection;
       }
 
-      if (connections.length < poolSize) {
+      if (pendingConnections.length + connections.length < poolSize) {
         const pendingConnection = driver.createClient();
 
         pendingConnections.push(pendingConnection);
@@ -131,7 +126,8 @@ export const createConnectionPool = ({
             return;
           }
 
-          if (connection.isActive()) {
+          if (connection.state() !== 'IDLE') {
+            // TODO throw an error if this happens.
             // The connection was used by another client.
             return;
           }
@@ -158,9 +154,9 @@ export const createConnectionPool = ({
 
         connection.on('destroy', onDestroy);
 
-        connections.push(connection);
-
         connection.acquire();
+
+        connections.push(connection);
 
         pendingConnections.splice(
           pendingConnections.indexOf(pendingConnection),
@@ -177,6 +173,8 @@ export const createConnectionPool = ({
       }
     },
     end: async () => {
+      isEnding = true;
+
       if (poolEndPromise) {
         return poolEndPromise;
       }
@@ -191,14 +189,43 @@ export const createConnectionPool = ({
       return id;
     },
     state: () => {
-      const idleConnections = connections.filter((connection) =>
-        connection.isIdle(),
-      );
+      const stateName = isEnded ? 'ENDED' : isEnding ? 'ENDING' : 'LIVE';
+
+      const state = {
+        acquiredConnections: 0,
+        idleConnections: 0,
+        pendingDestroyConnections: 0,
+        pendingReleaseConnections: 0,
+      };
+
+      // TODO add pendingAcquireConnections
+      // TODO add destroyedConnections
+
+      for (const connection of connections) {
+        if (connection.state() === 'ACQUIRED') {
+          state.acquiredConnections++;
+        }
+
+        if (connection.state() === 'IDLE') {
+          state.idleConnections++;
+        }
+
+        if (connection.state() === 'PENDING_RELEASE') {
+          state.pendingReleaseConnections++;
+        }
+
+        if (connection.state() === 'PENDING_DESTROY') {
+          state.pendingDestroyConnections++;
+        }
+
+        if (connection.state() === 'DESTROYED') {
+          state.pendingReleaseConnections++;
+        }
+      }
 
       return {
-        activeConnections: connections.length - idleConnections.length,
-        ended: isEnded,
-        idleConnections: idleConnections.length,
+        ...state,
+        state: stateName,
         waitingClients: waitingClients.length,
       };
     },

@@ -41,17 +41,23 @@ export type DriverClientEventEmitter = StrictEventEmitter<
   }
 >;
 
+export type DriverClientState =
+  | 'ACQUIRED'
+  | 'DESTROYED'
+  | 'IDLE'
+  | 'PENDING_DESTROY'
+  | 'PENDING_RELEASE';
+
 export type DriverClient = {
   acquire: () => void;
   destroy: () => Promise<void>;
   id: () => string;
-  isActive: () => boolean;
-  isIdle: () => boolean;
   off: DriverClientEventEmitter['off'];
   on: DriverClientEventEmitter['on'];
   query: (query: string, values?: unknown[]) => Promise<DriverQueryResult>;
   release: () => Promise<void>;
   removeListener: DriverClientEventEmitter['removeListener'];
+  state: () => DriverClientState;
   stream: (
     query: string,
     values?: unknown[],
@@ -136,7 +142,11 @@ export const createDriverFactory = (setup: DriverSetup): DriverFactory => {
 
         const onError = (error: Error) => {
           if (destroy) {
-            void destroy();
+            // eslint-disable-next-line promise/prefer-await-to-then
+            void destroy().catch(() => {
+              // Do nothing. The error has been emitted already.
+              // See "handles unexpected backend termination" test.
+            });
           }
 
           Logger.warn(
@@ -154,11 +164,13 @@ export const createDriverFactory = (setup: DriverSetup): DriverFactory => {
           clientEventEmitter,
         });
 
-        let isActive = false;
+        let isAcquired = false;
         let isDestroyed = false;
         let idleTimeout: NodeJS.Timeout | null = null;
 
         let activeQueryPromise: Promise<DriverQueryResult> | null = null;
+        let destroyPromise: Promise<void> | null = null;
+        let releasePromise: Promise<void> | null = null;
 
         const id = createUid();
 
@@ -170,19 +182,45 @@ export const createDriverFactory = (setup: DriverSetup): DriverFactory => {
           }
         };
 
-        destroy = async () => {
+        const state = () => {
+          if (destroyPromise) {
+            return 'PENDING_DESTROY';
+          }
+
+          if (releasePromise) {
+            return 'PENDING_RELEASE';
+          }
+
+          if (isDestroyed) {
+            return 'DESTROYED';
+          }
+
+          if (isAcquired) {
+            return 'ACQUIRED';
+          }
+
+          return 'IDLE';
+        };
+
+        const internalDestroy = async () => {
+          const currentState = state();
+
+          if (currentState === 'PENDING_DESTROY') {
+            throw new Error('Client is pending destroy.');
+          }
+
+          if (currentState === 'DESTROYED') {
+            throw new Error('Client is destroyed.');
+          }
+
+          clearIdleTimeout();
+
           if (activeQueryPromise) {
             await Promise.race([
               delay(driverConfiguration.gracefulTerminationTimeout),
               activeQueryPromise,
             ]);
           }
-
-          if (isDestroyed) {
-            return;
-          }
-
-          clearIdleTimeout();
 
           isDestroyed = true;
 
@@ -193,28 +231,101 @@ export const createDriverFactory = (setup: DriverSetup): DriverFactory => {
           clientEventEmitter.off('error', onError);
         };
 
+        destroy = async () => {
+          // console.trace('destroy');
+
+          if (destroyPromise) {
+            return destroyPromise;
+          }
+
+          destroyPromise = internalDestroy();
+
+          return destroyPromise;
+        };
+
+        const internalRelease = async () => {
+          const currentState = state();
+
+          if (currentState === 'PENDING_DESTROY') {
+            throw new Error('Client is pending destroy.');
+          }
+
+          if (currentState === 'DESTROYED') {
+            throw new Error('Client is destroyed.');
+          }
+
+          if (currentState !== 'ACQUIRED') {
+            throw new Error('Client is not acquired.');
+          }
+
+          if (activeQueryPromise) {
+            throw new Error('Client has an active query.');
+          }
+
+          await query('DISCARD ALL');
+
+          if (driverConfiguration.idleTimeout !== 'DISABLE_TIMEOUT') {
+            clearIdleTimeout();
+
+            idleTimeout = setTimeout(() => {
+              void destroy();
+
+              idleTimeout = null;
+            }, driverConfiguration.idleTimeout).unref();
+          }
+
+          // eslint-disable-next-line require-atomic-updates
+          isAcquired = false;
+
+          releasePromise = null;
+
+          clientEventEmitter.emit('release');
+        };
+
+        const release = () => {
+          if (destroyPromise) {
+            return destroyPromise;
+          }
+
+          if (releasePromise) {
+            return releasePromise;
+          }
+
+          releasePromise = internalRelease();
+
+          return releasePromise;
+        };
+
         const client = {
           acquire: () => {
-            if (isDestroyed) {
+            // console.trace('acquire', id);
+
+            const currentState = state();
+
+            if (currentState === 'PENDING_DESTROY') {
+              throw new Error('Client is pending destroy.');
+            }
+
+            if (currentState === 'PENDING_RELEASE') {
+              throw new Error('Client is pending release.');
+            }
+
+            if (currentState === 'DESTROYED') {
               throw new Error('Client is destroyed.');
             }
 
-            if (isActive) {
+            if (currentState === 'ACQUIRED') {
               throw new Error('Client is already acquired.');
             }
 
             clearIdleTimeout();
 
-            isActive = true;
+            isAcquired = true;
 
             clientEventEmitter.emit('acquire');
           },
           destroy,
           id: () => id,
-          isActive: () => isActive,
-          isIdle: () => {
-            return !isActive;
-          },
           off: (event, listener) => {
             return clientEventEmitter.off(event, listener);
           },
@@ -222,12 +333,24 @@ export const createDriverFactory = (setup: DriverSetup): DriverFactory => {
             return clientEventEmitter.on(event, listener);
           },
           query: async (sql, values) => {
-            if (isDestroyed) {
+            // console.trace('query', id);
+
+            const currentState = state();
+
+            if (currentState === 'PENDING_DESTROY') {
+              throw new Error('Client is pending destroy.');
+            }
+
+            if (currentState === 'PENDING_RELEASE') {
+              throw new Error('Client is pending release.');
+            }
+
+            if (currentState === 'DESTROYED') {
               throw new Error('Client is destroyed.');
             }
 
-            if (!isActive) {
-              throw new Error('Client is not active.');
+            if (currentState !== 'ACQUIRED') {
+              throw new Error('Client is not acquired.');
             }
 
             try {
@@ -245,45 +368,28 @@ export const createDriverFactory = (setup: DriverSetup): DriverFactory => {
               activeQueryPromise = null;
             }
           },
-          release: async () => {
-            if (activeQueryPromise) {
-              await Promise.race([
-                delay(driverConfiguration.gracefulTerminationTimeout),
-                activeQueryPromise,
-              ]);
-            }
-
-            if (!isActive) {
-              return;
-            }
-
-            await query('DISCARD ALL');
-
-            // eslint-disable-next-line require-atomic-updates
-            isActive = false;
-
-            if (driverConfiguration.idleTimeout !== 'DISABLE_TIMEOUT') {
-              clearIdleTimeout();
-
-              idleTimeout = setTimeout(() => {
-                void client.destroy();
-
-                idleTimeout = null;
-              }, driverConfiguration.idleTimeout).unref();
-            }
-
-            clientEventEmitter.emit('release');
-          },
+          release,
           removeListener: (event, listener) => {
             return clientEventEmitter.removeListener(event, listener);
           },
+          state,
           stream: (sql, values) => {
-            if (isDestroyed) {
+            const currentState = state();
+
+            if (currentState === 'PENDING_DESTROY') {
+              throw new Error('Client is pending destroy.');
+            }
+
+            if (currentState === 'PENDING_RELEASE') {
+              throw new Error('Client is pending release.');
+            }
+
+            if (currentState === 'DESTROYED') {
               throw new Error('Client is destroyed.');
             }
 
-            if (!isActive) {
-              throw new Error('Client is not active.');
+            if (currentState !== 'ACQUIRED') {
+              throw new Error('Client is not acquired.');
             }
 
             // TODO determine if streaming and do not allow to release the client until the stream is finished

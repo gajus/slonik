@@ -5,6 +5,7 @@ export {
   type Driver,
   type DriverClient,
   type DriverClientEventEmitter,
+  type DriverClientState,
   type DriverCommand,
   type DriverConfiguration,
   type DriverEventEmitter,

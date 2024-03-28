@@ -77,13 +77,19 @@ export const createConnection = async (
   poolHandler: PoolHandlerType,
   query: QuerySqlToken | null = null,
 ) => {
-  const { ended } = pool.state();
+  const { state } = pool.state();
 
   const poolId = pool.id();
 
-  if (ended) {
+  if (state === 'ENDING') {
     throw new UnexpectedStateError(
-      'Connection pool shutdown has been already initiated. Cannot create a new connection.',
+      'Connection pool is being shut down. Cannot create a new connection.',
+    );
+  }
+
+  if (state === 'ENDED') {
+    throw new UnexpectedStateError(
+      'Connection pool has been shut down. Cannot create a new connection.',
     );
   }
 
