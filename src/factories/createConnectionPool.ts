@@ -45,7 +45,12 @@ export const createConnectionPool = ({
   idleTimeout?: number;
   poolSize?: number;
 }): ConnectionPool => {
+  // See test "waits for all connections to be established before attempting to terminate the pool"
+  // for explanation of why `pendingConnections` is needed.
+  const pendingConnections: Array<Promise<ConnectionPoolClient>> = [];
+
   const connections: ConnectionPoolClient[] = [];
+
   const waitingClients: Array<DeferredPromise<ConnectionPoolClient>> = [];
 
   const id = createUid();
@@ -69,7 +74,16 @@ export const createConnectionPool = ({
       }
 
       if (connections.length < poolSize) {
-        const connection = await driver.createClient();
+        const pendingConnection = driver.createClient();
+
+        pendingConnections.push(pendingConnection);
+
+        const connection = await pendingConnection;
+
+        pendingConnections.splice(
+          pendingConnections.indexOf(pendingConnection),
+          1,
+        );
 
         const onRelease = () => {
           if (!waitingClients.length) {
@@ -122,6 +136,8 @@ export const createConnectionPool = ({
       }
 
       isEnded = true;
+
+      await Promise.all(pendingConnections);
 
       await Promise.all(connections.map((connection) => connection.release()));
 

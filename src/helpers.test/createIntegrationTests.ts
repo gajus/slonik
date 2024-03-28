@@ -831,6 +831,31 @@ export const createIntegrationTests = (
     await pool.end();
   });
 
+  test('waits for all connections to be established before attempting to terminate the pool', async (t) => {
+    t.timeout(1_000);
+
+    const pool = await createPool(t.context.dsn, {
+      driverFactory,
+      maximumPoolSize: 1,
+    });
+
+    // This test ensures that this query is registered before the pool teardown is initiated.
+    // Otherwise, the pool will be terminated before the query is registered, i.e. without even attempting to execute the query.
+    const promise = pool.query(
+      sql.unsafe`
+        SELECT pg_sleep(0.1)
+      `,
+    );
+
+    const startTime = Date.now();
+
+    await pool.end();
+
+    t.true(Date.now() - startTime >= 100);
+
+    await promise;
+  });
+
   test.serial('retries failing transactions (deadlock)', async (t) => {
     t.timeout(2_000);
 
