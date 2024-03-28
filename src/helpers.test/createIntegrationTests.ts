@@ -806,8 +806,6 @@ export const createIntegrationTests = (
     });
   });
 
-  // Skipping test because of a bug in node-postgres.
-  // @see https://github.com/brianc/node-postgres/issues/2103
   test('statements are cancelled after `statementTimeout`', async (t) => {
     t.timeout(5_000);
 
