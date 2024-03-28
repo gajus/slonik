@@ -244,16 +244,18 @@ export const createPgDriver = () => {
       getTypeParser: await getTypeParserPromise,
     };
 
+    const onNotice = (notice) => {
+      if (notice.message) {
+        eventEmitter.emit('notice', {
+          message: notice.message,
+        });
+      }
+    };
+
     return () => {
       const client = new Client(pgClientConfiguration);
 
-      client.on('notice', (notice) => {
-        if (notice.message) {
-          eventEmitter.emit('notice', {
-            message: notice.message,
-          });
-        }
-      });
+      client.on('notice', onNotice);
 
       return {
         connect: async () => {
@@ -261,6 +263,7 @@ export const createPgDriver = () => {
         },
         end: async () => {
           await client.end();
+          client.removeListener('notice', onNotice);
         },
         query: async (sql, values) => {
           let result;
