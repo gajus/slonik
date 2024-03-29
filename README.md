@@ -4,7 +4,7 @@
 [![Canonical Code Style](https://img.shields.io/badge/code%20style-canonical-blue.svg?style=flat-square)](https://github.com/gajus/canonical)
 [![Twitter Follow](https://img.shields.io/twitter/follow/kuizinas.svg?style=social&label=Follow)](https://twitter.com/kuizinas)
 
-A [battle-tested](#user-content-battle-tested) Node.js PostgreSQL client with strict types, detailed logging and assertions.
+A [battle-tested](#battle-tested) Node.js PostgreSQL client with strict types, detailed logging and assertions.
 
 ![Tailing Slonik logs](./.README/slonik-log-tailing.gif)
 
@@ -28,125 +28,125 @@ Note: Using this project does not require TypeScript. It is a regular ES6 module
 
 ## Features
 
-* [Runtime validation](#user-content-runtime-validation)
-* [Assertions and type safety](#user-content-repeating-code-patterns-and-type-safety).
-* [Safe connection handling](#user-content-protecting-against-unsafe-connection-handling).
-* [Safe transaction handling](#user-content-protecting-against-unsafe-transaction-handling).
-* [Safe value interpolation](#user-content-protecting-against-unsafe-value-interpolation).
-* [Transaction nesting](#user-content-transaction-nesting).
-* [Transaction retrying](#user-content-transaction-retrying)
-* [Query retrying](#user-content-query-retrying)
-* Detailed [logging](#user-content-slonik-debugging).
-* [Asynchronous stack trace resolution](#user-content-capture-stack-trace).
-* [Middlewares](#user-content-slonik-interceptors).
-* [Mapped errors](#user-content-error-handling).
+* [Runtime validation](#runtime-validation)
+* [Assertions and type safety](#repeating-code-patterns-and-type-safety).
+* [Safe connection handling](#protecting-against-unsafe-connection-handling).
+* [Safe transaction handling](#protecting-against-unsafe-transaction-handling).
+* [Safe value interpolation](#protecting-against-unsafe-value-interpolation).
+* [Transaction nesting](#transaction-nesting).
+* [Transaction retrying](#transaction-retrying)
+* [Query retrying](#query-retrying)
+* Detailed [logging](#slonik-debugging).
+* [Asynchronous stack trace resolution](#capture-stack-trace).
+* [Middlewares](#slonik-interceptors).
+* [Mapped errors](#error-handling).
 * [ESLint plugin](https://github.com/gajus/eslint-plugin-sql).
 
 ## Contents
 
-* [Slonik](#user-content-slonik)
-    * [Sponsors](#user-content-slonik-sponsors)
-    * [Principles](#user-content-slonik-principles)
-    * [Features](#user-content-slonik-features)
-    * [Contents](#user-content-slonik-contents)
-    * [About Slonik](#user-content-slonik-about-slonik)
-        * [Battle-Tested](#user-content-slonik-about-slonik-battle-tested)
-        * [Origin of the name](#user-content-slonik-about-slonik-origin-of-the-name)
-        * [Repeating code patterns and type safety](#user-content-slonik-about-slonik-repeating-code-patterns-and-type-safety)
-        * [Protecting against unsafe connection handling](#user-content-slonik-about-slonik-protecting-against-unsafe-connection-handling)
-        * [Protecting against unsafe transaction handling](#user-content-slonik-about-slonik-protecting-against-unsafe-transaction-handling)
-        * [Protecting against unsafe value interpolation](#user-content-slonik-about-slonik-protecting-against-unsafe-value-interpolation)
-    * [Documentation](#user-content-slonik-documentation)
-    * [Usage](#user-content-slonik-usage)
-        * [Connection URI](#user-content-slonik-usage-connection-uri)
-        * [Create connection](#user-content-slonik-usage-create-connection)
-        * [End connection pool](#user-content-slonik-usage-end-connection-pool)
-        * [Describing the current state of the connection pool](#user-content-slonik-usage-describing-the-current-state-of-the-connection-pool)
-        * [API](#user-content-slonik-usage-api)
-        * [Default configuration](#user-content-slonik-usage-default-configuration)
-        * [Checking out a client from the connection pool](#user-content-slonik-usage-checking-out-a-client-from-the-connection-pool)
-    * [How are they different?](#user-content-slonik-how-are-they-different)
-        * [`pg` vs `slonik`](#user-content-slonik-how-are-they-different-pg-vs-slonik)
-        * [`pg-promise` vs `slonik`](#user-content-slonik-how-are-they-different-pg-promise-vs-slonik)
-        * [`postgres` vs `slonik`](#user-content-slonik-how-are-they-different-postgres-vs-slonik)
-    * [Type parsers](#user-content-slonik-type-parsers)
-        * [Built-in type parsers](#user-content-slonik-type-parsers-built-in-type-parsers)
-    * [Interceptors](#user-content-slonik-interceptors)
-        * [Interceptor methods](#user-content-slonik-interceptors-interceptor-methods)
-        * [Community interceptors](#user-content-slonik-interceptors-community-interceptors)
-    * [Recipes](#user-content-slonik-recipes)
-        * [Inserting large number of rows](#user-content-slonik-recipes-inserting-large-number-of-rows)
-        * [Routing queries to different connections](#user-content-slonik-recipes-routing-queries-to-different-connections)
-        * [Building Utility Statements](#user-content-slonik-recipes-building-utility-statements)
-        * [Inserting vector data](#user-content-slonik-recipes-inserting-vector-data)
-    * [Runtime validation](#user-content-slonik-runtime-validation)
-        * [Motivation](#user-content-slonik-runtime-validation-motivation)
-        * [Result parser interceptor](#user-content-slonik-runtime-validation-result-parser-interceptor)
-        * [Example use of `sql.type`](#user-content-slonik-runtime-validation-example-use-of-sql-type)
-        * [Performance penalty](#user-content-slonik-runtime-validation-performance-penalty)
-        * [Unknown keys](#user-content-slonik-runtime-validation-unknown-keys)
-        * [Handling schema validation errors](#user-content-slonik-runtime-validation-handling-schema-validation-errors)
-        * [Inferring types](#user-content-slonik-runtime-validation-inferring-types)
-        * [Transforming results](#user-content-slonik-runtime-validation-transforming-results)
-    * [`sql` tag](#user-content-slonik-sql-tag)
-        * [Type aliases](#user-content-slonik-sql-tag-type-aliases)
-        * [Typing `sql` tag](#user-content-slonik-sql-tag-typing-sql-tag)
-    * [Value placeholders](#user-content-slonik-value-placeholders)
-        * [Tagged template literals](#user-content-slonik-value-placeholders-tagged-template-literals)
-        * [Manually constructing the query](#user-content-slonik-value-placeholders-manually-constructing-the-query)
-        * [Nesting `sql`](#user-content-slonik-value-placeholders-nesting-sql)
-    * [Query building](#user-content-slonik-query-building)
-        * [`sql.array`](#user-content-slonik-query-building-sql-array)
-        * [`sql.binary`](#user-content-slonik-query-building-sql-binary)
-        * [`sql.date`](#user-content-slonik-query-building-sql-date)
-        * [`sql.fragment`](#user-content-slonik-query-building-sql-fragment)
-        * [`sql.identifier`](#user-content-slonik-query-building-sql-identifier)
-        * [`sql.interval`](#user-content-slonik-query-building-sql-interval)
-        * [`sql.join`](#user-content-slonik-query-building-sql-join)
-        * [`sql.json`](#user-content-slonik-query-building-sql-json)
-        * [`sql.jsonb`](#user-content-slonik-query-building-sql-jsonb)
-        * [`sql.literalValue`](#user-content-slonik-query-building-sql-literalvalue)
-        * [`sql.timestamp`](#user-content-slonik-query-building-sql-timestamp)
-        * [`sql.unnest`](#user-content-slonik-query-building-sql-unnest)
-        * [`sql.unsafe`](#user-content-slonik-query-building-sql-unsafe)
-    * [Query methods](#user-content-slonik-query-methods)
-        * [`any`](#user-content-slonik-query-methods-any)
-        * [`anyFirst`](#user-content-slonik-query-methods-anyfirst)
-        * [`exists`](#user-content-slonik-query-methods-exists)
-        * [`many`](#user-content-slonik-query-methods-many)
-        * [`manyFirst`](#user-content-slonik-query-methods-manyfirst)
-        * [`maybeOne`](#user-content-slonik-query-methods-maybeone)
-        * [`maybeOneFirst`](#user-content-slonik-query-methods-maybeonefirst)
-        * [`one`](#user-content-slonik-query-methods-one)
-        * [`oneFirst`](#user-content-slonik-query-methods-onefirst)
-        * [`query`](#user-content-slonik-query-methods-query)
-        * [`stream`](#user-content-slonik-query-methods-stream)
-        * [`transaction`](#user-content-slonik-query-methods-transaction)
-    * [Utilities](#user-content-slonik-utilities)
-        * [`parseDsn`](#user-content-slonik-utilities-parsedsn)
-        * [`stringifyDsn`](#user-content-slonik-utilities-stringifydsn)
-    * [Error handling](#user-content-slonik-error-handling)
-        * [Original `node-postgres` error](#user-content-slonik-error-handling-original-node-postgres-error)
-        * [Handling `BackendTerminatedError`](#user-content-slonik-error-handling-handling-backendterminatederror)
-        * [Handling `CheckIntegrityConstraintViolationError`](#user-content-slonik-error-handling-handling-checkintegrityconstraintviolationerror)
-        * [Handling `ConnectionError`](#user-content-slonik-error-handling-handling-connectionerror)
-        * [Handling `DataIntegrityError`](#user-content-slonik-error-handling-handling-dataintegrityerror)
-        * [Handling `ForeignKeyIntegrityConstraintViolationError`](#user-content-slonik-error-handling-handling-foreignkeyintegrityconstraintviolationerror)
-        * [Handling `NotFoundError`](#user-content-slonik-error-handling-handling-notfounderror)
-        * [Handling `NotNullIntegrityConstraintViolationError`](#user-content-slonik-error-handling-handling-notnullintegrityconstraintviolationerror)
-        * [Handling `StatementCancelledError`](#user-content-slonik-error-handling-handling-statementcancellederror)
-        * [Handling `StatementTimeoutError`](#user-content-slonik-error-handling-handling-statementtimeouterror)
-        * [Handling `UniqueIntegrityConstraintViolationError`](#user-content-slonik-error-handling-handling-uniqueintegrityconstraintviolationerror)
-        * [Handling `TupleMovedToAnotherPartitionError`](#user-content-slonik-error-handling-handling-tuplemovedtoanotherpartitionerror)
-    * [Migrations](#user-content-slonik-migrations)
-    * [Types](#user-content-slonik-types)
-    * [Debugging](#user-content-slonik-debugging)
-        * [Logging](#user-content-slonik-debugging-logging)
-        * [Capture stack trace](#user-content-slonik-debugging-capture-stack-trace)
-    * [Syntax Highlighting](#user-content-slonik-syntax-highlighting)
-        * [Atom Syntax Highlighting Plugin](#user-content-slonik-syntax-highlighting-atom-syntax-highlighting-plugin)
-        * [VS Code Syntax Highlighting Extension](#user-content-slonik-syntax-highlighting-vs-code-syntax-highlighting-extension)
-    * [Development](#user-content-slonik-development)
+* [Slonik](#slonik)
+    * [Sponsors](#slonik-sponsors)
+    * [Principles](#slonik-principles)
+    * [Features](#slonik-features)
+    * [Contents](#slonik-contents)
+    * [About Slonik](#slonik-about-slonik)
+        * [Battle-Tested](#slonik-about-slonik-battle-tested)
+        * [Origin of the name](#slonik-about-slonik-origin-of-the-name)
+        * [Repeating code patterns and type safety](#slonik-about-slonik-repeating-code-patterns-and-type-safety)
+        * [Protecting against unsafe connection handling](#slonik-about-slonik-protecting-against-unsafe-connection-handling)
+        * [Protecting against unsafe transaction handling](#slonik-about-slonik-protecting-against-unsafe-transaction-handling)
+        * [Protecting against unsafe value interpolation](#slonik-about-slonik-protecting-against-unsafe-value-interpolation)
+    * [Documentation](#slonik-documentation)
+    * [Usage](#slonik-usage)
+        * [Connection URI](#slonik-usage-connection-uri)
+        * [Create connection](#slonik-usage-create-connection)
+        * [End connection pool](#slonik-usage-end-connection-pool)
+        * [Describing the current state of the connection pool](#slonik-usage-describing-the-current-state-of-the-connection-pool)
+        * [API](#slonik-usage-api)
+        * [Default configuration](#slonik-usage-default-configuration)
+        * [Checking out a client from the connection pool](#slonik-usage-checking-out-a-client-from-the-connection-pool)
+    * [How are they different?](#slonik-how-are-they-different)
+        * [`pg` vs `slonik`](#slonik-how-are-they-different-pg-vs-slonik)
+        * [`pg-promise` vs `slonik`](#slonik-how-are-they-different-pg-promise-vs-slonik)
+        * [`postgres` vs `slonik`](#slonik-how-are-they-different-postgres-vs-slonik)
+    * [Type parsers](#slonik-type-parsers)
+        * [Built-in type parsers](#slonik-type-parsers-built-in-type-parsers)
+    * [Interceptors](#slonik-interceptors)
+        * [Interceptor methods](#slonik-interceptors-interceptor-methods)
+        * [Community interceptors](#slonik-interceptors-community-interceptors)
+    * [Recipes](#slonik-recipes)
+        * [Inserting large number of rows](#slonik-recipes-inserting-large-number-of-rows)
+        * [Routing queries to different connections](#slonik-recipes-routing-queries-to-different-connections)
+        * [Building Utility Statements](#slonik-recipes-building-utility-statements)
+        * [Inserting vector data](#slonik-recipes-inserting-vector-data)
+    * [Runtime validation](#slonik-runtime-validation)
+        * [Motivation](#slonik-runtime-validation-motivation)
+        * [Result parser interceptor](#slonik-runtime-validation-result-parser-interceptor)
+        * [Example use of `sql.type`](#slonik-runtime-validation-example-use-of-sql-type)
+        * [Performance penalty](#slonik-runtime-validation-performance-penalty)
+        * [Unknown keys](#slonik-runtime-validation-unknown-keys)
+        * [Handling schema validation errors](#slonik-runtime-validation-handling-schema-validation-errors)
+        * [Inferring types](#slonik-runtime-validation-inferring-types)
+        * [Transforming results](#slonik-runtime-validation-transforming-results)
+    * [`sql` tag](#slonik-sql-tag)
+        * [Type aliases](#slonik-sql-tag-type-aliases)
+        * [Typing `sql` tag](#slonik-sql-tag-typing-sql-tag)
+    * [Value placeholders](#slonik-value-placeholders)
+        * [Tagged template literals](#slonik-value-placeholders-tagged-template-literals)
+        * [Manually constructing the query](#slonik-value-placeholders-manually-constructing-the-query)
+        * [Nesting `sql`](#slonik-value-placeholders-nesting-sql)
+    * [Query building](#slonik-query-building)
+        * [`sql.array`](#slonik-query-building-sql-array)
+        * [`sql.binary`](#slonik-query-building-sql-binary)
+        * [`sql.date`](#slonik-query-building-sql-date)
+        * [`sql.fragment`](#slonik-query-building-sql-fragment)
+        * [`sql.identifier`](#slonik-query-building-sql-identifier)
+        * [`sql.interval`](#slonik-query-building-sql-interval)
+        * [`sql.join`](#slonik-query-building-sql-join)
+        * [`sql.json`](#slonik-query-building-sql-json)
+        * [`sql.jsonb`](#slonik-query-building-sql-jsonb)
+        * [`sql.literalValue`](#slonik-query-building-sql-literalvalue)
+        * [`sql.timestamp`](#slonik-query-building-sql-timestamp)
+        * [`sql.unnest`](#slonik-query-building-sql-unnest)
+        * [`sql.unsafe`](#slonik-query-building-sql-unsafe)
+    * [Query methods](#slonik-query-methods)
+        * [`any`](#slonik-query-methods-any)
+        * [`anyFirst`](#slonik-query-methods-anyfirst)
+        * [`exists`](#slonik-query-methods-exists)
+        * [`many`](#slonik-query-methods-many)
+        * [`manyFirst`](#slonik-query-methods-manyfirst)
+        * [`maybeOne`](#slonik-query-methods-maybeone)
+        * [`maybeOneFirst`](#slonik-query-methods-maybeonefirst)
+        * [`one`](#slonik-query-methods-one)
+        * [`oneFirst`](#slonik-query-methods-onefirst)
+        * [`query`](#slonik-query-methods-query)
+        * [`stream`](#slonik-query-methods-stream)
+        * [`transaction`](#slonik-query-methods-transaction)
+    * [Utilities](#slonik-utilities)
+        * [`parseDsn`](#slonik-utilities-parsedsn)
+        * [`stringifyDsn`](#slonik-utilities-stringifydsn)
+    * [Error handling](#slonik-error-handling)
+        * [Original `node-postgres` error](#slonik-error-handling-original-node-postgres-error)
+        * [Handling `BackendTerminatedError`](#slonik-error-handling-handling-backendterminatederror)
+        * [Handling `CheckIntegrityConstraintViolationError`](#slonik-error-handling-handling-checkintegrityconstraintviolationerror)
+        * [Handling `ConnectionError`](#slonik-error-handling-handling-connectionerror)
+        * [Handling `DataIntegrityError`](#slonik-error-handling-handling-dataintegrityerror)
+        * [Handling `ForeignKeyIntegrityConstraintViolationError`](#slonik-error-handling-handling-foreignkeyintegrityconstraintviolationerror)
+        * [Handling `NotFoundError`](#slonik-error-handling-handling-notfounderror)
+        * [Handling `NotNullIntegrityConstraintViolationError`](#slonik-error-handling-handling-notnullintegrityconstraintviolationerror)
+        * [Handling `StatementCancelledError`](#slonik-error-handling-handling-statementcancellederror)
+        * [Handling `StatementTimeoutError`](#slonik-error-handling-handling-statementtimeouterror)
+        * [Handling `UniqueIntegrityConstraintViolationError`](#slonik-error-handling-handling-uniqueintegrityconstraintviolationerror)
+        * [Handling `TupleMovedToAnotherPartitionError`](#slonik-error-handling-handling-tuplemovedtoanotherpartitionerror)
+    * [Migrations](#slonik-migrations)
+    * [Types](#slonik-types)
+    * [Debugging](#slonik-debugging)
+        * [Logging](#slonik-debugging-logging)
+        * [Capture stack trace](#slonik-debugging-capture-stack-trace)
+    * [Syntax Highlighting](#slonik-syntax-highlighting)
+        * [Atom Syntax Highlighting Plugin](#slonik-syntax-highlighting-atom-syntax-highlighting-plugin)
+        * [VS Code Syntax Highlighting Extension](#slonik-syntax-highlighting-vs-code-syntax-highlighting-extension)
+    * [Development](#slonik-development)
 
 
 ## About Slonik
@@ -289,7 +289,7 @@ Using this pattern, we guarantee that connection is always released as soon as t
 
 ### Protecting against unsafe transaction handling
 
-Just like in the [unsafe connection handling](#user-content-protecting-against-unsafe-connection-handling) example, Slonik only allows to create a transaction for the duration of the promise routine supplied to the `connection#transaction()` method.
+Just like in the [unsafe connection handling](#protecting-against-unsafe-connection-handling) example, Slonik only allows to create a transaction for the duration of the promise routine supplied to the `connection#transaction()` method.
 
 ```ts
 connection.transaction(async (transactionConnection) => {
@@ -350,7 +350,7 @@ connection.query(sql.unsafe`SELECT ${userInput}`);
 
 Slonik takes over from here and constructs a query with value bindings, and sends the resulting query text and parameters to PostgreSQL. There is no other way of passing parameters to the query – this adds a strong layer of protection against accidental unsafe user input handling due to limited knowledge of the SQL client API.
 
-As Slonik restricts user's ability to generate and execute dynamic SQL, it provides helper functions used to generate fragments of the query and the corresponding value bindings, e.g. [`sql.identifier`](#user-content-sqlidentifier), [`sql.join`](#user-content-sqljoin) and [`sql.unnest`](#user-content-sqlunnest). These methods generate tokens that the query executor interprets to construct a safe query, e.g.
+As Slonik restricts user's ability to generate and execute dynamic SQL, it provides helper functions used to generate fragments of the query and the corresponding value bindings, e.g. [`sql.identifier`](#sqlidentifier), [`sql.join`](#sqljoin) and [`sql.unnest`](#sqlunnest). These methods generate tokens that the query executor interprets to construct a safe query, e.g.
 
 ```ts
 connection.query(sql.unsafe`
@@ -455,7 +455,7 @@ pool.connect(async (connection) => {
 
 The connection will be kept alive until the promise resolves (the result of the method supplied to `connect()`).
 
-Refer to [query method](#user-content-slonik-query-methods) documentation to learn about the connection methods.
+Refer to [query method](#slonik-query-methods) documentation to learn about the connection methods.
 
 If you do not require having a persistent connection to the same backend, then you can directly use `pool` to run queries, e.g.
 
@@ -701,7 +701,7 @@ result;
 
 Connection is released back to the pool after the promise produced by the function supplied to `connect()` method is either resolved or rejected.
 
-Read: [Protecting against unsafe connection handling](#user-content-protecting-against-unsafe-connection-handling).
+Read: [Protecting against unsafe connection handling](#protecting-against-unsafe-connection-handling).
 
 ## How are they different?
 
@@ -709,7 +709,7 @@ Read: [Protecting against unsafe connection handling](#user-content-protecting-a
 
 [`pg`](https://github.com/brianc/node-postgres) is built intentionally to provide unopinionated, minimal abstraction and encourages use of other modules to implement convenience methods.
 
-Slonik is built on top of `pg` and it provides convenience methods for [building queries](#user-content-value-placeholders) and [querying data](#user-content-slonik-query-methods).
+Slonik is built on top of `pg` and it provides convenience methods for [building queries](#value-placeholders) and [querying data](#slonik-query-methods).
 
 Work on `pg` began on [Tue Sep 28 22:09:21 2010](https://github.com/brianc/node-postgres/commit/cf637b08b79ef93d9a8b9dd2d25858aa7e9f9bdc). It is authored by [Brian Carlson](https://github.com/brianc).
 
@@ -719,8 +719,8 @@ As the name suggests, [`pg-promise`](https://github.com/vitaly-t/pg-promise) was
 
 The primary difference between Slonik and `pg-promise`:
 
-* Slonik does not allow to execute raw text queries. Slonik queries can only be constructed using [`sql` tagged template literals](#user-content-slonik-value-placeholders-tagged-template-literals). This design [protects against unsafe value interpolation](#user-content-protecting-against-unsafe-value-interpolation).
-* Slonik implements [interceptor API](#user-content-slonik-interceptors) (middleware). Middlewares allow to modify connection handling, override queries and modify the query results. Example Slonik interceptors include [field name transformation](https://github.com/gajus/slonik-interceptor-field-name-transformation), [query normalization](https://github.com/gajus/slonik-interceptor-query-normalisation) and [query benchmarking](https://github.com/gajus/slonik-interceptor-query-benchmarking).
+* Slonik does not allow to execute raw text queries. Slonik queries can only be constructed using [`sql` tagged template literals](#slonik-value-placeholders-tagged-template-literals). This design [protects against unsafe value interpolation](#protecting-against-unsafe-value-interpolation).
+* Slonik implements [interceptor API](#slonik-interceptors) (middleware). Middlewares allow to modify connection handling, override queries and modify the query results. Example Slonik interceptors include [field name transformation](https://github.com/gajus/slonik-interceptor-field-name-transformation), [query normalization](https://github.com/gajus/slonik-interceptor-query-normalisation) and [query benchmarking](https://github.com/gajus/slonik-interceptor-query-benchmarking).
 
 Note: Author of `pg-promise` has [objected to the above claims](https://github.com/gajus/slonik/issues/122). I have removed a difference that was clearly wrong. I maintain that the above two differences remain valid differences: even though `pg-promise` might have substitute functionality for variable interpolation and interceptors, it implements them in a way that does not provide the same benefits that Slonik provides, namely: guaranteed security and support for extending library functionality using multiple plugins.
 
@@ -787,9 +787,9 @@ FROM pg_type
 ORDER BY typname ASC
 ```
 
-Type parsers are configured using [`typeParsers` client configuration](#user-content-slonik-usage-api).
+Type parsers are configured using [`typeParsers` client configuration](#slonik-usage-api).
 
-Read: [Default type parsers](#user-content-default-type-parsers).
+Read: [Default type parsers](#default-type-parsers).
 
 ### Built-in type parsers
 
@@ -824,7 +824,7 @@ createTimestampTypeParser();
 
 Functionality can be added to Slonik client by adding interceptors (middleware).
 
-Interceptors are configured using [client configuration](#user-content-api), e.g.
+Interceptors are configured using [client configuration](#api), e.g.
 
 ```ts
 import {
@@ -840,7 +840,7 @@ const connection = await createPool('postgres://', {
 
 Interceptors are executed in the order they are added.
 
-Read: [Default interceptors](#user-content-default-interceptors).
+Read: [Default interceptors](#default-interceptors).
 
 ### Interceptor methods
 
@@ -983,7 +983,7 @@ Check out [`slonik-interceptor-preset`](https://github.com/gajus/slonik-intercep
 
 ### Inserting large number of rows
 
-Use [`sql.unnest`](#user-content-sqlunnest) to create a set of rows using `unnest`. Using the `unnest` approach requires only 1 variable per every column; values for each column are passed as an array, e.g.
+Use [`sql.unnest`](#sqlunnest) to create a set of rows using `unnest`. Using the `unnest` approach requires only 1 variable per every column; values for each column are passed as an array, e.g.
 
 ```ts
 await connection.query(sql.unsafe`
@@ -1090,8 +1090,8 @@ Parameter symbols only work in optimizable SQL commands (SELECT, INSERT, UPDATE,
 
 In the context of Slonik, if you are building utility statements you must use query building methods that interpolate values directly into queries:
 
-* [`sql.identifier`](#user-content-slonik-query-building-sql-identifier) – for identifiers.
-* [`sql.literalValue`](#user-content-slonik-query-building-sql-literalvalue) – for values.
+* [`sql.identifier`](#slonik-query-building-sql-identifier) – for identifiers.
+* [`sql.literalValue`](#slonik-query-building-sql-literalvalue) – for values.
 
 Example:
 
@@ -1132,8 +1132,8 @@ Slonik integrates [zod](https://github.com/colinhacks/zod) to provide runtime qu
 
 Validating queries requires to:
 
-1. Add a [result parser interceptor](#user-content-result-parser-interceptor) during slonik initiialization
-1. For every query define a Zod [object](https://github.com/colinhacks/zod#objects) and pass it to `sql.type` tagged template ([see below](#user-content-example-use-of-sqltype))
+1. Add a [result parser interceptor](#result-parser-interceptor) during slonik initiialization
+1. For every query define a Zod [object](https://github.com/colinhacks/zod#objects) and pass it to `sql.type` tagged template ([see below](#example-use-of-sqltype))
 
 ### Motivation
 
@@ -1259,7 +1259,7 @@ By default Zod object schemas strip unknown keys. If you want to disallow unknow
 z.object({ foo: z.string() }).strict()
 ```
 
-Using the [recommended parser pattern](#user-content-result-parser-interceptor), this will produce a `SchemaValidationError`, when a query result includes unknown keys.
+Using the [recommended parser pattern](#result-parser-interceptor), this will produce a `SchemaValidationError`, when a query result includes unknown keys.
 
 Conversely you can allow unknown keys to be passed through by using [`.passthrough()`](https://zod.dev/?id=passthrough):
 
@@ -1279,7 +1279,7 @@ If query produces a row that does not satisfy zod object, then `SchemaValidation
 * `row` – row data that did not satisfy the schema.
 * `issues` – array of unmet expectations.
 
-Whenever this error occurs, the same information is also included in the [logs](#user-content-logging).
+Whenever this error occurs, the same information is also included in the [logs](#logging).
 
 In most cases, you shouldn't attempt to handle these errors at individual query level – allow to propagate to the top of the application and fix the issue when you become aware of it.
 
@@ -1351,8 +1351,8 @@ t.deepEqual(result, {
 
 `sql` tag serves two purposes:
 
-* It is used to construct queries with bound parameter values (see [Value placeholders](#user-content-value-placeholders)).
-* It used to generate dynamic query fragments (see [Query building](#user-content-query-building)).
+* It is used to construct queries with bound parameter values (see [Value placeholders](#value-placeholders)).
+* It used to generate dynamic query fragments (see [Query building](#query-building)).
 
 `sql` tag can be imported from Slonik package:
 
@@ -1374,7 +1374,7 @@ const sql = createSqlTag();
 
 ### Type aliases
 
-You can create a `sql` tag with a predefined set of Zod type aliases that can be later referenced when creating a query with [runtime validation](#user-content-runtime-validation).
+You can create a `sql` tag with a predefined set of Zod type aliases that can be later referenced when creating a query with [runtime validation](#runtime-validation).
 
 Slonik documentation assumes that these type aliases are defined:
 
@@ -1411,7 +1411,7 @@ await pool.query(sql.typeAlias('void')`
 
 ### Typing <code>sql</code> tag
 
-See [runtime validation](#user-content-runtime-validation).
+See [runtime validation](#runtime-validation).
 
 ## Value placeholders
 
@@ -1906,7 +1906,7 @@ Produces:
 
 ### <code>sql.literalValue</code>
 
-> ⚠️ Do not use. This method interpolates values as literals and it must be used only for [building utility statements](#user-content-slonik-recipes-building-utility-statements). You are most likely looking for [value placeholders](#user-content-slonik-value-placeholders).
+> ⚠️ Do not use. This method interpolates values as literals and it must be used only for [building utility statements](#slonik-recipes-building-utility-statements). You are most likely looking for [value placeholders](#slonik-value-placeholders).
 
 ```ts
 (
@@ -2040,7 +2040,7 @@ Produces:
 }
 ```
 
-If `columnType` array member type is `[...string[], TypeNameIdentifier]`, it will act as [`sql.identifier`](#user-content-sqlidentifier), e.g.
+If `columnType` array member type is `[...string[], TypeNameIdentifier]`, it will act as [`sql.identifier`](#sqlidentifier), e.g.
 
 ```ts
 await connection.query(sql.unsafe`
@@ -2686,7 +2686,7 @@ export default async (
 };
 ```
 
-See [runtime validation](#user-content-runtime-validation).
+See [runtime validation](#runtime-validation).
 
 ## Debugging
 
