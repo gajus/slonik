@@ -35,10 +35,6 @@ jobs:
           node-version: '20'
       - run: npm ci
       - run: npm run build
-      - env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
-        run: npx semantic-release
   test:
     environment: release
     name: 'Test node_version:${{ matrix.node_version }} test_only:${{ matrix.test_only }}'
