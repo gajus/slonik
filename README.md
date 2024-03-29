@@ -1,5 +1,3 @@
-<a name="user-content-slonik"></a>
-<a name="slonik"></a>
 # Slonik
 
 [![NPM version](http://img.shields.io/npm/v/slonik.svg?style=flat-square)](https://www.npmjs.org/package/slonik)
@@ -12,8 +10,6 @@ A [battle-tested](#user-content-battle-tested) Node.js PostgreSQL client with st
 
 (The above GIF shows Slonik producing [query logs](https://github.com/gajus/slonik#logging). Slonik produces logs using [Roarr](https://github.com/gajus/roarr). Logs include stack trace of the actual query invocation location and values used to execute the query.)
 
-<a name="user-content-slonik-sponsors"></a>
-<a name="slonik-sponsors"></a>
 ## Sponsors
 
 If you value my work and want to see Slonik and [many other of my](https://github.com/gajus/) Open-Source projects to be continuously improved, then please consider becoming a patron:
@@ -21,8 +17,6 @@ If you value my work and want to see Slonik and [many other of my](https://githu
 [![Buy Me A Coffee](https://www.buymeacoffee.com/assets/img/custom_images/orange_img.png)](https://www.buymeacoffee.com/gajus)
 [![Become a Patron](https://c5.patreon.com/external/logo/become_a_patron_button.png)](https://www.patreon.com/gajus)
 
-<a name="user-content-slonik-principles"></a>
-<a name="slonik-principles"></a>
 ## Principles
 
 * Promotes writing raw SQL.
@@ -32,8 +26,6 @@ Read: [Stop using Knex.js](https://medium.com/@gajus/bf410349856c)
 
 Note: Using this project does not require TypeScript. It is a regular ES6 module. Ignore the type definitions used in the documentation if you do not use a type system.
 
-<a name="user-content-slonik-features"></a>
-<a name="slonik-features"></a>
 ## Features
 
 * [Runtime validation](#user-content-runtime-validation)
@@ -51,8 +43,6 @@ Note: Using this project does not require TypeScript. It is a regular ES6 module
 * [Mapped errors](#user-content-error-handling).
 * [ESLint plugin](https://github.com/gajus/eslint-plugin-sql).
 
-<a name="user-content-slonik-contents"></a>
-<a name="slonik-contents"></a>
 ## Contents
 
 * [Slonik](#user-content-slonik)
@@ -160,20 +150,14 @@ Note: Using this project does not require TypeScript. It is a regular ES6 module
     * [Development](#user-content-slonik-development)
 
 
-<a name="user-content-slonik-about-slonik"></a>
-<a name="slonik-about-slonik"></a>
 ## About Slonik
 
-<a name="user-content-slonik-about-slonik-battle-tested"></a>
-<a name="slonik-about-slonik-battle-tested"></a>
 ### Battle-Tested
 
 Slonik began as a collection of utilities designed for working with [`node-postgres`](https://github.com/brianc/node-postgres). It continues to use `node-postgres` driver as it provides a robust foundation for interacting with PostgreSQL. However, what once was a collection of utilities has since grown into a framework that abstracts repeating code patterns, protects against unsafe connection handling and value interpolation, and provides a rich debugging experience.
 
 Slonik has been [battle-tested](https://medium.com/@gajus/lessons-learned-scaling-postgresql-database-to-1-2bn-records-month-edc5449b3067) with large data volumes and queries ranging from simple CRUD operations to data-warehousing needs.
 
-<a name="user-content-slonik-about-slonik-origin-of-the-name"></a>
-<a name="slonik-about-slonik-origin-of-the-name"></a>
 ### Origin of the name
 
 ![Slonik](./.README/postgresql-elephant.png)
@@ -182,8 +166,6 @@ The name of the elephant depicted in the official PostgreSQL logo is Slonik. The
 
 Read: [The History of Slonik, the PostgreSQL Elephant Logo](https://www.vertabelo.com/blog/notes-from-the-lab/the-history-of-slonik-the-postgresql-elephant-logo)
 
-<a name="user-content-slonik-about-slonik-repeating-code-patterns-and-type-safety"></a>
-<a name="slonik-about-slonik-repeating-code-patterns-and-type-safety"></a>
 ### Repeating code patterns and type safety
 
 Among the primary reasons for developing Slonik, was the motivation to reduce the repeating code patterns and add a level of type safety. This is primarily achieved through the methods such as `one`, `many`, etc. But what is the issue? It is best illustrated with an example.
@@ -254,8 +236,6 @@ await connection.query(sql.typeAlias('void')`
 
 Static type check of the above example will produce a warning as the `fooId` is guaranteed to be an array and binding of the last query is expecting a primitive value.
 
-<a name="user-content-slonik-about-slonik-protecting-against-unsafe-connection-handling"></a>
-<a name="slonik-about-slonik-protecting-against-unsafe-connection-handling"></a>
 ### Protecting against unsafe connection handling
 
 Slonik only allows to check out a connection for the duration of the promise routine supplied to the `pool#connect()` method.
@@ -308,8 +288,6 @@ const main = () => {
 
 Using this pattern, we guarantee that connection is always released as soon as the `connect()` routine resolves or is rejected.
 
-<a name="user-content-slonik-about-slonik-protecting-against-unsafe-transaction-handling"></a>
-<a name="slonik-about-slonik-protecting-against-unsafe-transaction-handling"></a>
 ### Protecting against unsafe transaction handling
 
 Just like in the [unsafe connection handling](#user-content-protecting-against-unsafe-connection-handling) example, Slonik only allows to create a transaction for the duration of the promise routine supplied to the `connection#transaction()` method.
@@ -323,8 +301,6 @@ connection.transaction(async (transactionConnection) => {
 
 This pattern ensures that the transaction is either committed or aborted the moment the promise is either resolved or rejected.
 
-<a name="user-content-slonik-about-slonik-protecting-against-unsafe-value-interpolation"></a>
-<a name="slonik-about-slonik-protecting-against-unsafe-value-interpolation"></a>
 ### Protecting against unsafe value interpolation
 
 [SQL injections](https://en.wikipedia.org/wiki/SQL_injection) are one of the most well known attack vectors. Some of the [biggest data leaks](https://en.wikipedia.org/wiki/SQL_injection#Examples) were the consequence of improper user-input handling. In general, SQL injections are easily preventable by using parameterization and by restricting database permissions, e.g.
@@ -413,16 +389,10 @@ This query is executed with the parameters provided by the user.
 To sum up, Slonik is designed to prevent accidental creation of queries vulnerable to SQL injections.
 
 
-<a name="user-content-slonik-documentation"></a>
-<a name="slonik-documentation"></a>
 ## Documentation
 
-<a name="user-content-slonik-usage"></a>
-<a name="slonik-usage"></a>
 ## Usage
 
-<a name="user-content-slonik-usage-connection-uri"></a>
-<a name="slonik-usage-connection-uri"></a>
 ### Connection URI
 
 Slonik client is configured using a custom connection URI (DSN).
@@ -462,8 +432,6 @@ postgresql://%2Fvar%2Flib%2Fpostgresql/dbname
 
 Other configurations are available through the [`clientConfiguration` parameter](https://github.com/gajus/slonik#api).
 
-<a name="user-content-slonik-usage-create-connection"></a>
-<a name="slonik-usage-create-connection"></a>
 ### Create connection
 
 Use `createPool` to create a connection pool, e.g.
@@ -498,8 +466,6 @@ pool.query(sql.typeAlias('id')`SELECT 1 AS id`);
 
 Beware that in the latter example, the connection picked to execute the query is a random connection from the connection pool, i.e. using the latter method (without explicit `connect()`) does not guarantee that multiple queries will refer to the same backend.
 
-<a name="user-content-slonik-usage-end-connection-pool"></a>
-<a name="slonik-usage-end-connection-pool"></a>
 ### End connection pool
 
 Use `pool.end()` to end idle connections and prevent creation of new connections.
@@ -527,8 +493,6 @@ main();
 
 Note: `pool.end()` does not terminate active connections/ transactions.
 
-<a name="user-content-slonik-usage-describing-the-current-state-of-the-connection-pool"></a>
-<a name="slonik-usage-describing-the-current-state-of-the-connection-pool"></a>
 ### Describing the current state of the connection pool
 
 Use `pool.state()` to find out if pool is alive and how many connections are active and idle, and how many clients are waiting for a connection.
@@ -596,8 +560,6 @@ main();
 
 Note: `pool.end()` does not terminate active connections/ transactions.
 
-<a name="user-content-slonik-usage-api"></a>
-<a name="slonik-usage-api"></a>
 ### API
 
 ```ts
@@ -655,20 +617,14 @@ const pool = await createPool('postgres://');
 await pool.query(sql.typeAlias('id')`SELECT 1 AS id`);
 ```
 
-<a name="user-content-slonik-usage-default-configuration"></a>
-<a name="slonik-usage-default-configuration"></a>
 ### Default configuration
 
-<a name="user-content-slonik-usage-default-configuration-default-interceptors"></a>
-<a name="slonik-usage-default-configuration-default-interceptors"></a>
 #### Default interceptors
 
 None.
 
 Check out [`slonik-interceptor-preset`](https://github.com/gajus/slonik-interceptor-preset) for an opinionated collection of interceptors.
 
-<a name="user-content-slonik-usage-default-configuration-default-type-parsers"></a>
-<a name="slonik-usage-default-configuration-default-type-parsers"></a>
 #### Default type parsers
 
 These type parsers are enabled by default:
@@ -704,8 +660,6 @@ createPool('postgres://', {
 });
 ```
 
-<a name="user-content-slonik-usage-default-configuration-default-timeouts"></a>
-<a name="slonik-usage-default-configuration-default-timeouts"></a>
 #### Default timeouts
 
 There are 4 types of configurable timeouts:
@@ -719,14 +673,10 @@ There are 4 types of configurable timeouts:
 
 Slonik sets aggressive timeouts by default. These timeouts are designed to provide safe interface to the database. These timeouts might not work for all programs. If your program has long running statements, consider adjusting timeouts just for those statements instead of changing the defaults.
 
-<a name="user-content-slonik-usage-default-configuration-known-limitations-of-using-pg-native-with-slonik"></a>
-<a name="slonik-usage-default-configuration-known-limitations-of-using-pg-native-with-slonik"></a>
 #### Known limitations of using pg-native with Slonik
 
 `pg-native` is not officially supported by Slonik.
 
-<a name="user-content-slonik-usage-checking-out-a-client-from-the-connection-pool"></a>
-<a name="slonik-usage-checking-out-a-client-from-the-connection-pool"></a>
 ### Checking out a client from the connection pool
 
 Slonik only allows to check out a connection for the duration of the promise routine supplied to the `pool#connect()` method.
@@ -754,12 +704,8 @@ Connection is released back to the pool after the promise produced by the functi
 
 Read: [Protecting against unsafe connection handling](#user-content-protecting-against-unsafe-connection-handling).
 
-<a name="user-content-slonik-how-are-they-different"></a>
-<a name="slonik-how-are-they-different"></a>
 ## How are they different?
 
-<a name="user-content-slonik-how-are-they-different-pg-vs-slonik"></a>
-<a name="slonik-how-are-they-different-pg-vs-slonik"></a>
 ### <code>pg</code> vs <code>slonik</code>
 
 [`pg`](https://github.com/brianc/node-postgres) is built intentionally to provide unopinionated, minimal abstraction and encourages use of other modules to implement convenience methods.
@@ -768,8 +714,6 @@ Slonik is built on top of `pg` and it provides convenience methods for [building
 
 Work on `pg` began on [Tue Sep 28 22:09:21 2010](https://github.com/brianc/node-postgres/commit/cf637b08b79ef93d9a8b9dd2d25858aa7e9f9bdc). It is authored by [Brian Carlson](https://github.com/brianc).
 
-<a name="user-content-slonik-how-are-they-different-pg-promise-vs-slonik"></a>
-<a name="slonik-how-are-they-different-pg-promise-vs-slonik"></a>
 ### <code>pg-promise</code> vs <code>slonik</code>
 
 As the name suggests, [`pg-promise`](https://github.com/vitaly-t/pg-promise) was originally built to enable use of `pg` module with promises (at the time, `pg` only supported Continuation Passing Style (CPS), i.e. callbacks). Since then `pg-promise` added features for connection/ transaction handling, a powerful query-formatting engine and a declarative approach to handling query results.
@@ -796,8 +740,6 @@ When weighting which abstraction to use, it would be unfair not to consider that
 
 Work on `pg-promise` began [Wed Mar 4 02:00:34 2015](https://github.com/vitaly-t/pg-promise/commit/78fb80f638e7f28b301f75576701536d6b638f31). It is authored by [Vitaly Tomilov](https://github.com/vitaly-t).
 
-<a name="user-content-slonik-how-are-they-different-postgres-vs-slonik"></a>
-<a name="slonik-how-are-they-different-postgres-vs-slonik"></a>
 ### <code>postgres</code> vs <code>slonik</code>
 
 [`postgres`](https://github.com/porsager/postgres) recently gained in popularity due to its performance benefits when compared to `pg`. In terms of API, it has a pretty bare-bones API that heavily relies on using ES6 tagged templates and abstracts away many concepts of connection pool handling. While `postgres` API might be preferred by some, projects that already use `pg` may have difficulty migrating.
@@ -814,8 +756,6 @@ const pool = createPool('postgres://', {
 });
 ```
 
-<a name="user-content-slonik-type-parsers"></a>
-<a name="slonik-type-parsers"></a>
 ## Type parsers
 
 Type parsers describe how to parse PostgreSQL types.
@@ -852,8 +792,6 @@ Type parsers are configured using [`typeParsers` client configuration](#user-con
 
 Read: [Default type parsers](#user-content-default-type-parsers).
 
-<a name="user-content-slonik-type-parsers-built-in-type-parsers"></a>
-<a name="slonik-type-parsers-built-in-type-parsers"></a>
 ### Built-in type parsers
 
 |Type name|Implementation|Factory function name|
@@ -883,8 +821,6 @@ createTimestampTypeParser();
 ```
 
 
-<a name="user-content-slonik-interceptors"></a>
-<a name="slonik-interceptors"></a>
 ## Interceptors
 
 Functionality can be added to Slonik client by adding interceptors (middleware).
@@ -907,8 +843,6 @@ Interceptors are executed in the order they are added.
 
 Read: [Default interceptors](#user-content-default-interceptors).
 
-<a name="user-content-slonik-interceptors-interceptor-methods"></a>
-<a name="slonik-interceptors-interceptor-methods"></a>
 ### Interceptor methods
 
 Interceptor is an object that implements methods that can change the behaviour of the database client at different stages of the connection life-cycle
@@ -962,8 +896,6 @@ type Interceptor = {
 };
 ```
 
-<a name="user-content-slonik-interceptors-interceptor-methods-afterpoolconnection"></a>
-<a name="slonik-interceptors-interceptor-methods-afterpoolconnection"></a>
 #### <code>afterPoolConnection</code>
 
 Executed after a connection is acquired from the connection pool (or a new connection is created), e.g.
@@ -975,44 +907,32 @@ const pool = await createPool('postgres://');
 pool.connect();
 ```
 
-<a name="user-content-slonik-interceptors-interceptor-methods-afterqueryexecution"></a>
-<a name="slonik-interceptors-interceptor-methods-afterqueryexecution"></a>
 #### <code>afterQueryExecution</code>
 
 Executed after query has been executed and before rows were transformed using `transformRow`.
 
 Note: When query is executed using `stream`, then `afterQuery` is called with empty result set.
 
-<a name="user-content-slonik-interceptors-interceptor-methods-beforequeryexecution"></a>
-<a name="slonik-interceptors-interceptor-methods-beforequeryexecution"></a>
 #### <code>beforeQueryExecution</code>
 
 This function can optionally return a direct result of the query which will cause the actual query never to be executed.
 
-<a name="user-content-slonik-interceptors-interceptor-methods-beforequeryresult"></a>
-<a name="slonik-interceptors-interceptor-methods-beforequeryresult"></a>
 #### <code>beforeQueryResult</code>
 
 Executed just before the result is returned to the client.
 
 Use this method to capture the result that will be returned to the client.
 
-<a name="user-content-slonik-interceptors-interceptor-methods-beforetransformquery"></a>
-<a name="slonik-interceptors-interceptor-methods-beforetransformquery"></a>
 #### <code>beforeTransformQuery</code>
 
 Executed before `transformQuery`. Use this interceptor to capture the original query (e.g. for logging purposes).
 
-<a name="user-content-slonik-interceptors-interceptor-methods-beforepoolconnection"></a>
-<a name="slonik-interceptors-interceptor-methods-beforepoolconnection"></a>
 #### <code>beforePoolConnection</code>
 
 Executed before connection is created.
 
 This function can optionally return a pool to another database, causing a connection to be made to the new pool.
 
-<a name="user-content-slonik-interceptors-interceptor-methods-beforepoolconnectionrelease"></a>
-<a name="slonik-interceptors-interceptor-methods-beforepoolconnectionrelease"></a>
 #### <code>beforePoolConnectionRelease</code>
 
 Executed before connection is released back to the connection pool, e.g.
@@ -1027,24 +947,18 @@ pool.connect(async () => {
 });
 ```
 
-<a name="user-content-slonik-interceptors-interceptor-methods-queryexecutionerror"></a>
-<a name="slonik-interceptors-interceptor-methods-queryexecutionerror"></a>
 #### <code>queryExecutionError</code>
 
 Executed if query execution produces an error.
 
 Use `queryExecutionError` to log and/ or re-throw another error.
 
-<a name="user-content-slonik-interceptors-interceptor-methods-transformquery"></a>
-<a name="slonik-interceptors-interceptor-methods-transformquery"></a>
 #### <code>transformQuery</code>
 
 Executed before `beforeQueryExecution`.
 
 Transforms query.
 
-<a name="user-content-slonik-interceptors-interceptor-methods-transformrow"></a>
-<a name="slonik-interceptors-interceptor-methods-transformrow"></a>
 #### <code>transformRow</code>
 
 Executed for each row.
@@ -1053,8 +967,6 @@ Transforms row.
 
 Use `transformRow` to modify the query result.
 
-<a name="user-content-slonik-interceptors-community-interceptors"></a>
-<a name="slonik-interceptors-community-interceptors"></a>
 ### Community interceptors
 
 |Name|Description|
@@ -1068,12 +980,8 @@ Use `transformRow` to modify the query result.
 Check out [`slonik-interceptor-preset`](https://github.com/gajus/slonik-interceptor-preset) for an opinionated collection of interceptors.
 
 
-<a name="user-content-slonik-recipes"></a>
-<a name="slonik-recipes"></a>
 ## Recipes
 
-<a name="user-content-slonik-recipes-inserting-large-number-of-rows"></a>
-<a name="slonik-recipes-inserting-large-number-of-rows"></a>
 ### Inserting large number of rows
 
 Use [`sql.unnest`](#user-content-sqlunnest) to create a set of rows using `unnest`. Using the `unnest` approach requires only 1 variable per every column; values for each column are passed as an array, e.g.
@@ -1120,8 +1028,6 @@ Produces:
 
 Inserting data this way ensures that the query is stable and reduces the amount of time it takes to parse the query.
 
-<a name="user-content-slonik-recipes-routing-queries-to-different-connections"></a>
-<a name="slonik-recipes-routing-queries-to-different-connections"></a>
 ### Routing queries to different connections
 
 A typical load balancing requirement is to route all "logical" read-only queries to a read-only instance. This requirement can be implemented in 2 ways:
@@ -1179,8 +1085,6 @@ pool.query(sql.typeAlias('id')`SELECT 1 AS id`);
 pool.query(sql.typeAlias('id')`UPDATE 1 AS id`);
 ```
 
-<a name="user-content-slonik-recipes-building-utility-statements"></a>
-<a name="slonik-recipes-building-utility-statements"></a>
 ### Building Utility Statements
 
 Parameter symbols only work in optimizable SQL commands (SELECT, INSERT, UPDATE, DELETE, and certain commands containing one of these). In other statement types (generically called utility statements, e.g. ALTER, CREATE, DROP and SET), you must insert values textually even if they are just data values.
@@ -1199,8 +1103,6 @@ await connection.query(sql.typeAlias('void')`
 `);
 ```
 
-<a name="user-content-slonik-recipes-inserting-vector-data"></a>
-<a name="slonik-recipes-inserting-vector-data"></a>
 ### Inserting vector data
 
 If you are using [`pgvector`](https://github.com/pgvector/pgvector) and need to insert vector data, you can use the following helper function:
@@ -1225,8 +1127,6 @@ await connection.query(sql.typeAlias('void')`
 
 You can also use the [`pgvector` NPM package](https://github.com/pgvector/pgvector-node/?tab=readme-ov-file#slonik) to achieve the same result.
 
-<a name="user-content-slonik-runtime-validation"></a>
-<a name="slonik-runtime-validation"></a>
 ## Runtime validation
 
 Slonik integrates [zod](https://github.com/colinhacks/zod) to provide runtime query result validation and static type inference.
@@ -1236,8 +1136,6 @@ Validating queries requires to:
 1. Add a [result parser interceptor](#user-content-result-parser-interceptor) during slonik initiialization
 1. For every query define a Zod [object](https://github.com/colinhacks/zod#objects) and pass it to `sql.type` tagged template ([see below](#user-content-example-use-of-sqltype))
 
-<a name="user-content-slonik-runtime-validation-motivation"></a>
-<a name="slonik-runtime-validation-motivation"></a>
 ### Motivation
 
 Build-time type safety guarantees that your application will work as expected at the time of the build (assuming that the types are correct in the first place).
@@ -1248,8 +1146,6 @@ In contrast, by using runtime checks, you can ensure that the contract between y
 
 By using `zod`, we get the best of both worlds: type safety and runtime checks.
 
-<a name="user-content-slonik-runtime-validation-result-parser-interceptor"></a>
-<a name="slonik-runtime-validation-result-parser-interceptor"></a>
 ### Result parser interceptor
 
 Slonik works without the interceptor, but it doesn't validate the query results. To validate results, you must implement an interceptor that parses the results.
@@ -1303,8 +1199,6 @@ createPool("postgresql://", {
 });
 ```
 
-<a name="user-content-slonik-runtime-validation-example-use-of-sql-type"></a>
-<a name="slonik-runtime-validation-example-use-of-sql-type"></a>
 ### Example use of <code>sql.type</code>
 
 Let's assume that you have a PostgreSQL table `person`:
@@ -1352,16 +1246,12 @@ const persons = await connection.any(personQuery);
 
 With this information, Slonik guarantees that every member of `persons` is an object that has properties `id` and `name`, which are a non-null `number` and a non-null `string` respectively.
 
-<a name="user-content-slonik-runtime-validation-performance-penalty"></a>
-<a name="slonik-runtime-validation-performance-penalty"></a>
 ### Performance penalty
 
 In the context of the network overhead, validation accounts for a tiny amount of the total execution time.
 
 Just to give an idea, in our sample of data, it takes sub 0.1ms to validate 1 row, ~3ms to validate 1,000 and ~25ms to validate 100,000 rows.
 
-<a name="user-content-slonik-runtime-validation-unknown-keys"></a>
-<a name="slonik-runtime-validation-unknown-keys"></a>
 ### Unknown keys
 
 By default Zod object schemas strip unknown keys. If you want to disallow unknown keys, you can add [`.strict()`](https://zod.dev/?id=strict) to your schema:  
@@ -1380,8 +1270,6 @@ z.object({ foo: z.string() }).passthrough();
 
 _Note_: Using `.passthrough()` is not recommended as it reduces type safety and may lead to unexpected behaviour.
 
-<a name="user-content-slonik-runtime-validation-handling-schema-validation-errors"></a>
-<a name="slonik-runtime-validation-handling-schema-validation-errors"></a>
 ### Handling schema validation errors
 
 If query produces a row that does not satisfy zod object, then `SchemaValidationError` error is thrown.
@@ -1410,8 +1298,6 @@ try {
 }
 ```
 
-<a name="user-content-slonik-runtime-validation-inferring-types"></a>
-<a name="slonik-runtime-validation-inferring-types"></a>
 ### Inferring types
 
 You can infer the TypeScript type of the query result. There are couple of ways of doing it:
@@ -1426,8 +1312,6 @@ type Person = z.infer<
 >;
 ```
 
-<a name="user-content-slonik-runtime-validation-transforming-results"></a>
-<a name="slonik-runtime-validation-transforming-results"></a>
 ### Transforming results
 
 Using zod [transform](https://github.com/colinhacks/zod#transform) you can refine the result shape and its type, e.g.
@@ -1464,8 +1348,6 @@ t.deepEqual(result, {
 ```
 
 
-<a name="user-content-slonik-sql-tag"></a>
-<a name="slonik-sql-tag"></a>
 ## <code>sql</code> tag
 
 `sql` tag serves two purposes:
@@ -1491,8 +1373,6 @@ import {
 const sql = createSqlTag();
 ```
 
-<a name="user-content-slonik-sql-tag-type-aliases"></a>
-<a name="slonik-sql-tag-type-aliases"></a>
 ### Type aliases
 
 You can create a `sql` tag with a predefined set of Zod type aliases that can be later referenced when creating a query with [runtime validation](#user-content-runtime-validation).
@@ -1530,18 +1410,12 @@ await pool.query(sql.typeAlias('void')`
 `);
 ```
 
-<a name="user-content-slonik-sql-tag-typing-sql-tag"></a>
-<a name="slonik-sql-tag-typing-sql-tag"></a>
 ### Typing <code>sql</code> tag
 
 See [runtime validation](#user-content-runtime-validation).
 
-<a name="user-content-slonik-value-placeholders"></a>
-<a name="slonik-value-placeholders"></a>
 ## Value placeholders
 
-<a name="user-content-slonik-value-placeholders-tagged-template-literals"></a>
-<a name="slonik-value-placeholders-tagged-template-literals"></a>
 ### Tagged template literals
 
 Slonik query methods can only be executed using `sql` [tagged template literal](https://developer.mozilla.org/en/docs/Web/JavaScript/Reference/Template_literals#Tagged_template_literals), e.g.
@@ -1569,8 +1443,6 @@ WHERE bar = $1
 
 query with 'baz' value binding.
 
-<a name="user-content-slonik-value-placeholders-manually-constructing-the-query"></a>
-<a name="slonik-value-placeholders-manually-constructing-the-query"></a>
 ### Manually constructing the query
 
 Manually constructing queries is not allowed.
@@ -1597,8 +1469,6 @@ This is a security measure designed to prevent unsafe query execution.
 
 Furthermore, a query object constructed using `sql` tagged template literal is [frozen](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/freeze) to prevent further manipulation.
 
-<a name="user-content-slonik-value-placeholders-nesting-sql"></a>
-<a name="slonik-value-placeholders-nesting-sql"></a>
 ### Nesting <code>sql</code>
 
 `sql` tagged template literals can be nested, e.g.
@@ -1621,16 +1491,12 @@ Produces:
 ```
 
 
-<a name="user-content-slonik-query-building"></a>
-<a name="slonik-query-building"></a>
 ## Query building
 
 Queries are built using methods of the `sql` tagged template literal.
 
 If this is your first time using Slonik, read [Dynamically generating SQL queries using Node.js](https://dev.to/gajus/dynamically-generating-sql-queries-using-node-js-2c1g).
 
-<a name="user-content-slonik-query-building-sql-array"></a>
-<a name="slonik-query-building-sql-array"></a>
 ### <code>sql.array</code>
 
 ```ts
@@ -1663,8 +1529,6 @@ Produces:
 }
 ```
 
-<a name="user-content-slonik-query-building-sql-array-sql-array-membertype"></a>
-<a name="slonik-query-building-sql-array-sql-array-membertype"></a>
 #### <code>sql.array</code> <code>memberType</code>
 
 If `memberType` is a string (`TypeNameIdentifier`), then it is treated as a type name identifier and will be quoted using double quotes, i.e. `sql.array([1, 2, 3], 'int4')` is equivalent to `$1::"int4"[]`. The implication is that keywords that are often used interchangeably with type names are not going to work, e.g. [`int4`](https://github.com/postgres/postgres/blob/69edf4f8802247209e77f69e089799b3d83c13a4/src/include/catalog/pg_type.dat#L74-L78) is a type name identifier and will work. However, [`int`](https://github.com/postgres/postgres/blob/69edf4f8802247209e77f69e089799b3d83c13a4/src/include/parser/kwlist.h#L213) is a keyword and will not work. You can either use type name identifiers or you can construct custom member using `sql.fragment` tag, e.g.
@@ -1690,8 +1554,6 @@ Produces:
 }
 ```
 
-<a name="user-content-slonik-query-building-sql-array-sql-array-vs-sql-join"></a>
-<a name="slonik-query-building-sql-array-sql-array-vs-sql-join"></a>
 #### <code>sql.array</code> vs <code>sql.join</code>
 
 Unlike `sql.join`, `sql.array` generates a stable query of a predictable length, i.e. regardless of the number of values in the array, the generated query remains the same:
@@ -1731,8 +1593,6 @@ sql.typeAlias('id')`
 
 Furthermore, unlike `sql.join`, `sql.array` can be used with an empty array of values. In short, `sql.array` should be preferred over `sql.join` when possible.
 
-<a name="user-content-slonik-query-building-sql-binary"></a>
-<a name="slonik-query-building-sql-binary"></a>
 ### <code>sql.binary</code>
 
 ```ts
@@ -1760,8 +1620,6 @@ Produces:
 }
 ```
 
-<a name="user-content-slonik-query-building-sql-date"></a>
-<a name="slonik-query-building-sql-date"></a>
 ### <code>sql.date</code>
 
 ```ts
@@ -1789,8 +1647,6 @@ Produces:
 }
 ```
 
-<a name="user-content-slonik-query-building-sql-fragment"></a>
-<a name="slonik-query-building-sql-fragment"></a>
 ### <code>sql.fragment</code>
 
 ```ts
@@ -1834,8 +1690,6 @@ The only difference between queries and fragments is that fragments are untyped 
 > [!WARNING]
 > Due to the way that Slonik internally represents SQL fragments, your query must not contain `$slonik_` literals.
 
-<a name="user-content-slonik-query-building-sql-identifier"></a>
-<a name="slonik-query-building-sql-identifier"></a>
 ### <code>sql.identifier</code>
 
 ```ts
@@ -1862,8 +1716,6 @@ Produces:
 }
 ```
 
-<a name="user-content-slonik-query-building-sql-interval"></a>
-<a name="slonik-query-building-sql-interval"></a>
 ### <code>sql.interval</code>
 
 ```ts
@@ -1909,8 +1761,6 @@ You can use `sql.interval` exactly how you would use PostgreSQL [`make_interval`
 |`make_interval("secs" => 120)`|`sql.interval({seconds: 120})`|`00:02:00`|
 |`make_interval("secs" => 0.001)`|`sql.interval({seconds: 0.001})`|`00:00:00.001`|
 
-<a name="user-content-slonik-query-building-sql-interval-dynamic-intervals-without-sql-interval"></a>
-<a name="slonik-query-building-sql-interval-dynamic-intervals-without-sql-interval"></a>
 #### Dynamic intervals without <code>sql.interval</code>
 
 If you need a dynamic interval (e.g. X days), you can achieve this using multiplication, e.g.
@@ -1933,8 +1783,6 @@ sql.unsafe`
 
 `sql.interval` was added mostly as a type-safe alternative.
 
-<a name="user-content-slonik-query-building-sql-join"></a>
-<a name="slonik-query-building-sql-join"></a>
 ### <code>sql.join</code>
 
 ```ts
@@ -2003,8 +1851,6 @@ sql.unsafe`
 // SELECT ($1, $2), ($3, $4)
 ```
 
-<a name="user-content-slonik-query-building-sql-json"></a>
-<a name="slonik-query-building-sql-json"></a>
 ### <code>sql.json</code>
 
 ```ts
@@ -2032,8 +1878,6 @@ Produces:
 }
 ```
 
-<a name="user-content-slonik-query-building-sql-jsonb"></a>
-<a name="slonik-query-building-sql-jsonb"></a>
 ### <code>sql.jsonb</code>
 
 ```ts
@@ -2061,8 +1905,6 @@ Produces:
 }
 ```
 
-<a name="user-content-slonik-query-building-sql-literalvalue"></a>
-<a name="slonik-query-building-sql-literalvalue"></a>
 ### <code>sql.literalValue</code>
 
 > ⚠️ Do not use. This method interpolates values as literals and it must be used only for [building utility statements](#user-content-slonik-recipes-building-utility-statements). You are most likely looking for [value placeholders](#user-content-slonik-value-placeholders).
@@ -2089,8 +1931,6 @@ Produces:
 }
 ```
 
-<a name="user-content-slonik-query-building-sql-timestamp"></a>
-<a name="slonik-query-building-sql-timestamp"></a>
 ### <code>sql.timestamp</code>
 
 ```ts
@@ -2118,8 +1958,6 @@ Produces:
 }
 ```
 
-<a name="user-content-slonik-query-building-sql-unnest"></a>
-<a name="slonik-query-building-sql-unnest"></a>
 ### <code>sql.unnest</code>
 
 ```ts
@@ -2239,8 +2077,6 @@ Produces:
 }
 ```
 
-<a name="user-content-slonik-query-building-sql-unsafe"></a>
-<a name="slonik-query-building-sql-unsafe"></a>
 ### <code>sql.unsafe</code>
 
 ```ts
@@ -2269,12 +2105,8 @@ const result = await connection.one(sql.unsafe`
 * Use `sql.typeAlias` to alias an existing type
 * Use `sql.fragment` if you are writing a fragment of a query
 
-<a name="user-content-slonik-query-methods"></a>
-<a name="slonik-query-methods"></a>
 ## Query methods
 
-<a name="user-content-slonik-query-methods-any"></a>
-<a name="slonik-query-methods-any"></a>
 ### <code>any</code>
 
 Returns result rows.
@@ -2287,8 +2119,6 @@ const rows = await connection.any(sql.typeAlias('foo')`SELECT foo`);
 
 `#any` is similar to `#query` except that it returns rows without fields information.
 
-<a name="user-content-slonik-query-methods-anyfirst"></a>
-<a name="slonik-query-methods-anyfirst"></a>
 ### <code>anyFirst</code>
 
 Returns value of the first column of every row in the result set.
@@ -2301,8 +2131,6 @@ Example:
 const fooValues = await connection.anyFirst(sql.typeAlias('foo')`SELECT foo`);
 ```
 
-<a name="user-content-slonik-query-methods-exists"></a>
-<a name="slonik-query-methods-exists"></a>
 ### <code>exists</code>
 
 Returns a boolean value indicating whether query produces results.
@@ -2327,8 +2155,6 @@ pool.oneFirst(sql.unsafe`
 `)
 ```
 
-<a name="user-content-slonik-query-methods-many"></a>
-<a name="slonik-query-methods-many"></a>
 ### <code>many</code>
 
 Returns result rows.
@@ -2341,8 +2167,6 @@ Example:
 const rows = await connection.many(sql.typeAlias('foo')`SELECT foo`);
 ```
 
-<a name="user-content-slonik-query-methods-manyfirst"></a>
-<a name="slonik-query-methods-manyfirst"></a>
 ### <code>manyFirst</code>
 
 Returns value of the first column of every row in the result set.
@@ -2356,8 +2180,6 @@ Example:
 const fooValues = await connection.many(sql.typeAlias('foo')`SELECT foo`);
 ```
 
-<a name="user-content-slonik-query-methods-maybeone"></a>
-<a name="slonik-query-methods-maybeone"></a>
 ### <code>maybeOne</code>
 
 Selects the first row from the result.
@@ -2373,8 +2195,6 @@ const row = await connection.maybeOne(sql.typeAlias('foo')`SELECT foo`);
 // row.foo is the result of the `foo` column value of the first row.
 ```
 
-<a name="user-content-slonik-query-methods-maybeonefirst"></a>
-<a name="slonik-query-methods-maybeonefirst"></a>
 ### <code>maybeOneFirst</code>
 
 Returns value of the first column from the first row.
@@ -2391,8 +2211,6 @@ const foo = await connection.maybeOneFirst(sql.typeAlias('foo')`SELECT foo`);
 // foo is the result of the `foo` column value of the first row.
 ```
 
-<a name="user-content-slonik-query-methods-one"></a>
-<a name="slonik-query-methods-one"></a>
 ### <code>one</code>
 
 Selects the first row from the result.
@@ -2415,8 +2233,6 @@ const row = await connection.one(sql.typeAlias('foo')`SELECT foo`);
 > `knex` is a query builder; it does not assert the value of the result.
 > Slonik `#one` adds assertions about the result of the query.
 
-<a name="user-content-slonik-query-methods-onefirst"></a>
-<a name="slonik-query-methods-onefirst"></a>
 ### <code>oneFirst</code>
 
 Returns value of the first column from the first row.
@@ -2433,8 +2249,6 @@ const foo = await connection.oneFirst(sql.typeAlias('foo')`SELECT foo`);
 // foo is the result of the `foo` column value of the first row.
 ```
 
-<a name="user-content-slonik-query-methods-query"></a>
-<a name="slonik-query-methods-query"></a>
 ### <code>query</code>
 
 API and the result shape are equivalent to [`pg#query`](https://github.com/brianc/node-postgres).
@@ -2457,8 +2271,6 @@ await connection.query(sql.typeAlias('foo')`SELECT foo`);
 // }
 ```
 
-<a name="user-content-slonik-query-methods-stream"></a>
-<a name="slonik-query-methods-stream"></a>
 ### <code>stream</code>
 
 Streams query results.
@@ -2505,8 +2317,6 @@ await connection.stream(sql.typeAlias('foo')`SELECT foo`, async (stream) => {
 });
 ```
 
-<a name="user-content-slonik-query-methods-transaction"></a>
-<a name="slonik-query-methods-transaction"></a>
 ### <code>transaction</code>
 
 `transaction` method is used wrap execution of queries in `START TRANSACTION` and `COMMIT` or `ROLLBACK`. `COMMIT` is called if the transaction handler returns a promise that resolves; `ROLLBACK` is called otherwise.
@@ -2524,8 +2334,6 @@ const result = await connection.transaction(async (transactionConnection) => {
 result === 'FOO';
 ```
 
-<a name="user-content-slonik-query-methods-transaction-transaction-nesting"></a>
-<a name="slonik-query-methods-transaction-transaction-nesting"></a>
 #### Transaction nesting
 
 Slonik uses [`SAVEPOINT`](https://www.postgresql.org/docs/current/sql-savepoint.html) to automatically nest transactions, e.g.
@@ -2611,8 +2419,6 @@ ROLLBACK TO SAVEPOINT slonik_savepoint_1;
 ROLLBACK;
 ```
 
-<a name="user-content-slonik-query-methods-transaction-transaction-retrying"></a>
-<a name="slonik-query-methods-transaction-transaction-retrying"></a>
 #### Transaction retrying
 
 Transactions that are failing with [Transaction Rollback](https://www.postgresql.org/docs/current/errcodes-appendix.html) class errors are automatically retried.
@@ -2621,8 +2427,6 @@ A failing transaction will be rolled back and the callback function passed to th
 
 How many times a transaction is retried is controlled using `transactionRetryLimit` configuration (default: 5) and the `transactionRetryLimit` parameter of the `transaction` method (default: undefined). If a `transactionRetryLimit` is given to the method call then it is used otherwise the `transactionRetryLimit` configuration is used.
 
-<a name="user-content-slonik-query-methods-transaction-query-retrying"></a>
-<a name="slonik-query-methods-transaction-query-retrying"></a>
 #### Query retrying
 
 A single query (not part of a transaction) failing with a [Transaction Rollback](https://www.postgresql.org/docs/current/errcodes-appendix.html) class error is automatically retried.
@@ -2630,12 +2434,8 @@ A single query (not part of a transaction) failing with a [Transaction Rollback]
 How many times it is retried is controlled by using the `queryRetryLimit` configuration (default: 5).
 
 
-<a name="user-content-slonik-utilities"></a>
-<a name="slonik-utilities"></a>
 ## Utilities
 
-<a name="user-content-slonik-utilities-parsedsn"></a>
-<a name="slonik-utilities-parsedsn"></a>
 ### <code>parseDsn</code>
 
 ```ts
@@ -2656,8 +2456,6 @@ import {
 parseDsn('postgresql://foo@localhost/bar?application_name=baz');
 ```
 
-<a name="user-content-slonik-utilities-stringifydsn"></a>
-<a name="slonik-utilities-stringifydsn"></a>
 ### <code>stringifyDsn</code>
 
 ```ts
@@ -2684,8 +2482,6 @@ stringifyDsn({
 ```
 
 
-<a name="user-content-slonik-error-handling"></a>
-<a name="slonik-error-handling"></a>
 ## Error handling
 
 All Slonik errors extend from `SlonikError`, i.e. You can catch Slonik specific errors using the following logic.
@@ -2704,8 +2500,6 @@ try {
 }
 ```
 
-<a name="user-content-slonik-error-handling-original-node-postgres-error"></a>
-<a name="slonik-error-handling-original-node-postgres-error"></a>
 ### Original <code>node-postgres</code> error
 
 When error originates from `node-postgres`, the original error is available under [`cause` property](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Error/cause).
@@ -2714,8 +2508,6 @@ This property is exposed for debugging purposes only. Do not use it for conditio
 
 If you require to extract meta-data about a specific type of error (e.g. constraint violation name), raise a GitHub issue describing your use case.
 
-<a name="user-content-slonik-error-handling-handling-backendterminatederror"></a>
-<a name="slonik-error-handling-handling-backendterminatederror"></a>
 ### Handling <code>BackendTerminatedError</code>
 
 `BackendTerminatedError` is thrown when the backend is terminated by the user, i.e. [`pg_terminate_backend`](https://www.postgresql.org/docs/current/functions-admin.html#FUNCTIONS-ADMIN-SIGNAL).
@@ -2748,20 +2540,14 @@ await pool.connect(async (connection0) => {
 });
 ```
 
-<a name="user-content-slonik-error-handling-handling-checkintegrityconstraintviolationerror"></a>
-<a name="slonik-error-handling-handling-checkintegrityconstraintviolationerror"></a>
 ### Handling <code>CheckIntegrityConstraintViolationError</code>
 
 `CheckIntegrityConstraintViolationError` is thrown when PostgreSQL responds with [`check_violation`](https://www.postgresql.org/docs/9.4/static/errcodes-appendix.html) (`23514`) error.
 
-<a name="user-content-slonik-error-handling-handling-connectionerror"></a>
-<a name="slonik-error-handling-handling-connectionerror"></a>
 ### Handling <code>ConnectionError</code>
 
 `ConnectionError` is thrown when connection cannot be established to the PostgreSQL server.
 
-<a name="user-content-slonik-error-handling-handling-dataintegrityerror"></a>
-<a name="slonik-error-handling-handling-dataintegrityerror"></a>
 ### Handling <code>DataIntegrityError</code>
 
 To handle the case where the data result does not match the expectations, catch `DataIntegrityError` error.
@@ -2784,14 +2570,10 @@ try {
 }
 ```
 
-<a name="user-content-slonik-error-handling-handling-foreignkeyintegrityconstraintviolationerror"></a>
-<a name="slonik-error-handling-handling-foreignkeyintegrityconstraintviolationerror"></a>
 ### Handling <code>ForeignKeyIntegrityConstraintViolationError</code>
 
 `ForeignKeyIntegrityConstraintViolationError` is thrown when PostgreSQL responds with [`foreign_key_violation`](https://www.postgresql.org/docs/9.4/static/errcodes-appendix.html) (`23503`) error.
 
-<a name="user-content-slonik-error-handling-handling-notfounderror"></a>
-<a name="slonik-error-handling-handling-notfounderror"></a>
 ### Handling <code>NotFoundError</code>
 
 To handle the case where query returns less than one row, catch `NotFoundError` error.
@@ -2816,14 +2598,10 @@ if (row) {
 }
 ```
 
-<a name="user-content-slonik-error-handling-handling-notnullintegrityconstraintviolationerror"></a>
-<a name="slonik-error-handling-handling-notnullintegrityconstraintviolationerror"></a>
 ### Handling <code>NotNullIntegrityConstraintViolationError</code>
 
 `NotNullIntegrityConstraintViolationError` is thrown when PostgreSQL responds with [`not_null_violation`](https://www.postgresql.org/docs/9.4/static/errcodes-appendix.html) (`23502`) error.
 
-<a name="user-content-slonik-error-handling-handling-statementcancellederror"></a>
-<a name="slonik-error-handling-handling-statementcancellederror"></a>
 ### Handling <code>StatementCancelledError</code>
 
 `StatementCancelledError` is thrown when a query is cancelled by the user (i.e. [`pg_cancel_backend`](https://www.postgresql.org/docs/current/functions-admin.html#FUNCTIONS-ADMIN-SIGNAL)) or in case of a timeout.
@@ -2852,27 +2630,19 @@ await pool.connect(async (connection0) => {
 });
 ```
 
-<a name="user-content-slonik-error-handling-handling-statementtimeouterror"></a>
-<a name="slonik-error-handling-handling-statementtimeouterror"></a>
 ### Handling <code>StatementTimeoutError</code>
 
 `StatementTimeoutError` inherits from `StatementCancelledError` and it is called only in case of a timeout.
 
-<a name="user-content-slonik-error-handling-handling-uniqueintegrityconstraintviolationerror"></a>
-<a name="slonik-error-handling-handling-uniqueintegrityconstraintviolationerror"></a>
 ### Handling <code>UniqueIntegrityConstraintViolationError</code>
 
 `UniqueIntegrityConstraintViolationError` is thrown when PostgreSQL responds with [`unique_violation`](https://www.postgresql.org/docs/9.4/static/errcodes-appendix.html) (`23505`) error.
 
-<a name="user-content-slonik-error-handling-handling-tuplemovedtoanotherpartitionerror"></a>
-<a name="slonik-error-handling-handling-tuplemovedtoanotherpartitionerror"></a>
 ### Handling <code>TupleMovedToAnotherPartitionError</code>
 
 `TupleMovedToAnotherPartitionError` is thrown when [`affecting tuple moved into different partition`](https://github.com/postgres/postgres/commit/f16241bef7cc271bff60e23de2f827a10e50dde8).
 
 
-<a name="user-content-slonik-migrations"></a>
-<a name="slonik-migrations"></a>
 ## Migrations
 
 This library intentionally doesn't handle migrations, because a database client and migrations are conceptually distinct problems.
@@ -2884,8 +2654,6 @@ The Slonik community has also shared their successes with these Node.js framewor
 * [`node-pg-migrate`](https://github.com/salsita/node-pg-migrate)
 * [`@slonik/migrator`](https://www.npmjs.com/package/@slonik/migrator)
 
-<a name="user-content-slonik-types"></a>
-<a name="slonik-types"></a>
 ## Types
 
 This package is using [TypeScript](http://typescriptlang.org/) types.
@@ -2921,12 +2689,8 @@ export default async (
 
 See [runtime validation](#user-content-runtime-validation).
 
-<a name="user-content-slonik-debugging"></a>
-<a name="slonik-debugging"></a>
 ## Debugging
 
-<a name="user-content-slonik-debugging-logging"></a>
-<a name="slonik-debugging-logging"></a>
 ### Logging
 
 Slonik uses [roarr](https://github.com/gajus/roarr) to log queries.
@@ -2937,8 +2701,6 @@ By default, Slonik logs only connection events, e.g. when connection is created,
 
 Query-level logging can be added using [`slonik-interceptor-query-logging`](https://github.com/gajus/slonik-interceptor-query-logging) interceptor.
 
-<a name="user-content-slonik-debugging-capture-stack-trace"></a>
-<a name="slonik-debugging-capture-stack-trace"></a>
 ### Capture stack trace
 
 Note: Requires [`slonik-interceptor-query-logging`](https://github.com/gajus/slonik-interceptor-query-logging).
@@ -3003,12 +2765,8 @@ Use [`@roarr/cli`](https://github.com/gajus/roarr-cli) to pretty-print the outpu
 ![Log Roarr pretty-print output.](./.README/log-roarr-pretty-print-output.png)
 
 
-<a name="user-content-slonik-syntax-highlighting"></a>
-<a name="slonik-syntax-highlighting"></a>
 ## Syntax Highlighting
 
-<a name="user-content-slonik-syntax-highlighting-atom-syntax-highlighting-plugin"></a>
-<a name="slonik-syntax-highlighting-atom-syntax-highlighting-plugin"></a>
 ### Atom Syntax Highlighting Plugin
 
 Using [Atom](https://atom.io/) IDE you can leverage the [`language-babel`](https://github.com/gandm/language-babel) package in combination with the [`language-sql`](https://github.com/atom/language-sql) to enable highlighting of the SQL strings in the codebase.
@@ -3023,15 +2781,11 @@ To enable highlighting, you need to:
 
 For more information, refer to the [JavaScript Tagged Template Literal Grammar Extensions](https://github.com/gandm/language-babel#javascript-tagged-template-literal-grammar-extensions) documentation of `language-babel` package.
 
-<a name="user-content-slonik-syntax-highlighting-vs-code-syntax-highlighting-extension"></a>
-<a name="slonik-syntax-highlighting-vs-code-syntax-highlighting-extension"></a>
 ### VS Code Syntax Highlighting Extension
 
 The [`vscode-sql-lit` extension](https://marketplace.visualstudio.com/items?itemName=thebearingedge.vscode-sql-lit) provides syntax highlighting for VS Code:
 ![Syntax highlighting in VS Code](./.README/vscode-syntax-highlighting.png)
 
-<a name="user-content-slonik-development"></a>
-<a name="slonik-development"></a>
 ## Development
 
 Running Slonik tests requires having a local PostgreSQL instance.

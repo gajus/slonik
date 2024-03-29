@@ -31,7 +31,6 @@
     "eslint-config-canonical": "^42.8.1",
     "expect-type": "^0.15.0",
     "get-port": "^5.1.1",
-    "gitdown": "^3.1.5",
     "husky": "^9.0.11",
     "knip": "^5.5.0",
     "nyc": "^15.1.0",
@@ -85,7 +84,6 @@
   },
   "scripts": {
     "build": "rm -fr ./dist && tsc --project ./tsconfig.build.json",
-    "create-readme": "gitdown ./.README/README.md --output-file ./README.md",
     "lint": "npm run lint:cspell && npm run lint:eslint && npm run lint:knip && npm run lint:tsc",
     "lint:cspell": "cspell . --no-progress --gitignore",
     "lint:eslint": "eslint --cache ./src",
