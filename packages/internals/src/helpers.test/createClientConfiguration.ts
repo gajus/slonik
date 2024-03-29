@@ -1,3 +1,4 @@
+import { createTestDriverFactory } from '../factories/createTestDriverFactory';
 import { type ClientConfiguration } from '../types';
 
 export const createClientConfiguration = (): ClientConfiguration => {
@@ -6,6 +7,7 @@ export const createClientConfiguration = (): ClientConfiguration => {
     connectionRetryLimit: 3,
     connectionTimeout: 5_000,
     connectionUri: 'postgres://',
+    driverFactory: createTestDriverFactory(),
     gracefulTerminationTimeout: 5_000,
     idleInTransactionSessionTimeout: 60_000,
     idleTimeout: 5_000,

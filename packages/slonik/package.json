@@ -39,7 +39,7 @@
     "build": "rm -fr ./dist && tsc",
     "lint": "npm run lint:eslint && npm run lint:tsc",
     "lint:eslint": "eslint ./src",
-    "lint:tsc": "tsc --noEmit"
+    "lint:tsc": "tsc"
   },
   "types": "./dist/index.d.ts",
   "version": "40.2.1"

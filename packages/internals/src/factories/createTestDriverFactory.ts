@@ -18,19 +18,34 @@ export const createTestDriverFactory = (): DriverFactory => {
           query: async (sql) => {
             if (matchTemplate(sql, 'DISCARD ALL')) {
               return {
-                command: 'DISCARD ALL',
+                command: 'SELECT',
+                fields: [],
+                notices: [],
+                rowCount: 0,
+                rows: [],
+                type: 'QueryResult',
               };
             }
 
             if (matchTemplate(sql, 'START TRANSACTION')) {
               return {
-                command: 'START TRANSACTION',
+                command: 'SELECT',
+                fields: [],
+                notices: [],
+                rowCount: 0,
+                rows: [],
+                type: 'QueryResult',
               };
             }
 
             if (matchTemplate(sql, 'SAVEPOINT slonik_savepoint_1')) {
               return {
-                command: 'SAVEPOINT',
+                command: 'SELECT',
+                fields: [],
+                notices: [],
+                rowCount: 0,
+                rows: [],
+                type: 'QueryResult',
               };
             }
 
@@ -38,19 +53,34 @@ export const createTestDriverFactory = (): DriverFactory => {
               matchTemplate(sql, 'ROLLBACK TO SAVEPOINT slonik_savepoint_1')
             ) {
               return {
-                command: 'ROLLBACK TO SAVEPOINT',
+                command: 'SELECT',
+                fields: [],
+                notices: [],
+                rowCount: 0,
+                rows: [],
+                type: 'QueryResult',
               };
             }
 
             if (matchTemplate(sql, 'ROLLBACK')) {
               return {
-                command: 'ROLLBACK',
+                command: 'SELECT',
+                fields: [],
+                notices: [],
+                rowCount: 0,
+                rows: [],
+                type: 'QueryResult',
               };
             }
 
             if (matchTemplate(sql, 'COMMIT')) {
               return {
-                command: 'COMMIT',
+                command: 'SELECT',
+                fields: [],
+                notices: [],
+                rowCount: 0,
+                rows: [],
+                type: 'QueryResult',
               };
             }
 
@@ -200,8 +230,6 @@ export const createTestDriverFactory = (): DriverFactory => {
                 ],
               };
             }
-
-            console.log({ sql });
 
             throw new Error('Unexpected query.');
           },

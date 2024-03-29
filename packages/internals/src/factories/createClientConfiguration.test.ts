@@ -1,4 +1,5 @@
 import { createClientConfiguration } from './createClientConfiguration';
+import { createTestDriverFactory } from './createTestDriverFactory';
 import { createTypeParserPreset } from './createTypeParserPreset';
 import test from 'ava';
 
@@ -7,6 +8,7 @@ const defaultConfiguration = {
   connectionRetryLimit: 3,
   connectionTimeout: 5_000,
   connectionUri: 'postgres://',
+  driverFactory: createTestDriverFactory(),
   gracefulTerminationTimeout: 5_000,
   idleInTransactionSessionTimeout: 60_000,
   idleTimeout: 5_000,
@@ -19,7 +21,9 @@ const defaultConfiguration = {
 };
 
 test('creates default configuration', (t) => {
-  const configuration = createClientConfiguration('postgres://', {});
+  const configuration = createClientConfiguration('postgres://', {
+    driverFactory: createTestDriverFactory(),
+  });
 
   t.deepEqual(configuration, defaultConfiguration);
 });
@@ -28,6 +32,7 @@ test('overrides provided properties', (t) => {
   t.deepEqual(
     createClientConfiguration('postgres://', {
       captureStackTrace: false,
+      driverFactory: createTestDriverFactory(),
     }),
     {
       ...defaultConfiguration,
@@ -65,6 +70,7 @@ test('overrides provided properties', (t) => {
 test('disables default type parsers', (t) => {
   t.deepEqual(
     createClientConfiguration('postgres://', {
+      driverFactory: createTestDriverFactory(),
       typeParsers: [],
     }),
     {

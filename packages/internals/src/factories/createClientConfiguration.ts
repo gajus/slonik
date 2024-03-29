@@ -4,6 +4,7 @@ import {
   type ClientConfigurationInput,
   type TypeParser,
 } from '../types';
+import { createTestDriverFactory } from './createTestDriverFactory';
 import { createTypeParserPreset } from './createTypeParserPreset';
 
 export const createClientConfiguration = (
@@ -17,6 +18,7 @@ export const createClientConfiguration = (
     connectionRetryLimit: 3,
     connectionTimeout: 5_000,
     connectionUri,
+    driverFactory: createTestDriverFactory(),
     gracefulTerminationTimeout: 5_000,
     idleInTransactionSessionTimeout: 60_000,
     idleTimeout: 5_000,

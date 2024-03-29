@@ -40,8 +40,10 @@ export const createClientConfiguration = (
 
   if (clientConfiguration.statementTimeout !== 'DISABLE_TIMEOUT') {
     if (clientConfiguration.statementTimeout === 0) {
+      // eslint-disable-next-line canonical/id-match
       poolConfiguration.statement_timeout = 1;
     } else {
+      // eslint-disable-next-line canonical/id-match
       poolConfiguration.statement_timeout =
         clientConfiguration.statementTimeout;
     }
@@ -51,8 +53,10 @@ export const createClientConfiguration = (
     clientConfiguration.idleInTransactionSessionTimeout !== 'DISABLE_TIMEOUT'
   ) {
     if (clientConfiguration.idleInTransactionSessionTimeout === 0) {
+      // eslint-disable-next-line canonical/id-match
       poolConfiguration.idle_in_transaction_session_timeout = 1;
     } else {
+      // eslint-disable-next-line canonical/id-match
       poolConfiguration.idle_in_transaction_session_timeout =
         clientConfiguration.idleInTransactionSessionTimeout;
     }

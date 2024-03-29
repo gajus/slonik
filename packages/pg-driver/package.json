@@ -48,8 +48,8 @@
   "scripts": {
     "build": "rm -fr ./dist && tsc",
     "lint": "npm run lint:eslint && npm run lint:tsc",
-    "lint:eslint": "eslint --cache ./src",
-    "lint:tsc": "tsc --noEmit",
+    "lint:eslint": "eslint ./src",
+    "lint:tsc": "tsc",
     "test": "ava --verbose --serial"
   },
   "types": "./dist/index.d.ts",

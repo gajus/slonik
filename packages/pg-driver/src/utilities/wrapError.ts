@@ -7,6 +7,7 @@ import {
   InputSyntaxError,
   InvalidInputError,
   NotNullIntegrityConstraintViolationError,
+  type Query,
   StatementCancelledError,
   StatementTimeoutError,
   UnexpectedStateError,

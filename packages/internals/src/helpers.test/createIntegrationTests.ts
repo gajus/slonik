@@ -19,6 +19,7 @@ import {
 import { type DriverFactory } from '../factories/createDriverFactory';
 import { createPool } from '../factories/createPool';
 import { createSqlTag } from '../factories/createSqlTag';
+import { createBigintTypeParser } from '../factories/typeParsers/createBigintTypeParser';
 import { createNumericTypeParser } from '../factories/typeParsers/createNumericTypeParser';
 import {
   type DatabasePoolConnection,
@@ -31,7 +32,7 @@ import { type TestFn } from 'ava';
 import getPort from 'get-port';
 import { execSync, spawn } from 'node:child_process';
 import { randomUUID } from 'node:crypto';
-import { setTimeout as delay, setTimeout } from 'node:timers/promises';
+import { setTimeout as delay } from 'node:timers/promises';
 import * as sinon from 'sinon';
 import { z } from 'zod';
 
@@ -88,7 +89,7 @@ const startTestContainer = async () => {
     });
   });
 
-  await setTimeout(1_000);
+  await delay(1_000);
 
   const terminate = () => {
     execSync(`docker kill ${dockerContainerName}`);
@@ -1375,6 +1376,7 @@ export const createIntegrationTests = (
 
   test('shows waiting clients', async (t) => {
     const pool = await createPool(t.context.dsn, {
+      driverFactory,
       idleTimeout: 1_000,
       maximumPoolSize: 1,
     });
@@ -2022,6 +2024,7 @@ export const createIntegrationTests = (
 
   test('stream > reading stream after a delay', async (t) => {
     const pool = await createPool(t.context.dsn, {
+      driverFactory,
       statementTimeout: 1_000,
     });
 
@@ -2048,6 +2051,7 @@ export const createIntegrationTests = (
 
   test('stream > untapped stream produces statement timeout', async (t) => {
     const pool = await createPool(t.context.dsn, {
+      driverFactory,
       statementTimeout: 100,
     });
 
@@ -2076,6 +2080,7 @@ export const createIntegrationTests = (
 
   test('stream > stream pool connection can be re-used after an error', async (t) => {
     const pool = await createPool(t.context.dsn, {
+      driverFactory,
       maximumPoolSize: 1,
       statementTimeout: 100,
     });
@@ -2106,7 +2111,7 @@ export const createIntegrationTests = (
   });
 
   test('stream > streams rows', async (t) => {
-    const pool = await createPool(t.context.dsn);
+    const pool = await createPool(t.context.dsn, { driverFactory });
 
     await pool.query(sql.unsafe`
       INSERT INTO person (name)
@@ -2171,7 +2176,9 @@ export const createIntegrationTests = (
   });
 
   test('stream > streams rows (check types)', async (t) => {
-    const pool = await createPool(t.context.dsn);
+    const pool = await createPool(t.context.dsn, {
+      driverFactory,
+    });
 
     await pool.query(sql.unsafe`
       INSERT INTO person (name)
@@ -2204,7 +2211,9 @@ export const createIntegrationTests = (
   });
 
   test('stream > streams rows using AsyncIterator', async (t) => {
-    const pool = await createPool(t.context.dsn);
+    const pool = await createPool(t.context.dsn, {
+      driverFactory,
+    });
 
     await pool.query(sql.unsafe`
       INSERT INTO person (name)
@@ -2236,6 +2245,7 @@ export const createIntegrationTests = (
 
   test('stream > reading stream using custom type parsers', async (t) => {
     const pool = await createPool(t.context.dsn, {
+      driverFactory,
       typeParsers: [createBigintTypeParser()],
     });
 
@@ -2276,6 +2286,7 @@ export const createIntegrationTests = (
 
   test('stream > reading stream using row transform interceptors (sync)', async (t) => {
     const pool = await createPool(t.context.dsn, {
+      driverFactory,
       interceptors: [
         {
           transformRow: (context, query, row) => {
@@ -2319,6 +2330,7 @@ export const createIntegrationTests = (
 
   test('stream > reading stream using row transform interceptors (async)', async (t) => {
     const pool = await createPool(t.context.dsn, {
+      driverFactory,
       interceptors: [
         {
           transformRow: (context, query, row) => {
@@ -2361,7 +2373,7 @@ export const createIntegrationTests = (
   });
 
   test('stream > streams include notices', async (t) => {
-    const pool = await createPool(t.context.dsn);
+    const pool = await createPool(t.context.dsn, { driverFactory });
 
     await pool.query(sql.unsafe`
       CREATE OR REPLACE FUNCTION test_notice
@@ -2399,6 +2411,7 @@ export const createIntegrationTests = (
 
   test('stream > applies type parsers to streamed rows', async (t) => {
     const pool = await createPool(t.context.dsn, {
+      driverFactory,
       typeParsers: [
         {
           name: 'date',
@@ -2475,7 +2488,9 @@ export const createIntegrationTests = (
   });
 
   test('stream > streams over a transaction', async (t) => {
-    const pool = await createPool(t.context.dsn);
+    const pool = await createPool(t.context.dsn, {
+      driverFactory,
+    });
 
     await pool.query(sql.unsafe`
       INSERT INTO person (name)
@@ -2538,7 +2553,9 @@ export const createIntegrationTests = (
   });
 
   test('stream > frees connection after destroying a stream', async (t) => {
-    const pool = await createPool(t.context.dsn);
+    const pool = await createPool(t.context.dsn, {
+      driverFactory,
+    });
 
     await t.throwsAsync(
       pool.stream(
@@ -2562,7 +2579,9 @@ export const createIntegrationTests = (
   });
 
   test('stream > frees connection after destroying a stream with an error', async (t) => {
-    const pool = await createPool(t.context.dsn);
+    const pool = await createPool(t.context.dsn, {
+      driverFactory,
+    });
 
     const error = await t.throwsAsync(
       pool.stream(
@@ -2588,7 +2607,9 @@ export const createIntegrationTests = (
   });
 
   test('stream > stream throws error on syntax errors', async (t) => {
-    const pool = await createPool(t.context.dsn);
+    const pool = await createPool(t.context.dsn, {
+      driverFactory,
+    });
 
     const error = await t.throwsAsync(
       pool.stream(
@@ -2615,10 +2636,8 @@ export const createIntegrationTests = (
     try {
       const output = execSync('docker --version', { encoding: 'utf8' });
 
-      // eslint-disable-next-line no-console
       console.log('Docker CLI is available:', output.trim());
     } catch {
-      // eslint-disable-next-line no-console
       console.log('Skipper the test. Docker CLI is not available.');
 
       return;
@@ -2626,10 +2645,13 @@ export const createIntegrationTests = (
 
     const { dsn, terminate } = await startTestContainer();
 
-    const pool = await createPool(dsn);
+    const pool = await createPool(dsn, {
+      driverFactory,
+    });
 
-    // eslint-disable-next-line promise/prefer-await-to-then
-    setTimeout(1_000).then(terminate);
+    setTimeout(() => {
+      terminate();
+    }, 1_000);
 
     const error = await t.throwsAsync(
       pool.query(sql.unsafe`SELECT pg_sleep(2)`),

@@ -4,6 +4,7 @@
  */
 
 import { createPool, createSqlTag } from '.';
+import { createTestDriverFactory } from './factories/createTestDriverFactory';
 import { type QueryResult } from './types';
 import test from 'ava';
 import { expectTypeOf } from 'expect-type';
@@ -19,7 +20,11 @@ const ZodRow = z.object({
 });
 
 export const queryMethods = async (): Promise<void> => {
-  const client = await createPool('');
+  const driverFactory = createTestDriverFactory();
+
+  const client = await createPool('', {
+    driverFactory,
+  });
 
   type Row = {
     bar: boolean;
