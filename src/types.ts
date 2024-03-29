@@ -564,11 +564,4 @@ export type Interceptor = {
 
 export type IdentifierNormalizer = (identifierName: string) => string;
 
-export type MockPoolOverrides = {
-  readonly query: (
-    sql: string,
-    values: readonly PrimitiveValueExpression[],
-  ) => Promise<QueryResult<QueryResultRow>>;
-};
-
 export type { Logger } from 'roarr';
