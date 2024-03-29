@@ -232,8 +232,6 @@ export const createDriverFactory = (setup: DriverSetup): DriverFactory => {
         };
 
         destroy = async () => {
-          // console.trace('destroy');
-
           if (destroyPromise) {
             return destroyPromise;
           }
@@ -298,8 +296,6 @@ export const createDriverFactory = (setup: DriverSetup): DriverFactory => {
 
         const client = {
           acquire: () => {
-            // console.trace('acquire', id);
-
             const currentState = state();
 
             if (currentState === 'PENDING_DESTROY') {
@@ -333,8 +329,6 @@ export const createDriverFactory = (setup: DriverSetup): DriverFactory => {
             return clientEventEmitter.on(event, listener);
           },
           query: async (sql, values) => {
-            // console.trace('query', id);
-
             const currentState = state();
 
             if (currentState === 'PENDING_DESTROY') {

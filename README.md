@@ -545,9 +545,11 @@ const main = async () => {
   pool.state();
 
   // {
-  //   activeConnections: 0,
-  //   ended: false,
+  //   acquiredConnections: 0,
   //   idleConnections: 0,
+  //   pendingDestroyConnections: 0,
+  //   pendingReleaseConnections: 0,
+  //   state: 'ACTIVE',
   //   waitingClients: 0,
   // }
 
@@ -555,9 +557,11 @@ const main = async () => {
     pool.state();
 
     // {
-    //   activeConnections: 1,
-    //   ended: false,
+    //   acquiredConnections: 1,
     //   idleConnections: 0,
+    //   pendingDestroyConnections: 0,
+    //   pendingReleaseConnections: 0,
+    //   state: 'ACTIVE',
     //   waitingClients: 0,
     // }
   });
@@ -565,9 +569,11 @@ const main = async () => {
   pool.state();
 
   // {
-  //   activeConnections: 0,
-  //   ended: false,
+  //   acquiredConnections: 0,
   //   idleConnections: 1,
+  //   pendingDestroyConnections: 0,
+  //   pendingReleaseConnections: 0,
+  //   state: 'ACTIVE',
   //   waitingClients: 0,
   // }
 
@@ -576,9 +582,11 @@ const main = async () => {
   pool.state();
 
   // {
-  //   activeConnections: 0,
-  //   ended: true,
+  //   acquiredConnections: 0,
   //   idleConnections: 0,
+  //   pendingDestroyConnections: 0,
+  //   pendingReleaseConnections: 0,
+  //   state: 'ENDED',
   //   waitingClients: 0,
   // }
 };

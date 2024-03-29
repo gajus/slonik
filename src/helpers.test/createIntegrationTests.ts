@@ -673,7 +673,7 @@ export const createIntegrationTests = (
       idleConnections: 0,
       pendingDestroyConnections: 0,
       pendingReleaseConnections: 0,
-      state: 'LIVE',
+      state: 'ACTIVE',
       waitingClients: 0,
     });
 
@@ -700,7 +700,7 @@ export const createIntegrationTests = (
       idleConnections: 0,
       pendingDestroyConnections: 0,
       pendingReleaseConnections: 0,
-      state: 'LIVE',
+      state: 'ACTIVE',
       waitingClients: 0,
     });
 
@@ -713,7 +713,7 @@ export const createIntegrationTests = (
       idleConnections: 1,
       pendingDestroyConnections: 0,
       pendingReleaseConnections: 0,
-      state: 'LIVE',
+      state: 'ACTIVE',
       waitingClients: 0,
     });
 
@@ -739,7 +739,7 @@ export const createIntegrationTests = (
       idleConnections: 0,
       pendingDestroyConnections: 0,
       pendingReleaseConnections: 0,
-      state: 'LIVE',
+      state: 'ACTIVE',
       waitingClients: 0,
     });
 
@@ -754,7 +754,7 @@ export const createIntegrationTests = (
       idleConnections: 0,
       pendingDestroyConnections: 0,
       pendingReleaseConnections: 0,
-      state: 'LIVE',
+      state: 'ACTIVE',
       waitingClients: 0,
     });
 
@@ -784,7 +784,7 @@ export const createIntegrationTests = (
       idleConnections: 0,
       pendingDestroyConnections: 0,
       pendingReleaseConnections: 0,
-      state: 'LIVE',
+      state: 'ACTIVE',
       waitingClients: 0,
     });
 
@@ -811,7 +811,7 @@ export const createIntegrationTests = (
       idleConnections: 5,
       pendingDestroyConnections: 0,
       pendingReleaseConnections: 0,
-      state: 'LIVE',
+      state: 'ACTIVE',
       waitingClients: 0,
     });
 
@@ -1277,7 +1277,7 @@ export const createIntegrationTests = (
         idleConnections: 0,
         pendingDestroyConnections: 0,
         pendingReleaseConnections: 0,
-        state: 'LIVE',
+        state: 'ACTIVE',
         waitingClients: 0,
       },
       'initial state',
@@ -1301,7 +1301,7 @@ export const createIntegrationTests = (
         idleConnections: 0,
         pendingDestroyConnections: 0,
         pendingReleaseConnections: 0,
-        state: 'LIVE',
+        state: 'ACTIVE',
         waitingClients: 1,
       },
       'shows waiting connections',
@@ -1810,7 +1810,7 @@ export const createIntegrationTests = (
             idleConnections: 1,
             pendingDestroyConnections: 0,
             pendingReleaseConnections: 0,
-            state: 'LIVE',
+            state: 'ACTIVE',
             waitingClients: 0,
           },
           'initial state',
@@ -1855,7 +1855,7 @@ export const createIntegrationTests = (
           idleConnections: 0,
           pendingDestroyConnections: 0,
           pendingReleaseConnections: 0,
-          state: 'LIVE',
+          state: 'ACTIVE',
           waitingClients: 0,
         });
 

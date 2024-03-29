@@ -32,7 +32,7 @@ export type ConnectionPoolClient = {
   ) => TypedReadable<DriverStreamResult>;
 };
 
-type ConnectionPoolStateName = 'LIVE' | 'ENDING' | 'ENDED';
+type ConnectionPoolStateName = 'ACTIVE' | 'ENDING' | 'ENDED';
 
 /**
  * @property {number} acquiredConnections - The number of connections that are currently acquired.
@@ -40,6 +40,7 @@ type ConnectionPoolStateName = 'LIVE' | 'ENDING' | 'ENDED';
 type ConnectionPoolState = {
   acquiredConnections: number;
   idleConnections: number;
+  pendingDestroyConnections: number;
   pendingReleaseConnections: number;
   state: ConnectionPoolStateName;
   waitingClients: number;
@@ -183,7 +184,7 @@ export const createConnectionPool = ({
       return id;
     },
     state: () => {
-      const stateName = isEnded ? 'ENDED' : isEnding ? 'ENDING' : 'LIVE';
+      const stateName = isEnded ? 'ENDED' : isEnding ? 'ENDING' : 'ACTIVE';
 
       const state = {
         acquiredConnections: 0,
