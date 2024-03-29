@@ -1,0 +1,47 @@
+{
+  "author": {
+    "email": "gajus@gajus.com",
+    "name": "Gajus Kuizinas",
+    "url": "http://gajus.com"
+  },
+  "dependencies": {
+    "@slonik/internals": "^40.2.1"
+  },
+  "description": "A Node.js PostgreSQL client with strict types, detailed logging and assertions.",
+  "devDependencies": {
+    "@types/node": "^18.15.3",
+    "eslint": "^8.57.0",
+    "eslint-config-canonical": "^42.8.1",
+    "husky": "^9.0.11",
+    "typescript": "^5.4.3"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "files": [
+    "./src"
+  ],
+  "keywords": [
+    "postgresql",
+    "promise",
+    "types"
+  ],
+  "license": "BSD-3-Clause",
+  "main": "./dist/index.js",
+  "name": "slonik",
+  "peerDependencies": {
+    "zod": "^3"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/gajus/slonik"
+  },
+  "scripts": {
+    "build": "rm -fr ./dist && tsc",
+    "lint": "npm run lint:eslint && npm run lint:tsc",
+    "lint:eslint": "eslint ./src",
+    "lint:tsc": "tsc --noEmit"
+  },
+  "types": "./dist/index.d.ts",
+  "version": "40.2.1"
+}

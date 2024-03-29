@@ -1,0 +1,25 @@
+{
+  "extends": "canonical/auto",
+  "ignorePatterns": [
+    "dist",
+    "package-lock.json"
+  ],
+  "overrides": [
+    {
+      "files": "*.ts",
+      "rules": {
+        "import/no-cycle": 0
+      }
+    },
+    {
+      "files": ["*.test.ts", "**/*.test/*"],
+      "extends": "canonical/ava",
+      "rules": {
+        "@typescript-eslint/no-explicit-any": 0,
+        "@typescript-eslint/no-unused-expressions": 0,
+        "ava/no-ignored-test-files": 0
+      }
+    }
+  ],
+  "root": true
+}
