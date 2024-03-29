@@ -30,7 +30,6 @@ Note: Using this project does not require TypeScript. It is a regular ES6 module
 
 * [Runtime validation](#runtime-validation)
 * [Assertions and type safety](#repeating-code-patterns-and-type-safety).
-* [Connection mocking](#mocking-slonik).
 * [Safe connection handling](#protecting-against-unsafe-connection-handling).
 * [Safe transaction handling](#protecting-against-unsafe-transaction-handling).
 * [Safe value interpolation](#protecting-against-unsafe-value-interpolation).
