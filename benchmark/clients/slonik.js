@@ -3,11 +3,18 @@ const {
   sql,
 } = require('slonik');
 
-const pool = await createPool('postgres://postgres@127.0.0.1:5432', {
-  captureStackTrace: false,
-});
+let pool;
+let poolPromise;
 
-const connect = () => {
+const connect = async () => {
+  if (!poolPromise) {
+    poolPromise = createPool('postgres://postgres@127.0.0.1:5432', {
+      captureStackTrace: false,
+    });
+  }
+
+  pool = await poolPromise;
+
   return new Promise((resolve) => {
     pool.connect((connection) => {
       resolve(connection);
