@@ -1,16 +1,14 @@
-import { createPgDriverFactory } from '../../../factories/createPgDriverFactory';
 import { createSqlTag } from '../../../factories/createSqlTag';
+import { createTestDriverFactory } from '../../../factories/createTestDriverFactory';
 import { createPoolWithMockedQuery } from '../../../helpers.test/createPoolWithMockedQuery';
-import { createTestRunner } from '../../../helpers.test/createTestRunner';
+import test from 'ava';
 
-const driverFactory = createPgDriverFactory();
-
-const { test } = createTestRunner(driverFactory, 'pg');
+const driverFactory = createTestDriverFactory();
 
 const sql = createSqlTag();
 
-test('short-circuits the query execution', async (t) => {
-  const { pool, query } = await createPoolWithMockedQuery(t.context.dsn, {
+test('beforeQueryExecution short-circuits the query execution', async (t) => {
+  const { pool, query } = await createPoolWithMockedQuery('postgres://', {
     driverFactory,
     interceptors: [
       {
@@ -57,7 +55,7 @@ test('short-circuits the query execution', async (t) => {
 });
 
 test('executes query if "beforeQuery" does not return results', async (t) => {
-  const { pool, query } = await createPoolWithMockedQuery(t.context.dsn, {
+  const { pool, query } = await createPoolWithMockedQuery('postgres://', {
     driverFactory,
     interceptors: [
       {

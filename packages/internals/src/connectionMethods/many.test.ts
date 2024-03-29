@@ -1,17 +1,15 @@
 import { NotFoundError } from '../errors';
-import { createPgDriverFactory } from '../factories/createPgDriverFactory';
 import { createPool } from '../factories/createPool';
 import { createSqlTag } from '../factories/createSqlTag';
-import { createTestRunner } from '../helpers.test/createTestRunner';
+import { createTestDriverFactory } from '../factories/createTestDriverFactory';
+import test from 'ava';
 
-const driverFactory = createPgDriverFactory();
-
-const { test } = createTestRunner(driverFactory, 'pg');
+const driverFactory = createTestDriverFactory();
 
 const sql = createSqlTag();
 
 test('returns the query results rows', async (t) => {
-  const pool = await createPool(t.context.dsn, {
+  const pool = await createPool('postgres://', {
     driverFactory,
   });
 
@@ -31,7 +29,7 @@ test('returns the query results rows', async (t) => {
 });
 
 test('throws an error if no rows are returned', async (t) => {
-  const pool = await createPool(t.context.dsn, {
+  const pool = await createPool('postgres://', {
     driverFactory,
   });
 

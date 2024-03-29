@@ -10,7 +10,7 @@ import { createPoolConfiguration } from './createPoolConfiguration';
  */
 export const createPool = async (
   connectionUri: string,
-  clientConfigurationInput?: ClientConfigurationInput,
+  clientConfigurationInput: ClientConfigurationInput,
 ): Promise<DatabasePool> => {
   const clientConfiguration = createClientConfiguration(
     connectionUri,

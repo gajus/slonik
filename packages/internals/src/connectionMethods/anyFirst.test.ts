@@ -1,17 +1,15 @@
 import { DataIntegrityError } from '../errors';
-import { createPgDriverFactory } from '../factories/createPgDriverFactory';
 import { createPool } from '../factories/createPool';
 import { createSqlTag } from '../factories/createSqlTag';
-import { createTestRunner } from '../helpers.test/createTestRunner';
+import { createTestDriverFactory } from '../factories/createTestDriverFactory';
+import test from 'ava';
 
-const driverFactory = createPgDriverFactory();
-
-const { test } = createTestRunner(driverFactory, 'pg');
+const driverFactory = createTestDriverFactory();
 
 const sql = createSqlTag();
 
 test('returns empty array if no rows are returned', async (t) => {
-  const pool = await createPool(t.context.dsn, {
+  const pool = await createPool('postgres://', {
     driverFactory,
   });
 
@@ -25,7 +23,7 @@ test('returns empty array if no rows are returned', async (t) => {
 });
 
 test('returns first column values of the query result rows', async (t) => {
-  const pool = await createPool(t.context.dsn, {
+  const pool = await createPool('postgres://', {
     driverFactory,
   });
 
@@ -38,7 +36,7 @@ test('returns first column values of the query result rows', async (t) => {
 });
 
 test('throws an error if more than one column is returned', async (t) => {
-  const pool = await createPool(t.context.dsn, {
+  const pool = await createPool('postgres://', {
     driverFactory,
   });
 

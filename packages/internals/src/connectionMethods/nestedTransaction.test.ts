@@ -1,16 +1,14 @@
-import { createPgDriverFactory } from '../factories/createPgDriverFactory';
 import { createPool } from '../factories/createPool';
+import { createTestDriverFactory } from '../factories/createTestDriverFactory';
 import { createErrorWithCode } from '../helpers.test/createErrorWithCode';
 import { createPoolWithSpy } from '../helpers.test/createPoolWithSpy';
-import { createTestRunner } from '../helpers.test/createTestRunner';
+import test from 'ava';
 import * as sinon from 'sinon';
 
-const driverFactory = createPgDriverFactory();
-
-const { test } = createTestRunner(driverFactory, 'pg');
+const driverFactory = createTestDriverFactory();
 
 test('creates a savepoint', async (t) => {
-  const { spy, pool } = await createPoolWithSpy(t.context.dsn, {
+  const { spy, pool } = await createPoolWithSpy('postgres://', {
     driverFactory,
   });
 
@@ -23,7 +21,7 @@ test('creates a savepoint', async (t) => {
 });
 
 test('rollbacks unsuccessful nested transaction', async (t) => {
-  const { spy, pool } = await createPoolWithSpy(t.context.dsn, {
+  const { spy, pool } = await createPoolWithSpy('postgres://', {
     driverFactory,
   });
 
@@ -43,7 +41,9 @@ test('rollbacks unsuccessful nested transaction', async (t) => {
 });
 
 test('retries a nested transaction that failed due to a transaction error', async (t) => {
-  const pool = await createPool(t.context.dsn);
+  const pool = await createPool('postgres://', {
+    driverFactory,
+  });
   const handlerStub = sinon.stub();
 
   handlerStub
@@ -81,7 +81,7 @@ test('retries a nested transaction that failed due to a transaction error', asyn
 });
 
 test('commits successful transaction with retries', async (t) => {
-  const { spy, pool } = await createPoolWithSpy(t.context.dsn, {
+  const { spy, pool } = await createPoolWithSpy('postgres://', {
     driverFactory,
   });
 
@@ -117,7 +117,9 @@ test('commits successful transaction with retries', async (t) => {
 });
 
 test('returns the thrown transaction error if the retry limit is reached', async (t) => {
-  const pool = await createPool(t.context.dsn);
+  const pool = await createPool('postgres://', {
+    driverFactory,
+  });
 
   const handlerStub = sinon.stub();
 
@@ -140,7 +142,7 @@ test('returns the thrown transaction error if the retry limit is reached', async
 });
 
 test('rollbacks unsuccessful nested transaction with retries', async (t) => {
-  const { spy, pool } = await createPoolWithSpy(t.context.dsn, {
+  const { spy, pool } = await createPoolWithSpy('postgres://', {
     driverFactory,
   });
 

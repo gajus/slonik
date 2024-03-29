@@ -151,7 +151,9 @@ export type ClientConfiguration = {
   readonly typeParsers: readonly TypeParser[];
 };
 
-export type ClientConfigurationInput = Partial<ClientConfiguration>;
+export type ClientConfigurationInput = Partial<ClientConfiguration> & {
+  readonly driverFactory: DriverFactory;
+};
 
 export type StreamResult = {
   readonly notices: readonly DriverNotice[];
