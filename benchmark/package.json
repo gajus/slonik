@@ -1,9 +1,9 @@
 {
   "dependencies": {
     "benny": "^3.7.1",
-    "pg": "^8.7.3",
-    "pg-promise": "^10.11.1",
-    "postgres": "^3.0.0",
+    "pg": "^8.11.3",
+    "pg-promise": "^11.5.5",
+    "postgres": "^3.4.4",
     "slonik": "^40.2.0"
   },
   "scripts": {
