@@ -71,7 +71,6 @@ export type {
   JsonSqlToken,
   ListSqlToken,
   MaybePromise,
-  MockPoolOverrides,
   PoolContext,
   PrimitiveValueExpression,
   Query,
