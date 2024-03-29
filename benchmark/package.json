@@ -4,7 +4,7 @@
     "pg": "^8.7.3",
     "pg-promise": "^10.11.1",
     "postgres": "^3.0.0",
-    "slonik": "^27.1.1"
+    "slonik": "^40.2.0"
   },
   "scripts": {
     "benchmark": "NODE_ENV=production node benchmark.js"

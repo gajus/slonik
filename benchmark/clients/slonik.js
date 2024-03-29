@@ -36,21 +36,21 @@ module.exports = {
       const connection = await connect();
 
       return () => {
-        return connection.query(sql`select 1 as x`);
+        return connection.query(sql.unsafe`select 1 as x`);
       };
     },
     select_arg: async () => {
       const connection = await connect();
 
       return () => {
-        return connection.query(sql`select ${1} as x`);
+        return connection.query(sql.unsafe`select ${1} as x`);
       };
     },
     select_args: async () => {
       const connection = await connect();
 
       return () => {
-        return connection.query(sql`
+        return connection.query(sql.unsafe`
           select
                 ${1} as int,
                 ${'foo'} as string,
@@ -73,7 +73,7 @@ module.exports = {
       const connection = await connect();
 
       return () => {
-        return connection.query(sql`select * from pg_catalog.pg_type where typname = ${'bool'}`);
+        return connection.query(sql.unsafe`select * from pg_catalog.pg_type where typname = ${'bool'}`);
       };
     },
   },
