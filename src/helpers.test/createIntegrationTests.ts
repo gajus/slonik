@@ -31,6 +31,40 @@ export const createIntegrationTests = (
   test: TestFn<TestContextType>,
   driverFactory: DriverFactory,
 ) => {
+  test('streams data', async (t) => {
+    const pool = await createPool(t.context.dsn, {
+      driverFactory,
+      maximumPoolSize: 1,
+    });
+
+    const onData = sinon.spy();
+
+    await Promise.all([
+      pool.stream(
+        sql.unsafe`SELECT * FROM (VALUES (1), (2)) as t(id)`,
+        (stream) => {
+          stream.on('data', onData);
+        },
+      ),
+    ]);
+
+    t.true(onData.calledTwice);
+
+    t.deepEqual(onData.firstCall.args, [
+      {
+        data: {
+          id: 1,
+        },
+        fields: [
+          {
+            dataTypeId: 23,
+            name: 'id',
+          },
+        ],
+      },
+    ]);
+  });
+
   test('inserts and retrieves bigint', async (t) => {
     const pool = await createPool(t.context.dsn, {
       driverFactory,
