@@ -1,4 +1,8 @@
-import { createDriverFactory, type DriverFactory } from './createDriverFactory';
+import {
+  createDriverFactory,
+  type DriverFactory,
+  type DriverQueryResult,
+} from './createDriverFactory';
 
 // matches two strings ignoring whitespace
 const matchTemplate = (template, value) => {
@@ -8,6 +12,22 @@ const matchTemplate = (template, value) => {
   return templateString === valueString;
 };
 
+const matchQuery = (
+  sql: string,
+  queries: Record<string, DriverQueryResult>,
+) => {
+  for (const [template, result] of Object.entries(queries)) {
+    if (matchTemplate(template, sql)) {
+      return result;
+    }
+  }
+
+  throw new Error(`Query not matched: ${sql}`);
+};
+
+/**
+ * This is a test driver factory that is used for unit testing.
+ */
 export const createTestDriverFactory = (): DriverFactory => {
   return createDriverFactory(async () => {
     return {
@@ -16,100 +36,31 @@ export const createTestDriverFactory = (): DriverFactory => {
           connect: async () => {},
           end: async () => {},
           query: async (sql) => {
-            if (matchTemplate(sql, 'DISCARD ALL')) {
-              return {
+            return matchQuery(sql, {
+              [`
+                SELECT *
+                FROM (VALUES (1)) as t(id)
+              `]: {
                 command: 'SELECT',
-                fields: [],
-                notices: [],
-                rowCount: 0,
-                rows: [],
-                type: 'QueryResult',
-              };
-            }
-
-            if (matchTemplate(sql, 'START TRANSACTION')) {
-              return {
-                command: 'SELECT',
-                fields: [],
-                notices: [],
-                rowCount: 0,
-                rows: [],
-                type: 'QueryResult',
-              };
-            }
-
-            if (matchTemplate(sql, 'SAVEPOINT slonik_savepoint_1')) {
-              return {
-                command: 'SELECT',
-                fields: [],
-                notices: [],
-                rowCount: 0,
-                rows: [],
-                type: 'QueryResult',
-              };
-            }
-
-            if (
-              matchTemplate(sql, 'ROLLBACK TO SAVEPOINT slonik_savepoint_1')
-            ) {
-              return {
-                command: 'SELECT',
-                fields: [],
-                notices: [],
-                rowCount: 0,
-                rows: [],
-                type: 'QueryResult',
-              };
-            }
-
-            if (matchTemplate(sql, 'ROLLBACK')) {
-              return {
-                command: 'SELECT',
-                fields: [],
-                notices: [],
-                rowCount: 0,
-                rows: [],
-                type: 'QueryResult',
-              };
-            }
-
-            if (matchTemplate(sql, 'COMMIT')) {
-              return {
-                command: 'SELECT',
-                fields: [],
-                notices: [],
-                rowCount: 0,
-                rows: [],
-                type: 'QueryResult',
-              };
-            }
-
-            if (matchTemplate(sql, 'SELECT 1')) {
-              return {
-                command: 'SELECT',
-                fields: [],
-                notices: [],
+                fields: [
+                  {
+                    dataTypeId: 23,
+                    name: 'id',
+                  },
+                ],
                 rowCount: 1,
                 rows: [
                   {
-                    1: 1,
+                    id: 1,
                   },
                 ],
-                type: 'QueryResult',
-              };
-            }
+              },
 
-            if (
-              matchTemplate(
-                sql,
-                `
-                  SELECT *
-                  FROM (VALUES (1)) as t(id)
-                  WHERE false
-                `,
-              )
-            ) {
-              return {
+              [`
+                SELECT *
+                FROM (VALUES (1)) as t(id)
+                WHERE false
+              `]: {
                 command: 'SELECT',
                 fields: [
                   {
@@ -119,19 +70,11 @@ export const createTestDriverFactory = (): DriverFactory => {
                 ],
                 rowCount: 0,
                 rows: [],
-              };
-            }
-
-            if (
-              matchTemplate(
-                sql,
-                `
-                  SELECT *
-                  FROM (VALUES (1), (2)) as t(id)
-                `,
-              )
-            ) {
-              return {
+              },
+              [`
+                SELECT *
+                FROM (VALUES (1), (2)) as t(id)
+              `]: {
                 command: 'SELECT',
                 fields: [
                   {
@@ -148,19 +91,26 @@ export const createTestDriverFactory = (): DriverFactory => {
                     id: 2,
                   },
                 ],
-              };
-            }
-
-            if (
-              matchTemplate(
-                sql,
-                `
-                  SELECT *
-                  FROM (VALUES (1, 'foo')) as t(id, name)
-                `,
-              )
-            ) {
-              return {
+              },
+              [`
+                SELECT *
+                FROM (VALUES (1), (2)) as t(id)
+                WHERE false
+              `]: {
+                command: 'SELECT',
+                fields: [
+                  {
+                    dataTypeId: 23,
+                    name: 'id',
+                  },
+                ],
+                rowCount: 0,
+                rows: [],
+              },
+              [`
+                SELECT *
+                FROM (VALUES (1, 'foo')) as t(id, name)
+              `]: {
                 command: 'SELECT',
                 fields: [
                   {
@@ -179,59 +129,54 @@ export const createTestDriverFactory = (): DriverFactory => {
                     name: 'foo',
                   },
                 ],
-              };
-            }
-
-            if (
-              matchTemplate(
-                sql,
-                `
-                  SELECT *
-                  FROM (VALUES (1), (2)) as t(id)
-                  WHERE false
-                `,
-              )
-            ) {
-              return {
+              },
+              COMMIT: {
                 command: 'SELECT',
-                fields: [
-                  {
-                    dataTypeId: 23,
-                    name: 'id',
-                  },
-                ],
+                fields: [],
                 rowCount: 0,
                 rows: [],
-              };
-            }
-
-            if (
-              matchTemplate(
-                sql,
-                `
-                  SELECT *
-                  FROM (VALUES (1)) as t(id)
-                `,
-              )
-            ) {
-              return {
+              },
+              'DISCARD ALL': {
                 command: 'SELECT',
-                fields: [
-                  {
-                    dataTypeId: 23,
-                    name: 'id',
-                  },
-                ],
+                fields: [],
+                rowCount: 0,
+                rows: [],
+              },
+              ROLLBACK: {
+                command: 'SELECT',
+                fields: [],
+                rowCount: 0,
+                rows: [],
+              },
+              'ROLLBACK TO SAVEPOINT slonik_savepoint_1': {
+                command: 'SELECT',
+                fields: [],
+                rowCount: 0,
+                rows: [],
+              },
+              'SAVEPOINT slonik_savepoint_1': {
+                command: 'SELECT',
+                fields: [],
+                rowCount: 0,
+                rows: [],
+              },
+              'SELECT 1': {
+                command: 'SELECT',
+                fields: [],
                 rowCount: 1,
                 rows: [
                   {
-                    id: 1,
+                    1: 1,
                   },
                 ],
-              };
-            }
-
-            throw new Error('Unexpected query.');
+              },
+              'START TRANSACTION': {
+                command: 'SELECT',
+                fields: [],
+                rowCount: 0,
+                rows: [],
+              },
+            });
           },
           stream: () => {
             throw new Error('Not implemented.');
