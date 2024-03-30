@@ -37,7 +37,7 @@ jobs:
       - run: npm run build --workspaces --if-present
   test:
     environment: release
-    name: 'Test node_version:${{ matrix.node_version }} test_only:${{ matrix.test_only }}'
+    name: 'Test node_version:${{ matrix.node_version }}'
     runs-on: ubuntu-latest
     services:
       postgres:
@@ -81,14 +81,10 @@ jobs:
       - run: npm ci
       - env:
           POSTGRES_DSN: postgres:postgres@localhost:5432
-          TEST_ONLY: '${{ matrix.test_only }}'
         run: npm run tets --workspaces --if-present
     strategy:
       fail-fast: false
       matrix:
-        test_only:
-          - utilities
-          - pg-integration
         node_version:
           - 20
       max-parallel: 3
