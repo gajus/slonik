@@ -79,6 +79,7 @@ jobs:
           cache: 'npm'
           node-version: '${{ matrix.node_version }}'
       - run: npm ci
+      - run: npm run build --workspaces --if-present
       - env:
           POSTGRES_DSN: postgres:postgres@localhost:5432
         run: npm run tets --workspaces --if-present
