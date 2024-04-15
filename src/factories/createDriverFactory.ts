@@ -224,6 +224,8 @@ export const createDriverFactory = (setup: DriverSetup): DriverFactory => {
 
           // There is a possible race condition where there is no active query,
           // but the client still has a pending release (which may initiate a query).
+          // Not handling this would produce unhandled 'Error: Backend has been terminated.' errors
+          // when the release routine tries to query the database.
           if (releasePromise) {
             await Promise.race([
               delay(driverConfiguration.gracefulTerminationTimeout),
