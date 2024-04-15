@@ -1712,6 +1712,36 @@ export const createIntegrationTests = (
     );
   });
 
+  test('waits for every client to be assigned', async (t) => {
+    const pool = await createPool(t.context.dsn, {
+      driverFactory,
+      maximumPoolSize: 1,
+    });
+
+    const connection1 = pool.connect(async (connection) => {
+      await connection.query(sql.unsafe`
+        SELECT pg_sleep(0.1);
+      `);
+
+      return 'connection 1';
+    });
+
+    const connection2 = pool.connect(async (connection) => {
+      await connection.query(sql.unsafe`
+        SELECT pg_sleep(0.1);
+      `);
+
+      return 'connection 2';
+    });
+
+    await delay(50);
+
+    await t.notThrowsAsync(pool.end());
+
+    t.is(await connection1, 'connection 1');
+    t.is(await connection2, 'connection 2');
+  });
+
   test('pool.end() resolves only when pool ends', async (t) => {
     const pool = await createPool(t.context.dsn, {
       driverFactory,

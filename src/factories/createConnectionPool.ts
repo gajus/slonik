@@ -88,6 +88,19 @@ export const createConnectionPool = ({
       );
     }
 
+    try {
+      await Promise.all(
+        waitingClients.map((waitingClient) => waitingClient.promise),
+      );
+    } catch (error) {
+      logger.error(
+        {
+          error: serializeError(error),
+        },
+        'error in pool termination sequence while waiting for waiting clients to be resolved',
+      );
+    }
+
     // This is needed to ensure that all pending connections were assigned a waiting client.
     // e.g. "waits for all connections to be established before attempting to terminate the pool" test
     await delay(0);
