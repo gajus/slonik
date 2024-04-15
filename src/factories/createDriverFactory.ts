@@ -222,6 +222,15 @@ export const createDriverFactory = (setup: DriverSetup): DriverFactory => {
             ]);
           }
 
+          // There is a possible race condition where there is no active query,
+          // but the client still has a pending release (which may initiate a query).
+          if (releasePromise) {
+            await Promise.race([
+              delay(driverConfiguration.gracefulTerminationTimeout),
+              releasePromise,
+            ]);
+          }
+
           isDestroyed = true;
 
           clientEventEmitter.emit('destroy');
