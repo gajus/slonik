@@ -79,6 +79,20 @@ export const createIntegrationTests = (
     await pool.end();
   });
 
+  test('produces error if multiple statements are passed as the query input', async (t) => {
+    const pool = await createPool(t.context.dsn, {
+      driverFactory,
+    });
+
+    const error = await t.throwsAsync(
+      pool.query(sql.unsafe`
+        SELECT 1; SELECT 2;
+      `),
+    );
+
+    t.true(error instanceof InvalidInputError);
+  });
+
   test('NotNullIntegrityConstraintViolationError identifies the table and column', async (t) => {
     const pool = await createPool(t.context.dsn, {
       driverFactory,
