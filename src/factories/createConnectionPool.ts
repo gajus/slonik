@@ -108,78 +108,89 @@ export const createConnectionPool = ({
     await Promise.all(connections.map((connection) => connection.destroy()));
   };
 
-  return {
-    acquire: async () => {
-      if (isEnding) {
-        throw new Error('Connection pool is being terminated.');
-      }
+  const acquire = async () => {
+    if (isEnding) {
+      throw new Error('Connection pool is being terminated.');
+    }
 
-      if (isEnded) {
-        throw new Error('Connection pool has ended.');
-      }
+    if (isEnded) {
+      throw new Error('Connection pool has ended.');
+    }
 
-      const idleConnection = connections.find(
-        (connection) => connection.state() === 'IDLE',
-      );
+    const idleConnection = connections.find(
+      (connection) => connection.state() === 'IDLE',
+    );
 
-      if (idleConnection) {
-        idleConnection.acquire();
+    if (idleConnection) {
+      idleConnection.acquire();
 
-        return idleConnection;
-      }
+      return idleConnection;
+    }
 
-      if (pendingConnections.length + connections.length < poolSize) {
-        const pendingConnection = driver.createClient();
+    if (pendingConnections.length + connections.length < poolSize) {
+      const pendingConnection = driver.createClient();
 
-        pendingConnections.push(pendingConnection);
+      pendingConnections.push(pendingConnection);
 
-        const connection = await pendingConnection;
+      const connection = await pendingConnection;
 
-        const onRelease = () => {
-          const waitingClient = waitingClients.shift();
+      const onRelease = () => {
+        const waitingClient = waitingClients.shift();
 
-          if (!waitingClient) {
-            return;
-          }
+        if (!waitingClient) {
+          return;
+        }
 
-          if (connection.state() !== 'IDLE') {
-            throw new Error('Connection is not idle.');
-          }
-
-          connection.acquire();
-
-          waitingClient.resolve(connection);
-        };
-
-        connection.on('release', onRelease);
-
-        const onDestroy = () => {
-          connection.removeListener('release', onRelease);
-          connection.removeListener('destroy', onDestroy);
-
-          connections.splice(connections.indexOf(connection), 1);
-        };
-
-        connection.on('destroy', onDestroy);
+        if (connection.state() !== 'IDLE') {
+          throw new Error('Connection is not idle.');
+        }
 
         connection.acquire();
 
-        connections.push(connection);
+        waitingClient.resolve(connection);
+      };
 
-        pendingConnections.splice(
-          pendingConnections.indexOf(pendingConnection),
-          1,
-        );
+      connection.on('release', onRelease);
 
-        return connection;
-      } else {
-        const waitingClient = defer<ConnectionPoolClient>();
+      const onDestroy = () => {
+        connection.removeListener('release', onRelease);
+        connection.removeListener('destroy', onDestroy);
 
-        waitingClients.push(waitingClient);
+        connections.splice(connections.indexOf(connection), 1);
 
-        return waitingClient.promise;
-      }
-    },
+        const waitingClient = waitingClients.shift();
+
+        if (!waitingClient) {
+          return;
+        }
+
+        // eslint-disable-next-line promise/prefer-await-to-then
+        acquire().then(waitingClient.resolve, waitingClient.reject);
+      };
+
+      connection.on('destroy', onDestroy);
+
+      connection.acquire();
+
+      connections.push(connection);
+
+      pendingConnections.splice(
+        pendingConnections.indexOf(pendingConnection),
+        1,
+      );
+
+      return connection;
+    } else {
+      const waitingClient = defer<ConnectionPoolClient>();
+
+      waitingClients.push(waitingClient);
+
+      return waitingClient.promise;
+    }
+  };
+
+  return {
+    acquire,
     end: async () => {
       isEnding = true;
 

@@ -1660,6 +1660,38 @@ export const createIntegrationTests = (
     t.not(firstConnectionPid, secondConnectionPid);
   });
 
+  test('queued connection gets a new connection in case a blocking connection produced an error', async (t) => {
+    const pool = await createPool(t.context.dsn, {
+      driverFactory,
+      maximumPoolSize: 1,
+    });
+
+    const firstConnectionPid = await pool.oneFirst(sql.unsafe`
+      SELECT pg_backend_pid();
+    `);
+
+    await Promise.allSettled([
+      // This query will eventually produce an error.
+      pool.query(sql.unsafe`
+        SELECT 1 / 0
+      `),
+      // This query will queue to use the same connection
+      // that the previous query is using.
+      //
+      // Earlier implementation had a race condition where because the first query errored,
+      // the second query would not get a connection and would remain in the queue indefinitely.
+      pool.query(sql.unsafe`
+        SELECT 1
+      `),
+    ]);
+
+    const secondConnectionPid = await pool.oneFirst(sql.unsafe`
+      SELECT pg_backend_pid();
+    `);
+
+    t.not(firstConnectionPid, secondConnectionPid);
+  });
+
   test('does not re-use transaction connection if there was an error', async (t) => {
     const pool = await createPool(t.context.dsn, {
       driverFactory,
