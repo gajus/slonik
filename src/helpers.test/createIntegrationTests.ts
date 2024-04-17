@@ -1637,7 +1637,7 @@ export const createIntegrationTests = (
     t.true(Date.now() - startTime >= 200);
   });
 
-  test('does not re-use connection if there was an error', async (t) => {
+  test('does not re-use connection if there was an unhandled error', async (t) => {
     const pool = await createPool(t.context.dsn, {
       driverFactory,
       maximumPoolSize: 1,
