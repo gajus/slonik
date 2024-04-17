@@ -300,6 +300,15 @@ connection.transaction(async (transactionConnection) => {
 
 This pattern ensures that the transaction is either committed or aborted the moment the promise is either resolved or rejected.
 
+> [!NOTE]
+> If you receive an error `UnexpectedForeignConnectionError`, then you are trying to execute a query using a connection that is not associated with the transaction. This error is thrown to prevent accidental unsafe transaction handling, e.g.
+> ```ts
+> connection.transaction(async (transactionConnection) => {
+>   await connection.query(sql.typeAlias('void')`INSERT INTO foo (bar) VALUES ('baz')`);
+> });
+> ```
+> In this example, the query is executed using the `connection` that is not associated with the transaction. This is unsafe because the query is not part of the transaction and will not be rolled back if the transaction is aborted.
+
 ### Protecting against unsafe value interpolation
 
 [SQL injections](https://en.wikipedia.org/wiki/SQL_injection) are one of the most well known attack vectors. Some of the [biggest data leaks](https://en.wikipedia.org/wiki/SQL_injection#Examples) were the consequence of improper user-input handling. In general, SQL injections are easily preventable by using parameterization and by restricting database permissions, e.g.

@@ -1,10 +1,12 @@
 import { TRANSACTION_ROLLBACK_ERROR_PREFIX } from '../constants';
+import { transactionContext } from '../contexts/transactionContext';
 import {
   BackendTerminatedError,
   BackendTerminatedUnexpectedlyError,
   InvalidInputError,
   SlonikError,
   TupleMovedToAnotherPartitionError,
+  UnexpectedForeignConnectionError,
   UnexpectedStateError,
 } from '../errors';
 import { type ConnectionPoolClient } from '../factories/createConnectionPool';
@@ -136,6 +138,15 @@ export const executeQuery = async (
     throw new InvalidInputError(
       'Unexpected SQL input. Query cannot be empty. Found only value binding.',
     );
+  }
+
+  const transactionStore = transactionContext.getStore();
+
+  if (
+    transactionStore?.transactionId &&
+    transactionStore.transactionId !== poolClientState.transactionId
+  ) {
+    throw new UnexpectedForeignConnectionError();
   }
 
   const queryInputTime = process.hrtime.bigint();

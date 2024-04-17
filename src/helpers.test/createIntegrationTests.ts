@@ -16,6 +16,7 @@ import {
   StatementCancelledError,
   StatementTimeoutError,
   TupleMovedToAnotherPartitionError,
+  UnexpectedForeignConnectionError,
   UnexpectedStateError,
   UniqueIntegrityConstraintViolationError,
 } from '..';
@@ -31,6 +32,20 @@ export const createIntegrationTests = (
   test: TestFn<TestContextType>,
   driverFactory: DriverFactory,
 ) => {
+  test('does not allow to reference a non-transaction connection inside of a transaction', async (t) => {
+    const pool = await createPool(t.context.dsn, {
+      driverFactory,
+    });
+
+    const error = await t.throwsAsync(
+      pool.transaction(async () => {
+        await pool.query(sql.unsafe`SELECT 1`);
+      }),
+    );
+
+    t.true(error instanceof UnexpectedForeignConnectionError);
+  });
+
   test('streams data', async (t) => {
     const pool = await createPool(t.context.dsn, {
       driverFactory,
@@ -1821,10 +1836,10 @@ export const createIntegrationTests = (
     });
 
     t.is(
-      await pool.transaction(async () => {
+      await pool.transaction(async (transaction) => {
         await delay(200);
 
-        return await pool.oneFirst(sql.unsafe`
+        return await transaction.oneFirst(sql.unsafe`
           SELECT 1;
         `);
       }),

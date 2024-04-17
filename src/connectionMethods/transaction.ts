@@ -1,5 +1,6 @@
 import { bindTransactionConnection } from '../binders/bindTransactionConnection';
 import { TRANSACTION_ROLLBACK_ERROR_PREFIX } from '../constants';
+import { transactionContext } from '../contexts/transactionContext';
 import { BackendTerminatedError, UnexpectedStateError } from '../errors';
 import { getPoolClientState } from '../state';
 import { type InternalTransactionFunction } from '../types';
@@ -116,45 +117,59 @@ export const transaction: InternalTransactionFunction = async (
   handler,
   transactionRetryLimit,
 ) => {
-  const poolClientState = getPoolClientState(connection);
+  const transactionId = createUid();
 
-  if (poolClientState.transactionDepth !== null) {
-    throw new UnexpectedStateError(
-      'Cannot use the same connection to start a new transaction before completing the last transaction.',
-    );
-  }
+  return transactionContext.run(
+    {
+      transactionId,
+    },
+    async () => {
+      const poolClientState = getPoolClientState(connection);
 
-  poolClientState.transactionDepth = 0;
-  poolClientState.transactionId = createUid();
+      if (poolClientState.transactionDepth !== null) {
+        throw new UnexpectedStateError(
+          'Cannot use the same connection to start a new transaction before completing the last transaction.',
+        );
+      }
 
-  const log = parentLog.child({
-    transactionId: poolClientState.transactionId,
-  });
+      poolClientState.transactionDepth = 0;
+      poolClientState.transactionId = transactionId;
 
-  try {
-    return await execTransaction(log, connection, clientConfiguration, handler);
-  } catch (error) {
-    const transactionRetryLimitToUse =
-      transactionRetryLimit ?? clientConfiguration.transactionRetryLimit;
+      const log = parentLog.child({
+        transactionId: poolClientState.transactionId,
+      });
 
-    const shouldRetry =
-      typeof error.code === 'string' &&
-      error.code.startsWith(TRANSACTION_ROLLBACK_ERROR_PREFIX) &&
-      transactionRetryLimitToUse > 0;
+      try {
+        return await execTransaction(
+          log,
+          connection,
+          clientConfiguration,
+          handler,
+        );
+      } catch (error) {
+        const transactionRetryLimitToUse =
+          transactionRetryLimit ?? clientConfiguration.transactionRetryLimit;
 
-    if (shouldRetry) {
-      return await retryTransaction(
-        log,
-        connection,
-        clientConfiguration,
-        handler,
-        transactionRetryLimit,
-      );
-    } else {
-      throw error;
-    }
-  } finally {
-    poolClientState.transactionDepth = null;
-    poolClientState.transactionId = null;
-  }
+        const shouldRetry =
+          typeof error.code === 'string' &&
+          error.code.startsWith(TRANSACTION_ROLLBACK_ERROR_PREFIX) &&
+          transactionRetryLimitToUse > 0;
+
+        if (shouldRetry) {
+          return await retryTransaction(
+            log,
+            connection,
+            clientConfiguration,
+            handler,
+            transactionRetryLimit,
+          );
+        } else {
+          throw error;
+        }
+      } finally {
+        poolClientState.transactionDepth = null;
+        poolClientState.transactionId = null;
+      }
+    },
+  );
 };

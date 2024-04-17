@@ -36,6 +36,7 @@ export {
   StatementCancelledError,
   StatementTimeoutError,
   TupleMovedToAnotherPartitionError,
+  UnexpectedForeignConnectionError,
   UnexpectedStateError,
   UniqueIntegrityConstraintViolationError,
 } from './errors';

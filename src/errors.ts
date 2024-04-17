@@ -36,6 +36,14 @@ export class InputSyntaxError extends SlonikError {
 
 export class UnexpectedStateError extends SlonikError {}
 
+export class UnexpectedForeignConnectionError extends SlonikError {
+  public constructor() {
+    super(
+      'Cannot run a query inside a transaction using a foreign connection.',
+    );
+  }
+}
+
 export class ConnectionError extends SlonikError {}
 
 export class StatementCancelledError extends SlonikError {
