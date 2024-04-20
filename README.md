@@ -2304,7 +2304,7 @@ await connection.stream(sql.typeAlias('foo')`SELECT foo`, (stream) => {
 });
 ```
 
-You can also using the [AsyncIterable](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/AsyncIterator) interface:
+You can also use the [AsyncIterable](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/AsyncIterator) interface:
 
 ```ts
 await connection.stream(sql.typeAlias('foo')`SELECT foo`, async (stream) => {
