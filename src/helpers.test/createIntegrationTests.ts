@@ -46,6 +46,19 @@ export const createIntegrationTests = (
     t.true(error instanceof UnexpectedForeignConnectionError);
   });
 
+  test('does not allow to reference a non-transaction connection inside of a transaction (disabled)', async (t) => {
+    const pool = await createPool(t.context.dsn, {
+      dangerouslyAllowForeignConnections: true,
+      driverFactory,
+    });
+
+    await t.notThrowsAsync(
+      pool.transaction(async () => {
+        await pool.query(sql.unsafe`SELECT 1`);
+      }),
+    );
+  });
+
   test('streams data', async (t) => {
     const pool = await createPool(t.context.dsn, {
       driverFactory,

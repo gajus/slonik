@@ -143,6 +143,7 @@ export const executeQuery = async (
   const transactionStore = transactionContext.getStore();
 
   if (
+    clientConfiguration.dangerouslyAllowForeignConnections !== true &&
     transactionStore?.transactionId &&
     transactionStore.transactionId !== poolClientState.transactionId
   ) {

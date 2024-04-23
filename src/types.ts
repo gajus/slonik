@@ -106,6 +106,10 @@ export type ClientConfiguration = {
    */
   readonly connectionUri: string;
   /**
+   * Allow using connections that are not associated with the transaction. (Default: false)
+   */
+  readonly dangerouslyAllowForeignConnections: boolean;
+  /**
    * Overrides the default DriverFactory. (Default: "pg" driver factory)
    */
   readonly driverFactory?: DriverFactory;

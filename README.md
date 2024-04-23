@@ -308,6 +308,7 @@ This pattern ensures that the transaction is either committed or aborted the mom
 > });
 > ```
 > In this example, the query is executed using the `connection` that is not associated with the transaction. This is unsafe because the query is not part of the transaction and will not be rolled back if the transaction is aborted.
+> This behaviour can be disabled by setting `dangerouslyAllowForeignConnections` to `true` in the `ClientConfiguration`.
 
 ### Protecting against unsafe value interpolation
 
@@ -583,6 +584,7 @@ createPool(
  * @property captureStackTrace Dictates whether to capture stack trace before executing query. Middlewares access stack trace through query execution context. (Default: false)
  * @property connectionRetryLimit Number of times to retry establishing a new connection. (Default: 3)
  * @property connectionTimeout Timeout (in milliseconds) after which an error is raised if connection cannot be established. (Default: 5000)
+ * @property dangerouslyAllowForeignConnections Allow using connections that are not associated with the transaction. (Default: false)
  * @property driverFactory Overrides the default DriverFactory. (Default: "pg" driver factory)
  * @property gracefulTerminationTimeout Timeout (in milliseconds) that kicks in after a connection with an active query is requested to end. This is the amount of time that is allowed for query to complete before terminating it. (Default: 5000)
  * @property idleInTransactionSessionTimeout Timeout (in milliseconds) after which idle clients are closed. Use 'DISABLE_TIMEOUT' constant to disable the timeout. (Default: 60000)
