@@ -286,6 +286,26 @@ export const createIntegrationTests = (
     await pool.end();
   });
 
+  test('simultaneous releasing and destroying waits for release promise to resolve before proceeding to terminate the backend', async (t) => {
+    await t.notThrowsAsync(async () => {
+      let repeat = 10;
+
+      while (repeat--) {
+        const pool = await createPool(t.context.dsn, {
+          driverFactory,
+        });
+
+        void t.notThrowsAsync(
+          pool.connect((connection) => {
+            return connection.query(sql.unsafe`SELECT 1`);
+          }),
+        );
+
+        await pool.end();
+      }
+    });
+  });
+
   test('does not allow to reuse released connection', async (t) => {
     const pool = await createPool(t.context.dsn, {
       driverFactory,

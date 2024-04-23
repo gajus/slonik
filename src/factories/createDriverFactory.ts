@@ -222,6 +222,10 @@ export const createDriverFactory = (setup: DriverSetup): DriverFactory => {
             ]);
           }
 
+          if (releasePromise) {
+            await releasePromise;
+          }
+
           isDestroyed = true;
 
           clientEventEmitter.emit('destroy');
