@@ -23,7 +23,7 @@ export const createPool = async (
     clientConfiguration.driverFactory ?? createPgDriverFactory();
 
   const driver = await createDriver({
-    // TODO resolve name conflict
+    // TODO resolve name conflict between ClientConfiguration and DriverConfiguration
     driverConfiguration: clientConfiguration,
   });
 

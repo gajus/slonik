@@ -287,6 +287,37 @@ const main = () => {
 
 Using this pattern, we guarantee that connection is always released as soon as the `connect()` routine resolves or is rejected.
 
+#### Resetting connection state
+
+After the connection is released, Slonik resets the connection state. This is to prevent connection state from leaking between queries.
+
+The default behaviour is to execute `DISCARD ALL` command. This behaviour can be adjusted by configuring `resetConnection` routine, e.g.
+
+```ts
+import {
+  createPool,
+  sql
+} from 'slonik';
+
+const pool = createPool('postgres://', {
+  resetConnection: async (connection) => {
+    await connection.query('DISCARD ALL');
+  }
+});
+```
+
+> [!NOTE]
+> Reseting a connection is a heavy operation. Depending on the application requirements, it may make sense to disable connection reset, e.g.
+> ```ts
+> import {
+>   createPool,
+> } from 'slonik';
+>
+> const pool = createPool('postgres://', {
+>   resetConnection: async () => {}
+> });
+
+
 ### Protecting against unsafe transaction handling
 
 Just like in the [unsafe connection handling](#protecting-against-unsafe-connection-handling) example, Slonik only allows to create a transaction for the duration of the promise routine supplied to the `connection#transaction()` method.

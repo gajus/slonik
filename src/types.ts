@@ -88,6 +88,10 @@ export type QueryResult<T> = {
   readonly type: 'QueryResult';
 };
 
+type BasicConnection = {
+  readonly query: (query: string) => Promise<void>;
+};
+
 export type ClientConfiguration = {
   /**
    * Dictates whether to capture stack trace before executing query. Middlewares access stack trace through query execution context. (Default: true)
@@ -137,6 +141,13 @@ export type ClientConfiguration = {
    * Number of times a query failing with Transaction Rollback class error, that doesn't belong to a transaction, is retried. (Default: 5)
    */
   readonly queryRetryLimit: number;
+  /**
+   * Routine that's invoked to reset the connection.
+   * The default routine invokes `DISCARD ALL`.
+   */
+  readonly resetConnection?: (
+    basicConnection: BasicConnection,
+  ) => Promise<void>;
   /**
    * tls.connect options *
    */

@@ -32,6 +32,38 @@ export const createIntegrationTests = (
   test: TestFn<TestContextType>,
   driverFactory: DriverFactory,
 ) => {
+  test('uses resetConnection after implicit connection release', async (t) => {
+    const resetConnection = sinon.spy();
+
+    const pool = await createPool(t.context.dsn, {
+      driverFactory,
+      resetConnection,
+    });
+
+    await pool.query(sql.unsafe`SELECT 1`);
+
+    t.true(resetConnection.calledOnce);
+
+    await pool.end();
+  });
+
+  test('uses resetConnection after explicit connection release', async (t) => {
+    const resetConnection = sinon.spy();
+
+    const pool = await createPool(t.context.dsn, {
+      driverFactory,
+      resetConnection,
+    });
+
+    await pool.connect(async () => {
+      return null;
+    });
+
+    t.true(resetConnection.calledOnce);
+
+    await pool.end();
+  });
+
   test('does not allow to reference a non-transaction connection inside of a transaction', async (t) => {
     const pool = await createPool(t.context.dsn, {
       driverFactory,

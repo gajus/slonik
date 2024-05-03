@@ -24,10 +24,12 @@ export const createClientConfiguration = (
     interceptors: [],
     maximumPoolSize: 10,
     queryRetryLimit: 5,
+    resetConnection: ({ query }) => {
+      return query(`DISCARD ALL`);
+    },
     statementTimeout: 60_000,
     transactionRetryLimit: 5,
     typeParsers,
-
     ...clientUserConfigurationInput,
   };
 

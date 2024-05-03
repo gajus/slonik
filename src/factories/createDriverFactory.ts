@@ -7,6 +7,10 @@ import { type ConnectionOptions as TlsConnectionOptions } from 'node:tls';
 import { serializeError } from 'serialize-error';
 import { type StrictEventEmitter } from 'strict-event-emitter-types';
 
+type BasicConnection = {
+  readonly query: (query: string) => Promise<void>;
+};
+
 export type DriverConfiguration = {
   readonly connectionTimeout: number | 'DISABLE_TIMEOUT';
   readonly connectionUri: string;
@@ -14,6 +18,7 @@ export type DriverConfiguration = {
   readonly idleInTransactionSessionTimeout: number | 'DISABLE_TIMEOUT';
   readonly idleTimeout?: number | 'DISABLE_TIMEOUT';
   readonly maximumPoolSize?: number;
+  readonly resetConnection?: (connection: BasicConnection) => Promise<void>;
   readonly ssl?: TlsConnectionOptions;
   readonly statementTimeout: number | 'DISABLE_TIMEOUT';
   readonly typeParsers: readonly TypeParser[];
@@ -126,6 +131,8 @@ type InternalPoolClientFactory = {
 
 export const createDriverFactory = (setup: DriverSetup): DriverFactory => {
   return async ({ driverConfiguration }): Promise<Driver> => {
+    const { resetConnection } = driverConfiguration;
+
     const driverEventEmitter: DriverEventEmitter = new EventEmitter();
 
     const { createPoolClient } = await setup({
@@ -264,7 +271,13 @@ export const createDriverFactory = (setup: DriverSetup): DriverFactory => {
             throw new Error('Client has an active query.');
           }
 
-          await query('DISCARD ALL');
+          if (resetConnection) {
+            await resetConnection({
+              query: async (sql) => {
+                await query(sql);
+              },
+            });
+          }
 
           if (driverConfiguration.idleTimeout !== 'DISABLE_TIMEOUT') {
             clearIdleTimeout();
