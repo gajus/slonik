@@ -85,5 +85,5 @@
     "test": "nyc ava --verbose --serial"
   },
   "types": "./dist/index.d.ts",
-  "version": "40.2.0"
+  "version": "40.2.1"
 }
