@@ -29,7 +29,7 @@
     "typescript": "^4.7.4"
   },
   "engines": {
-    "node": ">=8.0"
+    "node": ">=18"
   },
   "keywords": [
     "postgresql",
@@ -40,7 +40,7 @@
   "main": "./dist/index.js",
   "name": "slonik-interceptor-field-name-transformation",
   "peerDependencies": {
-    "slonik": ">=27.0.0"
+    "slonik": ">=40"
   },
   "repository": {
     "type": "git",
