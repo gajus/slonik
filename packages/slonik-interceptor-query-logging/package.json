@@ -22,8 +22,7 @@
   },
   "description": "Logs Slonik queries.",
   "devDependencies": {
-    "ava": "^3.15.0",
-    "del-cli": "^4.0.1",
+    "ava": "^5.3.1",
     "eslint": "^8.57.0",
     "eslint-config-canonical": "^42.8.1",
     "slonik": "^40.2.1",
@@ -49,7 +48,7 @@
     "url": "https://github.com/gajus/slonik"
   },
   "scripts": {
-    "build": "del-cli ./dist && tsc",
+    "build": "rm -fr ./dist && tsc",
     "lint": "eslint ./src && tsc --noEmit",
     "test": "ava --verbose --serial"
   },
