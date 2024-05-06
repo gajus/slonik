@@ -5,6 +5,8 @@
     "src/**/*.test.ts"
   ],
   "ignoreDependencies": [
+    "@changesets/cli",
+    "eslint-config-canonical",
     "husky"
   ],
   "project": [
