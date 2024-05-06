@@ -14,7 +14,7 @@ jobs:
           cache: 'npm'
           node-version: '20'
       - run: npm ci
-      - run: npm run lint
+      - run: npm run lint --workspaces --if-present
     timeout-minutes: 10
   release:
     environment: release
@@ -34,11 +34,13 @@ jobs:
           cache: 'npm'
           node-version: '20'
       - run: npm ci
-      - run: npm run build
+      - run: npm run build --workspaces --if-present
       - env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
-        run: echo 'release'
+        uses: changesets/action@v1
+        with:
+          publish: npx changeset publish
   test:
     environment: release
     name: 'Test node_version:${{ matrix.node_version }} test_only:${{ matrix.test_only }}'
@@ -83,10 +85,11 @@ jobs:
           cache: 'npm'
           node-version: '${{ matrix.node_version }}'
       - run: npm ci
+      - run: npm run build --workspaces --if-present
       - env:
           POSTGRES_DSN: postgres:postgres@localhost:5432
           TEST_ONLY: '${{ matrix.test_only }}'
-        run: npm run test
+        run: npm run test --workspaces --if-present
     strategy:
       fail-fast: false
       matrix:

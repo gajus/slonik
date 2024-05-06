@@ -1,4 +1,6 @@
 {
+  "name": "@slonik/benchmark",
+  "private": true,
   "dependencies": {
     "benny": "^3.7.1",
     "pg": "^8.11.3",

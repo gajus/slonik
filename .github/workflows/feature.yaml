@@ -14,7 +14,7 @@ jobs:
           cache: 'npm'
           node-version: '20'
       - run: npm ci
-      - run: npm run build
+      - run: npm run build --workspaces --if-present
     timeout-minutes: 10
   lint:
     environment: release
@@ -31,7 +31,7 @@ jobs:
           cache: 'npm'
           node-version: '20'
       - run: npm ci
-      - run: npm run lint
+      - run: npm run lint --workspaces --if-present
     timeout-minutes: 10
   test:
     environment: release
@@ -76,10 +76,11 @@ jobs:
           cache: 'npm'
           node-version: '${{ matrix.node_version }}'
       - run: npm ci
+      - run: npm run build --workspaces --if-present
       - env:
           POSTGRES_DSN: postgres:postgres@localhost:5432
           TEST_ONLY: '${{ matrix.test_only }}'
-        run: npm run test
+        run: npm run test --workspaces --if-present
     strategy:
       fail-fast: false
       matrix:

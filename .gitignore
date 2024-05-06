@@ -8,3 +8,4 @@ node_modules
 !.gitignore
 !.husky
 !.README
+!.changeset
