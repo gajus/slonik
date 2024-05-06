@@ -1,5 +1,11 @@
 # slonik
 
+## 40.2.2
+
+### Patch Changes
+
+- [`caf2b5e`](https://github.com/gajus/slonik/commit/caf2b5e7b03d2cf1bfe76201cde1e44c15589601) Thanks [@gajus](https://github.com/gajus)! - Add README.md
+
 ## 0.0.0
 
 ### Patch Changes
