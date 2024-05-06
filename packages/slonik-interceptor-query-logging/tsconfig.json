@@ -2,23 +2,22 @@
   "compilerOptions": {
     "allowSyntheticDefaultImports": true,
     "declaration": true,
+    "declarationMap": true,
     "esModuleInterop": true,
-    "forceConsistentCasingInFileNames": true,
+    "lib": [
+      "es2021"
+    ],
     "module": "commonjs",
     "moduleResolution": "node",
     "noImplicitAny": false,
     "noImplicitReturns": true,
-    "noUnusedLocals": true,
-    "noUnusedParameters": false,
     "outDir": "dist",
     "skipLibCheck": true,
+    "sourceMap": true,
     "strict": true,
-    "target": "es2018"
+    "target": "es2020",
+    "useUnknownInCatchVariables": false
   },
-  "exclude": [
-    "dist",
-    "node_modules"
-  ],
   "include": [
     "src"
   ]

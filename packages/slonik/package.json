@@ -77,7 +77,7 @@
     "url": "https://github.com/gajus/slonik"
   },
   "scripts": {
-    "build": "rm -fr ./dist && tsc --project ./tsconfig.build.json",
+    "build": "rm -fr ./dist && tsc --project ./tsconfig.json",
     "lint": "npm run lint:cspell && npm run lint:eslint && npm run lint:tsc",
     "lint:cspell": "cspell . --no-progress --gitignore",
     "lint:eslint": "eslint --cache ./src",
