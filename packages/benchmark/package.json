@@ -10,9 +10,5 @@
   },
   "scripts": {
     "benchmark": "NODE_ENV=production node benchmark.js"
-  },
-  "devDependencies": {
-    "eslint": "^8.57.0",
-    "eslint-config-canonical": "^42.8.1"
   }
 }
