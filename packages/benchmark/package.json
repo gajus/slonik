@@ -1,4 +1,6 @@
 {
+  "name": "@slonik/benchmark",
+  "private": true,
   "dependencies": {
     "benny": "^3.7.1",
     "pg": "^8.11.3",
@@ -8,9 +10,5 @@
   },
   "scripts": {
     "benchmark": "NODE_ENV=production node benchmark.js"
-  },
-  "devDependencies": {
-    "eslint": "^8.57.0",
-    "eslint-config-canonical": "^42.8.1"
   }
 }
