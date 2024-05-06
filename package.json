@@ -3,6 +3,7 @@
     "packages/*"
   ],
   "scripts": {
+    "lint": "npm run lint:knip",
     "lint:knip": "knip"
   },
   "dependencies": {
