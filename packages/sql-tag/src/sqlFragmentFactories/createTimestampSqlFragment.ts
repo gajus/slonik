@@ -1,6 +1,6 @@
-import { InvalidInputError } from '../errors';
 import { type SqlFragment, type TimestampSqlToken } from '../types';
 import { formatSlonikPlaceholder } from '../utilities/formatSlonikPlaceholder';
+import { InvalidInputError } from '@slonik/errors';
 
 export const createTimestampSqlFragment = (
   token: TimestampSqlToken,

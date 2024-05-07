@@ -1,6 +1,6 @@
-import { InvalidInputError } from '../errors';
 import { type IdentifierSqlToken, type SqlFragment } from '../types';
 import { escapeIdentifier } from '../utilities/escapeIdentifier';
+import { InvalidInputError } from '@slonik/errors';
 
 export const createIdentifierSqlFragment = (
   token: IdentifierSqlToken,

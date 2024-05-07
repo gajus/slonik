@@ -1,7 +1,7 @@
-import { UnexpectedStateError } from '../errors';
 import { type InternalQueryMethod } from '../types';
 import { createQueryId } from '../utilities/createQueryId';
 import { one } from './one';
+import { UnexpectedStateError } from '@slonik/errors';
 
 /**
  * Makes a query and expects exactly one result.

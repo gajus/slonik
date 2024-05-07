@@ -1,7 +1,7 @@
 import { createPgDriverFactory } from '../../../factories/createPgDriverFactory';
-import { createSqlTag } from '../../../factories/createSqlTag';
 import { createPoolWithMockedQuery } from '../../../helpers.test/createPoolWithMockedQuery';
 import { createTestRunner } from '../../../helpers.test/createTestRunner';
+import { createSqlTag } from '@slonik/sql-tag';
 
 const driverFactory = createPgDriverFactory();
 

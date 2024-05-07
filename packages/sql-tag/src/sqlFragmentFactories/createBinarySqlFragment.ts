@@ -1,6 +1,6 @@
-import { InvalidInputError } from '../errors';
 import { type BinarySqlToken, type SqlFragment } from '../types';
 import { formatSlonikPlaceholder } from '../utilities/formatSlonikPlaceholder';
+import { InvalidInputError } from '@slonik/errors';
 
 export const createBinarySqlFragment = (
   token: BinarySqlToken,

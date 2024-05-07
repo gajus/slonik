@@ -1,8 +1,8 @@
 import { createPgDriverFactory } from '../../factories/createPgDriverFactory';
 import { createPool } from '../../factories/createPool';
-import { createSqlTag } from '../../factories/createSqlTag';
 import { createPoolWithSpy } from '../../helpers.test/createPoolWithSpy';
 import { createTestRunner } from '../../helpers.test/createTestRunner';
+import { createSqlTag } from '@slonik/sql-tag';
 import { setTimeout as delay } from 'node:timers/promises';
 
 const driverFactory = createPgDriverFactory();

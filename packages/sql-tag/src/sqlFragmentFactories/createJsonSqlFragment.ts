@@ -1,4 +1,3 @@
-import { InvalidInputError } from '../errors';
 import { Logger } from '../Logger';
 import {
   type JsonBinarySqlToken,
@@ -8,6 +7,7 @@ import {
 import { formatSlonikPlaceholder } from '../utilities/formatSlonikPlaceholder';
 import { isPlainObject } from '../utilities/isPlainObject';
 import { safeStringify } from '../utilities/safeStringify';
+import { InvalidInputError } from '@slonik/errors';
 import { serializeError } from 'serialize-error';
 
 const log = Logger.child({

@@ -1,6 +1,6 @@
-import { InvalidInputError } from '../errors';
 import { type IntervalSqlToken, type SqlFragment } from '../types';
 import { formatSlonikPlaceholder } from '../utilities/formatSlonikPlaceholder';
+import { InvalidInputError } from '@slonik/errors';
 import { z } from 'zod';
 
 const IntervalInput = z

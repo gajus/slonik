@@ -1,4 +1,4 @@
-import { createSqlTag } from './factories/createSqlTag';
+import { createSqlTag } from '@slonik/sql-tag';
 
 export {
   createDriverFactory,
@@ -17,6 +17,42 @@ export {
 
 export const sql = createSqlTag();
 
+export { createPool } from './factories/createPool';
+export { createTypeParserPreset } from './factories/createTypeParserPreset';
+export { createBigintTypeParser } from './factories/typeParsers/createBigintTypeParser';
+export { createDateTypeParser } from './factories/typeParsers/createDateTypeParser';
+export { createIntervalTypeParser } from './factories/typeParsers/createIntervalTypeParser';
+export { createNumericTypeParser } from './factories/typeParsers/createNumericTypeParser';
+export { createTimestampTypeParser } from './factories/typeParsers/createTimestampTypeParser';
+export { createTimestampWithTimeZoneTypeParser } from './factories/typeParsers/createTimestampWithTimeZoneTypeParser';
+export type {
+  ClientConfiguration,
+  ClientConfigurationInput,
+  CommonQueryMethods,
+  Connection,
+  ConnectionOptions,
+  ConnectionRoutine,
+  DatabaseConnection,
+  DatabasePool,
+  DatabasePoolConnection,
+  DatabaseTransactionConnection,
+  Field,
+  IdentifierNormalizer,
+  Interceptor,
+  MaybePromise,
+  PoolContext,
+  Query,
+  QueryContext,
+  QueryFunction,
+  QueryResult,
+  QueryResultRow,
+  QueryResultRowColumn,
+  TypeNameIdentifier,
+  TypeParser,
+  ValueExpression,
+} from './types';
+export { parseDsn } from './utilities/parseDsn';
+export { stringifyDsn } from './utilities/stringifyDsn';
 export {
   BackendTerminatedError,
   BackendTerminatedUnexpectedlyError,
@@ -39,57 +75,23 @@ export {
   UnexpectedForeignConnectionError,
   UnexpectedStateError,
   UniqueIntegrityConstraintViolationError,
-} from './errors';
-export { createPool } from './factories/createPool';
-export { createSqlTag } from './factories/createSqlTag';
-export { createSqlTokenSqlFragment } from './factories/createSqlTokenSqlFragment';
-export { createTypeParserPreset } from './factories/createTypeParserPreset';
-export { createBigintTypeParser } from './factories/typeParsers/createBigintTypeParser';
-export { createDateTypeParser } from './factories/typeParsers/createDateTypeParser';
-export { createIntervalTypeParser } from './factories/typeParsers/createIntervalTypeParser';
-export { createNumericTypeParser } from './factories/typeParsers/createNumericTypeParser';
-export { createTimestampTypeParser } from './factories/typeParsers/createTimestampTypeParser';
-export { createTimestampWithTimeZoneTypeParser } from './factories/typeParsers/createTimestampWithTimeZoneTypeParser';
-export type {
-  ArraySqlToken,
-  BinarySqlToken,
-  ClientConfiguration,
-  ClientConfigurationInput,
-  CommonQueryMethods,
-  Connection,
-  ConnectionOptions,
-  ConnectionRoutine,
-  DatabaseConnection,
-  DatabasePool,
-  DatabasePoolConnection,
-  DatabaseTransactionConnection,
-  Field,
-  FragmentSqlToken,
-  IdentifierNormalizer,
-  IdentifierSqlToken,
-  Interceptor,
-  JsonBinarySqlToken,
-  JsonSqlToken,
-  ListSqlToken,
-  MaybePromise,
-  PoolContext,
-  PrimitiveValueExpression,
-  Query,
-  QueryContext,
-  QueryFunction,
-  QueryResult,
-  QueryResultRow,
-  QueryResultRowColumn,
-  QuerySqlToken,
-  SerializableValue,
-  SqlFragment,
-  SqlTag,
-  SqlToken,
-  TypeNameIdentifier,
-  TypeParser,
-  UnnestSqlToken,
-  ValueExpression,
-} from './types';
-export { isSqlToken } from './utilities/isSqlToken';
-export { parseDsn } from './utilities/parseDsn';
-export { stringifyDsn } from './utilities/stringifyDsn';
+} from '@slonik/errors';
+export { createSqlTokenSqlFragment } from '@slonik/sql-tag';
+export {
+  type ArraySqlToken,
+  type BinarySqlToken,
+  createSqlTag,
+  type FragmentSqlToken,
+  type IdentifierSqlToken,
+  isSqlToken,
+  type JsonBinarySqlToken,
+  type JsonSqlToken,
+  type ListSqlToken,
+  type PrimitiveValueExpression,
+  type QuerySqlToken,
+  type SerializableValue,
+  type SqlFragment,
+  type SqlTag,
+  type SqlToken,
+  type UnnestSqlToken,
+} from '@slonik/sql-tag';

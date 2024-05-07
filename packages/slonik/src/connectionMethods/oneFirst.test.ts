@@ -1,12 +1,12 @@
+import { createPgDriverFactory } from '../factories/createPgDriverFactory';
+import { createPool } from '../factories/createPool';
+import { createTestRunner } from '../helpers.test/createTestRunner';
 import {
   DataIntegrityError,
   NotFoundError,
   UnexpectedStateError,
-} from '../errors';
-import { createPgDriverFactory } from '../factories/createPgDriverFactory';
-import { createPool } from '../factories/createPool';
-import { createSqlTag } from '../factories/createSqlTag';
-import { createTestRunner } from '../helpers.test/createTestRunner';
+} from '@slonik/errors';
+import { createSqlTag } from '@slonik/sql-tag';
 import { expectTypeOf } from 'expect-type';
 import { z } from 'zod';
 

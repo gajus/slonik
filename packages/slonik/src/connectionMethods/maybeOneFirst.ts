@@ -1,7 +1,7 @@
-import { DataIntegrityError } from '../errors';
 import { type InternalQueryMethod } from '../types';
 import { createQueryId } from '../utilities/createQueryId';
 import { maybeOne } from './maybeOne';
+import { DataIntegrityError } from '@slonik/errors';
 
 /**
  * Makes a query and expects exactly one result.

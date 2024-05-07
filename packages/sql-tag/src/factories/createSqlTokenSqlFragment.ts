@@ -1,4 +1,3 @@
-import { UnexpectedStateError } from '../errors';
 import { createArraySqlFragment } from '../sqlFragmentFactories/createArraySqlFragment';
 import { createBinarySqlFragment } from '../sqlFragmentFactories/createBinarySqlFragment';
 import { createDateSqlFragment } from '../sqlFragmentFactories/createDateSqlFragment';
@@ -25,6 +24,7 @@ import {
   UnnestToken,
 } from '../tokens';
 import { type SqlFragment, type SqlToken as SqlTokenType } from '../types';
+import { UnexpectedStateError } from '@slonik/errors';
 
 export const createSqlTokenSqlFragment = (
   token: SqlTokenType,

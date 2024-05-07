@@ -1,7 +1,7 @@
-import { DataIntegrityError } from '../errors';
 import { type InternalQueryMethod } from '../types';
 import { createQueryId } from '../utilities/createQueryId';
 import { many } from './many';
+import { DataIntegrityError } from '@slonik/errors';
 
 export const manyFirst: InternalQueryMethod = async (
   log,

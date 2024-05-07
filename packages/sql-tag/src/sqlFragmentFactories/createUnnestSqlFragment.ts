@@ -1,4 +1,3 @@
-import { InvalidInputError } from '../errors';
 import {
   type PrimitiveValueExpression,
   type SqlFragment,
@@ -9,6 +8,7 @@ import { escapeIdentifier } from '../utilities/escapeIdentifier';
 import { formatSlonikPlaceholder } from '../utilities/formatSlonikPlaceholder';
 import { isPrimitiveValueExpression } from '../utilities/isPrimitiveValueExpression';
 import { stripArrayNotation } from '../utilities/stripArrayNotation';
+import { InvalidInputError } from '@slonik/errors';
 
 export const createUnnestSqlFragment = (
   token: UnnestSqlToken,

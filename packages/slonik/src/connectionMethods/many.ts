@@ -1,7 +1,7 @@
-import { NotFoundError } from '../errors';
 import { type InternalQueryMethod } from '../types';
 import { createQueryId } from '../utilities/createQueryId';
 import { query } from './query';
+import { NotFoundError } from '@slonik/errors';
 
 /**
  * Makes a query and expects at least 1 result.

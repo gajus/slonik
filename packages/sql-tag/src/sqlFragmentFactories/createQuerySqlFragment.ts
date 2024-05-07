@@ -1,7 +1,7 @@
-import { UnexpectedStateError } from '../errors';
 import { slonikPlaceholderRegexRule } from '../regexRules/slonikPlaceholderRegexRule';
 import { type QuerySqlToken, type SqlFragment } from '../types';
 import { formatSlonikPlaceholder } from '../utilities/formatSlonikPlaceholder';
+import { UnexpectedStateError } from '@slonik/errors';
 
 export const createQuerySqlFragment = (
   token: QuerySqlToken,

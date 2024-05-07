@@ -1,4 +1,3 @@
-import { InvalidInputError } from '../errors';
 import { createPrimitiveValueExpressions } from '../factories/createPrimitiveValueExpressions';
 import { createSqlTokenSqlFragment } from '../factories/createSqlTokenSqlFragment';
 import {
@@ -9,6 +8,7 @@ import {
 import { formatSlonikPlaceholder } from '../utilities/formatSlonikPlaceholder';
 import { isPrimitiveValueExpression } from '../utilities/isPrimitiveValueExpression';
 import { isSqlToken } from '../utilities/isSqlToken';
+import { InvalidInputError } from '@slonik/errors';
 
 export const createListSqlFragment = (
   token: ListSqlToken,

@@ -1,6 +1,6 @@
-import { InvalidInputError } from '../errors';
 import { type DateSqlToken, type SqlFragment } from '../types';
 import { formatSlonikPlaceholder } from '../utilities/formatSlonikPlaceholder';
+import { InvalidInputError } from '@slonik/errors';
 
 export const createDateSqlFragment = (
   token: DateSqlToken,

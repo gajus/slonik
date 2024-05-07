@@ -1,4 +1,3 @@
-import { UnexpectedStateError } from '../errors';
 import {
   ArrayToken,
   BinaryToken,
@@ -16,6 +15,7 @@ import {
 } from '../tokens';
 import { type SqlToken as SqlTokenType } from '../types';
 import { hasOwnProperty } from './hasOwnProperty';
+import { UnexpectedStateError } from '@slonik/errors';
 
 const Tokens = [
   ArrayToken,

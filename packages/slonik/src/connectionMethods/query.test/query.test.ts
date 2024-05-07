@@ -1,8 +1,8 @@
 import { createPgDriverFactory } from '../../factories/createPgDriverFactory';
 import { createPool } from '../../factories/createPool';
-import { createSqlTag } from '../../factories/createSqlTag';
 import { createErrorWithCode } from '../../helpers.test/createErrorWithCode';
 import { createTestRunner } from '../../helpers.test/createTestRunner';
+import { createSqlTag } from '@slonik/sql-tag';
 import * as sinon from 'sinon';
 
 const driverFactory = createPgDriverFactory();

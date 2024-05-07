@@ -1,10 +1,10 @@
 import { bindTransactionConnection } from '../binders/bindTransactionConnection';
 import { TRANSACTION_ROLLBACK_ERROR_PREFIX } from '../constants';
 import { transactionContext } from '../contexts/transactionContext';
-import { BackendTerminatedError, UnexpectedStateError } from '../errors';
 import { getPoolClientState } from '../state';
 import { type InternalTransactionFunction } from '../types';
 import { createUid } from '../utilities/createUid';
+import { BackendTerminatedError, UnexpectedStateError } from '@slonik/errors';
 import { serializeError } from 'serialize-error';
 
 const execTransaction: InternalTransactionFunction = async (

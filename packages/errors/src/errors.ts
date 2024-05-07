@@ -2,7 +2,7 @@ import {
   type PrimitiveValueExpression,
   type Query,
   type QueryResultRow,
-} from './types';
+} from '@slonik/types';
 import { type ZodIssue } from 'zod';
 
 export class SlonikError extends Error {
