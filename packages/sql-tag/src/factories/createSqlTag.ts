@@ -14,23 +14,8 @@ import {
   UnnestToken,
 } from '../tokens';
 import {
-  type ArraySqlToken,
-  type BinarySqlToken,
-  type DateSqlToken,
-  type FragmentSqlToken,
-  type IdentifierSqlToken,
-  type IntervalInput,
-  type IntervalSqlToken,
-  type JsonBinarySqlToken,
-  type JsonSqlToken,
-  type ListSqlToken,
   type PrimitiveValueExpression,
-  type SerializableValue,
-  type SqlFragment,
   type SqlTag,
-  type TimestampSqlToken,
-  type TypeNameIdentifier,
-  type UnnestSqlToken,
   type ValueExpression,
 } from '../types';
 import { escapeLiteralValue } from '../utilities/escapeLiteralValue';
