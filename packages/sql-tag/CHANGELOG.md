@@ -1,5 +1,15 @@
 # @slonik/sql-tag
 
+## 43.0.3
+
+### Patch Changes
+
+- [`0f072df`](https://github.com/gajus/slonik/commit/0f072df5f3796fc2571c0e5e81405a36000ab9ec) Thanks [@gajus](https://github.com/gajus)! - drop ambiguous SqlFragment member
+
+- Updated dependencies []:
+  - @slonik/errors@43.0.3
+  - @slonik/types@43.0.3
+
 ## 43.0.2
 
 ### Patch Changes
