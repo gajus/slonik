@@ -1,5 +1,12 @@
 # @slonik/errors
 
+## 43.0.3
+
+### Patch Changes
+
+- Updated dependencies []:
+  - @slonik/types@43.0.3
+
 ## 43.0.2
 
 ### Patch Changes
