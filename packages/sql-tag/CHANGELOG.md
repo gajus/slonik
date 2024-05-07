@@ -1,5 +1,15 @@
 # @slonik/sql-tag
 
+## 43.0.2
+
+### Patch Changes
+
+- [`a28e8ac`](https://github.com/gajus/slonik/commit/a28e8ac7325e24b2c27c05f22b597dbd1898049b) Thanks [@gajus](https://github.com/gajus)! - avoid duplicate type declaration
+
+- Updated dependencies []:
+  - @slonik/errors@43.0.2
+  - @slonik/types@43.0.2
+
 ## 43.0.1
 
 ### Patch Changes
