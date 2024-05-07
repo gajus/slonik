@@ -1,5 +1,14 @@
 # slonik-interceptor-field-name-transformation
 
+## 40.2.4
+
+### Patch Changes
+
+- [`c1064fc`](https://github.com/gajus/slonik/commit/c1064fc3f21f839effc1687737942332a7c05b0d) Thanks [@gajus](https://github.com/gajus)! - update access
+
+- Updated dependencies [[`c1064fc`](https://github.com/gajus/slonik/commit/c1064fc3f21f839effc1687737942332a7c05b0d)]:
+  - slonik@40.2.4
+
 ## 40.2.3
 
 ### Patch Changes
