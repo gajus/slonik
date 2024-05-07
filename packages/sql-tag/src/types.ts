@@ -26,12 +26,16 @@ export type IntervalInput = {
   years?: number;
 };
 
-export type SqlFragment = {
+export type SqlFragmentToken = {
   readonly sql: string;
+  readonly type: typeof tokens.FragmentToken;
   readonly values: readonly PrimitiveValueExpression[];
 };
 
-export type ValueExpression = PrimitiveValueExpression | SqlFragment | SqlToken;
+export type ValueExpression =
+  | PrimitiveValueExpression
+  | SqlFragmentToken
+  | SqlToken;
 
 /**
  * "string" type covers all type name identifiers – the literal values are added only to assist developer
@@ -52,7 +56,7 @@ export type TypeNameIdentifier =
   | 'uuid';
 
 export type ArraySqlToken = {
-  readonly memberType: SqlFragment | TypeNameIdentifier;
+  readonly memberType: SqlFragmentToken | TypeNameIdentifier;
   readonly type: typeof tokens.ArrayToken;
   readonly values: readonly PrimitiveValueExpression[];
 };
@@ -84,7 +88,7 @@ export type IntervalSqlToken = {
 };
 
 export type ListSqlToken = {
-  readonly glue: SqlFragment;
+  readonly glue: SqlFragmentToken;
   readonly members: readonly ValueExpression[];
   readonly type: typeof tokens.ListToken;
 };
@@ -114,7 +118,7 @@ export type TimestampSqlToken = {
 export type UnnestSqlToken = {
   readonly columnTypes:
     | Array<[...string[], TypeNameIdentifier]>
-    | Array<SqlFragment | TypeNameIdentifier>;
+    | Array<SqlFragmentToken | TypeNameIdentifier>;
   readonly tuples: ReadonlyArray<readonly ValueExpression[]>;
   readonly type: typeof tokens.UnnestToken;
 };
@@ -138,23 +142,23 @@ export type SqlTag<
 > = {
   array: (
     values: readonly PrimitiveValueExpression[],
-    memberType: SqlFragment | TypeNameIdentifier,
+    memberType: SqlFragmentToken | TypeNameIdentifier,
   ) => ArraySqlToken;
   binary: (data: Buffer) => BinarySqlToken;
   date: (date: Date) => DateSqlToken;
   fragment: (
     template: TemplateStringsArray,
     ...values: ValueExpression[]
-  ) => SqlFragment;
+  ) => SqlFragmentToken;
   identifier: (names: readonly string[]) => IdentifierSqlToken;
   interval: (interval: IntervalInput) => IntervalSqlToken;
   join: (
     members: readonly ValueExpression[],
-    glue: SqlFragment,
+    glue: SqlFragmentToken,
   ) => ListSqlToken;
   json: (value: SerializableValue) => JsonSqlToken;
   jsonb: (value: SerializableValue) => JsonBinarySqlToken;
-  literalValue: (value: string) => SqlFragment;
+  literalValue: (value: string) => SqlFragmentToken;
   timestamp: (date: Date) => TimestampSqlToken;
   type: <Y extends ZodTypeAny>(
     parser: Y,
@@ -176,7 +180,7 @@ export type SqlTag<
     tuples: ReadonlyArray<readonly any[]>,
     columnTypes:
       | Array<[...string[], TypeNameIdentifier]>
-      | Array<SqlFragment | TypeNameIdentifier>,
+      | Array<SqlFragmentToken | TypeNameIdentifier>,
   ) => UnnestSqlToken;
   unsafe: (
     template: TemplateStringsArray,

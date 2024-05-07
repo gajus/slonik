@@ -1,10 +1,11 @@
-import { type IdentifierSqlToken, type SqlFragment } from '../types';
+import { FragmentToken } from '../tokens';
+import { type IdentifierSqlToken, type SqlFragmentToken } from '../types';
 import { escapeIdentifier } from '../utilities/escapeIdentifier';
 import { InvalidInputError } from '@slonik/errors';
 
 export const createIdentifierSqlFragment = (
   token: IdentifierSqlToken,
-): SqlFragment => {
+): SqlFragmentToken => {
   const sql = token.names
     .map((identifierName) => {
       if (typeof identifierName !== 'string') {
@@ -19,6 +20,7 @@ export const createIdentifierSqlFragment = (
 
   return {
     sql,
+    type: FragmentToken,
     values: [],
   };
 };

@@ -1,8 +1,9 @@
 import { Logger } from '../Logger';
+import { FragmentToken } from '../tokens';
 import {
   type JsonBinarySqlToken,
   type JsonSqlToken,
-  type SqlFragment,
+  type SqlFragmentToken,
 } from '../types';
 import { formatSlonikPlaceholder } from '../utilities/formatSlonikPlaceholder';
 import { isPlainObject } from '../utilities/isPlainObject';
@@ -18,7 +19,7 @@ export const createJsonSqlFragment = (
   token: JsonBinarySqlToken | JsonSqlToken,
   greatestParameterPosition: number,
   binary: boolean,
-): SqlFragment => {
+): SqlFragmentToken => {
   let value;
 
   if (token.value === undefined) {
@@ -61,6 +62,7 @@ export const createJsonSqlFragment = (
       formatSlonikPlaceholder(greatestParameterPosition + 1) +
       '::' +
       (binary ? 'jsonb' : 'json'),
+    type: FragmentToken,
     values: [value],
   };
 };

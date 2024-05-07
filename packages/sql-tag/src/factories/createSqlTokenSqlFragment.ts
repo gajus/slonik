@@ -23,13 +23,13 @@ import {
   TimestampToken,
   UnnestToken,
 } from '../tokens';
-import { type SqlFragment, type SqlToken as SqlTokenType } from '../types';
+import { type SqlFragmentToken, type SqlToken as SqlTokenType } from '../types';
 import { UnexpectedStateError } from '@slonik/errors';
 
 export const createSqlTokenSqlFragment = (
   token: SqlTokenType,
   greatestParameterPosition: number,
-): SqlFragment => {
+): SqlFragmentToken => {
   if (token.type === ArrayToken) {
     return createArraySqlFragment(token, greatestParameterPosition);
   } else if (token.type === BinaryToken) {

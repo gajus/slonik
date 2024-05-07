@@ -1,4 +1,5 @@
-import { type IntervalSqlToken, type SqlFragment } from '../types';
+import { FragmentToken } from '../tokens';
+import { type IntervalSqlToken, type SqlFragmentToken } from '../types';
 import { formatSlonikPlaceholder } from '../utilities/formatSlonikPlaceholder';
 import { InvalidInputError } from '@slonik/errors';
 import { z } from 'zod';
@@ -33,7 +34,7 @@ const tokenMap = {
 export const createIntervalSqlFragment = (
   token: IntervalSqlToken,
   greatestParameterPosition: number,
-): SqlFragment => {
+): SqlFragmentToken => {
   let intervalInput;
 
   try {
@@ -66,6 +67,7 @@ export const createIntervalSqlFragment = (
 
   return {
     sql: 'make_interval(' + intervalTokens.join(', ') + ')',
+    type: FragmentToken,
     values,
   };
 };

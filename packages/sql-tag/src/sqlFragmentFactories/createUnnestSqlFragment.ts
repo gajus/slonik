@@ -1,6 +1,7 @@
+import { FragmentToken } from '../tokens';
 import {
   type PrimitiveValueExpression,
-  type SqlFragment,
+  type SqlFragmentToken,
   type UnnestSqlToken,
 } from '../types';
 import { countArrayDimensions } from '../utilities/countArrayDimensions';
@@ -13,7 +14,7 @@ import { InvalidInputError } from '@slonik/errors';
 export const createUnnestSqlFragment = (
   token: UnnestSqlToken,
   greatestParameterPosition: number,
-): SqlFragment => {
+): SqlFragmentToken => {
   const { columnTypes } = token;
 
   const values: PrimitiveValueExpression[] = [];
@@ -113,6 +114,7 @@ export const createUnnestSqlFragment = (
 
   return {
     sql,
+    type: FragmentToken,
     values,
   };
 };

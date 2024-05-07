@@ -7,7 +7,7 @@ import { type SlonikError } from '@slonik/errors';
 import {
   type PrimitiveValueExpression,
   type QuerySqlToken,
-  type SqlFragment,
+  type SqlFragmentToken,
   type SqlToken,
 } from '@slonik/sql-tag';
 import { type Readable } from 'node:stream';
@@ -292,7 +292,10 @@ export type QueryContext = {
   readonly transactionId: string | null;
 };
 
-export type ValueExpression = PrimitiveValueExpression | SqlFragment | SqlToken;
+export type ValueExpression =
+  | PrimitiveValueExpression
+  | SqlFragmentToken
+  | SqlToken;
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export type InternalQueryMethod<R = any> = (

@@ -90,7 +90,6 @@ export {
   type PrimitiveValueExpression,
   type QuerySqlToken,
   type SerializableValue,
-  type SqlFragment,
   type SqlTag,
   type SqlToken,
   type UnnestSqlToken,

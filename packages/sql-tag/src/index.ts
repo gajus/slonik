@@ -14,7 +14,7 @@ export {
   type PrimitiveValueExpression,
   type QuerySqlToken,
   type SerializableValue,
-  type SqlFragment,
+  type SqlFragmentToken,
   type SqlTag,
   type SqlToken,
   type TimestampSqlToken,

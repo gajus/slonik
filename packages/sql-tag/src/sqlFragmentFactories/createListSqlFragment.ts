@@ -1,9 +1,10 @@
 import { createPrimitiveValueExpressions } from '../factories/createPrimitiveValueExpressions';
 import { createSqlTokenSqlFragment } from '../factories/createSqlTokenSqlFragment';
+import { FragmentToken } from '../tokens';
 import {
   type ListSqlToken,
   type PrimitiveValueExpression,
-  type SqlFragment,
+  type SqlFragmentToken,
 } from '../types';
 import { formatSlonikPlaceholder } from '../utilities/formatSlonikPlaceholder';
 import { isPrimitiveValueExpression } from '../utilities/isPrimitiveValueExpression';
@@ -13,7 +14,7 @@ import { InvalidInputError } from '@slonik/errors';
 export const createListSqlFragment = (
   token: ListSqlToken,
   greatestParameterPosition: number,
-): SqlFragment => {
+): SqlFragmentToken => {
   const values: PrimitiveValueExpression[] = [];
   const placeholders: Array<PrimitiveValueExpression | null> = [];
 
@@ -43,6 +44,7 @@ export const createListSqlFragment = (
 
   return {
     sql: placeholders.join(token.glue.sql),
+    type: FragmentToken,
     values: createPrimitiveValueExpressions(values),
   };
 };
