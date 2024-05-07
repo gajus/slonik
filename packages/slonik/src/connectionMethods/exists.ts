@@ -1,8 +1,8 @@
 import { type InternalQueryMethod } from '../types';
-import { generateUid } from '../utilities/generateUid';
 import { query } from './query';
 import { DataIntegrityError } from '@slonik/errors';
 import { type QuerySqlToken } from '@slonik/sql-tag';
+import { generateUid } from '@slonik/utilities';
 
 export const exists: InternalQueryMethod<Promise<boolean>> = async (
   log,

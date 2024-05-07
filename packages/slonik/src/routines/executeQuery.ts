@@ -13,8 +13,6 @@ import {
   type QueryResultRow,
   type StreamResult,
 } from '../types';
-import { defer } from '../utilities/defer';
-import { generateUid } from '../utilities/generateUid';
 import { type DriverNotice } from '@slonik/driver';
 import {
   BackendTerminatedError,
@@ -29,6 +27,7 @@ import {
   type PrimitiveValueExpression,
   type QuerySqlToken,
 } from '@slonik/sql-tag';
+import { defer, generateUid } from '@slonik/utilities';
 import { getStackTrace } from 'get-stack-trace';
 import { serializeError } from 'serialize-error';
 

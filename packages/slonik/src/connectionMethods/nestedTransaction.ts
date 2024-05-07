@@ -2,7 +2,7 @@ import { bindTransactionConnection } from '../binders/bindTransactionConnection'
 import { TRANSACTION_ROLLBACK_ERROR_PREFIX } from '../constants';
 import { getPoolClientState } from '../state';
 import { type InternalNestedTransactionFunction } from '../types';
-import { generateUid } from '../utilities/generateUid';
+import { generateUid } from '@slonik/utilities';
 import { serializeError } from 'serialize-error';
 
 const execNestedTransaction: InternalNestedTransactionFunction = async (

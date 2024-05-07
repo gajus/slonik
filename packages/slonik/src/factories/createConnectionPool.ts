@@ -1,6 +1,4 @@
 import { Logger } from '../Logger';
-import { defer, type DeferredPromise } from '../utilities/defer';
-import { generateUid } from '../utilities/generateUid';
 import {
   type Driver,
   type DriverClientEventEmitter,
@@ -9,6 +7,7 @@ import {
   type DriverStream,
   type DriverStreamResult,
 } from '@slonik/driver';
+import { defer, type DeferredPromise, generateUid } from '@slonik/utilities';
 import { setTimeout as delay } from 'node:timers/promises';
 import { serializeError } from 'serialize-error';
 

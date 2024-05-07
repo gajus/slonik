@@ -39,6 +39,12 @@
   ],
   "license": "BSD-3-Clause",
   "main": "./dist/index.js",
+  "exports": {
+    ".": {
+      "import": "./dist/index.js",
+      "types": "./dist/index.d.ts"
+    }
+  },
   "name": "slonik-interceptor-query-logging",
   "peerDependencies": {
     "slonik": ">=43.0.5"

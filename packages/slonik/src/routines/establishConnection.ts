@@ -4,8 +4,8 @@ import {
 } from '../factories/createConnectionPool';
 import { poolClientStateMap } from '../state';
 import { type Logger } from '../types';
-import { generateUid } from '../utilities/generateUid';
 import { ConnectionError, UnexpectedStateError } from '@slonik/errors';
+import { generateUid } from '@slonik/utilities';
 import { serializeError } from 'serialize-error';
 
 export const establishConnection = async (

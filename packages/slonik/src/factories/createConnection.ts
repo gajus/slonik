@@ -9,13 +9,13 @@ import {
   type Logger,
   type MaybePromise,
 } from '../types';
-import { defer } from '../utilities/defer';
 import {
   type ConnectionPool,
   type ConnectionPoolClient,
 } from './createConnectionPool';
 import { UnexpectedStateError } from '@slonik/errors';
 import { type QuerySqlToken } from '@slonik/sql-tag';
+import { defer } from '@slonik/utilities';
 
 type ConnectionHandlerType = (
   connectionLog: Logger,

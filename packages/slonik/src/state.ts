@@ -1,6 +1,6 @@
 import { type ConnectionPoolClient } from './factories/createConnectionPool';
-import { type DeferredPromise } from './utilities/defer';
 import { UnexpectedStateError } from '@slonik/errors';
+import { type DeferredPromise } from '@slonik/utilities';
 
 type PoolClientState = {
   activeQuery?: DeferredPromise<null>;

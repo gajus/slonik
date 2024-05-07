@@ -1,7 +1,7 @@
 import { type InternalQueryMethod } from '../types';
-import { generateUid } from '../utilities/generateUid';
 import { many } from './many';
 import { DataIntegrityError } from '@slonik/errors';
+import { generateUid } from '@slonik/utilities';
 
 export const manyFirst: InternalQueryMethod = async (
   log,

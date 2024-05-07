@@ -1,7 +1,7 @@
 import { type InternalQueryMethod } from '../types';
-import { generateUid } from '../utilities/generateUid';
 import { query } from './query';
 import { NotFoundError } from '@slonik/errors';
+import { generateUid } from '@slonik/utilities';
 
 /**
  * Makes a query and expects at least 1 result.
