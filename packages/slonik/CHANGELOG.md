@@ -1,5 +1,13 @@
 # slonik
 
+## 43.0.2
+
+### Patch Changes
+
+- Updated dependencies [[`a28e8ac`](https://github.com/gajus/slonik/commit/a28e8ac7325e24b2c27c05f22b597dbd1898049b)]:
+  - @slonik/sql-tag@43.0.2
+  - @slonik/errors@43.0.2
+
 ## 43.0.1
 
 ### Patch Changes
