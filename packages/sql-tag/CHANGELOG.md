@@ -1,4 +1,4 @@
-# slonik
+# @slonik/sql-tag
 
 ## 40.2.3
 
@@ -9,17 +9,5 @@
 - [#579](https://github.com/gajus/slonik/pull/579) [`2779fd1`](https://github.com/gajus/slonik/commit/2779fd15ddae35b9830f4c156648e444cd793f13) Thanks [@gajus](https://github.com/gajus)! - add slonik-sql-tag-raw
 
 - Updated dependencies [[`4007ab7`](https://github.com/gajus/slonik/commit/4007ab7e07d5b71e8f41e145584979fa36885275), [`2779fd1`](https://github.com/gajus/slonik/commit/2779fd15ddae35b9830f4c156648e444cd793f13)]:
-  - @slonik/sql-tag@40.2.3
   - @slonik/errors@40.2.3
-
-## 40.2.2
-
-### Patch Changes
-
-- [`caf2b5e`](https://github.com/gajus/slonik/commit/caf2b5e7b03d2cf1bfe76201cde1e44c15589601) Thanks [@gajus](https://github.com/gajus)! - Add README.md
-
-## 0.0.0
-
-### Patch Changes
-
-- [#572](https://github.com/gajus/slonik/pull/572) [`d69a83d`](https://github.com/gajus/slonik/commit/d69a83d379dfa5ac68226717dfcbe617bbd041f1) Thanks [@gajus](https://github.com/gajus)! - migrate from semantic-release to changeset
+  - @slonik/types@40.2.3
