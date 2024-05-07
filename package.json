@@ -1,5 +1,9 @@
 {
   "workspaces": [
+    "packages/types",
+    "packages/errors",
+    "packages/sql-tag",
+    "packages/slonik",
     "packages/*"
   ],
   "scripts": {
