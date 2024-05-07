@@ -1,5 +1,18 @@
 # slonik
 
+## 43.0.8
+
+### Patch Changes
+
+- [`30f1dc4`](https://github.com/gajus/slonik/commit/30f1dc4469fe6065f90651c2e1c501d5374358c7) Thanks [@gajus](https://github.com/gajus)! - remove exports
+
+- Updated dependencies [[`30f1dc4`](https://github.com/gajus/slonik/commit/30f1dc4469fe6065f90651c2e1c501d5374358c7)]:
+  - @slonik/driver@43.0.8
+  - @slonik/errors@43.0.8
+  - @slonik/pg-driver@43.0.8
+  - @slonik/sql-tag@43.0.8
+  - @slonik/utilities@43.0.8
+
 ## 43.0.7
 
 ### Patch Changes
