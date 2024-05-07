@@ -18,6 +18,7 @@ export {
 
 export const sql = createSqlTag();
 
+export { stringifyDsn } from '../../utilities/src/utilities/stringifyDsn';
 export { createPool } from './factories/createPool';
 export { createTypeParserPreset } from './factories/createTypeParserPreset';
 export { createBigintTypeParser } from './factories/typeParsers/createBigintTypeParser';
@@ -51,8 +52,6 @@ export type {
   TypeNameIdentifier,
   ValueExpression,
 } from './types';
-export { parseDsn } from './utilities/parseDsn';
-export { stringifyDsn } from './utilities/stringifyDsn';
 export {
   BackendTerminatedError,
   BackendTerminatedUnexpectedlyError,
@@ -94,3 +93,4 @@ export {
   type SqlToken,
   type UnnestSqlToken,
 } from '@slonik/sql-tag';
+export { parseDsn } from '@slonik/utilities';

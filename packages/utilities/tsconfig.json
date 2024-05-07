@@ -20,5 +20,5 @@
   },
   "include": [
     "src"
-, "../utilities/src/utilities/stringifyDsn.test.ts", "../utilities/src/utilities/stringifyDsn.ts"  ]
+  ]
 }

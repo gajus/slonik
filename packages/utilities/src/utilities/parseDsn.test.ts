@@ -1,5 +1,5 @@
-import { type ConnectionOptions } from '../types';
 import { parseDsn } from './parseDsn';
+import { type ConnectionOptions } from '@slonik/types';
 import test from 'ava';
 
 const testParse = test.macro((t, connectionOptions: ConnectionOptions) => {

@@ -4,8 +4,8 @@ import {
   sql,
   StatementTimeoutError,
 } from '..';
-import { createPgDriverFactory } from '../factories/createPgDriverFactory';
 import { createTestRunner } from '../helpers.test/createTestRunner';
+import { createPgDriverFactory } from '@slonik/pg-driver';
 import * as sinon from 'sinon';
 import { z } from 'zod';
 

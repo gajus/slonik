@@ -1,8 +1,8 @@
 import { sql } from '..';
-import { createPgDriverFactory } from '../factories/createPgDriverFactory';
 import { createPool } from '../factories/createPool';
 import { createIntegrationTests } from '../helpers.test/createIntegrationTests';
 import { createTestRunner } from '../helpers.test/createTestRunner';
+import { createPgDriverFactory } from '@slonik/pg-driver';
 
 const driverFactory = createPgDriverFactory();
 

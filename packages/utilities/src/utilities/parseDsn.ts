@@ -1,5 +1,5 @@
 import { Logger } from '../Logger';
-import { type ConnectionOptions } from '../types';
+import { type ConnectionOptions } from '@slonik/types';
 
 const log = Logger.child({
   namespace: 'parseDsn',
