@@ -53,5 +53,5 @@
     "test": "ava --verbose --serial"
   },
   "typings": "./dist/index.d.ts",
-  "version": "1.4.7"
+  "version": "2.0.0"
 }
