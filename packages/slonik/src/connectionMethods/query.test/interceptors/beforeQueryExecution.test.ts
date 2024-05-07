@@ -1,6 +1,6 @@
-import { createPgDriverFactory } from '../../../factories/createPgDriverFactory';
 import { createPoolWithMockedQuery } from '../../../helpers.test/createPoolWithMockedQuery';
 import { createTestRunner } from '../../../helpers.test/createTestRunner';
+import { createPgDriverFactory } from '@slonik/pg-driver';
 import { createSqlTag } from '@slonik/sql-tag';
 
 const driverFactory = createPgDriverFactory();

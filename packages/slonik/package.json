@@ -5,19 +5,16 @@
     "url": "http://gajus.com"
   },
   "dependencies": {
-    "@slonik/errors": "^43.0.5",
-    "@slonik/sql-tag": "^43.0.5",
-    "@types/pg": "^8.11.6",
+    "@slonik/driver": "^43.0.4",
+    "@slonik/errors": "^43.0.4",
+    "@slonik/pg-driver": "^43.0.4",
+    "@slonik/sql-tag": "^43.0.4",
+    "@slonik/utilities": "^43.0.4",
     "get-stack-trace": "^3.1.1",
     "iso8601-duration": "^1.3.0",
-    "pg": "^8.11.5",
-    "pg-query-stream": "^4.5.5",
-    "pg-types": "^4.0.2",
-    "postgres-array": "^3.0.2",
     "postgres-interval": "^4.0.2",
     "roarr": "^7.21.1",
-    "serialize-error": "^8.0.0",
-    "strict-event-emitter-types": "^2.0.0"
+    "serialize-error": "^8.0.0"
   },
   "description": "A Node.js PostgreSQL client with strict types, detailed logging and assertions.",
   "devDependencies": {
@@ -49,6 +46,12 @@
   ],
   "license": "BSD-3-Clause",
   "main": "./dist/index.js",
+  "exports": {
+    ".": {
+      "require": "./dist/index.js",
+      "types": "./dist/index.d.ts"
+    }
+  },
   "name": "slonik",
   "nyc": {
     "all": true,

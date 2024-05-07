@@ -13,7 +13,8 @@ export {
   type DriverNotice,
   type DriverQueryResult,
   type DriverStreamResult,
-} from './factories/createDriverFactory';
+  type DriverTypeParser,
+} from '@slonik/driver';
 
 export const sql = createSqlTag();
 
@@ -48,11 +49,8 @@ export type {
   QueryResultRow,
   QueryResultRowColumn,
   TypeNameIdentifier,
-  TypeParser,
   ValueExpression,
 } from './types';
-export { parseDsn } from './utilities/parseDsn';
-export { stringifyDsn } from './utilities/stringifyDsn';
 export {
   BackendTerminatedError,
   BackendTerminatedUnexpectedlyError,
@@ -94,3 +92,5 @@ export {
   type SqlToken,
   type UnnestSqlToken,
 } from '@slonik/sql-tag';
+export { stringifyDsn } from '@slonik/utilities';
+export { parseDsn } from '@slonik/utilities';

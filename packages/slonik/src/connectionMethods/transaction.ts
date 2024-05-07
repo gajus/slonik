@@ -3,8 +3,8 @@ import { TRANSACTION_ROLLBACK_ERROR_PREFIX } from '../constants';
 import { transactionContext } from '../contexts/transactionContext';
 import { getPoolClientState } from '../state';
 import { type InternalTransactionFunction } from '../types';
-import { createUid } from '../utilities/createUid';
 import { BackendTerminatedError, UnexpectedStateError } from '@slonik/errors';
+import { generateUid } from '@slonik/utilities';
 import { serializeError } from 'serialize-error';
 
 const execTransaction: InternalTransactionFunction = async (
@@ -117,7 +117,7 @@ export const transaction: InternalTransactionFunction = async (
   handler,
   transactionRetryLimit,
 ) => {
-  const transactionId = createUid();
+  const transactionId = generateUid();
 
   return transactionContext.run(
     {

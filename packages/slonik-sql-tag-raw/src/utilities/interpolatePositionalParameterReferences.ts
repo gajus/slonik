@@ -7,7 +7,7 @@ import {
   type ValueExpression,
 } from 'slonik';
 
-export const slonikPlaceholderRegexRule = /\$slonik_(\d+)/gu;
+const slonikPlaceholderRegexRule = /\$slonik_(\d+)/gu;
 
 /**
  * @see https://github.com/mysqljs/sqlstring/blob/f946198800a8d7f198fcf98d8bb80620595d01ec/lib/SqlString.js#L73

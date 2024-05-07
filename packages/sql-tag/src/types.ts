@@ -41,7 +41,7 @@ export type ValueExpression =
  * "string" type covers all type name identifiers – the literal values are added only to assist developer
  * experience with auto suggestions for commonly used type name identifiers.
  */
-export type TypeNameIdentifier =
+type TypeNameIdentifier =
   | string
   | 'bool'
   | 'bytea'

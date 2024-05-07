@@ -1,4 +1,3 @@
-import { type DriverStreamResult } from '../factories/createDriverFactory';
 import { executeQuery, type ExecutionRoutine } from '../routines/executeQuery';
 import {
   type ClientConfiguration,
@@ -9,6 +8,7 @@ import {
   type QueryResultRow,
   type StreamHandler,
 } from '../types';
+import { type DriverStreamResult } from '@slonik/driver';
 import { Transform } from 'node:stream';
 import { pipeline } from 'node:stream/promises';
 

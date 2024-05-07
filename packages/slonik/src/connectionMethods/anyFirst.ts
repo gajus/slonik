@@ -1,7 +1,7 @@
 import { type InternalQueryMethod } from '../types';
-import { createQueryId } from '../utilities/createQueryId';
 import { any } from './any';
 import { DataIntegrityError } from '@slonik/errors';
+import { generateUid } from '@slonik/utilities';
 
 export const anyFirst: InternalQueryMethod = async (
   log,
@@ -10,7 +10,7 @@ export const anyFirst: InternalQueryMethod = async (
   query,
   inheritedQueryId,
 ) => {
-  const queryId = inheritedQueryId ?? createQueryId();
+  const queryId = inheritedQueryId ?? generateUid();
 
   const rows = await any(
     log,

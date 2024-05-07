@@ -1,7 +1,7 @@
-import { createPgDriverFactory } from '../../factories/createPgDriverFactory';
 import { createPool } from '../../factories/createPool';
 import { createErrorWithCode } from '../../helpers.test/createErrorWithCode';
 import { createTestRunner } from '../../helpers.test/createTestRunner';
+import { createPgDriverFactory } from '@slonik/pg-driver';
 import { createSqlTag } from '@slonik/sql-tag';
 import * as sinon from 'sinon';
 

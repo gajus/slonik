@@ -1,7 +1,7 @@
 import { type InternalQueryMethod } from '../types';
-import { createQueryId } from '../utilities/createQueryId';
 import { one } from './one';
 import { UnexpectedStateError } from '@slonik/errors';
+import { generateUid } from '@slonik/utilities';
 
 /**
  * Makes a query and expects exactly one result.
@@ -16,7 +16,7 @@ export const oneFirst: InternalQueryMethod = async (
   slonikSql,
   inheritedQueryId,
 ) => {
-  const queryId = inheritedQueryId ?? createQueryId();
+  const queryId = inheritedQueryId ?? generateUid();
 
   const row = await one(
     log,

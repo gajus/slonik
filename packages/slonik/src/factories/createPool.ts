@@ -3,9 +3,9 @@ import { Logger } from '../Logger';
 import { type ClientConfigurationInput, type DatabasePool } from '../types';
 import { createClientConfiguration } from './createClientConfiguration';
 import { createConnectionPool } from './createConnectionPool';
-import { type DriverFactory } from './createDriverFactory';
-import { createPgDriverFactory } from './createPgDriverFactory';
 import { createPoolConfiguration } from './createPoolConfiguration';
+import { type DriverFactory } from '@slonik/driver';
+import { createPgDriverFactory } from '@slonik/pg-driver';
 
 /**
  * @param connectionUri PostgreSQL [Connection URI](https://www.postgresql.org/docs/current/libpq-connect.html#LIBPQ-CONNSTRING).

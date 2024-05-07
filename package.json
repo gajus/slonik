@@ -1,8 +1,11 @@
 {
   "workspaces": [
     "packages/types",
+    "packages/utilities",
     "packages/errors",
     "packages/sql-tag",
+    "packages/driver",
+    "packages/pg-driver",
     "packages/slonik",
     "packages/*"
   ],

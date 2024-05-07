@@ -25,3 +25,22 @@ export type SerializableValue =
     }
   | null
   | undefined;
+
+/**
+ * @see https://www.postgresql.org/docs/current/libpq-connect.html#LIBPQ-PARAMKEYWORDS
+ */
+export type ConnectionOptions = {
+  applicationName?: string;
+  databaseName?: string;
+  host?: string;
+  options?: string;
+  password?: string;
+  port?: number;
+  sslMode?: 'disable' | 'no-verify' | 'require';
+  username?: string;
+};
+
+export type Field = {
+  readonly dataTypeId: number;
+  readonly name: string;
+};

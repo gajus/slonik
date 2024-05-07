@@ -2,31 +2,20 @@ import { type ConnectionPoolClient } from './factories/createConnectionPool';
 import {
   type DriverFactory,
   type DriverNotice,
-} from './factories/createDriverFactory';
+  type DriverStream,
+  type DriverTypeParser,
+} from '@slonik/driver';
 import { type SlonikError } from '@slonik/errors';
 import {
   type PrimitiveValueExpression,
   type QuerySqlToken,
   type SqlToken,
 } from '@slonik/sql-tag';
-import { type Readable } from 'node:stream';
 import { type ConnectionOptions as TlsConnectionOptions } from 'node:tls';
 import { type Logger } from 'roarr';
 import { type z, type ZodTypeAny } from 'zod';
 
-type StreamDataEvent<T> = { data: T; fields: readonly Field[] };
-
-// eslint-disable-next-line @typescript-eslint/consistent-type-definitions
-export interface TypedReadable<T> extends Readable {
-  // eslint-disable-next-line @typescript-eslint/method-signature-style
-  on(event: 'data', listener: (chunk: StreamDataEvent<T>) => void): this;
-  // eslint-disable-next-line @typescript-eslint/method-signature-style
-  on(event: string | symbol, listener: (...args: any[]) => void): this;
-
-  [Symbol.asyncIterator]: () => AsyncIterableIterator<StreamDataEvent<T>>;
-}
-
-export type StreamHandler<T> = (stream: TypedReadable<T>) => void;
+export type StreamHandler<T> = (stream: DriverStream<T>) => void;
 
 /**
  * @see https://www.postgresql.org/docs/current/libpq-connect.html#LIBPQ-PARAMKEYWORDS
@@ -155,7 +144,7 @@ export type ClientConfiguration = {
   /**
    * An array of [Slonik type parsers](https://github.com/gajus/slonik#slonik-type-parsers).
    */
-  readonly typeParsers: readonly TypeParser[];
+  readonly typeParsers: readonly DriverTypeParser[];
 };
 
 export type ClientConfigurationInput = Partial<ClientConfiguration>;
@@ -227,14 +216,6 @@ export type QueryResultRow = Record<string, PrimitiveValueExpression>;
 export type Query = {
   readonly sql: string;
   readonly values: readonly PrimitiveValueExpression[];
-};
-
-/**
- * @property name Value of "pg_type"."typname" (e.g. "int8", "timestamp", "timestamptz").
- */
-export type TypeParser<T = unknown> = {
-  readonly name: string;
-  readonly parse: (value: string) => T;
 };
 
 /**
