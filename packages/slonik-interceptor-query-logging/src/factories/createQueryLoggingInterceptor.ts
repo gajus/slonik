@@ -79,7 +79,7 @@ export const createQueryLoggingInterceptor = (
           // Hide the internal call sites.
           if (
             callSite.fileName !== null &&
-            !callSite.fileName.includes('node_modules/slonik') &&
+            !callSite.fileName.includes('node_modules/slonik/') &&
             !callSite.fileName.includes('next_tick')
           ) {
             stackTrace.push(stringifyCallSite(callSite));
