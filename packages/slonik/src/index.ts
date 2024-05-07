@@ -76,11 +76,11 @@ export {
   UnexpectedStateError,
   UniqueIntegrityConstraintViolationError,
 } from '@slonik/errors';
-export { createSqlTokenSqlFragment } from '@slonik/sql-tag';
 export {
   type ArraySqlToken,
   type BinarySqlToken,
   createSqlTag,
+  createSqlTokenSqlFragment,
   type FragmentSqlToken,
   type IdentifierSqlToken,
   isSqlToken,
