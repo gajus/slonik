@@ -16,7 +16,7 @@
     ]
   },
   "dependencies": {
-    "@slonik/sql-tag": "^43.0.4",
+    "@slonik/sql-tag": "^43.0.5",
     "lodash": "^4.17.20",
     "roarr": "^7.21.1"
   },
@@ -25,7 +25,7 @@
     "ava": "^5.3.1",
     "eslint": "^8.57.0",
     "eslint-config-canonical": "^42.8.1",
-    "slonik": "^43.0.4",
+    "slonik": "^43.0.5",
     "ts-node": "^10.4.0",
     "typescript": "^4.5.3"
   },
@@ -41,7 +41,7 @@
   "main": "./dist/index.js",
   "name": "slonik-sql-tag-raw",
   "peerDependencies": {
-    "slonik": ">=43.0.4"
+    "slonik": ">=43.0.5"
   },
   "repository": {
     "type": "git",
@@ -53,5 +53,5 @@
     "test": "ava --verbose --serial"
   },
   "typings": "./dist/index.d.ts",
-  "version": "43.0.4"
+  "version": "43.0.5"
 }

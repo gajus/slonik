@@ -1,5 +1,11 @@
 # @slonik/types
 
+## 43.0.5
+
+### Patch Changes
+
+- [`d1958fd`](https://github.com/gajus/slonik/commit/d1958fd6acfcd48cc4148811106b63daf28b52a8) Thanks [@gajus](https://github.com/gajus)! - log how long it took to acquire a connection
+
 ## 43.0.4
 
 ### Patch Changes
