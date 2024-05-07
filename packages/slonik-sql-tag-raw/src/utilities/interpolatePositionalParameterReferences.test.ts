@@ -11,15 +11,17 @@ test('creates a plain sql token', (t) => {
 });
 
 test('creates a tuple with a single positional parameter', (t) => {
-  const sqlFragment = interpolatePositionalParameterReferences('($1)', ['foo']);
+  const sqlFragment = interpolatePositionalParameterReferences('($slonik_1)', [
+    'foo',
+  ]);
 
-  t.is(sqlFragment.sql, '($1)');
+  t.is(sqlFragment.sql, '($slonik_1)');
 
   t.deepEqual(sqlFragment.values, ['foo']);
 });
 
 test('interpolates SQL token', (t) => {
-  const sqlFragment = interpolatePositionalParameterReferences('$1', [
+  const sqlFragment = interpolatePositionalParameterReferences('$slonik_1', [
     sql.fragment`to_timestamp(${'foo'})`,
   ]);
 
@@ -31,7 +33,9 @@ test('interpolates SQL token', (t) => {
 test('throws an error if the greatest parameter position is greater than the number of parameter values', (t) => {
   t.throws(
     () => {
-      interpolatePositionalParameterReferences('($1, $2)', ['foo']);
+      interpolatePositionalParameterReferences('($slonik_1, $slonik_2)', [
+        'foo',
+      ]);
     },
     {
       message:
@@ -43,7 +47,7 @@ test('throws an error if the greatest parameter position is greater than the num
 test('throws an error if least parameter is greater than 1', (t) => {
   t.throws(
     () => {
-      interpolatePositionalParameterReferences('($2)', ['foo', 'bar']);
+      interpolatePositionalParameterReferences('($slonik_2)', ['foo', 'bar']);
     },
     {
       message: 'Parameter position must start at 1.',

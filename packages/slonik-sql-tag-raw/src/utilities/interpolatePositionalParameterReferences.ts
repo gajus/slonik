@@ -7,6 +7,8 @@ import {
   type ValueExpression,
 } from 'slonik';
 
+export const slonikPlaceholderRegexRule = /\$slonik_(\d+)/gu;
+
 /**
  * @see https://github.com/mysqljs/sqlstring/blob/f946198800a8d7f198fcf98d8bb80620595d01ec/lib/SqlString.js#L73
  */
@@ -16,9 +18,9 @@ export const interpolatePositionalParameterReferences = (
 ): FragmentSqlToken => {
   const resultValues = [] as PrimitiveValueExpression[];
 
-  const bindingNames = (inputSql.match(/\$(\d+)/gu) ?? [])
+  const bindingNames = (inputSql.match(slonikPlaceholderRegexRule) ?? [])
     .map((match) => {
-      return Number.parseInt(match.slice(1), 10);
+      return Number.parseInt(match.replace('$slonik_', ''), 10);
     })
     .sort();
 
@@ -32,27 +34,30 @@ export const interpolatePositionalParameterReferences = (
     throw new InvalidInputError('Parameter position must start at 1.');
   }
 
-  const resultSql = inputSql.replaceAll(/\$(\d+)/gu, (match, g1) => {
-    const parameterPosition = Number.parseInt(g1, 10);
-    const boundValue = inputValues[parameterPosition - 1];
+  const resultSql = inputSql.replaceAll(
+    slonikPlaceholderRegexRule,
+    (match, g1) => {
+      const parameterPosition = Number.parseInt(g1, 10);
+      const boundValue = inputValues[parameterPosition - 1];
 
-    if (isSqlToken(boundValue)) {
-      const sqlFragment = createSqlTokenSqlFragment(
-        boundValue,
-        resultValues.length,
-      );
+      if (isSqlToken(boundValue)) {
+        const sqlFragment = createSqlTokenSqlFragment(
+          boundValue,
+          resultValues.length,
+        );
 
-      resultValues.push(...sqlFragment.values);
+        resultValues.push(...sqlFragment.values);
 
-      return sqlFragment.sql;
-    } else {
-      resultValues.push(
-        inputValues[parameterPosition - 1] as PrimitiveValueExpression,
-      );
+        return sqlFragment.sql;
+      } else {
+        resultValues.push(
+          inputValues[parameterPosition - 1] as PrimitiveValueExpression,
+        );
 
-      return `$${resultValues.length}`;
-    }
-  });
+        return `$slonik_${resultValues.length}`;
+      }
+    },
+  );
 
   return {
     sql: resultSql,

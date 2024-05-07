@@ -43,7 +43,7 @@ export const interpolateNamedParameterReferences = (
 
     const parameterIndex = parameterNames.indexOf(g1) + 1;
 
-    return match.slice(0, -g1.length - 1) + `$${parameterIndex}`;
+    return match.slice(0, -g1.length - 1) + `$slonik_${parameterIndex}`;
   });
 
   const unusedParameterNames = difference(parameterNames, usedParameterNames);

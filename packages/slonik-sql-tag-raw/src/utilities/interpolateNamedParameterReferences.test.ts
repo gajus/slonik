@@ -15,7 +15,7 @@ test('interpolates a named parameter reference', (t) => {
     foo: 'FOO',
   });
 
-  t.is(sqlFragment.sql, 'SELECT $1');
+  t.is(sqlFragment.sql, 'SELECT $slonik_1');
 
   t.deepEqual(sqlFragment.values, ['FOO']);
 });
@@ -26,7 +26,7 @@ test('interpolates multiple named parameter references', (t) => {
     foo: 'FOO',
   });
 
-  t.is(sqlFragment.sql, 'SELECT $1, $2');
+  t.is(sqlFragment.sql, 'SELECT $slonik_1, $slonik_2');
 
   t.deepEqual(sqlFragment.values, ['FOO', 'BAR']);
 });
@@ -36,7 +36,7 @@ test('interpolates multiple named parameter references (same name)', (t) => {
     foo: 'FOO',
   });
 
-  t.is(sqlFragment.sql, 'SELECT $1, $2');
+  t.is(sqlFragment.sql, 'SELECT $slonik_1, $slonik_2');
 
   t.deepEqual(sqlFragment.values, ['FOO', 'FOO']);
 });
