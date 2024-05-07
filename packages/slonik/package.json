@@ -6,6 +6,7 @@
     "url": "http://gajus.com"
   },
   "dependencies": {
+    "@slonik/errors": "^40.2.2",
     "@slonik/sql-tag": "^40.2.2",
     "@types/pg": "^8.11.6",
     "get-stack-trace": "^3.1.1",
@@ -16,7 +17,6 @@
     "postgres-array": "^3.0.2",
     "postgres-interval": "^4.0.2",
     "roarr": "^7.21.1",
-    "safe-stable-stringify": "^2.4.3",
     "serialize-error": "^8.0.0",
     "strict-event-emitter-types": "^2.0.0"
   },
