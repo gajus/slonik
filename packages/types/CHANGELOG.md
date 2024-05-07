@@ -1,5 +1,11 @@
 # @slonik/types
 
+## 43.0.7
+
+### Patch Changes
+
+- [`dba5be1`](https://github.com/gajus/slonik/commit/dba5be1b34868059c3f64a8dc44e48703625a3b9) Thanks [@gajus](https://github.com/gajus)! - corrects exports; adds more logging about pool state
+
 ## 43.0.6
 
 ### Patch Changes
