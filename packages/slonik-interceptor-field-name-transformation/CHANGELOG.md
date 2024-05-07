@@ -1,5 +1,14 @@
 # slonik-interceptor-field-name-transformation
 
+## 43.0.1
+
+### Patch Changes
+
+- [`146a301`](https://github.com/gajus/slonik/commit/146a3011b6b9cbd1a3a5dbc7ce3a13d9cc6bb2ae) Thanks [@gajus](https://github.com/gajus)! - add missing type exports
+
+- Updated dependencies [[`146a301`](https://github.com/gajus/slonik/commit/146a3011b6b9cbd1a3a5dbc7ce3a13d9cc6bb2ae)]:
+  - slonik@43.0.1
+
 ## 43.0.0
 
 ### Minor Changes
