@@ -46,7 +46,7 @@ test('interpolates SQL token', (t) => {
     foo: sql.fragment`${'foo'}`,
   });
 
-  t.is(sqlFragment.sql, 'SELECT $1');
+  t.is(sqlFragment.sql, 'SELECT $slonik_1');
 
   t.deepEqual(sqlFragment.values, ['foo']);
 });

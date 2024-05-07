@@ -23,7 +23,7 @@ test('interpolates SQL token', (t) => {
     sql.fragment`to_timestamp(${'foo'})`,
   ]);
 
-  t.is(sqlFragment.sql, 'to_timestamp($1)');
+  t.is(sqlFragment.sql, 'to_timestamp($slonik_1)');
 
   t.deepEqual(sqlFragment.values, ['foo']);
 });
