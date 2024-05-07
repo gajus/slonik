@@ -1,5 +1,17 @@
 # slonik
 
+## 43.0.3
+
+### Patch Changes
+
+- [`c9e261d`](https://github.com/gajus/slonik/commit/c9e261d8af6490ad84b450b6e4b598f662d92203) Thanks [@gajus](https://github.com/gajus)! - log when connection pool is full
+
+- [`0f072df`](https://github.com/gajus/slonik/commit/0f072df5f3796fc2571c0e5e81405a36000ab9ec) Thanks [@gajus](https://github.com/gajus)! - drop ambiguous SqlFragment member
+
+- Updated dependencies [[`0f072df`](https://github.com/gajus/slonik/commit/0f072df5f3796fc2571c0e5e81405a36000ab9ec)]:
+  - @slonik/sql-tag@43.0.3
+  - @slonik/errors@43.0.3
+
 ## 43.0.2
 
 ### Patch Changes
