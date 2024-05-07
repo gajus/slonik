@@ -39,12 +39,6 @@
   ],
   "license": "BSD-3-Clause",
   "main": "./dist/index.js",
-  "exports": {
-    ".": {
-      "default": "./dist/index.js",
-      "types": "./dist/index.d.ts"
-    }
-  },
   "name": "slonik-sql-tag-raw",
   "peerDependencies": {
     "slonik": ">=43.0.6"

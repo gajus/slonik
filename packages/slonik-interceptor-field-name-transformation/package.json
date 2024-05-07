@@ -37,12 +37,6 @@
   ],
   "license": "BSD-3-Clause",
   "main": "./dist/index.js",
-  "exports": {
-    ".": {
-      "default": "./dist/index.js",
-      "types": "./dist/index.d.ts"
-    }
-  },
   "name": "slonik-interceptor-field-name-transformation",
   "peerDependencies": {
     "slonik": ">=43.0.6"

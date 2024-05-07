@@ -44,12 +44,6 @@
   ],
   "license": "BSD-3-Clause",
   "main": "./dist/index.js",
-  "exports": {
-    ".": {
-      "default": "./dist/index.js",
-      "types": "./dist/index.d.ts"
-    }
-  },
   "name": "@slonik/errors",
   "nyc": {
     "all": true,
