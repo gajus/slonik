@@ -185,6 +185,13 @@ export const createConnectionPool = ({
 
       waitingClients.push(waitingClient);
 
+      logger.warn(
+        {
+          waitingClients: waitingClients.length,
+        },
+        `connection pool full; client has been queued`,
+      );
+
       return waitingClient.promise;
     }
   };
