@@ -15,5 +15,6 @@ export {
   type SqlTag,
   type SqlToken,
   type UnnestSqlToken,
+  type ValueExpression,
 } from './types';
 export { isSqlToken } from './utilities/isSqlToken';
