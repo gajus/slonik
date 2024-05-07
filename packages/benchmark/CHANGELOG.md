@@ -1,5 +1,14 @@
 # @slonik/benchmark
 
+## 43.0.4
+
+### Patch Changes
+
+- [`d0d9a82`](https://github.com/gajus/slonik/commit/d0d9a82dee0980c4768d74e90e20491ada126816) Thanks [@gajus](https://github.com/gajus)! - use $slonik\_ bindings
+
+- Updated dependencies [[`d0d9a82`](https://github.com/gajus/slonik/commit/d0d9a82dee0980c4768d74e90e20491ada126816)]:
+  - slonik@43.0.4
+
 ## 43.0.3
 
 ### Patch Changes
