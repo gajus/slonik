@@ -24,7 +24,7 @@
     "ava": "^5.3.1",
     "eslint": "^8.57.0",
     "eslint-config-canonical": "^42.8.1",
-    "slonik": "^43.0.5",
+    "slonik": "^43.0.6",
     "ts-node": "^10.4.0",
     "typescript": "^4.5.3"
   },
@@ -46,7 +46,7 @@
   },
   "name": "slonik-interceptor-query-cache",
   "peerDependencies": {
-    "slonik": ">=43.0.5"
+    "slonik": ">=43.0.6"
   },
   "repository": {
     "type": "git",
@@ -58,5 +58,5 @@
     "test": "ava --verbose --serial"
   },
   "typings": "./dist/index.d.ts",
-  "version": "43.0.5"
+  "version": "43.0.6"
 }
