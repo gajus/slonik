@@ -32,6 +32,10 @@ export type ConnectionPoolClient = {
   ) => TypedReadable<DriverStreamResult>;
 };
 
+type WaitingClient = {
+  deferred: DeferredPromise<ConnectionPoolClient>;
+};
+
 type ConnectionPoolStateName = 'ACTIVE' | 'ENDING' | 'ENDED';
 
 /**
@@ -67,7 +71,7 @@ export const createConnectionPool = ({
 
   const connections: ConnectionPoolClient[] = [];
 
-  const waitingClients: Array<DeferredPromise<ConnectionPoolClient>> = [];
+  const waitingClients: WaitingClient[] = [];
 
   const id = createUid();
 
@@ -90,7 +94,7 @@ export const createConnectionPool = ({
 
     try {
       await Promise.all(
-        waitingClients.map((waitingClient) => waitingClient.promise),
+        waitingClients.map((waitingClient) => waitingClient.deferred.promise),
       );
     } catch (error) {
       logger.error(
@@ -147,7 +151,7 @@ export const createConnectionPool = ({
 
         connection.acquire();
 
-        waitingClient.resolve(connection);
+        waitingClient.deferred.resolve(connection);
       };
 
       connection.on('release', onRelease);
@@ -165,7 +169,10 @@ export const createConnectionPool = ({
         }
 
         // eslint-disable-next-line promise/prefer-await-to-then
-        acquire().then(waitingClient.resolve, waitingClient.reject);
+        acquire().then(
+          waitingClient.deferred.resolve,
+          waitingClient.deferred.reject,
+        );
       };
 
       connection.on('destroy', onDestroy);
@@ -181,9 +188,13 @@ export const createConnectionPool = ({
 
       return connection;
     } else {
-      const waitingClient = defer<ConnectionPoolClient>();
+      const deferred = defer<ConnectionPoolClient>();
 
-      waitingClients.push(waitingClient);
+      waitingClients.push({
+        deferred,
+      });
+
+      const queuedAt = process.hrtime.bigint();
 
       logger.warn(
         {
@@ -192,7 +203,18 @@ export const createConnectionPool = ({
         `connection pool full; client has been queued`,
       );
 
-      return waitingClient.promise;
+      // eslint-disable-next-line promise/prefer-await-to-then
+      return deferred.promise.then((connection) => {
+        logger.debug(
+          {
+            connectionId: connection.id(),
+            duration: Number(process.hrtime.bigint() - queuedAt) / 1e6,
+          },
+          'connection has been acquired from the queue',
+        );
+
+        return connection;
+      });
     }
   };
 
