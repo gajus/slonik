@@ -1,5 +1,11 @@
 # @slonik/types
 
+## 41.4.0
+
+### Minor Changes
+
+- [`8c58884`](https://github.com/gajus/slonik/commit/8c588849338dbc626d661a04af9f162a791f3e31) Thanks [@gajus](https://github.com/gajus)! - force version bump
+
 ## 41.3.0
 
 ### Minor Changes

@@ -1,5 +1,17 @@
 # slonik
 
+## 43.0.0
+
+### Minor Changes
+
+- [`8c58884`](https://github.com/gajus/slonik/commit/8c588849338dbc626d661a04af9f162a791f3e31) Thanks [@gajus](https://github.com/gajus)! - force version bump
+
+### Patch Changes
+
+- Updated dependencies [[`8c58884`](https://github.com/gajus/slonik/commit/8c588849338dbc626d661a04af9f162a791f3e31)]:
+  - @slonik/errors@41.4.0
+  - @slonik/sql-tag@41.4.0
+
 ## 42.0.0
 
 ### Minor Changes
