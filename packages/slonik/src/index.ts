@@ -13,7 +13,8 @@ export {
   type DriverNotice,
   type DriverQueryResult,
   type DriverStreamResult,
-} from './factories/createDriverFactory';
+  type DriverTypeParser,
+} from '@slonik/driver';
 
 export const sql = createSqlTag();
 
@@ -48,7 +49,6 @@ export type {
   QueryResultRow,
   QueryResultRowColumn,
   TypeNameIdentifier,
-  TypeParser,
   ValueExpression,
 } from './types';
 export { parseDsn } from './utilities/parseDsn';

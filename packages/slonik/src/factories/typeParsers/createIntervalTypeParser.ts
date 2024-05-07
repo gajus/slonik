@@ -1,4 +1,4 @@
-import { type TypeParser } from '../../types';
+import { type DriverTypeParser } from '@slonik/driver';
 import {
   parse as parseIsoDuration,
   toSeconds as durationToSeconds,
@@ -11,7 +11,7 @@ const intervalParser = (value: string) => {
     : durationToSeconds(parseIsoDuration(parseInterval(value).toISOString()));
 };
 
-export const createIntervalTypeParser = (): TypeParser => {
+export const createIntervalTypeParser = (): DriverTypeParser => {
   return {
     name: 'interval',
     parse: intervalParser,

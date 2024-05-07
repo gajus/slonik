@@ -1,6 +1,6 @@
 import { sql } from '..';
-import { type DriverFactory } from '../factories/createDriverFactory';
 import { createPool } from '../factories/createPool';
+import { type DriverFactory } from '@slonik/driver';
 import anyTest, { type TestFn } from 'ava';
 
 // eslint-disable-next-line n/no-process-env

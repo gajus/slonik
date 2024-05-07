@@ -1,14 +1,39 @@
 import { Logger } from '../Logger';
-import { type TypedReadable, type TypeParser } from '../types';
-import { createUid } from '../utilities/createUid';
+import { generateUid } from '../utilities/generateUid';
 import EventEmitter from 'node:events';
+import { type Readable } from 'node:stream';
 import { setTimeout as delay } from 'node:timers/promises';
 import { type ConnectionOptions as TlsConnectionOptions } from 'node:tls';
 import { serializeError } from 'serialize-error';
 import { type StrictEventEmitter } from 'strict-event-emitter-types';
 
+type Field = {
+  readonly dataTypeId: number;
+  readonly name: string;
+};
+
+type StreamDataEvent<T> = { data: T; fields: readonly Field[] };
+
+// eslint-disable-next-line @typescript-eslint/consistent-type-definitions
+export interface DriverStream<T> extends Readable {
+  // eslint-disable-next-line @typescript-eslint/method-signature-style
+  on(event: 'data', listener: (chunk: StreamDataEvent<T>) => void): this;
+  // eslint-disable-next-line @typescript-eslint/method-signature-style
+  on(event: string | symbol, listener: (...args: any[]) => void): this;
+
+  [Symbol.asyncIterator]: () => AsyncIterableIterator<StreamDataEvent<T>>;
+}
+
 type BasicConnection = {
   readonly query: (query: string) => Promise<void>;
+};
+
+/**
+ * @property name Value of "pg_type"."typname" (e.g. "int8", "timestamp", "timestamptz").
+ */
+export type DriverTypeParser<T = unknown> = {
+  readonly name: string;
+  readonly parse: (value: string) => T;
 };
 
 export type DriverConfiguration = {
@@ -21,7 +46,7 @@ export type DriverConfiguration = {
   readonly resetConnection?: (connection: BasicConnection) => Promise<void>;
   readonly ssl?: TlsConnectionOptions;
   readonly statementTimeout: number | 'DISABLE_TIMEOUT';
-  readonly typeParsers: readonly TypeParser[];
+  readonly typeParsers: readonly DriverTypeParser[];
 };
 
 export type DriverNotice = {
@@ -66,7 +91,7 @@ export type DriverClient = {
   stream: (
     query: string,
     values?: unknown[],
-  ) => TypedReadable<DriverStreamResult>;
+  ) => DriverStream<DriverStreamResult>;
 };
 
 export type Driver = {
@@ -118,7 +143,7 @@ type InternalPoolClient = {
   stream: (
     query: string,
     values?: unknown[],
-  ) => TypedReadable<DriverStreamResult>;
+  ) => DriverStream<DriverStreamResult>;
 };
 
 type InternalPoolClientFactory = {
@@ -179,7 +204,7 @@ export const createDriverFactory = (setup: DriverSetup): DriverFactory => {
         let destroyPromise: Promise<void> | null = null;
         let releasePromise: Promise<void> | null = null;
 
-        const id = createUid();
+        const id = generateUid();
 
         const clearIdleTimeout = () => {
           if (idleTimeout) {

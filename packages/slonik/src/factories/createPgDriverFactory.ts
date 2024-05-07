@@ -1,13 +1,14 @@
 /* eslint-disable canonical/id-match */
 
-import { type Field, type Query, type TypeParser } from '../types';
+import { type Field, type Query } from '../types';
 import { parseDsn } from '../utilities/parseDsn';
 import {
   createDriverFactory,
   type DriverCommand,
   type DriverConfiguration,
   type DriverFactory,
-} from './createDriverFactory';
+  type DriverTypeParser,
+} from '@slonik/driver';
 import {
   BackendTerminatedError,
   BackendTerminatedUnexpectedlyError,
@@ -45,7 +46,7 @@ type TypeOverrides = (oid: number) => any;
 
 const createTypeOverrides = async (
   connection: Client,
-  typeParsers: readonly TypeParser[],
+  typeParsers: readonly DriverTypeParser[],
 ): Promise<TypeOverrides> => {
   const typeNames = typeParsers.map((typeParser) => {
     return typeParser.name;

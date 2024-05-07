@@ -1,5 +1,5 @@
 import { type InternalQueryMethod } from '../types';
-import { createQueryId } from '../utilities/createQueryId';
+import { generateUid } from '../utilities/generateUid';
 import { query } from './query';
 
 /**
@@ -12,7 +12,7 @@ export const any: InternalQueryMethod = async (
   slonikSql,
   inheritedQueryId,
 ) => {
-  const queryId = inheritedQueryId ?? createQueryId();
+  const queryId = inheritedQueryId ?? generateUid();
 
   const { rows } = await query(
     log,

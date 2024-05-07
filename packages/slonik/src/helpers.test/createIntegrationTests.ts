@@ -20,8 +20,8 @@ import {
   UnexpectedStateError,
   UniqueIntegrityConstraintViolationError,
 } from '..';
-import { type DriverFactory } from '../factories/createDriverFactory';
 import { type TestContextType } from './createTestRunner';
+import { type DriverFactory } from '@slonik/driver';
 // eslint-disable-next-line ava/use-test
 import { type TestFn } from 'ava';
 import { setTimeout as delay } from 'node:timers/promises';

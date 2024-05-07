@@ -1,7 +1,6 @@
 import { TRANSACTION_ROLLBACK_ERROR_PREFIX } from '../constants';
 import { transactionContext } from '../contexts/transactionContext';
 import { type ConnectionPoolClient } from '../factories/createConnectionPool';
-import { type DriverNotice } from '../factories/createDriverFactory';
 import { getPoolClientState } from '../state';
 import {
   type ClientConfiguration,
@@ -14,8 +13,9 @@ import {
   type QueryResultRow,
   type StreamResult,
 } from '../types';
-import { createQueryId } from '../utilities/createQueryId';
 import { defer } from '../utilities/defer';
+import { generateUid } from '../utilities/generateUid';
+import { type DriverNotice } from '@slonik/driver';
 import {
   BackendTerminatedError,
   BackendTerminatedUnexpectedlyError,
@@ -160,7 +160,7 @@ export const executeQuery = async (
     stackTrace = getStackTrace();
   }
 
-  const queryId = inheritedQueryId ?? createQueryId();
+  const queryId = inheritedQueryId ?? generateUid();
 
   const log = connectionLogger.child({
     queryId,

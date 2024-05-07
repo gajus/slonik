@@ -1,5 +1,5 @@
 import { type InternalQueryMethod } from '../types';
-import { createQueryId } from '../utilities/createQueryId';
+import { generateUid } from '../utilities/generateUid';
 import { query } from './query';
 import { DataIntegrityError } from '@slonik/errors';
 import { type QuerySqlToken } from '@slonik/sql-tag';
@@ -11,7 +11,7 @@ export const exists: InternalQueryMethod<Promise<boolean>> = async (
   slonikQuery,
   inheritedQueryId,
 ) => {
-  const queryId = inheritedQueryId ?? createQueryId();
+  const queryId = inheritedQueryId ?? generateUid();
 
   const { rows } = await query(
     log,

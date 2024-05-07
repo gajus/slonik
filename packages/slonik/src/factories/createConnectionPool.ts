@@ -1,14 +1,14 @@
 import { Logger } from '../Logger';
-import { type TypedReadable } from '../types';
-import { createUid } from '../utilities/createUid';
 import { defer, type DeferredPromise } from '../utilities/defer';
+import { generateUid } from '../utilities/generateUid';
 import {
   type Driver,
   type DriverClientEventEmitter,
   type DriverClientState,
   type DriverQueryResult,
+  type DriverStream,
   type DriverStreamResult,
-} from './createDriverFactory';
+} from '@slonik/driver';
 import { setTimeout as delay } from 'node:timers/promises';
 import { serializeError } from 'serialize-error';
 
@@ -29,7 +29,7 @@ export type ConnectionPoolClient = {
   stream: (
     query: string,
     values?: unknown[],
-  ) => TypedReadable<DriverStreamResult>;
+  ) => DriverStream<DriverStreamResult>;
 };
 
 type WaitingClient = {
@@ -73,7 +73,7 @@ export const createConnectionPool = ({
 
   const waitingClients: WaitingClient[] = [];
 
-  const id = createUid();
+  const id = generateUid();
 
   let isEnding = false;
   let isEnded = false;

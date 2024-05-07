@@ -1,7 +1,3 @@
-import {
-  type DriverNotice,
-  type DriverQueryResult,
-} from '../factories/createDriverFactory';
 import { executeQuery, type ExecutionRoutine } from '../routines/executeQuery';
 import {
   type Field,
@@ -9,6 +5,7 @@ import {
   type QueryResult,
   type QueryResultRow,
 } from '../types';
+import { type DriverNotice, type DriverQueryResult } from '@slonik/driver';
 
 const executionRoutine: ExecutionRoutine = async (
   finalConnection,

@@ -1,4 +1,4 @@
-import { type TypeParser } from '../../types';
+import { type DriverTypeParser } from '@slonik/driver';
 
 const timestampParser = (value: string | null) => {
   if (value === 'infinity') {
@@ -12,7 +12,7 @@ const timestampParser = (value: string | null) => {
   return value === null ? value : Date.parse(value + ' UTC');
 };
 
-export const createTimestampTypeParser = (): TypeParser => {
+export const createTimestampTypeParser = (): DriverTypeParser => {
   return {
     name: 'timestamp',
     parse: timestampParser,
