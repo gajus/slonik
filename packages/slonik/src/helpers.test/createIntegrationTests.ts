@@ -1772,6 +1772,33 @@ export const createIntegrationTests = (
     t.not(firstConnectionPid, secondConnectionPid);
   });
 
+  test('connections are parallelized', async (t) => {
+    const resetConnection = sinon.spy();
+
+    const pool = await createPool(t.context.dsn, {
+      driverFactory,
+      maximumPoolSize: 2,
+      resetConnection,
+    });
+
+    const [a, b] = await Promise.all([
+      pool.connect(async (connection) => {
+        await connection.query(sql.unsafe`SELECT pg_sleep(0.2)`);
+
+        return Date.now();
+      }),
+      pool.connect(async (connection) => {
+        await connection.query(sql.unsafe`SELECT pg_sleep(0.1)`);
+
+        return Date.now();
+      }),
+    ]);
+
+    t.true(a > b);
+
+    await pool.end();
+  });
+
   test('does not re-use transaction connection if there was an error', async (t) => {
     const pool = await createPool(t.context.dsn, {
       driverFactory,
