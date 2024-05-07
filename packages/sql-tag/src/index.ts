@@ -7,6 +7,7 @@ export {
   type FragmentSqlToken,
   type IdentifierSqlToken,
   type IntervalInput,
+  type IntervalSqlToken,
   type JsonBinarySqlToken,
   type JsonSqlToken,
   type ListSqlToken,
