@@ -1,5 +1,14 @@
 # slonik-interceptor-query-logging
 
+## 40.2.5
+
+### Patch Changes
+
+- [`ef802a9`](https://github.com/gajus/slonik/commit/ef802a91be2bc6e69b077c544cc7f9e5a2687433) Thanks [@gajus](https://github.com/gajus)! - force patch bump
+
+- Updated dependencies [[`ef802a9`](https://github.com/gajus/slonik/commit/ef802a91be2bc6e69b077c544cc7f9e5a2687433)]:
+  - slonik@40.2.5
+
 ## 40.2.4
 
 ### Patch Changes
