@@ -1,4 +1,3 @@
-import { InvalidInputError } from '../errors';
 import { Logger } from '../Logger';
 import {
   ArrayToken,
@@ -40,6 +39,7 @@ import { isPrimitiveValueExpression } from '../utilities/isPrimitiveValueExpress
 import { isSqlToken } from '../utilities/isSqlToken';
 import { safeStringify } from '../utilities/safeStringify';
 import { createSqlTokenSqlFragment } from './createSqlTokenSqlFragment';
+import { InvalidInputError } from '@slonik/errors';
 import { z, type ZodTypeAny } from 'zod';
 
 const log = Logger.child({

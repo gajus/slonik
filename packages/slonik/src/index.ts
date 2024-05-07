@@ -1,4 +1,4 @@
-import { createSqlTag } from './factories/createSqlTag';
+import { createSqlTag } from '@slonik/sql-tag';
 
 export {
   createDriverFactory,
@@ -41,7 +41,6 @@ export {
   UniqueIntegrityConstraintViolationError,
 } from './errors';
 export { createPool } from './factories/createPool';
-export { createSqlTag } from './factories/createSqlTag';
 export { createSqlTokenSqlFragment } from './factories/createSqlTokenSqlFragment';
 export { createTypeParserPreset } from './factories/createTypeParserPreset';
 export { createBigintTypeParser } from './factories/typeParsers/createBigintTypeParser';
@@ -83,13 +82,16 @@ export type {
   QuerySqlToken,
   SerializableValue,
   SqlFragment,
-  SqlTag,
-  SqlToken,
   TypeNameIdentifier,
   TypeParser,
-  UnnestSqlToken,
   ValueExpression,
 } from './types';
 export { isSqlToken } from './utilities/isSqlToken';
 export { parseDsn } from './utilities/parseDsn';
 export { stringifyDsn } from './utilities/stringifyDsn';
+export {
+  createSqlTag,
+  type SqlTag,
+  type SqlToken,
+  type UnnestSqlToken,
+} from '@slonik/sql-tag';

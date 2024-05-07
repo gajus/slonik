@@ -5,8 +5,8 @@ import {
 } from '../errors';
 import { createPgDriverFactory } from '../factories/createPgDriverFactory';
 import { createPool } from '../factories/createPool';
-import { createSqlTag } from '../factories/createSqlTag';
 import { createTestRunner } from '../helpers.test/createTestRunner';
+import { createSqlTag } from '@slonik/sql-tag';
 import { expectTypeOf } from 'expect-type';
 import { z } from 'zod';
 

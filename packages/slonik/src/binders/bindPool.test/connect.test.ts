@@ -1,9 +1,9 @@
 /* eslint-disable ava/max-asserts */
 
 import { createPgDriverFactory } from '../../factories/createPgDriverFactory';
-import { createSqlTag } from '../../factories/createSqlTag';
 import { createPoolWithSpy } from '../../helpers.test/createPoolWithSpy';
 import { createTestRunner } from '../../helpers.test/createTestRunner';
+import { createSqlTag } from '@slonik/sql-tag';
 
 const driverFactory = createPgDriverFactory();
 
