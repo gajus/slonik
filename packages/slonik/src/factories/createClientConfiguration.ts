@@ -1,10 +1,10 @@
-import { InvalidConfigurationError } from '../errors';
 import {
   type ClientConfiguration,
   type ClientConfigurationInput,
   type TypeParser,
 } from '../types';
 import { createTypeParserPreset } from './createTypeParserPreset';
+import { InvalidConfigurationError } from '@slonik/errors';
 
 export const createClientConfiguration = (
   connectionUri: string,

@@ -1,7 +1,7 @@
-import { NotFoundError } from '../errors';
 import { createPgDriverFactory } from '../factories/createPgDriverFactory';
 import { createPool } from '../factories/createPool';
 import { createTestRunner } from '../helpers.test/createTestRunner';
+import { NotFoundError } from '@slonik/errors';
 import { createSqlTag } from '@slonik/sql-tag';
 
 const driverFactory = createPgDriverFactory();

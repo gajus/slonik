@@ -1,5 +1,13 @@
 /* eslint-disable canonical/id-match */
 
+import { type Field, type Query, type TypeParser } from '../types';
+import { parseDsn } from '../utilities/parseDsn';
+import {
+  createDriverFactory,
+  type DriverCommand,
+  type DriverConfiguration,
+  type DriverFactory,
+} from './createDriverFactory';
 import {
   BackendTerminatedError,
   BackendTerminatedUnexpectedlyError,
@@ -13,20 +21,8 @@ import {
   StatementTimeoutError,
   UnexpectedStateError,
   UniqueIntegrityConstraintViolationError,
-} from '../errors';
-import {
-  type Field,
-  type PrimitiveValueExpression,
-  type Query,
-  type TypeParser,
-} from '../types';
-import { parseDsn } from '../utilities/parseDsn';
-import {
-  createDriverFactory,
-  type DriverCommand,
-  type DriverConfiguration,
-  type DriverFactory,
-} from './createDriverFactory';
+} from '@slonik/errors';
+import { type PrimitiveValueExpression } from '@slonik/sql-tag';
 import { Transform } from 'node:stream';
 // eslint-disable-next-line no-restricted-imports
 import {

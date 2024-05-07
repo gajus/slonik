@@ -49,8 +49,6 @@
   "nyc": {
     "all": true,
     "exclude": [
-      "src/bin",
-      "src/queries/*.ts",
       "**/*.d.ts"
     ],
     "include": [

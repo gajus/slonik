@@ -1,5 +1,4 @@
 import { bindPoolConnection } from '../binders/bindPoolConnection';
-import { UnexpectedStateError } from '../errors';
 import { establishConnection } from '../routines/establishConnection';
 import { getPoolClientState } from '../state';
 import {
@@ -9,13 +8,14 @@ import {
   type DatabasePoolConnection,
   type Logger,
   type MaybePromise,
-  type QuerySqlToken,
 } from '../types';
 import { defer } from '../utilities/defer';
 import {
   type ConnectionPool,
   type ConnectionPoolClient,
 } from './createConnectionPool';
+import { UnexpectedStateError } from '@slonik/errors';
+import { type QuerySqlToken } from '@slonik/sql-tag';
 
 type ConnectionHandlerType = (
   connectionLog: Logger,

@@ -1,4 +1,3 @@
-import { ConnectionError, UnexpectedStateError } from '../errors';
 import {
   type ConnectionPool,
   type ConnectionPoolClient,
@@ -6,6 +5,7 @@ import {
 import { poolClientStateMap } from '../state';
 import { type Logger } from '../types';
 import { createUid } from '../utilities/createUid';
+import { ConnectionError, UnexpectedStateError } from '@slonik/errors';
 import { serializeError } from 'serialize-error';
 
 export const establishConnection = async (

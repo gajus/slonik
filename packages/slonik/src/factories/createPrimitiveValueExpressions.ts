@@ -1,7 +1,7 @@
-import { UnexpectedStateError } from '../errors';
 import { Logger } from '../Logger';
-import { type PrimitiveValueExpression } from '../types';
 import { safeStringify } from '../utilities/safeStringify';
+import { UnexpectedStateError } from '@slonik/errors';
+import { type PrimitiveValueExpression } from '@slonik/sql-tag';
 
 const log = Logger.child({
   namespace: 'createPrimitiveValueExpressions',

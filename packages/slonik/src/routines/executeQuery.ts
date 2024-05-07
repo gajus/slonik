@@ -1,5 +1,21 @@
 import { TRANSACTION_ROLLBACK_ERROR_PREFIX } from '../constants';
 import { transactionContext } from '../contexts/transactionContext';
+import { type ConnectionPoolClient } from '../factories/createConnectionPool';
+import { type DriverNotice } from '../factories/createDriverFactory';
+import { getPoolClientState } from '../state';
+import {
+  type ClientConfiguration,
+  type Interceptor,
+  type Logger,
+  type Query,
+  type QueryContext,
+  type QueryId,
+  type QueryResult,
+  type QueryResultRow,
+  type StreamResult,
+} from '../types';
+import { createQueryId } from '../utilities/createQueryId';
+import { defer } from '../utilities/defer';
 import {
   BackendTerminatedError,
   BackendTerminatedUnexpectedlyError,
@@ -8,25 +24,11 @@ import {
   TupleMovedToAnotherPartitionError,
   UnexpectedForeignConnectionError,
   UnexpectedStateError,
-} from '../errors';
-import { type ConnectionPoolClient } from '../factories/createConnectionPool';
-import { type DriverNotice } from '../factories/createDriverFactory';
-import { getPoolClientState } from '../state';
+} from '@slonik/errors';
 import {
-  type ClientConfiguration,
-  type Interceptor,
-  type Logger,
   type PrimitiveValueExpression,
-  type Query,
-  type QueryContext,
-  type QueryId,
-  type QueryResult,
-  type QueryResultRow,
   type QuerySqlToken,
-  type StreamResult,
-} from '../types';
-import { createQueryId } from '../utilities/createQueryId';
-import { defer } from '../utilities/defer';
+} from '@slonik/sql-tag';
 import { getStackTrace } from 'get-stack-trace';
 import { serializeError } from 'serialize-error';
 

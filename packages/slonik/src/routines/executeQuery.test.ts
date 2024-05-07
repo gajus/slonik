@@ -1,9 +1,9 @@
 import { type QuerySqlToken } from '..';
-import { InvalidInputError } from '../errors';
 import { createClientConfiguration } from '../helpers.test/createClientConfiguration';
 import { createErrorWithCode } from '../helpers.test/createErrorWithCode';
 import { poolClientStateMap } from '../state';
 import { executeQuery } from './executeQuery';
+import { InvalidInputError } from '@slonik/errors';
 import anyTest, { type TestFn } from 'ava';
 import { Roarr } from 'roarr';
 import * as sinon from 'sinon';

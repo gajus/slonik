@@ -1,12 +1,13 @@
-import { type SlonikError } from './errors';
 import { type ConnectionPoolClient } from './factories/createConnectionPool';
 import {
   type DriverFactory,
   type DriverNotice,
 } from './factories/createDriverFactory';
+import { type SlonikError } from '@slonik/errors';
 import {
   type PrimitiveValueExpression,
   type QuerySqlToken,
+  type SqlFragment,
   type SqlToken,
 } from '@slonik/sql-tag';
 import { type Readable } from 'node:stream';
@@ -225,11 +226,6 @@ export type QueryResultRowColumn = PrimitiveValueExpression;
 export type QueryResultRow = Record<string, PrimitiveValueExpression>;
 
 export type Query = {
-  readonly sql: string;
-  readonly values: readonly PrimitiveValueExpression[];
-};
-
-export type SqlFragment = {
   readonly sql: string;
   readonly values: readonly PrimitiveValueExpression[];
 };
