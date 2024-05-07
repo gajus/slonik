@@ -27,7 +27,7 @@ import {
   type PrimitiveValueExpression,
   type SerializableValue,
   type SqlFragment,
-  type SqlToken as SqlTokenType,
+  type SqlTag,
   type TimestampSqlToken,
   type TypeNameIdentifier,
   type UnnestSqlToken,
@@ -121,89 +121,80 @@ export const createSqlTag = <
   configuration: {
     typeAliases?: Z;
   } = {},
-) => {
+): SqlTag<Z> => {
   const typeAliases = configuration.typeAliases;
 
   return {
-    array: (
-      values: readonly PrimitiveValueExpression[],
-      memberType: SqlTokenType | TypeNameIdentifier,
-    ): ArraySqlToken => {
+    array: (values, memberType) => {
       return Object.freeze({
         memberType,
         type: ArrayToken,
         values,
       });
     },
-    binary: (data: Buffer): BinarySqlToken => {
+    binary: (data) => {
       return Object.freeze({
         data,
         type: BinaryToken,
       });
     },
-    date: (date: Date): DateSqlToken => {
+    date: (date) => {
       return Object.freeze({
         date,
         type: DateToken,
       });
     },
-    fragment: (
-      parts: readonly string[],
-      ...args: readonly ValueExpression[]
-    ): FragmentSqlToken => {
+    fragment: (parts, ...args) => {
       return Object.freeze({
         ...createFragment(parts, args),
         type: FragmentToken,
       });
     },
-    identifier: (names: readonly string[]): IdentifierSqlToken => {
+    identifier: (names) => {
       return Object.freeze({
         names,
         type: IdentifierToken,
       });
     },
-    interval: (interval: IntervalInput): IntervalSqlToken => {
+    interval: (interval) => {
       return Object.freeze({
         interval,
         type: IntervalToken,
       });
     },
-    join: (
-      members: readonly ValueExpression[],
-      glue: SqlFragment,
-    ): ListSqlToken => {
+    join: (members, glue) => {
       return Object.freeze({
         glue,
         members,
         type: ListToken,
       });
     },
-    json: (value: SerializableValue): JsonSqlToken => {
+    json: (value) => {
       return Object.freeze({
         type: JsonToken,
         value,
       });
     },
-    jsonb: (value: SerializableValue): JsonBinarySqlToken => {
+    jsonb: (value) => {
       return Object.freeze({
         type: JsonBinaryToken,
         value,
       });
     },
-    literalValue: (value: string): SqlFragment => {
+    literalValue: (value) => {
       return Object.freeze({
         sql: escapeLiteralValue(value),
         type: FragmentToken,
         values: [],
       });
     },
-    timestamp: (date: Date): TimestampSqlToken => {
+    timestamp: (date) => {
       return Object.freeze({
         date,
         type: TimestampToken,
       });
     },
-    type: <T extends ZodTypeAny>(parser: T) => {
+    type: (parser) => {
       return (
         parts: readonly string[],
         ...args: readonly ValueExpression[]
@@ -215,7 +206,7 @@ export const createSqlTag = <
         });
       };
     },
-    typeAlias: <Y extends keyof Z>(parserAlias: Y) => {
+    typeAlias: (parserAlias) => {
       if (!typeAliases?.[parserAlias]) {
         throw new Error(
           'Type alias "' + String(parserAlias) + '" does not exist.',
@@ -233,19 +224,14 @@ export const createSqlTag = <
         });
       };
     },
-    unnest: (
-      tuples: ReadonlyArray<readonly PrimitiveValueExpression[]>,
-      columnTypes:
-        | Array<[...string[], TypeNameIdentifier]>
-        | Array<SqlFragment | TypeNameIdentifier>,
-    ): UnnestSqlToken => {
+    unnest: (tuples, columnTypes) => {
       return Object.freeze({
         columnTypes,
         tuples,
         type: UnnestToken,
       });
     },
-    unsafe: (parts: readonly string[], ...args: readonly ValueExpression[]) => {
+    unsafe: (parts, ...args) => {
       return Object.freeze({
         ...createFragment(parts, args),
         parser: z.any(),

@@ -52,7 +52,7 @@ export type TypeNameIdentifier =
   | 'uuid';
 
 export type ArraySqlToken = {
-  readonly memberType: SqlToken | TypeNameIdentifier;
+  readonly memberType: SqlFragment | TypeNameIdentifier;
   readonly type: typeof tokens.ArrayToken;
   readonly values: readonly PrimitiveValueExpression[];
 };
@@ -133,7 +133,9 @@ export type SqlToken =
   | TimestampSqlToken
   | UnnestSqlToken;
 
-export type SqlTag<Z extends Record<string, ZodTypeAny>> = {
+export type SqlTag<
+  Z extends Record<string, ZodTypeAny> = Record<string, ZodTypeAny>,
+> = {
   array: (
     values: readonly PrimitiveValueExpression[],
     memberType: SqlFragment | TypeNameIdentifier,

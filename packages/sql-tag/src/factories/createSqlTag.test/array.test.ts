@@ -97,6 +97,7 @@ test('throws if array member is not a primitive value expression', (t) => {
 
 test('throws if memberType is not a string or SqlToken of different type than "SLONIK_TOKEN_FRAGMENT"', (t) => {
   const error = t.throws(() => {
+    // @ts-expect-error - intentional
     sql.fragment`SELECT ${sql.array([1, 2, 3], sql.identifier(['int']))}`;
   });
 

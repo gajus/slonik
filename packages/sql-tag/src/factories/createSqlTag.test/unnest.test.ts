@@ -123,12 +123,7 @@ test('throws if tuple member is not a primitive value expression', (t) => {
   const error = t.throws(() => {
     sql.fragment`SELECT * FROM ${sql.unnest(
       [
-        [
-          // @ts-expect-error Intentional invalid value.
-          () => {},
-          2,
-          3,
-        ],
+        [() => {}, 2, 3],
         [4, 5],
       ],
       ['int4', 'int4', 'int4'],
