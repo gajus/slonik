@@ -18,7 +18,6 @@ export {
 
 export const sql = createSqlTag();
 
-export { stringifyDsn } from '../../utilities/src/utilities/stringifyDsn';
 export { createPool } from './factories/createPool';
 export { createTypeParserPreset } from './factories/createTypeParserPreset';
 export { createBigintTypeParser } from './factories/typeParsers/createBigintTypeParser';
@@ -93,4 +92,5 @@ export {
   type SqlToken,
   type UnnestSqlToken,
 } from '@slonik/sql-tag';
+export { stringifyDsn } from '@slonik/utilities';
 export { parseDsn } from '@slonik/utilities';
