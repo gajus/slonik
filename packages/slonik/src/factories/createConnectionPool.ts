@@ -197,6 +197,9 @@ export const createConnectionPool = ({
 
       logger.warn(
         {
+          connections: connections.length,
+          pendingConnections: pendingConnections.length,
+          poolSize,
           waitingClients: waitingClients.length,
         },
         `connection pool full; client has been queued`,
