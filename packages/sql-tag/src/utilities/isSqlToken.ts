@@ -44,9 +44,9 @@ export const isSqlToken = (subject: unknown): subject is SqlTokenType => {
     );
   }
 
-  if (typeof subject.type !== 'string') {
-    throw new UnexpectedStateError('Expected type to be string.');
+  if (typeof subject.type !== 'symbol') {
+    throw new UnexpectedStateError('Expected type to be symbol.');
   }
 
-  return (Tokens as readonly string[]).includes(subject.type);
+  return (Tokens as readonly symbol[]).includes(subject.type);
 };

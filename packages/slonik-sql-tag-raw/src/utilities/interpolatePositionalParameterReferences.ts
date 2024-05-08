@@ -61,7 +61,7 @@ export const interpolatePositionalParameterReferences = (
 
   return {
     sql: resultSql,
-    type: 'SLONIK_TOKEN_FRAGMENT',
+    type: Symbol.for('SLONIK_TOKEN_FRAGMENT'),
     values: Object.freeze(resultValues),
-  };
+  } as FragmentSqlToken;
 };
