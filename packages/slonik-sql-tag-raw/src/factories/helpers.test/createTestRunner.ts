@@ -6,7 +6,7 @@ import { createPool, sql } from 'slonik';
 // eslint-disable-next-line n/no-process-env
 const POSTGRES_DSN = process.env.POSTGRES_DSN ?? 'postgres@localhost:5432';
 
-export type TestContextType = {
+type TestContextType = {
   dsn: string;
   testDatabaseName: string;
 };
