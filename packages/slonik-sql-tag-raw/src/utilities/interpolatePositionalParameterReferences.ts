@@ -1,4 +1,5 @@
 import { type PrimitiveValueExpression } from '../types';
+import { FragmentToken } from '@slonik/sql-tag';
 import {
   createSqlTokenSqlFragment,
   type FragmentSqlToken,
@@ -64,7 +65,7 @@ export const interpolatePositionalParameterReferences = (
 
   return {
     sql: resultSql,
-    type: 'SLONIK_TOKEN_FRAGMENT',
+    type: FragmentToken,
     values: Object.freeze(resultValues),
   };
 };
