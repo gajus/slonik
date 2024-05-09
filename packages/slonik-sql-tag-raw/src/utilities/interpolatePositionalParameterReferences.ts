@@ -1,4 +1,5 @@
 import { type PrimitiveValueExpression } from '../types';
+import { FragmentToken } from '@slonik/sql-tag';
 import {
   createSqlTokenSqlFragment,
   type FragmentSqlToken,
@@ -7,7 +8,7 @@ import {
   type ValueExpression,
 } from 'slonik';
 
-const slonikPlaceholderRegexRule = /\$slonik_(\d+)/gu;
+const slonikPlaceholderRegexRule = /\$(?:slonik_)?(\d+)/gu;
 
 /**
  * @see https://github.com/mysqljs/sqlstring/blob/f946198800a8d7f198fcf98d8bb80620595d01ec/lib/SqlString.js#L73
@@ -20,7 +21,10 @@ export const interpolatePositionalParameterReferences = (
 
   const bindingNames = (inputSql.match(slonikPlaceholderRegexRule) ?? [])
     .map((match) => {
-      return Number.parseInt(match.replace('$slonik_', ''), 10);
+      return Number.parseInt(
+        match.replace('$slonik_', '').replace('$', ''),
+        10,
+      );
     })
     .sort();
 
@@ -61,7 +65,7 @@ export const interpolatePositionalParameterReferences = (
 
   return {
     sql: resultSql,
-    type: 'SLONIK_TOKEN_FRAGMENT',
+    type: FragmentToken,
     values: Object.freeze(resultValues),
   };
 };
