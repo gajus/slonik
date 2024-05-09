@@ -163,7 +163,7 @@ Slonik has been [battle-tested](https://medium.com/@gajus/lessons-learned-scalin
 
 The name of the elephant depicted in the official PostgreSQL logo is Slonik. The name itself is derived from the Russian word for "little elephant".
 
-Read: [The History of Slonik, the PostgreSQL Elephant Logo](https://www.vertabelo.com/blog/notes-from-the-lab/the-history-of-slonik-the-postgresql-elephant-logo)
+Read: [The History of Slonik, the PostgreSQL Elephant Logo](https://learnsql.com/blog/the-history-of-slonik-the-postgresql-elephant-logo/)
 
 ### Repeating code patterns and type safety
 
