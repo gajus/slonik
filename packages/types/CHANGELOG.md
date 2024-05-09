@@ -1,5 +1,7 @@
 # @slonik/types
 
+## 44.0.0
+
 ## 43.0.8
 
 ### Patch Changes

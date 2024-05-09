@@ -1,5 +1,12 @@
 # slonik-interceptor-query-cache
 
+## 44.0.0
+
+### Patch Changes
+
+- Updated dependencies [[`96db9f0`](https://github.com/gajus/slonik/commit/96db9f08faefb0e7da0cc0d817d9e8fae361e590)]:
+  - slonik@44.0.0
+
 ## 43.0.8
 
 ### Patch Changes

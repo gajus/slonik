@@ -1,5 +1,24 @@
 # slonik
 
+## 44.0.0
+
+### Major Changes
+
+- [`96db9f0`](https://github.com/gajus/slonik/commit/96db9f08faefb0e7da0cc0d817d9e8fae361e590) Thanks [@gajus](https://github.com/gajus)! - Convert token types to symbols to ensures that SQL tokens cannot be injected from outside of the codebase, e.g. through JSON.
+
+  Thanks to @alxndrsn for reporting the issue and suggesting patch (https://github.com/gajus/slonik/pull/595).
+
+  Thanks to @danielrearden for suggesting a viable patch.
+
+### Patch Changes
+
+- Updated dependencies [[`96db9f0`](https://github.com/gajus/slonik/commit/96db9f08faefb0e7da0cc0d817d9e8fae361e590)]:
+  - @slonik/sql-tag@44.0.0
+  - @slonik/pg-driver@44.0.0
+  - @slonik/driver@44.0.0
+  - @slonik/errors@44.0.0
+  - @slonik/utilities@44.0.0
+
 ## 43.0.8
 
 ### Patch Changes
