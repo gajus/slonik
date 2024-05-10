@@ -2218,7 +2218,7 @@ Returns value of the first column of every row in the result set.
 Example:
 
 ```ts
-const fooValues = await connection.many(sql.typeAlias('foo')`SELECT foo`);
+const fooValues = await connection.manyFirst(sql.typeAlias('foo')`SELECT foo`);
 ```
 
 ### <code>maybeOne</code>
