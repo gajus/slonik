@@ -8,7 +8,7 @@ import { type ZodIssue } from 'zod';
 export class SlonikError extends Error {
   public readonly message: string;
 
-  public readonly cause?: Error;
+  public override readonly cause?: Error;
 
   public constructor(message: string, options?: { cause?: Error }) {
     super(message);
