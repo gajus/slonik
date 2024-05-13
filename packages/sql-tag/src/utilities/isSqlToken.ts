@@ -51,23 +51,19 @@ export const isSqlToken = (subject: unknown): subject is SqlTokenType => {
   }
 
   if (!hasOwnProperty(subject, 'type')) {
-    throw new UnexpectedStateError(
-      'Expected token to include "type" property.',
-    );
+    return false;
   }
 
   const tokenType = subject.type;
 
   if (typeof tokenType !== 'symbol') {
-    throw new UnexpectedStateError('Expected type to be symbol.');
+    return false;
   }
 
   const tokenTypeName = Symbol.keyFor(tokenType);
 
   if (typeof tokenTypeName !== 'string') {
-    throw new UnexpectedStateError(
-      'Expected token type to be a symbol with inferrable key',
-    );
+    return false;
   }
 
   // It is worth clarifying that we don't care if symbols match.
