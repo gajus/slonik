@@ -27,7 +27,7 @@ const getInfo = (
   };
 };
 
-const BarConnectionLoader = createConnectionLoaderClass({
+const PersonConnectionLoader = createConnectionLoaderClass({
   query: sql.type(
     z.object({
       id: z.number(),
@@ -87,7 +87,7 @@ describe('createConnectionLoaderClass', () => {
   });
 
   it('loads all records with no additional options', async () => {
-    const loader = new BarConnectionLoader(pool, {});
+    const loader = new PersonConnectionLoader(pool, {});
     const result = await loader.load({});
 
     expect(result).toMatchObject({
@@ -102,7 +102,7 @@ describe('createConnectionLoaderClass', () => {
   });
 
   it('loads records in ascending order', async () => {
-    const loader = new BarConnectionLoader(pool, {});
+    const loader = new PersonConnectionLoader(pool, {});
     const result = await loader.load({
       orderBy: ({ uid }) => [[uid, 'ASC']],
     });
@@ -112,7 +112,7 @@ describe('createConnectionLoaderClass', () => {
   });
 
   it('loads records in descending order', async () => {
-    const loader = new BarConnectionLoader(pool, {});
+    const loader = new PersonConnectionLoader(pool, {});
     const result = await loader.load({
       orderBy: ({ uid }) => [[uid, 'DESC']],
     });
@@ -122,7 +122,7 @@ describe('createConnectionLoaderClass', () => {
   });
 
   it('loads records with multiple order by expressions', async () => {
-    const loader = new BarConnectionLoader(pool, {});
+    const loader = new PersonConnectionLoader(pool, {});
     const result = await loader.load({
       orderBy: ({ uid, name }) => [
         [name, 'ASC'],
@@ -134,7 +134,7 @@ describe('createConnectionLoaderClass', () => {
   });
 
   it('loads records with complex order by expression', async () => {
-    const loader = new BarConnectionLoader(pool, {});
+    const loader = new PersonConnectionLoader(pool, {});
     const result = await loader.load({
       orderBy: ({ uid }) => [[sql.fragment`upper(${uid})`, 'ASC']],
     });
@@ -143,7 +143,7 @@ describe('createConnectionLoaderClass', () => {
   });
 
   it('loads records with where expression', async () => {
-    const loader = new BarConnectionLoader(pool, {});
+    const loader = new PersonConnectionLoader(pool, {});
     const result = await loader.load({
       where: ({ name }) => sql.fragment`upper(${name}) = 'EEE'`,
     });
@@ -152,7 +152,7 @@ describe('createConnectionLoaderClass', () => {
   });
 
   it('loads records with limit', async () => {
-    const loader = new BarConnectionLoader(pool, {});
+    const loader = new PersonConnectionLoader(pool, {});
     const result = await loader.load({
       limit: 4,
       orderBy: ({ uid }) => [[uid, 'ASC']],
@@ -162,7 +162,7 @@ describe('createConnectionLoaderClass', () => {
   });
 
   it('loads records with limit and offset', async () => {
-    const loader = new BarConnectionLoader(pool, {});
+    const loader = new PersonConnectionLoader(pool, {});
     const result = await loader.load({
       limit: 4,
       offset: 4,
@@ -173,7 +173,7 @@ describe('createConnectionLoaderClass', () => {
   });
 
   it('paginates through the records forwards', async () => {
-    const loader = new BarConnectionLoader(pool, {});
+    const loader = new PersonConnectionLoader(pool, {});
     const firstResult = await loader.load({
       limit: 4,
       orderBy: ({ uid }) => [[uid, 'ASC']],
@@ -223,7 +223,7 @@ describe('createConnectionLoaderClass', () => {
   });
 
   it('paginates through the records backwards', async () => {
-    const loader = new BarConnectionLoader(pool, {});
+    const loader = new PersonConnectionLoader(pool, {});
     const firstResult = await loader.load({
       limit: 4,
       orderBy: ({ uid }) => [[uid, 'ASC']],
@@ -277,7 +277,7 @@ describe('createConnectionLoaderClass', () => {
   });
 
   it('batches loaded records', async () => {
-    const loader = new BarConnectionLoader(pool, {});
+    const loader = new PersonConnectionLoader(pool, {});
     const poolAnySpy = vi.spyOn(pool, 'any');
 
     poolAnySpy.mockClear();
@@ -302,7 +302,7 @@ describe('createConnectionLoaderClass', () => {
   });
 
   it('caches loaded records', async () => {
-    const loader = new BarConnectionLoader(pool, {});
+    const loader = new PersonConnectionLoader(pool, {});
     const poolAnySpy = vi.spyOn(pool, 'any');
     poolAnySpy.mockClear();
     const resultsA = await loader.load({
@@ -318,7 +318,7 @@ describe('createConnectionLoaderClass', () => {
   });
 
   it('gets the count', async () => {
-    const loader = new BarConnectionLoader(pool, {});
+    const loader = new PersonConnectionLoader(pool, {});
     const results = await Promise.all([
       loader.load({
         info: getInfo(['edges', 'count']),
@@ -335,7 +335,7 @@ describe('createConnectionLoaderClass', () => {
   });
 
   it('gets the count without fetching edges', async () => {
-    const loader = new BarConnectionLoader(pool, {});
+    const loader = new PersonConnectionLoader(pool, {});
     const results = await Promise.all([
       loader.load({
         info: getInfo(['count']),
@@ -354,7 +354,7 @@ describe('createConnectionLoaderClass', () => {
   });
 
   it('gets the edges without fetching edges', async () => {
-    const loader = new BarConnectionLoader(pool, {});
+    const loader = new PersonConnectionLoader(pool, {});
     const results = await Promise.all([
       loader.load({
         info: getInfo(['edges']),
