@@ -11,10 +11,10 @@
   },
   "description": "Utilities for creating DataLoaders using Slonik.",
   "devDependencies": {
-    "@slonik/types": "^46.0.0",
+    "@slonik/types": "^44.0.0",
     "eslint": "^8.57.0",
     "eslint-config-canonical": "^42.8.1",
-    "slonik": "^46.0.0",
+    "slonik": "^44.0.0",
     "typescript": "^4.5.3",
     "vitest": "^1.6.0"
   },
@@ -30,7 +30,7 @@
   "main": "./dist/index.js",
   "name": "@slonik/dataloaders",
   "peerDependencies": {
-    "slonik": ">=46.0.0"
+    "slonik": ">=44.0.0"
   },
   "repository": {
     "type": "git",
@@ -42,5 +42,5 @@
     "test": "npx vitest run"
   },
   "typings": "./dist/index.d.ts",
-  "version": "46.0.0"
+  "version": "44.0.0"
 }
