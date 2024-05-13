@@ -216,6 +216,7 @@ export const createConnectionLoaderClass = <T extends ZodTypeAny>(config: {
               const cursorValues: string[] = [];
 
               let index = 0;
+
               while (true) {
                 const value = record[SORT_COLUMN_ALIAS]?.[index];
                 if (value === undefined) {
@@ -226,8 +227,14 @@ export const createConnectionLoaderClass = <T extends ZodTypeAny>(config: {
                 }
               }
 
+              // TODO add a test for this
+              // Strip out `__typename`, otherwise if the connection object is returned inside a resolver,
+              // GraphQL will throw an error because the typename won't match the edge type
+              // eslint-disable-next-line @typescript-eslint/no-unused-vars, @typescript-eslint/naming-convention
+              const { __typename, ...edgeFields } = record;
+
               return {
-                ...record,
+                ...edgeFields,
                 cursor: toCursor(cursorValues),
                 node: record,
               };
