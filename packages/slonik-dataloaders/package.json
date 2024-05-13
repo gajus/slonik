@@ -1,0 +1,46 @@
+{
+  "author": {
+    "email": "gajus@gajus.com",
+    "name": "Gajus Kuizinas",
+    "url": "http://gajus.com"
+  },
+  "dependencies": {
+    "dataloader": "^2.2.2",
+    "graphql": "^16.8.1",
+    "zod": "^3.23.8"
+  },
+  "description": "Utilities for creating DataLoaders using Slonik.",
+  "devDependencies": {
+    "@slonik/types": "^44.0.0",
+    "eslint": "^8.57.0",
+    "eslint-config-canonical": "^42.8.1",
+    "slonik": "^44.0.0",
+    "typescript": "^4.5.3",
+    "vitest": "^1.6.0"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "keywords": [
+    "postgresql",
+    "interceptor",
+    "logging"
+  ],
+  "license": "BSD-3-Clause",
+  "main": "./dist/index.js",
+  "name": "@slonik/dataloaders",
+  "peerDependencies": {
+    "slonik": ">=44.0.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/gajus/slonik"
+  },
+  "scripts": {
+    "build": "rm -fr ./dist && tsc",
+    "lint": "eslint ./src && tsc --noEmit",
+    "test": "npx vitest run"
+  },
+  "typings": "./dist/index.d.ts",
+  "version": "44.0.0"
+}
