@@ -128,7 +128,7 @@ describe('createConnectionLoaderClass', () => {
     expect(result.edges[9].node.id).toEqual(1);
   });
 
-  it('loads records with multiple order by expressions', async () => {
+  it('loads records with multiple ORDER BY expressions', async () => {
     const loader = new PersonConnectionLoader(pool, {});
     const result = await loader.load({
       orderBy: ({ uid, name }) => [
@@ -140,7 +140,7 @@ describe('createConnectionLoaderClass', () => {
     expect(getNodeIds(result.edges)).toEqual([2, 1, 4, 3, 6, 5, 8, 7, 10, 9]);
   });
 
-  it('loads records with complex order by expression', async () => {
+  it('loads records with complex ORDER BY expression', async () => {
     const loader = new PersonConnectionLoader(pool, {});
     const result = await loader.load({
       orderBy: ({ uid }) => [[sql.fragment`${uid}`, 'ASC']],
@@ -149,7 +149,7 @@ describe('createConnectionLoaderClass', () => {
     expect(getNodeIds(result.edges)).toEqual([1, 2, 3, 4, 5, 6, 7, 8, 9, 10]);
   });
 
-  it('loads records with where expression', async () => {
+  it('loads records with WHERE expression', async () => {
     const loader = new PersonConnectionLoader(pool, {});
     const result = await loader.load({
       where: ({ name }) => sql.fragment`${name} = 'eee'`,
@@ -158,7 +158,7 @@ describe('createConnectionLoaderClass', () => {
     expect(getNodeIds(result.edges)).toEqual([9, 10]);
   });
 
-  it('loads records with limit', async () => {
+  it('loads records with LIMIT', async () => {
     const loader = new PersonConnectionLoader(pool, {});
     const result = await loader.load({
       limit: 4,
@@ -168,7 +168,7 @@ describe('createConnectionLoaderClass', () => {
     expect(getNodeIds(result.edges)).toEqual([1, 2, 3, 4]);
   });
 
-  it('loads records with limit and offset', async () => {
+  it('loads records with LIMIT and OFFSET', async () => {
     const loader = new PersonConnectionLoader(pool, {});
     const result = await loader.load({
       limit: 4,
@@ -366,7 +366,7 @@ describe('createConnectionLoaderClass', () => {
     expect(results[1].edges.length).toEqual(0);
   });
 
-  it('gets a mix of count and edges', async () => {
+  it('gets a mix of count and edges (batch)', async () => {
     const loader = new PersonConnectionLoader(pool, {});
 
     const results = await Promise.all([
