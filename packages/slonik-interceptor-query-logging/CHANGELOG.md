@@ -1,5 +1,12 @@
 # slonik-interceptor-query-logging
 
+## 46.0.0
+
+### Patch Changes
+
+- Updated dependencies []:
+  - slonik@46.0.0
+
 ## 45.0.0
 
 ### Patch Changes
