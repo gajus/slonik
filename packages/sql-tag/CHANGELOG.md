@@ -1,5 +1,15 @@
 # @slonik/sql-tag
 
+## 45.2.1
+
+### Patch Changes
+
+- [`0378001`](https://github.com/gajus/slonik/commit/0378001b3de22b749348ce40cdea1ce75c423b30) Thanks [@gajus](https://github.com/gajus)! - is\* method must not throw
+
+- Updated dependencies []:
+  - @slonik/errors@45.2.1
+  - @slonik/types@45.2.1
+
 ## 45.2.0
 
 ### Patch Changes
