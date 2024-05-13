@@ -338,6 +338,17 @@ describe('createConnectionLoaderClass', () => {
 
   it('gets the count without fetching edges', async () => {
     const loader = new PersonConnectionLoader(pool, {});
+    const result = await loader.load({
+      info: getInfo(['count']),
+      where: ({ name }) => sql.fragment`${name} = 'ccc'`,
+    });
+
+    expect(result.count).toEqual(2n);
+    expect(result.edges.length).toEqual(0);
+  });
+
+  it('gets the count without fetching edges (batch)', async () => {
+    const loader = new PersonConnectionLoader(pool, {});
     const results = await Promise.all([
       loader.load({
         info: getInfo(['count']),
@@ -353,6 +364,24 @@ describe('createConnectionLoaderClass', () => {
     expect(results[0].edges.length).toEqual(0);
     expect(results[1].count).toEqual(2n);
     expect(results[1].edges.length).toEqual(0);
+  });
+
+  it('gets a mix of count and edges', async () => {
+    const loader = new PersonConnectionLoader(pool, {});
+
+    const results = await Promise.all([
+      loader.load({
+        info: getInfo(['edges']),
+        where: ({ name }) => sql.fragment`${name} = 'eee'`,
+      }),
+      loader.load({
+        info: getInfo(['count']),
+        where: ({ name }) => sql.fragment`${name} = 'eee'`,
+      }),
+    ]);
+
+    expect(results[0].count).toEqual(0);
+    expect(results[1].count).toEqual(2n);
   });
 
   it('gets the edges without fetching edges', async () => {

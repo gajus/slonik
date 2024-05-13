@@ -38,6 +38,7 @@ export const createConnectionLoaderClass = <T extends ZodTypeAny>(config: {
   query: QuerySqlToken<T>;
 }) => {
   const { columnNameTransformer = snakeCase, query } = config;
+
   const columnIdentifiers = getColumnIdentifiers<z.infer<T>>(
     TABLE_ALIAS,
     columnNameTransformer,
@@ -58,8 +59,8 @@ export const createConnectionLoaderClass = <T extends ZodTypeAny>(config: {
     ) {
       super(
         async (loaderKeys) => {
-          const edgesQueries: QuerySqlToken[] = [];
-          const countQueries: QuerySqlToken[] = [];
+          const edgesQueries: Array<QuerySqlToken | null> = [];
+          const countQueries: Array<QuerySqlToken | null> = [];
 
           for (const loaderKey of loaderKeys.values()) {
             const {
@@ -98,6 +99,8 @@ export const createConnectionLoaderClass = <T extends ZodTypeAny>(config: {
                   }
                 )`,
               );
+            } else {
+              countQueries.push(null);
             }
 
             if (
@@ -181,6 +184,8 @@ export const createConnectionLoaderClass = <T extends ZodTypeAny>(config: {
                   OFFSET ${offset || 0}
                 )`,
               );
+            } else {
+              edgesQueries.push(null);
             }
           }
 
@@ -203,12 +208,16 @@ export const createConnectionLoaderClass = <T extends ZodTypeAny>(config: {
           const [edgeResults, countResults] = await Promise.all([
             Promise.all(
               edgesQueries.map((edgesQuery) => {
-                return pool.any(sql.type(edgeSchema)`${edgesQuery}`);
+                return edgesQuery === null
+                  ? []
+                  : pool.any(sql.type(edgeSchema)`${edgesQuery}`);
               }),
             ),
             Promise.all(
               countQueries.map((countQuery) => {
-                return pool.oneFirst(sql.type(countSchema)`${countQuery}`);
+                return countQuery === null
+                  ? 0
+                  : pool.oneFirst(sql.type(countSchema)`${countQuery}`);
               }),
             ),
           ]);
