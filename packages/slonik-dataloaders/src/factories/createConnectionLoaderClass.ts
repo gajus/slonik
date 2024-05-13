@@ -16,7 +16,7 @@ import {
   sql,
   type SqlToken,
 } from 'slonik';
-import { type AnyZodObject, z, type ZodTypeAny } from 'zod';
+import { z, type ZodTypeAny } from 'zod';
 
 type DataLoaderKey<TResult> = {
   cursor?: string | null;
@@ -61,7 +61,7 @@ export const createConnectionLoaderClass = <T extends ZodTypeAny>(config: {
           const edgesQueries: QuerySqlToken[] = [];
           const countQueries: QuerySqlToken[] = [];
 
-          for (const [index, loaderKey] of loaderKeys.entries()) {
+          for (const loaderKey of loaderKeys.values()) {
             const {
               cursor,
               info,
@@ -80,18 +80,11 @@ export const createConnectionLoaderClass = <T extends ZodTypeAny>(config: {
             const conditions: SqlToken[] = where
               ? [sql.fragment`(${where(columnIdentifiers)})`]
               : [];
-            const queryKey = String(index);
-
-            const selectExpressions = [sql.fragment`${queryKey} "key"`];
 
             if (requestedFields.has('count')) {
               countQueries.push(
                 sql.unsafe`(
-                  SELECT
-                    ${sql.join(
-                      [...selectExpressions, sql.fragment`count(*) count`],
-                      sql.fragment`, `,
-                    )}
+                  SELECT count(*) count
                   FROM (
                     ${query}
                   ) ${sql.identifier([TABLE_ALIAS])}
@@ -114,7 +107,7 @@ export const createConnectionLoaderClass = <T extends ZodTypeAny>(config: {
               const orderByExpressions: Array<[SqlToken, OrderDirection]> =
                 orderBy ? orderBy(columnIdentifiers) : [];
 
-              selectExpressions.push(
+              const selectExpressions = [
                 sql.fragment`${sql.identifier([TABLE_ALIAS])}.*`,
                 sql.fragment`json_build_array(${
                   orderByExpressions.length
@@ -124,7 +117,7 @@ export const createConnectionLoaderClass = <T extends ZodTypeAny>(config: {
                       )
                     : sql.fragment``
                 }) ${sql.identifier([SORT_COLUMN_ALIAS])}`,
-              );
+              ];
 
               const orderByClause = orderByExpressions.length
                 ? sql.fragment`ORDER BY ${sql.join(
@@ -191,73 +184,55 @@ export const createConnectionLoaderClass = <T extends ZodTypeAny>(config: {
             }
           }
 
-          const parser = query.parser as unknown as AnyZodObject;
+          if (!(query.parser instanceof z.ZodObject)) {
+            throw new TypeError(
+              'Invalid query parser. Provided schema must be a ZodObject.',
+            );
+          }
 
-          const extendedParser =
-            // @ts-expect-error Accessing internal property to determine if parser is an instance of z.any()
-            parser._any === true
-              ? z
-                  .object({
-                    key: z.union([z.string(), z.number()]),
-                    s1: z.array(z.unknown()),
-                  })
-                  .passthrough()
-              : parser.extend({
-                  key: z.union([z.string(), z.number()]),
-                  s1: z.array(z.unknown()),
-                });
+          const edgeSchema = query.parser.extend({
+            [SORT_COLUMN_ALIAS]: z.array(z.any()),
+          });
+          const countSchema = z.object({
+            count: z.number(),
+          });
 
-          const [edgesRecords, countRecords] = await Promise.all([
-            edgesQueries.length
-              ? pool.any(
-                  sql.type(extendedParser)`${sql.join(
-                    edgesQueries,
-                    sql.fragment`UNION ALL`,
-                  )}`,
-                )
-              : [],
-            countQueries.length
-              ? pool.any(
-                  sql.unsafe`${sql.join(
-                    countQueries,
-                    sql.fragment`UNION ALL`,
-                  )}`,
-                )
-              : [],
+          const [edgeResults, countResults] = await Promise.all([
+            Promise.all(
+              edgesQueries.map((query) => {
+                return pool.any(sql.type(edgeSchema)`${query}`);
+              }),
+            ),
+            Promise.all(
+              countQueries.map((query) => {
+                return pool.oneFirst(sql.type(countSchema)`${query}`);
+              }),
+            ),
           ]);
 
           const connections = loaderKeys.map((loaderKey, loaderKeyIndex) => {
-            const queryKey = String(loaderKeyIndex);
             const { cursor, limit, reverse = false } = loaderKey;
 
-            const edges = edgesRecords
-              .filter((record) => {
-                return record.key === queryKey;
-              })
-              .map((record) => {
-                // eslint-disable-next-line @typescript-eslint/no-unused-vars
-                const { key, ...rest } = record;
-                const cursorValues: string[] = [];
+            const edges = (edgeResults[loaderKeyIndex] ?? []).map((record) => {
+              const cursorValues: string[] = [];
 
-                let index = 0;
-
-                while (true) {
-                  const value = record[SORT_COLUMN_ALIAS]?.[index];
-                  if (value === undefined) {
-                    break;
-                  }
-
-                  cursorValues.push(value as string);
-
+              let index = 0;
+              while (true) {
+                const value = record[SORT_COLUMN_ALIAS]?.[index];
+                if (value === undefined) {
+                  break;
+                } else {
+                  cursorValues.push(value);
                   index++;
                 }
+              }
 
-                return {
-                  ...rest,
-                  cursor: toCursor(cursorValues),
-                  node: rest,
-                };
-              });
+              return {
+                ...record,
+                cursor: toCursor(cursorValues),
+                node: record,
+              };
+            });
 
             const slicedEdges = edges.slice(
               0,
@@ -276,10 +251,7 @@ export const createConnectionLoaderClass = <T extends ZodTypeAny>(config: {
               startCursor: slicedEdges[0]?.cursor || null,
             };
 
-            const count =
-              countRecords.find((record) => {
-                return record.key === queryKey;
-              })?.count ?? 0;
+            const count = countResults[loaderKeyIndex] ?? 0;
 
             return {
               count,

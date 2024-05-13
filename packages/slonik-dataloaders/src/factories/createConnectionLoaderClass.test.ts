@@ -305,6 +305,7 @@ describe('createConnectionLoaderClass', () => {
     const loader = new PersonConnectionLoader(pool, {});
     const poolAnySpy = vi.spyOn(pool, 'any');
     poolAnySpy.mockClear();
+    const poolOneFirstSpy = vi.spyOn(pool, 'oneFirst');
     const resultsA = await loader.load({
       orderBy: ({ uid }) => [[uid, 'ASC']],
     });
@@ -312,7 +313,8 @@ describe('createConnectionLoaderClass', () => {
       orderBy: ({ uid }) => [[uid, 'ASC']],
     });
 
-    expect(poolAnySpy).toHaveBeenCalledTimes(2);
+    expect(poolAnySpy).toHaveBeenCalledTimes(1);
+    expect(poolOneFirstSpy).toHaveBeenCalledTimes(1);
     expect(getNodeIds(resultsA.edges)).toEqual([1, 2, 3, 4, 5, 6, 7, 8, 9, 10]);
     expect(getNodeIds(resultsB.edges)).toEqual([1, 2, 3, 4, 5, 6, 7, 8, 9, 10]);
   });
