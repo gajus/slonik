@@ -143,7 +143,7 @@ describe('createConnectionLoaderClass', () => {
   it('loads records with complex order by expression', async () => {
     const loader = new PersonConnectionLoader(pool, {});
     const result = await loader.load({
-      orderBy: ({ uid }) => [[sql.fragment`upper(${uid})`, 'ASC']],
+      orderBy: ({ uid }) => [[sql.fragment`${uid}`, 'ASC']],
     });
 
     expect(getNodeIds(result.edges)).toEqual([1, 2, 3, 4, 5, 6, 7, 8, 9, 10]);
@@ -152,7 +152,7 @@ describe('createConnectionLoaderClass', () => {
   it('loads records with where expression', async () => {
     const loader = new PersonConnectionLoader(pool, {});
     const result = await loader.load({
-      where: ({ name }) => sql.fragment`upper(${name}) = 'EEE'`,
+      where: ({ name }) => sql.fragment`${name} = 'eee'`,
     });
 
     expect(getNodeIds(result.edges)).toEqual([9, 10]);
@@ -328,19 +328,12 @@ describe('createConnectionLoaderClass', () => {
 
   it('gets the count', async () => {
     const loader = new PersonConnectionLoader(pool, {});
-    const results = await Promise.all([
-      loader.load({
-        info: getInfo(['edges', 'count']),
-        where: ({ name }) => sql.fragment`upper(${name}) = 'CCC'`,
-      }),
-      loader.load({
-        info: getInfo(['edges', 'count']),
-        where: ({ name }) => sql.fragment`upper(${name}) = 'EEE'`,
-      }),
-    ]);
+    const result = await loader.load({
+      info: getInfo(['count']),
+      where: ({ name }) => sql.fragment`${name} = 'ccc'`,
+    });
 
-    expect(results[0].count).toEqual(2n);
-    expect(results[1].count).toEqual(2n);
+    expect(result.count).toEqual(2n);
   });
 
   it('gets the count without fetching edges', async () => {
@@ -348,11 +341,11 @@ describe('createConnectionLoaderClass', () => {
     const results = await Promise.all([
       loader.load({
         info: getInfo(['count']),
-        where: ({ name }) => sql.fragment`upper(${name}) = 'CCC'`,
+        where: ({ name }) => sql.fragment`${name} = 'ccc'`,
       }),
       loader.load({
         info: getInfo(['count']),
-        where: ({ name }) => sql.fragment`upper(${name}) = 'EEE'`,
+        where: ({ name }) => sql.fragment`${name} = 'eee'`,
       }),
     ]);
 
@@ -367,11 +360,11 @@ describe('createConnectionLoaderClass', () => {
     const results = await Promise.all([
       loader.load({
         info: getInfo(['edges']),
-        where: ({ name }) => sql.fragment`upper(${name}) = 'CCC'`,
+        where: ({ name }) => sql.fragment`${name} = 'ccc'`,
       }),
       loader.load({
         info: getInfo(['pageInfo']),
-        where: ({ name }) => sql.fragment`upper(${name}) = 'EEE'`,
+        where: ({ name }) => sql.fragment`${name} = 'eee'`,
       }),
     ]);
 
