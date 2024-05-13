@@ -22,6 +22,7 @@ type DataLoaderKey<TResult> = {
   cursor?: string | null;
   info?: Pick<GraphQLResolveInfo, 'fieldNodes' | 'fragments'>;
   limit?: number | null;
+  offset?: number | null;
   orderBy?: (
     identifiers: ColumnIdentifiers<TResult>,
   ) => Array<[SqlToken, OrderDirection]>;
@@ -65,6 +66,7 @@ export const createConnectionLoaderClass = <T extends ZodTypeAny>(config: {
               cursor,
               info,
               limit,
+              offset,
               orderBy,
               reverse = false,
               where,
@@ -183,6 +185,7 @@ export const createConnectionLoaderClass = <T extends ZodTypeAny>(config: {
                   WHERE ${whereExpression}
                   ${orderByClause}
                   LIMIT ${limit ? limit + 1 : null}
+                  OFFSET ${offset || 0}
                 )`,
               );
             }
@@ -293,6 +296,7 @@ export const createConnectionLoaderClass = <T extends ZodTypeAny>(config: {
             cursor,
             info,
             limit,
+            offset,
             orderBy,
             reverse = false,
             where,
@@ -301,7 +305,7 @@ export const createConnectionLoaderClass = <T extends ZodTypeAny>(config: {
               ? getRequestedFields(info)
               : new Set(['pageInfo', 'edges']);
 
-            return `${cursor}|${reverse}|${limit}|${JSON.stringify(
+            return `${cursor}|${reverse}|${limit}|${offset}|${JSON.stringify(
               orderBy?.(columnIdentifiers),
             )}|${JSON.stringify(
               where?.(columnIdentifiers),

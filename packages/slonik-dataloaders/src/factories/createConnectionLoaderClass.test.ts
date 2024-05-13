@@ -161,6 +161,17 @@ describe('createConnectionLoaderClass', () => {
     expect(getNodeIds(result.edges)).toEqual([1, 2, 3, 4]);
   });
 
+  it('loads records with limit and offset', async () => {
+    const loader = new BarConnectionLoader(pool, {});
+    const result = await loader.load({
+      limit: 4,
+      offset: 4,
+      orderBy: ({ uid }) => [[uid, 'ASC']],
+    });
+
+    expect(getNodeIds(result.edges)).toEqual([5, 6, 7, 8]);
+  });
+
   it('paginates through the records forwards', async () => {
     const loader = new BarConnectionLoader(pool, {});
     const firstResult = await loader.load({
