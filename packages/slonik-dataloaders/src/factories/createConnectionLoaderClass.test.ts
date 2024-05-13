@@ -18,7 +18,7 @@ import { z } from 'zod';
 
 const POSTGRES_DSN =
   // eslint-disable-next-line n/no-process-env
-  process.env.POSTGRES_DSN ?? 'postgres://postgres@localhost:5432';
+  process.env.POSTGRES_DSN ?? 'postgres://postgres:postgres@localhost:5432';
 
 const getInfo = (
   fields: string[],
