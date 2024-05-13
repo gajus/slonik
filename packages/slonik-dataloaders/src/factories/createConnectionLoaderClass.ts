@@ -184,28 +184,27 @@ export const createConnectionLoaderClass = <T extends ZodTypeAny>(config: {
             }
           }
 
-          if (!(query.parser instanceof z.ZodObject)) {
-            throw new TypeError(
-              'Invalid query parser. Provided schema must be a ZodObject.',
-            );
-          }
-
-          const edgeSchema = query.parser.extend({
+          let edgeSchema: z.AnyZodObject = z.object({
             [SORT_COLUMN_ALIAS]: z.array(z.any()),
           });
+
+          if ('extend' in query.parser) {
+            edgeSchema = edgeSchema.extend(query.parser as any);
+          }
+
           const countSchema = z.object({
             count: z.number(),
           });
 
           const [edgeResults, countResults] = await Promise.all([
             Promise.all(
-              edgesQueries.map((query) => {
-                return pool.any(sql.type(edgeSchema)`${query}`);
+              edgesQueries.map((edgesQuery) => {
+                return pool.any(sql.type(edgeSchema)`${edgesQuery}`);
               }),
             ),
             Promise.all(
-              countQueries.map((query) => {
-                return pool.oneFirst(sql.type(countSchema)`${query}`);
+              countQueries.map((countQuery) => {
+                return pool.oneFirst(sql.type(countSchema)`${countQuery}`);
               }),
             ),
           ]);
