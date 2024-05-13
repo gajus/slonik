@@ -3,3 +3,8 @@ export { createConnectionLoaderClass } from './factories/createConnectionLoaderC
 export { createListLoader } from './factories/createListLoader';
 export { createNodeByIdLoader } from './factories/createNodeByIdLoader';
 export { createNodeByIdLoaderClass } from './factories/createNodeByIdLoaderClass';
+export {
+  type ColumnIdentifiers,
+  type Connection,
+  type OrderDirection,
+} from './types';
