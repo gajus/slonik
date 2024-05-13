@@ -1,5 +1,7 @@
 # @slonik/dataloaders
 
+## 45.2.1
+
 ## 45.2.0
 
 ### Minor Changes
