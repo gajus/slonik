@@ -32,9 +32,15 @@ const log = Logger.child({
 });
 
 const createFragment = (
-  parts: readonly string[],
+  parts: TemplateStringsArray,
   values: readonly ValueExpression[],
 ) => {
+  if (!Array.isArray(parts.raw) || !Object.isFrozen(parts.raw)) {
+    throw new InvalidInputError(
+      'Function must be called as a template literal.',
+    );
+  }
+
   let rawSql = '';
 
   const parameterValues: PrimitiveValueExpression[] = [];
@@ -181,7 +187,7 @@ export const createSqlTag = <
     },
     type: (parser) => {
       return (
-        parts: readonly string[],
+        parts: TemplateStringsArray,
         ...args: readonly ValueExpression[]
       ) => {
         return Object.freeze({
@@ -199,7 +205,7 @@ export const createSqlTag = <
       }
 
       return (
-        parts: readonly string[],
+        parts: TemplateStringsArray,
         ...args: readonly ValueExpression[]
       ) => {
         return Object.freeze({
