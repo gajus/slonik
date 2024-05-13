@@ -11,6 +11,7 @@
   },
   "description": "Utilities for creating DataLoaders using Slonik.",
   "devDependencies": {
+    "@slonik/types": "^44.0.0",
     "eslint": "^8.57.0",
     "eslint-config-canonical": "^42.8.1",
     "slonik": "^44.0.0",

@@ -15,7 +15,7 @@ export const createListLoader = <T extends ZodTypeAny>(
       orderBy?: LoadParameters['orderBy'];
       where?: LoadParameters['where'];
     }) => {
-      const nodes = [];
+      const nodes: T[] = [];
 
       const connection = await loader.load({
         orderBy: args.orderBy,
