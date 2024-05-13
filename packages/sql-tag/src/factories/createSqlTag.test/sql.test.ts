@@ -1,5 +1,6 @@
 import { FragmentToken } from '../../tokens';
 import { createSqlTag } from '../createSqlTag';
+import { InvalidInputError } from '@slonik/errors';
 import anyTest, { type TestFn } from 'ava';
 import { ROARR } from 'roarr';
 
@@ -15,6 +16,15 @@ test.beforeEach((t) => {
   ROARR.write = (message) => {
     t.context.logs.push(JSON.parse(message));
   };
+});
+
+test('throws error if called as a function', (t) => {
+  const error = t.throws(() => {
+    // @ts-expect-error - intentional
+    sql.fragment([`SELECT 1`]);
+  });
+
+  t.true(error instanceof InvalidInputError);
 });
 
 test('creates an object describing a query', (t) => {
