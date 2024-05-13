@@ -1,5 +1,22 @@
 # slonik
 
+## 45.0.0
+
+### Minor Changes
+
+- [`5525659`](https://github.com/gajus/slonik/commit/552565961fa65e9951e363a2388538713388c5b5) Thanks [@gajus](https://github.com/gajus)! - \* fixes TypeScript error due to clashing "cause" property in Error object (#567)
+  - protects against unsafe invocation of sql.fragment (#602)
+  - correct manyFirst example in README (#600)
+
+### Patch Changes
+
+- Updated dependencies []:
+  - @slonik/driver@45.0.0
+  - @slonik/errors@45.0.0
+  - @slonik/pg-driver@45.0.0
+  - @slonik/sql-tag@45.0.0
+  - @slonik/utilities@45.0.0
+
 ## 44.0.0
 
 ### Major Changes
