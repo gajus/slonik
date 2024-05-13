@@ -287,11 +287,15 @@ export const createConnectionLoaderClass = <T extends ZodTypeAny>(config: {
               ? getRequestedFields(info)
               : new Set(['pageInfo', 'edges']);
 
-            return `${cursor}|${reverse}|${limit}|${offset}|${JSON.stringify(
-              orderBy?.(columnIdentifiers),
-            )}|${JSON.stringify(
-              where?.(columnIdentifiers),
-            )}|${requestedFields.values()}`;
+            return JSON.stringify({
+              cursor,
+              limit,
+              offset,
+              orderBy: orderBy?.(columnIdentifiers),
+              requestedFields: Array.from(requestedFields),
+              reverse,
+              where: where?.(columnIdentifiers),
+            });
           },
         },
       );
