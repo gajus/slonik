@@ -184,12 +184,16 @@ export const createConnectionLoaderClass = <T extends ZodTypeAny>(config: {
             }
           }
 
-          let edgeSchema: z.AnyZodObject = z.object({
-            [SORT_COLUMN_ALIAS]: z.array(z.any()),
-          });
+          let edgeSchema: ZodTypeAny = z.any();
 
-          if ('extend' in query.parser) {
-            edgeSchema = edgeSchema.extend(query.parser as any);
+          if ('shape' in query.parser) {
+            edgeSchema = z
+              .object({
+                [SORT_COLUMN_ALIAS]: z.array(z.any()),
+                // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                ...(query.parser as any).shape,
+              })
+              .strict();
           }
 
           const countSchema = z.object({

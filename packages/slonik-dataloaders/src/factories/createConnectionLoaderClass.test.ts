@@ -1,11 +1,18 @@
 import { createConnectionLoaderClass } from './createConnectionLoaderClass';
+import { type QueryResultRow } from '@slonik/types';
 import {
   type FieldNode,
   type GraphQLResolveInfo,
   type OperationDefinitionNode,
   parse,
 } from 'graphql';
-import { createPool, type DatabasePool, sql } from 'slonik';
+import {
+  createPool,
+  type DatabasePool,
+  type Interceptor,
+  SchemaValidationError,
+  sql,
+} from 'slonik';
 import { afterAll, beforeAll, describe, expect, it, vi } from 'vitest';
 import { z } from 'zod';
 
@@ -372,5 +379,92 @@ describe('createConnectionLoaderClass', () => {
     expect(results[0].edges.length).toEqual(2);
     expect(results[1].count).toEqual(0);
     expect(results[1].edges.length).toEqual(2);
+  });
+});
+
+describe('createConnectionLoaderClass (with validation)', () => {
+  let pool: DatabasePool;
+
+  beforeAll(async () => {
+    const createResultParserInterceptor = (): Interceptor => {
+      return {
+        transformRow: (executionContext, actualQuery, row) => {
+          const { resultParser } = executionContext;
+
+          // @ts-expect-error _any is not exposed through the zod typings, but does exist on ZodTypeAny
+          if (!resultParser || resultParser._any) {
+            return row;
+          }
+
+          const validationResult = resultParser.safeParse(row);
+
+          if (validationResult.success !== true) {
+            throw new SchemaValidationError(
+              actualQuery,
+              row,
+              validationResult.error.issues,
+            );
+          }
+
+          return validationResult.data as QueryResultRow;
+        },
+      };
+    };
+
+    pool = await createPool(POSTGRES_DSN, {
+      interceptors: [createResultParserInterceptor()],
+    });
+
+    await pool.query(sql.unsafe`
+      CREATE TABLE IF NOT EXISTS person (
+        id integer NOT NULL PRIMARY KEY,
+        uid text NOT NULL,
+        name text NOT NULL
+      );
+    `);
+
+    await pool.query(sql.unsafe`
+      INSERT INTO person
+        (id, uid, name)
+      VALUES
+        (1, 'a', 'aaa'),
+        (2, 'b', 'aaa'),
+        (3, 'c', 'bbb'),
+        (4, 'd', 'bbb'),
+        (5, 'e', 'ccc'),
+        (6, 'f', 'ccc'),
+        (7, 'g', 'ddd'),
+        (8, 'h', 'ddd'),
+        (9, 'i', 'eee'),
+        (10, 'j', 'eee');
+    `);
+  });
+
+  afterAll(async () => {
+    if (pool) {
+      await pool.query(sql.unsafe`
+        DROP TABLE IF EXISTS person;
+      `);
+
+      await pool.end();
+    }
+  });
+
+  it('fails with schema validation error', async () => {
+    const BadConnectionLoader = createConnectionLoaderClass({
+      query: sql.type(
+        z.object({
+          id: z.number(),
+          uid: z.string(),
+        }),
+      )`
+        SELECT
+          *
+        FROM person
+      `,
+    });
+
+    const loader = new BadConnectionLoader(pool, {});
+    await expect(loader.load({})).rejects.toThrowError(SchemaValidationError);
   });
 });
