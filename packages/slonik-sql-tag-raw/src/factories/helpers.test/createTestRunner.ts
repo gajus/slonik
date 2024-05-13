@@ -3,8 +3,9 @@ import { createPool, sql } from 'slonik';
 
 // TODO deduplicate with slonik/src/factories/createTestRunner.ts
 
-// eslint-disable-next-line n/no-process-env
-const POSTGRES_DSN = process.env.POSTGRES_DSN ?? 'postgres@localhost:5432';
+const POSTGRES_DSN =
+  // eslint-disable-next-line n/no-process-env
+  process.env.POSTGRES_DSN ?? 'postgresql://postgres:postgres@localhost:5432';
 
 type TestContextType = {
   dsn: string;
@@ -25,11 +26,11 @@ export const createTestRunner = () => {
     const TEST_DATABASE_NAME = ['slonik_test', String(testId)].join('_');
 
     t.context = {
-      dsn: 'postgresql://' + POSTGRES_DSN + '/' + TEST_DATABASE_NAME,
+      dsn: POSTGRES_DSN + '/' + TEST_DATABASE_NAME,
       testDatabaseName: TEST_DATABASE_NAME,
     };
 
-    const pool0 = await createPool('postgresql://' + POSTGRES_DSN, {
+    const pool0 = await createPool(POSTGRES_DSN, {
       maximumPoolSize: 1,
     });
 

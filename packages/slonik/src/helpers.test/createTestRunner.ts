@@ -3,8 +3,9 @@ import { createPool } from '../factories/createPool';
 import { type DriverFactory } from '@slonik/driver';
 import anyTest, { type TestFn } from 'ava';
 
-// eslint-disable-next-line n/no-process-env
-const POSTGRES_DSN = process.env.POSTGRES_DSN ?? 'postgres@localhost:5432';
+const POSTGRES_DSN =
+  // eslint-disable-next-line n/no-process-env
+  process.env.POSTGRES_DSN ?? 'postgresql://postgres:postgres@localhost:5432';
 
 export type TestContextType = {
   dsn: string;
@@ -28,11 +29,11 @@ export const createTestRunner = (
     const TEST_DATABASE_NAME = ['slonik_test', name, String(testId)].join('_');
 
     t.context = {
-      dsn: 'postgresql://' + POSTGRES_DSN + '/' + TEST_DATABASE_NAME,
+      dsn: POSTGRES_DSN + '/' + TEST_DATABASE_NAME,
       testDatabaseName: TEST_DATABASE_NAME,
     };
 
-    const pool0 = await createPool('postgresql://' + POSTGRES_DSN, {
+    const pool0 = await createPool(POSTGRES_DSN, {
       driverFactory,
       maximumPoolSize: 1,
     });
