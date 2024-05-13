@@ -11,10 +11,10 @@
   },
   "description": "Utilities for creating DataLoaders using Slonik.",
   "devDependencies": {
-    "@slonik/types": "^45.0.0",
+    "@slonik/types": "^45.1.0",
     "eslint": "^8.57.0",
     "eslint-config-canonical": "^42.8.1",
-    "slonik": "^45.0.0",
+    "slonik": "^45.1.0",
     "typescript": "^4.5.3",
     "vitest": "^1.6.0"
   },
@@ -42,5 +42,5 @@
     "test": "npx vitest run"
   },
   "typings": "./dist/index.d.ts",
-  "version": "45.0.0"
+  "version": "45.1.0"
 }
