@@ -1,5 +1,11 @@
 # @slonik/dataloaders
 
+## 45.3.0
+
+### Minor Changes
+
+- [`b0fbee6`](https://github.com/gajus/slonik/commit/b0fbee640ca8fea0bcf93eafd2d541fd56341b03) Thanks [@gajus](https://github.com/gajus)! - use UNION to batch queries
+
 ## 45.2.1
 
 ## 45.2.0
