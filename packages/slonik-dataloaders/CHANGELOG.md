@@ -1,5 +1,11 @@
 # @slonik/dataloaders
 
+## 45.4.0
+
+### Minor Changes
+
+- [`8a120a5`](https://github.com/gajus/slonik/commit/8a120a5d7be8895762c2421f040e51b512150ccd) Thanks [@gajus](https://github.com/gajus)! - omit internal slonikqueryindex
+
 ## 45.3.0
 
 ### Minor Changes
