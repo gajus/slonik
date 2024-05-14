@@ -192,7 +192,7 @@ export const createConnectionLoaderClass = <T extends ZodTypeAny>(config: {
             }
           }
 
-          let edgeSchema: AnyZodObject = z.object({});
+          let edgeSchema: AnyZodObject;
 
           if ('shape' in query.parser) {
             edgeSchema = z
@@ -202,6 +202,12 @@ export const createConnectionLoaderClass = <T extends ZodTypeAny>(config: {
                 ...(query.parser as any).shape,
               })
               .strict();
+          } else {
+            edgeSchema = z
+              .object({
+                [SORT_COLUMN_ALIAS]: z.array(z.any()),
+              })
+              .passthrough();
           }
 
           const countSchema = z.object({

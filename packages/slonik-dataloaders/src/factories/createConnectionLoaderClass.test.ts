@@ -153,6 +153,21 @@ describe('createConnectionLoaderClass', () => {
     expect(result.edges[9].node.id).toEqual(1);
   });
 
+  it('loads records with ORDER expression (batch)', async () => {
+    const loader = new PersonConnectionLoader(pool);
+    const [a, b] = await Promise.all([
+      loader.load({
+        orderBy: ({ uid }) => [[uid, 'ASC']],
+      }),
+      loader.load({
+        orderBy: ({ uid }) => [[uid, 'DESC']],
+      }),
+    ]);
+
+    expect(getNodeIds(a.edges)).toEqual([1, 2, 3, 4, 5, 6, 7, 8, 9, 10]);
+    expect(getNodeIds(b.edges)).toEqual([10, 9, 8, 7, 6, 5, 4, 3, 2, 1]);
+  });
+
   it('loads records with multiple ORDER BY expressions', async () => {
     const loader = new PersonConnectionLoader(pool);
     const result = await loader.load({
@@ -181,6 +196,41 @@ describe('createConnectionLoaderClass', () => {
     });
 
     expect(getNodeIds(result.edges)).toEqual([9, 10]);
+  });
+
+  it('loads records with WHERE expression (batch)', async () => {
+    const loader = new PersonConnectionLoader(pool);
+    const [a, b] = await Promise.all([
+      loader.load({
+        where: ({ name }) => sql.fragment`${name} = 'aaa'`,
+      }),
+      loader.load({
+        where: ({ name }) => sql.fragment`${name} = 'bbb'`,
+      }),
+    ]);
+
+    expect(getNodeIds(a.edges)).toEqual([1, 2]);
+    expect(getNodeIds(b.edges)).toEqual([3, 4]);
+  });
+
+  it('loads records with WHERE expression (batch; miss)', async () => {
+    const loader = new PersonConnectionLoader(pool);
+    // eslint-disable-next-line id-length
+    const [a, b, c] = await Promise.all([
+      loader.load({
+        where: ({ name }) => sql.fragment`${name} = 'aaa'`,
+      }),
+      loader.load({
+        where: ({ name }) => sql.fragment`${name} = 'xxx'`,
+      }),
+      loader.load({
+        where: ({ name }) => sql.fragment`${name} = 'bbb'`,
+      }),
+    ]);
+
+    expect(getNodeIds(a.edges)).toEqual([1, 2]);
+    expect(getNodeIds(b.edges)).toEqual([]);
+    expect(getNodeIds(c.edges)).toEqual([3, 4]);
   });
 
   it('loads records with LIMIT', async () => {
@@ -499,6 +549,26 @@ describe('createConnectionLoaderClass (with validation)', () => {
     const result = await loader.load({});
 
     expect(result.edges).toHaveLength(10);
+  });
+
+  it('loads all records with row validation (unsafe)', async () => {
+    const UnsafePersonConnectionLoader = createConnectionLoaderClass({
+      query: sql.unsafe`
+        SELECT
+          id,
+          uid,
+          name
+        FROM person
+      `,
+    });
+
+    const loader = new UnsafePersonConnectionLoader(pool);
+
+    const result = await loader.load({
+      orderBy: ({ uid }) => [[uid, 'ASC']],
+    });
+
+    expect(getNodeIds(result.edges)).toEqual([1, 2, 3, 4, 5, 6, 7, 8, 9, 10]);
   });
 
   it('fails with schema validation error', async () => {
