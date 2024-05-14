@@ -1,5 +1,12 @@
 # @slonik/benchmark
 
+## 45.3.0
+
+### Patch Changes
+
+- Updated dependencies []:
+  - slonik@45.3.0
+
 ## 45.2.1
 
 ### Patch Changes
