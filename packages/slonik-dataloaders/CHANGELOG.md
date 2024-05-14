@@ -1,5 +1,11 @@
 # @slonik/dataloaders
 
+## 45.4.1
+
+### Patch Changes
+
+- [`9bdba03`](https://github.com/gajus/slonik/commit/9bdba030355566d4db7171f495ac9bf05e688870) Thanks [@gajus](https://github.com/gajus)! - handle sql tokens without parser
+
 ## 45.4.0
 
 ### Minor Changes

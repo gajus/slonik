@@ -1,5 +1,16 @@
 # slonik
 
+## 45.4.1
+
+### Patch Changes
+
+- Updated dependencies []:
+  - @slonik/driver@45.4.1
+  - @slonik/errors@45.4.1
+  - @slonik/pg-driver@45.4.1
+  - @slonik/sql-tag@45.4.1
+  - @slonik/utilities@45.4.1
+
 ## 45.4.0
 
 ### Patch Changes
