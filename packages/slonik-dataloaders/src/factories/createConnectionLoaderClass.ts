@@ -85,6 +85,7 @@ export const createConnectionLoaderClass = <T extends ZodTypeAny>(config: {
             if (requestedFields.has('count')) {
               countQueries.push(
                 sql.unsafe`(
+                  -- @count-query
                   SELECT count(*) count
                   FROM (
                     ${query}
@@ -173,6 +174,7 @@ export const createConnectionLoaderClass = <T extends ZodTypeAny>(config: {
 
               edgesQueries.push(
                 sql.unsafe`(
+                  -- @edges-query
                   SELECT
                     ${sql.join(selectExpressions, sql.fragment`, `)}
                   FROM (

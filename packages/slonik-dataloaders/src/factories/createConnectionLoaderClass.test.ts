@@ -1,5 +1,5 @@
 import { createConnectionLoaderClass } from './createConnectionLoaderClass';
-import { type QueryResultRow } from '@slonik/types';
+import { type Query, type QueryResultRow } from '@slonik/types';
 import {
   type FieldNode,
   type GraphQLResolveInfo,
@@ -13,7 +13,7 @@ import {
   SchemaValidationError,
   sql,
 } from 'slonik';
-import { afterAll, beforeAll, describe, expect, it, vi } from 'vitest';
+import { afterAll, beforeAll, beforeEach, describe, expect, it } from 'vitest';
 import { z } from 'zod';
 
 const POSTGRES_DSN =
@@ -55,8 +55,20 @@ const getNodeIds = (edges) => edges.map(({ node }) => node.id);
 describe('createConnectionLoaderClass', () => {
   let pool: DatabasePool;
 
+  let queries: Query[] = [];
+
   beforeAll(async () => {
-    pool = await createPool(POSTGRES_DSN);
+    pool = await createPool(POSTGRES_DSN, {
+      interceptors: [
+        {
+          beforeQueryExecution: (executionContext, query) => {
+            queries.push(query);
+
+            return null;
+          },
+        },
+      ],
+    });
 
     await pool.query(sql.unsafe`
       CREATE TABLE IF NOT EXISTS person (
@@ -83,6 +95,10 @@ describe('createConnectionLoaderClass', () => {
     `);
   });
 
+  beforeEach(() => {
+    queries = [];
+  });
+
   afterAll(async () => {
     if (pool) {
       await pool.query(sql.unsafe`
@@ -93,8 +109,11 @@ describe('createConnectionLoaderClass', () => {
     }
   });
 
+  const countTaggedQueries = (tagName: string) =>
+    queries.filter((query) => query.sql.includes(tagName)).length;
+
   it('loads all records with no additional options', async () => {
-    const loader = new PersonConnectionLoader(pool, {});
+    const loader = new PersonConnectionLoader(pool);
     const result = await loader.load({});
 
     expect(result).toMatchObject({
@@ -105,11 +124,15 @@ describe('createConnectionLoaderClass', () => {
         startCursor: result.edges[0].cursor,
       },
     });
+
+    expect(countTaggedQueries('@count-query')).toEqual(1);
+    expect(countTaggedQueries('@edges-query')).toEqual(1);
+
     expect(result.edges).toHaveLength(10);
   });
 
   it('loads records in ascending order', async () => {
-    const loader = new PersonConnectionLoader(pool, {});
+    const loader = new PersonConnectionLoader(pool);
     const result = await loader.load({
       orderBy: ({ uid }) => [[uid, 'ASC']],
     });
@@ -119,7 +142,7 @@ describe('createConnectionLoaderClass', () => {
   });
 
   it('loads records in descending order', async () => {
-    const loader = new PersonConnectionLoader(pool, {});
+    const loader = new PersonConnectionLoader(pool);
     const result = await loader.load({
       orderBy: ({ uid }) => [[uid, 'DESC']],
     });
@@ -129,7 +152,7 @@ describe('createConnectionLoaderClass', () => {
   });
 
   it('loads records with multiple ORDER BY expressions', async () => {
-    const loader = new PersonConnectionLoader(pool, {});
+    const loader = new PersonConnectionLoader(pool);
     const result = await loader.load({
       orderBy: ({ uid, name }) => [
         [name, 'ASC'],
@@ -141,7 +164,7 @@ describe('createConnectionLoaderClass', () => {
   });
 
   it('loads records with complex ORDER BY expression', async () => {
-    const loader = new PersonConnectionLoader(pool, {});
+    const loader = new PersonConnectionLoader(pool);
     const result = await loader.load({
       orderBy: ({ uid }) => [[sql.fragment`${uid}`, 'ASC']],
     });
@@ -150,7 +173,7 @@ describe('createConnectionLoaderClass', () => {
   });
 
   it('loads records with WHERE expression', async () => {
-    const loader = new PersonConnectionLoader(pool, {});
+    const loader = new PersonConnectionLoader(pool);
     const result = await loader.load({
       where: ({ name }) => sql.fragment`${name} = 'eee'`,
     });
@@ -159,7 +182,7 @@ describe('createConnectionLoaderClass', () => {
   });
 
   it('loads records with LIMIT', async () => {
-    const loader = new PersonConnectionLoader(pool, {});
+    const loader = new PersonConnectionLoader(pool);
     const result = await loader.load({
       limit: 4,
       orderBy: ({ uid }) => [[uid, 'ASC']],
@@ -169,7 +192,7 @@ describe('createConnectionLoaderClass', () => {
   });
 
   it('loads records with LIMIT and OFFSET', async () => {
-    const loader = new PersonConnectionLoader(pool, {});
+    const loader = new PersonConnectionLoader(pool);
     const result = await loader.load({
       limit: 4,
       offset: 4,
@@ -180,7 +203,7 @@ describe('createConnectionLoaderClass', () => {
   });
 
   it('paginates through the records forwards', async () => {
-    const loader = new PersonConnectionLoader(pool, {});
+    const loader = new PersonConnectionLoader(pool);
     const firstResult = await loader.load({
       limit: 4,
       orderBy: ({ uid }) => [[uid, 'ASC']],
@@ -230,7 +253,7 @@ describe('createConnectionLoaderClass', () => {
   });
 
   it('paginates through the records backwards', async () => {
-    const loader = new PersonConnectionLoader(pool, {});
+    const loader = new PersonConnectionLoader(pool);
     const firstResult = await loader.load({
       limit: 4,
       orderBy: ({ uid }) => [[uid, 'ASC']],
@@ -284,10 +307,7 @@ describe('createConnectionLoaderClass', () => {
   });
 
   it('batches loaded records', async () => {
-    const loader = new PersonConnectionLoader(pool, {});
-    const poolAnySpy = vi.spyOn(pool, 'any');
-
-    poolAnySpy.mockClear();
+    const loader = new PersonConnectionLoader(pool);
 
     const results = await Promise.all([
       loader.load({
@@ -298,7 +318,8 @@ describe('createConnectionLoaderClass', () => {
       }),
     ]);
 
-    expect(poolAnySpy).toHaveBeenCalledTimes(2);
+    expect(countTaggedQueries('@count-query')).toEqual(2);
+    expect(countTaggedQueries('@edges-query')).toEqual(2);
 
     expect(getNodeIds(results[0].edges)).toEqual([
       1, 2, 3, 4, 5, 6, 7, 8, 9, 10,
@@ -309,10 +330,8 @@ describe('createConnectionLoaderClass', () => {
   });
 
   it('caches loaded records', async () => {
-    const loader = new PersonConnectionLoader(pool, {});
-    const poolAnySpy = vi.spyOn(pool, 'any');
-    poolAnySpy.mockClear();
-    const poolOneFirstSpy = vi.spyOn(pool, 'oneFirst');
+    const loader = new PersonConnectionLoader(pool);
+
     const resultsA = await loader.load({
       orderBy: ({ uid }) => [[uid, 'ASC']],
     });
@@ -320,14 +339,15 @@ describe('createConnectionLoaderClass', () => {
       orderBy: ({ uid }) => [[uid, 'ASC']],
     });
 
-    expect(poolAnySpy).toHaveBeenCalledTimes(1);
-    expect(poolOneFirstSpy).toHaveBeenCalledTimes(1);
+    expect(countTaggedQueries('@count-query')).toEqual(1);
+    expect(countTaggedQueries('@edges-query')).toEqual(1);
+
     expect(getNodeIds(resultsA.edges)).toEqual([1, 2, 3, 4, 5, 6, 7, 8, 9, 10]);
     expect(getNodeIds(resultsB.edges)).toEqual([1, 2, 3, 4, 5, 6, 7, 8, 9, 10]);
   });
 
   it('gets the count', async () => {
-    const loader = new PersonConnectionLoader(pool, {});
+    const loader = new PersonConnectionLoader(pool);
     const result = await loader.load({
       info: getInfo(['count']),
       where: ({ name }) => sql.fragment`${name} = 'ccc'`,
@@ -337,7 +357,7 @@ describe('createConnectionLoaderClass', () => {
   });
 
   it('gets the count without fetching edges', async () => {
-    const loader = new PersonConnectionLoader(pool, {});
+    const loader = new PersonConnectionLoader(pool);
     const result = await loader.load({
       info: getInfo(['count']),
       where: ({ name }) => sql.fragment`${name} = 'ccc'`,
@@ -348,7 +368,7 @@ describe('createConnectionLoaderClass', () => {
   });
 
   it('gets the count without fetching edges (batch)', async () => {
-    const loader = new PersonConnectionLoader(pool, {});
+    const loader = new PersonConnectionLoader(pool);
     const results = await Promise.all([
       loader.load({
         info: getInfo(['count']),
@@ -367,7 +387,7 @@ describe('createConnectionLoaderClass', () => {
   });
 
   it('gets a mix of count and edges (batch)', async () => {
-    const loader = new PersonConnectionLoader(pool, {});
+    const loader = new PersonConnectionLoader(pool);
 
     const results = await Promise.all([
       loader.load({
@@ -385,7 +405,7 @@ describe('createConnectionLoaderClass', () => {
   });
 
   it('gets the edges without fetching edges', async () => {
-    const loader = new PersonConnectionLoader(pool, {});
+    const loader = new PersonConnectionLoader(pool);
     const results = await Promise.all([
       loader.load({
         info: getInfo(['edges']),
@@ -486,7 +506,7 @@ describe('createConnectionLoaderClass (with validation)', () => {
       `,
     });
 
-    const loader = new BadConnectionLoader(pool, {});
+    const loader = new BadConnectionLoader(pool);
     await expect(loader.load({})).rejects.toThrowError(SchemaValidationError);
   });
 });
