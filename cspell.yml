@@ -3,6 +3,7 @@ dictionaries:
   - sql
   - typescript
 ignorePaths:
+  - '**/CHANGELOG.md'
   - node_modules
   - dist
   - README.md

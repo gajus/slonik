@@ -1,5 +1,76 @@
 # slonik
 
+## 45.2.0
+
+### Patch Changes
+
+- Updated dependencies []:
+  - @slonik/driver@45.2.0
+  - @slonik/errors@45.2.0
+  - @slonik/pg-driver@45.2.0
+  - @slonik/sql-tag@45.2.0
+  - @slonik/utilities@45.2.0
+
+## 45.1.0
+
+### Patch Changes
+
+- Updated dependencies []:
+  - @slonik/driver@45.1.0
+  - @slonik/errors@45.1.0
+  - @slonik/pg-driver@45.1.0
+  - @slonik/sql-tag@45.1.0
+  - @slonik/utilities@45.1.0
+
+## 45.0.0
+
+### Minor Changes
+
+- [`5525659`](https://github.com/gajus/slonik/commit/552565961fa65e9951e363a2388538713388c5b5) Thanks [@gajus](https://github.com/gajus)! - \* fixes TypeScript error due to clashing "cause" property in Error object (#567)
+  - protects against unsafe invocation of sql.fragment (#602)
+  - correct manyFirst example in README (#600)
+
+### Patch Changes
+
+- Updated dependencies []:
+  - @slonik/driver@45.0.0
+  - @slonik/errors@45.0.0
+  - @slonik/pg-driver@45.0.0
+  - @slonik/sql-tag@45.0.0
+  - @slonik/utilities@45.0.0
+
+## 44.0.0
+
+### Major Changes
+
+- [`96db9f0`](https://github.com/gajus/slonik/commit/96db9f08faefb0e7da0cc0d817d9e8fae361e590) Thanks [@gajus](https://github.com/gajus)! - Convert token types to symbols to ensures that SQL tokens cannot be injected from outside of the codebase, e.g. through JSON.
+
+  Thanks to @alxndrsn for reporting the issue and suggesting patch (https://github.com/gajus/slonik/pull/595).
+
+  Thanks to @danielrearden for suggesting a viable patch.
+
+### Patch Changes
+
+- Updated dependencies [[`96db9f0`](https://github.com/gajus/slonik/commit/96db9f08faefb0e7da0cc0d817d9e8fae361e590)]:
+  - @slonik/sql-tag@44.0.0
+  - @slonik/pg-driver@44.0.0
+  - @slonik/driver@44.0.0
+  - @slonik/errors@44.0.0
+  - @slonik/utilities@44.0.0
+
+## 43.0.8
+
+### Patch Changes
+
+- [`30f1dc4`](https://github.com/gajus/slonik/commit/30f1dc4469fe6065f90651c2e1c501d5374358c7) Thanks [@gajus](https://github.com/gajus)! - remove exports
+
+- Updated dependencies [[`30f1dc4`](https://github.com/gajus/slonik/commit/30f1dc4469fe6065f90651c2e1c501d5374358c7)]:
+  - @slonik/driver@43.0.8
+  - @slonik/errors@43.0.8
+  - @slonik/pg-driver@43.0.8
+  - @slonik/sql-tag@43.0.8
+  - @slonik/utilities@43.0.8
+
 ## 43.0.7
 
 ### Patch Changes

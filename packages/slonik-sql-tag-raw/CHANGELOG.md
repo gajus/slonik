@@ -1,5 +1,55 @@
 # slonik-sql-tag-raw
 
+## 45.2.0
+
+### Patch Changes
+
+- Updated dependencies []:
+  - @slonik/sql-tag@45.2.0
+
+## 45.1.0
+
+### Patch Changes
+
+- Updated dependencies []:
+  - @slonik/sql-tag@45.1.0
+
+## 45.0.0
+
+### Patch Changes
+
+- Updated dependencies [[`5525659`](https://github.com/gajus/slonik/commit/552565961fa65e9951e363a2388538713388c5b5)]:
+  - slonik@45.0.0
+  - @slonik/sql-tag@45.0.0
+
+## 44.0.0
+
+### Major Changes
+
+- [`96db9f0`](https://github.com/gajus/slonik/commit/96db9f08faefb0e7da0cc0d817d9e8fae361e590) Thanks [@gajus](https://github.com/gajus)! - Convert token types to symbols to ensures that SQL tokens cannot be injected from outside of the codebase, e.g. through JSON.
+
+  Thanks to @alxndrsn for reporting the issue and suggesting patch (https://github.com/gajus/slonik/pull/595).
+
+  Thanks to @danielrearden for suggesting a viable patch.
+
+### Patch Changes
+
+- [`8f05f8c`](https://github.com/gajus/slonik/commit/8f05f8cf2b03935e9f7fcac3a95a41eaddfb1758) Thanks [@gajus](https://github.com/gajus)! - correctly handle value binders
+
+- Updated dependencies [[`96db9f0`](https://github.com/gajus/slonik/commit/96db9f08faefb0e7da0cc0d817d9e8fae361e590)]:
+  - @slonik/sql-tag@44.0.0
+  - slonik@44.0.0
+
+## 43.0.8
+
+### Patch Changes
+
+- [`30f1dc4`](https://github.com/gajus/slonik/commit/30f1dc4469fe6065f90651c2e1c501d5374358c7) Thanks [@gajus](https://github.com/gajus)! - remove exports
+
+- Updated dependencies [[`30f1dc4`](https://github.com/gajus/slonik/commit/30f1dc4469fe6065f90651c2e1c501d5374358c7)]:
+  - slonik@43.0.8
+  - @slonik/sql-tag@43.0.8
+
 ## 43.0.7
 
 ### Patch Changes
