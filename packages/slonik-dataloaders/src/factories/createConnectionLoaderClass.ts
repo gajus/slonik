@@ -3,6 +3,7 @@ import {
   type Connection,
   type OrderDirection,
 } from '../types';
+import { batchQueries } from '../utilities/batchQueries';
 import { fromCursor } from '../utilities/fromCursor';
 import { getColumnIdentifiers } from '../utilities/getColumnIdentifiers';
 import { getRequestedFields } from '../utilities/getRequestedFields';
@@ -196,6 +197,7 @@ export const createConnectionLoaderClass = <T extends ZodTypeAny>(config: {
           if ('shape' in query.parser) {
             edgeSchema = z
               .object({
+                slonikqueryindex: z.number(),
                 [SORT_COLUMN_ALIAS]: z.array(z.any()),
                 // eslint-disable-next-line @typescript-eslint/no-explicit-any
                 ...(query.parser as any).shape,
@@ -205,23 +207,36 @@ export const createConnectionLoaderClass = <T extends ZodTypeAny>(config: {
 
           const countSchema = z.object({
             count: z.number(),
+            slonikqueryindex: z.number(),
           });
 
           const [edgeResults, countResults] = await Promise.all([
-            Promise.all(
-              edgesQueries.map((edgesQuery) => {
-                return edgesQuery === null
-                  ? []
-                  : pool.any(sql.type(edgeSchema)`${edgesQuery}`);
+            batchQueries(
+              pool,
+              edgeSchema,
+              edgesQueries.filter(
+                (edgeQuery) => edgeQuery !== null,
+              ) as QuerySqlToken[],
+            ).then((results) => {
+              return edgesQueries.map((edgeQuery) => {
+                return edgeQuery === null ? [] : results.shift();
+              });
+            }),
+            batchQueries(
+              pool,
+              countSchema,
+              countQueries.filter(
+                (countQuery) => countQuery !== null,
+              ) as QuerySqlToken[],
+            )
+              .then((results) => {
+                return countQueries.map((countQuery) => {
+                  return countQuery === null ? [] : results.shift();
+                });
+              })
+              .then((results) => {
+                return results.map((result) => result?.[0]?.count);
               }),
-            ),
-            Promise.all(
-              countQueries.map((countQuery) => {
-                return countQuery === null
-                  ? 0
-                  : pool.oneFirst(sql.type(countSchema)`${countQuery}`);
-              }),
-            ),
           ]);
 
           const connections = loaderKeys.map((loaderKey, loaderKeyIndex) => {

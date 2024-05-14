@@ -318,8 +318,8 @@ describe('createConnectionLoaderClass', () => {
       }),
     ]);
 
-    expect(countTaggedQueries('@count-query')).toEqual(2);
-    expect(countTaggedQueries('@edges-query')).toEqual(2);
+    expect(countTaggedQueries('@count-query')).toEqual(1);
+    expect(countTaggedQueries('@edges-query')).toEqual(1);
 
     expect(getNodeIds(results[0].edges)).toEqual([
       1, 2, 3, 4, 5, 6, 7, 8, 9, 10,
