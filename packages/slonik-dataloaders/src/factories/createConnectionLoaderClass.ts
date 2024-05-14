@@ -17,7 +17,7 @@ import {
   sql,
   type SqlToken,
 } from 'slonik';
-import { z, type ZodTypeAny } from 'zod';
+import { type AnyZodObject, z, type ZodTypeAny } from 'zod';
 
 type DataLoaderKey<TResult> = {
   cursor?: string | null;
@@ -87,7 +87,7 @@ export const createConnectionLoaderClass = <T extends ZodTypeAny>(config: {
               countQueries.push(
                 sql.unsafe`(
                   -- @count-query
-                  SELECT count(*) count
+                  SELECT count(*)::int4 count
                   FROM (
                     ${query}
                   ) ${sql.identifier([TABLE_ALIAS])}
@@ -192,12 +192,11 @@ export const createConnectionLoaderClass = <T extends ZodTypeAny>(config: {
             }
           }
 
-          let edgeSchema: ZodTypeAny = z.any();
+          let edgeSchema: AnyZodObject = z.object({});
 
           if ('shape' in query.parser) {
             edgeSchema = z
               .object({
-                slonikqueryindex: z.number(),
                 [SORT_COLUMN_ALIAS]: z.array(z.any()),
                 // eslint-disable-next-line @typescript-eslint/no-explicit-any
                 ...(query.parser as any).shape,
@@ -207,7 +206,6 @@ export const createConnectionLoaderClass = <T extends ZodTypeAny>(config: {
 
           const countSchema = z.object({
             count: z.number(),
-            slonikqueryindex: z.number(),
           });
 
           const [edgeResults, countResults] = await Promise.all([
@@ -249,6 +247,7 @@ export const createConnectionLoaderClass = <T extends ZodTypeAny>(config: {
 
               while (true) {
                 const value = record[SORT_COLUMN_ALIAS]?.[index];
+
                 if (value === undefined) {
                   break;
                 } else {

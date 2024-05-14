@@ -36,11 +36,13 @@ const getInfo = (
 
 const PersonConnectionLoader = createConnectionLoaderClass({
   query: sql.type(
-    z.object({
-      id: z.number(),
-      name: z.string(),
-      uid: z.string(),
-    }),
+    z
+      .object({
+        id: z.number(),
+        name: z.string(),
+        uid: z.string(),
+      })
+      .strict(),
   )`
     SELECT
       id,
@@ -353,7 +355,7 @@ describe('createConnectionLoaderClass', () => {
       where: ({ name }) => sql.fragment`${name} = 'ccc'`,
     });
 
-    expect(result.count).toEqual(2n);
+    expect(result.count).toEqual(2);
   });
 
   it('gets the count without fetching edges', async () => {
@@ -363,7 +365,7 @@ describe('createConnectionLoaderClass', () => {
       where: ({ name }) => sql.fragment`${name} = 'ccc'`,
     });
 
-    expect(result.count).toEqual(2n);
+    expect(result.count).toEqual(2);
     expect(result.edges.length).toEqual(0);
   });
 
@@ -380,9 +382,9 @@ describe('createConnectionLoaderClass', () => {
       }),
     ]);
 
-    expect(results[0].count).toEqual(2n);
+    expect(results[0].count).toEqual(2);
     expect(results[0].edges.length).toEqual(0);
-    expect(results[1].count).toEqual(2n);
+    expect(results[1].count).toEqual(2);
     expect(results[1].edges.length).toEqual(0);
   });
 
@@ -401,7 +403,7 @@ describe('createConnectionLoaderClass', () => {
     ]);
 
     expect(results[0].count).toEqual(0);
-    expect(results[1].count).toEqual(2n);
+    expect(results[1].count).toEqual(2);
   });
 
   it('gets the edges without fetching edges', async () => {
@@ -492,21 +494,30 @@ describe('createConnectionLoaderClass (with validation)', () => {
     }
   });
 
+  it('loads all records with row validation', async () => {
+    const loader = new PersonConnectionLoader(pool);
+    const result = await loader.load({});
+
+    expect(result.edges).toHaveLength(10);
+  });
+
   it('fails with schema validation error', async () => {
     const BadConnectionLoader = createConnectionLoaderClass({
       query: sql.type(
         z.object({
-          id: z.number(),
+          id: z.string(),
           uid: z.string(),
         }),
       )`
         SELECT
-          *
+          id,
+          uid
         FROM person
       `,
     });
 
     const loader = new BadConnectionLoader(pool);
+
     await expect(loader.load({})).rejects.toThrowError(SchemaValidationError);
   });
 });

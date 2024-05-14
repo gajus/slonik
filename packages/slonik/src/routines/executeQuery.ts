@@ -352,9 +352,9 @@ export const executeQuery = async (
         const { fields } = result;
 
         const rows: QueryResultRow[] = await Promise.all(
-          result.rows.map((row) =>
-            transformRow(executionContext, actualQuery, row, fields),
-          ),
+          result.rows.map((row) => {
+            return transformRow(executionContext, actualQuery, row, fields);
+          }),
         );
 
         result = {
