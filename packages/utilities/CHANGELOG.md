@@ -1,5 +1,12 @@
 # @slonik/utilities
 
+## 45.5.0
+
+### Patch Changes
+
+- Updated dependencies []:
+  - @slonik/types@45.5.0
+
 ## 45.4.1
 
 ### Patch Changes

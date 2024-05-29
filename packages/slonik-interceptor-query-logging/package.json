@@ -25,7 +25,7 @@
     "ava": "^5.3.1",
     "eslint": "^8.57.0",
     "eslint-config-canonical": "^42.8.1",
-    "slonik": "^45.4.1",
+    "slonik": "^45.5.0",
     "ts-node": "^10.4.0",
     "typescript": "^4.5.3"
   },
@@ -53,5 +53,5 @@
     "test": "ava --verbose --serial"
   },
   "typings": "./dist/index.d.ts",
-  "version": "45.4.1"
+  "version": "45.5.0"
 }
