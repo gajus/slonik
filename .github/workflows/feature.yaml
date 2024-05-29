@@ -1,0 +1,112 @@
+jobs:
+  build:
+    environment: release
+    name: Build
+    runs-on: ubuntu-latest
+    steps:
+      - name: setup repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: setup node.js
+        uses: actions/setup-node@v4
+        with:
+          cache: 'npm'
+          node-version: '20'
+      - run: npm ci
+      - run: npm run build --workspaces --if-present
+    timeout-minutes: 10
+  lint:
+    environment: release
+    name: Lint
+    runs-on: ubuntu-latest
+    steps:
+      - name: setup repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: setup node.js
+        uses: actions/setup-node@v4
+        with:
+          cache: 'npm'
+          node-version: '20'
+      - run: npm ci
+      - run: npm run build --workspaces --if-present
+      - run: npm run lint
+      - run: npm run lint --workspaces --if-present
+    timeout-minutes: 10
+  test:
+    environment: release
+    name: 'Test node_version:${{ matrix.node_version }} test_only:${{ matrix.test_only }}'
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        env:
+          POSTGRES_DB: postgres
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_USER: postgres
+        image: postgres
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 5
+          --name my_postgres_container
+        ports:
+          - 5432:5432
+    steps:
+      - name: install psql
+        run: |
+          sudo apt-get update
+          sudo apt-get install --yes postgresql-client
+      - name: Increase max_connections and shared_buffers
+        run: |
+          docker exec -i my_postgres_container bash << EOF
+            sed -i -e 's/max_connections = 100/max_connections = 1000/' /var/lib/postgresql/data/postgresql.conf
+            sed -i -e 's/shared_buffers = 128MB/shared_buffers = 2GB/' /var/lib/postgresql/data/postgresql.conf
+          EOF
+      - run: docker restart --time 0 my_postgres_container
+      - run: sleep 10
+      - run: docker exec my_postgres_container psql -U postgres -c 'SHOW max_connections;'
+      - name: setup repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: setup node.js
+        uses: actions/setup-node@v4
+        with:
+          cache: 'npm'
+          node-version: '${{ matrix.node_version }}'
+      - run: npm ci
+      - run: npm run build --workspaces --if-present
+      - env:
+          POSTGRES_DSN: 'postgres://postgres:postgres@localhost:5432'
+          TEST_ONLY: '${{ matrix.test_only }}'
+        run: npm run test --workspaces --if-present
+    strategy:
+      fail-fast: false
+      matrix:
+        test_only:
+          - utilities
+          - pg-integration
+        node_version:
+          - 20
+      max-parallel: 3
+    timeout-minutes: 10
+name: Test and build
+on:
+  pull_request:
+    branches:
+      - main
+    paths-ignore:
+      - '.editorconfig'
+      - '.husky/**'
+      - '.lintstagedrc.js'
+      - '.mergify.yml'
+      - '.nvmrc'
+      - 'README.md'
+    types:
+      - opened
+      - synchronize
+      - reopened
+      - ready_for_review

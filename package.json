@@ -1,111 +1,24 @@
 {
-  "author": {
-    "email": "gajus@gajus.com",
-    "name": "Gajus Kuizinas",
-    "url": "http://gajus.com"
-  },
-  "ava": {
-    "extensions": [
-      "ts"
-    ],
-    "files": [
-      "test/slonik/**/*"
-    ],
-    "require": [
-      "ts-node/register/transpile-only"
-    ],
-    "timeout": "30s"
+  "workspaces": [
+    "packages/types",
+    "packages/utilities",
+    "packages/errors",
+    "packages/sql-tag",
+    "packages/driver",
+    "packages/pg-driver",
+    "packages/slonik",
+    "packages/*"
+  ],
+  "scripts": {
+    "lint": "npm run lint:knip",
+    "lint:knip": "knip"
   },
   "dependencies": {
-    "concat-stream": "^2.0.0",
-    "es6-error": "^4.1.1",
-    "fast-safe-stringify": "^2.1.1",
-    "get-stack-trace": "^2.1.1",
-    "hyperid": "^2.3.1",
-    "is-plain-object": "^5.0.0",
-    "iso8601-duration": "^1.3.0",
-    "p-defer": "^3.0.0",
-    "pg": "^8.7.1",
-    "pg-copy-streams": "^6.0.2",
-    "pg-copy-streams-binary": "^2.2.0",
-    "pg-cursor": "^2.7.1",
-    "pg-protocol": "^1.5.0",
-    "postgres-array": "^3.0.1",
-    "postgres-interval": "^4.0.0",
-    "roarr": "^7.8.0",
-    "serialize-error": "^8.0.0",
-    "through2": "^4.0.2"
+    "@changesets/cli": "^2.27.1"
   },
-  "description": "A PostgreSQL client with strict types, detailed logging and assertions.",
   "devDependencies": {
-    "@types/concat-stream": "^1.6.1",
-    "@types/pg-copy-streams": "^1.2.1",
-    "@types/sinon": "^10.0.6",
-    "@types/through2": "^2.0.36",
-    "ava": "^4.0.0-rc.1",
-    "coveralls": "^3.1.1",
-    "delay": "^5.0.0",
-    "eslint": "^8.5.0",
-    "eslint-config-canonical": "^32.48.8",
-    "expect-type": "^0.13.0",
-    "gitdown": "^3.1.4",
-    "husky": "^4.3.6",
-    "nyc": "^15.1.0",
-    "pg-native": "^3.0.0",
-    "semantic-release": "^18.0.1",
-    "sinon": "^12.0.1",
-    "ts-node": "^10.4.0",
-    "typescript": "^4.5.4"
-  },
-  "engines": {
-    "node": ">=10.0"
-  },
-  "husky": {
-    "hooks": {
-      "pre-commit": "npm run lint && npm run test && npm run build",
-      "pre-push": "gitdown ./.README/README.md --output-file ./README.md --check"
-    }
-  },
-  "keywords": [
-    "postgresql",
-    "promise",
-    "types"
-  ],
-  "license": "BSD-3-Clause",
-  "main": "./dist/src/index.js",
-  "name": "slonik",
-  "nyc": {
-    "all": true,
-    "exclude": [
-      "src/bin",
-      "src/queries/*.ts",
-      "**/*.d.ts"
-    ],
-    "include": [
-      "src/**/*.ts"
-    ],
-    "reporter": [
-      "html",
-      "text-summary"
-    ],
-    "require": [
-      "ts-node/register/transpile-only"
-    ],
-    "silent": true,
-    "sourceMap": false
-  },
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/gajus/slonik"
-  },
-  "scripts": {
-    "build": "rm -fr ./dist && tsc -p tsconfig.lib.json",
-    "create-readme": "gitdown ./.README/README.md --output-file ./README.md",
-    "eslint": "eslint --ext '.ts'",
-    "lint": "npm run eslint ./src ./test && npm run type-check",
-    "test": "ROARR_LOG=true NODE_ENV=test nyc ava --verbose --serial",
-    "type-check": "tsc -p ."
-  },
-  "types": "./dist/src/index.d.ts",
-  "version": "0.0.0-development"
+    "@changesets/changelog-github": "^0.5.0",
+    "husky": "^9.0.11",
+    "knip": "^5.7.0"
+  }
 }

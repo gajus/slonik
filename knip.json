@@ -1,0 +1,15 @@
+{
+  "$schema": "https://unpkg.com/knip@2/schema.json",
+  "entry": [
+    "src/index.ts!",
+    "src/**/*.test.ts"
+  ],
+  "ignoreDependencies": [
+    "@changesets/cli",
+    "eslint-config-canonical",
+    "husky"
+  ],
+  "project": [
+    "src/**/*.ts"
+  ]
+}

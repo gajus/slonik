@@ -1,0 +1,57 @@
+{
+  "author": {
+    "email": "gajus@gajus.com",
+    "name": "Gajus Kuizinas",
+    "url": "http://gajus.com"
+  },
+  "ava": {
+    "extensions": [
+      "ts"
+    ],
+    "files": [
+      "src/**/*.test.ts"
+    ],
+    "require": [
+      "ts-node/register/transpile-only"
+    ]
+  },
+  "dependencies": {
+    "crack-json": "^1.3.0",
+    "pretty-ms": "^7.0.1",
+    "serialize-error": "^8.0.0"
+  },
+  "description": "Logs Slonik queries.",
+  "devDependencies": {
+    "ava": "^5.3.1",
+    "eslint": "^8.57.0",
+    "eslint-config-canonical": "^42.8.1",
+    "slonik": "^45.4.1",
+    "ts-node": "^10.4.0",
+    "typescript": "^4.5.3"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "keywords": [
+    "postgresql",
+    "interceptor",
+    "logging"
+  ],
+  "license": "BSD-3-Clause",
+  "main": "./dist/index.js",
+  "name": "slonik-interceptor-query-logging",
+  "peerDependencies": {
+    "slonik": ">=45.0.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/gajus/slonik"
+  },
+  "scripts": {
+    "build": "rm -fr ./dist && tsc",
+    "lint": "eslint ./src && tsc --noEmit",
+    "test": "ava --verbose --serial"
+  },
+  "typings": "./dist/index.d.ts",
+  "version": "45.4.1"
+}

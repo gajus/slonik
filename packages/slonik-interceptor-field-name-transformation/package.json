@@ -1,0 +1,55 @@
+{
+  "author": {
+    "email": "gajus@gajus.com",
+    "name": "Gajus Kuizinas",
+    "url": "http://gajus.com"
+  },
+  "ava": {
+    "extensions": [
+      "ts"
+    ],
+    "files": [
+      "src/**/*.test.ts"
+    ],
+    "require": [
+      "ts-node/register/transpile-only"
+    ]
+  },
+  "dependencies": {
+    "camelcase": "^6.2.1"
+  },
+  "description": "Transforms Slonik query result field names.",
+  "devDependencies": {
+    "ava": "^5.3.1",
+    "eslint": "^8.57.0",
+    "eslint-config-canonical": "^42.8.1",
+    "slonik": "^45.4.1",
+    "ts-node": "^10.4.0",
+    "typescript": "^4.7.4"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "keywords": [
+    "postgresql",
+    "interceptor",
+    "format"
+  ],
+  "license": "BSD-3-Clause",
+  "main": "./dist/index.js",
+  "name": "slonik-interceptor-field-name-transformation",
+  "peerDependencies": {
+    "slonik": ">=45.0.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/gajus/slonik"
+  },
+  "scripts": {
+    "build": "rm -fr ./dist && tsc",
+    "lint": "eslint ./src && tsc --noEmit",
+    "test": "ava --verbose --serial"
+  },
+  "typings": "./dist/index.d.ts",
+  "version": "45.4.1"
+}

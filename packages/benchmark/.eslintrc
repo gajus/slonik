@@ -1,0 +1,7 @@
+{
+  "extends": [
+    "canonical",
+    "canonical/node"
+  ],
+  "root": true
+}

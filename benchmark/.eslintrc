@@ -1,8 +1,0 @@
-{
-  "rules": {
-    "filenames/match-regex": 0,
-    "import/no-commonjs": 0,
-    "import/unambiguous": 0,
-    "no-console": 0
-  }
-}

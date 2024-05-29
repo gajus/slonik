@@ -1,0 +1,91 @@
+{
+  "author": {
+    "email": "gajus@gajus.com",
+    "name": "Gajus Kuizinas",
+    "url": "http://gajus.com"
+  },
+  "ava": {
+    "extensions": [
+      "ts"
+    ],
+    "files": [
+      "src/**/*.test.ts"
+    ],
+    "require": [
+      "ts-node/register/transpile-only"
+    ]
+  },
+  "dependencies": {
+    "@slonik/driver": "^45.4.1",
+    "@slonik/errors": "^45.4.1",
+    "@slonik/sql-tag": "^45.4.1",
+    "@slonik/types": "^45.4.1",
+    "@slonik/utilities": "^45.4.1",
+    "pg-query-stream": "^4.5.5",
+    "pg-types": "^4.0.2",
+    "pg": "^8.11.5",
+    "postgres-array": "^3.0.2"
+  },
+  "description": "A Node.js PostgreSQL client with strict types, detailed logging and assertions.",
+  "devDependencies": {
+    "@types/pg": "^8.11.6",
+    "@types/node": "^18.15.3",
+    "ava": "^5.3.1",
+    "cspell": "^8.6.0",
+    "eslint": "^8.57.0",
+    "eslint-config-canonical": "^42.8.1",
+    "nyc": "^15.1.0",
+    "ts-node": "^10.9.1",
+    "typescript": "^5.4.3"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "files": [
+    "./src",
+    "./dist"
+  ],
+  "keywords": [
+    "postgresql",
+    "promise",
+    "types"
+  ],
+  "license": "BSD-3-Clause",
+  "main": "./dist/index.js",
+  "name": "@slonik/pg-driver",
+  "nyc": {
+    "all": true,
+    "exclude": [
+      "**/*.d.ts"
+    ],
+    "include": [
+      "src/**/*.ts"
+    ],
+    "reporter": [
+      "html",
+      "text-summary"
+    ],
+    "require": [
+      "ts-node/register/transpile-only"
+    ],
+    "silent": true,
+    "sourceMap": false
+  },
+  "peerDependencies": {
+    "zod": "^3"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/gajus/slonik"
+  },
+  "scripts": {
+    "build": "rm -fr ./dist && tsc --project ./tsconfig.json",
+    "lint": "npm run lint:cspell && npm run lint:eslint && npm run lint:tsc",
+    "lint:cspell": "cspell . --no-progress --gitignore",
+    "lint:eslint": "eslint --cache ./src",
+    "lint:tsc": "tsc --noEmit",
+    "test": "nyc ava --verbose --serial"
+  },
+  "types": "./dist/index.d.ts",
+  "version": "45.4.1"
+}
