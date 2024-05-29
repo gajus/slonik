@@ -37,8 +37,12 @@ const TABLE_ALIAS = 't1';
 export const createConnectionLoaderClass = <T extends ZodTypeAny>(config: {
   columnNameTransformer?: (column: string) => string;
   query: QuerySqlToken<T>;
+  resolverFieldsThatRequireFetchingEdges?: string[];
 }) => {
   const { columnNameTransformer = snakeCase, query } = config;
+
+  const fieldsThatRequireFetchingEdges =
+    config.resolverFieldsThatRequireFetchingEdges ?? ['pageInfo', 'edges'];
 
   const columnIdentifiers = getColumnIdentifiers<z.infer<T>>(
     TABLE_ALIAS,
@@ -105,10 +109,11 @@ export const createConnectionLoaderClass = <T extends ZodTypeAny>(config: {
               countQueries.push(null);
             }
 
-            if (
-              requestedFields.has('pageInfo') ||
-              requestedFields.has('edges')
-            ) {
+            const shouldFetchEdges = fieldsThatRequireFetchingEdges.some(
+              (field) => requestedFields.has(field),
+            );
+
+            if (shouldFetchEdges) {
               const orderByExpressions: Array<[SqlToken, OrderDirection]> =
                 orderBy ? orderBy(columnIdentifiers) : [];
 
