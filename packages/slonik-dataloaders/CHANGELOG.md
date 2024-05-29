@@ -1,5 +1,11 @@
 # @slonik/dataloaders
 
+## 45.5.0
+
+### Minor Changes
+
+- [#614](https://github.com/gajus/slonik/pull/614) [`ce9b19c`](https://github.com/gajus/slonik/commit/ce9b19cdcf23ec2651a1455321d7535c4ef86534) Thanks [@mikeroelens](https://github.com/mikeroelens)! - feat: make fields configurable for determining whether or not to fetch edges
+
 ## 45.4.1
 
 ### Patch Changes

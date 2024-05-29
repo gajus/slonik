@@ -6,10 +6,10 @@
     "pg": "^8.11.3",
     "pg-promise": "^11.5.5",
     "postgres": "^3.4.4",
-    "slonik": "^45.4.1"
+    "slonik": "^45.5.0"
   },
   "scripts": {
     "benchmark": "NODE_ENV=production node benchmark.js"
   },
-  "version": "45.4.1"
+  "version": "45.5.0"
 }
