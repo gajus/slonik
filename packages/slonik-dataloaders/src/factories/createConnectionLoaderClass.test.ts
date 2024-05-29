@@ -456,7 +456,7 @@ describe('createConnectionLoaderClass', () => {
     expect(results[1].count).toEqual(2);
   });
 
-  it('gets the edges without fetching edges', async () => {
+  it('gets the edges without fetching count', async () => {
     const loader = new PersonConnectionLoader(pool);
     const results = await Promise.all([
       loader.load({
@@ -473,6 +473,38 @@ describe('createConnectionLoaderClass', () => {
     expect(results[0].edges.length).toEqual(2);
     expect(results[1].count).toEqual(0);
     expect(results[1].edges.length).toEqual(2);
+  });
+
+  it('fetches edges for fields provided in resolverFieldsThatRequireFetchingEdges config variable', async () => {
+    const loaderClass = createConnectionLoaderClass({
+      query: sql.type(
+        z
+          .object({
+            id: z.number(),
+            name: z.string(),
+            uid: z.string(),
+          })
+          .strict(),
+      )`
+        SELECT
+          id,
+          uid,
+          name
+        FROM person
+      `,
+      resolverFieldsThatRequireFetchingEdges: ['data'],
+    });
+
+    const loader = new loaderClass(pool);
+    const result = await loader.load({
+      info: getInfo(['data']),
+    });
+
+    expect(countTaggedQueries('@count-query')).toEqual(0);
+    expect(countTaggedQueries('@edges-query')).toEqual(1);
+
+    expect(result.count).toEqual(0);
+    expect(result.edges.length).toEqual(10);
   });
 });
 
