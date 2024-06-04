@@ -21,9 +21,9 @@
     "@slonik/sql-tag": "^45.5.0",
     "@slonik/types": "^45.5.0",
     "@slonik/utilities": "^45.5.0",
-    "pg-query-stream": "^4.5.5",
+    "pg-query-stream": "^4.6.0",
     "pg-types": "^4.0.2",
-    "pg": "^8.11.5",
+    "pg": "^8.12.0",
     "postgres-array": "^3.0.2"
   },
   "description": "A Node.js PostgreSQL client with strict types, detailed logging and assertions.",
