@@ -111,6 +111,8 @@ const createClientConfiguration = (
     options: connectionOptions.options,
     password: connectionOptions.password,
     port: connectionOptions.port,
+    // @ts-expect-error - https://github.com/brianc/node-postgres/pull/3214
+    queryMode: 'extended',
     ssl: false,
     user: connectionOptions.username,
   };

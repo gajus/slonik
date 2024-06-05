@@ -139,7 +139,7 @@ export const createIntegrationTests = (
     await pool.end();
   });
 
-  test('produces error if multiple statements are passed as the query input', async (t) => {
+  test('produces error if multiple statements are passed as the query input (without parameters)', async (t) => {
     const pool = await createPool(t.context.dsn, {
       driverFactory,
     });
@@ -151,6 +151,24 @@ export const createIntegrationTests = (
     );
 
     t.true(error instanceof InvalidInputError);
+  });
+
+  // The difference between this test and the previous one is that this one is expected to fail before the query is executed.
+  // In case of pg driver, that is because of the { queryMode: 'extended' } setting.
+  test('produces error if multiple statements are passed as the query input (with parameters)', async (t) => {
+    const pool = await createPool(t.context.dsn, {
+      driverFactory,
+    });
+
+    const error = await t.throwsAsync(
+      pool.query(sql.unsafe`
+        SELECT ${1}; SELECT ${2};
+      `),
+    );
+
+    // The actual error is going to be driver specific, e.g.: 'cannot insert multiple commands into a prepared statement'.
+    // However, Slonik will require compatible drivers to throw InputSyntaxError.
+    t.true(error instanceof InputSyntaxError);
   });
 
   test('NotNullIntegrityConstraintViolationError identifies the table and column', async (t) => {
