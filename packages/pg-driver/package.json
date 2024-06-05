@@ -16,11 +16,11 @@
     ]
   },
   "dependencies": {
-    "@slonik/driver": "^45.5.0",
-    "@slonik/errors": "^45.5.0",
-    "@slonik/sql-tag": "^45.5.0",
-    "@slonik/types": "^45.5.0",
-    "@slonik/utilities": "^45.5.0",
+    "@slonik/driver": "^45.6.0",
+    "@slonik/errors": "^45.6.0",
+    "@slonik/sql-tag": "^45.6.0",
+    "@slonik/types": "^45.6.0",
+    "@slonik/utilities": "^45.6.0",
     "pg-query-stream": "^4.6.0",
     "pg-types": "^4.0.2",
     "pg": "^8.12.0",
@@ -87,5 +87,5 @@
     "test": "nyc ava --verbose --serial"
   },
   "types": "./dist/index.d.ts",
-  "version": "45.5.0"
+  "version": "45.6.0"
 }

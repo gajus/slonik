@@ -1,5 +1,20 @@
 # @slonik/pg-driver
 
+## 45.6.0
+
+### Minor Changes
+
+- [#617](https://github.com/gajus/slonik/pull/617) [`2968b32`](https://github.com/gajus/slonik/commit/2968b32bec2e9bd8f2f757dd830a730824bf0e47) Thanks [@gajus](https://github.com/gajus)! - utilize extended query mode
+
+### Patch Changes
+
+- Updated dependencies []:
+  - @slonik/driver@45.6.0
+  - @slonik/errors@45.6.0
+  - @slonik/sql-tag@45.6.0
+  - @slonik/types@45.6.0
+  - @slonik/utilities@45.6.0
+
 ## 45.5.0
 
 ### Patch Changes
