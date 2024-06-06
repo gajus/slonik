@@ -111,8 +111,6 @@ const createClientConfiguration = (
     options: connectionOptions.options,
     password: connectionOptions.password,
     port: connectionOptions.port,
-    // @ts-expect-error - https://github.com/brianc/node-postgres/pull/3214
-    queryMode: 'extended',
     ssl: false,
     user: connectionOptions.username,
   };
@@ -286,6 +284,9 @@ export const createPgDriverFactory = (): DriverFactory => {
         client.on('error', onError);
         client.on('notice', onNotice);
 
+        let uniqueQueryIndex = 0;
+        const queries: Record<string, string> = {};
+
         return {
           connect: async () => {
             await client.connect();
@@ -297,10 +298,22 @@ export const createPgDriverFactory = (): DriverFactory => {
             client.removeListener('notice', onNotice);
           },
           query: async (sql, values) => {
+            let queryName = queries[sql];
+
+            if (!queryName) {
+              queryName = `query_${++uniqueQueryIndex}`;
+
+              queries[sql] = queryName;
+            }
+
             let result;
 
             try {
-              result = await client.query(sql, values as unknown[]);
+              result = await client.query({
+                // name: queryName,
+                text: sql,
+                values: values as unknown[],
+              });
             } catch (error) {
               throw wrapError(error, {
                 sql,
