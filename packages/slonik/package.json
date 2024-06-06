@@ -12,6 +12,7 @@
     "@slonik/utilities": "^45.6.0",
     "get-stack-trace": "^3.1.1",
     "iso8601-duration": "^1.3.0",
+    "pgsql-parser": "^13.16.0",
     "postgres-interval": "^4.0.2",
     "roarr": "^7.21.1",
     "serialize-error": "^8.0.0"

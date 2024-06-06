@@ -1,6 +1,7 @@
 import { TRANSACTION_ROLLBACK_ERROR_PREFIX } from '../constants';
 import { transactionContext } from '../contexts/transactionContext';
 import { type ConnectionPoolClient } from '../factories/createConnectionPool';
+import { createQueryValidator } from '../factories/createQueryValidator';
 import { getPoolClientState } from '../state';
 import {
   type ClientConfiguration,
@@ -26,10 +27,13 @@ import {
 import {
   type PrimitiveValueExpression,
   type QuerySqlToken,
+  stripSlonikPlaceholders,
 } from '@slonik/sql-tag';
 import { defer, generateUid } from '@slonik/utilities';
 import { getStackTrace } from 'get-stack-trace';
 import { serializeError } from 'serialize-error';
+
+const assertValidQuery = createQueryValidator();
 
 type GenericQueryResult = StreamResult | QueryResult<QueryResultRow>;
 
@@ -166,10 +170,11 @@ export const executeQuery = async (
   });
 
   const originalQuery = {
-    // See comments in `formatSlonikPlaceholder` for more information.
-    sql: query.sql.replaceAll('$slonik_', '$'),
+    sql: stripSlonikPlaceholders(query.sql),
     values: query.values,
   };
+
+  await assertValidQuery(originalQuery);
 
   let actualQuery = {
     ...originalQuery,

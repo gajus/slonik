@@ -139,6 +139,8 @@ export const createIntegrationTests = (
     await pool.end();
   });
 
+  // It is important that we cover queries with and without parameters.
+  // That's because in the extended mode, only statements with parameters would trigger the error.
   test('produces error if multiple statements are passed as the query input (without parameters)', async (t) => {
     const pool = await createPool(t.context.dsn, {
       driverFactory,
@@ -150,11 +152,9 @@ export const createIntegrationTests = (
       `),
     );
 
-    t.true(error instanceof InvalidInputError);
+    t.true(error instanceof InputSyntaxError);
   });
 
-  // The difference between this test and the previous one is that this one is expected to fail before the query is executed.
-  // In case of pg driver, that is because of the { queryMode: 'extended' } setting.
   test('produces error if multiple statements are passed as the query input (with parameters)', async (t) => {
     const pool = await createPool(t.context.dsn, {
       driverFactory,
