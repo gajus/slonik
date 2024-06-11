@@ -27,7 +27,6 @@
     "eslint-config-canonical": "^42.8.1",
     "expect-type": "^0.15.0",
     "get-port": "^5.1.1",
-    "nyc": "^15.1.0",
     "sinon": "^15.1.0",
     "ts-node": "^10.9.1",
     "typescript": "^5.4.5",
@@ -48,26 +47,6 @@
   "license": "BSD-3-Clause",
   "main": "./dist/index.js",
   "name": "slonik",
-  "nyc": {
-    "all": true,
-    "exclude": [
-      "src/bin",
-      "src/queries/*.ts",
-      "**/*.d.ts"
-    ],
-    "include": [
-      "src/**/*.ts"
-    ],
-    "reporter": [
-      "html",
-      "text-summary"
-    ],
-    "require": [
-      "ts-node/register/transpile-only"
-    ],
-    "silent": true,
-    "sourceMap": false
-  },
   "peerDependencies": {
     "zod": "^3"
   },
@@ -81,7 +60,7 @@
     "lint:cspell": "cspell . --no-progress --gitignore",
     "lint:eslint": "eslint --cache ./src",
     "lint:tsc": "tsc --noEmit",
-    "test": "nyc ava --verbose --serial"
+    "test": "ava --verbose --serial"
   },
   "types": "./dist/index.d.ts",
   "version": "45.6.0"

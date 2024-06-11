@@ -241,9 +241,6 @@ importers:
       get-port:
         specifier: ^5.1.1
         version: 5.1.1
-      nyc:
-        specifier: ^15.1.0
-        version: 15.1.0
       sinon:
         specifier: ^15.1.0
         version: 15.2.0
