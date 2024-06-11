@@ -1,6 +1,5 @@
 import { type Query } from '../types';
 import { InputSyntaxError, InvalidInputError } from '@slonik/errors';
-import { stripSlonikPlaceholders } from '@slonik/sql-tag';
 import { parseAsync } from 'pgsql-parser';
 
 export const createQueryValidator = () => {
