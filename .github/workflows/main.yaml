@@ -12,7 +12,7 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: '20'
-      - run: pnpm ci
+      - run: pnpm install
       - run: pnpm run -r build
       - run: pnpm run -r lint
     timeout-minutes: 10
