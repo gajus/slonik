@@ -176,16 +176,19 @@ export const createIntegrationTests = (
       driverFactory,
     });
 
-    const error: NotNullIntegrityConstraintViolationError | undefined =
-      await t.throwsAsync(
-        pool.any(sql.unsafe`
-      INSERT INTO person (name) VALUES (null)
-    `),
-      );
+    const error: Error | undefined = await t.throwsAsync(
+      pool.any(sql.unsafe`
+        INSERT INTO person (name) VALUES (null)
+      `),
+    );
 
     t.true(error instanceof NotNullIntegrityConstraintViolationError);
-    t.is(error?.table, 'person');
-    t.is(error?.column, 'name');
+
+    const notNullIntegrityConstraintViolationError =
+      error as NotNullIntegrityConstraintViolationError;
+
+    t.is(notNullIntegrityConstraintViolationError?.table, 'person');
+    t.is(notNullIntegrityConstraintViolationError?.column, 'name');
   });
 
   test('properly handles terminated connections', async (t) => {
@@ -212,13 +215,15 @@ export const createIntegrationTests = (
       driverFactory,
     });
 
-    const error: InputSyntaxError | undefined = await t.throwsAsync(
+    const error: Error | undefined = await t.throwsAsync(
       pool.any(sql.unsafe`SELECT WHERE`),
     );
 
     t.true(error instanceof InputSyntaxError);
 
-    t.is(error?.sql, 'SELECT WHERE');
+    const inputSyntaxError = error as InputSyntaxError;
+
+    t.is(inputSyntaxError?.sql, 'SELECT WHERE');
 
     await pool.end();
   });
