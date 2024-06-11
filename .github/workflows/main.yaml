@@ -13,9 +13,9 @@ jobs:
         with:
           cache: 'npm'
           node-version: '20'
-      - run: npm ci
-      - run: npm run build --workspaces --if-present
-      - run: npm run lint --workspaces --if-present
+      - run: pnpm ci
+      - run: pnpm run build --workspaces --if-present
+      - run: pnpm run lint --workspaces --if-present
     timeout-minutes: 10
   release:
     environment: release
@@ -34,8 +34,8 @@ jobs:
         with:
           cache: 'npm'
           node-version: '20'
-      - run: npm ci
-      - run: npm run build --workspaces --if-present
+      - run: pnpm install
+      - run: pnpm run build --workspaces --if-present
       - env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
@@ -85,12 +85,12 @@ jobs:
         with:
           cache: 'npm'
           node-version: '${{ matrix.node_version }}'
-      - run: npm ci
-      - run: npm run build --workspaces --if-present
+      - run: pnpm install
+      - run: pnpm run build --workspaces --if-present
       - env:
           POSTGRES_DSN: 'postgres://postgres:postgres@localhost:5432'
           TEST_ONLY: '${{ matrix.test_only }}'
-        run: npm run test --workspaces --if-present
+        run: pnpm run test --workspaces --if-present
     strategy:
       fail-fast: false
       matrix:
