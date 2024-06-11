@@ -11,11 +11,15 @@ jobs:
       - name: setup node.js
         uses: actions/setup-node@v4
         with:
-          cache: 'npm'
           node-version: '20'
-      - run: npm ci
-      - run: npm run build --workspaces --if-present
-      - run: npm run lint --workspaces --if-present
+      - uses: pnpm/action-setup@v4
+        name: install pnpm
+        with:
+          version: 8
+          run_install: |
+            - recursive: true
+      - run: pnpm run -r build
+      - run: pnpm run -r lint
     timeout-minutes: 10
   release:
     environment: release
@@ -32,10 +36,14 @@ jobs:
       - name: setup node.js
         uses: actions/setup-node@v4
         with:
-          cache: 'npm'
           node-version: '20'
-      - run: npm ci
-      - run: npm run build --workspaces --if-present
+      - uses: pnpm/action-setup@v4
+        name: install pnpm
+        with:
+          version: 8
+          run_install: |
+            - recursive: true
+      - run: pnpm run -r build
       - env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
@@ -83,14 +91,18 @@ jobs:
       - name: setup node.js
         uses: actions/setup-node@v4
         with:
-          cache: 'npm'
           node-version: '${{ matrix.node_version }}'
-      - run: npm ci
-      - run: npm run build --workspaces --if-present
+      - uses: pnpm/action-setup@v4
+        name: install pnpm
+        with:
+          version: 8
+          run_install: |
+            - recursive: true
+      - run: pnpm run -r build
       - env:
           POSTGRES_DSN: 'postgres://postgres:postgres@localhost:5432'
           TEST_ONLY: '${{ matrix.test_only }}'
-        run: npm run test --workspaces --if-present
+        run: pnpm run -r test
     strategy:
       fail-fast: false
       matrix:

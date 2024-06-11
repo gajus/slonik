@@ -15,7 +15,7 @@
     "eslint": "^8.57.0",
     "eslint-config-canonical": "^42.8.1",
     "slonik": "^45.6.0",
-    "typescript": "^4.5.3",
+    "typescript": "^5.4.5",
     "vitest": "^1.6.0"
   },
   "engines": {
