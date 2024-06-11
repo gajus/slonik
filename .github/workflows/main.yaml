@@ -11,7 +11,7 @@ jobs:
       - name: setup node.js
         uses: actions/setup-node@v4
         with:
-          cache: 'npm'
+          cache: 'pnpm'
           node-version: '20'
       - run: pnpm ci
       - run: pnpm run build --workspaces --if-present
@@ -32,9 +32,12 @@ jobs:
       - name: setup node.js
         uses: actions/setup-node@v4
         with:
-          cache: 'npm'
+          cache: 'pnpm'
           node-version: '20'
-      - run: pnpm install
+      - uses: pnpm/action-setup@v4
+        name: install pnpm
+        with:
+          version: 8
       - run: pnpm run build --workspaces --if-present
       - env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -83,9 +86,12 @@ jobs:
       - name: setup node.js
         uses: actions/setup-node@v4
         with:
-          cache: 'npm'
+          cache: 'pnpm'
           node-version: '${{ matrix.node_version }}'
-      - run: pnpm install
+      - uses: pnpm/action-setup@v4
+        name: install pnpm
+        with:
+          version: 8
       - run: pnpm run build --workspaces --if-present
       - env:
           POSTGRES_DSN: 'postgres://postgres:postgres@localhost:5432'
