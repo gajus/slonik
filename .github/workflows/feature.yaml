@@ -11,7 +11,7 @@ jobs:
       - name: setup node.js
         uses: actions/setup-node@v4
         with:
-          cache: 'npm'
+          cache: 'pnpm'
           node-version: '20'
       - run: pnpm install
       - run: pnpm run build --workspaces --if-present
@@ -28,7 +28,7 @@ jobs:
       - name: setup node.js
         uses: actions/setup-node@v4
         with:
-          cache: 'npm'
+          cache: 'pnpm'
           node-version: '20'
       - run: pnpm install
       - run: pnpm run build --workspaces --if-present
