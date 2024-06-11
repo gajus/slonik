@@ -36,6 +36,8 @@ jobs:
         name: install pnpm
         with:
           version: 8
+          run_install: |
+            - recursive: true
       - run: pnpm run -r build
       - env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -89,6 +91,8 @@ jobs:
         name: install pnpm
         with:
           version: 8
+          run_install: |
+            - recursive: true
       - run: pnpm run -r build
       - env:
           POSTGRES_DSN: 'postgres://postgres:postgres@localhost:5432'
