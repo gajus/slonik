@@ -11,7 +11,6 @@ jobs:
       - name: setup node.js
         uses: actions/setup-node@v4
         with:
-          cache: 'pnpm'
           node-version: '20'
       - uses: pnpm/action-setup@v4
         name: install pnpm
@@ -31,7 +30,6 @@ jobs:
       - name: setup node.js
         uses: actions/setup-node@v4
         with:
-          cache: 'pnpm'
           node-version: '20'
       - uses: pnpm/action-setup@v4
         name: install pnpm
@@ -81,7 +79,6 @@ jobs:
       - name: setup node.js
         uses: actions/setup-node@v4
         with:
-          cache: 'pnpm'
           node-version: '${{ matrix.node_version }}'
       - uses: pnpm/action-setup@v4
         name: install pnpm
