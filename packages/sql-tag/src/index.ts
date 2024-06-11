@@ -37,3 +37,4 @@ export {
   type ValueExpression,
 } from './types';
 export { isSqlToken } from './utilities/isSqlToken';
+export { stripSlonikPlaceholders } from './utilities/stripSlonikPlaceholders';
