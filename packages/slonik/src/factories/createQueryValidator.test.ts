@@ -1,5 +1,5 @@
 import { createQueryValidator } from './createQueryValidator';
-import { createSqlTag } from '@slonik/sql-tag';
+import { createSqlTag, stripSlonikPlaceholders } from '@slonik/sql-tag';
 import test from 'ava';
 
 const sql = createSqlTag();
@@ -20,7 +20,10 @@ test('allows to pass a query with a single statement (with parameters)', async (
   const assertValidQuery = createQueryValidator();
 
   await t.notThrowsAsync(async () => {
-    await assertValidQuery(query);
+    await assertValidQuery({
+      ...query,
+      sql: stripSlonikPlaceholders(query.sql),
+    });
   });
 });
 

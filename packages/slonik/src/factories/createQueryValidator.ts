@@ -13,7 +13,7 @@ export const createQueryValidator = () => {
       let ast;
 
       try {
-        ast = await parseAsync(stripSlonikPlaceholders(query.sql));
+        ast = await parseAsync(query.sql);
       } catch (error) {
         throw new InputSyntaxError(error, query);
       }
