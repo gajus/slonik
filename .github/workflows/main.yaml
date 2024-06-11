@@ -13,8 +13,8 @@ jobs:
         with:
           node-version: '20'
       - run: pnpm ci
-      - run: pnpm run build --workspaces --if-present
-      - run: pnpm run lint --workspaces --if-present
+      - run: pnpm run -r build
+      - run: pnpm run -r lint
     timeout-minutes: 10
   release:
     environment: release
@@ -36,7 +36,7 @@ jobs:
         name: install pnpm
         with:
           version: 8
-      - run: pnpm run build --workspaces --if-present
+      - run: pnpm run -r build
       - env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
@@ -89,11 +89,11 @@ jobs:
         name: install pnpm
         with:
           version: 8
-      - run: pnpm run build --workspaces --if-present
+      - run: pnpm run -r build
       - env:
           POSTGRES_DSN: 'postgres://postgres:postgres@localhost:5432'
           TEST_ONLY: '${{ matrix.test_only }}'
-        run: pnpm run test --workspaces --if-present
+        run: pnpm run -r test
     strategy:
       fail-fast: false
       matrix:
