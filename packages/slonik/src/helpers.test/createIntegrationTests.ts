@@ -139,6 +139,21 @@ export const createIntegrationTests = (
     await pool.end();
   });
 
+  // We have to test this scenario because we are using a custom query parser.
+  test('produces syntax error', async (t) => {
+    const pool = await createPool(t.context.dsn, {
+      driverFactory,
+    });
+
+    const error = await t.throwsAsync(
+      pool.query(sql.unsafe`
+        SELECT 1 foo bar baz
+      `),
+    );
+
+    t.true(error instanceof InputSyntaxError);
+  });
+
   // It is important that we cover queries with and without parameters.
   // That's because in the extended mode, only statements with parameters would trigger the error.
   test('produces error if multiple statements are passed as the query input (without parameters)', async (t) => {

@@ -10,7 +10,13 @@ export const createQueryValidator = () => {
     let stats = queries[query.sql];
 
     if (stats === undefined) {
-      const ast = await parseAsync(stripSlonikPlaceholders(query.sql));
+      let ast;
+
+      try {
+        ast = await parseAsync(stripSlonikPlaceholders(query.sql));
+      } catch (error) {
+        throw new InputSyntaxError(error, query);
+      }
 
       stats = ast.length;
 
