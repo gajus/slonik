@@ -1,6 +1,7 @@
 import { Logger } from '../Logger';
 import {
   type Driver,
+  type DriverClient,
   type DriverClientEventEmitter,
   type DriverClientState,
   type DriverQueryResult,
@@ -135,7 +136,13 @@ export const createConnectionPool = ({
 
       pendingConnections.push(pendingConnection);
 
-      const connection = await pendingConnection;
+      let connection: DriverClient;
+      try {
+        connection = await pendingConnection;
+      } catch (error) {
+        pendingConnections.pop();
+        throw error;
+      }
 
       const onRelease = () => {
         const waitingClient = waitingClients.shift();

@@ -7,7 +7,7 @@ import { execSync, spawn } from 'node:child_process';
 import { randomUUID } from 'node:crypto';
 import { setTimeout } from 'node:timers/promises';
 
-const startTestContainer = async () => {
+export const startTestContainer = async () => {
   const dockerContainerName = `slonik-test-${randomUUID()}`;
   const servicePort = await getPort();
 
