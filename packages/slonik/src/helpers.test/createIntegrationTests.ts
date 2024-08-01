@@ -926,7 +926,7 @@ export const createIntegrationTests = (
 
     const pool = await createPool(t.context.dsn, {
       driverFactory,
-      idleTimeout: 500,
+      idleTimeout: 'DISABLE_TIMEOUT',
       maximumPoolSize: 5,
     });
 
@@ -967,8 +967,6 @@ export const createIntegrationTests = (
     });
 
     await pool.end();
-
-    await delay(600);
 
     t.deepEqual(pool.state(), {
       acquiredConnections: 0,
