@@ -108,7 +108,11 @@ export const createConnectionPool = ({
     // e.g. "waits for all connections to be established before attempting to terminate the pool" test
     await delay(0);
 
-    await Promise.all(connections.map((connection) => connection.destroy()));
+    // Make a copy of `connections` array as items are removed from it during the map iteration.
+    // If `connections` array is used directly, the loop will skip some items.
+    await Promise.all(
+      [...connections].map((connection) => connection.destroy()),
+    );
   };
 
   const acquire = async () => {
