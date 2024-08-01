@@ -1,5 +1,11 @@
 # @slonik/types
 
+## 46.0.1
+
+### Patch Changes
+
+- [`a478df5`](https://github.com/gajus/slonik/commit/a478df56482e9f9ee6adc6489d101259c91fa89d) Thanks [@gajus](https://github.com/gajus)! - update lock file
+
 ## 46.0.0
 
 ## 45.6.0
