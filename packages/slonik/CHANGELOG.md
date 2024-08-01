@@ -1,5 +1,22 @@
 # slonik
 
+## 46.0.0
+
+### Major Changes
+
+- [#633](https://github.com/gajus/slonik/pull/633) [`c415b16`](https://github.com/gajus/slonik/commit/c415b16616871073fa0aa11a4965e2ba86db60a0) Thanks [@mikeroelens](https://github.com/mikeroelens)! - fix: close all connections in pool.end(). Previously a subset idleConnections would hang until idleTimeout was reached
+
+### Patch Changes
+
+- [#632](https://github.com/gajus/slonik/pull/632) [`48263cd`](https://github.com/gajus/slonik/commit/48263cd4845aa89539bd7004ae195d1a968bbeb1) Thanks [@yamnigh](https://github.com/yamnigh)! - Fix: release pending pool connections on error
+
+- Updated dependencies []:
+  - @slonik/driver@46.0.0
+  - @slonik/errors@46.0.0
+  - @slonik/pg-driver@46.0.0
+  - @slonik/sql-tag@46.0.0
+  - @slonik/utilities@46.0.0
+
 ## 45.6.0
 
 ### Minor Changes
