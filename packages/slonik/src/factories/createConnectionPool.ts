@@ -139,7 +139,10 @@ export const createConnectionPool = ({
 
       pendingConnections.push(pendingConnection);
 
-      const connection = await pendingConnection;
+      const connection = await pendingConnection.catch((error) => {
+        pendingConnections.pop();
+        throw error;
+      });
 
       const onRelease = () => {
         const waitingClient = waitingClients.shift();
