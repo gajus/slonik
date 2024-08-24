@@ -23,7 +23,7 @@ export const createClientConfiguration = (
     idleTimeout: 5_000,
     interceptors: [],
     maximumPoolSize: 10,
-    minimumPoolSize: 1,
+    minimumPoolSize: 0,
     queryRetryLimit: 5,
     resetConnection: ({ query }) => {
       return query(`DISCARD ALL`);

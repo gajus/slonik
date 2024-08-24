@@ -15,7 +15,7 @@ export const createPoolConfiguration = (
   const poolConfiguration = {
     idleTimeout: 10_000,
     maximumPoolSize: 10,
-    minimumPoolSize: 1,
+    minimumPoolSize: 0,
   };
 
   if (clientConfiguration.idleTimeout !== 'DISABLE_TIMEOUT') {

@@ -119,7 +119,7 @@ export type ClientConfiguration = {
    */
   readonly maximumPoolSize?: number;
   /**
-   * Ensure that at least this many connections are available in the pool. (Default: 1)
+   * Ensure that at least this many connections are available in the pool. (Default: 0)
    */
   readonly minimumPoolSize?: number;
   /**
