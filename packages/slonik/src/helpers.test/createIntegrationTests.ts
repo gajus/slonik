@@ -1994,7 +1994,7 @@ export const createIntegrationTests = (
     );
   });
 
-  test.only('retains a minimum number of connections in the pool', async (t) => {
+  test('retains a minimum number of connections in the pool', async (t) => {
     const pool = await createPool(t.context.dsn, {
       driverFactory,
       idleTimeout: 100,
