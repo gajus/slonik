@@ -132,10 +132,13 @@ export const createConnectionPool = ({
 
       const connection = await pendingConnection.catch((error) => {
         pendingConnections.pop();
+
         throw error;
       });
+
       const onRelease = () => {
         const waitingClient = waitingClients.shift();
+
         if (!waitingClient) {
           return;
         }
@@ -154,6 +157,7 @@ export const createConnectionPool = ({
       const onDestroy = () => {
         connection.removeListener('release', onRelease);
         connection.removeListener('destroy', onDestroy);
+
         connections.splice(connections.indexOf(connection), 1);
 
         const waitingClient = waitingClients.shift();
