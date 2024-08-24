@@ -62,6 +62,7 @@ export const createConnectionPool = ({
 }: {
   driver: Driver;
   idleTimeout?: number;
+  // TODO rename to `maxPoolSize`
   poolSize?: number;
 }): ConnectionPool => {
   // See test "waits for all connections to be established before attempting to terminate the pool"
@@ -194,7 +195,7 @@ export const createConnectionPool = ({
       return idleConnection;
     }
 
-    if (poolSize - (pendingConnections.length + connections.length) >= 0) {
+    if (pendingConnections.length + connections.length < poolSize) {
       const newConnection = await addConnection();
 
       newConnection.acquire();
