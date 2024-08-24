@@ -1994,7 +1994,7 @@ export const createIntegrationTests = (
     );
   });
 
-  test('retains a minimum number of connections in the pool', async (t) => {
+  test.only('retains a minimum number of connections in the pool', async (t) => {
     const pool = await createPool(t.context.dsn, {
       driverFactory,
       idleTimeout: 100,
@@ -2046,6 +2046,8 @@ export const createIntegrationTests = (
       },
       'shows idle clients because minimum pool size is 1',
     );
+
+    await pool.end();
   });
 
   test('retains explicit transaction beyond the idle timeout', async (t) => {
