@@ -195,12 +195,7 @@ export const createConnectionPool = ({
       return idleConnection;
     }
 
-    while (
-      Math.max(
-        poolSize - (pendingConnections.length + connections.length),
-        0,
-      ) >= 0
-    ) {
+    if (poolSize - (pendingConnections.length + connections.length) >= 0) {
       await addConnection();
     }
 
