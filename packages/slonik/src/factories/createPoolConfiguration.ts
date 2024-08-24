@@ -4,8 +4,9 @@ import { Logger as log } from '../Logger';
 import { type ClientConfiguration } from '../types';
 
 type PoolConfiguration = {
-  idleTimeout?: number;
-  poolSize?: number;
+  idleTimeout: number;
+  maximumPoolSize: number;
+  minimumPoolSize: number;
 };
 
 export const createPoolConfiguration = (
@@ -13,7 +14,8 @@ export const createPoolConfiguration = (
 ): PoolConfiguration => {
   const poolConfiguration = {
     idleTimeout: 10_000,
-    poolSize: 10,
+    maximumPoolSize: 10,
+    minimumPoolSize: 0,
   };
 
   if (clientConfiguration.idleTimeout !== 'DISABLE_TIMEOUT') {
@@ -29,7 +31,11 @@ export const createPoolConfiguration = (
   }
 
   if (clientConfiguration.maximumPoolSize) {
-    poolConfiguration.poolSize = clientConfiguration.maximumPoolSize;
+    poolConfiguration.maximumPoolSize = clientConfiguration.maximumPoolSize;
+  }
+
+  if (clientConfiguration.minimumPoolSize) {
+    poolConfiguration.minimumPoolSize = clientConfiguration.minimumPoolSize;
   }
 
   return poolConfiguration;

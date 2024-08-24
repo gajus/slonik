@@ -58,12 +58,13 @@ export type ConnectionPool = {
 
 export const createConnectionPool = ({
   driver,
-  poolSize = 1,
+  maximumPoolSize,
+  minimumPoolSize,
 }: {
   driver: Driver;
-  idleTimeout?: number;
-  // TODO rename to `maxPoolSize`
-  poolSize?: number;
+  idleTimeout: number;
+  maximumPoolSize: number;
+  minimumPoolSize: number;
 }): ConnectionPool => {
   // See test "waits for all connections to be established before attempting to terminate the pool"
   // for explanation of why `pendingConnections` is needed.
@@ -162,6 +163,12 @@ export const createConnectionPool = ({
 
         const waitingClient = waitingClients.shift();
 
+        if (!isEnding && !isEnded && connections.length < minimumPoolSize) {
+          addConnection();
+
+          return;
+        }
+
         if (!waitingClient) {
           return;
         }
@@ -195,7 +202,7 @@ export const createConnectionPool = ({
       return idleConnection;
     }
 
-    if (pendingConnections.length + connections.length < poolSize) {
+    if (pendingConnections.length + connections.length < maximumPoolSize) {
       const newConnection = await addConnection();
 
       newConnection.acquire();
@@ -214,8 +221,9 @@ export const createConnectionPool = ({
     logger.warn(
       {
         connections: connections.length,
+        maximumPoolSize,
+        minimumPoolSize,
         pendingConnections: pendingConnections.length,
-        poolSize,
         waitingClients: waitingClients.length,
       },
       `connection pool full; client has been queued`,
