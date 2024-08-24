@@ -1,5 +1,12 @@
 # @slonik/errors
 
+## 46.1.0
+
+### Patch Changes
+
+- Updated dependencies []:
+  - @slonik/types@46.1.0
+
 ## 46.0.1
 
 ### Patch Changes
