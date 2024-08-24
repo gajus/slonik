@@ -39,6 +39,7 @@ export type DriverConfiguration = {
   readonly idleInTransactionSessionTimeout: number | 'DISABLE_TIMEOUT';
   readonly idleTimeout?: number | 'DISABLE_TIMEOUT';
   readonly maximumPoolSize?: number;
+  readonly minimumPoolSize?: number;
   readonly resetConnection?: (connection: BasicConnection) => Promise<void>;
   readonly ssl?: TlsConnectionOptions;
   readonly statementTimeout: number | 'DISABLE_TIMEOUT';

@@ -1942,6 +1942,112 @@ export const createIntegrationTests = (
     );
   });
 
+  test('removes connections from the pool after the idle timeout', async (t) => {
+    const pool = await createPool(t.context.dsn, {
+      driverFactory,
+      idleTimeout: 100,
+    });
+
+    t.deepEqual(
+      pool.state(),
+      {
+        acquiredConnections: 0,
+        idleConnections: 0,
+        pendingDestroyConnections: 0,
+        pendingReleaseConnections: 0,
+        state: 'ACTIVE',
+        waitingClients: 0,
+      },
+      'initial state',
+    );
+
+    await pool.query(sql.unsafe`
+      SELECT 1
+    `);
+
+    t.deepEqual(
+      pool.state(),
+      {
+        acquiredConnections: 0,
+        idleConnections: 1,
+        pendingDestroyConnections: 0,
+        pendingReleaseConnections: 0,
+        state: 'ACTIVE',
+        waitingClients: 0,
+      },
+      'shows idle clients',
+    );
+
+    await delay(100);
+
+    t.deepEqual(
+      pool.state(),
+      {
+        acquiredConnections: 0,
+        idleConnections: 0,
+        pendingDestroyConnections: 0,
+        pendingReleaseConnections: 0,
+        state: 'ACTIVE',
+        waitingClients: 0,
+      },
+      'shows no idle clients',
+    );
+  });
+
+  test('retains a minimum number of connections in the pool', async (t) => {
+    const pool = await createPool(t.context.dsn, {
+      driverFactory,
+      idleTimeout: 100,
+      minimumPoolSize: 1,
+    });
+
+    t.deepEqual(
+      pool.state(),
+      {
+        acquiredConnections: 0,
+        // TODO we might want to add an option to warm up the pool, in which case this value should be 1
+        idleConnections: 0,
+        pendingDestroyConnections: 0,
+        pendingReleaseConnections: 0,
+        state: 'ACTIVE',
+        waitingClients: 0,
+      },
+      'initial state',
+    );
+
+    await pool.query(sql.unsafe`
+      SELECT 1
+    `);
+
+    t.deepEqual(
+      pool.state(),
+      {
+        acquiredConnections: 0,
+        idleConnections: 1,
+        pendingDestroyConnections: 0,
+        pendingReleaseConnections: 0,
+        state: 'ACTIVE',
+        waitingClients: 0,
+      },
+      'shows idle clients',
+    );
+
+    await delay(150);
+
+    t.deepEqual(
+      pool.state(),
+      {
+        acquiredConnections: 0,
+        idleConnections: 1,
+        pendingDestroyConnections: 0,
+        pendingReleaseConnections: 0,
+        state: 'ACTIVE',
+        waitingClients: 0,
+      },
+      'shows idle clients because minimum pool size is 1',
+    );
+  });
+
   test('retains explicit transaction beyond the idle timeout', async (t) => {
     const pool = await createPool(t.context.dsn, {
       driverFactory,

@@ -115,9 +115,13 @@ export type ClientConfiguration = {
    */
   readonly interceptors: readonly Interceptor[];
   /**
-   * Do not allow more than this many connections. Use 'DISABLE_TIMEOUT' constant to disable the timeout. (Default: 10)
+   * Do not allow more than this many connections. (Default: 10)
    */
-  readonly maximumPoolSize: number;
+  readonly maximumPoolSize?: number;
+  /**
+   * Ensure that at least this many connections are available in the pool. (Default: 1)
+   */
+  readonly minimumPoolSize?: number;
   /**
    * Number of times a query failing with Transaction Rollback class error, that doesn't belong to a transaction, is retried. (Default: 5)
    */

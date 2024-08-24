@@ -23,6 +23,7 @@ export const createClientConfiguration = (
     idleTimeout: 5_000,
     interceptors: [],
     maximumPoolSize: 10,
+    minimumPoolSize: 1,
     queryRetryLimit: 5,
     resetConnection: ({ query }) => {
       return query(`DISCARD ALL`);
@@ -36,6 +37,18 @@ export const createClientConfiguration = (
   if (configuration.maximumPoolSize < 1) {
     throw new InvalidConfigurationError(
       'maximumPoolSize must be equal to or greater than 1.',
+    );
+  }
+
+  if (configuration.minimumPoolSize < 0) {
+    throw new InvalidConfigurationError(
+      'minimumPoolSize must be equal to or greater than 0.',
+    );
+  }
+
+  if (configuration.maximumPoolSize < configuration.minimumPoolSize) {
+    throw new InvalidConfigurationError(
+      'maximumPoolSize must be equal to or greater than minimumPoolSize.',
     );
   }
 
