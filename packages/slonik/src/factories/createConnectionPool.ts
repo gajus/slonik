@@ -195,57 +195,45 @@ export const createConnectionPool = ({
       return idleConnection;
     }
 
-    let requiredConnectionCount = Math.max(
-      poolSize - (pendingConnections.length + connections.length),
-      0,
+    while (
+      Math.max(
+        poolSize - (pendingConnections.length + connections.length),
+        0,
+      ) >= 0
+    ) {
+      await addConnection();
+    }
+
+    const deferred = defer<ConnectionPoolClient>();
+
+    waitingClients.push({
+      deferred,
+    });
+
+    const queuedAt = process.hrtime.bigint();
+
+    logger.warn(
+      {
+        connections: connections.length,
+        pendingConnections: pendingConnections.length,
+        poolSize,
+        waitingClients: waitingClients.length,
+      },
+      `connection pool full; client has been queued`,
     );
 
-    if (requiredConnectionCount) {
-      while (requiredConnectionCount-- >= 0) {
-        if (requiredConnectionCount === 0) {
-          const newConnection = await addConnection();
-
-          newConnection.acquire();
-
-          return newConnection;
-        } else {
-          await addConnection();
-        }
-      }
-
-      throw new UnexpectedStateError('Connection pool is full.');
-    } else {
-      const deferred = defer<ConnectionPoolClient>();
-
-      waitingClients.push({
-        deferred,
-      });
-
-      const queuedAt = process.hrtime.bigint();
-
-      logger.warn(
+    // eslint-disable-next-line promise/prefer-await-to-then
+    return deferred.promise.then((connection) => {
+      logger.debug(
         {
-          connections: connections.length,
-          pendingConnections: pendingConnections.length,
-          poolSize,
-          waitingClients: waitingClients.length,
+          connectionId: connection.id(),
+          duration: Number(process.hrtime.bigint() - queuedAt) / 1e6,
         },
-        `connection pool full; client has been queued`,
+        'connection has been acquired from the queue',
       );
 
-      // eslint-disable-next-line promise/prefer-await-to-then
-      return deferred.promise.then((connection) => {
-        logger.debug(
-          {
-            connectionId: connection.id(),
-            duration: Number(process.hrtime.bigint() - queuedAt) / 1e6,
-          },
-          'connection has been acquired from the queue',
-        );
-
-        return connection;
-      });
-    }
+      return connection;
+    });
   };
 
   return {
