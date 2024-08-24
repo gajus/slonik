@@ -163,13 +163,13 @@ export const createConnectionPool = ({
 
         const waitingClient = waitingClients.shift();
 
+        if (!isEnding && !isEnded && connections.length < minimumPoolSize) {
+          addConnection();
+
+          return;
+        }
+
         if (!waitingClient) {
-          if (connections.length < minimumPoolSize) {
-            addConnection();
-
-            return;
-          }
-
           return;
         }
 
