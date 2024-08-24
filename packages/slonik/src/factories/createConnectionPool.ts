@@ -7,7 +7,6 @@ import {
   type DriverStream,
   type DriverStreamResult,
 } from '@slonik/driver';
-import { UnexpectedStateError } from '@slonik/errors';
 import { defer, type DeferredPromise, generateUid } from '@slonik/utilities';
 import { setTimeout as delay } from 'node:timers/promises';
 import { serializeError } from 'serialize-error';
@@ -196,7 +195,11 @@ export const createConnectionPool = ({
     }
 
     if (poolSize - (pendingConnections.length + connections.length) >= 0) {
-      await addConnection();
+      const newConnection = await addConnection();
+
+      newConnection.acquire();
+
+      return newConnection;
     }
 
     const deferred = defer<ConnectionPoolClient>();
