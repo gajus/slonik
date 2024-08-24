@@ -1,5 +1,17 @@
 # @slonik/driver
 
+## 46.1.0
+
+### Minor Changes
+
+- [#639](https://github.com/gajus/slonik/pull/639) [`97924d6`](https://github.com/gajus/slonik/commit/97924d663c8f948c70dc3f3a3248000e298627d7) Thanks [@gajus](https://github.com/gajus)! - add minimumPoolSize option
+
+### Patch Changes
+
+- Updated dependencies []:
+  - @slonik/types@46.1.0
+  - @slonik/utilities@46.1.0
+
 ## 46.0.1
 
 ### Patch Changes
