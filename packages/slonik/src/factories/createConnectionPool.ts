@@ -7,6 +7,7 @@ import {
   type DriverStream,
   type DriverStreamResult,
 } from '@slonik/driver';
+import { UnexpectedStateError } from '@slonik/errors';
 import { defer, type DeferredPromise, generateUid } from '@slonik/utilities';
 import { setTimeout as delay } from 'node:timers/promises';
 import { serializeError } from 'serialize-error';
@@ -124,17 +125,7 @@ export const createConnectionPool = ({
       throw new Error('Connection pool has ended.');
     }
 
-    const idleConnection = connections.find(
-      (connection) => connection.state() === 'IDLE',
-    );
-
-    if (idleConnection) {
-      idleConnection.acquire();
-
-      return idleConnection;
-    }
-
-    if (pendingConnections.length + connections.length < poolSize) {
+    const addConnection = async () => {
       const pendingConnection = driver.createClient();
 
       pendingConnections.push(pendingConnection);
@@ -143,10 +134,8 @@ export const createConnectionPool = ({
         pendingConnections.pop();
         throw error;
       });
-
       const onRelease = () => {
         const waitingClient = waitingClients.shift();
-
         if (!waitingClient) {
           return;
         }
@@ -165,7 +154,6 @@ export const createConnectionPool = ({
       const onDestroy = () => {
         connection.removeListener('release', onRelease);
         connection.removeListener('destroy', onDestroy);
-
         connections.splice(connections.indexOf(connection), 1);
 
         const waitingClient = waitingClients.shift();
@@ -183,8 +171,6 @@ export const createConnectionPool = ({
 
       connection.on('destroy', onDestroy);
 
-      connection.acquire();
-
       connections.push(connection);
 
       pendingConnections.splice(
@@ -193,6 +179,37 @@ export const createConnectionPool = ({
       );
 
       return connection;
+    };
+
+    const idleConnection = connections.find(
+      (connection) => connection.state() === 'IDLE',
+    );
+
+    if (idleConnection) {
+      idleConnection.acquire();
+
+      return idleConnection;
+    }
+
+    let requiredConnectionCount = Math.max(
+      poolSize - (pendingConnections.length + connections.length),
+      0,
+    );
+
+    if (requiredConnectionCount) {
+      while (requiredConnectionCount-- >= 0) {
+        if (requiredConnectionCount === 0) {
+          const newConnection = await addConnection();
+
+          newConnection.acquire();
+
+          return newConnection;
+        } else {
+          await addConnection();
+        }
+      }
+
+      throw new UnexpectedStateError('Connection pool is full.');
     } else {
       const deferred = defer<ConnectionPoolClient>();
 
