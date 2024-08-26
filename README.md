@@ -28,14 +28,14 @@ Note: Using this project does not require TypeScript. It is a regular ES6 module
 
 ## Features
 
-* [Runtime validation](#runtime-validation)
+* [Runtime validation](#runtime-validation).
 * [Assertions and type safety](#repeating-code-patterns-and-type-safety).
 * [Safe connection handling](#protecting-against-unsafe-connection-handling).
 * [Safe transaction handling](#protecting-against-unsafe-transaction-handling).
 * [Safe value interpolation](#protecting-against-unsafe-value-interpolation).
 * [Transaction nesting](#transaction-nesting).
-* [Transaction retrying](#transaction-retrying)
-* [Query retrying](#query-retrying)
+* [Transaction retrying](#transaction-retrying).
+* [Query retrying](#query-retrying).
 * Detailed [logging](#debugging).
 * [Asynchronous stack trace resolution](#capture-stack-trace).
 * [Middlewares](#interceptors).
@@ -80,14 +80,14 @@ Note: Using this project does not require TypeScript. It is a regular ES6 module
         * [Building Utility Statements](#building-utility-statements)
         * [Inserting vector data](#inserting-vector-data)
     * [Runtime validation](#runtime-validation)
-        * [Motivation](#runtime-validation-motivation)
-        * [Result parser interceptor](#runtime-validation-result-parser-interceptor)
-        * [Example use of `sql.type`](#runtime-validation-example-use-of-sql-type)
-        * [Performance penalty](#runtime-validation-performance-penalty)
-        * [Unknown keys](#runtime-validation-unknown-keys)
-        * [Handling schema validation errors](#runtime-validation-handling-schema-validation-errors)
-        * [Inferring types](#runtime-validation-inferring-types)
-        * [Transforming results](#runtime-validation-transforming-results)
+        * [Motivation](#motivation)
+        * [Result parser interceptor](#result-parser-interceptor)
+        * [Example use of `sql.type`](#example-use-of-sqltype)
+        * [Performance penalty](#performance-penalty)
+        * [Unknown keys](#unknown-keys)
+        * [Handling schema validation errors](#handling-schema-validation-errors)
+        * [Inferring types](#inferring-types)
+        * [Transforming results](#transforming-results)
     * [`sql` tag](#sql-tag)
         * [Type aliases](#type-aliases)
         * [Typing `sql` tag](#typing-sql-tag)
@@ -96,19 +96,19 @@ Note: Using this project does not require TypeScript. It is a regular ES6 module
         * [Manually constructing the query](#manually-constructing-the-query)
         * [Nesting `sql`](#nesting-sql)
     * [Query building](#query-building)
-        * [`sql.array`](#sql-array)
-        * [`sql.binary`](#sql-binary)
-        * [`sql.date`](#sql-date)
-        * [`sql.fragment`](#sql-fragment)
-        * [`sql.identifier`](#sql-identifier)
-        * [`sql.interval`](#sql-interval)
-        * [`sql.join`](#sql-join)
-        * [`sql.json`](#sql-json)
-        * [`sql.jsonb`](#sql-jsonb)
-        * [`sql.literalValue`](#sql-literalvalue)
-        * [`sql.timestamp`](#sql-timestamp)
-        * [`sql.unnest`](#sql-unnest)
-        * [`sql.unsafe`](#sql-unsafe)
+        * [`sql.array`](#sqlarray)
+        * [`sql.binary`](#sqlbinary)
+        * [`sql.date`](#sqldate)
+        * [`sql.fragment`](#sqlfragment)
+        * [`sql.identifier`](#sqlidentifier)
+        * [`sql.interval`](#sqlinterval)
+        * [`sql.join`](#sqljoin)
+        * [`sql.json`](#sqljson)
+        * [`sql.jsonb`](#sqljsonb)
+        * [`sql.literalValue`](#sqlliteralvalue)
+        * [`sql.timestamp`](#sqltimestamp)
+        * [`sql.unnest`](#sqlunnest)
+        * [`sql.unsafe`](#sqlunsafe)
     * [Query methods](#query-methods)
         * [`any`](#any)
         * [`anyFirst`](#anyfirst)
@@ -123,8 +123,8 @@ Note: Using this project does not require TypeScript. It is a regular ES6 module
         * [`stream`](#stream)
         * [`transaction`](#transaction)
     * [Utilities](#utilities)
-        * [`parseDsn`](#utilities-parsedsn)
-        * [`stringifyDsn`](#utilities-stringifydsn)
+        * [`parseDsn`](#parsedsn)
+        * [`stringifyDsn`](#stringifydsn)
     * [Error handling](#error-handling)
         * [Original `node-postgres` error](#original-node-postgres-error)
         * [Handling `BackendTerminatedError`](#handling-backendterminatederror)
