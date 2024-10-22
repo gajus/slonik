@@ -49,6 +49,17 @@ const destroyBoundConnection = (boundConnection: DatabasePoolConnection) => {
   }
 };
 
+const modifyErrorTrace = (invocationTrace:string,runtimeErrorTrace:string) => {
+  let invocationTraceArr = invocationTrace.split("\n");
+  let errorTraceArr = runtimeErrorTrace.split("\n");
+  var errorMessage =  errorTraceArr[0];
+  invocationTraceArr.pop();
+  invocationTraceArr.push(errorMessage);
+  invocationTraceArr.reverse();
+  invocationTraceArr =  invocationTraceArr.slice(0,3);
+  invocationTrace = invocationTraceArr.join("\n");
+  return invocationTrace;
+}
 const raceError = async <T>(
   connection: ConnectionPoolClient,
   routine: () => Promise<T>,
@@ -77,6 +88,7 @@ export const createConnection = async (
   poolHandler: PoolHandlerType,
   query: QuerySqlToken | null = null,
 ) => {
+  let invocationTrace =  new Error().stack;
   const { state } = pool.state();
 
   const poolId = pool.id();
@@ -159,7 +171,7 @@ export const createConnection = async (
       );
     } catch (error) {
       await connection.destroy();
-
+      error.stack = modifyErrorTrace(invocationTrace??"",error.stack??"");
       throw error;
     }
 
