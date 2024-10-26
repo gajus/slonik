@@ -156,7 +156,7 @@ export const createConnection = async (
       }
     } catch (error) {
       await connection.destroy();
-
+      error.stack = modifyErrorTrace(invocationTrace??"",error.stack??"");
       throw error;
     }
 
@@ -186,7 +186,7 @@ export const createConnection = async (
       }
     } catch (error) {
       await connection.destroy();
-
+      error.stack = modifyErrorTrace(invocationTrace??"",error.stack??"");
       throw error;
     }
 
