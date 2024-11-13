@@ -27,7 +27,7 @@
     "eslint": "^9.14.0",
     "slonik": "^46.1.0",
     "ts-node": "^10.4.0",
-    "typescript": "^5.4.5"
+    "typescript": "^5.6.3"
   },
   "engines": {
     "node": ">=18"
