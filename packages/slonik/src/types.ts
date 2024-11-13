@@ -36,7 +36,6 @@ export type ConnectionOptions = {
  * experience with auto suggestions for commonly used type name identifiers.
  */
 export type TypeNameIdentifier =
-  | string
   | 'bool'
   | 'bytea'
   | 'float4'
@@ -47,7 +46,8 @@ export type TypeNameIdentifier =
   | 'json'
   | 'text'
   | 'timestamptz'
-  | 'uuid';
+  | 'uuid'
+  | string;
 
 export type QueryId = string;
 
@@ -85,7 +85,7 @@ export type ClientConfiguration = {
   /**
    * Timeout (in milliseconds) after which an error is raised if connection cannot cannot be established. (Default: 5000)
    */
-  readonly connectionTimeout: number | 'DISABLE_TIMEOUT';
+  readonly connectionTimeout: 'DISABLE_TIMEOUT' | number;
   /**
    * Connection URI, e.g. `postgres://user:password@localhost/database`.
    */
@@ -105,11 +105,11 @@ export type ClientConfiguration = {
   /**
    * Timeout (in milliseconds) after which idle clients are closed. Use 'DISABLE_TIMEOUT' constant to disable the timeout. (Default: 60000)
    */
-  readonly idleInTransactionSessionTimeout: number | 'DISABLE_TIMEOUT';
+  readonly idleInTransactionSessionTimeout: 'DISABLE_TIMEOUT' | number;
   /**
    * Timeout (in milliseconds) after which idle clients are closed. Use 'DISABLE_TIMEOUT' constant to disable the timeout. (Default: 5000)
    */
-  readonly idleTimeout: number | 'DISABLE_TIMEOUT';
+  readonly idleTimeout: 'DISABLE_TIMEOUT' | number;
   /**
    * An array of [Slonik interceptors](https://github.com/gajus/slonik#slonik-interceptors).
    */
@@ -140,7 +140,7 @@ export type ClientConfiguration = {
   /**
    * Timeout (in milliseconds) after which database is instructed to abort the query. Use 'DISABLE_TIMEOUT' constant to disable the timeout. (Default: 60000)
    */
-  readonly statementTimeout: number | 'DISABLE_TIMEOUT';
+  readonly statementTimeout: 'DISABLE_TIMEOUT' | number;
   /**
    * Number of times a transaction failing with Transaction Rollback class error is retried. (Default: 5)
    */
@@ -193,7 +193,7 @@ export type ConnectionRoutine<T> = (
   connection: DatabasePoolConnection,
 ) => Promise<T>;
 
-type PoolStateName = 'ACTIVE' | 'ENDING' | 'ENDED';
+type PoolStateName = 'ACTIVE' | 'ENDED' | 'ENDING';
 
 type PoolState = {
   readonly acquiredConnections: number;
@@ -204,12 +204,12 @@ type PoolState = {
   readonly waitingClients: number;
 };
 
-export type DatabasePool = CommonQueryMethods & {
+export type DatabasePool = {
   readonly configuration: ClientConfiguration;
   readonly connect: <T>(connectionRoutine: ConnectionRoutine<T>) => Promise<T>;
   readonly end: () => Promise<void>;
   readonly state: () => PoolState;
-};
+} & CommonQueryMethods;
 
 export type DatabaseConnection = DatabasePool | DatabasePoolConnection;
 
@@ -230,7 +230,7 @@ export type Query = {
 export type PoolContext = {
   readonly log: Logger;
   readonly poolId: string;
-  readonly query: QuerySqlToken | null;
+  readonly query: null | QuerySqlToken;
 };
 
 /**
@@ -246,10 +246,10 @@ type ConnectionContext = {
 };
 
 type CallSite = {
-  readonly columnNumber: number | null;
-  readonly fileName: string | null;
-  readonly functionName: string | null;
-  readonly lineNumber: number | null;
+  readonly columnNumber: null | number;
+  readonly fileName: null | string;
+  readonly functionName: null | string;
+  readonly lineNumber: null | number;
 };
 
 /**
@@ -272,8 +272,8 @@ export type QueryContext = {
   readonly queryInputTime: bigint | number;
   readonly resultParser?: ZodTypeAny;
   readonly sandbox: Record<string, unknown>;
-  readonly stackTrace: readonly CallSite[] | null;
-  readonly transactionId: string | null;
+  readonly stackTrace: null | readonly CallSite[];
+  readonly transactionId: null | string;
 };
 
 export type ValueExpression = PrimitiveValueExpression | SqlToken;
@@ -340,11 +340,11 @@ type QueryManyFunction = <T extends ZodTypeAny>(
 type QueryMaybeOneFirstFunction = <T extends ZodTypeAny>(
   sql: QuerySqlToken<T>,
   values?: PrimitiveValueExpression[],
-) => Promise<z.infer<T>[keyof z.infer<T>] | null>;
+) => Promise<null | z.infer<T>[keyof z.infer<T>]>;
 type QueryMaybeOneFunction = <T extends ZodTypeAny>(
   sql: QuerySqlToken<T>,
   values?: PrimitiveValueExpression[],
-) => Promise<z.infer<T> | null>;
+) => Promise<null | z.infer<T>>;
 type QueryOneFirstFunction = <T extends ZodTypeAny>(
   sql: QuerySqlToken<T>,
   values?: PrimitiveValueExpression[],
@@ -374,7 +374,7 @@ export type Interceptor = {
   readonly beforeQueryExecution?: (
     queryContext: QueryContext,
     query: Query,
-  ) => MaybePromise<QueryResult<QueryResultRow> | null>;
+  ) => MaybePromise<null | QueryResult<QueryResultRow>>;
   readonly beforeQueryResult?: (
     queryContext: QueryContext,
     query: Query,

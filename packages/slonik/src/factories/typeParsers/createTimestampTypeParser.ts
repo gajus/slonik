@@ -1,6 +1,6 @@
 import { type DriverTypeParser } from '@slonik/driver';
 
-const timestampParser = (value: string | null) => {
+const timestampParser = (value: null | string) => {
   if (value === 'infinity') {
     return Number.POSITIVE_INFINITY;
   }

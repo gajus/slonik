@@ -35,7 +35,7 @@ export const createQueryLoggingInterceptor = (
 
   return {
     afterQueryExecution: (context, query, result) => {
-      let rowCount: number | null = null;
+      let rowCount: null | number = null;
 
       if (result.rowCount) {
         rowCount = result.rowCount;

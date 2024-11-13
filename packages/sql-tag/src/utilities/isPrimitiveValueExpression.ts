@@ -1,6 +1,6 @@
 export const isPrimitiveValueExpression = (
   maybe: unknown,
-): maybe is bigint | boolean | number | string | null => {
+): maybe is bigint | boolean | null | number | string => {
   return (
     typeof maybe === 'string' ||
     typeof maybe === 'number' ||

@@ -54,7 +54,6 @@ const createTransformStream = (
         );
       }
 
-      // eslint-disable-next-line @babel/no-invalid-this
       this.push({
         data: finalRow,
         fields: datum.fields,

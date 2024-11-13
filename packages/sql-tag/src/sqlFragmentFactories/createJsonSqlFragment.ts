@@ -31,7 +31,7 @@ export const createJsonSqlFragment = (
   } else if (
     !isPlainObject(token.value) &&
     !Array.isArray(token.value) &&
-    !['number', 'string', 'boolean'].includes(typeof token.value)
+    !['boolean', 'number', 'string'].includes(typeof token.value)
   ) {
     throw new InvalidInputError(
       'JSON payload must be a primitive value or a plain object.',

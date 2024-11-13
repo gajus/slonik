@@ -16,8 +16,6 @@ export const establishConnection = async (
   let connection: ConnectionPoolClient;
 
   let remainingConnectionRetryLimit = connectionRetryLimit + 1;
-
-  // eslint-disable-next-line no-constant-condition
   while (true) {
     remainingConnectionRetryLimit--;
 

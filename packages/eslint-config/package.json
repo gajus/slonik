@@ -1,0 +1,9 @@
+{
+  "dependencies": {
+    "eslint-config-canonical": "^44.3.28"
+  },
+  "main": "./index.cjs",
+  "name": "@slonik/eslint-config",
+  "private": true,
+  "version": "0.0.0"
+}

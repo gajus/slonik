@@ -20,11 +20,13 @@ export const createTestRunner = () => {
 
   const TEMPLATE_DATABASE_NAME = 'slonik_test';
 
+  // eslint-disable-next-line id-length
   beforeEach(async (t) => {
     ++testId;
 
     const TEST_DATABASE_NAME = ['slonik_test', String(testId)].join('_');
 
+    // eslint-disable-next-line id-length
     t.context = {
       dsn: POSTGRES_DSN + '/' + TEST_DATABASE_NAME,
       testDatabaseName: TEST_DATABASE_NAME,

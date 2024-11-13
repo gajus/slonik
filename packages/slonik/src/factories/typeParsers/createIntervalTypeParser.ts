@@ -1,7 +1,7 @@
 import { type DriverTypeParser } from '@slonik/driver';
 import {
-  parse as parseIsoDuration,
   toSeconds as durationToSeconds,
+  parse as parseIsoDuration,
 } from 'iso8601-duration';
 import parseInterval from 'postgres-interval';
 

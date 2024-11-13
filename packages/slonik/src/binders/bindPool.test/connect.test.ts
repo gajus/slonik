@@ -1,5 +1,3 @@
-/* eslint-disable ava/max-asserts */
-
 import { createPoolWithSpy } from '../../helpers.test/createPoolWithSpy';
 import { createTestRunner } from '../../helpers.test/createTestRunner';
 import { createPgDriverFactory } from '@slonik/pg-driver';

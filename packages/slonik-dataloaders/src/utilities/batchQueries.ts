@@ -13,7 +13,7 @@ export const batchQueries = async <T extends AnyZodObject>(
   pool: CommonQueryMethods,
   zodSchema: T,
   queries: readonly QuerySqlToken[],
-): Promise<Array<null | Array<z.infer<T>>>> => {
+): Promise<Array<Array<z.infer<T>> | null>> => {
   if (queries.length === 0) {
     return [];
   }

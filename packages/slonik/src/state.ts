@@ -7,8 +7,8 @@ type PoolClientState = {
   connectionId: string;
   poolId: string;
   terminated: Error | null;
-  transactionDepth: number | null;
-  transactionId: string | null;
+  transactionDepth: null | number;
+  transactionId: null | string;
 };
 
 export const poolClientStateMap = new WeakMap<

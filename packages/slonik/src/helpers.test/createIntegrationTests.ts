@@ -22,7 +22,6 @@ import {
 } from '..';
 import { type TestContextType } from './createTestRunner';
 import { type DriverFactory } from '@slonik/driver';
-// eslint-disable-next-line ava/use-test
 import { type TestFn } from 'ava';
 import { setTimeout as delay } from 'node:timers/promises';
 import * as sinon from 'sinon';
@@ -2094,8 +2093,8 @@ export const createIntegrationTests = (
   });
 
   type IsolationLevel =
-    | 'READ UNCOMMITTED'
     | 'READ COMMITTED'
+    | 'READ UNCOMMITTED'
     | 'REPEATABLE READ'
     | 'SERIALIZABLE';
 
@@ -2125,9 +2124,9 @@ export const createIntegrationTests = (
   };
 
   const testConcurrentTransactions = ({
-    isolationLevel,
     expectedResult1,
     expectedResult2,
+    isolationLevel,
   }: {
     expectedResult1: number;
     expectedResult2: number;

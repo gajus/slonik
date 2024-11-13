@@ -26,7 +26,7 @@ const split = (input: string): string[] => {
   if (start === end) return [];
   while (result.charAt(end - 1) === '\0') end--;
   // Transform each token independently.
-  return result.slice(start, end).split(/\0/gu);
+  return result.slice(start, end).split(/\0/u);
 };
 
 export const snakeCase = (input: string) => {

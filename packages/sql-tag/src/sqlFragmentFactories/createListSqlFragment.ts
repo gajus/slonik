@@ -16,7 +16,7 @@ export const createListSqlFragment = (
   greatestParameterPosition: number,
 ): SqlFragmentToken => {
   const values: PrimitiveValueExpression[] = [];
-  const placeholders: Array<PrimitiveValueExpression | null> = [];
+  const placeholders: Array<null | PrimitiveValueExpression> = [];
 
   let placeholderIndex = greatestParameterPosition;
 

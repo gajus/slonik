@@ -1,6 +1,7 @@
 /* eslint-disable no-console */
 
 import { createPool, sql } from '..';
+// eslint-disable-next-line import/extensions
 import { startTestContainer } from './termination.test';
 import test from 'ava';
 import { execSync } from 'node:child_process';

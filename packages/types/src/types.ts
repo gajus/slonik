@@ -1,11 +1,11 @@
 export type PrimitiveValueExpression =
-  | Buffer
   | bigint
   | boolean
+  | Buffer
+  | null
   | number
-  | string
   | readonly PrimitiveValueExpression[]
-  | null;
+  | string;
 
 export type Query = {
   readonly sql: string;
@@ -15,15 +15,15 @@ export type Query = {
 export type QueryResultRow = Record<string, PrimitiveValueExpression>;
 
 export type SerializableValue =
-  | SerializableValue[]
-  | boolean
-  | number
-  | string
-  | readonly SerializableValue[]
   | {
       [key: string]: SerializableValue;
     }
+  | boolean
   | null
+  | number
+  | readonly SerializableValue[]
+  | SerializableValue[]
+  | string
   | undefined;
 
 /**

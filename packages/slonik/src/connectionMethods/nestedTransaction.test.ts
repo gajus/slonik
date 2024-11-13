@@ -10,7 +10,7 @@ const driverFactory = createPgDriverFactory();
 const { test } = createTestRunner(driverFactory, 'pg');
 
 test('creates a savepoint', async (t) => {
-  const { spy, pool } = await createPoolWithSpy(t.context.dsn, {
+  const { pool, spy } = await createPoolWithSpy(t.context.dsn, {
     driverFactory,
   });
 
@@ -23,7 +23,7 @@ test('creates a savepoint', async (t) => {
 });
 
 test('rollbacks unsuccessful nested transaction', async (t) => {
-  const { spy, pool } = await createPoolWithSpy(t.context.dsn, {
+  const { pool, spy } = await createPoolWithSpy(t.context.dsn, {
     driverFactory,
   });
 
@@ -81,7 +81,7 @@ test('retries a nested transaction that failed due to a transaction error', asyn
 });
 
 test('commits successful transaction with retries', async (t) => {
-  const { spy, pool } = await createPoolWithSpy(t.context.dsn, {
+  const { pool, spy } = await createPoolWithSpy(t.context.dsn, {
     driverFactory,
   });
 
@@ -140,7 +140,7 @@ test('returns the thrown transaction error if the retry limit is reached', async
 });
 
 test('rollbacks unsuccessful nested transaction with retries', async (t) => {
-  const { spy, pool } = await createPoolWithSpy(t.context.dsn, {
+  const { pool, spy } = await createPoolWithSpy(t.context.dsn, {
     driverFactory,
   });
 

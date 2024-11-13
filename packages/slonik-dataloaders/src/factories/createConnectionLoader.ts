@@ -19,11 +19,11 @@ export const createConnectionLoader = <T extends ZodTypeAny>(
 
   return {
     load: async (args: {
-      after?: string | null;
-      before?: string | null;
-      first?: number | null;
+      after?: null | string;
+      before?: null | string;
+      first?: null | number;
       info?: LoadParameters['info'];
-      last?: number | null;
+      last?: null | number;
       orderBy?: LoadParameters['orderBy'];
       where?: LoadParameters['where'];
     }) => {

@@ -8,7 +8,7 @@ import { fromCursor } from '../utilities/fromCursor';
 import { getColumnIdentifiers } from '../utilities/getColumnIdentifiers';
 import { getRequestedFields } from '../utilities/getRequestedFields';
 import { snakeCase } from '../utilities/snakeCase';
-import { toCursor } from '../utilities/toCursor.js';
+import { toCursor } from '../utilities/toCursor';
 import DataLoader from 'dataloader';
 import { type GraphQLResolveInfo } from 'graphql';
 import {
@@ -20,10 +20,10 @@ import {
 import { type AnyZodObject, z, type ZodTypeAny } from 'zod';
 
 type DataLoaderKey<TResult> = {
-  cursor?: string | null;
+  cursor?: null | string;
   info?: Pick<GraphQLResolveInfo, 'fieldNodes' | 'fragments'>;
-  limit?: number | null;
-  offset?: number | null;
+  limit?: null | number;
+  offset?: null | number;
   orderBy?: (
     identifiers: ColumnIdentifiers<TResult>,
   ) => Array<[SqlToken, OrderDirection]>;
@@ -64,8 +64,8 @@ export const createConnectionLoaderClass = <T extends ZodTypeAny>(config: {
     ) {
       super(
         async (loaderKeys) => {
-          const edgesQueries: Array<QuerySqlToken | null> = [];
-          const countQueries: Array<QuerySqlToken | null> = [];
+          const edgesQueries: Array<null | QuerySqlToken> = [];
+          const countQueries: Array<null | QuerySqlToken> = [];
 
           for (const loaderKey of loaderKeys.values()) {
             const {
@@ -81,7 +81,7 @@ export const createConnectionLoaderClass = <T extends ZodTypeAny>(config: {
             // If a GraphQLResolveInfo object was not provided, we will assume both pageInfo and edges were requested
             const requestedFields = info
               ? getRequestedFields(info)
-              : new Set(['pageInfo', 'edges', 'count']);
+              : new Set(['count', 'edges', 'pageInfo']);
 
             const conditions: SqlToken[] = where
               ? [sql.fragment`(${where(columnIdentifiers)})`]
@@ -321,7 +321,7 @@ export const createConnectionLoaderClass = <T extends ZodTypeAny>(config: {
           }) => {
             const requestedFields = info
               ? getRequestedFields(info)
-              : new Set(['pageInfo', 'edges']);
+              : new Set(['edges', 'pageInfo']);
 
             return JSON.stringify({
               cursor,

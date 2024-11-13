@@ -171,7 +171,7 @@ describe('createConnectionLoaderClass', () => {
   it('loads records with multiple ORDER BY expressions', async () => {
     const loader = new PersonConnectionLoader(pool);
     const result = await loader.load({
-      orderBy: ({ uid, name }) => [
+      orderBy: ({ name, uid }) => [
         [name, 'ASC'],
         [uid, 'DESC'],
       ],
@@ -215,7 +215,7 @@ describe('createConnectionLoaderClass', () => {
 
   it('loads records with WHERE expression (batch; miss)', async () => {
     const loader = new PersonConnectionLoader(pool);
-    // eslint-disable-next-line id-length
+
     const [a, b, c] = await Promise.all([
       loader.load({
         where: ({ name }) => sql.fragment`${name} = 'aaa'`,
@@ -512,6 +512,7 @@ describe('createConnectionLoaderClass (with validation)', () => {
   let pool: DatabasePool;
 
   beforeAll(async () => {
+    // eslint-disable-next-line unicorn/consistent-function-scoping
     const createResultParserInterceptor = (): Interceptor => {
       return {
         transformRow: (executionContext, actualQuery, row) => {

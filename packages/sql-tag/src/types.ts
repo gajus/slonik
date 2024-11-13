@@ -5,15 +5,15 @@ import { type ZodTypeAny } from 'zod';
 export { type PrimitiveValueExpression } from '@slonik/types';
 
 export type SerializableValue =
-  | SerializableValue[]
-  | boolean
-  | number
-  | string
-  | readonly SerializableValue[]
   | {
       [key: string]: SerializableValue;
     }
+  | boolean
   | null
+  | number
+  | readonly SerializableValue[]
+  | SerializableValue[]
+  | string
   | undefined;
 
 export type IntervalInput = {
@@ -42,7 +42,6 @@ export type ValueExpression =
  * experience with auto suggestions for commonly used type name identifiers.
  */
 type TypeNameIdentifier =
-  | string
   | 'bool'
   | 'bytea'
   | 'float4'
@@ -53,7 +52,8 @@ type TypeNameIdentifier =
   | 'json'
   | 'text'
   | 'timestamptz'
-  | 'uuid';
+  | 'uuid'
+  | string;
 
 export type ArraySqlToken = {
   readonly memberType: SqlFragmentToken | TypeNameIdentifier;

@@ -6,9 +6,9 @@ import {
 import { type ZodIssue } from 'zod';
 
 export class SlonikError extends Error {
-  public readonly message: string;
-
   public override readonly cause?: Error;
+
+  public readonly message: string;
 
   public constructor(message: string, options?: { cause?: Error }) {
     super(message);
@@ -115,13 +115,13 @@ export class DataIntegrityError extends SlonikError {
 }
 
 export class SchemaValidationError extends SlonikError {
-  public sql: string;
-
-  public values: readonly PrimitiveValueExpression[];
+  public issues: ZodIssue[];
 
   public row: QueryResultRow;
 
-  public issues: ZodIssue[];
+  public sql: string;
+
+  public values: readonly PrimitiveValueExpression[];
 
   public constructor(query: Query, row: QueryResultRow, issues: ZodIssue[]) {
     super('Query returned rows that do not conform with the schema.');
@@ -133,20 +133,20 @@ export class SchemaValidationError extends SlonikError {
   }
 }
 
-type IntegrityConstraintViolationErrorCause = Error & {
+type IntegrityConstraintViolationErrorCause = {
   column?: string;
   constraint?: string;
   table?: string;
-};
+} & Error;
 
 export class IntegrityConstraintViolationError extends SlonikError {
-  public constraint: string | null;
-
-  public column: string | null;
-
-  public table: string | null;
-
   public cause?: Error;
+
+  public column: null | string;
+
+  public constraint: null | string;
+
+  public table: null | string;
 
   public constructor(
     message: string,

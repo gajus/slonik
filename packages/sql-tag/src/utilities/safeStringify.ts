@@ -9,8 +9,8 @@ const stringify = configure({
 export const safeStringify = (
   subject: unknown,
   replacer?:
-    | Array<number | string>
     | ((key: string, value: unknown) => unknown)
+    | Array<number | string>
     | null
     | undefined,
   space?: number | string,

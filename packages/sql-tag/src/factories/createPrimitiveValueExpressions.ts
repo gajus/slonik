@@ -12,7 +12,7 @@ export const createPrimitiveValueExpressions = (
 ): readonly PrimitiveValueExpression[] => {
   const primitiveValueExpressions: Array<
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    any[] | Buffer | boolean | number | string | bigint | null
+    any[] | bigint | boolean | Buffer | null | number | string
   > = [];
 
   for (const value of values) {

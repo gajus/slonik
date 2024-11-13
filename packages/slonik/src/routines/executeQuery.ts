@@ -31,7 +31,7 @@ import { defer, generateUid } from '@slonik/utilities';
 import { getStackTrace } from 'get-stack-trace';
 import { serializeError } from 'serialize-error';
 
-type GenericQueryResult = StreamResult | QueryResult<QueryResultRow>;
+type GenericQueryResult = QueryResult<QueryResultRow> | StreamResult;
 
 export type ExecutionRoutine = (
   connection: ConnectionPoolClient,
@@ -107,10 +107,10 @@ const retryQuery = async (
 };
 
 type StackCrumb = {
-  columnNumber: number | null;
-  fileName: string | null;
-  functionName: string | null;
-  lineNumber: number | null;
+  columnNumber: null | number;
+  fileName: null | string;
+  functionName: null | string;
+  lineNumber: null | number;
 };
 
 // eslint-disable-next-line complexity
@@ -123,7 +123,7 @@ export const executeQuery = async (
   executionRoutine: ExecutionRoutine,
   stream: boolean = false,
 ): Promise<
-  StreamResult | QueryResult<Record<string, PrimitiveValueExpression>>
+  QueryResult<Record<string, PrimitiveValueExpression>> | StreamResult
 > => {
   const poolClientState = getPoolClientState(connection);
 
@@ -153,7 +153,7 @@ export const executeQuery = async (
 
   const queryInputTime = process.hrtime.bigint();
 
-  let stackTrace: StackCrumb[] | null = null;
+  let stackTrace: null | StackCrumb[] = null;
 
   if (clientConfiguration.captureStackTrace) {
     stackTrace = getStackTrace();

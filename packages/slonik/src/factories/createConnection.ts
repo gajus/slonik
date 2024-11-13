@@ -75,7 +75,7 @@ export const createConnection = async (
   connectionType: Connection,
   connectionHandler: ConnectionHandlerType,
   poolHandler: PoolHandlerType,
-  query: QuerySqlToken | null = null,
+  query: null | QuerySqlToken = null,
 ) => {
   const { state } = pool.state();
 

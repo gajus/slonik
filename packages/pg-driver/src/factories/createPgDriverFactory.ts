@@ -25,11 +25,10 @@ import { type PrimitiveValueExpression } from '@slonik/sql-tag';
 import { type Field, type Query } from '@slonik/types';
 import { parseDsn } from '@slonik/utilities';
 import { Transform } from 'node:stream';
-// eslint-disable-next-line no-restricted-imports
 import {
   Client,
-  type ClientConfig as NativePostgresClientConfiguration,
   type DatabaseError,
+  type ClientConfig as NativePostgresClientConfiguration,
 } from 'pg';
 import QueryStream from 'pg-query-stream';
 import { getTypeParser as getNativeTypeParser } from 'pg-types';
@@ -187,7 +186,7 @@ const isErrorWithCode = (error: Error): error is DatabaseError => {
 // TODO evaluate if we can remove query from the error object.
 // I suspect we should not be even using InputSyntaxError as one of the error types.
 // @see https://github.com/gajus/slonik/issues/557
-const wrapError = (error: Error, query: Query | null) => {
+const wrapError = (error: Error, query: null | Query) => {
   if (
     error.message.toLowerCase().includes('connection terminated unexpectedly')
   ) {
@@ -355,7 +354,6 @@ export const createPgDriverFactory = (): DriverFactory => {
                   return;
                 }
 
-                // eslint-disable-next-line @babel/no-invalid-this
                 this.push({
                   fields,
                   row: datum,

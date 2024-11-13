@@ -1,24 +1,9 @@
 import { createSqlTag } from '@slonik/sql-tag';
 
-export {
-  createDriverFactory,
-  type Driver,
-  type DriverClient,
-  type DriverClientEventEmitter,
-  type DriverClientState,
-  type DriverCommand,
-  type DriverConfiguration,
-  type DriverEventEmitter,
-  type DriverFactory,
-  type DriverNotice,
-  type DriverQueryResult,
-  type DriverStreamResult,
-  type DriverTypeParser,
-} from '@slonik/driver';
+export { createPool } from './factories/createPool';
 
 export const sql = createSqlTag();
 
-export { createPool } from './factories/createPool';
 export { createTypeParserPreset } from './factories/createTypeParserPreset';
 export { createBigintTypeParser } from './factories/typeParsers/createBigintTypeParser';
 export { createDateTypeParser } from './factories/typeParsers/createDateTypeParser';
@@ -51,6 +36,21 @@ export type {
   TypeNameIdentifier,
   ValueExpression,
 } from './types';
+export {
+  createDriverFactory,
+  type Driver,
+  type DriverClient,
+  type DriverClientEventEmitter,
+  type DriverClientState,
+  type DriverCommand,
+  type DriverConfiguration,
+  type DriverEventEmitter,
+  type DriverFactory,
+  type DriverNotice,
+  type DriverQueryResult,
+  type DriverStreamResult,
+  type DriverTypeParser,
+} from '@slonik/driver';
 export {
   BackendTerminatedError,
   BackendTerminatedUnexpectedlyError,

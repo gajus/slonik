@@ -28,7 +28,7 @@ type Storage = {
   get: (
     query: Query,
     cacheAttributes: CacheAttributes,
-  ) => Promise<QueryResult<QueryResultRow> | null>;
+  ) => Promise<null | QueryResult<QueryResultRow>>;
   set: (
     query: Query,
     cacheAttributes: CacheAttributes,

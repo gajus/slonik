@@ -35,7 +35,7 @@ type WaitingClient = {
   deferred: DeferredPromise<ConnectionPoolClient>;
 };
 
-type ConnectionPoolStateName = 'ACTIVE' | 'ENDING' | 'ENDED';
+type ConnectionPoolStateName = 'ACTIVE' | 'ENDED' | 'ENDING';
 
 /**
  * @property {number} acquiredConnections - The number of connections that are currently acquired.
@@ -79,7 +79,7 @@ export const createConnectionPool = ({
   let isEnding = false;
   let isEnded = false;
 
-  let poolEndPromise: Promise<void> | null = null;
+  let poolEndPromise: null | Promise<void> = null;
 
   const endPool = async () => {
     try {

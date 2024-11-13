@@ -1,5 +1,3 @@
-/* eslint-disable canonical/id-match */
-
 import { Logger as log } from '../Logger';
 import { type ClientConfiguration } from '../types';
 

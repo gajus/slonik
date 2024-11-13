@@ -8,14 +8,14 @@ export type ColumnIdentifiers<TResult> = Record<
 >;
 
 type PageInfo = {
-  endCursor: string | null;
+  endCursor: null | string;
   hasNextPage: boolean;
   hasPreviousPage: boolean;
-  startCursor: string | null;
+  startCursor: null | string;
 };
 
 export type Connection<TResult> = {
   count: number;
-  edges: Array<TResult & { cursor: string; node: TResult }>;
+  edges: Array<{ cursor: string; node: TResult } & TResult>;
   pageInfo: PageInfo;
 };
