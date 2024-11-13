@@ -3,9 +3,9 @@
   "private": true,
   "dependencies": {
     "benny": "^3.7.1",
-    "pg": "^8.11.3",
-    "pg-promise": "^11.5.5",
-    "postgres": "^3.4.4",
+    "pg": "^8.13.1",
+    "pg-promise": "^11.10.2",
+    "postgres": "^3.4.5",
     "slonik": "^46.1.0"
   },
   "scripts": {
