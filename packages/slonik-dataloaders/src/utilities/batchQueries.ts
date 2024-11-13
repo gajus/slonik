@@ -1,3 +1,5 @@
+/* cspell:ignore slonikqueryindex */
+
 import { type CommonQueryMethods, type QuerySqlToken, sql } from 'slonik';
 import { type AnyZodObject, z } from 'zod';
 

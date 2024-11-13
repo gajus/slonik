@@ -11,8 +11,8 @@ language: en
 minWordLength: 5
 version: '0.2'
 words:
-  - slonik
   - gajus
   - kuizinas
-  - roarr
   - plpgsql
+  - roarr
+  - slonik
