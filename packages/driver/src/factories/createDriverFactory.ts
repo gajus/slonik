@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/consistent-type-definitions */
+
 import { Logger } from '../Logger';
 import { type Field } from '@slonik/types';
 import { generateUid } from '@slonik/utilities';
@@ -10,7 +12,7 @@ import { type StrictEventEmitter } from 'strict-event-emitter-types';
 
 type StreamDataEvent<T> = { data: T; fields: readonly Field[] };
 
-// eslint-disable-next-line @typescript-eslint/consistent-type-definitions
+// @ts-expect-error - TODO figure out how to fix this
 export interface DriverStream<T> extends Readable {
   [Symbol.asyncIterator]: () => AsyncIterableIterator<StreamDataEvent<T>>;
   // eslint-disable-next-line @typescript-eslint/method-signature-style
