@@ -230,6 +230,21 @@ export const createIntegrationTests = (
     await pool.end();
   });
 
+  test('emits thrown errors', async (t) => {
+    const pool = await createPool(t.context.dsn, {
+      driverFactory,
+    });
+
+    const onError = sinon.spy();
+
+    pool.on('error', onError);
+
+    await t.throwsAsync(pool.any(sql.unsafe`SELECT WHERE`));
+
+    t.is(onError.callCount, 1);
+    t.true(onError.firstCall.args[0] instanceof InputSyntaxError);
+  });
+
   test('retrieves correct infinity values (with timezone)', async (t) => {
     const pool = await createPool(t.context.dsn, {
       driverFactory,

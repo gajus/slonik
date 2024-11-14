@@ -11,8 +11,10 @@ import {
   type QuerySqlToken,
   type SqlToken,
 } from '@slonik/sql-tag';
+import type EventEmitter from 'node:events';
 import { type ConnectionOptions as TlsConnectionOptions } from 'node:tls';
 import { type Logger } from 'roarr';
+import { type StrictEventEmitter } from 'strict-event-emitter-types';
 import { type z, type ZodTypeAny } from 'zod';
 
 export type StreamHandler<T> = (stream: DriverStream<T>) => void;
@@ -204,12 +206,20 @@ type PoolState = {
   readonly waitingClients: number;
 };
 
+export type DatabasePoolEventEmitter = StrictEventEmitter<
+  EventEmitter,
+  {
+    error: (error: SlonikError) => void;
+  }
+>;
+
 export type DatabasePool = {
   readonly configuration: ClientConfiguration;
   readonly connect: <T>(connectionRoutine: ConnectionRoutine<T>) => Promise<T>;
   readonly end: () => Promise<void>;
   readonly state: () => PoolState;
-} & CommonQueryMethods;
+} & CommonQueryMethods &
+  DatabasePoolEventEmitter;
 
 export type DatabaseConnection = DatabasePool | DatabasePoolConnection;
 

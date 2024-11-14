@@ -65,6 +65,7 @@ Note: Using this project does not require TypeScript. It is a regular ES6 module
         * [API](#api)
         * [Default configuration](#default-configuration)
         * [Checking out a client from the connection pool](#checking-out-a-client-from-the-connection-pool)
+        * [Events](#events)
     * [How are they different?](#how-are-they-different)
         * [`pg` vs `slonik`](#pg-vs-slonik)
         * [`pg-promise` vs `slonik`](#pg-promise-vs-slonik)
@@ -746,6 +747,24 @@ result;
 Connection is released back to the pool after the promise produced by the function supplied to `connect()` method is either resolved or rejected.
 
 Read: [Protecting against unsafe connection handling](#protecting-against-unsafe-connection-handling).
+
+### Events
+
+The `DatabasePool` extends `DatabasePoolEventEmitter` and exposes the following events:
+
+- `error`: `(error: SlonikError) => void` – emitted for all errors that happen within the pool.
+
+```ts
+import {
+  createPool,
+} from 'slonik';
+
+const pool = await createPool('postgres://localhost');
+
+pool.on('error', (error) => {
+  console.error(error);
+});
+```
 
 ## How are they different?
 

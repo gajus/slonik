@@ -219,6 +219,9 @@ importers:
       serialize-error:
         specifier: ^8.0.0
         version: 8.1.0
+      strict-event-emitter-types:
+        specifier: ^2.0.0
+        version: 2.0.0
     devDependencies:
       '@slonik/eslint-config':
         specifier: workspace:^

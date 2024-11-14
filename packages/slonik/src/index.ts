@@ -21,6 +21,7 @@ export type {
   DatabaseConnection,
   DatabasePool,
   DatabasePoolConnection,
+  DatabasePoolEventEmitter,
   DatabaseTransactionConnection,
   Field,
   IdentifierNormalizer,

@@ -1,4 +1,5 @@
 import { Logger } from '../Logger';
+import { type DatabasePoolEventEmitter } from '../types';
 import {
   type Driver,
   type DriverClientEventEmitter,
@@ -18,6 +19,7 @@ const logger = Logger.child({
 export type ConnectionPoolClient = {
   acquire: () => void;
   destroy: () => Promise<void>;
+  events: DatabasePoolEventEmitter;
   id: () => string;
   off: DriverClientEventEmitter['off'];
   on: DriverClientEventEmitter['on'];
@@ -58,10 +60,12 @@ export type ConnectionPool = {
 
 export const createConnectionPool = ({
   driver,
+  events,
   maximumPoolSize,
   minimumPoolSize,
 }: {
   driver: Driver;
+  events: DatabasePoolEventEmitter;
   idleTimeout: number;
   maximumPoolSize: number;
   minimumPoolSize: number;
@@ -127,7 +131,15 @@ export const createConnectionPool = ({
     }
 
     const addConnection = async () => {
-      const pendingConnection = driver.createClient();
+      const pendingConnection = driver
+        .createClient()
+        // eslint-disable-next-line promise/prefer-await-to-then
+        .then((resolvedConnection) => {
+          return {
+            ...resolvedConnection,
+            events,
+          };
+        });
 
       pendingConnections.push(pendingConnection);
 

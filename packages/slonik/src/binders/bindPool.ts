@@ -4,15 +4,17 @@ import { type ConnectionPool } from '../factories/createConnectionPool';
 import {
   type ClientConfiguration,
   type DatabasePool,
+  type DatabasePoolEventEmitter,
   type Logger,
 } from '../types';
 
 export const bindPool = (
+  events: DatabasePoolEventEmitter,
   parentLog: Logger,
   pool: ConnectionPool,
   clientConfiguration: ClientConfiguration,
 ): DatabasePool => {
-  return {
+  const boundPool = {
     any: async (query) => {
       return await createConnection(
         parentLog,
@@ -219,5 +221,10 @@ export const bindPool = (
         },
       );
     },
+    ...events,
   };
+
+  Object.setPrototypeOf(boundPool, events);
+
+  return boundPool;
 };
