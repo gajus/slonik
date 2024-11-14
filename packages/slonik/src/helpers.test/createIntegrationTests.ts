@@ -13,6 +13,7 @@ import {
   InputSyntaxError,
   InvalidInputError,
   NotNullIntegrityConstraintViolationError,
+  parseDsn,
   sql,
   StatementCancelledError,
   StatementTimeoutError,
@@ -24,6 +25,7 @@ import {
 import { type TestContextType } from './createTestRunner';
 import { type DriverFactory } from '@slonik/driver';
 import { type TestFn } from 'ava';
+import { randomUUID } from 'node:crypto';
 import { setTimeout as delay } from 'node:timers/promises';
 import * as sinon from 'sinon';
 import { z } from 'zod';
@@ -2108,6 +2110,81 @@ export const createIntegrationTests = (
     t.not(firstConnectionPid, nextConnectionPid);
 
     await pool.end();
+  });
+
+  test('connections failing auth are not added to the connection pool', async (t) => {
+    const superPool = await createPool(t.context.dsn, {
+      driverFactory,
+      maximumPoolSize: 1,
+    });
+
+    const connection = parseDsn(t.context.dsn);
+
+    const testUser = `auth_change_test_${randomUUID().split('-')[0]}`;
+
+    await superPool.query(
+      sql.unsafe`
+        CREATE ROLE ${sql.identifier([testUser])}
+        WITH LOGIN SUPERUSER
+        PASSWORD 'auth_change_test'
+      `,
+    );
+
+    // Connect as the new role
+    const pool = await createPool(
+      `postgres://${testUser}:auth_change_test@${connection.host}:${connection.port}/${connection.databaseName}`,
+      {
+        driverFactory,
+        idleTimeout: 1_000,
+        maximumPoolSize: 1,
+      },
+    );
+
+    await pool.oneFirst(sql.unsafe`
+      SELECT pg_backend_pid();
+    `);
+
+    // Change the password
+    await superPool.query(
+      sql.unsafe`
+        ALTER ROLE ${sql.identifier([testUser])}
+        PASSWORD 'auth_change_test_changed'
+      `,
+    );
+
+    // Wait for the idle timeout to expire
+    await delay(1_000);
+
+    // Ensure that there are no longer active connections.
+    t.like(pool.state(), {
+      acquiredConnections: 0,
+      idleConnections: 0,
+      pendingDestroyConnections: 0,
+      pendingReleaseConnections: 0,
+      waitingClients: 0,
+    });
+
+    const error = await t.throwsAsync(
+      pool.oneFirst(sql.unsafe`
+        SELECT pg_backend_pid();
+      `),
+    );
+
+    // @ts-expect-error TODO
+    t.is(error.cause.code, '28P01');
+
+    // Ensure that the connection was not added to the pool.
+    t.like(pool.state(), {
+      acquiredConnections: 0,
+      idleConnections: 0,
+      pendingDestroyConnections: 0,
+      pendingReleaseConnections: 0,
+      waitingClients: 0,
+    });
+
+    await pool.end();
+
+    await superPool.end();
   });
 
   test('retains a minimum number of connections in the pool', async (t) => {
