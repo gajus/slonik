@@ -188,3 +188,9 @@ export class CheckIntegrityConstraintViolationError extends IntegrityConstraintV
     super('Query violates a check integrity constraint.', error);
   }
 }
+
+export class CheckExclusionConstraintViolationError extends IntegrityConstraintViolationError {
+  public constructor(error: IntegrityConstraintViolationErrorCause) {
+    super('Query violates a check exclusion constraint.', error);
+  }
+}

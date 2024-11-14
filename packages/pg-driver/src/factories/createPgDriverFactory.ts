@@ -10,6 +10,7 @@ import {
 import {
   BackendTerminatedError,
   BackendTerminatedUnexpectedlyError,
+  CheckExclusionConstraintViolationError,
   CheckIntegrityConstraintViolationError,
   ForeignKeyIntegrityConstraintViolationError,
   IdleTransactionTimeoutError,
@@ -235,6 +236,10 @@ const wrapError = (error: Error, query: null | Query) => {
 
   if (error.code === '23505') {
     return new UniqueIntegrityConstraintViolationError(error);
+  }
+
+  if (error.code === '23P01') {
+    return new CheckExclusionConstraintViolationError(error);
   }
 
   if (error.code === '23514') {

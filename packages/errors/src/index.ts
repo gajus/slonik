@@ -1,6 +1,7 @@
 export {
   BackendTerminatedError,
   BackendTerminatedUnexpectedlyError,
+  CheckExclusionConstraintViolationError,
   CheckIntegrityConstraintViolationError,
   ConnectionError,
   DataIntegrityError,

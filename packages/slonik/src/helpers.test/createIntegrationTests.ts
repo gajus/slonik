@@ -2,6 +2,7 @@
 
 import {
   BackendTerminatedError,
+  CheckExclusionConstraintViolationError,
   CheckIntegrityConstraintViolationError,
   createNumericTypeParser,
   createPool,
@@ -1504,6 +1505,39 @@ export const createIntegrationTests = (
     );
 
     t.true(error instanceof UniqueIntegrityConstraintViolationError);
+  });
+
+  test('throws CheckExclusionConstraintViolationError if exclusion constraint is violated', async (t) => {
+    const pool = await createPool(t.context.dsn, {
+      driverFactory,
+    });
+
+    // Set up the test table with an exclusion constraint on overlapping ranges
+    await pool.query(sql.unsafe`
+      CREATE TABLE exclusion_constraint_test (
+        id SERIAL PRIMARY KEY,
+        range tstzrange,
+        EXCLUDE USING gist (range WITH &&)
+      );
+    `);
+
+    // Insert a range that should be allowed
+    await pool.query(sql.unsafe`
+      INSERT INTO exclusion_constraint_test (range) 
+      VALUES (tstzrange('2024-01-01 00:00:00+00', '2024-01-31 23:59:59+00'));
+    `);
+
+    // Attempt to insert an overlapping range, expecting a CheckExclusionConstraintViolationError
+    const error = await t.throwsAsync(
+      pool.query(sql.unsafe`
+        INSERT INTO exclusion_constraint_test (range) 
+        VALUES (tstzrange('2024-01-15 00:00:00+00', '2024-02-15 23:59:59+00'));
+      `),
+    );
+
+    t.true(error instanceof CheckExclusionConstraintViolationError);
+
+    await pool.end();
   });
 
   test('throws ForeignKeyIntegrityConstraintViolationError if foreign key constraint is violated', async (t) => {
