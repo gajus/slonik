@@ -2027,6 +2027,43 @@ export const createIntegrationTests = (
     );
   });
 
+  test('removes connections from the pool after backend termination (connection terminated itself)', async (t) => {
+    const pool = await createPool(t.context.dsn, {
+      driverFactory,
+      idleTimeout: 5_000,
+      maximumPoolSize: 1,
+    });
+
+    const firstConnectionPid = await pool.oneFirst(sql.unsafe`
+      SELECT pg_backend_pid();
+    `);
+
+    // Confirm that the same connection is re-used.
+    await t.is(
+      firstConnectionPid,
+      await pool.oneFirst(sql.unsafe`
+        SELECT pg_backend_pid();
+      `),
+    );
+
+    await t.throwsAsync(
+      pool.query(sql.unsafe`
+        SELECT pg_terminate_backend(${firstConnectionPid})
+      `),
+      {
+        instanceOf: BackendTerminatedError,
+      },
+    );
+
+    const nextConnectionPid = await pool.oneFirst(sql.unsafe`
+      SELECT pg_backend_pid();
+    `);
+
+    t.not(firstConnectionPid, nextConnectionPid);
+
+    await pool.end();
+  });
+
   const terminateBackend = async (dsn: string, pid: number) => {
     const pool = await createPool(dsn, {
       driverFactory,
@@ -2063,43 +2100,6 @@ export const createIntegrationTests = (
     // to ensure that  connection-level errors are handled,
     // as opposed to statement-level errors.
     await terminateBackend(t.context.dsn, firstConnectionPid);
-
-    const nextConnectionPid = await pool.oneFirst(sql.unsafe`
-      SELECT pg_backend_pid();
-    `);
-
-    t.not(firstConnectionPid, nextConnectionPid);
-
-    await pool.end();
-  });
-
-  test('removes connections from the pool after backend termination (connection terminated itself)', async (t) => {
-    const pool = await createPool(t.context.dsn, {
-      driverFactory,
-      idleTimeout: 5_000,
-      maximumPoolSize: 1,
-    });
-
-    const firstConnectionPid = await pool.oneFirst(sql.unsafe`
-      SELECT pg_backend_pid();
-    `);
-
-    // Confirm that the same connection is re-used.
-    await t.is(
-      firstConnectionPid,
-      await pool.oneFirst(sql.unsafe`
-        SELECT pg_backend_pid();
-      `),
-    );
-
-    await t.throwsAsync(
-      pool.query(sql.unsafe`
-        SELECT pg_terminate_backend(${firstConnectionPid})
-      `),
-      {
-        instanceOf: BackendTerminatedError,
-      },
-    );
 
     const nextConnectionPid = await pool.oneFirst(sql.unsafe`
       SELECT pg_backend_pid();
