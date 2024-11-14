@@ -7,26 +7,12 @@ assignees: ''
 
 ---
 
-<!--- Provide a general summary of the issue in the Title above -->
+<!--
 
-## Expected Behavior
-<!--- Tell us what should happen -->
+Bug reports without a reproduction are not accepted.
 
-## Current Behavior
-<!--- Tell us what happens instead of the expected behavior -->
+To raise a bug, fork the repository, add a failing test and submit a pull request with a failing test case.
 
-## Possible Solution
-<!--- (optional) Suggest a fix/reason for the bug, -->
+Issues without a reproducible test case will be closed.
 
-## Steps to Reproduce
-<!--- Provide a link to a live example, or an unambiguous set of steps to -->
-<!--- reproduce this bug. Include code to reproduce, if relevant -->
-
-1.
-2.
-3.
-4.
-
-## Logs
-
-<!-- Capture and include logs https://github.com/gajus/slonik#logging -->
+-->
