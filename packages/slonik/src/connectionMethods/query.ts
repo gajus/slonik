@@ -49,7 +49,7 @@ export const query: InternalQueryMethod = async (
   inheritedQueryId,
 ) => {
   try {
-    await executeQuery(
+    return await executeQuery(
       connectionLogger,
       connection,
       clientConfiguration,
