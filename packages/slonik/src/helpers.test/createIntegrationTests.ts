@@ -1,4 +1,5 @@
 /* eslint-disable id-length */
+/* cspell:ignore tstzrange */
 
 import {
   BackendTerminatedError,
