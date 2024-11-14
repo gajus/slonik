@@ -757,6 +757,7 @@ The `DatabasePool` extends `DatabasePoolEventEmitter` and exposes the following 
 ```ts
 import {
   createPool,
+  type DatabasePoolEventEmitter,
 } from 'slonik';
 
 const pool = await createPool('postgres://localhost');
