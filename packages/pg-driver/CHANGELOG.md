@@ -1,5 +1,20 @@
 # @slonik/pg-driver
 
+## 46.2.0
+
+### Minor Changes
+
+- [`6aa21ad`](https://github.com/gajus/slonik/commit/6aa21ad31300ba904d26853e0c78b70f21393bf7) Thanks [@gajus](https://github.com/gajus)! - expose DatabaseError
+
+### Patch Changes
+
+- Updated dependencies []:
+  - @slonik/driver@46.2.0
+  - @slonik/errors@46.2.0
+  - @slonik/sql-tag@46.2.0
+  - @slonik/types@46.2.0
+  - @slonik/utilities@46.2.0
+
 ## 46.1.0
 
 ### Patch Changes
