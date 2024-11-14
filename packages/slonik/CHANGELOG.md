@@ -1,5 +1,20 @@
 # slonik
 
+## 46.2.0
+
+### Minor Changes
+
+- [`c8f9741`](https://github.com/gajus/slonik/commit/c8f9741855d3a564b1709fb539cbf0a09610056e) Thanks [@gajus](https://github.com/gajus)! - give pool instance EventEmitter prototype
+
+### Patch Changes
+
+- Updated dependencies [[`6aa21ad`](https://github.com/gajus/slonik/commit/6aa21ad31300ba904d26853e0c78b70f21393bf7)]:
+  - @slonik/pg-driver@46.2.0
+  - @slonik/driver@46.2.0
+  - @slonik/errors@46.2.0
+  - @slonik/sql-tag@46.2.0
+  - @slonik/utilities@46.2.0
+
 ## 46.1.0
 
 ### Minor Changes
