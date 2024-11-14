@@ -1975,6 +1975,58 @@ export const createIntegrationTests = (
     );
   });
 
+  test('removes connections from the pool after the idle timeout', async (t) => {
+    const pool = await createPool(t.context.dsn, {
+      driverFactory,
+      idleTimeout: 100,
+    });
+
+    t.deepEqual(
+      pool.state(),
+      {
+        acquiredConnections: 0,
+        idleConnections: 0,
+        pendingDestroyConnections: 0,
+        pendingReleaseConnections: 0,
+        state: 'ACTIVE',
+        waitingClients: 0,
+      },
+      'initial state',
+    );
+
+    await pool.query(sql.unsafe`
+      SELECT 1
+    `);
+
+    t.deepEqual(
+      pool.state(),
+      {
+        acquiredConnections: 0,
+        idleConnections: 1,
+        pendingDestroyConnections: 0,
+        pendingReleaseConnections: 0,
+        state: 'ACTIVE',
+        waitingClients: 0,
+      },
+      'shows idle clients',
+    );
+
+    await delay(100);
+
+    t.deepEqual(
+      pool.state(),
+      {
+        acquiredConnections: 0,
+        idleConnections: 0,
+        pendingDestroyConnections: 0,
+        pendingReleaseConnections: 0,
+        state: 'ACTIVE',
+        waitingClients: 0,
+      },
+      'shows no idle clients',
+    );
+  });
+
   const terminateBackend = async (dsn: string, pid: number) => {
     const pool = await createPool(dsn, {
       driverFactory,
@@ -2056,58 +2108,6 @@ export const createIntegrationTests = (
     t.not(firstConnectionPid, nextConnectionPid);
 
     await pool.end();
-  });
-
-  test('removes connections from the pool after the idle timeout', async (t) => {
-    const pool = await createPool(t.context.dsn, {
-      driverFactory,
-      idleTimeout: 100,
-    });
-
-    t.deepEqual(
-      pool.state(),
-      {
-        acquiredConnections: 0,
-        idleConnections: 0,
-        pendingDestroyConnections: 0,
-        pendingReleaseConnections: 0,
-        state: 'ACTIVE',
-        waitingClients: 0,
-      },
-      'initial state',
-    );
-
-    await pool.query(sql.unsafe`
-      SELECT 1
-    `);
-
-    t.deepEqual(
-      pool.state(),
-      {
-        acquiredConnections: 0,
-        idleConnections: 1,
-        pendingDestroyConnections: 0,
-        pendingReleaseConnections: 0,
-        state: 'ACTIVE',
-        waitingClients: 0,
-      },
-      'shows idle clients',
-    );
-
-    await delay(100);
-
-    t.deepEqual(
-      pool.state(),
-      {
-        acquiredConnections: 0,
-        idleConnections: 0,
-        pendingDestroyConnections: 0,
-        pendingReleaseConnections: 0,
-        state: 'ACTIVE',
-        waitingClients: 0,
-      },
-      'shows no idle clients',
-    );
   });
 
   test('retains a minimum number of connections in the pool', async (t) => {
