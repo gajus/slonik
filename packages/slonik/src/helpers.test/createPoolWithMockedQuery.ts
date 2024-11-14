@@ -1,6 +1,7 @@
 import { type ConnectionPoolClient } from '../factories/createConnectionPool';
 import { createPool } from '../factories/createPool';
 import { type ClientConfigurationInput } from '../types';
+import EventEmitter from 'node:events';
 import * as sinon from 'sinon';
 
 export const createPoolWithMockedQuery = async (
@@ -28,7 +29,12 @@ export const createPoolWithMockedQuery = async (
           // We are re-using the same connection for all queries
           // as it makes it easier to spy on the connection.
           // eslint-disable-next-line require-atomic-updates
-          connection = await driver.createClient();
+          connection = await driver.createClient().then((nextConnection) => {
+            return {
+              ...nextConnection,
+              events: new EventEmitter(),
+            };
+          });
 
           // eslint-disable-next-line require-atomic-updates
           connection.query = query;
