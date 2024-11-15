@@ -297,10 +297,14 @@ The default behaviour is to execute `DISCARD ALL` command. This behaviour can be
 ```ts
 import {
   createPool,
-  sql
+  sql,
 } from 'slonik';
+import {
+  createPgDriverFactory,
+} from '@slonik/pg-driver';
 
 const pool = createPool('postgres://', {
+  driverFactory: createPgDriverFactory(),
   resetConnection: async (connection) => {
     await connection.query('DISCARD ALL');
   }
@@ -313,8 +317,12 @@ const pool = createPool('postgres://', {
 > import {
 >   createPool,
 > } from 'slonik';
+> import {
+>   createPgDriverFactory,
+> } from '@slonik/pg-driver';
 >
 > const pool = createPool('postgres://', {
+>   driverFactory: createPgDriverFactory(),
 >   resetConnection: async () => {}
 > });
 
@@ -481,8 +489,13 @@ Use `createPool` to create a connection pool, e.g.
 import {
   createPool,
 } from 'slonik';
+import {
+  createPgDriverFactory,
+} from '@slonik/pg-driver';
 
-const pool = await createPool('postgres://');
+const pool = await createPool('postgres://', {
+  driverFactory: createPgDriverFactory(),
+});
 ```
 
 > **Note:** If you are new to Slonik, then you should read [Integrating Slonik with Express.js](https://dev.to/gajus/integrating-slonik-with-expressjs-33kn).
@@ -518,8 +531,13 @@ import {
   createPool,
   sql,
 } from 'slonik';
+import {
+  createPgDriverFactory,
+} from '@slonik/pg-driver';
 
-const pool = await createPool('postgres://');
+const pool = await createPool('postgres://', {
+  driverFactory: createPgDriverFactory(),
+});
 
 const main = async () => {
   await pool.query(sql.typeAlias('id')`
@@ -543,8 +561,13 @@ import {
   createPool,
   sql,
 } from 'slonik';
+import {
+  createPgDriverFactory,
+} from '@slonik/pg-driver';
 
-const pool = await createPool('postgres://');
+const pool = await createPool('postgres://', {
+  driverFactory: createPgDriverFactory(),
+});
 
 const main = async () => {
   pool.state();
@@ -655,8 +678,13 @@ Example:
 import {
   createPool
 } from 'slonik';
+import {
+  createPgDriverFactory,
+} from '@slonik/pg-driver';
 
-const pool = await createPool('postgres://');
+const pool = await createPool('postgres://', {
+  driverFactory: createPgDriverFactory(),
+});
 
 await pool.query(sql.typeAlias('id')`SELECT 1 AS id`);
 ```
@@ -696,8 +724,12 @@ You can create default type parser collection using `createTypeParserPreset`, e.
 import {
   createTypeParserPreset
 } from 'slonik';
+import {
+  createPgDriverFactory,
+} from '@slonik/pg-driver';
 
 createPool('postgres://', {
+  driverFactory: createPgDriverFactory(),
   typeParsers: [
     ...createTypeParserPreset()
   ]
@@ -729,8 +761,13 @@ Slonik only allows to check out a connection for the duration of the promise rou
 import {
   createPool,
 } from 'slonik';
+import {
+  createPgDriverFactory,
+} from '@slonik/pg-driver';
 
-const pool = await createPool('postgres://localhost');
+const pool = await createPool('postgres://localhost', {
+  driverFactory: createPgDriverFactory(),
+});
 
 const result = await pool.connect(async (connection) => {
   await connection.query(sql.typeAlias('id')`SELECT 1 AS id`);
@@ -759,8 +796,13 @@ import {
   createPool,
   type DatabasePoolEventEmitter,
 } from 'slonik';
+import {
+  createPgDriverFactory,
+} from '@slonik/pg-driver';
 
-const pool = await createPool('postgres://localhost');
+const pool = await createPool('postgres://localhost', {
+  driverFactory: createPgDriverFactory(),
+});
 
 pool.on('error', (error) => {
   console.error(error);
@@ -806,18 +848,6 @@ Work on `pg-promise` began [Wed Mar 4 02:00:34 2015](https://github.com/vitaly-t
 ### <code>postgres</code> vs <code>slonik</code>
 
 [`postgres`](https://github.com/porsager/postgres) recently gained in popularity due to its performance benefits when compared to `pg`. In terms of API, it has a pretty bare-bones API that heavily relies on using ES6 tagged templates and abstracts away many concepts of connection pool handling. While `postgres` API might be preferred by some, projects that already use `pg` may have difficulty migrating.
-
-However, by using [postgres-bridge](https://github.com/gajus/postgres-bridge) (`postgres`/`pg` compatibility layer), you can benefit from `postgres` performance improvements while still using Slonik API:
-
-```ts
-import postgres from 'postgres';
-import { createPostgresBridge } from 'postgres-bridge';
-import { createPool } from 'slonik';
-const PostgresBridge = createPostgresBridge(postgres);
-const pool = createPool('postgres://', {
-  PgPool: PostgresBridge,
-});
-```
 
 ## Type parsers
 
@@ -894,10 +924,14 @@ Interceptors are configured using [client configuration](#api), e.g.
 import {
   createPool
 } from 'slonik';
+import {
+  createPgDriverFactory,
+} from '@slonik/pg-driver';
 
 const interceptors = [];
 
 const connection = await createPool('postgres://', {
+  driverFactory: createPgDriverFactory(),
   interceptors
 });
 ```
@@ -1114,6 +1148,7 @@ Note: This particular implementation does not handle [`SELECT INTO`](https://www
 
 ```ts
 const readOnlyPool = await createPool('postgres://read-only');
+
 const pool = await createPool('postgres://main', {
   interceptors: [
     {
@@ -1256,8 +1291,12 @@ To use it, simply add it as a middleware:
 
 ```ts
 import { createPool } from "slonik";
+import {
+  createPgDriverFactory,
+} from '@slonik/pg-driver';
 
 createPool("postgresql://", {
+  driverFactory: createPgDriverFactory(),
   interceptors: [createResultParserInterceptor()],
 });
 ```
