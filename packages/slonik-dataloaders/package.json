@@ -13,7 +13,7 @@
   "devDependencies": {
     "@slonik/eslint-config": "workspace:^",
     "@slonik/types": "^46.2.0",
-    "eslint": "^9.14.0",
+    "eslint": "^9.16.0",
     "slonik": "^46.2.0",
     "typescript": "^5.6.3",
     "vitest": "^1.6.0"
