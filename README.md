@@ -1787,7 +1787,12 @@ sql.typeAlias('id')`
 `
 ```
 
-The only difference between queries and fragments is that fragments are untyped and they cannot be used as inputs to query methods (use `sql.type` instead).
+#### Fragments vs Queries
+
+There are two primary differences:
+
+* Fragments are untyped and they cannot be used as inputs to query methods (use `sql.type` instead).
+* Queries are expected to be valid SQL if executed (e.g. `SELECT * FROM foo`); fragments are expected to be valid _fragments_ of SQL (e.g. `WHERE bar = 1`).
 
 > [!WARNING]
 > Due to the way that Slonik internally represents SQL fragments, your query must not contain `$slonik_` literals.
