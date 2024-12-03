@@ -1,3 +1,28 @@
+/**
+ * @see https://www.postgresql.org/docs/current/libpq-connect.html#LIBPQ-PARAMKEYWORDS
+ */
+export type ConnectionOptions = {
+  applicationName?: string;
+  databaseName?: string;
+  host?: string;
+  options?: string;
+  password?: string;
+  port?: number;
+  ssl?: {
+    ca?: string;
+    cert?: string;
+    key?: string;
+    rejectUnauthorized: boolean;
+  };
+  sslMode?: 'disable' | 'no-verify' | 'require';
+  username?: string;
+};
+
+export type Field = {
+  readonly dataTypeId: number;
+  readonly name: string;
+};
+
 export type PrimitiveValueExpression =
   | bigint
   | boolean
@@ -15,32 +40,13 @@ export type Query = {
 export type QueryResultRow = Record<string, PrimitiveValueExpression>;
 
 export type SerializableValue =
-  | {
-      [key: string]: SerializableValue;
-    }
   | boolean
   | null
   | number
   | readonly SerializableValue[]
   | SerializableValue[]
   | string
-  | undefined;
-
-/**
- * @see https://www.postgresql.org/docs/current/libpq-connect.html#LIBPQ-PARAMKEYWORDS
- */
-export type ConnectionOptions = {
-  applicationName?: string;
-  databaseName?: string;
-  host?: string;
-  options?: string;
-  password?: string;
-  port?: number;
-  sslMode?: 'disable' | 'no-verify' | 'require';
-  username?: string;
-};
-
-export type Field = {
-  readonly dataTypeId: number;
-  readonly name: string;
-};
+  | undefined
+  | {
+      [key: string]: SerializableValue;
+    };

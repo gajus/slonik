@@ -1,9 +1,9 @@
-import { Logger } from '../Logger';
-import { type ConnectionOptions } from '@slonik/types';
+// cspell:ignore sslrootcert, sslcert
 
-const log = Logger.child({
-  namespace: 'parseDsn',
-});
+import { UnexpectedStateError } from '@slonik/errors';
+import { type ConnectionOptions } from '@slonik/types';
+import { readFileSync } from 'node:fs';
+import { z } from 'zod';
 
 export const parseDsn = (dsn: string): ConnectionOptions => {
   if (dsn.trim() === '') {
@@ -42,32 +42,85 @@ export const parseDsn = (dsn: string): ConnectionOptions => {
     connectionOptions.password = decodeURIComponent(url.password);
   }
 
-  const {
-    application_name: applicationName,
-    options,
-    sslmode: sslMode,
-    ...unsupportedOptions
-  } = Object.fromEntries(url.searchParams);
+  const searchParameters = z
+    .object({
+      application_name: z.string().optional(),
+      options: z.string().optional(),
+      sslcert: z
+        .string()
+        .optional()
+        .describe('Specifies the file name of the client SSL certificate.'),
+      sslkey: z
+        .string()
+        .optional()
+        .describe(
+          'Specifies the location for the secret key used for the client certificate.',
+        ),
+      sslmode: z.enum(['disable', 'no-verify', 'require']).optional(),
+      sslrootcert: z
+        .string()
+        .optional()
+        .describe(
+          'Specifies the name of a file containing SSL certificate authority (CA) certificate(s).',
+        ),
+    })
+    .parse(Object.fromEntries(url.searchParams));
 
-  if (Object.keys(unsupportedOptions).length > 0) {
-    log.warn(
-      {
-        unsupportedOptions,
-      },
-      'unsupported DSN parameters',
-    );
+  if (searchParameters.application_name) {
+    connectionOptions.applicationName = searchParameters.application_name;
   }
 
-  if (applicationName) {
-    connectionOptions.applicationName = applicationName;
+  if (searchParameters.options) {
+    connectionOptions.options = searchParameters.options;
   }
 
-  if (options) {
-    connectionOptions.options = options;
+  if (searchParameters.sslmode) {
+    connectionOptions.sslMode = searchParameters.sslmode;
   }
 
-  if (sslMode) {
-    connectionOptions.sslMode = sslMode as ConnectionOptions['sslMode'];
+  let sslCert: string | undefined;
+  let sslKey: string | undefined;
+  let sslRootCert: string | undefined;
+
+  if (searchParameters.sslcert) {
+    try {
+      sslCert = readFileSync(searchParameters.sslcert, 'utf8');
+    } catch {
+      throw new UnexpectedStateError('Failed to read SSL certificate file.');
+    }
+  }
+
+  if (searchParameters.sslkey) {
+    try {
+      sslKey = readFileSync(searchParameters.sslkey, 'utf8');
+    } catch {
+      throw new UnexpectedStateError('Failed to read SSL key file.');
+    }
+  }
+
+  if (searchParameters.sslrootcert) {
+    try {
+      sslRootCert = readFileSync(searchParameters.sslrootcert, 'utf8');
+    } catch {
+      throw new UnexpectedStateError(
+        'Failed to read SSL root certificate file.',
+      );
+    }
+  }
+
+  if (sslCert || sslKey || sslRootCert) {
+    if ((sslCert && !sslKey) || (!sslCert && sslKey)) {
+      throw new UnexpectedStateError(
+        'Both sslcert and sslkey must be provided together.',
+      );
+    }
+
+    connectionOptions.ssl = {
+      ca: sslRootCert,
+      cert: sslCert,
+      key: sslKey,
+      rejectUnauthorized: searchParameters.sslmode !== 'no-verify',
+    };
   }
 
   return connectionOptions;
