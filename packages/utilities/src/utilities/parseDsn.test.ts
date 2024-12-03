@@ -1,6 +1,8 @@
 import { parseDsn } from './parseDsn';
 import { type ConnectionOptions } from '@slonik/types';
 import test from 'ava';
+import { readFileSync } from 'node:fs';
+import { resolve } from 'node:path';
 
 const testParse = test.macro((t, connectionOptions: ConnectionOptions) => {
   t.deepEqual(parseDsn(t.title), connectionOptions);
@@ -75,3 +77,38 @@ test('postgresql:///database-name?host=/var/lib/postgresql', testParse, {
   databaseName: 'database-name',
   host: '/var/lib/postgresql',
 });
+
+const sslCaCertPath = resolve(__dirname, './fixtures/ssl/root.crt');
+const sslCertPath = resolve(__dirname, './fixtures/ssl/slonik.crt');
+const sslKeyPath = resolve(__dirname, './fixtures/ssl/slonik.key');
+
+test(`postgresql://?sslcert=${sslCertPath}&sslkey=${sslKeyPath}`, testParse, {
+  ssl: {
+    ca: undefined,
+    cert: readFileSync(sslCertPath, 'utf8'),
+    key: readFileSync(sslKeyPath, 'utf8'),
+    rejectUnauthorized: true,
+  },
+});
+
+test(`postgresql://?sslrootcert=${sslCaCertPath}`, testParse, {
+  ssl: {
+    ca: readFileSync(sslCaCertPath, 'utf8'),
+    cert: undefined,
+    key: undefined,
+    rejectUnauthorized: true,
+  },
+});
+
+test(
+  `postgresql://?sslcert=${sslCertPath}&sslkey=${sslKeyPath}&sslrootcert=${sslCaCertPath}`,
+  testParse,
+  {
+    ssl: {
+      ca: readFileSync(sslCaCertPath, 'utf8'),
+      cert: readFileSync(sslCertPath, 'utf8'),
+      key: readFileSync(sslKeyPath, 'utf8'),
+      rejectUnauthorized: true,
+    },
+  },
+);

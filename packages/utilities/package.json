@@ -16,8 +16,8 @@
     ]
   },
   "dependencies": {
-    "@slonik/types": "^46.2.0",
-    "roarr": "^7.21.1"
+    "@slonik/errors": "workspace:^46.2.0",
+    "@slonik/types": "^46.2.0"
   },
   "description": "A Node.js PostgreSQL client with strict types, detailed logging and assertions.",
   "devDependencies": {

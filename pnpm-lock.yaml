@@ -37,16 +37,16 @@ importers:
         specifier: ^3.4.5
         version: 3.4.5
       slonik:
-        specifier: ^46.1.0
+        specifier: ^46.2.0
         version: link:../slonik
 
   packages/driver:
     dependencies:
       '@slonik/types':
-        specifier: ^46.1.0
+        specifier: ^46.2.0
         version: link:../types
       '@slonik/utilities':
-        specifier: ^46.1.0
+        specifier: ^46.2.0
         version: link:../utilities
       roarr:
         specifier: ^7.21.1
@@ -89,7 +89,7 @@ importers:
   packages/errors:
     dependencies:
       '@slonik/types':
-        specifier: ^46.1.0
+        specifier: ^46.2.0
         version: link:../types
     devDependencies:
       '@slonik/eslint-config':
@@ -129,19 +129,19 @@ importers:
   packages/pg-driver:
     dependencies:
       '@slonik/driver':
-        specifier: ^46.1.0
+        specifier: ^46.2.0
         version: link:../driver
       '@slonik/errors':
-        specifier: ^46.1.0
+        specifier: ^46.2.0
         version: link:../errors
       '@slonik/sql-tag':
-        specifier: ^46.1.0
+        specifier: ^46.2.0
         version: link:../sql-tag
       '@slonik/types':
-        specifier: ^46.1.0
+        specifier: ^46.2.0
         version: link:../types
       '@slonik/utilities':
-        specifier: ^46.1.0
+        specifier: ^46.2.0
         version: link:../utilities
       pg:
         specifier: ^8.13.1
@@ -190,19 +190,19 @@ importers:
   packages/slonik:
     dependencies:
       '@slonik/driver':
-        specifier: ^46.1.0
+        specifier: ^46.2.0
         version: link:../driver
       '@slonik/errors':
-        specifier: ^46.1.0
+        specifier: ^46.2.0
         version: link:../errors
       '@slonik/pg-driver':
-        specifier: ^46.1.0
+        specifier: ^46.2.0
         version: link:../pg-driver
       '@slonik/sql-tag':
-        specifier: ^46.1.0
+        specifier: ^46.2.0
         version: link:../sql-tag
       '@slonik/utilities':
-        specifier: ^46.1.0
+        specifier: ^46.2.0
         version: link:../utilities
       get-stack-trace:
         specifier: ^3.1.1
@@ -279,13 +279,13 @@ importers:
         specifier: workspace:^
         version: link:../eslint-config
       '@slonik/types':
-        specifier: ^46.1.0
+        specifier: ^46.2.0
         version: link:../types
       eslint:
         specifier: ^9.14.0
         version: 9.14.0(jiti@2.4.0)
       slonik:
-        specifier: ^46.1.0
+        specifier: ^46.2.0
         version: link:../slonik
       typescript:
         specifier: ^5.6.3
@@ -310,7 +310,7 @@ importers:
         specifier: ^9.14.0
         version: 9.14.0(jiti@2.4.0)
       slonik:
-        specifier: ^46.1.0
+        specifier: ^46.2.0
         version: link:../slonik
       ts-node:
         specifier: ^10.4.0
@@ -338,7 +338,7 @@ importers:
         specifier: ^9.14.0
         version: 9.14.0(jiti@2.4.0)
       slonik:
-        specifier: ^46.1.0
+        specifier: ^46.2.0
         version: link:../slonik
       ts-node:
         specifier: ^10.4.0
@@ -369,7 +369,7 @@ importers:
         specifier: ^9.14.0
         version: 9.14.0(jiti@2.4.0)
       slonik:
-        specifier: ^46.1.0
+        specifier: ^46.2.0
         version: link:../slonik
       ts-node:
         specifier: ^10.4.0
@@ -381,7 +381,7 @@ importers:
   packages/slonik-sql-tag-raw:
     dependencies:
       '@slonik/sql-tag':
-        specifier: ^46.1.0
+        specifier: ^46.2.0
         version: link:../sql-tag
       lodash:
         specifier: ^4.17.20
@@ -400,7 +400,7 @@ importers:
         specifier: ^9.14.0
         version: 9.14.0(jiti@2.4.0)
       slonik:
-        specifier: ^46.1.0
+        specifier: ^46.2.0
         version: link:../slonik
       ts-node:
         specifier: ^10.4.0
@@ -412,10 +412,10 @@ importers:
   packages/sql-tag:
     dependencies:
       '@slonik/errors':
-        specifier: ^46.1.0
+        specifier: ^46.2.0
         version: link:../errors
       '@slonik/types':
-        specifier: ^46.1.0
+        specifier: ^46.2.0
         version: link:../types
       roarr:
         specifier: ^7.21.1
@@ -488,12 +488,12 @@ importers:
 
   packages/utilities:
     dependencies:
+      '@slonik/errors':
+        specifier: workspace:^46.2.0
+        version: link:../errors
       '@slonik/types':
-        specifier: ^46.1.0
+        specifier: ^46.2.0
         version: link:../types
-      roarr:
-        specifier: ^7.21.1
-        version: 7.21.1
     devDependencies:
       '@slonik/eslint-config':
         specifier: workspace:^
