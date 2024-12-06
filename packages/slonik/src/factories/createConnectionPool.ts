@@ -16,6 +16,13 @@ const logger = Logger.child({
   namespace: 'createConnectionPool',
 });
 
+export type ConnectionPool = {
+  acquire: () => Promise<ConnectionPoolClient>;
+  end: () => Promise<void>;
+  id: () => string;
+  state: () => ConnectionPoolState;
+};
+
 export type ConnectionPoolClient = {
   acquire: () => void;
   destroy: () => Promise<void>;
@@ -33,12 +40,6 @@ export type ConnectionPoolClient = {
   ) => DriverStream<DriverStreamResult>;
 };
 
-type WaitingClient = {
-  deferred: DeferredPromise<ConnectionPoolClient>;
-};
-
-type ConnectionPoolStateName = 'ACTIVE' | 'ENDED' | 'ENDING';
-
 /**
  * @property {number} acquiredConnections - The number of connections that are currently acquired.
  */
@@ -51,11 +52,10 @@ type ConnectionPoolState = {
   waitingClients: number;
 };
 
-export type ConnectionPool = {
-  acquire: () => Promise<ConnectionPoolClient>;
-  end: () => Promise<void>;
-  id: () => string;
-  state: () => ConnectionPoolState;
+type ConnectionPoolStateName = 'ACTIVE' | 'ENDED' | 'ENDING';
+
+type WaitingClient = {
+  deferred: DeferredPromise<ConnectionPoolClient>;
 };
 
 export const createConnectionPool = ({

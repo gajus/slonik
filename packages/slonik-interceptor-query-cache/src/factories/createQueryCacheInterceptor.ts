@@ -12,16 +12,24 @@ const log = Logger.child({
   namespace: 'createQueryCacheInterceptor',
 });
 
-type Sandbox = {
-  cache: {
-    cacheAttributes: CacheAttributes;
-  };
-};
-
 export type CacheAttributes = {
   discardEmpty: boolean;
   key: string;
   ttl: number;
+};
+
+type Configuration = {
+  storage: Storage;
+};
+
+type ConfigurationInput = {
+  storage: Storage;
+};
+
+type Sandbox = {
+  cache: {
+    cacheAttributes: CacheAttributes;
+  };
 };
 
 type Storage = {
@@ -34,14 +42,6 @@ type Storage = {
     cacheAttributes: CacheAttributes,
     queryResult: QueryResult<QueryResultRow>,
   ) => Promise<void>;
-};
-
-type ConfigurationInput = {
-  storage: Storage;
-};
-
-type Configuration = {
-  storage: Storage;
 };
 
 export const createQueryCacheInterceptor = (

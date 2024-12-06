@@ -13,7 +13,7 @@ const executionRoutine: ExecutionRoutine = async (
   finalSql,
   finalValues,
 ) => {
-  const result: { notices?: DriverNotice[] } & DriverQueryResult =
+  const result: DriverQueryResult & { notices?: DriverNotice[] } =
     await finalConnection.query(
       finalSql,
       // eslint-disable-next-line @typescript-eslint/no-explicit-any

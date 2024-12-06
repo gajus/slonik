@@ -4,57 +4,6 @@ import { type ZodTypeAny } from 'zod';
 
 export { type PrimitiveValueExpression } from '@slonik/types';
 
-export type SerializableValue =
-  | {
-      [key: string]: SerializableValue;
-    }
-  | boolean
-  | null
-  | number
-  | readonly SerializableValue[]
-  | SerializableValue[]
-  | string
-  | undefined;
-
-export type IntervalInput = {
-  days?: number;
-  hours?: number;
-  minutes?: number;
-  months?: number;
-  seconds?: number;
-  weeks?: number;
-  years?: number;
-};
-
-export type SqlFragmentToken = {
-  readonly sql: string;
-  readonly type: typeof tokens.FragmentToken;
-  readonly values: readonly PrimitiveValueExpression[];
-};
-
-export type ValueExpression =
-  | PrimitiveValueExpression
-  | SqlFragmentToken
-  | SqlToken;
-
-/**
- * "string" type covers all type name identifiers – the literal values are added only to assist developer
- * experience with auto suggestions for commonly used type name identifiers.
- */
-type TypeNameIdentifier =
-  | 'bool'
-  | 'bytea'
-  | 'float4'
-  | 'float8'
-  | 'int2'
-  | 'int4'
-  | 'int8'
-  | 'json'
-  | 'text'
-  | 'timestamptz'
-  | 'uuid'
-  | string;
-
 export type ArraySqlToken = {
   readonly memberType: SqlFragmentToken | TypeNameIdentifier;
   readonly type: typeof tokens.ArrayToken;
@@ -82,15 +31,19 @@ export type IdentifierSqlToken = {
   readonly type: typeof tokens.IdentifierToken;
 };
 
+export type IntervalInput = {
+  days?: number;
+  hours?: number;
+  minutes?: number;
+  months?: number;
+  seconds?: number;
+  weeks?: number;
+  years?: number;
+};
+
 export type IntervalSqlToken = {
   readonly interval: IntervalInput;
   readonly type: typeof tokens.IntervalToken;
-};
-
-export type ListSqlToken = {
-  readonly glue: SqlFragmentToken;
-  readonly members: readonly ValueExpression[];
-  readonly type: typeof tokens.ListToken;
 };
 
 export type JsonBinarySqlToken = {
@@ -103,6 +56,12 @@ export type JsonSqlToken = {
   readonly value: SerializableValue;
 };
 
+export type ListSqlToken = {
+  readonly glue: SqlFragmentToken;
+  readonly members: readonly ValueExpression[];
+  readonly type: typeof tokens.ListToken;
+};
+
 export type QuerySqlToken<T extends ZodTypeAny = ZodTypeAny> = {
   readonly parser: T;
   readonly sql: string;
@@ -110,32 +69,23 @@ export type QuerySqlToken<T extends ZodTypeAny = ZodTypeAny> = {
   readonly values: readonly PrimitiveValueExpression[];
 };
 
-export type TimestampSqlToken = {
-  readonly date: Date;
-  readonly type: typeof tokens.TimestampToken;
-};
+export type SerializableValue =
+  | boolean
+  | null
+  | number
+  | readonly SerializableValue[]
+  | SerializableValue[]
+  | string
+  | undefined
+  | {
+      [key: string]: SerializableValue;
+    };
 
-export type UnnestSqlToken = {
-  readonly columnTypes:
-    | Array<[...string[], TypeNameIdentifier]>
-    | Array<SqlFragmentToken | TypeNameIdentifier>;
-  readonly tuples: ReadonlyArray<readonly ValueExpression[]>;
-  readonly type: typeof tokens.UnnestToken;
+export type SqlFragmentToken = {
+  readonly sql: string;
+  readonly type: typeof tokens.FragmentToken;
+  readonly values: readonly PrimitiveValueExpression[];
 };
-
-export type SqlToken =
-  | ArraySqlToken
-  | BinarySqlToken
-  | DateSqlToken
-  | FragmentSqlToken
-  | IdentifierSqlToken
-  | IntervalSqlToken
-  | JsonBinarySqlToken
-  | JsonSqlToken
-  | ListSqlToken
-  | QuerySqlToken
-  | TimestampSqlToken
-  | UnnestSqlToken;
 
 export type SqlTag<
   Z extends Record<string, ZodTypeAny> = Record<string, ZodTypeAny>,
@@ -187,3 +137,53 @@ export type SqlTag<
     ...values: ValueExpression[]
   ) => QuerySqlToken;
 };
+
+export type SqlToken =
+  | ArraySqlToken
+  | BinarySqlToken
+  | DateSqlToken
+  | FragmentSqlToken
+  | IdentifierSqlToken
+  | IntervalSqlToken
+  | JsonBinarySqlToken
+  | JsonSqlToken
+  | ListSqlToken
+  | QuerySqlToken
+  | TimestampSqlToken
+  | UnnestSqlToken;
+
+export type TimestampSqlToken = {
+  readonly date: Date;
+  readonly type: typeof tokens.TimestampToken;
+};
+
+export type UnnestSqlToken = {
+  readonly columnTypes:
+    | Array<[...string[], TypeNameIdentifier]>
+    | Array<SqlFragmentToken | TypeNameIdentifier>;
+  readonly tuples: ReadonlyArray<readonly ValueExpression[]>;
+  readonly type: typeof tokens.UnnestToken;
+};
+
+export type ValueExpression =
+  | PrimitiveValueExpression
+  | SqlFragmentToken
+  | SqlToken;
+
+/**
+ * "string" type covers all type name identifiers – the literal values are added only to assist developer
+ * experience with auto suggestions for commonly used type name identifiers.
+ */
+type TypeNameIdentifier =
+  | 'bool'
+  | 'bytea'
+  | 'float4'
+  | 'float8'
+  | 'int2'
+  | 'int4'
+  | 'int8'
+  | 'json'
+  | 'text'
+  | 'timestamptz'
+  | 'uuid'
+  | string;
