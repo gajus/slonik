@@ -144,20 +144,23 @@ export const createConnectionPool = ({
       pendingConnections.push(pendingConnection);
 
       const connection = await pendingConnection.catch((error) => {
-        pendingConnections.pop();
+        pendingConnections.splice(
+          pendingConnections.indexOf(pendingConnection),
+          1,
+        );
 
         throw error;
       });
 
       const onRelease = () => {
+        if (connection.state() !== 'IDLE') {
+          throw new Error('Connection is not idle.');
+        }
+
         const waitingClient = waitingClients.shift();
 
         if (!waitingClient) {
           return;
-        }
-
-        if (connection.state() !== 'IDLE') {
-          throw new Error('Connection is not idle.');
         }
 
         connection.acquire();
@@ -173,13 +176,12 @@ export const createConnectionPool = ({
 
         connections.splice(connections.indexOf(connection), 1);
 
-        const waitingClient = waitingClients.shift();
 
         if (!isEnding && !isEnded && connections.length < minimumPoolSize) {
           addConnection();
-
-          return;
         }
+
+        const waitingClient = waitingClients.shift();
 
         if (!waitingClient) {
           return;
