@@ -22,6 +22,7 @@ import {
   QueryToken,
   TimestampToken,
   UnnestToken,
+  UuidToken,
 } from '../tokens';
 import { type SqlFragmentToken, type SqlToken as SqlTokenType } from '../types';
 import { UnexpectedStateError } from '@slonik/errors';
@@ -54,6 +55,8 @@ export const createSqlTokenSqlFragment = (
     return createTimestampSqlFragment(token, greatestParameterPosition);
   } else if (token.type === UnnestToken) {
     return createUnnestSqlFragment(token, greatestParameterPosition);
+  } else if (token.type === UuidToken) {
+    return createFragmentSqlFragment(token, greatestParameterPosition);
   }
 
   throw new UnexpectedStateError('Unexpected token type.');
