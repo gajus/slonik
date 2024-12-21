@@ -13,3 +13,4 @@ export const ListToken = Symbol.for('SLONIK_TOKEN_LIST');
 export const QueryToken = Symbol.for('SLONIK_TOKEN_QUERY');
 export const TimestampToken = Symbol.for('SLONIK_TOKEN_TIMESTAMP');
 export const UnnestToken = Symbol.for('SLONIK_TOKEN_UNNEST');
+export const UuidToken = Symbol.for('SLONIK_TOKEN_UUID');

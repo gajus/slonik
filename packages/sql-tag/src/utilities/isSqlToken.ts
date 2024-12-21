@@ -12,6 +12,7 @@ import {
   QueryToken,
   TimestampToken,
   UnnestToken,
+  UuidToken,
 } from '../tokens';
 import { type SqlToken as SqlTokenType } from '../types';
 import { hasOwnProperty } from './hasOwnProperty';
@@ -31,6 +32,7 @@ const Tokens = [
   QueryToken,
   TimestampToken,
   UnnestToken,
+  UuidToken,
 ] as const;
 
 const tokenNamess = Tokens.map((token) => {

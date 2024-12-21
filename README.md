@@ -110,6 +110,7 @@ Note: Using this project does not require TypeScript. It is a regular ES6 module
         * [`sql.timestamp`](#sqltimestamp)
         * [`sql.unnest`](#sqlunnest)
         * [`sql.unsafe`](#sqlunsafe)
+        * [`sql.uuid`](#sqluuid)
     * [Query methods](#query-methods)
         * [`any`](#any)
         * [`anyFirst`](#anyfirst)
@@ -2211,6 +2212,33 @@ const result = await connection.one(sql.unsafe`
 * Use `sql.type` to type the query result
 * Use `sql.typeAlias` to alias an existing type
 * Use `sql.fragment` if you are writing a fragment of a query
+
+### <code>sql.uuid</code>
+
+```ts
+(
+  uuid: string
+) => TimestampSqlToken;
+```
+
+Inserts a UUID, e.g.
+
+```ts
+await connection.query(sql.unsafe`
+  SELECT ${sql.uuid('00000000-0000-0000-0000-000000000000')}
+`);
+```
+
+Produces:
+
+```ts
+{
+  sql: 'SELECT $1::uuid',
+  values: [
+    '00000000-0000-0000-0000-000000000000'
+  ]
+}
+```
 
 ## Query methods
 

@@ -12,6 +12,7 @@ import {
   QueryToken,
   TimestampToken,
   UnnestToken,
+  UuidToken,
 } from '../tokens';
 import {
   type PrimitiveValueExpression,
@@ -227,6 +228,12 @@ export const createSqlTag = <
         ...createFragment(parts, args),
         parser: z.any(),
         type: QueryToken,
+      });
+    },
+    uuid: (uuid) => {
+      return Object.freeze({
+        type: UuidToken,
+        uuid,
       });
     },
   };

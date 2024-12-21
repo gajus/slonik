@@ -14,6 +14,7 @@ export {
   QueryToken,
   TimestampToken,
   UnnestToken,
+  UuidToken,
 } from './tokens';
 export {
   type ArraySqlToken,
@@ -34,6 +35,7 @@ export {
   type SqlToken,
   type TimestampSqlToken,
   type UnnestSqlToken,
+  type UuidSqlToken,
   type ValueExpression,
 } from './types';
 export { isSqlToken } from './utilities/isSqlToken';
