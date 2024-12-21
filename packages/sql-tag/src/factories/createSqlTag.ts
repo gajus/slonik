@@ -1,4 +1,5 @@
 import { Logger } from '../Logger';
+import { type UUID } from '../sqlFragmentFactories/createUuidSqlFragment';
 import {
   ArrayToken,
   BinaryToken,
@@ -12,6 +13,7 @@ import {
   QueryToken,
   TimestampToken,
   UnnestToken,
+  UuidToken,
 } from '../tokens';
 import {
   type PrimitiveValueExpression,
@@ -227,6 +229,12 @@ export const createSqlTag = <
         ...createFragment(parts, args),
         parser: z.any(),
         type: QueryToken,
+      });
+    },
+    uuid: (uuid) => {
+      return Object.freeze({
+        type: UuidToken,
+        uuid: uuid as UUID,
       });
     },
   };

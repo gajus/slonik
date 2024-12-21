@@ -136,6 +136,7 @@ export type SqlTag<
     template: TemplateStringsArray,
     ...values: ValueExpression[]
   ) => QuerySqlToken;
+  uuid: (uuid: string) => UuidSqlToken;
 };
 
 export type SqlToken =
@@ -150,7 +151,8 @@ export type SqlToken =
   | ListSqlToken
   | QuerySqlToken
   | TimestampSqlToken
-  | UnnestSqlToken;
+  | UnnestSqlToken
+  | UuidSqlToken;
 
 export type TimestampSqlToken = {
   readonly date: Date;
@@ -163,6 +165,11 @@ export type UnnestSqlToken = {
     | Array<SqlFragmentToken | TypeNameIdentifier>;
   readonly tuples: ReadonlyArray<readonly ValueExpression[]>;
   readonly type: typeof tokens.UnnestToken;
+};
+
+export type UuidSqlToken = {
+  readonly type: typeof tokens.UuidToken;
+  readonly uuid: `${string}-${string}-${string}-${string}-${string}`;
 };
 
 export type ValueExpression =

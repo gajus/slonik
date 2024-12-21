@@ -93,6 +93,7 @@ export {
   type SqlTag,
   type SqlToken,
   type UnnestSqlToken,
+  type UuidSqlToken,
 } from '@slonik/sql-tag';
 export { stringifyDsn } from '@slonik/utilities';
 export { parseDsn } from '@slonik/utilities';
