@@ -169,7 +169,7 @@ export type UnnestSqlToken = {
 
 export type UuidSqlToken = {
   readonly type: typeof tokens.UuidToken;
-  readonly uuid: string;
+  readonly uuid: `${string}-${string}-${string}-${string}-${string}`;
 };
 
 export type ValueExpression =

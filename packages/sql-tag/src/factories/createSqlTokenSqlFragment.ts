@@ -9,6 +9,7 @@ import { createListSqlFragment } from '../sqlFragmentFactories/createListSqlFrag
 import { createQuerySqlFragment } from '../sqlFragmentFactories/createQuerySqlFragment';
 import { createTimestampSqlFragment } from '../sqlFragmentFactories/createTimestampSqlFragment';
 import { createUnnestSqlFragment } from '../sqlFragmentFactories/createUnnestSqlFragment';
+import { createUuidSqlFragment } from '../sqlFragmentFactories/createUuidSqlFragment';
 import {
   ArrayToken,
   BinaryToken,
@@ -56,7 +57,7 @@ export const createSqlTokenSqlFragment = (
   } else if (token.type === UnnestToken) {
     return createUnnestSqlFragment(token, greatestParameterPosition);
   } else if (token.type === UuidToken) {
-    return createFragmentSqlFragment(token, greatestParameterPosition);
+    return createUuidSqlFragment(token, greatestParameterPosition);
   }
 
   throw new UnexpectedStateError('Unexpected token type.');
