@@ -231,6 +231,14 @@ export const createSqlTag = <
       });
     },
     uuid: (uuid) => {
+      const uuidRegex = /^[\da-f]{8}(?:-[\da-f]{4}){3}-[\da-f]{12}$/iu;
+
+      if (!uuidRegex.test(uuid)) {
+        throw new InvalidInputError(
+          'UUID parameter value must be a valid UUID.',
+        );
+      }
+
       return Object.freeze({
         type: UuidToken,
         uuid,

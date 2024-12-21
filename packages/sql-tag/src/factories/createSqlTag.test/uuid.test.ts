@@ -16,14 +16,10 @@ test('binds a uuid', (t) => {
   });
 });
 
-test('throws if not instance of Date', (t) => {
+test('throws if not valid uuid', (t) => {
   const error = t.throws(() => {
-    // @ts-expect-error - intentional
-    sql.fragment`SELECT ${sql.timestamp(1)}`;
+    sql.fragment`SELECT ${sql.uuid('1')}`;
   });
 
-  t.is(
-    error?.message,
-    'Timestamp parameter value must be an instance of Date.',
-  );
+  t.is(error?.message, 'UUID parameter value must be a valid UUID.');
 });
