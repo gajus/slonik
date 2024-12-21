@@ -10,9 +10,9 @@ test('binds a uuid', (t) => {
   )}`;
 
   t.deepEqual(query, {
-    sql: 'SELECT to_timestamp($slonik_1)',
+    sql: 'SELECT $slonik_1::uuid',
     type: FragmentToken,
-    values: ['1660879644.951'],
+    values: ['00000000-0000-0000-0000-000000000000'],
   });
 });
 
