@@ -313,7 +313,7 @@ const pool = createPool('postgres://', {
 ```
 
 > [!NOTE]
-> Reseting a connection is a heavy operation. Depending on the application requirements, it may make sense to disable connection reset, e.g.
+> Resetting a connection is a heavy operation. Depending on the application requirements, it may make sense to disable connection reset, e.g.
 > ```ts
 > import {
 >   createPool,
@@ -2793,7 +2793,7 @@ The Slonik community has also shared their successes with these Node.js framewor
 
 This package is using [TypeScript](http://typescriptlang.org/) types.
 
-Refer to [`./src/types.ts`](./src/types.ts).
+Refer to [`./packages/slonik/src/types.ts`](./packages/slonik/src/types.ts).
 
 The public interface exports the following types:
 
