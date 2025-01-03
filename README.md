@@ -457,7 +457,10 @@ Supported parameters:
 |---|---|---|
 |`application_name`|[`application_name`](https://www.postgresql.org/docs/current/libpq-connect.html#LIBPQ-CONNECT-APPLICATION-NAME)||
 |`options`|[`options`](https://www.postgresql.org/docs/current/libpq-connect.html#LIBPQ-CONNECT-OPTIONS)||
-|`sslmode`|[`sslmode`](https://www.postgresql.org/docs/current/libpq-connect.html#LIBPQ-CONNECT-SSLMODE) (supported values: `disable`, `no-verify`, `require`)|`disable`|
+|`sslcert`|The location of the [certificate](https://www.postgresql.org/docs/current/libpq-ssl.html#LIBPQ-SSL-CLIENTCERT).|-|
+|`sslkey`|The location of the [certificate](https://www.postgresql.org/docs/current/libpq-ssl.html#LIBPQ-SSL-CLIENTCERT).|-|
+|`sslmode`|[`sslmode`](https://www.postgresql.org/docs/current/libpq-ssl.html#LIBPQ-SSL-PROTECTION) (supported values: `disable`, `no-verify`, `require`)|`disable`|
+|`sslrootcert`|The location of the [root certificate]((https://www.postgresql.org/docs/current/libpq-ssl.html#LIBQ-SSL-CERTIFICATES)) file.||
 
 Note that unless listed above, other [libpq parameters](https://www.postgresql.org/docs/current/libpq-connect.html#LIBPQ-PARAMKEYWORDS) are not supported.
 
@@ -2590,6 +2593,8 @@ import {
 
 parseDsn('postgresql://foo@localhost/bar?application_name=baz');
 ```
+
+See [supported parameters](#connection-uri).
 
 ### <code>stringifyDsn</code>
 
