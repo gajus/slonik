@@ -10,8 +10,8 @@
     "packages/*"
   ],
   "scripts": {
-    "lint": "npm run lint:knip",
-    "lint:knip": "knip"
+    "lint:knip": "knip",
+    "lint": "npm run lint:knip"
   },
   "dependencies": {
     "@changesets/cli": "^2.27.1"
