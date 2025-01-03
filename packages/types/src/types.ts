@@ -14,7 +14,14 @@ export type ConnectionOptions = {
     key?: string;
     rejectUnauthorized: boolean;
   };
-  sslMode?: 'disable' | 'no-verify' | 'require';
+  sslMode?:
+    | 'allow'
+    | 'disable'
+    | 'no-verify'
+    | 'prefer'
+    | 'require'
+    | 'verify-ca'
+    | 'verify-full';
   username?: string;
 };
 
