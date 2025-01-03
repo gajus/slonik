@@ -31,8 +31,6 @@ import { defer, generateUid } from '@slonik/utilities';
 import { getStackTrace } from 'get-stack-trace';
 import { serializeError } from 'serialize-error';
 
-type GenericQueryResult = QueryResult<QueryResultRow> | StreamResult;
-
 export type ExecutionRoutine = (
   connection: ConnectionPoolClient,
   sql: string,
@@ -40,6 +38,8 @@ export type ExecutionRoutine = (
   queryContext: QueryContext,
   query: Query,
 ) => Promise<GenericQueryResult>;
+
+type GenericQueryResult = QueryResult<QueryResultRow> | StreamResult;
 
 type TransactionQuery = {
   readonly executionContext: QueryContext;

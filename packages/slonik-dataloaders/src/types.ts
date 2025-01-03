@@ -1,21 +1,21 @@
 import { type IdentifierSqlToken } from 'slonik';
 
-export type OrderDirection = 'ASC' | 'DESC';
-
 export type ColumnIdentifiers<TResult> = Record<
   keyof TResult,
   IdentifierSqlToken
 >;
+
+export type Connection<TResult> = {
+  count: number;
+  edges: Array<TResult & { cursor: string; node: TResult }>;
+  pageInfo: PageInfo;
+};
+
+export type OrderDirection = 'ASC' | 'DESC';
 
 type PageInfo = {
   endCursor: null | string;
   hasNextPage: boolean;
   hasPreviousPage: boolean;
   startCursor: null | string;
-};
-
-export type Connection<TResult> = {
-  count: number;
-  edges: Array<{ cursor: string; node: TResult } & TResult>;
-  pageInfo: PageInfo;
 };

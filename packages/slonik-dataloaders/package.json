@@ -16,7 +16,7 @@
     "eslint": "^9.16.0",
     "slonik": "^46.2.0",
     "typescript": "^5.6.3",
-    "vitest": "^1.6.0"
+    "vitest": "^2.1.8"
   },
   "engines": {
     "node": ">=18"
