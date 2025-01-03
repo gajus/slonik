@@ -40,13 +40,13 @@ export type Query = {
 export type QueryResultRow = Record<string, PrimitiveValueExpression>;
 
 export type SerializableValue =
-  | {
-      [key: string]: SerializableValue;
-    }
   | boolean
   | null
   | number
   | readonly SerializableValue[]
   | SerializableValue[]
   | string
-  | undefined;
+  | undefined
+  | {
+      [key: string]: SerializableValue;
+    };
