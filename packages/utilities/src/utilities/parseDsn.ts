@@ -5,6 +5,7 @@ import { type ConnectionOptions } from '@slonik/types';
 import { readFileSync } from 'node:fs';
 import { z } from 'zod';
 
+// eslint-disable-next-line complexity
 export const parseDsn = (dsn: string): ConnectionOptions => {
   if (dsn.trim() === '') {
     return {};
@@ -56,7 +57,17 @@ export const parseDsn = (dsn: string): ConnectionOptions => {
         .describe(
           'Specifies the location for the secret key used for the client certificate.',
         ),
-      sslmode: z.enum(['disable', 'no-verify', 'require']).optional(),
+      sslmode: z
+        .enum([
+          'allow',
+          'disable',
+          'no-verify',
+          'prefer',
+          'require',
+          'verify-ca',
+          'verify-full',
+        ])
+        .optional(),
       sslrootcert: z
         .string()
         .optional()
@@ -78,49 +89,81 @@ export const parseDsn = (dsn: string): ConnectionOptions => {
     connectionOptions.sslMode = searchParameters.sslmode;
   }
 
-  let sslCert: string | undefined;
-  let sslKey: string | undefined;
-  let sslRootCert: string | undefined;
+  /**
+   * Refer to https://github.com/brianc/node-postgres/pull/2709
+   */
+  if (
+    searchParameters.sslcert ||
+    searchParameters.sslkey ||
+    searchParameters.sslrootcert ||
+    searchParameters.sslmode
+  ) {
+    let sslCert: string | undefined;
+    let sslKey: string | undefined;
+    let sslRootCert: string | undefined;
 
-  if (searchParameters.sslcert) {
-    try {
-      sslCert = readFileSync(searchParameters.sslcert, 'utf8');
-    } catch {
-      throw new UnexpectedStateError('Failed to read SSL certificate file.');
+    if (searchParameters.sslcert) {
+      try {
+        sslCert = readFileSync(searchParameters.sslcert, 'utf8');
+      } catch {
+        throw new UnexpectedStateError('Failed to read SSL certificate file.');
+      }
+    }
+
+    if (searchParameters.sslkey) {
+      try {
+        sslKey = readFileSync(searchParameters.sslkey, 'utf8');
+      } catch {
+        throw new UnexpectedStateError('Failed to read SSL key file.');
+      }
+    }
+
+    if (searchParameters.sslrootcert) {
+      try {
+        sslRootCert = readFileSync(searchParameters.sslrootcert, 'utf8');
+      } catch {
+        throw new UnexpectedStateError(
+          'Failed to read SSL root certificate file.',
+        );
+      }
+    }
+
+    if (sslCert || sslKey || sslRootCert) {
+      if ((sslCert && !sslKey) || (!sslCert && sslKey)) {
+        throw new UnexpectedStateError(
+          'Both sslcert and sslkey must be provided together.',
+        );
+      }
+
+      connectionOptions.ssl = {
+        ca: sslRootCert,
+        cert: sslCert,
+        key: sslKey,
+        rejectUnauthorized: searchParameters.sslmode !== 'no-verify',
+      };
     }
   }
 
-  if (searchParameters.sslkey) {
-    try {
-      sslKey = readFileSync(searchParameters.sslkey, 'utf8');
-    } catch {
-      throw new UnexpectedStateError('Failed to read SSL key file.');
-    }
-  }
-
-  if (searchParameters.sslrootcert) {
-    try {
-      sslRootCert = readFileSync(searchParameters.sslrootcert, 'utf8');
-    } catch {
-      throw new UnexpectedStateError(
-        'Failed to read SSL root certificate file.',
-      );
-    }
-  }
-
-  if (sslCert || sslKey || sslRootCert) {
-    if ((sslCert && !sslKey) || (!sslCert && sslKey)) {
-      throw new UnexpectedStateError(
-        'Both sslcert and sslkey must be provided together.',
-      );
+  switch (connectionOptions.sslMode) {
+    case 'disable': {
+      connectionOptions.ssl = false;
+      break;
     }
 
-    connectionOptions.ssl = {
-      ca: sslRootCert,
-      cert: sslCert,
-      key: sslKey,
-      rejectUnauthorized: searchParameters.sslmode !== 'no-verify',
-    };
+    case 'no-verify': {
+      connectionOptions.ssl = {
+        ...connectionOptions.ssl,
+        rejectUnauthorized: false,
+      };
+      break;
+    }
+
+    case 'prefer':
+    case 'require':
+    case 'verify-ca':
+    case 'verify-full': {
+      break;
+    }
   }
 
   return connectionOptions;
