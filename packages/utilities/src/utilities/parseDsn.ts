@@ -56,7 +56,10 @@ export const parseDsn = (dsn: string): ConnectionOptions => {
         .describe(
           'Specifies the location for the secret key used for the client certificate.',
         ),
-      sslmode: z.enum(['disable', 'no-verify', 'require']).optional(),
+      sslmode: z
+        .enum(['disable', 'no-verify', 'require'])
+        .optional()
+        .default('disable'),
       sslrootcert: z
         .string()
         .optional()
