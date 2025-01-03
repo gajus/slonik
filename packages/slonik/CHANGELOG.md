@@ -1,5 +1,20 @@
 # slonik
 
+## 46.3.0
+
+### Minor Changes
+
+- [#653](https://github.com/gajus/slonik/pull/653) [`960bf89`](https://github.com/gajus/slonik/commit/960bf891f8f280551cc405210ea87e8dca2ff278) Thanks [@gajus](https://github.com/gajus)! - add the ability to configure sslrootcert, sslkey and sslrootcert
+
+### Patch Changes
+
+- Updated dependencies []:
+  - @slonik/driver@46.3.0
+  - @slonik/errors@46.3.0
+  - @slonik/pg-driver@46.3.0
+  - @slonik/sql-tag@46.3.0
+  - @slonik/utilities@46.3.0
+
 ## 46.2.0
 
 ### Minor Changes
