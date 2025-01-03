@@ -22,6 +22,7 @@
   "description": "A Node.js PostgreSQL client with strict types, detailed logging and assertions.",
   "devDependencies": {
     "@slonik/eslint-config": "workspace:^",
+    "@slonik/test-ssls": "workspace:^",
     "@types/node": "^22.9.0",
     "ava": "^6.1.3",
     "cspell": "^8.16.0",

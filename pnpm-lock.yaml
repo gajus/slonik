@@ -455,6 +455,12 @@ importers:
         specifier: ^3.22.4
         version: 3.23.8
 
+  packages/test-ssls:
+    dependencies:
+      zod:
+        specifier: ^3
+        version: 3.23.8
+
   packages/types:
     dependencies:
       zod:
@@ -498,6 +504,9 @@ importers:
       '@slonik/eslint-config':
         specifier: workspace:^
         version: link:../eslint-config
+      '@slonik/test-ssls':
+        specifier: workspace:^
+        version: link:../test-ssls
       '@types/node':
         specifier: ^22.9.0
         version: 22.9.0
@@ -6774,7 +6783,7 @@ snapshots:
 
   agent-base@6.0.2:
     dependencies:
-      debug: 4.3.5
+      debug: 4.4.0
     transitivePeerDependencies:
       - supports-color
 

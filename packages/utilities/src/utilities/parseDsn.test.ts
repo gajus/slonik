@@ -78,9 +78,9 @@ test('postgresql:///database-name?host=/var/lib/postgresql', testParse, {
   host: '/var/lib/postgresql',
 });
 
-const sslCaCertPath = resolve(__dirname, './fixtures/ssl/root.crt');
-const sslCertPath = resolve(__dirname, './fixtures/ssl/slonik.crt');
-const sslKeyPath = resolve(__dirname, './fixtures/ssl/slonik.key');
+const sslCaCertPath = require.resolve('@slonik/test-ssls/root.crt');
+const sslCertPath = require.resolve('@slonik/test-ssls/slonik.crt');
+const sslKeyPath = require.resolve('@slonik/test-ssls/slonik.key');
 
 test(`postgresql://?sslcert=${sslCertPath}&sslkey=${sslKeyPath}`, testParse, {
   ssl: {

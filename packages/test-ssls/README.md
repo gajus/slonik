@@ -1,3 +1,9 @@
+# Test SSLs
+
+SSLs used for testing Slonik.
+
+## Generating SSL certificates
+
 ```bash
 # Generate a Root Certificate (CA)
 openssl genrsa -out root.key 2048
@@ -14,4 +20,11 @@ openssl x509 -req -in slonik.csr -CA root.crt -CAkey root.key -CAcreateserial -o
 
 # Verify the Certificates
 openssl verify -CAfile root.crt slonik.crt
+```
+
+## Running PostgreSQL with SSL
+
+```bash
+docker build -t slonik-ssl-test .
+docker run --name slonik-ssl-test --rm -it -e POSTGRES_PASSWORD=postgres -p 5433:5432 slonik-ssl-test
 ```
