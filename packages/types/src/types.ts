@@ -8,12 +8,14 @@ export type ConnectionOptions = {
   options?: string;
   password?: string;
   port?: number;
-  ssl?: {
-    ca?: string;
-    cert?: string;
-    key?: string;
-    rejectUnauthorized: boolean;
-  };
+  ssl?:
+    | boolean
+    | {
+        ca?: string;
+        cert?: string;
+        key?: string;
+        rejectUnauthorized: boolean;
+      };
   sslMode?:
     | 'allow'
     | 'disable'
