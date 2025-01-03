@@ -151,8 +151,10 @@ export const parseDsn = (dsn: string): ConnectionOptions => {
     }
 
     case 'no-verify': {
+      const ssl = connectionOptions.ssl ?? {};
+
       connectionOptions.ssl = {
-        ...connectionOptions.ssl,
+        ...ssl,
         rejectUnauthorized: false,
       };
       break;
