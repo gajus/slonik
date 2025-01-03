@@ -8,7 +8,7 @@ export type ConnectionOptions = {
   options?: string;
   password?: string;
   port?: number;
-  sslMode?: 'disable' | 'no-verify' | 'require';
+  sslMode?: 'disable' | 'allow' | 'prefer' | 'require' | 'verify-ca' | 'verify-full' ;
   username?: string;
 };
 
