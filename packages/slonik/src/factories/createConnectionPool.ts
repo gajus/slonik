@@ -154,7 +154,7 @@ export const createConnectionPool = ({
 
       const onRelease = () => {
         if (connection.state() !== 'IDLE') {
-          throw new Error('Connection is not idle.');
+          return;
         }
 
         const waitingClient = waitingClients.shift();
@@ -174,24 +174,26 @@ export const createConnectionPool = ({
         connection.removeListener('release', onRelease);
         connection.removeListener('destroy', onDestroy);
 
+        console.error('local destory', { connections });
+
         connections.splice(connections.indexOf(connection), 1);
-
-
-        if (!isEnding && !isEnded && connections.length < minimumPoolSize) {
-          addConnection();
-        }
 
         const waitingClient = waitingClients.shift();
 
-        if (!waitingClient) {
+        if (waitingClient) {
+          // eslint-disable-next-line promise/prefer-await-to-then
+          acquire().then(
+            waitingClient.deferred.resolve,
+            waitingClient.deferred.reject,
+          );
+
           return;
         }
 
-        // eslint-disable-next-line promise/prefer-await-to-then
-        acquire().then(
-          waitingClient.deferred.resolve,
-          waitingClient.deferred.reject,
-        );
+        // In the case that there are no waiting clients and we're below the minimum pool size, add a new connection
+        if (!isEnding && !isEnded && connections.length < minimumPoolSize) {
+          addConnection();
+        }
       };
 
       connection.on('destroy', onDestroy);

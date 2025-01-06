@@ -2259,6 +2259,65 @@ export const createIntegrationTests = (
     await pool.end();
   });
 
+  test('destroy adds new connection to meet minimum, and then is used by waiting client', async (t) => {
+    const pool = await createPool(t.context.dsn, {
+      driverFactory,
+      idleTimeout: 30_000,
+      maximumPoolSize: 1,
+      minimumPoolSize: 1,
+    });
+
+    pool
+      .query(
+        sql.unsafe`
+        DO $$
+        BEGIN
+            PERFORM pg_sleep(1); -- Sleep for 1 second
+            RAISE EXCEPTION 'Test error after 1 second delay';
+        END $$;
+      `,
+      )
+      // eslint-disable-next-line promise/prefer-await-to-then
+      .catch(() => {
+        // Ignoring intentional error
+      });
+
+    const waitingClientPromise = pool.oneFirst(sql.unsafe`
+      SELECT 1
+    `);
+
+    t.deepEqual(
+      pool.state(),
+      {
+        acquiredConnections: 0,
+        idleConnections: 0,
+        pendingDestroyConnections: 0,
+        pendingReleaseConnections: 0,
+        state: 'ACTIVE',
+        waitingClients: 1,
+      },
+      'pool state has waiting client',
+    );
+
+    const waitingClientResult = await waitingClientPromise;
+    t.is(waitingClientResult, 1);
+
+    t.deepEqual(
+      pool.state(),
+      {
+        acquiredConnections: 0,
+        idleConnections: 1,
+        pendingDestroyConnections: 0,
+        pendingReleaseConnections: 0,
+        state: 'ACTIVE',
+        waitingClients: 0,
+      },
+      'pool state after all queries complete',
+    );
+
+    await pool.end();
+  });
+
   test('retains explicit transaction beyond the idle timeout', async (t) => {
     const pool = await createPool(t.context.dsn, {
       driverFactory,
