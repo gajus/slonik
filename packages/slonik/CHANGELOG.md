@@ -1,5 +1,20 @@
 # slonik
 
+## 46.4.0
+
+### Minor Changes
+
+- [#661](https://github.com/gajus/slonik/pull/661) [`a97891b`](https://github.com/gajus/slonik/commit/a97891b7f58cbc9af912654a78cf786a184620bf) Thanks [@mikeroelens](https://github.com/mikeroelens)! - fix: connection pool edge cases that could lead to hanging connections or effectively incorrect pool sizing
+
+### Patch Changes
+
+- Updated dependencies []:
+  - @slonik/driver@46.4.0
+  - @slonik/errors@46.4.0
+  - @slonik/pg-driver@46.4.0
+  - @slonik/sql-tag@46.4.0
+  - @slonik/utilities@46.4.0
+
 ## 46.3.0
 
 ### Minor Changes
