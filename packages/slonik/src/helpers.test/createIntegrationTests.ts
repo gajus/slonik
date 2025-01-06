@@ -2259,7 +2259,7 @@ export const createIntegrationTests = (
     await pool.end();
   });
 
-  test('destroy adds new connection to meet minimum, and then is used by waiting client', async (t) => {
+  test('destroy creates a new connection to be used by waiting client', async (t) => {
     const pool = await createPool(t.context.dsn, {
       driverFactory,
       idleTimeout: 30_000,
