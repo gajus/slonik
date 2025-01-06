@@ -840,6 +840,7 @@ export const createIntegrationTests = (
     t.deepEqual(pool.state(), {
       acquiredConnections: 0,
       idleConnections: 0,
+      pendingConnections: 0,
       pendingDestroyConnections: 0,
       pendingReleaseConnections: 0,
       state: 'ACTIVE',
@@ -851,6 +852,7 @@ export const createIntegrationTests = (
     t.deepEqual(pool.state(), {
       acquiredConnections: 0,
       idleConnections: 0,
+      pendingConnections: 0,
       pendingDestroyConnections: 0,
       pendingReleaseConnections: 0,
       state: 'ENDED',
@@ -867,6 +869,7 @@ export const createIntegrationTests = (
     t.deepEqual(pool.state(), {
       acquiredConnections: 0,
       idleConnections: 0,
+      pendingConnections: 0,
       pendingDestroyConnections: 0,
       pendingReleaseConnections: 0,
       state: 'ACTIVE',
@@ -880,6 +883,7 @@ export const createIntegrationTests = (
     t.deepEqual(pool.state(), {
       acquiredConnections: 0,
       idleConnections: 1,
+      pendingConnections: 0,
       pendingDestroyConnections: 0,
       pendingReleaseConnections: 0,
       state: 'ACTIVE',
@@ -891,6 +895,7 @@ export const createIntegrationTests = (
     t.deepEqual(pool.state(), {
       acquiredConnections: 0,
       idleConnections: 0,
+      pendingConnections: 0,
       pendingDestroyConnections: 0,
       pendingReleaseConnections: 0,
       state: 'ENDED',
@@ -906,6 +911,7 @@ export const createIntegrationTests = (
     t.deepEqual(pool.state(), {
       acquiredConnections: 0,
       idleConnections: 0,
+      pendingConnections: 0,
       pendingDestroyConnections: 0,
       pendingReleaseConnections: 0,
       state: 'ACTIVE',
@@ -921,6 +927,7 @@ export const createIntegrationTests = (
     t.deepEqual(pool.state(), {
       acquiredConnections: 1,
       idleConnections: 0,
+      pendingConnections: 0,
       pendingDestroyConnections: 0,
       pendingReleaseConnections: 0,
       state: 'ACTIVE',
@@ -932,6 +939,7 @@ export const createIntegrationTests = (
     t.deepEqual(pool.state(), {
       acquiredConnections: 0,
       idleConnections: 0,
+      pendingConnections: 0,
       pendingDestroyConnections: 0,
       pendingReleaseConnections: 0,
       state: 'ENDED',
@@ -951,6 +959,7 @@ export const createIntegrationTests = (
     t.deepEqual(pool.state(), {
       acquiredConnections: 0,
       idleConnections: 0,
+      pendingConnections: 0,
       pendingDestroyConnections: 0,
       pendingReleaseConnections: 0,
       state: 'ACTIVE',
@@ -978,6 +987,7 @@ export const createIntegrationTests = (
     t.deepEqual(pool.state(), {
       acquiredConnections: 0,
       idleConnections: 5,
+      pendingConnections: 0,
       pendingDestroyConnections: 0,
       pendingReleaseConnections: 0,
       state: 'ACTIVE',
@@ -989,6 +999,7 @@ export const createIntegrationTests = (
     t.deepEqual(pool.state(), {
       acquiredConnections: 0,
       idleConnections: 0,
+      pendingConnections: 0,
       pendingDestroyConnections: 0,
       pendingReleaseConnections: 0,
       state: 'ENDED',
@@ -1442,6 +1453,7 @@ export const createIntegrationTests = (
       {
         acquiredConnections: 0,
         idleConnections: 0,
+        pendingConnections: 0,
         pendingDestroyConnections: 0,
         pendingReleaseConnections: 0,
         state: 'ACTIVE',
@@ -1466,6 +1478,7 @@ export const createIntegrationTests = (
       {
         acquiredConnections: 1,
         idleConnections: 0,
+        pendingConnections: 0,
         pendingDestroyConnections: 0,
         pendingReleaseConnections: 0,
         state: 'ACTIVE',
@@ -2004,6 +2017,7 @@ export const createIntegrationTests = (
       {
         acquiredConnections: 0,
         idleConnections: 0,
+        pendingConnections: 0,
         pendingDestroyConnections: 0,
         pendingReleaseConnections: 0,
         state: 'ACTIVE',
@@ -2021,6 +2035,7 @@ export const createIntegrationTests = (
       {
         acquiredConnections: 0,
         idleConnections: 1,
+        pendingConnections: 0,
         pendingDestroyConnections: 0,
         pendingReleaseConnections: 0,
         state: 'ACTIVE',
@@ -2036,6 +2051,7 @@ export const createIntegrationTests = (
       {
         acquiredConnections: 0,
         idleConnections: 0,
+        pendingConnections: 0,
         pendingDestroyConnections: 0,
         pendingReleaseConnections: 0,
         state: 'ACTIVE',
@@ -2175,6 +2191,7 @@ export const createIntegrationTests = (
     t.like(pool.state(), {
       acquiredConnections: 0,
       idleConnections: 0,
+      pendingConnections: 0,
       pendingDestroyConnections: 0,
       pendingReleaseConnections: 0,
       waitingClients: 0,
@@ -2193,6 +2210,7 @@ export const createIntegrationTests = (
     t.like(pool.state(), {
       acquiredConnections: 0,
       idleConnections: 0,
+      pendingConnections: 0,
       pendingDestroyConnections: 0,
       pendingReleaseConnections: 0,
       waitingClients: 0,
@@ -2216,6 +2234,7 @@ export const createIntegrationTests = (
         acquiredConnections: 0,
         // TODO we might want to add an option to warm up the pool, in which case this value should be 1
         idleConnections: 0,
+        pendingConnections: 0,
         pendingDestroyConnections: 0,
         pendingReleaseConnections: 0,
         state: 'ACTIVE',
@@ -2233,6 +2252,7 @@ export const createIntegrationTests = (
       {
         acquiredConnections: 0,
         idleConnections: 1,
+        pendingConnections: 0,
         pendingDestroyConnections: 0,
         pendingReleaseConnections: 0,
         state: 'ACTIVE',
@@ -2248,6 +2268,7 @@ export const createIntegrationTests = (
       {
         acquiredConnections: 0,
         idleConnections: 1,
+        pendingConnections: 0,
         pendingDestroyConnections: 0,
         pendingReleaseConnections: 0,
         state: 'ACTIVE',
@@ -2291,6 +2312,7 @@ export const createIntegrationTests = (
       {
         acquiredConnections: 0,
         idleConnections: 0,
+        pendingConnections: 1,
         pendingDestroyConnections: 0,
         pendingReleaseConnections: 0,
         state: 'ACTIVE',
@@ -2307,6 +2329,7 @@ export const createIntegrationTests = (
       {
         acquiredConnections: 0,
         idleConnections: 1,
+        pendingConnections: 0,
         pendingDestroyConnections: 0,
         pendingReleaseConnections: 0,
         state: 'ACTIVE',
@@ -2422,6 +2445,7 @@ export const createIntegrationTests = (
           {
             acquiredConnections: 0,
             idleConnections: 1,
+            pendingConnections: 0,
             pendingDestroyConnections: 0,
             pendingReleaseConnections: 0,
             state: 'ACTIVE',
@@ -2467,6 +2491,7 @@ export const createIntegrationTests = (
         t.deepEqual(pool.state(), {
           acquiredConnections: 2,
           idleConnections: 0,
+          pendingConnections: 0,
           pendingDestroyConnections: 0,
           pendingReleaseConnections: 0,
           state: 'ACTIVE',

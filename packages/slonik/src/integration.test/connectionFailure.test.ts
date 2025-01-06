@@ -1,9 +1,9 @@
 /* eslint-disable no-console */
 
 import { createPool } from '..';
-import { createPgDriverFactory } from '@slonik/pg-driver';
 // eslint-disable-next-line import/extensions
 import { startTestContainer } from './termination.test';
+import { createPgDriverFactory } from '@slonik/pg-driver';
 import test from 'ava';
 import { execSync } from 'node:child_process';
 import { setTimeout as delay } from 'node:timers/promises';
