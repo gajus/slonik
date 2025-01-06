@@ -174,8 +174,6 @@ export const createConnectionPool = ({
         connection.removeListener('release', onRelease);
         connection.removeListener('destroy', onDestroy);
 
-        console.error('local destory', { connections });
-
         connections.splice(connections.indexOf(connection), 1);
 
         const waitingClient = waitingClients.shift();
