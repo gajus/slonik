@@ -46,6 +46,7 @@ export type ConnectionPoolClient = {
 type ConnectionPoolState = {
   acquiredConnections: number;
   idleConnections: number;
+  pendingConnections: number;
   pendingDestroyConnections: number;
   pendingReleaseConnections: number;
   state: ConnectionPoolStateName;
@@ -144,20 +145,28 @@ export const createConnectionPool = ({
       pendingConnections.push(pendingConnection);
 
       const connection = await pendingConnection.catch((error) => {
-        pendingConnections.pop();
+        const index = pendingConnections.indexOf(pendingConnection);
+
+        if (index === -1) {
+          logger.error(
+            'Unable to find pendingConnection in `pendingConnections` array to remove.',
+          );
+        } else {
+          pendingConnections.splice(index, 1);
+        }
 
         throw error;
       });
 
       const onRelease = () => {
+        if (connection.state() !== 'IDLE') {
+          return;
+        }
+
         const waitingClient = waitingClients.shift();
 
         if (!waitingClient) {
           return;
-        }
-
-        if (connection.state() !== 'IDLE') {
-          throw new Error('Connection is not idle.');
         }
 
         connection.acquire();
@@ -171,35 +180,48 @@ export const createConnectionPool = ({
         connection.removeListener('release', onRelease);
         connection.removeListener('destroy', onDestroy);
 
-        connections.splice(connections.indexOf(connection), 1);
+        const indexOfConnection = connections.indexOf(connection);
+
+        if (indexOfConnection === -1) {
+          logger.error(
+            'Unable to find connection in `connections` array to remove.',
+          );
+        } else {
+          connections.splice(indexOfConnection, 1);
+        }
 
         const waitingClient = waitingClients.shift();
 
+        if (waitingClient) {
+          // eslint-disable-next-line promise/prefer-await-to-then
+          acquire().then(
+            waitingClient.deferred.resolve,
+            waitingClient.deferred.reject,
+          );
+
+          return;
+        }
+
+        // In the case that there are no waiting clients and we're below the minimum pool size, add a new connection
         if (!isEnding && !isEnded && connections.length < minimumPoolSize) {
           addConnection();
-
-          return;
         }
-
-        if (!waitingClient) {
-          return;
-        }
-
-        // eslint-disable-next-line promise/prefer-await-to-then
-        acquire().then(
-          waitingClient.deferred.resolve,
-          waitingClient.deferred.reject,
-        );
       };
 
       connection.on('destroy', onDestroy);
 
       connections.push(connection);
 
-      pendingConnections.splice(
-        pendingConnections.indexOf(pendingConnection),
-        1,
-      );
+      const indexOfPendingConnection =
+        pendingConnections.indexOf(pendingConnection);
+
+      if (indexOfPendingConnection === -1) {
+        logger.error(
+          'Unable to find pendingConnection in `pendingConnections` array to remove.',
+        );
+      } else {
+        pendingConnections.splice(indexOfPendingConnection, 1);
+      }
 
       return connection;
     };
@@ -279,6 +301,7 @@ export const createConnectionPool = ({
       const state = {
         acquiredConnections: 0,
         idleConnections: 0,
+        pendingConnections: pendingConnections.length,
         pendingDestroyConnections: 0,
         pendingReleaseConnections: 0,
       };
