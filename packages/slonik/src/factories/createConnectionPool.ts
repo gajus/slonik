@@ -144,10 +144,15 @@ export const createConnectionPool = ({
       pendingConnections.push(pendingConnection);
 
       const connection = await pendingConnection.catch((error) => {
-        pendingConnections.splice(
-          pendingConnections.indexOf(pendingConnection),
-          1,
-        );
+        const index = pendingConnections.indexOf(pendingConnection);
+
+        if (index === -1) {
+          logger.error(
+            'Unable to find pendingConnection in `pendingConnections` array to remove.',
+          );
+        } else {
+          pendingConnections.splice(index, 1);
+        }
 
         throw error;
       });
@@ -174,7 +179,15 @@ export const createConnectionPool = ({
         connection.removeListener('release', onRelease);
         connection.removeListener('destroy', onDestroy);
 
-        connections.splice(connections.indexOf(connection), 1);
+        const indexOfConnection = connections.indexOf(connection);
+
+        if (indexOfConnection === -1) {
+          logger.error(
+            'Unable to find connection in `connections` array to remove.',
+          );
+        } else {
+          connections.splice(indexOfConnection, 1);
+        }
 
         const waitingClient = waitingClients.shift();
 
@@ -198,10 +211,16 @@ export const createConnectionPool = ({
 
       connections.push(connection);
 
-      pendingConnections.splice(
-        pendingConnections.indexOf(pendingConnection),
-        1,
-      );
+      const indexOfPendingConnection =
+        pendingConnections.indexOf(pendingConnection);
+
+      if (indexOfPendingConnection === -1) {
+        logger.error(
+          'Unable to find pendingConnection in `pendingConnections` array to remove.',
+        );
+      } else {
+        pendingConnections.splice(indexOfPendingConnection, 1);
+      }
 
       return connection;
     };
