@@ -16,3 +16,5 @@ words:
   - plpgsql
   - roarr
   - slonik
+  - sslcert
+  - sslrootcert

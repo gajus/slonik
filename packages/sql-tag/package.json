@@ -16,8 +16,8 @@
     ]
   },
   "dependencies": {
-    "@slonik/errors": "^46.2.0",
-    "@slonik/types": "^46.2.0",
+    "@slonik/errors": "^46.3.0",
+    "@slonik/types": "^46.3.0",
     "roarr": "^7.21.1",
     "safe-stable-stringify": "^2.4.3",
     "serialize-error": "^8.0.0"
@@ -28,7 +28,7 @@
     "@types/node": "^22.9.0",
     "ava": "^6.1.3",
     "cspell": "^8.16.0",
-    "eslint": "^9.14.0",
+    "eslint": "^9.16.0",
     "nyc": "^15.1.0",
     "ts-node": "^10.9.1",
     "typescript": "^5.6.3",
@@ -83,5 +83,5 @@
     "test": "nyc ava --verbose --serial"
   },
   "types": "./dist/index.d.ts",
-  "version": "46.2.0"
+  "version": "46.3.0"
 }

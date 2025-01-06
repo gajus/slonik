@@ -110,6 +110,7 @@ Note: Using this project does not require TypeScript. It is a regular ES6 module
         * [`sql.timestamp`](#sqltimestamp)
         * [`sql.unnest`](#sqlunnest)
         * [`sql.unsafe`](#sqlunsafe)
+        * [`sql.uuid`](#sqluuid)
     * [Query methods](#query-methods)
         * [`any`](#any)
         * [`anyFirst`](#anyfirst)
@@ -312,7 +313,7 @@ const pool = createPool('postgres://', {
 ```
 
 > [!NOTE]
-> Reseting a connection is a heavy operation. Depending on the application requirements, it may make sense to disable connection reset, e.g.
+> Resetting a connection is a heavy operation. Depending on the application requirements, it may make sense to disable connection reset, e.g.
 > ```ts
 > import {
 >   createPool,
@@ -456,7 +457,10 @@ Supported parameters:
 |---|---|---|
 |`application_name`|[`application_name`](https://www.postgresql.org/docs/current/libpq-connect.html#LIBPQ-CONNECT-APPLICATION-NAME)||
 |`options`|[`options`](https://www.postgresql.org/docs/current/libpq-connect.html#LIBPQ-CONNECT-OPTIONS)||
-|`sslmode`|[`sslmode`](https://www.postgresql.org/docs/current/libpq-connect.html#LIBPQ-CONNECT-SSLMODE) (supported values: `disable`, `no-verify`, `require`)|`disable`|
+|`sslcert`|The location of the [certificate](https://www.postgresql.org/docs/current/libpq-ssl.html#LIBPQ-SSL-CLIENTCERT).|-|
+|`sslkey`|The location of the [certificate](https://www.postgresql.org/docs/current/libpq-ssl.html#LIBPQ-SSL-CLIENTCERT).|-|
+|`sslmode`|[`sslmode`](https://www.postgresql.org/docs/current/libpq-ssl.html#LIBPQ-SSL-PROTECTION) (supported values: `disable`, `no-verify`, `require`)|`disable`|
+|`sslrootcert`|The location of the [root certificate]((https://www.postgresql.org/docs/current/libpq-ssl.html#LIBQ-SSL-CERTIFICATES)) file.||
 
 Note that unless listed above, other [libpq parameters](https://www.postgresql.org/docs/current/libpq-connect.html#LIBPQ-PARAMKEYWORDS) are not supported.
 
@@ -2212,6 +2216,33 @@ const result = await connection.one(sql.unsafe`
 * Use `sql.typeAlias` to alias an existing type
 * Use `sql.fragment` if you are writing a fragment of a query
 
+### <code>sql.uuid</code>
+
+```ts
+(
+  uuid: string
+) => TimestampSqlToken;
+```
+
+Inserts a UUID, e.g.
+
+```ts
+await connection.query(sql.unsafe`
+  SELECT ${sql.uuid('00000000-0000-0000-0000-000000000000')}
+`);
+```
+
+Produces:
+
+```ts
+{
+  sql: 'SELECT $1::uuid',
+  values: [
+    '00000000-0000-0000-0000-000000000000'
+  ]
+}
+```
+
 ## Query methods
 
 ### <code>any</code>
@@ -2563,6 +2594,8 @@ import {
 parseDsn('postgresql://foo@localhost/bar?application_name=baz');
 ```
 
+See [supported parameters](#connection-uri).
+
 ### <code>stringifyDsn</code>
 
 ```ts
@@ -2765,7 +2798,7 @@ The Slonik community has also shared their successes with these Node.js framewor
 
 This package is using [TypeScript](http://typescriptlang.org/) types.
 
-Refer to [`./src/types.ts`](./src/types.ts).
+Refer to [`./packages/slonik/src/types.ts`](./packages/slonik/src/types.ts).
 
 The public interface exports the following types:
 

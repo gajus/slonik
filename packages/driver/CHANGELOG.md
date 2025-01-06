@@ -1,5 +1,13 @@
 # @slonik/driver
 
+## 46.3.0
+
+### Patch Changes
+
+- Updated dependencies []:
+  - @slonik/types@46.3.0
+  - @slonik/utilities@46.3.0
+
 ## 46.2.0
 
 ### Patch Changes

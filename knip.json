@@ -6,7 +6,7 @@
   ],
   "ignoreDependencies": [
     "@changesets/cli",
-    "eslint-config-canonical",
+    "@slonik/test-ssls",
     "husky"
   ],
   "project": [

@@ -1,0 +1,21 @@
+{
+  "author": {
+    "email": "gajus@gajus.com",
+    "name": "Gajus Kuizinas",
+    "url": "http://gajus.com"
+  },
+  "description": "SSLs used for testing Slonik.",
+  "engines": {
+    "node": ">=18"
+  },
+  "license": "BSD-3-Clause",
+  "name": "@slonik/test-ssls",
+  "peerDependencies": {
+    "zod": "^3"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/gajus/slonik"
+  },
+  "version": "46.3.0"
+}

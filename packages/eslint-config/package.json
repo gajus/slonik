@@ -1,9 +1,9 @@
 {
   "dependencies": {
-    "eslint-config-canonical": "^44.3.28"
+    "eslint-config-canonical": "^44.3.33"
   },
   "main": "./index.cjs",
   "name": "@slonik/eslint-config",
   "private": true,
-  "version": "46.2.0"
+  "version": "46.3.0"
 }
