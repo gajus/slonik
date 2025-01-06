@@ -46,6 +46,7 @@ export type ConnectionPoolClient = {
 type ConnectionPoolState = {
   acquiredConnections: number;
   idleConnections: number;
+  pendingConnections: number;
   pendingDestroyConnections: number;
   pendingReleaseConnections: number;
   state: ConnectionPoolStateName;
