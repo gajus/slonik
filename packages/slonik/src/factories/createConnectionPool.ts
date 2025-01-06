@@ -281,6 +281,7 @@ export const createConnectionPool = ({
       const state = {
         acquiredConnections: 0,
         idleConnections: 0,
+        pendingConnections: pendingConnections.length,
         pendingDestroyConnections: 0,
         pendingReleaseConnections: 0,
       };
