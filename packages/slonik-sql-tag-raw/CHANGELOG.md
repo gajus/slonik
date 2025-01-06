@@ -1,5 +1,12 @@
 # slonik-sql-tag-raw
 
+## 46.4.0
+
+### Patch Changes
+
+- Updated dependencies []:
+  - @slonik/sql-tag@46.4.0
+
 ## 46.3.0
 
 ### Patch Changes
