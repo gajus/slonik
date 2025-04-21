@@ -360,6 +360,7 @@ type ConnectionContext = {
 type PoolState = {
   readonly acquiredConnections: number;
   readonly idleConnections: number;
+  readonly pendingConnections: number;
   readonly pendingDestroyConnections: number;
   readonly pendingReleaseConnections: number;
   readonly state: PoolStateName;
