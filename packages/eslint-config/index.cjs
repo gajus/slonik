@@ -1,8 +1,8 @@
 module.exports = [
-  ...require('eslint-config-canonical/configurations/auto'),
+  ...require('eslint-config-canonical/auto'),
   {
     files: ['**/*.cjs', '**/*.js', '**/*.ts'],
-    ...require('eslint-config-canonical/configurations/node').recommended
+    ...require('eslint-config-canonical/node').recommended
   },
   {
     files: ['**/eslint.config.cjs'],

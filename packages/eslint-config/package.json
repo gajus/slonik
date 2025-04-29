@@ -1,6 +1,6 @@
 {
   "dependencies": {
-    "eslint-config-canonical": "^44.3.33"
+    "eslint-config-canonical": "^44.9.5"
   },
   "main": "./index.cjs",
   "name": "@slonik/eslint-config",
