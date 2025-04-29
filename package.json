@@ -13,6 +13,12 @@
     "lint:knip": "knip",
     "lint": "npm run lint:knip"
   },
+  "pnpm": {
+    "overrides": {
+      "eslint-config-canonical": "44.3.33",
+      "eslint": "9.16.0"
+    }
+  },
   "dependencies": {
     "@changesets/cli": "^2.27.1"
   },
