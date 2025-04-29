@@ -3,11 +3,7 @@ import { type PrimitiveValueExpression } from 'slonik';
 import stripComments from 'strip-comments';
 
 const hash = (subject: string) => {
-  return createHash('shake256', {
-    outputLength: 12,
-  })
-    .update(subject)
-    .digest('hex');
+  return createHash('sha256').update(subject).digest('hex').slice(0, 24);
 };
 
 export type ExtractedCacheAttributes = {
