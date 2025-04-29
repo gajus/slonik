@@ -1,6 +1,5 @@
 import { createHash } from 'node:crypto';
 import { type PrimitiveValueExpression } from 'slonik';
-import stripComments from 'strip-comments';
 
 const hash = (subject: string) => {
   return createHash('sha256').update(subject).digest('hex').slice(0, 24);
@@ -21,12 +20,8 @@ export const extractCacheAttributes = (
 ): ExtractedCacheAttributes | null => {
   const ttl = /-- @cache-ttl (\d+)/u.exec(subject)?.[1];
 
-  // https://github.com/jonschlinkert/strip-comments/issues/71
-  const bodyHash = hash(
-    stripComments(subject)
-      .replaceAll(/^\s*--.*$/gmu, '')
-      .replaceAll(/\s/gu, ''),
-  );
+  // Remove any comments from the query that begin with `--`
+  const bodyHash = hash(subject.replaceAll(/^\s*--.*$/gmu, ''));
 
   const discardEmpty =
     (/-- @cache-discard-empty (true|false)/u.exec(subject)?.[1] ?? 'false') ===

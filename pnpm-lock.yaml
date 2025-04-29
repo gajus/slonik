@@ -324,9 +324,6 @@ importers:
       roarr:
         specifier: ^7.21.1
         version: 7.21.1
-      strip-comments:
-        specifier: ^2.0.1
-        version: 2.0.1
     devDependencies:
       '@slonik/eslint-config':
         specifier: workspace:^
@@ -338,7 +335,7 @@ importers:
         specifier: ^9.16.0
         version: 9.17.0(jiti@2.4.0)
       slonik:
-        specifier: ^46.2.0
+        specifier: ^46.4.0
         version: link:../slonik
       ts-node:
         specifier: ^10.4.0
@@ -4804,10 +4801,6 @@ packages:
   strip-bom@4.0.0:
     resolution: {integrity: sha512-3xurFv5tEgii33Zi8Jtp55wEIILR9eh34FAW00PZf+JnSsTmV/ioewSgQl97JHvgjoRGwPShsWm+IdrxB35d0w==}
     engines: {node: '>=8'}
-
-  strip-comments@2.0.1:
-    resolution: {integrity: sha512-ZprKx+bBLXv067WTCALv8SSz5l2+XhpYCsVtSqlMnkAXMWDq+/ekVbl1ghqP9rUHTzv6sm/DwCOiYutU/yp1fw==}
-    engines: {node: '>=10'}
 
   strip-indent@3.0.0:
     resolution: {integrity: sha512-laJTa3Jb+VQpaC6DseHhF7dXVqHTfJPCRDaEbid/drOhgitgYku/letMUqOXFoWV0zIIUbjpdH2t+tYj4bQMRQ==}
@@ -10286,8 +10279,6 @@ snapshots:
   strip-bom@3.0.0: {}
 
   strip-bom@4.0.0: {}
-
-  strip-comments@2.0.1: {}
 
   strip-indent@3.0.0:
     dependencies:
