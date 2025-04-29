@@ -23,7 +23,7 @@ export const extractCacheAttributes = (
   subject: string,
   values: readonly PrimitiveValueExpression[],
 ): ExtractedCacheAttributes | null => {
-  const ttl = TtlRegex.exec(subject)?.[1];
+  const ttl = subject.match(TtlRegex)?.[1];
 
   if (!ttl) {
     return null;
@@ -32,11 +32,11 @@ export const extractCacheAttributes = (
   // Remove any comments from the query that begin with `--`
   const bodyHash = hash(subject.replaceAll(CommentRegex, ''));
 
-  const discardEmpty = DiscardEmptyRegex.exec(subject)?.[1] === 'true';
+  const discardEmpty = subject.match(DiscardEmptyRegex)?.[1] === 'true';
 
   const valueHash = hash(JSON.stringify(values));
 
-  const key = KeyRegex.exec(subject)?.[1] ?? `query:${bodyHash}:${valueHash}`;
+  const key = subject.match(KeyRegex)?.[1] ?? `query:$bodyHash:$valueHash`;
 
   return {
     bodyHash,
