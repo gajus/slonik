@@ -5,11 +5,11 @@
     "url": "http://gajus.com"
   },
   "dependencies": {
-    "@slonik/driver": "^46.4.0",
-    "@slonik/errors": "^46.4.0",
-    "@slonik/pg-driver": "^46.4.0",
-    "@slonik/sql-tag": "^46.4.0",
-    "@slonik/utilities": "^46.4.0",
+    "@slonik/driver": "^46.5.0",
+    "@slonik/errors": "^46.5.0",
+    "@slonik/pg-driver": "^46.5.0",
+    "@slonik/sql-tag": "^46.5.0",
+    "@slonik/utilities": "^46.5.0",
     "get-stack-trace": "^3.1.1",
     "iso8601-duration": "^1.3.0",
     "postgres-interval": "^4.0.2",
@@ -84,5 +84,5 @@
     "test": "nyc ava --verbose --serial"
   },
   "types": "./dist/index.d.ts",
-  "version": "46.4.0"
+  "version": "46.5.0"
 }
