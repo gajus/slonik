@@ -20,7 +20,9 @@ const createQueryContext = (): QueryContext => {
 
 test('transforms field names to camelcase', (t) => {
   const interceptor = createFieldNameTransformationInterceptor({
-    format: 'CAMEL_CASE',
+    test: (field) => {
+      return /^[\d_a-z]+$/u.test(field.name);
+    },
   });
 
   const { transformRow } = interceptor;

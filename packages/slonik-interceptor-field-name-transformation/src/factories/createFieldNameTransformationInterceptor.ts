@@ -1,57 +1,55 @@
 import camelcase from 'camelcase';
-import { type Field, type Interceptor } from 'slonik';
+import { type Field, type Interceptor, type QueryResultRow } from 'slonik';
 
-/**
- * @property format The only supported format is CAMEL_CASE.
- * @property test Tests whether the field should be formatted. The default behavior is to include all fields that match ^[a-z0-9_]+$ regex.
- */
-type Configuration = {
-  format: 'CAMEL_CASE';
-  test?: (field: Field) => boolean;
-};
-
-const underscoreFieldRegex = /^[a-z\d_]+$/u;
-
-const underscoreFieldTest = (field: Field) => {
-  return underscoreFieldRegex.test(field.name);
-};
-
-export const createFieldNameTransformationInterceptor = (
-  configuration: Configuration,
-): Interceptor => {
-  if (configuration.format !== 'CAMEL_CASE') {
-    throw new Error('Unsupported format.');
-  }
-
-  const fieldTest = configuration.test ?? underscoreFieldTest;
+export const createFieldNameTransformationInterceptor = ({
+  test,
+}: {
+  test: (field: Field) => boolean;
+}): Interceptor => {
+  const cachedMappers = new Map<
+    string,
+    (row: Record<string, unknown>) => QueryResultRow
+  >();
 
   return {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     transformRow: (context: any, query, row, fields) => {
-      if (!context.sandbox.formattedFields) {
-        context.sandbox.formattedFields = [];
+      let mapper = context.sandbox.mapper;
 
-        for (const field of fields) {
-          context.sandbox.formattedFields.push({
-            formatted: fieldTest(field) ? camelcase(field.name) : field.name,
-            original: field.name,
-          });
+      if (!mapper) {
+        const mapperKey = fields.map((field) => field.name).join(',');
+
+        mapper = cachedMappers.get(mapperKey);
+
+        if (!mapper) {
+          // Create object with null prototype for slightly better performance
+          const fieldMapping = Object.create(null);
+
+          for (const field of fields) {
+            fieldMapping[field.name] = test(field)
+              ? camelcase(field.name)
+              : field.name;
+          }
+
+          const keys = Object.keys(row);
+
+          mapper = (currentRow: Record<string, unknown>) => {
+            const result = Object.create(null);
+
+            for (const key of keys) {
+              result[fieldMapping[key]] = currentRow[key];
+            }
+
+            return result;
+          };
+
+          cachedMappers.set(mapperKey, mapper);
         }
+
+        context.sandbox.mapper = mapper;
       }
 
-      const { formattedFields } = context.sandbox;
-
-      const transformedRow = {};
-
-      for (const field of formattedFields) {
-        if (typeof field.formatted !== 'string') {
-          throw new TypeError('Unexpected field name type.');
-        }
-
-        transformedRow[field.formatted] = row[field.original];
-      }
-
-      return transformedRow;
+      return mapper(row);
     },
   };
 };
