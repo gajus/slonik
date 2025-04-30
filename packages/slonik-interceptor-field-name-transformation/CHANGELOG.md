@@ -1,5 +1,11 @@
 # slonik-interceptor-field-name-transformation
 
+## 46.6.0
+
+### Minor Changes
+
+- [`58dd95f`](https://github.com/gajus/slonik/commit/58dd95f69605048aabb73522413e0f41c179cf70) Thanks [@gajus](https://github.com/gajus)! - refactor to a more performance implementation
+
 ## 46.5.0
 
 ## 46.4.0
