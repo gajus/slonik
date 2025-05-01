@@ -32,25 +32,25 @@ importers:
         specifier: ^3.7.1
         version: 3.7.1
       pg:
-        specifier: ^8.13.1
-        version: 8.13.1
+        specifier: ^8.15.6
+        version: 8.15.6
       pg-promise:
-        specifier: ^11.10.2
-        version: 11.10.2(pg-query-stream@4.7.1(pg@8.13.1))
+        specifier: ^11.13.0
+        version: 11.13.0(pg-query-stream@4.7.1(pg@8.15.6))
       postgres:
         specifier: ^3.4.5
         version: 3.4.5
       slonik:
-        specifier: ^46.4.0
+        specifier: ^46.6.0
         version: link:../slonik
 
   packages/driver:
     dependencies:
       '@slonik/types':
-        specifier: ^46.4.0
+        specifier: ^46.6.0
         version: link:../types
       '@slonik/utilities':
-        specifier: ^46.4.0
+        specifier: ^46.6.0
         version: link:../utilities
       roarr:
         specifier: ^7.21.1
@@ -93,7 +93,7 @@ importers:
   packages/errors:
     dependencies:
       '@slonik/types':
-        specifier: ^46.4.0
+        specifier: ^46.6.0
         version: link:../types
     devDependencies:
       '@slonik/eslint-config':
@@ -133,19 +133,19 @@ importers:
   packages/pg-driver:
     dependencies:
       '@slonik/driver':
-        specifier: ^46.4.0
+        specifier: ^46.6.0
         version: link:../driver
       '@slonik/errors':
-        specifier: ^46.4.0
+        specifier: ^46.6.0
         version: link:../errors
       '@slonik/sql-tag':
-        specifier: ^46.4.0
+        specifier: ^46.6.0
         version: link:../sql-tag
       '@slonik/types':
-        specifier: ^46.4.0
+        specifier: ^46.6.0
         version: link:../types
       '@slonik/utilities':
-        specifier: ^46.4.0
+        specifier: ^46.6.0
         version: link:../utilities
       pg:
         specifier: ^8.13.1
@@ -194,19 +194,19 @@ importers:
   packages/slonik:
     dependencies:
       '@slonik/driver':
-        specifier: ^46.4.0
+        specifier: ^46.6.0
         version: link:../driver
       '@slonik/errors':
-        specifier: ^46.4.0
+        specifier: ^46.6.0
         version: link:../errors
       '@slonik/pg-driver':
-        specifier: ^46.4.0
+        specifier: ^46.6.0
         version: link:../pg-driver
       '@slonik/sql-tag':
-        specifier: ^46.4.0
+        specifier: ^46.6.0
         version: link:../sql-tag
       '@slonik/utilities':
-        specifier: ^46.4.0
+        specifier: ^46.6.0
         version: link:../utilities
       get-stack-trace:
         specifier: ^3.1.1
@@ -283,13 +283,13 @@ importers:
         specifier: workspace:^
         version: link:../eslint-config
       '@slonik/types':
-        specifier: ^46.4.0
+        specifier: ^46.6.0
         version: link:../types
       eslint:
         specifier: 9.16.0
         version: 9.16.0(jiti@2.4.2)
       slonik:
-        specifier: ^46.4.0
+        specifier: ^46.6.0
         version: link:../slonik
       typescript:
         specifier: ^5.6.3
@@ -314,7 +314,7 @@ importers:
         specifier: 9.16.0
         version: 9.16.0(jiti@2.4.2)
       slonik:
-        specifier: ^46.4.0
+        specifier: ^46.6.0
         version: link:../slonik
       ts-node:
         specifier: ^10.4.0
@@ -339,7 +339,7 @@ importers:
         specifier: 9.16.0
         version: 9.16.0(jiti@2.4.2)
       slonik:
-        specifier: ^46.4.0
+        specifier: ^46.6.0
         version: link:../slonik
       ts-node:
         specifier: ^10.4.0
@@ -370,7 +370,7 @@ importers:
         specifier: 9.16.0
         version: 9.16.0(jiti@2.4.2)
       slonik:
-        specifier: ^46.4.0
+        specifier: ^46.6.0
         version: link:../slonik
       ts-node:
         specifier: ^10.4.0
@@ -382,7 +382,7 @@ importers:
   packages/slonik-sql-tag-raw:
     dependencies:
       '@slonik/sql-tag':
-        specifier: ^46.4.0
+        specifier: ^46.6.0
         version: link:../sql-tag
       lodash:
         specifier: ^4.17.20
@@ -401,7 +401,7 @@ importers:
         specifier: 9.16.0
         version: 9.16.0(jiti@2.4.2)
       slonik:
-        specifier: ^46.4.0
+        specifier: ^46.6.0
         version: link:../slonik
       ts-node:
         specifier: ^10.4.0
@@ -413,10 +413,10 @@ importers:
   packages/sql-tag:
     dependencies:
       '@slonik/errors':
-        specifier: ^46.4.0
+        specifier: ^46.6.0
         version: link:../errors
       '@slonik/types':
-        specifier: ^46.4.0
+        specifier: ^46.6.0
         version: link:../types
       roarr:
         specifier: ^7.21.1
@@ -496,10 +496,10 @@ importers:
   packages/utilities:
     dependencies:
       '@slonik/errors':
-        specifier: workspace:^46.4.0
+        specifier: workspace:^46.6.0
         version: link:../errors
       '@slonik/types':
-        specifier: ^46.4.0
+        specifier: ^46.6.0
         version: link:../types
     devDependencies:
       '@slonik/eslint-config':
@@ -4432,8 +4432,14 @@ packages:
   pg-cloudflare@1.1.1:
     resolution: {integrity: sha512-xWPagP/4B6BgFO+EKz3JONXv3YDgvkbVrGw2mTo3D6tVDQRh1e7cqVGvyR3BE+eQgAvx1XhW/iEASj4/jCWl3Q==}
 
+  pg-cloudflare@1.2.5:
+    resolution: {integrity: sha512-OOX22Vt0vOSRrdoUPKJ8Wi2OpE/o/h9T8X1s4qSkCedbNah9ei2W2765be8iMVxQUsvgT7zIAT2eIa9fs5+vtg==}
+
   pg-connection-string@2.7.0:
     resolution: {integrity: sha512-PI2W9mv53rXJQEOb8xNR8lH7Hr+EKa6oJa38zsK0S/ky2er16ios1wLKhZyxzD7jUReiWokc9WK5nxSnC7W1TA==}
+
+  pg-connection-string@2.8.5:
+    resolution: {integrity: sha512-Ni8FuZ8yAF+sWZzojvtLE2b03cqjO5jNULcHFfM9ZZ0/JXrgom5pBREbtnAw7oxsxJqHw9Nz/XWORUEL3/IFow==}
 
   pg-cursor@2.12.1:
     resolution: {integrity: sha512-V13tEaA9Oq1w+V6Q3UBIB/blxJrwbbr35/dY54r/86soBJ7xkP236bXaORUTVXUPt9B6Ql2BQu+uwQiuMfRVgg==}
@@ -4444,8 +4450,8 @@ packages:
     resolution: {integrity: sha512-WCtabS6t3c8SkpDBUlb1kjOs7l66xsGdKpIPZsg4wR+B3+u9UAum2odSsF9tnvxg80h4ZxLWMy4pRjOsFIqQpw==}
     engines: {node: '>=4.0.0'}
 
-  pg-minify@1.6.5:
-    resolution: {integrity: sha512-u0UE8veaCnMfJmoklqneeBBopOAPG3/6DHqGVHYAhz8DkJXh9dnjPlz25fRxn4e+6XVzdOp7kau63Rp52fZ3WQ==}
+  pg-minify@1.7.0:
+    resolution: {integrity: sha512-kFPxAWAhPMvOqnY7klP3scdU5R7bxpAYOm8vGExuIkcSIwuFkZYl4C4XIPQ8DtXY2NzVmAX1aFHpvFSXQ/qQmA==}
     engines: {node: '>=14.0.0'}
 
   pg-numeric@1.0.2:
@@ -4457,14 +4463,22 @@ packages:
     peerDependencies:
       pg: '>=8.0'
 
-  pg-promise@11.10.2:
-    resolution: {integrity: sha512-wK4yjxZdfxBmAMcs40q6IsC1SOzdLilc1yNvJqlbOjtm2syayqLDCt1JQ9lhS6yNSgVlGOQZT88yb/SADJmEBw==}
+  pg-pool@3.9.6:
+    resolution: {integrity: sha512-rFen0G7adh1YmgvrmE5IPIqbb+IgEzENUm+tzm6MLLDSlPRoZVhzU1WdML9PV2W5GOdRA9qBKURlbt1OsXOsPw==}
+    peerDependencies:
+      pg: '>=8.0'
+
+  pg-promise@11.13.0:
+    resolution: {integrity: sha512-NWCsh1gnELfYRF5hNhfXPcSxuCk9C3FyM9MhmGkVTmepczAC2aXuBkyXhipVlHzp0V/IVzyCZOrlH48Ma3i7YQ==}
     engines: {node: '>=14.0'}
     peerDependencies:
-      pg-query-stream: 4.7.1
+      pg-query-stream: 4.8.1
 
   pg-protocol@1.7.0:
     resolution: {integrity: sha512-hTK/mE36i8fDDhgDFjy6xNOG+LCorxLG3WO17tku+ij6sVHXh1jQUJ8hYAnRhNla4QVD2H8er/FOjc/+EgC6yQ==}
+
+  pg-protocol@1.9.5:
+    resolution: {integrity: sha512-DYTWtWpfd5FOro3UnAfwvhD8jh59r2ig8bPtc9H8Ds7MscE/9NYruUQWFAOuraRl29jwcT2kyMFQ3MxeaVjUhg==}
 
   pg-query-stream@4.7.1:
     resolution: {integrity: sha512-UMgsgn/pOIYsIifRySp59vwlpTpLADMK9HWJtq5ff0Z3MxBnPMGnCQeaQl5VuL+7ov4F96mSzIRIcz+Duo6OiQ==}
@@ -4481,6 +4495,24 @@ packages:
 
   pg@8.13.1:
     resolution: {integrity: sha512-OUir1A0rPNZlX//c7ksiu7crsGZTKSOXJPgtNiHGIlC9H0lO+NC6ZDYksSgBYY/thSWhnSRBv8w1lieNNGATNQ==}
+    engines: {node: '>= 8.0.0'}
+    peerDependencies:
+      pg-native: '>=3.0.1'
+    peerDependenciesMeta:
+      pg-native:
+        optional: true
+
+  pg@8.14.1:
+    resolution: {integrity: sha512-0TdbqfjwIun9Fm/r89oB7RFQ0bLgduAhiIqIXOsyKoiC/L54DbuAAzIEN/9Op0f1Po9X7iCPXGoa/Ah+2aI8Xw==}
+    engines: {node: '>= 8.0.0'}
+    peerDependencies:
+      pg-native: '>=3.0.1'
+    peerDependenciesMeta:
+      pg-native:
+        optional: true
+
+  pg@8.15.6:
+    resolution: {integrity: sha512-yvao7YI3GdmmrslNVsZgx9PfntfWrnXwtR+K/DjI0I/sTKif4Z623um+sjVZ1hk5670B+ODjvHDAckKdjmPTsg==}
     engines: {node: '>= 8.0.0'}
     peerDependencies:
       pg-native: '>=3.0.1'
@@ -10341,15 +10373,24 @@ snapshots:
   pg-cloudflare@1.1.1:
     optional: true
 
+  pg-cloudflare@1.2.5:
+    optional: true
+
   pg-connection-string@2.7.0: {}
+
+  pg-connection-string@2.8.5: {}
 
   pg-cursor@2.12.1(pg@8.13.1):
     dependencies:
       pg: 8.13.1
 
+  pg-cursor@2.12.1(pg@8.15.6):
+    dependencies:
+      pg: 8.15.6
+
   pg-int8@1.0.1: {}
 
-  pg-minify@1.6.5: {}
+  pg-minify@1.7.0: {}
 
   pg-numeric@1.0.2: {}
 
@@ -10357,22 +10398,37 @@ snapshots:
     dependencies:
       pg: 8.13.1
 
-  pg-promise@11.10.2(pg-query-stream@4.7.1(pg@8.13.1)):
+  pg-pool@3.9.6(pg@8.14.1):
+    dependencies:
+      pg: 8.14.1
+
+  pg-pool@3.9.6(pg@8.15.6):
+    dependencies:
+      pg: 8.15.6
+
+  pg-promise@11.13.0(pg-query-stream@4.7.1(pg@8.15.6)):
     dependencies:
       assert-options: 0.8.2
-      pg: 8.13.1
-      pg-minify: 1.6.5
-      pg-query-stream: 4.7.1(pg@8.13.1)
+      pg: 8.14.1
+      pg-minify: 1.7.0
+      pg-query-stream: 4.7.1(pg@8.15.6)
       spex: 3.4.0
     transitivePeerDependencies:
       - pg-native
 
   pg-protocol@1.7.0: {}
 
+  pg-protocol@1.9.5: {}
+
   pg-query-stream@4.7.1(pg@8.13.1):
     dependencies:
       pg: 8.13.1
       pg-cursor: 2.12.1(pg@8.13.1)
+
+  pg-query-stream@4.7.1(pg@8.15.6):
+    dependencies:
+      pg: 8.15.6
+      pg-cursor: 2.12.1(pg@8.15.6)
 
   pg-types@2.2.0:
     dependencies:
@@ -10401,6 +10457,26 @@ snapshots:
       pgpass: 1.0.5
     optionalDependencies:
       pg-cloudflare: 1.1.1
+
+  pg@8.14.1:
+    dependencies:
+      pg-connection-string: 2.7.0
+      pg-pool: 3.9.6(pg@8.14.1)
+      pg-protocol: 1.9.5
+      pg-types: 2.2.0
+      pgpass: 1.0.5
+    optionalDependencies:
+      pg-cloudflare: 1.1.1
+
+  pg@8.15.6:
+    dependencies:
+      pg-connection-string: 2.8.5
+      pg-pool: 3.9.6(pg@8.15.6)
+      pg-protocol: 1.9.5
+      pg-types: 2.2.0
+      pgpass: 1.0.5
+    optionalDependencies:
+      pg-cloudflare: 1.2.5
 
   pgpass@1.0.5:
     dependencies:

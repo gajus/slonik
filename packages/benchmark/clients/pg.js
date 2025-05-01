@@ -2,6 +2,7 @@ const pg = require('pg');
 
 const pool = new pg.Pool({
   user: 'postgres',
+  password: 'postgres',
 });
 
 const connect = () => {

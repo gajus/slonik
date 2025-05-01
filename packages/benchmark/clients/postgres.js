@@ -1,6 +1,6 @@
 const postgres = require('postgres');
 
-const sql = postgres('postgres://postgres@127.0.0.1:5432', {
+const sql = postgres('postgres://postgres:postgres@127.0.0.1:5432', {
   // Unlike "pg", "pg-promise" and "slonik", "postgres" does provide a method to explicitly create a connection.
   // https://github.com/porsager/postgres/tree/v3.0.0#the-connection-pool
   // `max: 1` mimics this behavior as close as possible.

@@ -8,7 +8,7 @@ let poolPromise;
 
 const connect = async () => {
   if (!poolPromise) {
-    poolPromise = createPool('postgres://postgres@127.0.0.1:5432', {
+    poolPromise = createPool('postgres://postgres:postgres@127.0.0.1:5432', {
       captureStackTrace: false,
     });
   }

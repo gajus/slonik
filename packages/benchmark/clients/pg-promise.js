@@ -2,6 +2,7 @@ const pg = require('pg-promise');
 
 const connect = pg()({
   user: 'postgres',
+  password: 'postgres',
 }).connect;
 
 module.exports = {

@@ -31,9 +31,12 @@ Binaries:
 ## Run benchmark
 
 ```bash
+docker run --name slonik-test --rm -it -e POSTGRES_PASSWORD=postgres -p 5432:5432 postgres -N 1000
+```
+
+```bash
 npm install
 npm run benchmark
-
 ```
 
 ## Disclaimer
