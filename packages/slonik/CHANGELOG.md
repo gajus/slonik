@@ -1,5 +1,18 @@
 # slonik
 
+## 46.6.1
+
+### Patch Changes
+
+- [`45bff8b`](https://github.com/gajus/slonik/commit/45bff8b901b6bc70d5fb397e38c49ca410bae6b8) Thanks [@gajus](https://github.com/gajus)! - handle error while adding a new connection to satisfy the minimum pool size
+
+- Updated dependencies []:
+  - @slonik/driver@46.6.1
+  - @slonik/errors@46.6.1
+  - @slonik/pg-driver@46.6.1
+  - @slonik/sql-tag@46.6.1
+  - @slonik/utilities@46.6.1
+
 ## 46.6.0
 
 ### Patch Changes
