@@ -204,6 +204,7 @@ export const createConnectionPool = ({
 
         // In the case that there are no waiting clients and we're below the minimum pool size, add a new connection
         if (!isEnding && !isEnded && connections.length < minimumPoolSize) {
+          // eslint-disable-next-line promise/prefer-await-to-then
           addConnection().catch((error) => {
             logger.error(
               {
