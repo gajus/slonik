@@ -16,8 +16,8 @@
     ]
   },
   "dependencies": {
-    "@slonik/errors": "workspace:^46.6.0",
-    "@slonik/types": "^46.6.0"
+    "@slonik/errors": "workspace:^46.6.1",
+    "@slonik/types": "^46.6.1"
   },
   "description": "A Node.js PostgreSQL client with strict types, detailed logging and assertions.",
   "devDependencies": {
@@ -81,5 +81,5 @@
     "test": "nyc ava --verbose --serial"
   },
   "types": "./dist/index.d.ts",
-  "version": "46.6.0"
+  "version": "46.6.1"
 }

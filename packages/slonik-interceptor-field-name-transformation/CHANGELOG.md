@@ -1,5 +1,7 @@
 # slonik-interceptor-field-name-transformation
 
+## 46.6.1
+
 ## 46.6.0
 
 ### Minor Changes
