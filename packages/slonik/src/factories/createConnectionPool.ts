@@ -204,7 +204,14 @@ export const createConnectionPool = ({
 
         // In the case that there are no waiting clients and we're below the minimum pool size, add a new connection
         if (!isEnding && !isEnded && connections.length < minimumPoolSize) {
-          addConnection();
+          addConnection().catch((error) => {
+            logger.error(
+              {
+                error: serializeError(error),
+              },
+              'error while adding a new connection to satisfy the minimum pool size',
+            );
+          });
         }
       };
 
