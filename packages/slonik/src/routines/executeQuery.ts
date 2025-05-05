@@ -305,6 +305,7 @@ export const executeQuery = async (
   try {
     try {
       try {
+        // eslint-disable-next-line require-atomic-updates
         result = await executionRoutine(
           connection,
           actualQuery.sql,
@@ -320,6 +321,7 @@ export const executeQuery = async (
 
         // Transactions errors in queries that are part of a transaction are handled by the transaction/nestedTransaction functions
         if (shouldRetry && !poolClientState.transactionId) {
+          // eslint-disable-next-line require-atomic-updates
           result = await retryQuery(
             connectionLogger,
             connection,
