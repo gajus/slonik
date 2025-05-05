@@ -195,6 +195,7 @@ export type Interceptor = {
     queryContext: QueryContext,
     query: Query,
   ) => MaybePromise<null>;
+  readonly name: string;
   readonly queryExecutionError?: (
     queryContext: QueryContext,
     query: Query,

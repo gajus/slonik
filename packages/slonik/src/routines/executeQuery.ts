@@ -200,6 +200,8 @@ export const executeQuery = async (
       await tracer.startActiveSpan(
         'slonik.interceptor.beforeTransformQuery',
         async (span) => {
+          span.setAttribute('interceptor.name', interceptor.name);
+
           try {
             await beforeTransformQuery(executionContext, actualQuery);
           } catch (error) {
@@ -225,6 +227,8 @@ export const executeQuery = async (
       actualQuery = await tracer.startActiveSpan(
         'slonik.interceptor.transformQuery',
         async (span) => {
+          span.setAttribute('interceptor.name', interceptor.name);
+
           try {
             return transformQuery(executionContext, actualQuery);
           } catch (error) {
@@ -253,6 +257,8 @@ export const executeQuery = async (
         result = await tracer.startActiveSpan(
           'slonik.interceptor.beforeQueryExecution',
           async (span) => {
+            span.setAttribute('interceptor.name', interceptor.name);
+
             try {
               return await beforeQueryExecution(executionContext, actualQuery);
             } catch (error) {
@@ -401,6 +407,8 @@ export const executeQuery = async (
         await tracer.startActiveSpan(
           'slonik.interceptor.afterQueryExecution',
           async (span) => {
+            span.setAttribute('interceptor.name', interceptor.name);
+
             try {
               await afterQueryExecution(
                 executionContext,
@@ -435,6 +443,8 @@ export const executeQuery = async (
         const transformedRows: QueryResultRow[] = await tracer.startActiveSpan(
           'slonik.interceptor.transformRow',
           async (span) => {
+            span.setAttribute('interceptor.name', interceptor.name);
+
             try {
               const limit = pLimit(10);
 
@@ -473,6 +483,8 @@ export const executeQuery = async (
         await tracer.startActiveSpan(
           'slonik.interceptor.beforeQueryResult',
           async (span) => {
+            span.setAttribute('interceptor.name', interceptor.name);
+
             try {
               await beforeQueryResult(
                 executionContext,

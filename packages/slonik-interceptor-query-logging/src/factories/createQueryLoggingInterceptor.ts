@@ -112,6 +112,7 @@ export const createQueryLoggingInterceptor = (
 
       return null;
     },
+    name: 'slonik-interceptor-query-logging',
     queryExecutionError: (context, query, error) => {
       context.log.error(
         {

@@ -12,6 +12,7 @@ export const createFieldNameTransformationInterceptor = ({
   >();
 
   return {
+    name: 'slonik-interceptor-field-name-transformation',
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     transformRow: (context: any, query, row, fields) => {
       let mapper = context.sandbox.mapper;

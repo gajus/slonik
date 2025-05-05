@@ -126,5 +126,6 @@ export const createQueryCacheInterceptor = (
 
       return null;
     },
+    name: 'slonik-interceptor-query-cache',
   };
 };
