@@ -5,5 +5,5 @@
   "main": "./index.cjs",
   "name": "@slonik/eslint-config",
   "private": true,
-  "version": "46.6.1"
+  "version": "46.7.0"
 }
