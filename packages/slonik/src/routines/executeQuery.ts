@@ -446,12 +446,53 @@ export const executeQuery = async (
             span.setAttribute('interceptor.name', interceptor.name);
 
             try {
+              return rows.map((row) => {
+                return transformRow(executionContext, actualQuery, row, fields);
+              });
+            } catch (error) {
+              span.recordException(error);
+              span.setStatus({
+                code: SpanStatusCode.ERROR,
+                message: String(error),
+              });
+
+              throw error;
+            } finally {
+              span.end();
+            }
+          },
+        );
+
+        result = {
+          ...result,
+          rows: transformedRows,
+        };
+      }
+    }
+
+    for (const interceptor of interceptors) {
+      const transformRowAsync = interceptor.transformRowAsync;
+
+      if (transformRowAsync) {
+        const { fields, rows } = result;
+
+        const transformedRows: QueryResultRow[] = await tracer.startActiveSpan(
+          'slonik.interceptor.transformRowAsync',
+          async (span) => {
+            span.setAttribute('interceptor.name', interceptor.name);
+
+            try {
               const limit = pLimit(10);
 
               return await Promise.all(
                 rows.map((row) => {
                   return limit(() =>
-                    transformRow(executionContext, actualQuery, row, fields),
+                    transformRowAsync(
+                      executionContext,
+                      actualQuery,
+                      row,
+                      fields,
+                    ),
                   );
                 }),
               );

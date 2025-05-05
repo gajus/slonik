@@ -208,7 +208,13 @@ export type Interceptor = {
     query: Query,
     row: QueryResultRow,
     fields: readonly Field[],
-  ) => MaybePromise<QueryResultRow>;
+  ) => QueryResultRow;
+  readonly transformRowAsync?: (
+    queryContext: QueryContext,
+    query: Query,
+    row: QueryResultRow,
+    fields: readonly Field[],
+  ) => Promise<QueryResultRow>;
 };
 
 export type InternalNestedTransactionFunction = <T>(
