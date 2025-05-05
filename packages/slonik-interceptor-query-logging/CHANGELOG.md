@@ -1,5 +1,11 @@
 # slonik-interceptor-query-logging
 
+## 47.0.0
+
+### Major Changes
+
+- [`cdd1d9a`](https://github.com/gajus/slonik/commit/cdd1d9a2c8d9b30ac21297ff71c45f52bb0f922c) Thanks [@gajus](https://github.com/gajus)! - separate transformRow and transformRowAsync
+
 ## 46.8.0
 
 ## 46.7.0
