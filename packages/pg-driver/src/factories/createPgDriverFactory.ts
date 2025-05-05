@@ -340,7 +340,6 @@ export const createPgDriverFactory = (): DriverFactory => {
             // `rowDescription` will not fire if the query produces a syntax error.
             // Also, `rowDescription` won't fire until client starts consuming the stream.
             // This is why we cannot simply await for `rowDescription` event before starting to pipe the stream.
-            // @ts-expect-error – https://github.com/brianc/node-postgres/issues/3015
             client.connection.once('rowDescription', (rowDescription) => {
               fields = rowDescription.fields.map((field) => {
                 return {
