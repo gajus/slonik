@@ -31,6 +31,7 @@ import {
 } from '@slonik/sql-tag';
 import { defer, generateUid } from '@slonik/utilities';
 import { getStackTrace } from 'get-stack-trace';
+import pLimit from 'p-limit';
 import { serializeError } from 'serialize-error';
 
 const tracer = trace.getTracer('slonik.interceptors');
@@ -435,13 +436,12 @@ export const executeQuery = async (
           'slonik.interceptor.transformRow',
           async (span) => {
             try {
+              const limit = pLimit(10);
+
               return await Promise.all(
                 rows.map((row) => {
-                  return transformRow(
-                    executionContext,
-                    actualQuery,
-                    row,
-                    fields,
+                  return limit(() =>
+                    transformRow(executionContext, actualQuery, row, fields),
                   );
                 }),
               );

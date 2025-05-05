@@ -41,16 +41,16 @@ importers:
         specifier: ^3.4.5
         version: 3.4.5
       slonik:
-        specifier: ^46.6.1
+        specifier: ^46.7.0
         version: link:../slonik
 
   packages/driver:
     dependencies:
       '@slonik/types':
-        specifier: ^46.6.1
+        specifier: ^46.7.0
         version: link:../types
       '@slonik/utilities':
-        specifier: ^46.6.1
+        specifier: ^46.7.0
         version: link:../utilities
       roarr:
         specifier: ^7.21.1
@@ -63,7 +63,7 @@ importers:
         version: 2.0.0
       zod:
         specifier: ^3
-        version: 3.23.8
+        version: 3.24.4
     devDependencies:
       '@slonik/eslint-config':
         specifier: workspace:^
@@ -93,7 +93,7 @@ importers:
   packages/errors:
     dependencies:
       '@slonik/types':
-        specifier: ^46.6.1
+        specifier: ^46.7.0
         version: link:../types
     devDependencies:
       '@slonik/eslint-config':
@@ -133,19 +133,19 @@ importers:
   packages/pg-driver:
     dependencies:
       '@slonik/driver':
-        specifier: ^46.6.1
+        specifier: ^46.7.0
         version: link:../driver
       '@slonik/errors':
-        specifier: ^46.6.1
+        specifier: ^46.7.0
         version: link:../errors
       '@slonik/sql-tag':
-        specifier: ^46.6.1
+        specifier: ^46.7.0
         version: link:../sql-tag
       '@slonik/types':
-        specifier: ^46.6.1
+        specifier: ^46.7.0
         version: link:../types
       '@slonik/utilities':
-        specifier: ^46.6.1
+        specifier: ^46.7.0
         version: link:../utilities
       pg:
         specifier: ^8.13.1
@@ -161,7 +161,7 @@ importers:
         version: 3.0.4
       zod:
         specifier: ^3
-        version: 3.23.8
+        version: 3.24.4
     devDependencies:
       '@slonik/eslint-config':
         specifier: workspace:^
@@ -197,19 +197,19 @@ importers:
         specifier: ^1.9.0
         version: 1.9.0
       '@slonik/driver':
-        specifier: ^46.6.1
+        specifier: ^46.7.0
         version: link:../driver
       '@slonik/errors':
-        specifier: ^46.6.1
+        specifier: ^46.7.0
         version: link:../errors
       '@slonik/pg-driver':
-        specifier: ^46.6.1
+        specifier: ^46.7.0
         version: link:../pg-driver
       '@slonik/sql-tag':
-        specifier: ^46.6.1
+        specifier: ^46.7.0
         version: link:../sql-tag
       '@slonik/utilities':
-        specifier: ^46.6.1
+        specifier: ^46.7.0
         version: link:../utilities
       get-stack-trace:
         specifier: ^3.1.1
@@ -217,6 +217,9 @@ importers:
       iso8601-duration:
         specifier: ^1.3.0
         version: 1.3.0
+      p-limit:
+        specifier: ^6.2.0
+        version: 6.2.0
       postgres-interval:
         specifier: ^4.0.2
         version: 4.0.2
@@ -286,13 +289,13 @@ importers:
         specifier: workspace:^
         version: link:../eslint-config
       '@slonik/types':
-        specifier: ^46.6.1
+        specifier: ^46.7.0
         version: link:../types
       eslint:
         specifier: 9.16.0
         version: 9.16.0(jiti@2.4.2)
       slonik:
-        specifier: ^46.6.1
+        specifier: ^46.7.0
         version: link:../slonik
       typescript:
         specifier: ^5.8.3
@@ -317,7 +320,7 @@ importers:
         specifier: 9.16.0
         version: 9.16.0(jiti@2.4.2)
       slonik:
-        specifier: ^46.6.1
+        specifier: ^46.7.0
         version: link:../slonik
       ts-node:
         specifier: ^10.4.0
@@ -342,7 +345,7 @@ importers:
         specifier: 9.16.0
         version: 9.16.0(jiti@2.4.2)
       slonik:
-        specifier: ^46.6.1
+        specifier: ^46.7.0
         version: link:../slonik
       ts-node:
         specifier: ^10.4.0
@@ -373,7 +376,7 @@ importers:
         specifier: 9.16.0
         version: 9.16.0(jiti@2.4.2)
       slonik:
-        specifier: ^46.6.1
+        specifier: ^46.7.0
         version: link:../slonik
       ts-node:
         specifier: ^10.4.0
@@ -385,7 +388,7 @@ importers:
   packages/slonik-sql-tag-raw:
     dependencies:
       '@slonik/sql-tag':
-        specifier: ^46.6.1
+        specifier: ^46.7.0
         version: link:../sql-tag
       lodash:
         specifier: ^4.17.20
@@ -404,7 +407,7 @@ importers:
         specifier: 9.16.0
         version: 9.16.0(jiti@2.4.2)
       slonik:
-        specifier: ^46.6.1
+        specifier: ^46.7.0
         version: link:../slonik
       ts-node:
         specifier: ^10.4.0
@@ -416,10 +419,10 @@ importers:
   packages/sql-tag:
     dependencies:
       '@slonik/errors':
-        specifier: ^46.6.1
+        specifier: ^46.7.0
         version: link:../errors
       '@slonik/types':
-        specifier: ^46.6.1
+        specifier: ^46.7.0
         version: link:../types
       roarr:
         specifier: ^7.21.1
@@ -463,13 +466,13 @@ importers:
     dependencies:
       zod:
         specifier: ^3
-        version: 3.23.8
+        version: 3.24.4
 
   packages/types:
     dependencies:
       zod:
         specifier: ^3
-        version: 3.23.8
+        version: 3.24.4
     devDependencies:
       '@slonik/eslint-config':
         specifier: workspace:^
@@ -499,10 +502,10 @@ importers:
   packages/utilities:
     dependencies:
       '@slonik/errors':
-        specifier: workspace:^46.6.1
+        specifier: workspace:^46.7.0
         version: link:../errors
       '@slonik/types':
-        specifier: ^46.6.1
+        specifier: ^46.7.0
         version: link:../types
     devDependencies:
       '@slonik/eslint-config':
@@ -4174,6 +4177,10 @@ packages:
     resolution: {integrity: sha512-TYOanM3wGwNGsZN2cVTYPArw454xnXj5qmWF1bEoAc4+cU/ol7GVh7odevjp1FNHduHc3KZMcFduxU5Xc6uJRQ==}
     engines: {node: '>=10'}
 
+  p-limit@6.2.0:
+    resolution: {integrity: sha512-kuUqqHNUqoIWp/c467RI4X6mmyuojY5jGutNU0wVTmEOOfcuwLqyMVoAi9MKi2Ak+5i9+nhmrK4ufZE8069kHA==}
+    engines: {node: '>=18'}
+
   p-locate@4.1.0:
     resolution: {integrity: sha512-R79ZZ/0wAxKGu3oYMlz8jy/kbhsNrS7SKZ7PxEHBgJ5+F2mtFW2fK2cOtBh1cHYkQsbzFV7I+EoRKe6Yt0oK7A==}
     engines: {node: '>=8'}
@@ -5435,14 +5442,15 @@ packages:
     resolution: {integrity: sha512-rVksvsnNCdJ/ohGc6xgPwyN8eheCxsiLM8mxuE/t/mOVqJewPuO1miLpTHQiRgTKCLexL4MeAFVagts7HmNZ2Q==}
     engines: {node: '>=10'}
 
+  yocto-queue@1.2.1:
+    resolution: {integrity: sha512-AyeEbWOu/TAXdxlV9wmGcR0+yh2j3vYPGOECcIj2S7MkrLyC7ne+oye2BKTItt0ii2PHk4cDy+95+LshzbXnGg==}
+    engines: {node: '>=12.20'}
+
   zod-validation-error@3.4.0:
     resolution: {integrity: sha512-ZOPR9SVY6Pb2qqO5XHt+MkkTRxGXb4EVtnjc9JpXUOtUB1T9Ru7mZOT361AN3MsetVe7R0a1KZshJDZdgp9miQ==}
     engines: {node: '>=18.0.0'}
     peerDependencies:
       zod: ^3.18.0
-
-  zod@3.23.8:
-    resolution: {integrity: sha512-XBx9AXhXktjUqnepgTiE5flcKIYWi/rme0Eaj+5Y0lftuGBq+jyRu/md4WnuxqgP1ubdpNCsYEYPxrzVHD8d6g==}
 
   zod@3.24.4:
     resolution: {integrity: sha512-OdqJE9UDRPwWsrHjLN2F8bPxvwJBK22EHLWtanu0LSYr5YqzsaaW3RMgmjwr8Rypg5k+meEJdSPXJZXE/yqOMg==}
@@ -9742,6 +9750,10 @@ snapshots:
     dependencies:
       yocto-queue: 0.1.0
 
+  p-limit@6.2.0:
+    dependencies:
+      yocto-queue: 1.2.1
+
   p-locate@4.1.0:
     dependencies:
       p-limit: 2.3.0
@@ -11070,10 +11082,10 @@ snapshots:
 
   yocto-queue@0.1.0: {}
 
+  yocto-queue@1.2.1: {}
+
   zod-validation-error@3.4.0(zod@3.24.4):
     dependencies:
       zod: 3.24.4
-
-  zod@3.23.8: {}
 
   zod@3.24.4: {}
