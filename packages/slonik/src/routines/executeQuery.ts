@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-loop-func */
 import { TRANSACTION_ROLLBACK_ERROR_PREFIX } from '../constants';
 import { transactionContext } from '../contexts/transactionContext';
 import { type ConnectionPoolClient } from '../factories/createConnectionPool';
@@ -13,6 +14,7 @@ import {
   type QueryResultRow,
   type StreamResult,
 } from '../types';
+import { SpanStatusCode, trace } from '@opentelemetry/api';
 import { type DriverNotice } from '@slonik/driver';
 import {
   BackendTerminatedError,
@@ -30,6 +32,8 @@ import {
 import { defer, generateUid } from '@slonik/utilities';
 import { getStackTrace } from 'get-stack-trace';
 import { serializeError } from 'serialize-error';
+
+const tracer = trace.getTracer('slonik.interceptors');
 
 export type ExecutionRoutine = (
   connection: ConnectionPoolClient,
@@ -189,14 +193,52 @@ export const executeQuery = async (
   };
 
   for (const interceptor of clientConfiguration.interceptors) {
-    if (interceptor.beforeTransformQuery) {
-      await interceptor.beforeTransformQuery(executionContext, actualQuery);
+    const beforeTransformQuery = interceptor.beforeTransformQuery;
+
+    if (beforeTransformQuery) {
+      await tracer.startActiveSpan(
+        'slonik.interceptor.beforeTransformQuery',
+        async (span) => {
+          try {
+            await beforeTransformQuery(executionContext, actualQuery);
+          } catch (error) {
+            span.recordException(error);
+            span.setStatus({
+              code: SpanStatusCode.ERROR,
+              message: String(error),
+            });
+
+            throw error;
+          } finally {
+            span.end();
+          }
+        },
+      );
     }
   }
 
   for (const interceptor of clientConfiguration.interceptors) {
-    if (interceptor.transformQuery) {
-      actualQuery = interceptor.transformQuery(executionContext, actualQuery);
+    const transformQuery = interceptor.transformQuery;
+
+    if (transformQuery) {
+      actualQuery = await tracer.startActiveSpan(
+        'slonik.interceptor.transformQuery',
+        async (span) => {
+          try {
+            return transformQuery(executionContext, actualQuery);
+          } catch (error) {
+            span.recordException(error);
+            span.setStatus({
+              code: SpanStatusCode.ERROR,
+              message: String(error),
+            });
+
+            throw error;
+          } finally {
+            span.end();
+          }
+        },
+      );
     }
   }
 
@@ -204,10 +246,26 @@ export const executeQuery = async (
 
   if (!stream) {
     for (const interceptor of clientConfiguration.interceptors) {
-      if (interceptor.beforeQueryExecution) {
-        result = await interceptor.beforeQueryExecution(
-          executionContext,
-          actualQuery,
+      const beforeQueryExecution = interceptor.beforeQueryExecution;
+
+      if (beforeQueryExecution) {
+        result = await tracer.startActiveSpan(
+          'slonik.interceptor.beforeQueryExecution',
+          async (span) => {
+            try {
+              return await beforeQueryExecution(executionContext, actualQuery);
+            } catch (error) {
+              span.recordException(error);
+              span.setStatus({
+                code: SpanStatusCode.ERROR,
+                message: String(error),
+              });
+
+              throw error;
+            } finally {
+              span.end();
+            }
+          },
         );
 
         if (result) {
@@ -334,11 +392,30 @@ export const executeQuery = async (
 
   if (result.type === 'QueryResult') {
     for (const interceptor of clientConfiguration.interceptors) {
-      if (interceptor.afterQueryExecution) {
-        await interceptor.afterQueryExecution(
-          executionContext,
-          actualQuery,
-          result,
+      const afterQueryExecution = interceptor.afterQueryExecution;
+
+      if (afterQueryExecution) {
+        await tracer.startActiveSpan(
+          'slonik.interceptor.afterQueryExecution',
+          async (span) => {
+            try {
+              await afterQueryExecution(
+                executionContext,
+                actualQuery,
+                result as QueryResult<QueryResultRow>,
+              );
+            } catch (error) {
+              span.recordException(error);
+              span.setStatus({
+                code: SpanStatusCode.ERROR,
+                message: String(error),
+              });
+
+              throw error;
+            } finally {
+              span.end();
+            }
+          },
         );
       }
     }
@@ -347,29 +424,71 @@ export const executeQuery = async (
       clientConfiguration.interceptors.slice();
 
     for (const interceptor of interceptors) {
-      if (interceptor.transformRow) {
-        const { transformRow } = interceptor;
-        const { fields } = result;
+      const transformRow = interceptor.transformRow;
 
-        const rows: QueryResultRow[] = await Promise.all(
-          result.rows.map((row) => {
-            return transformRow(executionContext, actualQuery, row, fields);
-          }),
+      if (transformRow) {
+        const { fields, rows } = result;
+
+        const transformedRows: QueryResultRow[] = await tracer.startActiveSpan(
+          'slonik.interceptor.transformRow',
+          async (span) => {
+            try {
+              return await Promise.all(
+                rows.map((row) => {
+                  return transformRow(
+                    executionContext,
+                    actualQuery,
+                    row,
+                    fields,
+                  );
+                }),
+              );
+            } catch (error) {
+              span.recordException(error);
+              span.setStatus({
+                code: SpanStatusCode.ERROR,
+                message: String(error),
+              });
+
+              throw error;
+            } finally {
+              span.end();
+            }
+          },
         );
 
         result = {
           ...result,
-          rows,
+          rows: transformedRows,
         };
       }
     }
 
     for (const interceptor of clientConfiguration.interceptors) {
-      if (interceptor.beforeQueryResult) {
-        await interceptor.beforeQueryResult(
-          executionContext,
-          actualQuery,
-          result,
+      const beforeQueryResult = interceptor.beforeQueryResult;
+
+      if (beforeQueryResult) {
+        await tracer.startActiveSpan(
+          'slonik.interceptor.beforeQueryResult',
+          async (span) => {
+            try {
+              await beforeQueryResult(
+                executionContext,
+                actualQuery,
+                result as QueryResult<QueryResultRow>,
+              );
+            } catch (error) {
+              span.recordException(error);
+              span.setStatus({
+                code: SpanStatusCode.ERROR,
+                message: String(error),
+              });
+
+              throw error;
+            } finally {
+              span.end();
+            }
+          },
         );
       }
     }
