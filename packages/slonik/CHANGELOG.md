@@ -1,5 +1,20 @@
 # slonik
 
+## 46.8.0
+
+### Minor Changes
+
+- [`60613bd`](https://github.com/gajus/slonik/commit/60613bd56bb2ab85c970dd20f35ef68bd09eeb22) Thanks [@gajus](https://github.com/gajus)! - instrument middleware invocations
+
+### Patch Changes
+
+- Updated dependencies []:
+  - @slonik/driver@46.8.0
+  - @slonik/errors@46.8.0
+  - @slonik/pg-driver@46.8.0
+  - @slonik/sql-tag@46.8.0
+  - @slonik/utilities@46.8.0
+
 ## 46.7.0
 
 ### Minor Changes
