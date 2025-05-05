@@ -6,11 +6,11 @@
   },
   "dependencies": {
     "@opentelemetry/api": "^1.9.0",
-    "@slonik/driver": "^46.6.1",
-    "@slonik/errors": "^46.6.1",
-    "@slonik/pg-driver": "^46.6.1",
-    "@slonik/sql-tag": "^46.6.1",
-    "@slonik/utilities": "^46.6.1",
+    "@slonik/driver": "^46.7.0",
+    "@slonik/errors": "^46.7.0",
+    "@slonik/pg-driver": "^46.7.0",
+    "@slonik/sql-tag": "^46.7.0",
+    "@slonik/utilities": "^46.7.0",
     "get-stack-trace": "^3.1.1",
     "iso8601-duration": "^1.3.0",
     "postgres-interval": "^4.0.2",
@@ -85,5 +85,5 @@
     "test": "nyc ava --verbose --serial"
   },
   "types": "./dist/index.d.ts",
-  "version": "46.6.1"
+  "version": "46.7.0"
 }
