@@ -271,6 +271,7 @@ test('reading stream using row transform interceptors (sync)', async (t) => {
   const pool = await createPool(t.context.dsn, {
     interceptors: [
       {
+        name: 'foo',
         transformRow: (context, query, row) => {
           return {
             ...row,
@@ -314,12 +315,13 @@ test('reading stream using row transform interceptors (async)', async (t) => {
   const pool = await createPool(t.context.dsn, {
     interceptors: [
       {
-        transformRow: (context, query, row) => {
-          return Promise.resolve({
+        name: 'foo',
+        transformRowAsync: async (context, query, row) => {
+          return {
             ...row,
             // @ts-expect-error - we know it exists
             name: row.name.toUpperCase(),
-          });
+          };
         },
       },
     ],

@@ -346,6 +346,7 @@ export const createIntegrationTests = (
       interceptors: [
         {
           beforeTransformQuery: readOnlyBeforeTransformQuery,
+          name: 'foo',
         },
       ],
     });
@@ -358,6 +359,7 @@ export const createIntegrationTests = (
             return readOnlyPool;
           },
           beforeTransformQuery,
+          name: 'foo',
         },
       ],
     });

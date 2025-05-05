@@ -43,6 +43,7 @@ test('does not connect if `beforePoolConnection` throws an error', async (t) => 
         beforePoolConnection: async () => {
           throw new Error('foo');
         },
+        name: 'foo',
       },
     ],
   });
@@ -65,6 +66,7 @@ test('ends connection if `afterPoolConnection` throws an error', async (t) => {
         afterPoolConnection: async () => {
           throw new Error('foo');
         },
+        name: 'foo',
       },
     ],
   });
@@ -87,6 +89,7 @@ test('ends connection if `beforePoolConnectionRelease` throws an error', async (
         afterPoolConnection: async () => {
           throw new Error('foo');
         },
+        name: 'foo',
       },
     ],
   });
@@ -113,6 +116,7 @@ test('if `beforePoolConnection` returns pool object, then the returned pool obje
         beforePoolConnection: () => {
           return pool0;
         },
+        name: 'foo',
       },
     ],
   });
@@ -138,6 +142,7 @@ test('if `beforePoolConnection` returns pool object, then the returned pool obje
         beforePoolConnection: () => {
           return pool0;
         },
+        name: 'foo',
       },
     ],
   });
@@ -165,6 +170,7 @@ test('if `beforePoolConnection` returns pool object, then the returned pool obje
         beforePoolConnection: () => {
           return pool0;
         },
+        name: 'foo',
       },
     ],
   });
@@ -188,6 +194,7 @@ test('if `beforePoolConnection` returns null, then the current pool object is us
         beforePoolConnection: () => {
           return null;
         },
+        name: 'foo',
       },
     ],
   });

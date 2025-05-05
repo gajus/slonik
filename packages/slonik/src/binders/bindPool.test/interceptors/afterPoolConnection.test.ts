@@ -16,7 +16,11 @@ test('`afterPoolConnection` is called after `connect`', async (t) => {
 
   const { pool, spy } = await createPoolWithSpy(t.context.dsn, {
     driverFactory,
-    interceptors: [{}],
+    interceptors: [
+      {
+        name: 'foo',
+      },
+    ],
   });
 
   await pool.connect(async () => {
@@ -34,6 +38,7 @@ test('`connectionType` is "EXPLICIT" when `connect` is used to create connection
     interceptors: [
       {
         afterPoolConnection,
+        name: 'foo',
       },
     ],
   });
@@ -53,6 +58,7 @@ test('`connectionType` is "IMPLICIT_QUERY" when a query method is used to create
     interceptors: [
       {
         afterPoolConnection,
+        name: 'foo',
       },
     ],
   });
@@ -70,6 +76,7 @@ test('`connectionType` is "IMPLICIT_TRANSACTION" when `transaction` is used to c
     interceptors: [
       {
         afterPoolConnection,
+        name: 'foo',
       },
     ],
   });

@@ -13,8 +13,8 @@ import { SlonikError } from '@slonik/errors';
 import { Transform } from 'node:stream';
 import { pipeline } from 'node:stream/promises';
 
+type AsyncRowTransformer = NonNullable<Interceptor['transformRowAsync']>;
 type RowTransformer = NonNullable<Interceptor['transformRow']>;
-
 const createTransformStream = (
   clientConfiguration: ClientConfiguration,
   queryContext: QueryContext,
@@ -25,6 +25,14 @@ const createTransformStream = (
   for (const interceptor of clientConfiguration.interceptors) {
     if (interceptor.transformRow) {
       rowTransformers.push(interceptor.transformRow);
+    }
+  }
+
+  const asyncRowTransformers: AsyncRowTransformer[] = [];
+
+  for (const interceptor of clientConfiguration.interceptors) {
+    if (interceptor.transformRowAsync) {
+      asyncRowTransformers.push(interceptor.transformRowAsync);
     }
   }
 
@@ -47,6 +55,10 @@ const createTransformStream = (
 
       // apply row transformers. Note this is done sequentially, as one transformer's result will be passed to the next.
       for (const rowTransformer of rowTransformers) {
+        finalRow = rowTransformer(queryContext, query, finalRow, datum.fields);
+      }
+
+      for (const rowTransformer of asyncRowTransformers) {
         finalRow = await rowTransformer(
           queryContext,
           query,

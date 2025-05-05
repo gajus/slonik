@@ -15,6 +15,7 @@ test('`beforePoolConnection` is called before `connect`', async (t) => {
     interceptors: [
       {
         beforePoolConnection,
+        name: 'foo',
       },
     ],
   });

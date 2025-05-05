@@ -28,6 +28,7 @@ test('short-circuits the query execution', async (t) => {
             type: 'QueryResult',
           };
         },
+        name: 'foo',
       },
     ],
   });
@@ -64,6 +65,7 @@ test('executes query if "beforeQuery" does not return results', async (t) => {
         beforeQueryExecution: () => {
           return null;
         },
+        name: 'foo',
       },
     ],
   });

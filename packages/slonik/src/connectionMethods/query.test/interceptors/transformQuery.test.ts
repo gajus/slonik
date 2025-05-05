@@ -14,6 +14,7 @@ test('transforms query', async (t) => {
     driverFactory,
     interceptors: [
       {
+        name: 'foo',
         transformQuery: (executionContext, query) => {
           return {
             ...query,

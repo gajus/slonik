@@ -14,6 +14,7 @@ test('overrides result row (sync)', async (t) => {
     driverFactory,
     interceptors: [
       {
+        name: 'foo',
         transformRow: () => {
           return {
             foo: 2,
@@ -56,10 +57,11 @@ test('overrides result row (async)', async (t) => {
     driverFactory,
     interceptors: [
       {
-        transformRow: () => {
-          return Promise.resolve({
+        name: 'foo',
+        transformRowAsync: async () => {
+          return {
             foo: 2,
-          });
+          };
         },
       },
     ],

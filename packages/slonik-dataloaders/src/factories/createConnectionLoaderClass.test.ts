@@ -68,6 +68,7 @@ describe('createConnectionLoaderClass', () => {
 
             return null;
           },
+          name: 'foo',
         },
       ],
     });
@@ -515,6 +516,7 @@ describe('createConnectionLoaderClass (with validation)', () => {
     // eslint-disable-next-line unicorn/consistent-function-scoping
     const createResultParserInterceptor = (): Interceptor => {
       return {
+        name: 'foo',
         transformRow: (executionContext, actualQuery, row) => {
           const { resultParser } = executionContext;
 
