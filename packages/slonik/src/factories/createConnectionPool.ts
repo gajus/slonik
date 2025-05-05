@@ -1,5 +1,6 @@
 import { Logger } from '../Logger';
 import { type DatabasePoolEventEmitter } from '../types';
+import { SpanStatusCode, trace } from '@opentelemetry/api';
 import {
   type Driver,
   type DriverClientEventEmitter,
@@ -11,6 +12,8 @@ import {
 import { defer, type DeferredPromise, generateUid } from '@slonik/utilities';
 import { setTimeout as delay } from 'node:timers/promises';
 import { serializeError } from 'serialize-error';
+
+const tracer = trace.getTracer('pg-slonik-connection-pool');
 
 const logger = Logger.child({
   namespace: 'createConnectionPool',
@@ -123,165 +126,218 @@ export const createConnectionPool = ({
   };
 
   const acquire = async () => {
-    if (isEnding) {
-      throw new Error('Connection pool is being terminated.');
-    }
+    return tracer.startActiveSpan('slonik.connection.acquire', async (span) => {
+      try {
+        span.setAttribute('slonik.pool.id', id);
+        span.setAttribute('slonik.pool.connections.total', connections.length);
+        span.setAttribute(
+          'slonik.pool.connections.pending',
+          pendingConnections.length,
+        );
+        span.setAttribute('slonik.pool.waitingClients', waitingClients.length);
+        span.setAttribute('slonik.pool.maximumSize', maximumPoolSize);
 
-    if (isEnded) {
-      throw new Error('Connection pool has ended.');
-    }
+        if (isEnding) {
+          span.setStatus({
+            code: SpanStatusCode.ERROR,
+            message: 'Connection pool is being terminated',
+          });
 
-    const addConnection = async () => {
-      const pendingConnection = driver
-        .createClient()
-        // eslint-disable-next-line promise/prefer-await-to-then
-        .then((resolvedConnection) => {
-          return {
-            ...resolvedConnection,
-            events,
+          throw new Error('Connection pool is being terminated.');
+        }
+
+        if (isEnded) {
+          span.setStatus({
+            code: SpanStatusCode.ERROR,
+            message: 'Connection pool has ended',
+          });
+
+          throw new Error('Connection pool has ended.');
+        }
+
+        const addConnection = async () => {
+          const pendingConnection = driver
+            .createClient()
+            // eslint-disable-next-line promise/prefer-await-to-then
+            .then((resolvedConnection) => {
+              return {
+                ...resolvedConnection,
+                events,
+              };
+            });
+
+          pendingConnections.push(pendingConnection);
+
+          const connection = await pendingConnection.catch((error) => {
+            const index = pendingConnections.indexOf(pendingConnection);
+
+            if (index === -1) {
+              logger.error(
+                'Unable to find pendingConnection in `pendingConnections` array to remove.',
+              );
+            } else {
+              pendingConnections.splice(index, 1);
+            }
+
+            throw error;
+          });
+
+          const onRelease = () => {
+            if (connection.state() !== 'IDLE') {
+              return;
+            }
+
+            const waitingClient = waitingClients.shift();
+
+            if (!waitingClient) {
+              return;
+            }
+
+            connection.acquire();
+
+            waitingClient.deferred.resolve(connection);
           };
+
+          connection.on('release', onRelease);
+
+          const onDestroy = () => {
+            connection.removeListener('release', onRelease);
+            connection.removeListener('destroy', onDestroy);
+
+            const indexOfConnection = connections.indexOf(connection);
+
+            if (indexOfConnection === -1) {
+              logger.error(
+                'Unable to find connection in `connections` array to remove.',
+              );
+            } else {
+              connections.splice(indexOfConnection, 1);
+            }
+
+            const waitingClient = waitingClients.shift();
+
+            if (waitingClient) {
+              // eslint-disable-next-line promise/prefer-await-to-then
+              acquire().then(
+                waitingClient.deferred.resolve,
+                waitingClient.deferred.reject,
+              );
+
+              return;
+            }
+
+            // In the case that there are no waiting clients and we're below the minimum pool size, add a new connection
+            if (!isEnding && !isEnded && connections.length < minimumPoolSize) {
+              // eslint-disable-next-line promise/prefer-await-to-then
+              addConnection().catch((error) => {
+                logger.error(
+                  {
+                    error: serializeError(error),
+                  },
+                  'error while adding a new connection to satisfy the minimum pool size',
+                );
+              });
+            }
+          };
+
+          connection.on('destroy', onDestroy);
+
+          connections.push(connection);
+
+          const indexOfPendingConnection =
+            pendingConnections.indexOf(pendingConnection);
+
+          if (indexOfPendingConnection === -1) {
+            logger.error(
+              'Unable to find pendingConnection in `pendingConnections` array to remove.',
+            );
+          } else {
+            pendingConnections.splice(indexOfPendingConnection, 1);
+          }
+
+          span.setAttribute('slonik.connection.id', connection.id());
+          span.setAttribute('method', 'acquire:add-connection');
+          span.setStatus({ code: SpanStatusCode.OK });
+
+          return connection;
+        };
+
+        const idleConnection = connections.find(
+          (connection) => connection.state() === 'IDLE',
+        );
+
+        if (idleConnection) {
+          idleConnection.acquire();
+
+          span.setAttribute('slonik.connection.id', idleConnection.id());
+          span.setAttribute('method', 'acquire:reuse-idle');
+          span.setStatus({ code: SpanStatusCode.OK });
+
+          return idleConnection;
+        }
+
+        if (pendingConnections.length + connections.length < maximumPoolSize) {
+          const newConnection = await addConnection();
+
+          newConnection.acquire();
+
+          span.setAttribute('slonik.connection.id', newConnection.id());
+          span.setAttribute('method', 'acquire:add-connection');
+          span.setStatus({ code: SpanStatusCode.OK });
+
+          return newConnection;
+        }
+
+        const deferred = defer<ConnectionPoolClient>();
+
+        waitingClients.push({
+          deferred,
         });
 
-      pendingConnections.push(pendingConnection);
+        const queuedAt = process.hrtime.bigint();
 
-      const connection = await pendingConnection.catch((error) => {
-        const index = pendingConnections.indexOf(pendingConnection);
+        logger.warn(
+          {
+            connections: connections.length,
+            maximumPoolSize,
+            minimumPoolSize,
+            pendingConnections: pendingConnections.length,
+            waitingClients: waitingClients.length,
+          },
+          `connection pool full; client has been queued`,
+        );
 
-        if (index === -1) {
-          logger.error(
-            'Unable to find pendingConnection in `pendingConnections` array to remove.',
+        // eslint-disable-next-line promise/prefer-await-to-then
+        return deferred.promise.then((connection) => {
+          logger.debug(
+            {
+              connectionId: connection.id(),
+              duration: Number(process.hrtime.bigint() - queuedAt) / 1e6,
+            },
+            'connection has been acquired from the queue',
           );
-        } else {
-          pendingConnections.splice(index, 1);
-        }
+
+          span.setAttribute(
+            'queuedMs',
+            Number(process.hrtime.bigint() - queuedAt) / 1e6,
+          );
+          span.setAttribute('slonik.connection.id', connection.id());
+          span.setAttribute('method', 'acquire:queued');
+          span.setStatus({ code: SpanStatusCode.OK });
+
+          return connection;
+        });
+      } catch (error) {
+        span.recordException(error);
+        span.setStatus({
+          code: SpanStatusCode.ERROR,
+          message: error instanceof Error ? error.message : String(error),
+        });
 
         throw error;
-      });
-
-      const onRelease = () => {
-        if (connection.state() !== 'IDLE') {
-          return;
-        }
-
-        const waitingClient = waitingClients.shift();
-
-        if (!waitingClient) {
-          return;
-        }
-
-        connection.acquire();
-
-        waitingClient.deferred.resolve(connection);
-      };
-
-      connection.on('release', onRelease);
-
-      const onDestroy = () => {
-        connection.removeListener('release', onRelease);
-        connection.removeListener('destroy', onDestroy);
-
-        const indexOfConnection = connections.indexOf(connection);
-
-        if (indexOfConnection === -1) {
-          logger.error(
-            'Unable to find connection in `connections` array to remove.',
-          );
-        } else {
-          connections.splice(indexOfConnection, 1);
-        }
-
-        const waitingClient = waitingClients.shift();
-
-        if (waitingClient) {
-          // eslint-disable-next-line promise/prefer-await-to-then
-          acquire().then(
-            waitingClient.deferred.resolve,
-            waitingClient.deferred.reject,
-          );
-
-          return;
-        }
-
-        // In the case that there are no waiting clients and we're below the minimum pool size, add a new connection
-        if (!isEnding && !isEnded && connections.length < minimumPoolSize) {
-          // eslint-disable-next-line promise/prefer-await-to-then
-          addConnection().catch((error) => {
-            logger.error(
-              {
-                error: serializeError(error),
-              },
-              'error while adding a new connection to satisfy the minimum pool size',
-            );
-          });
-        }
-      };
-
-      connection.on('destroy', onDestroy);
-
-      connections.push(connection);
-
-      const indexOfPendingConnection =
-        pendingConnections.indexOf(pendingConnection);
-
-      if (indexOfPendingConnection === -1) {
-        logger.error(
-          'Unable to find pendingConnection in `pendingConnections` array to remove.',
-        );
-      } else {
-        pendingConnections.splice(indexOfPendingConnection, 1);
+      } finally {
+        span.end();
       }
-
-      return connection;
-    };
-
-    const idleConnection = connections.find(
-      (connection) => connection.state() === 'IDLE',
-    );
-
-    if (idleConnection) {
-      idleConnection.acquire();
-
-      return idleConnection;
-    }
-
-    if (pendingConnections.length + connections.length < maximumPoolSize) {
-      const newConnection = await addConnection();
-
-      newConnection.acquire();
-
-      return newConnection;
-    }
-
-    const deferred = defer<ConnectionPoolClient>();
-
-    waitingClients.push({
-      deferred,
-    });
-
-    const queuedAt = process.hrtime.bigint();
-
-    logger.warn(
-      {
-        connections: connections.length,
-        maximumPoolSize,
-        minimumPoolSize,
-        pendingConnections: pendingConnections.length,
-        waitingClients: waitingClients.length,
-      },
-      `connection pool full; client has been queued`,
-    );
-
-    // eslint-disable-next-line promise/prefer-await-to-then
-    return deferred.promise.then((connection) => {
-      logger.debug(
-        {
-          connectionId: connection.id(),
-          duration: Number(process.hrtime.bigint() - queuedAt) / 1e6,
-        },
-        'connection has been acquired from the queue',
-      );
-
-      return connection;
     });
   };
 

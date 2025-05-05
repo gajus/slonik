@@ -5,6 +5,7 @@
     "url": "http://gajus.com"
   },
   "dependencies": {
+    "@opentelemetry/api": "^1.9.0",
     "@slonik/driver": "^46.6.1",
     "@slonik/errors": "^46.6.1",
     "@slonik/pg-driver": "^46.6.1",
