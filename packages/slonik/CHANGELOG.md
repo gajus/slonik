@@ -1,5 +1,24 @@
 # slonik
 
+## 47.0.0
+
+### Major Changes
+
+- [`cdd1d9a`](https://github.com/gajus/slonik/commit/cdd1d9a2c8d9b30ac21297ff71c45f52bb0f922c) Thanks [@gajus](https://github.com/gajus)! - separate transformRow and transformRowAsync
+
+### Minor Changes
+
+- [`1b4032c`](https://github.com/gajus/slonik/commit/1b4032c589cc8788a617d651be70720f2f60936a) Thanks [@gajus](https://github.com/gajus)! - add p-limit to avoid saturating the event loop
+
+### Patch Changes
+
+- Updated dependencies []:
+  - @slonik/driver@47.0.0
+  - @slonik/errors@47.0.0
+  - @slonik/pg-driver@47.0.0
+  - @slonik/sql-tag@47.0.0
+  - @slonik/utilities@47.0.0
+
 ## 46.8.0
 
 ### Minor Changes
