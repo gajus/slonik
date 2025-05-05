@@ -31,11 +31,9 @@ import {
 
 ```ts
 /**
- * @property format The only supported format is CAMEL_CASE.
  * @property test Tests whether the field should be formatted. The default behaviour is to include all fields that match ^[a-z0-9_]+$ regex.
  */
 type ConfigurationType = {|
-  +format: 'CAMEL_CASE',
   +test: (field: FieldType) => boolean
 |};
 
@@ -54,7 +52,9 @@ import {
 
 const interceptors = [
   createFieldNameTransformationInterceptor({
-    format: 'CAMEL_CASE'
+    test: (field) => {
+      return field.name !== '__typename' && /^[\d_a-z]+$/u.test(field.name);
+    },
   })
 ];
 
