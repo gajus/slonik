@@ -1,5 +1,20 @@
 # slonik
 
+## 46.7.0
+
+### Minor Changes
+
+- [`ef65a7f`](https://github.com/gajus/slonik/commit/ef65a7fafe4e76c13c4a1a1e60f264ad9558f853) Thanks [@gajus](https://github.com/gajus)! - add otel to slonik pool
+
+### Patch Changes
+
+- Updated dependencies []:
+  - @slonik/driver@46.7.0
+  - @slonik/errors@46.7.0
+  - @slonik/pg-driver@46.7.0
+  - @slonik/sql-tag@46.7.0
+  - @slonik/utilities@46.7.0
+
 ## 46.6.1
 
 ### Patch Changes
