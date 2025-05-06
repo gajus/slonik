@@ -1,5 +1,20 @@
 # slonik
 
+## 47.1.0
+
+### Minor Changes
+
+- [`8e8e819`](https://github.com/gajus/slonik/commit/8e8e819b029ca1d30a74779def57f49d6700f83f) Thanks [@gajus](https://github.com/gajus)! - instrument executeQuery
+
+### Patch Changes
+
+- Updated dependencies []:
+  - @slonik/driver@47.1.0
+  - @slonik/errors@47.1.0
+  - @slonik/pg-driver@47.1.0
+  - @slonik/sql-tag@47.1.0
+  - @slonik/utilities@47.1.0
+
 ## 47.0.1
 
 ### Patch Changes

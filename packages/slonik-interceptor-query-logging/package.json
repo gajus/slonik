@@ -25,7 +25,7 @@
     "@slonik/eslint-config": "workspace:^",
     "ava": "^6.3.0",
     "eslint": "9.16.0",
-    "slonik": "^47.0.1",
+    "slonik": "^47.1.0",
     "ts-node": "^10.4.0",
     "typescript": "^5.8.3"
   },
@@ -53,5 +53,5 @@
     "test": "ava --verbose --serial"
   },
   "typings": "./dist/index.d.ts",
-  "version": "47.0.1"
+  "version": "47.1.0"
 }
