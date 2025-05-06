@@ -1,4 +1,5 @@
 /* eslint-disable @typescript-eslint/no-loop-func */
+
 import { TRANSACTION_ROLLBACK_ERROR_PREFIX } from '../constants';
 import { transactionContext } from '../contexts/transactionContext';
 import { type ConnectionPoolClient } from '../factories/createConnectionPool';
@@ -119,7 +120,7 @@ type StackCrumb = {
 };
 
 // eslint-disable-next-line complexity
-export const executeQuery = async (
+const executeQueryInternal = async (
   connectionLogger: Logger,
   connection: ConnectionPoolClient,
   clientConfiguration: ClientConfiguration,
@@ -551,4 +552,42 @@ export const executeQuery = async (
   }
 
   return result;
+};
+
+export const executeQuery = async (
+  connectionLogger: Logger,
+  connection: ConnectionPoolClient,
+  clientConfiguration: ClientConfiguration,
+  query: QuerySqlToken,
+  inheritedQueryId: QueryId | undefined,
+  executionRoutine: ExecutionRoutine,
+  stream: boolean = false,
+): Promise<
+  QueryResult<Record<string, PrimitiveValueExpression>> | StreamResult
+> => {
+  return await tracer.startActiveSpan('slonik.executeQuery', async (span) => {
+    span.setAttribute('sql', query.sql);
+
+    try {
+      return await executeQueryInternal(
+        connectionLogger,
+        connection,
+        clientConfiguration,
+        query,
+        inheritedQueryId,
+        executionRoutine,
+        stream,
+      );
+    } catch (error) {
+      span.recordException(error);
+      span.setStatus({
+        code: SpanStatusCode.ERROR,
+        message: String(error),
+      });
+
+      throw error;
+    } finally {
+      span.end();
+    }
+  });
 };

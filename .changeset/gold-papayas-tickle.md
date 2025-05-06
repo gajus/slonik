@@ -1,0 +1,5 @@
+---
+"slonik": minor
+---
+
+instrument executeQuery
