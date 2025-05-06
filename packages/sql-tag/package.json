@@ -16,8 +16,8 @@
     ]
   },
   "dependencies": {
-    "@slonik/errors": "^47.0.0",
-    "@slonik/types": "^47.0.0",
+    "@slonik/errors": "^47.0.1",
+    "@slonik/types": "^47.0.1",
     "roarr": "^7.21.1",
     "safe-stable-stringify": "^2.5.0",
     "serialize-error": "^8.0.0"
@@ -83,5 +83,5 @@
     "test": "nyc ava --verbose --serial"
   },
   "types": "./dist/index.d.ts",
-  "version": "47.0.0"
+  "version": "47.0.1"
 }

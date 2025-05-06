@@ -1,5 +1,7 @@
 # slonik-interceptor-field-name-transformation
 
+## 47.0.1
+
 ## 47.0.0
 
 ### Major Changes
