@@ -1,5 +1,18 @@
 # slonik
 
+## 47.0.1
+
+### Patch Changes
+
+- [`97d6887`](https://github.com/gajus/slonik/commit/97d6887fd9fa0691c847238317c70a74e4d51895) Thanks [@gajus](https://github.com/gajus)! - use a copy of interceptors
+
+- Updated dependencies []:
+  - @slonik/driver@47.0.1
+  - @slonik/errors@47.0.1
+  - @slonik/pg-driver@47.0.1
+  - @slonik/sql-tag@47.0.1
+  - @slonik/utilities@47.0.1
+
 ## 47.0.0
 
 ### Major Changes

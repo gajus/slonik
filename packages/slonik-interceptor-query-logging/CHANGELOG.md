@@ -1,5 +1,7 @@
 # slonik-interceptor-query-logging
 
+## 47.0.1
+
 ## 47.0.0
 
 ### Major Changes
