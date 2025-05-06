@@ -443,6 +443,7 @@ export const executeQuery = async (
           'slonik.interceptor.transformRow',
           async (span) => {
             span.setAttribute('interceptor.name', interceptor.name);
+            span.setAttribute('rows.length', rows.length);
 
             try {
               return rows.map((row) => {
@@ -479,6 +480,7 @@ export const executeQuery = async (
           'slonik.interceptor.transformRowAsync',
           async (span) => {
             span.setAttribute('interceptor.name', interceptor.name);
+            span.setAttribute('rows.length', rows.length);
 
             try {
               const limit = pLimit(10);
