@@ -399,8 +399,10 @@ export const executeQuery = async (
   // @ts-expect-error -- We want to keep notices as readonly for consumer, but write to it here.
   result.notices = notices;
 
+  const interceptors: Interceptor[] = clientConfiguration.interceptors.slice();
+
   if (result.type === 'QueryResult') {
-    for (const interceptor of clientConfiguration.interceptors) {
+    for (const interceptor of interceptors) {
       const afterQueryExecution = interceptor.afterQueryExecution;
 
       if (afterQueryExecution) {
@@ -430,9 +432,6 @@ export const executeQuery = async (
         );
       }
     }
-
-    const interceptors: Interceptor[] =
-      clientConfiguration.interceptors.slice();
 
     for (const interceptor of interceptors) {
       const transformRow = interceptor.transformRow;
@@ -517,7 +516,7 @@ export const executeQuery = async (
       }
     }
 
-    for (const interceptor of clientConfiguration.interceptors) {
+    for (const interceptor of interceptors) {
       const beforeQueryResult = interceptor.beforeQueryResult;
 
       if (beforeQueryResult) {
