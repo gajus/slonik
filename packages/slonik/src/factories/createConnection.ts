@@ -96,44 +96,44 @@ export const createConnection = async (
     );
   }
 
-  for (const interceptor of clientConfiguration.interceptors) {
-    const beforePoolConnection = interceptor.beforePoolConnection;
-
-    if (beforePoolConnection) {
-      const maybeNewPool = await tracer.startActiveSpan(
-        'slonik.interceptor.beforePoolConnection',
-        async (span) => {
-          span.setAttribute('interceptor.name', interceptor.name);
-
-          try {
-            return await beforePoolConnection({
-              log: parentLog,
-              poolId,
-              query,
-            });
-          } catch (error) {
-            span.recordException(error);
-            span.setStatus({
-              code: SpanStatusCode.ERROR,
-              message: String(error),
-            });
-
-            throw error;
-          } finally {
-            span.end();
-          }
-        },
-      );
-
-      if (maybeNewPool) {
-        return await poolHandler(maybeNewPool);
-      }
-    }
-  }
-
   return await tracer.startActiveSpan(
-    'slonik.connection.create',
+    'slonik.createConnection',
     async (span) => {
+      for (const interceptor of clientConfiguration.interceptors) {
+        const beforePoolConnection = interceptor.beforePoolConnection;
+
+        if (beforePoolConnection) {
+          const maybeNewPool = await tracer.startActiveSpan(
+            'slonik.interceptor.beforePoolConnection',
+            async (interceptorSpan) => {
+              span.setAttribute('interceptor.name', interceptor.name);
+
+              try {
+                return await beforePoolConnection({
+                  log: parentLog,
+                  poolId,
+                  query,
+                });
+              } catch (error) {
+                interceptorSpan.recordException(error);
+                interceptorSpan.setStatus({
+                  code: SpanStatusCode.ERROR,
+                  message: String(error),
+                });
+
+                throw error;
+              } finally {
+                interceptorSpan.end();
+              }
+            },
+          );
+
+          if (maybeNewPool) {
+            return await poolHandler(maybeNewPool);
+          }
+        }
+      }
+
       try {
         const connection = await establishConnection(
           parentLog,
