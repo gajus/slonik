@@ -141,9 +141,13 @@ export const createConnection = async (
           clientConfiguration.connectionRetryLimit,
         );
 
-        return raceError(connection, async () => {
-          const { connectionId } = getPoolClientState(connection);
+        const { connectionId, poolId: poolIdFromState } =
+          getPoolClientState(connection);
 
+        span.setAttribute('slonik.connection.id', connectionId);
+        span.setAttribute('slonik.pool.id', poolIdFromState);
+
+        return await raceError(connection, async () => {
           const connectionLog = parentLog.child({
             connectionId,
           });
