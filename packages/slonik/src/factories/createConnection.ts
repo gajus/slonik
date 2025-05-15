@@ -13,9 +13,12 @@ import {
   type ConnectionPool,
   type ConnectionPoolClient,
 } from './createConnectionPool';
+import { trace } from '@opentelemetry/api';
 import { UnexpectedStateError } from '@slonik/errors';
 import { type QuerySqlToken } from '@slonik/sql-tag';
 import { defer } from '@slonik/utilities';
+
+const tracer = trace.getTracer('slonik.interceptors');
 
 type ConnectionHandlerType = (
   connectionLog: Logger,
@@ -94,18 +97,29 @@ export const createConnection = async (
   }
 
   for (const interceptor of clientConfiguration.interceptors) {
-    if (interceptor.beforePoolConnection) {
-      const maybeNewPool = await interceptor.beforePoolConnection({
-        log: parentLog,
-        poolId,
-        query,
-      });
+    const beforePoolConnection = interceptor.beforePoolConnection;
+
+    if (beforePoolConnection) {
+      const maybeNewPool = await tracer.startActiveSpan(
+        'slonik.interceptor.beforePoolConnection',
+        async (span) => {
+          span.setAttribute('interceptor.name', interceptor.name);
+
+          return await beforePoolConnection({
+            log: parentLog,
+            poolId,
+            query,
+          });
+        },
+      );
 
       if (maybeNewPool) {
         return await poolHandler(maybeNewPool);
       }
     }
   }
+
+  await tracer.startActiveSpan;
 
   const connection = await establishConnection(
     parentLog,
