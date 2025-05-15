@@ -131,8 +131,6 @@ export const createConnection = async (
     }
   }
 
-  await tracer.startActiveSpan;
-
   const connection = await establishConnection(
     parentLog,
     pool,
