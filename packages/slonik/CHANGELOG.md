@@ -1,5 +1,22 @@
 # slonik
 
+## 47.2.0
+
+### Minor Changes
+
+- [`dbc7b15`](https://github.com/gajus/slonik/commit/dbc7b15b0f2d21638686777fe76947b4bf216bdf) Thanks [@gajus](https://github.com/gajus)! - instrument slonik.connection.create
+
+- [`0caecd5`](https://github.com/gajus/slonik/commit/0caecd5e1b2e03869229fc06783d3365eac6143b) Thanks [@gajus](https://github.com/gajus)! - add span for beforePoolConnection
+
+### Patch Changes
+
+- Updated dependencies []:
+  - @slonik/driver@47.2.0
+  - @slonik/errors@47.2.0
+  - @slonik/pg-driver@47.2.0
+  - @slonik/sql-tag@47.2.0
+  - @slonik/utilities@47.2.0
+
 ## 47.1.0
 
 ### Minor Changes
