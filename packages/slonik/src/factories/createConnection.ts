@@ -13,7 +13,7 @@ import {
   type ConnectionPool,
   type ConnectionPoolClient,
 } from './createConnectionPool';
-import { trace } from '@opentelemetry/api';
+import { SpanStatusCode, trace } from '@opentelemetry/api';
 import { UnexpectedStateError } from '@slonik/errors';
 import { type QuerySqlToken } from '@slonik/sql-tag';
 import { defer } from '@slonik/utilities';
@@ -105,11 +105,23 @@ export const createConnection = async (
         async (span) => {
           span.setAttribute('interceptor.name', interceptor.name);
 
-          return await beforePoolConnection({
-            log: parentLog,
-            poolId,
-            query,
-          });
+          try {
+            return await beforePoolConnection({
+              log: parentLog,
+              poolId,
+              query,
+            });
+          } catch (error) {
+            span.recordException(error);
+            span.setStatus({
+              code: SpanStatusCode.ERROR,
+              message: String(error),
+            });
+
+            throw error;
+          } finally {
+            span.end();
+          }
         },
       );
 
