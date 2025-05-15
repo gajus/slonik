@@ -1,5 +1,18 @@
 # slonik
 
+## 47.2.1
+
+### Patch Changes
+
+- [`2225991`](https://github.com/gajus/slonik/commit/2225991d4d368d0b9181ea59def88455a77772ce) Thanks [@gajus](https://github.com/gajus)! - add missing await
+
+- Updated dependencies []:
+  - @slonik/driver@47.2.1
+  - @slonik/errors@47.2.1
+  - @slonik/pg-driver@47.2.1
+  - @slonik/sql-tag@47.2.1
+  - @slonik/utilities@47.2.1
+
 ## 47.2.0
 
 ### Minor Changes
