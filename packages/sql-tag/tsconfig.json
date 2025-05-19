@@ -5,9 +5,9 @@
     "declarationMap": true,
     "esModuleInterop": true,
     "lib": [
-      "es2021"
+      "es2024"
     ],
-    "module": "commonjs",
+    "module": "ES2022",
     "moduleResolution": "node",
     "noImplicitAny": false,
     "noImplicitReturns": true,
@@ -15,7 +15,7 @@
     "skipLibCheck": true,
     "sourceMap": true,
     "strict": true,
-    "target": "es2020",
+    "target": "es2024",
     "useUnknownInCatchVariables": false
   },
   "include": [

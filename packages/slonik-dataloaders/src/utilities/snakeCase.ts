@@ -22,9 +22,18 @@ const split = (input: string): string[] => {
   let start = 0;
   let end = result.length;
   // Trim the delimiter from around the output string.
-  while (result.charAt(start) === '\0') start++;
-  if (start === end) return [];
-  while (result.charAt(end - 1) === '\0') end--;
+  while (result.charAt(start) === '\0') {
+    start++;
+  }
+
+  if (start === end) {
+    return [];
+  }
+
+  while (result.charAt(end - 1) === '\0') {
+    end--;
+  }
+
   // Transform each token independently.
   return result.slice(start, end).split(/\0/u);
 };

@@ -1,9 +1,13 @@
 {
   "dependencies": {
-    "eslint-config-canonical": "44.3.33"
+    "eslint-config-canonical": "44.9.5"
   },
-  "main": "./index.cjs",
+  "devDependencies": {
+    "typescript-eslint": "^8.32.1"
+  },
+  "main": "./eslint.config.js",
   "name": "@slonik/eslint-config",
   "private": true,
+  "type": "module",
   "version": "47.3.1"
 }

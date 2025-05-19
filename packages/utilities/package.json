@@ -23,13 +23,14 @@
   "devDependencies": {
     "@slonik/eslint-config": "workspace:^",
     "@slonik/test-ssls": "workspace:^",
-    "@types/node": "^22.15.8",
+    "@types/node": "^22.15.19",
     "ava": "^6.3.0",
-    "cspell": "^8.16.0",
-    "eslint": "9.16.0",
-    "nyc": "^15.1.0",
+    "cspell": "^9.0.1",
+    "eslint": "9.27.0",
+    "nyc": "^17.1.0",
     "ts-node": "^10.9.1",
     "typescript": "^5.8.3",
+    "typescript-eslint": "^8.32.1",
     "zod": "^3.25.6"
   },
   "engines": {
@@ -80,6 +81,7 @@
     "lint:tsc": "tsc --noEmit",
     "test": "nyc ava --verbose --serial"
   },
+  "type": "module",
   "types": "./dist/index.d.ts",
   "version": "47.3.1"
 }

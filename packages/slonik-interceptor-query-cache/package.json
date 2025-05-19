@@ -22,10 +22,11 @@
   "devDependencies": {
     "@slonik/eslint-config": "workspace:^",
     "ava": "^6.3.0",
-    "eslint": "9.16.0",
+    "eslint": "9.27.0",
     "slonik": "^47.3.1",
     "ts-node": "^10.4.0",
-    "typescript": "^5.8.3"
+    "typescript": "^5.8.3",
+    "typescript-eslint": "^8.32.1"
   },
   "engines": {
     "node": ">=18"
@@ -50,6 +51,7 @@
     "lint": "eslint ./src && tsc --noEmit",
     "test": "ava --verbose --serial"
   },
-  "typings": "./dist/index.d.ts",
+  "type": "module",
+  "types": "./dist/index.d.ts",
   "version": "47.3.1"
 }

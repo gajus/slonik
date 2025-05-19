@@ -17,5 +17,6 @@
     "type": "git",
     "url": "https://github.com/gajus/slonik"
   },
+  "type": "module",
   "version": "47.3.1"
 }

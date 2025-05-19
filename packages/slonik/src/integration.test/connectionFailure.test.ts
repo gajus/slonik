@@ -1,7 +1,6 @@
 /* eslint-disable no-console */
 
 import { createPool } from '..';
-// eslint-disable-next-line import/extensions
 import { startTestContainer } from './termination.test';
 import { createPgDriverFactory } from '@slonik/pg-driver';
 import test from 'ava';
