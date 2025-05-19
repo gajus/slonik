@@ -6,11 +6,11 @@
   },
   "dependencies": {
     "@opentelemetry/api": "^1.9.0",
-    "@slonik/driver": "^47.3.1",
-    "@slonik/errors": "^47.3.1",
-    "@slonik/pg-driver": "^47.3.1",
-    "@slonik/sql-tag": "^47.3.1",
-    "@slonik/utilities": "^47.3.1",
+    "@slonik/driver": "^47.3.2",
+    "@slonik/errors": "^47.3.2",
+    "@slonik/pg-driver": "^47.3.2",
+    "@slonik/sql-tag": "^47.3.2",
+    "@slonik/utilities": "^47.3.2",
     "get-stack-trace": "^3.1.1",
     "iso8601-duration": "^2.1.2",
     "p-limit": "^6.2.0",
@@ -88,5 +88,5 @@
   },
   "type": "module",
   "types": "./dist/index.d.ts",
-  "version": "47.3.1"
+  "version": "47.3.2"
 }

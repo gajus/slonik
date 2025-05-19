@@ -77,5 +77,5 @@
   },
   "type": "module",
   "types": "./dist/index.d.ts",
-  "version": "47.3.1"
+  "version": "47.3.2"
 }
