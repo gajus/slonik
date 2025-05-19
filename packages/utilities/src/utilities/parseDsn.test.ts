@@ -77,22 +77,28 @@ test('postgresql:///database-name?host=/var/lib/postgresql', testParse, {
   host: '/var/lib/postgresql',
 });
 
-const sslCaCertPath = import.meta.resolve('@slonik/test-ssls/root.crt');
-const sslCertPath = import.meta.resolve('@slonik/test-ssls/slonik.crt');
-const sslKeyPath = import.meta.resolve('@slonik/test-ssls/slonik.key');
+const sslCaCertPath = fileURLToPath(
+  import.meta.resolve('@slonik/test-ssls/root.crt'),
+);
+const sslCertPath = fileURLToPath(
+  import.meta.resolve('@slonik/test-ssls/slonik.crt'),
+);
+const sslKeyPath = fileURLToPath(
+  import.meta.resolve('@slonik/test-ssls/slonik.key'),
+);
 
 test(`postgresql://?sslcert=${sslCertPath}&sslkey=${sslKeyPath}`, testParse, {
   ssl: {
     ca: undefined,
-    cert: readFileSync(fileURLToPath(sslCertPath), 'utf8'),
-    key: readFileSync(fileURLToPath(sslKeyPath), 'utf8'),
+    cert: readFileSync(sslCertPath, 'utf8'),
+    key: readFileSync(sslKeyPath, 'utf8'),
     rejectUnauthorized: true,
   },
 });
 
 test(`postgresql://?sslrootcert=${sslCaCertPath}`, testParse, {
   ssl: {
-    ca: readFileSync(fileURLToPath(sslCaCertPath), 'utf8'),
+    ca: readFileSync(sslCaCertPath, 'utf8'),
     cert: undefined,
     key: undefined,
     rejectUnauthorized: true,
@@ -104,9 +110,9 @@ test(
   testParse,
   {
     ssl: {
-      ca: readFileSync(fileURLToPath(sslCaCertPath), 'utf8'),
-      cert: readFileSync(fileURLToPath(sslCertPath), 'utf8'),
-      key: readFileSync(fileURLToPath(sslKeyPath), 'utf8'),
+      ca: readFileSync(sslCaCertPath, 'utf8'),
+      cert: readFileSync(sslCertPath, 'utf8'),
+      key: readFileSync(sslKeyPath, 'utf8'),
       rejectUnauthorized: true,
     },
   },
