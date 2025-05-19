@@ -1,6 +1,7 @@
 import { parseDsn } from './parseDsn.js';
 import test from 'ava';
 import { readFileSync } from 'node:fs';
+import { fileURLToPath } from 'node:url';
 
 const testParse = test.macro((t, connectionOptions) => {
   t.deepEqual(parseDsn(t.title), connectionOptions);
@@ -76,22 +77,22 @@ test('postgresql:///database-name?host=/var/lib/postgresql', testParse, {
   host: '/var/lib/postgresql',
 });
 
-const sslCaCertPath = require.resolve('@slonik/test-ssls/root.crt');
-const sslCertPath = require.resolve('@slonik/test-ssls/slonik.crt');
-const sslKeyPath = require.resolve('@slonik/test-ssls/slonik.key');
+const sslCaCertPath = import.meta.resolve('@slonik/test-ssls/root.crt');
+const sslCertPath = import.meta.resolve('@slonik/test-ssls/slonik.crt');
+const sslKeyPath = import.meta.resolve('@slonik/test-ssls/slonik.key');
 
 test(`postgresql://?sslcert=${sslCertPath}&sslkey=${sslKeyPath}`, testParse, {
   ssl: {
     ca: undefined,
-    cert: readFileSync(sslCertPath, 'utf8'),
-    key: readFileSync(sslKeyPath, 'utf8'),
+    cert: readFileSync(fileURLToPath(sslCertPath), 'utf8'),
+    key: readFileSync(fileURLToPath(sslKeyPath), 'utf8'),
     rejectUnauthorized: true,
   },
 });
 
 test(`postgresql://?sslrootcert=${sslCaCertPath}`, testParse, {
   ssl: {
-    ca: readFileSync(sslCaCertPath, 'utf8'),
+    ca: readFileSync(fileURLToPath(sslCaCertPath), 'utf8'),
     cert: undefined,
     key: undefined,
     rejectUnauthorized: true,
@@ -103,9 +104,9 @@ test(
   testParse,
   {
     ssl: {
-      ca: readFileSync(sslCaCertPath, 'utf8'),
-      cert: readFileSync(sslCertPath, 'utf8'),
-      key: readFileSync(sslKeyPath, 'utf8'),
+      ca: readFileSync(fileURLToPath(sslCaCertPath), 'utf8'),
+      cert: readFileSync(fileURLToPath(sslCertPath), 'utf8'),
+      key: readFileSync(fileURLToPath(sslKeyPath), 'utf8'),
       rejectUnauthorized: true,
     },
   },

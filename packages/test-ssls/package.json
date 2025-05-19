@@ -8,6 +8,11 @@
   "engines": {
     "node": ">=24"
   },
+  "exports": {
+    "./root.crt": "./root.crt",
+    "./slonik.crt": "./slonik.crt",
+    "./slonik.key": "./slonik.key"
+  },
   "license": "BSD-3-Clause",
   "name": "@slonik/test-ssls",
   "peerDependencies": {

@@ -6,6 +6,7 @@ import getPort from 'get-port';
 import { execSync, spawn } from 'node:child_process';
 import { randomUUID } from 'node:crypto';
 import { setTimeout } from 'node:timers/promises';
+import { fileURLToPath } from 'node:url';
 
 export const startTestContainer = async () => {
   const dockerContainerName = `slonik-test-${randomUUID()}`;
@@ -80,15 +81,15 @@ test('makes a connection using SSL', async (t) => {
 
     searchParameters.set(
       'sslrootcert',
-      require.resolve('@slonik/test-ssls/root.crt'),
+      fileURLToPath(import.meta.resolve('@slonik/test-ssls/root.crt')),
     );
     searchParameters.set(
       'sslcert',
-      require.resolve('@slonik/test-ssls/slonik.crt'),
+      fileURLToPath(import.meta.resolve('@slonik/test-ssls/slonik.crt')),
     );
     searchParameters.set(
       'sslkey',
-      require.resolve('@slonik/test-ssls/slonik.key'),
+      fileURLToPath(import.meta.resolve('@slonik/test-ssls/slonik.key')),
     );
 
     const pool = await createPool(
