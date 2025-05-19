@@ -1,5 +1,11 @@
 # slonik-interceptor-query-logging
 
+## 48.0.0
+
+### Major Changes
+
+- [#692](https://github.com/gajus/slonik/pull/692) [`31db3aa`](https://github.com/gajus/slonik/commit/31db3aa0f0f64cd2fadfc854815d2c0e346b75be) Thanks [@gajus](https://github.com/gajus)! - migrate to esm
+
 ## 47.3.2
 
 ## 47.3.1

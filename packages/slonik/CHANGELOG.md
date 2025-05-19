@@ -1,5 +1,22 @@
 # slonik
 
+## 48.0.0
+
+### Major Changes
+
+- [#692](https://github.com/gajus/slonik/pull/692) [`31db3aa`](https://github.com/gajus/slonik/commit/31db3aa0f0f64cd2fadfc854815d2c0e346b75be) Thanks [@gajus](https://github.com/gajus)! - migrate to esm
+
+### Patch Changes
+
+- [`363cafb`](https://github.com/gajus/slonik/commit/363cafbffd69a64354ed0e23a56d88ac78af78cf) Thanks [@gajus](https://github.com/gajus)! - update zod
+
+- Updated dependencies [[`31db3aa`](https://github.com/gajus/slonik/commit/31db3aa0f0f64cd2fadfc854815d2c0e346b75be)]:
+  - @slonik/pg-driver@48.0.0
+  - @slonik/utilities@48.0.0
+  - @slonik/sql-tag@48.0.0
+  - @slonik/driver@48.0.0
+  - @slonik/errors@48.0.0
+
 ## 47.3.2
 
 ### Patch Changes
