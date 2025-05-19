@@ -1,5 +1,7 @@
 # slonik-interceptor-query-cache
 
+## 47.3.1
+
 ## 47.3.0
 
 ## 47.2.1
