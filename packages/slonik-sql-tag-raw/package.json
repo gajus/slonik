@@ -23,7 +23,7 @@
   "devDependencies": {
     "@slonik/eslint-config": "workspace:^",
     "ava": "^6.3.0",
-    "eslint": "9.16.0",
+    "eslint": "9.27.0",
     "slonik": "^47.3.2",
     "tsimp": "^2.0.12",
     "typescript": "^5.8.3",

@@ -32,7 +32,7 @@
     "tsimp": "^2.0.12",
     "typescript": "^5.8.3",
     "typescript-eslint": "^8.32.1",
-    "zod": "^3.25.6"
+    "zod": "^3.25.7"
   },
   "engines": {
     "node": ">=24"
