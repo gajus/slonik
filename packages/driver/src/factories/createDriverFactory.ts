@@ -88,7 +88,6 @@ export type DriverQueryResult = {
   readonly rows: Array<Record<string, unknown>>;
 };
 
-// @ts-expect-error - TODO figure out how to fix this
 export interface DriverStream<T> extends Readable {
   [Symbol.asyncIterator]: () => AsyncIterableIterator<StreamDataEvent<T>>;
   // eslint-disable-next-line @typescript-eslint/method-signature-style
