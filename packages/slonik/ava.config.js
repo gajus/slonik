@@ -3,7 +3,7 @@ const {
   // eslint-disable-next-line n/no-process-env
 } = process.env;
 
-module.exports = () => {
+export default () => {
   let files = ['src/**/*.test.ts'];
 
   if (TEST_ONLY === 'utilities') {
