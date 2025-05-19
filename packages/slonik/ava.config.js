@@ -17,7 +17,7 @@ module.exports = () => {
   return {
     extensions: ['ts'],
     files,
-    nodeArguments: ['--experimental-transform-types'],
+    nodeArguments: ['--import=tsimp'],
     timeout: '30s',
   };
 };
