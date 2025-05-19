@@ -1,5 +1,20 @@
 # slonik
 
+## 47.3.0
+
+### Minor Changes
+
+- [`50ebfbe`](https://github.com/gajus/slonik/commit/50ebfbe04bf796519788e515b9092edd2dd1bd83) Thanks [@gajus](https://github.com/gajus)! - group together beforePoolConnection
+
+### Patch Changes
+
+- Updated dependencies []:
+  - @slonik/driver@47.3.0
+  - @slonik/errors@47.3.0
+  - @slonik/pg-driver@47.3.0
+  - @slonik/sql-tag@47.3.0
+  - @slonik/utilities@47.3.0
+
 ## 47.2.1
 
 ### Patch Changes
