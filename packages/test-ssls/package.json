@@ -6,7 +6,7 @@
   },
   "description": "SSLs used for testing Slonik.",
   "engines": {
-    "node": ">=18"
+    "node": ">=24"
   },
   "license": "BSD-3-Clause",
   "name": "@slonik/test-ssls",

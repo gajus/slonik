@@ -20,7 +20,7 @@
     "vitest": "^3.1.4"
   },
   "engines": {
-    "node": ">=18"
+    "node": ">=24"
   },
   "keywords": [
     "postgresql",
