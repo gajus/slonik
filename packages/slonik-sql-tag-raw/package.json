@@ -17,7 +17,6 @@
   },
   "dependencies": {
     "@slonik/sql-tag": "^47.3.2",
-    "lodash": "^4.17.20",
     "roarr": "^7.21.1"
   },
   "description": "Logs Slonik queries.",

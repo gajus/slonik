@@ -402,9 +402,6 @@ importers:
       '@slonik/sql-tag':
         specifier: ^47.3.2
         version: link:../sql-tag
-      lodash:
-        specifier: ^4.17.20
-        version: 4.17.21
       roarr:
         specifier: ^7.21.1
         version: 7.21.1
