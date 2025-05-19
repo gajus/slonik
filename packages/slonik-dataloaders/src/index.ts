@@ -1,10 +1,10 @@
-export { createConnectionLoader } from './factories/createConnectionLoader';
-export { createConnectionLoaderClass } from './factories/createConnectionLoaderClass';
-export { createListLoader } from './factories/createListLoader';
-export { createNodeByIdLoader } from './factories/createNodeByIdLoader';
-export { createNodeByIdLoaderClass } from './factories/createNodeByIdLoaderClass';
+export { createConnectionLoader } from './factories/createConnectionLoader.js';
+export { createConnectionLoaderClass } from './factories/createConnectionLoaderClass.js';
+export { createListLoader } from './factories/createListLoader.js';
+export { createNodeByIdLoader } from './factories/createNodeByIdLoader.js';
+export { createNodeByIdLoaderClass } from './factories/createNodeByIdLoaderClass.js';
 export {
   type ColumnIdentifiers,
   type Connection,
   type OrderDirection,
-} from './types';
+} from './types.js';

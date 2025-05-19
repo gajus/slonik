@@ -1,2 +1,2 @@
-export { createPgDriverFactory } from './factories/createPgDriverFactory';
+export { createPgDriverFactory } from './factories/createPgDriverFactory.js';
 export { DatabaseError } from 'pg';

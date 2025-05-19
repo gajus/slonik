@@ -1,4 +1,4 @@
-import { type ConnectionPoolClient } from './factories/createConnectionPool';
+import { type ConnectionPoolClient } from './factories/createConnectionPool.js';
 import { UnexpectedStateError } from '@slonik/errors';
 import { type DeferredPromise } from '@slonik/utilities';
 

@@ -1,6 +1,6 @@
-import { createPool } from '../../factories/createPool';
-import { createPoolWithSpy } from '../../helpers.test/createPoolWithSpy';
-import { createTestRunner } from '../../helpers.test/createTestRunner';
+import { createPool } from '../../factories/createPool.js';
+import { createPoolWithSpy } from '../../helpers.test/createPoolWithSpy.js';
+import { createTestRunner } from '../../helpers.test/createTestRunner.js';
 import { createPgDriverFactory } from '@slonik/pg-driver';
 import { createSqlTag } from '@slonik/sql-tag';
 import { setTimeout as delay } from 'node:timers/promises';

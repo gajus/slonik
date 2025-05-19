@@ -1,14 +1,14 @@
-import { createPrimitiveValueExpressions } from '../factories/createPrimitiveValueExpressions';
-import { createSqlTokenSqlFragment } from '../factories/createSqlTokenSqlFragment';
-import { FragmentToken } from '../tokens';
+import { createPrimitiveValueExpressions } from '../factories/createPrimitiveValueExpressions.js';
+import { createSqlTokenSqlFragment } from '../factories/createSqlTokenSqlFragment.js';
+import { FragmentToken } from '../tokens.js';
 import {
   type ListSqlToken,
   type PrimitiveValueExpression,
   type SqlFragmentToken,
-} from '../types';
-import { formatSlonikPlaceholder } from '../utilities/formatSlonikPlaceholder';
-import { isPrimitiveValueExpression } from '../utilities/isPrimitiveValueExpression';
-import { isSqlToken } from '../utilities/isSqlToken';
+} from '../types.js';
+import { formatSlonikPlaceholder } from '../utilities/formatSlonikPlaceholder.js';
+import { isPrimitiveValueExpression } from '../utilities/isPrimitiveValueExpression.js';
+import { isSqlToken } from '../utilities/isSqlToken.js';
 import { InvalidInputError } from '@slonik/errors';
 
 export const createListSqlFragment = (

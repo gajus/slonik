@@ -1,21 +1,21 @@
-import { any } from '../connectionMethods/any';
-import { anyFirst } from '../connectionMethods/anyFirst';
-import { exists } from '../connectionMethods/exists';
-import { many } from '../connectionMethods/many';
-import { manyFirst } from '../connectionMethods/manyFirst';
-import { maybeOne } from '../connectionMethods/maybeOne';
-import { maybeOneFirst } from '../connectionMethods/maybeOneFirst';
-import { one } from '../connectionMethods/one';
-import { oneFirst } from '../connectionMethods/oneFirst';
-import { query as queryMethod } from '../connectionMethods/query';
-import { stream } from '../connectionMethods/stream';
-import { transaction } from '../connectionMethods/transaction';
-import { type ConnectionPoolClient } from '../factories/createConnectionPool';
+import { any } from '../connectionMethods/any.js';
+import { anyFirst } from '../connectionMethods/anyFirst.js';
+import { exists } from '../connectionMethods/exists.js';
+import { many } from '../connectionMethods/many.js';
+import { manyFirst } from '../connectionMethods/manyFirst.js';
+import { maybeOne } from '../connectionMethods/maybeOne.js';
+import { maybeOneFirst } from '../connectionMethods/maybeOneFirst.js';
+import { one } from '../connectionMethods/one.js';
+import { oneFirst } from '../connectionMethods/oneFirst.js';
+import { query as queryMethod } from '../connectionMethods/query.js';
+import { stream } from '../connectionMethods/stream.js';
+import { transaction } from '../connectionMethods/transaction.js';
+import { type ConnectionPoolClient } from '../factories/createConnectionPool.js';
 import {
   type ClientConfiguration,
   type DatabasePoolConnection,
   type Logger,
-} from '../types';
+} from '../types.js';
 
 export const bindPoolConnection = (
   parentLog: Logger,

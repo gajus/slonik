@@ -1,4 +1,4 @@
-import { normalizeCacheAttributes } from './normalizeCacheAttributes';
+import { normalizeCacheAttributes } from './normalizeCacheAttributes.js';
 import test from 'ava';
 
 test('replaces $bodyHash and $valueHash', (t) => {

@@ -1,5 +1,5 @@
-import { type InternalQueryMethod } from '../types';
-import { many } from './many';
+import { type InternalQueryMethod } from '../types.js';
+import { many } from './many.js';
 import { DataIntegrityError } from '@slonik/errors';
 import { generateUid } from '@slonik/utilities';
 

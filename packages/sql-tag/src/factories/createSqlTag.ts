@@ -1,5 +1,5 @@
-import { Logger } from '../Logger';
-import { type UUID } from '../sqlFragmentFactories/createUuidSqlFragment';
+import { Logger } from '../Logger.js';
+import { type UUID } from '../sqlFragmentFactories/createUuidSqlFragment.js';
 import {
   ArrayToken,
   BinaryToken,
@@ -14,18 +14,18 @@ import {
   TimestampToken,
   UnnestToken,
   UuidToken,
-} from '../tokens';
+} from '../tokens.js';
 import {
   type PrimitiveValueExpression,
   type SqlTag,
   type ValueExpression,
-} from '../types';
-import { escapeLiteralValue } from '../utilities/escapeLiteralValue';
-import { formatSlonikPlaceholder } from '../utilities/formatSlonikPlaceholder';
-import { isPrimitiveValueExpression } from '../utilities/isPrimitiveValueExpression';
-import { isSqlToken } from '../utilities/isSqlToken';
-import { safeStringify } from '../utilities/safeStringify';
-import { createSqlTokenSqlFragment } from './createSqlTokenSqlFragment';
+} from '../types.js';
+import { escapeLiteralValue } from '../utilities/escapeLiteralValue.js';
+import { formatSlonikPlaceholder } from '../utilities/formatSlonikPlaceholder.js';
+import { isPrimitiveValueExpression } from '../utilities/isPrimitiveValueExpression.js';
+import { isSqlToken } from '../utilities/isSqlToken.js';
+import { safeStringify } from '../utilities/safeStringify.js';
+import { createSqlTokenSqlFragment } from './createSqlTokenSqlFragment.js';
 import { InvalidInputError } from '@slonik/errors';
 import { z, type ZodTypeAny } from 'zod';
 

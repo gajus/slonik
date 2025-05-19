@@ -1,5 +1,5 @@
-import { createRaqSqlToken as raw } from './createRaqSqlToken';
-import { createTestRunner } from './helpers.test/createTestRunner';
+import { createRaqSqlToken as raw } from './createRaqSqlToken.js';
+import { createTestRunner } from './helpers.test/createTestRunner.js';
 import { createPool, sql } from 'slonik';
 
 const { test } = createTestRunner();

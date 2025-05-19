@@ -1,7 +1,7 @@
 /* eslint-disable no-console */
 
-import { createPool, sql } from '..';
-import { startTestContainer } from './termination.test';
+import { createPool, sql } from '../index.js';
+import { startTestContainer } from './termination.test.js';
 import test from 'ava';
 import { execSync } from 'node:child_process';
 

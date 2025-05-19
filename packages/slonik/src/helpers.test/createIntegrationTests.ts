@@ -22,8 +22,8 @@ import {
   UnexpectedForeignConnectionError,
   UnexpectedStateError,
   UniqueIntegrityConstraintViolationError,
-} from '..';
-import { type TestContextType } from './createTestRunner';
+} from '../index.js';
+import { type TestContextType } from './createTestRunner.js';
 import { type DriverFactory } from '@slonik/driver';
 import { type TestFn } from 'ava';
 import { randomUUID } from 'node:crypto';

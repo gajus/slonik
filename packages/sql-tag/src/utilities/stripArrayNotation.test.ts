@@ -1,4 +1,4 @@
-import { stripArrayNotation } from './stripArrayNotation';
+import { stripArrayNotation } from './stripArrayNotation.js';
 import test from 'ava';
 
 test('strips array notation', (t) => {

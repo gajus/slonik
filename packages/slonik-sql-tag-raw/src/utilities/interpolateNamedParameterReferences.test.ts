@@ -1,4 +1,4 @@
-import { interpolateNamedParameterReferences } from './interpolateNamedParameterReferences';
+import { interpolateNamedParameterReferences } from './interpolateNamedParameterReferences.js';
 import test from 'ava';
 import { sql } from 'slonik';
 

@@ -1,8 +1,8 @@
 import {
   type ClientConfiguration,
   type ClientConfigurationInput,
-} from '../types';
-import { createTypeParserPreset } from './createTypeParserPreset';
+} from '../types.js';
+import { createTypeParserPreset } from './createTypeParserPreset.js';
 import { type DriverTypeParser } from '@slonik/driver';
 import { InvalidConfigurationError } from '@slonik/errors';
 

@@ -1,4 +1,4 @@
-import { type PrimitiveValueExpression } from '../types';
+import { type PrimitiveValueExpression } from '../types.js';
 import { FragmentToken } from '@slonik/sql-tag';
 import {
   createSqlTokenSqlFragment,

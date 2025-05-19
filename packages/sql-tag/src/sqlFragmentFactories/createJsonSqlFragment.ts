@@ -1,13 +1,13 @@
-import { Logger } from '../Logger';
-import { FragmentToken } from '../tokens';
+import { Logger } from '../Logger.js';
+import { FragmentToken } from '../tokens.js';
 import {
   type JsonBinarySqlToken,
   type JsonSqlToken,
   type SqlFragmentToken,
-} from '../types';
-import { formatSlonikPlaceholder } from '../utilities/formatSlonikPlaceholder';
-import { isPlainObject } from '../utilities/isPlainObject';
-import { safeStringify } from '../utilities/safeStringify';
+} from '../types.js';
+import { formatSlonikPlaceholder } from '../utilities/formatSlonikPlaceholder.js';
+import { isPlainObject } from '../utilities/isPlainObject.js';
+import { safeStringify } from '../utilities/safeStringify.js';
 import { InvalidInputError } from '@slonik/errors';
 import { serializeError } from 'serialize-error';
 

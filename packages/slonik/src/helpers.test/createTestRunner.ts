@@ -1,5 +1,5 @@
-import { sql } from '..';
-import { createPool } from '../factories/createPool';
+import { createPool } from '../factories/createPool.js';
+import { sql } from '../index.js';
 import { type DriverFactory } from '@slonik/driver';
 import anyTest, { type TestFn } from 'ava';
 

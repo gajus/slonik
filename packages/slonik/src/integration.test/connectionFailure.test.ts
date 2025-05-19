@@ -1,7 +1,7 @@
 /* eslint-disable no-console */
 
-import { createPool } from '..';
-import { startTestContainer } from './termination.test';
+import { createPool } from '../index.js';
+import { startTestContainer } from './termination.test.js';
 import { createPgDriverFactory } from '@slonik/pg-driver';
 import test from 'ava';
 import { execSync } from 'node:child_process';

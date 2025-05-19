@@ -1,4 +1,4 @@
-import { getAutoExplainPayload } from './getAutoExplainPayload';
+import { getAutoExplainPayload } from './getAutoExplainPayload.js';
 import test from 'ava';
 
 test('extracts JSON from the message', (t) => {

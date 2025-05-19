@@ -1,4 +1,4 @@
-import { createConnectionLoaderClass } from './createConnectionLoaderClass';
+import { createConnectionLoaderClass } from './createConnectionLoaderClass.js';
 import { type Query, type QueryResultRow } from '@slonik/types';
 import {
   type FieldNode,

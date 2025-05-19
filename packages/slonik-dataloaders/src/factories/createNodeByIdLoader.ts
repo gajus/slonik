@@ -1,4 +1,4 @@
-import { createNodeByIdLoaderClass } from './createNodeByIdLoaderClass';
+import { createNodeByIdLoaderClass } from './createNodeByIdLoaderClass.js';
 import { type DatabasePool, type QuerySqlToken } from 'slonik';
 import { type ZodTypeAny } from 'zod';
 

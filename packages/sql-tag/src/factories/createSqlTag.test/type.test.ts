@@ -1,4 +1,4 @@
-import { createSqlTag } from '../createSqlTag';
+import { createSqlTag } from '../createSqlTag.js';
 import test from 'ava';
 import { z } from 'zod';
 

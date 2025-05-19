@@ -1,10 +1,13 @@
-import { executeQuery, type ExecutionRoutine } from '../routines/executeQuery';
+import {
+  executeQuery,
+  type ExecutionRoutine,
+} from '../routines/executeQuery.js';
 import {
   type Field,
   type InternalQueryMethod,
   type QueryResult,
   type QueryResultRow,
-} from '../types';
+} from '../types.js';
 import { type DriverNotice, type DriverQueryResult } from '@slonik/driver';
 import { SlonikError } from '@slonik/errors';
 

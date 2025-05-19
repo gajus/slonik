@@ -1,4 +1,7 @@
-import { executeQuery, type ExecutionRoutine } from '../routines/executeQuery';
+import {
+  executeQuery,
+  type ExecutionRoutine,
+} from '../routines/executeQuery.js';
 import {
   type ClientConfiguration,
   type Interceptor,
@@ -7,7 +10,7 @@ import {
   type QueryContext,
   type QueryResultRow,
   type StreamHandler,
-} from '../types';
+} from '../types.js';
 import { type DriverStreamResult } from '@slonik/driver';
 import { SlonikError } from '@slonik/errors';
 import { Transform } from 'node:stream';

@@ -1,13 +1,13 @@
-import { bindPool } from '../binders/bindPool';
-import { Logger } from '../Logger';
+import { bindPool } from '../binders/bindPool.js';
+import { Logger } from '../Logger.js';
 import {
   type ClientConfigurationInput,
   type DatabasePool,
   type DatabasePoolEventEmitter,
-} from '../types';
-import { createClientConfiguration } from './createClientConfiguration';
-import { createConnectionPool } from './createConnectionPool';
-import { createPoolConfiguration } from './createPoolConfiguration';
+} from '../types.js';
+import { createClientConfiguration } from './createClientConfiguration.js';
+import { createConnectionPool } from './createConnectionPool.js';
+import { createPoolConfiguration } from './createPoolConfiguration.js';
 import { type DriverFactory } from '@slonik/driver';
 import { createPgDriverFactory } from '@slonik/pg-driver';
 import EventEmitter from 'node:events';

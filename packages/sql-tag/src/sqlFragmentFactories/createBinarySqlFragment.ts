@@ -1,6 +1,6 @@
-import { FragmentToken } from '../tokens';
-import { type BinarySqlToken, type SqlFragmentToken } from '../types';
-import { formatSlonikPlaceholder } from '../utilities/formatSlonikPlaceholder';
+import { FragmentToken } from '../tokens.js';
+import { type BinarySqlToken, type SqlFragmentToken } from '../types.js';
+import { formatSlonikPlaceholder } from '../utilities/formatSlonikPlaceholder.js';
 import { InvalidInputError } from '@slonik/errors';
 
 export const createBinarySqlFragment = (

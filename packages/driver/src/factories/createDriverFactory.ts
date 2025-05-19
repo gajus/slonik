@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/consistent-type-definitions */
 
-import { Logger } from '../Logger';
+import { Logger } from '../Logger.js';
 import { type Field } from '@slonik/types';
 import { generateUid } from '@slonik/utilities';
 import EventEmitter from 'node:events';

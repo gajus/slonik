@@ -1,5 +1,5 @@
-import { getAutoExplainPayload } from '../utilities/getAutoExplainPayload';
-import { isAutoExplainJsonMessage } from '../utilities/isAutoExplainJsonMessage';
+import { getAutoExplainPayload } from '../utilities/getAutoExplainPayload.js';
+import { isAutoExplainJsonMessage } from '../utilities/isAutoExplainJsonMessage.js';
 import prettyMs from 'pretty-ms';
 import { serializeError } from 'serialize-error';
 import { type Interceptor } from 'slonik';

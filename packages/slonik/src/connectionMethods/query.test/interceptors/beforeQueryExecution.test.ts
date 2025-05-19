@@ -1,5 +1,5 @@
-import { createPoolWithMockedQuery } from '../../../helpers.test/createPoolWithMockedQuery';
-import { createTestRunner } from '../../../helpers.test/createTestRunner';
+import { createPoolWithMockedQuery } from '../../../helpers.test/createPoolWithMockedQuery.js';
+import { createTestRunner } from '../../../helpers.test/createTestRunner.js';
 import { createPgDriverFactory } from '@slonik/pg-driver';
 import { createSqlTag } from '@slonik/sql-tag';
 

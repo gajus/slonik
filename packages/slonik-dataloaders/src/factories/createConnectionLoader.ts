@@ -1,4 +1,4 @@
-import { createConnectionLoaderClass } from './createConnectionLoaderClass';
+import { createConnectionLoaderClass } from './createConnectionLoaderClass.js';
 import { type DatabasePool, type QuerySqlToken } from 'slonik';
 import { type ZodTypeAny } from 'zod';
 

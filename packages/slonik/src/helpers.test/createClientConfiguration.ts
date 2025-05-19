@@ -1,4 +1,4 @@
-import { type ClientConfiguration } from '../types';
+import { type ClientConfiguration } from '../types.js';
 
 export const createClientConfiguration = (): ClientConfiguration => {
   return {

@@ -1,5 +1,5 @@
-import { Logger as log } from '../Logger';
-import { type ClientConfiguration } from '../types';
+import { Logger as log } from '../Logger.js';
+import { type ClientConfiguration } from '../types.js';
 
 type PoolConfiguration = {
   idleTimeout: number;

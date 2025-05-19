@@ -1,7 +1,7 @@
-import { sql } from '..';
-import { createPool } from '../factories/createPool';
-import { createIntegrationTests } from '../helpers.test/createIntegrationTests';
-import { createTestRunner } from '../helpers.test/createTestRunner';
+import { createPool } from '../factories/createPool.js';
+import { createIntegrationTests } from '../helpers.test/createIntegrationTests.js';
+import { createTestRunner } from '../helpers.test/createTestRunner.js';
+import { sql } from '../index.js';
 import { createPgDriverFactory } from '@slonik/pg-driver';
 
 const driverFactory = createPgDriverFactory();

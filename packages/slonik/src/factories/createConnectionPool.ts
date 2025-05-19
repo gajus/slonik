@@ -1,5 +1,5 @@
-import { Logger } from '../Logger';
-import { type DatabasePoolEventEmitter } from '../types';
+import { Logger } from '../Logger.js';
+import { type DatabasePoolEventEmitter } from '../types.js';
 import { SpanStatusCode, trace } from '@opentelemetry/api';
 import {
   type Driver,

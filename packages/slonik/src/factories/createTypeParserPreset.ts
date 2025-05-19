@@ -1,9 +1,9 @@
-import { createBigintTypeParser } from './typeParsers/createBigintTypeParser';
-import { createDateTypeParser } from './typeParsers/createDateTypeParser';
-import { createIntervalTypeParser } from './typeParsers/createIntervalTypeParser';
-import { createNumericTypeParser } from './typeParsers/createNumericTypeParser';
-import { createTimestampTypeParser } from './typeParsers/createTimestampTypeParser';
-import { createTimestampWithTimeZoneTypeParser } from './typeParsers/createTimestampWithTimeZoneTypeParser';
+import { createBigintTypeParser } from './typeParsers/createBigintTypeParser.js';
+import { createDateTypeParser } from './typeParsers/createDateTypeParser.js';
+import { createIntervalTypeParser } from './typeParsers/createIntervalTypeParser.js';
+import { createNumericTypeParser } from './typeParsers/createNumericTypeParser.js';
+import { createTimestampTypeParser } from './typeParsers/createTimestampTypeParser.js';
+import { createTimestampWithTimeZoneTypeParser } from './typeParsers/createTimestampWithTimeZoneTypeParser.js';
 import { type DriverTypeParser } from '@slonik/driver';
 
 export const createTypeParserPreset = (): readonly DriverTypeParser[] => {

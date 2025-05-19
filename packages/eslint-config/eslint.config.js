@@ -9,6 +9,13 @@ export default tseslint.config(
     ...recommended[0],
   },
   {
+    files: ['**/*.ts'],
+    rules: {
+      'import/extensions': ['error', 'always'],
+      'import/no-useless-path-segments': 0,
+    }
+  },
+  {
     files: ['**/eslint.config.cjs'],
     rules: {
       'n/global-require': 0,

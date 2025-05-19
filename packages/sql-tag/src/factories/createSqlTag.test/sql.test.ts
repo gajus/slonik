@@ -1,5 +1,5 @@
-import { FragmentToken } from '../../tokens';
-import { createSqlTag } from '../createSqlTag';
+import { FragmentToken } from '../../tokens.js';
+import { createSqlTag } from '../createSqlTag.js';
 import { InvalidInputError } from '@slonik/errors';
 import anyTest, { type TestFn } from 'ava';
 import { ROARR } from 'roarr';

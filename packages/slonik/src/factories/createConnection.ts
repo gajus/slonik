@@ -1,6 +1,6 @@
-import { bindPoolConnection } from '../binders/bindPoolConnection';
-import { establishConnection } from '../routines/establishConnection';
-import { getPoolClientState } from '../state';
+import { bindPoolConnection } from '../binders/bindPoolConnection.js';
+import { establishConnection } from '../routines/establishConnection.js';
+import { getPoolClientState } from '../state.js';
 import {
   type ClientConfiguration,
   type Connection,
@@ -8,11 +8,11 @@ import {
   type DatabasePoolConnection,
   type Logger,
   type MaybePromise,
-} from '../types';
+} from '../types.js';
 import {
   type ConnectionPool,
   type ConnectionPoolClient,
-} from './createConnectionPool';
+} from './createConnectionPool.js';
 import { SpanStatusCode, trace } from '@opentelemetry/api';
 import { UnexpectedStateError } from '@slonik/errors';
 import { type QuerySqlToken } from '@slonik/sql-tag';

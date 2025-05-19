@@ -1,4 +1,4 @@
-import { snakeCase } from '../utilities/snakeCase';
+import { snakeCase } from '../utilities/snakeCase.js';
 import DataLoader from 'dataloader';
 import {
   type CommonQueryMethods,

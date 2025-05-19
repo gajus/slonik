@@ -1,4 +1,4 @@
-import { parseDsn } from './parseDsn';
+import { parseDsn } from './parseDsn.js';
 import { type ConnectionOptions } from '@slonik/types';
 import test from 'ava';
 import { readFileSync } from 'node:fs';

@@ -1,4 +1,4 @@
-import { interpolatePositionalParameterReferences } from './interpolatePositionalParameterReferences';
+import { interpolatePositionalParameterReferences } from './interpolatePositionalParameterReferences.js';
 import test from 'ava';
 import { sql } from 'slonik';
 

@@ -1,6 +1,6 @@
 /* eslint-disable no-console */
 
-import { createPool, sql } from '..';
+import { createPool, sql } from '../index.js';
 import test from 'ava';
 import getPort from 'get-port';
 import { execSync, spawn } from 'node:child_process';

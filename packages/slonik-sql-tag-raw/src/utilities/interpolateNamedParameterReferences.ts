@@ -1,6 +1,6 @@
-import { Logger } from '../Logger';
-import { type NamedParameterValues } from '../types';
-import { interpolatePositionalParameterReferences } from './interpolatePositionalParameterReferences';
+import { Logger } from '../Logger.js';
+import { type NamedParameterValues } from '../types.js';
+import { interpolatePositionalParameterReferences } from './interpolatePositionalParameterReferences.js';
 import { type ValueExpression } from '@slonik/sql-tag';
 import { difference } from 'lodash';
 import { type FragmentSqlToken, InvalidInputError } from 'slonik';

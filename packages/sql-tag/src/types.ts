@@ -1,4 +1,4 @@
-import type * as tokens from './tokens';
+import type * as tokens from './tokens.js';
 import { type PrimitiveValueExpression } from '@slonik/types';
 import { type ZodTypeAny } from 'zod';
 

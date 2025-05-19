@@ -1,1 +1,1 @@
-export { createQueryLoggingInterceptor } from './factories/createQueryLoggingInterceptor';
+export { createQueryLoggingInterceptor } from './factories/createQueryLoggingInterceptor.js';

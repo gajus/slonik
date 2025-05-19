@@ -1,9 +1,9 @@
 /* eslint-disable @typescript-eslint/no-loop-func */
 
-import { TRANSACTION_ROLLBACK_ERROR_PREFIX } from '../constants';
-import { transactionContext } from '../contexts/transactionContext';
-import { type ConnectionPoolClient } from '../factories/createConnectionPool';
-import { getPoolClientState } from '../state';
+import { TRANSACTION_ROLLBACK_ERROR_PREFIX } from '../constants.js';
+import { transactionContext } from '../contexts/transactionContext.js';
+import { type ConnectionPoolClient } from '../factories/createConnectionPool.js';
+import { getPoolClientState } from '../state.js';
 import {
   type ClientConfiguration,
   type Interceptor,
@@ -14,7 +14,7 @@ import {
   type QueryResult,
   type QueryResultRow,
   type StreamResult,
-} from '../types';
+} from '../types.js';
 import { SpanStatusCode, trace } from '@opentelemetry/api';
 import { type DriverNotice } from '@slonik/driver';
 import {

@@ -1,4 +1,4 @@
-import { defer } from './defer';
+import { defer } from './defer.js';
 import test from 'ava';
 
 test('resolves deferred promise', async (t) => {
