@@ -19,7 +19,7 @@ export const createTestRunner = (
 ) => {
   let testId = 0;
 
-  const test = anyTest as TestFn<TestContextType>;
+  const test = anyTest as unknown as TestFn<TestContextType>;
   const { beforeEach } = test;
 
   const TEMPLATE_DATABASE_NAME = 'slonik_test';
