@@ -1,5 +1,18 @@
 # slonik
 
+## 47.3.2
+
+### Patch Changes
+
+- [`ce93282`](https://github.com/gajus/slonik/commit/ce93282ff3da12c77f5e15e2b729a1de58beefd1) Thanks [@gajus](https://github.com/gajus)! - update zod
+
+- Updated dependencies []:
+  - @slonik/driver@47.3.2
+  - @slonik/errors@47.3.2
+  - @slonik/pg-driver@47.3.2
+  - @slonik/sql-tag@47.3.2
+  - @slonik/utilities@47.3.2
+
 ## 47.3.1
 
 ### Patch Changes
