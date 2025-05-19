@@ -13,7 +13,7 @@ export default tseslint.config(
     rules: {
       'import/extensions': ['error', 'always'],
       'import/no-useless-path-segments': 0,
-    }
+    },
   },
   {
     files: ['**/eslint.config.cjs'],

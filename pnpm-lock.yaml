@@ -79,9 +79,6 @@ importers:
       nyc:
         specifier: ^17.1.0
         version: 17.1.0
-      ts-node:
-        specifier: ^10.9.1
-        version: 10.9.2(@types/node@22.15.19)(typescript@5.8.3)
       typescript:
         specifier: ^5.8.3
         version: 5.8.3
@@ -113,9 +110,6 @@ importers:
       nyc:
         specifier: ^17.1.0
         version: 17.1.0
-      ts-node:
-        specifier: ^10.9.1
-        version: 10.9.2(@types/node@22.15.19)(typescript@5.8.3)
       typescript:
         specifier: ^5.8.3
         version: 5.8.3
@@ -190,9 +184,6 @@ importers:
       nyc:
         specifier: ^17.1.0
         version: 17.1.0
-      ts-node:
-        specifier: ^10.9.1
-        version: 10.9.2(@types/node@22.15.19)(typescript@5.8.3)
       typescript:
         specifier: ^5.8.3
         version: 5.8.3
@@ -272,9 +263,6 @@ importers:
       sinon:
         specifier: ^20.0.0
         version: 20.0.0
-      ts-node:
-        specifier: ^10.9.1
-        version: 10.9.2(@types/node@22.15.19)(typescript@5.8.3)
       typescript:
         specifier: ^5.8.3
         version: 5.8.3
@@ -365,9 +353,6 @@ importers:
       slonik:
         specifier: ^47.3.2
         version: link:../slonik
-      ts-node:
-        specifier: ^10.4.0
-        version: 10.9.2(@types/node@22.15.19)(typescript@5.8.3)
       typescript:
         specifier: ^5.8.3
         version: 5.8.3
@@ -399,9 +384,6 @@ importers:
       slonik:
         specifier: ^47.3.2
         version: link:../slonik
-      ts-node:
-        specifier: ^10.4.0
-        version: 10.9.2(@types/node@22.15.19)(typescript@5.8.3)
       typescript:
         specifier: ^5.8.3
         version: 5.8.3
@@ -433,9 +415,6 @@ importers:
       slonik:
         specifier: ^47.3.2
         version: link:../slonik
-      ts-node:
-        specifier: ^10.4.0
-        version: 10.9.2(@types/node@22.15.19)(typescript@5.8.3)
       typescript:
         specifier: ^5.8.3
         version: 5.8.3
@@ -479,9 +458,6 @@ importers:
       nyc:
         specifier: ^17.1.0
         version: 17.1.0
-      ts-node:
-        specifier: ^10.9.1
-        version: 10.9.2(@types/node@22.15.19)(typescript@5.8.3)
       typescript:
         specifier: ^5.8.3
         version: 5.8.3
@@ -522,9 +498,6 @@ importers:
       nyc:
         specifier: ^17.1.0
         version: 17.1.0
-      ts-node:
-        specifier: ^10.9.1
-        version: 10.9.2(@types/node@22.15.19)(typescript@5.8.3)
       typescript:
         specifier: ^5.8.3
         version: 5.8.3
@@ -562,9 +535,6 @@ importers:
       nyc:
         specifier: ^17.1.0
         version: 17.1.0
-      ts-node:
-        specifier: ^10.9.1
-        version: 10.9.2(@types/node@22.15.19)(typescript@5.8.3)
       typescript:
         specifier: ^5.8.3
         version: 5.8.3

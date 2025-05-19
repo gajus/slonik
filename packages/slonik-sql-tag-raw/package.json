@@ -10,9 +10,6 @@
     ],
     "files": [
       "src/**/*.test.ts"
-    ],
-    "require": [
-      "ts-node/register/transpile-only"
     ]
   },
   "dependencies": {
@@ -26,7 +23,6 @@
     "ava": "^6.3.0",
     "eslint": "9.16.0",
     "slonik": "^47.3.2",
-    "ts-node": "^10.4.0",
     "typescript": "^5.8.3",
     "typescript-eslint": "^8.32.1"
   },

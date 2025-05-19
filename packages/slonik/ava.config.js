@@ -17,7 +17,7 @@ module.exports = () => {
   return {
     extensions: ['ts'],
     files,
-    require: ['ts-node/register/transpile-only'],
+    nodeArguments: ['--experimental-transform-types'],
     timeout: '30s',
   };
 };
