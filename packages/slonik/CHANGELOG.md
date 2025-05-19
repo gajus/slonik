@@ -1,5 +1,18 @@
 # slonik
 
+## 47.3.1
+
+### Patch Changes
+
+- [`b7c9c34`](https://github.com/gajus/slonik/commit/b7c9c34116553c143feec9ae84df09ffe28c5db4) Thanks [@gajus](https://github.com/gajus)! - update zod to v4 compatible version
+
+- Updated dependencies []:
+  - @slonik/driver@47.3.1
+  - @slonik/errors@47.3.1
+  - @slonik/pg-driver@47.3.1
+  - @slonik/sql-tag@47.3.1
+  - @slonik/utilities@47.3.1
+
 ## 47.3.0
 
 ### Minor Changes
