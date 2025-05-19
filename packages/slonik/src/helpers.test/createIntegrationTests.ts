@@ -7,8 +7,6 @@ import {
   CheckIntegrityConstraintViolationError,
   createNumericTypeParser,
   createPool,
-  type DatabasePoolConnection,
-  type DatabaseTransactionConnection,
   ForeignKeyIntegrityConstraintViolationError,
   IdleTransactionTimeoutError,
   InputSyntaxError,
@@ -22,10 +20,14 @@ import {
   UnexpectedForeignConnectionError,
   UnexpectedStateError,
   UniqueIntegrityConstraintViolationError,
-} from '..';
-import { type TestContextType } from './createTestRunner';
-import { type DriverFactory } from '@slonik/driver';
-import { type TestFn } from 'ava';
+} from '../index.js';
+import type {
+  DatabasePoolConnection,
+  DatabaseTransactionConnection,
+} from '../index.js';
+import type { TestContextType } from './createTestRunner.js';
+import type { DriverFactory } from '@slonik/driver';
+import type { TestFn } from 'ava';
 import { randomUUID } from 'node:crypto';
 import { setTimeout as delay } from 'node:timers/promises';
 import * as sinon from 'sinon';

@@ -1,6 +1,6 @@
-import { createFieldNameTransformationInterceptor } from './createFieldNameTransformationInterceptor';
+import { createFieldNameTransformationInterceptor } from './createFieldNameTransformationInterceptor.js';
 import test from 'ava';
-import { type QueryContext } from 'slonik';
+import type { QueryContext } from 'slonik';
 
 const createQueryContext = (): QueryContext => {
   return {

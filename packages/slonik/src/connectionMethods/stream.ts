@@ -1,14 +1,15 @@
-import { executeQuery, type ExecutionRoutine } from '../routines/executeQuery';
-import {
-  type ClientConfiguration,
-  type Interceptor,
-  type InternalStreamFunction,
-  type Query,
-  type QueryContext,
-  type QueryResultRow,
-  type StreamHandler,
-} from '../types';
-import { type DriverStreamResult } from '@slonik/driver';
+import { executeQuery } from '../routines/executeQuery.js';
+import type { ExecutionRoutine } from '../routines/executeQuery.js';
+import type {
+  ClientConfiguration,
+  Interceptor,
+  InternalStreamFunction,
+  Query,
+  QueryContext,
+  QueryResultRow,
+  StreamHandler,
+} from '../types.js';
+import type { DriverStreamResult } from '@slonik/driver';
 import { SlonikError } from '@slonik/errors';
 import { Transform } from 'node:stream';
 import { pipeline } from 'node:stream/promises';

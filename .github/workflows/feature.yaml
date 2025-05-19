@@ -102,7 +102,7 @@ jobs:
           - utilities
           - pg-integration
         node_version:
-          - 20
+          - 24
       max-parallel: 3
     timeout-minutes: 10
 name: Test and build

@@ -3,8 +3,8 @@
  * a type-level tests to ensure the typings don't regress.
  */
 
-import { createPool, createSqlTag } from '.';
-import { type QueryResult } from './types';
+import { createPool, createSqlTag } from './index.js';
+import type { QueryResult } from './types.js';
 import test from 'ava';
 import { expectTypeOf } from 'expect-type';
 import { z } from 'zod';

@@ -1,12 +1,7 @@
-import { Logger } from '../Logger';
-import { extractCacheAttributes } from '../utilities/extractCacheAttributes';
-import { normalizeCacheAttributes } from '../utilities/normalizeCacheAttributes';
-import {
-  type Interceptor,
-  type Query,
-  type QueryResult,
-  type QueryResultRow,
-} from 'slonik';
+import { Logger } from '../Logger.js';
+import { extractCacheAttributes } from '../utilities/extractCacheAttributes.js';
+import { normalizeCacheAttributes } from '../utilities/normalizeCacheAttributes.js';
+import type { Interceptor, Query, QueryResult, QueryResultRow } from 'slonik';
 
 const log = Logger.child({
   namespace: 'createQueryCacheInterceptor',

@@ -1,6 +1,6 @@
-import { FragmentToken } from '../tokens';
-import { type SqlFragmentToken, type UuidSqlToken } from '../types';
-import { formatSlonikPlaceholder } from '../utilities/formatSlonikPlaceholder';
+import { FragmentToken } from '../tokens.js';
+import type { SqlFragmentToken, UuidSqlToken } from '../types.js';
+import { formatSlonikPlaceholder } from '../utilities/formatSlonikPlaceholder.js';
 import { InvalidInputError } from '@slonik/errors';
 
 export type UUID = `${string}-${string}-${string}-${string}-${string}`;

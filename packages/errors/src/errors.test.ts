@@ -1,4 +1,4 @@
-import { SlonikError } from './errors';
+import { SlonikError } from './errors.js';
 import test from 'ava';
 
 test('should be able to create an error', (t) => {

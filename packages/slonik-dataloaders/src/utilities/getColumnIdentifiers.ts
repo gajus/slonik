@@ -1,5 +1,6 @@
-import { snakeCase } from './snakeCase';
-import { type IdentifierSqlToken, sql } from 'slonik';
+import { snakeCase } from './snakeCase.js';
+import { sql } from 'slonik';
+import type { IdentifierSqlToken } from 'slonik';
 
 export const getColumnIdentifiers = <T>(
   tableAlias: string,

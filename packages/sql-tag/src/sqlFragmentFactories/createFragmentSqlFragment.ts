@@ -1,7 +1,7 @@
-import { slonikPlaceholderRegexRule } from '../regexRules/slonikPlaceholderRegexRule';
-import { FragmentToken } from '../tokens';
-import { type FragmentSqlToken, type SqlFragmentToken } from '../types';
-import { formatSlonikPlaceholder } from '../utilities/formatSlonikPlaceholder';
+import { slonikPlaceholderRegexRule } from '../regexRules/slonikPlaceholderRegexRule.js';
+import { FragmentToken } from '../tokens.js';
+import type { FragmentSqlToken, SqlFragmentToken } from '../types.js';
+import { formatSlonikPlaceholder } from '../utilities/formatSlonikPlaceholder.js';
 import { UnexpectedStateError } from '@slonik/errors';
 
 export const createFragmentSqlFragment = (

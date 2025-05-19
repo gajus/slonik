@@ -1,9 +1,9 @@
-import { parseDsn } from './parseDsn';
-import { type ConnectionOptions } from '@slonik/types';
+import { parseDsn } from './parseDsn.js';
 import test from 'ava';
 import { readFileSync } from 'node:fs';
+import { fileURLToPath } from 'node:url';
 
-const testParse = test.macro((t, connectionOptions: ConnectionOptions) => {
+const testParse = test.macro((t, connectionOptions) => {
   t.deepEqual(parseDsn(t.title), connectionOptions);
 });
 
@@ -77,9 +77,15 @@ test('postgresql:///database-name?host=/var/lib/postgresql', testParse, {
   host: '/var/lib/postgresql',
 });
 
-const sslCaCertPath = require.resolve('@slonik/test-ssls/root.crt');
-const sslCertPath = require.resolve('@slonik/test-ssls/slonik.crt');
-const sslKeyPath = require.resolve('@slonik/test-ssls/slonik.key');
+const sslCaCertPath = fileURLToPath(
+  import.meta.resolve('@slonik/test-ssls/root.crt'),
+);
+const sslCertPath = fileURLToPath(
+  import.meta.resolve('@slonik/test-ssls/slonik.crt'),
+);
+const sslKeyPath = fileURLToPath(
+  import.meta.resolve('@slonik/test-ssls/slonik.key'),
+);
 
 test(`postgresql://?sslcert=${sslCertPath}&sslkey=${sslKeyPath}`, testParse, {
   ssl: {

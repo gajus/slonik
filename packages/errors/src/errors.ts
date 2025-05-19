@@ -1,9 +1,9 @@
-import {
-  type PrimitiveValueExpression,
-  type Query,
-  type QueryResultRow,
+import type {
+  PrimitiveValueExpression,
+  Query,
+  QueryResultRow,
 } from '@slonik/types';
-import { type ZodIssue } from 'zod';
+import type { ZodIssue } from 'zod';
 
 type IntegrityConstraintViolationErrorCause = Error & {
   column?: string;
@@ -37,8 +37,6 @@ export class BackendTerminatedUnexpectedlyError extends SlonikError {
 }
 
 export class IntegrityConstraintViolationError extends SlonikError {
-  public cause?: Error;
-
   public column: null | string;
 
   public constraint: null | string;

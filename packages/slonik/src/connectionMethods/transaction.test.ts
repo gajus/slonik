@@ -1,7 +1,7 @@
-import { createPool } from '../factories/createPool';
-import { createErrorWithCode } from '../helpers.test/createErrorWithCode';
-import { createPoolWithSpy } from '../helpers.test/createPoolWithSpy';
-import { createTestRunner } from '../helpers.test/createTestRunner';
+import { createPool } from '../factories/createPool.js';
+import { createErrorWithCode } from '../helpers.test/createErrorWithCode.js';
+import { createPoolWithSpy } from '../helpers.test/createPoolWithSpy.js';
+import { createTestRunner } from '../helpers.test/createTestRunner.js';
 import { createPgDriverFactory } from '@slonik/pg-driver';
 import * as sinon from 'sinon';
 

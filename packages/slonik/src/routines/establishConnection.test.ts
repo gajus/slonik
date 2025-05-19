@@ -1,6 +1,6 @@
-import { type ConnectionPool } from '../factories/createConnectionPool';
-import { Logger } from '../Logger';
-import { establishConnection } from './establishConnection';
+import type { ConnectionPool } from '../factories/createConnectionPool.js';
+import { Logger } from '../Logger.js';
+import { establishConnection } from './establishConnection.js';
 import test from 'ava';
 import * as sinon from 'sinon';
 

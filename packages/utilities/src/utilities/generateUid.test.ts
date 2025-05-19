@@ -1,4 +1,4 @@
-import { generateUid } from './generateUid';
+import { generateUid } from './generateUid.js';
 import test from 'ava';
 
 test('returns a string', (t) => {

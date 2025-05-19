@@ -6,7 +6,12 @@
   },
   "description": "SSLs used for testing Slonik.",
   "engines": {
-    "node": ">=18"
+    "node": ">=24"
+  },
+  "exports": {
+    "./root.crt": "./root.crt",
+    "./slonik.crt": "./slonik.crt",
+    "./slonik.key": "./slonik.key"
   },
   "license": "BSD-3-Clause",
   "name": "@slonik/test-ssls",
@@ -17,5 +22,6 @@
     "type": "git",
     "url": "https://github.com/gajus/slonik"
   },
+  "type": "module",
   "version": "47.3.2"
 }

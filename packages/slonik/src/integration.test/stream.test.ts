@@ -1,10 +1,10 @@
+import { createTestRunner } from '../helpers.test/createTestRunner.js';
 import {
   createBigintTypeParser,
   createPool,
   sql,
   StatementTimeoutError,
-} from '..';
-import { createTestRunner } from '../helpers.test/createTestRunner';
+} from '../index.js';
 import { createPgDriverFactory } from '@slonik/pg-driver';
 import * as sinon from 'sinon';
 import { z } from 'zod';

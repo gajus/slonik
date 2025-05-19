@@ -1,4 +1,4 @@
-import { type DriverTypeParser } from '@slonik/driver';
+import type { DriverTypeParser } from '@slonik/driver';
 import {
   toSeconds as durationToSeconds,
   parse as parseIsoDuration,

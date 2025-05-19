@@ -1,4 +1,4 @@
-import { type DriverTypeParser } from '@slonik/driver';
+import type { DriverTypeParser } from '@slonik/driver';
 
 const timestampParser = (value: null | string) => {
   if (value === 'infinity') {

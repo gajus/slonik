@@ -1,6 +1,6 @@
-import { FragmentToken } from '../tokens';
-import { type SqlFragmentToken, type TimestampSqlToken } from '../types';
-import { formatSlonikPlaceholder } from '../utilities/formatSlonikPlaceholder';
+import { FragmentToken } from '../tokens.js';
+import type { SqlFragmentToken, TimestampSqlToken } from '../types.js';
+import { formatSlonikPlaceholder } from '../utilities/formatSlonikPlaceholder.js';
 import { InvalidInputError } from '@slonik/errors';
 
 export const createTimestampSqlFragment = (

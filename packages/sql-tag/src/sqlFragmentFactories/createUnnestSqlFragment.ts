@@ -1,14 +1,14 @@
-import { FragmentToken } from '../tokens';
-import {
-  type PrimitiveValueExpression,
-  type SqlFragmentToken,
-  type UnnestSqlToken,
-} from '../types';
-import { countArrayDimensions } from '../utilities/countArrayDimensions';
-import { escapeIdentifier } from '../utilities/escapeIdentifier';
-import { formatSlonikPlaceholder } from '../utilities/formatSlonikPlaceholder';
-import { isPrimitiveValueExpression } from '../utilities/isPrimitiveValueExpression';
-import { stripArrayNotation } from '../utilities/stripArrayNotation';
+import { FragmentToken } from '../tokens.js';
+import type {
+  PrimitiveValueExpression,
+  SqlFragmentToken,
+  UnnestSqlToken,
+} from '../types.js';
+import { countArrayDimensions } from '../utilities/countArrayDimensions.js';
+import { escapeIdentifier } from '../utilities/escapeIdentifier.js';
+import { formatSlonikPlaceholder } from '../utilities/formatSlonikPlaceholder.js';
+import { isPrimitiveValueExpression } from '../utilities/isPrimitiveValueExpression.js';
+import { stripArrayNotation } from '../utilities/stripArrayNotation.js';
 import { InvalidInputError } from '@slonik/errors';
 
 export const createUnnestSqlFragment = (

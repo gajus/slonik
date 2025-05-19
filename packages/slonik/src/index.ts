@@ -1,16 +1,16 @@
 import { createSqlTag } from '@slonik/sql-tag';
 
-export { createPool } from './factories/createPool';
+export { createPool } from './factories/createPool.js';
 
 export const sql = createSqlTag();
 
-export { createTypeParserPreset } from './factories/createTypeParserPreset';
-export { createBigintTypeParser } from './factories/typeParsers/createBigintTypeParser';
-export { createDateTypeParser } from './factories/typeParsers/createDateTypeParser';
-export { createIntervalTypeParser } from './factories/typeParsers/createIntervalTypeParser';
-export { createNumericTypeParser } from './factories/typeParsers/createNumericTypeParser';
-export { createTimestampTypeParser } from './factories/typeParsers/createTimestampTypeParser';
-export { createTimestampWithTimeZoneTypeParser } from './factories/typeParsers/createTimestampWithTimeZoneTypeParser';
+export { createTypeParserPreset } from './factories/createTypeParserPreset.js';
+export { createBigintTypeParser } from './factories/typeParsers/createBigintTypeParser.js';
+export { createDateTypeParser } from './factories/typeParsers/createDateTypeParser.js';
+export { createIntervalTypeParser } from './factories/typeParsers/createIntervalTypeParser.js';
+export { createNumericTypeParser } from './factories/typeParsers/createNumericTypeParser.js';
+export { createTimestampTypeParser } from './factories/typeParsers/createTimestampTypeParser.js';
+export { createTimestampWithTimeZoneTypeParser } from './factories/typeParsers/createTimestampWithTimeZoneTypeParser.js';
 export type {
   ClientConfiguration,
   ClientConfigurationInput,
@@ -36,7 +36,7 @@ export type {
   QueryResultRowColumn,
   TypeNameIdentifier,
   ValueExpression,
-} from './types';
+} from './types.js';
 export {
   createDriverFactory,
   type Driver,

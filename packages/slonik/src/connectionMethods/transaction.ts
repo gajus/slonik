@@ -1,8 +1,8 @@
-import { bindTransactionConnection } from '../binders/bindTransactionConnection';
-import { TRANSACTION_ROLLBACK_ERROR_PREFIX } from '../constants';
-import { transactionContext } from '../contexts/transactionContext';
-import { getPoolClientState } from '../state';
-import { type InternalTransactionFunction } from '../types';
+import { bindTransactionConnection } from '../binders/bindTransactionConnection.js';
+import { TRANSACTION_ROLLBACK_ERROR_PREFIX } from '../constants.js';
+import { transactionContext } from '../contexts/transactionContext.js';
+import { getPoolClientState } from '../state.js';
+import type { InternalTransactionFunction } from '../types.js';
 import { BackendTerminatedError, UnexpectedStateError } from '@slonik/errors';
 import { generateUid } from '@slonik/utilities';
 import { serializeError } from 'serialize-error';

@@ -1,5 +1,6 @@
-import { createSqlTag } from '../createSqlTag';
-import anyTest, { type TestFn } from 'ava';
+import { createSqlTag } from '../createSqlTag.js';
+import anyTest from 'ava';
+import type { TestFn } from 'ava';
 import { ROARR } from 'roarr';
 import { z } from 'zod';
 

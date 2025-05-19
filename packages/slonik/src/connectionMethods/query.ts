@@ -1,11 +1,12 @@
-import { executeQuery, type ExecutionRoutine } from '../routines/executeQuery';
-import {
-  type Field,
-  type InternalQueryMethod,
-  type QueryResult,
-  type QueryResultRow,
-} from '../types';
-import { type DriverNotice, type DriverQueryResult } from '@slonik/driver';
+import { executeQuery } from '../routines/executeQuery.js';
+import type { ExecutionRoutine } from '../routines/executeQuery.js';
+import type {
+  Field,
+  InternalQueryMethod,
+  QueryResult,
+  QueryResultRow,
+} from '../types.js';
+import type { DriverNotice, DriverQueryResult } from '@slonik/driver';
 import { SlonikError } from '@slonik/errors';
 
 const executionRoutine: ExecutionRoutine = async (

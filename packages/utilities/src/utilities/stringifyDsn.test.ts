@@ -1,5 +1,5 @@
-import { parseDsn } from './parseDsn';
-import { stringifyDsn } from './stringifyDsn';
+import { parseDsn } from './parseDsn.js';
+import { stringifyDsn } from './stringifyDsn.js';
 import test from 'ava';
 
 const dsns = [

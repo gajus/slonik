@@ -1,6 +1,6 @@
-import { createNodeByIdLoaderClass } from './createNodeByIdLoaderClass';
-import { type DatabasePool, type QuerySqlToken } from 'slonik';
-import { type ZodTypeAny } from 'zod';
+import { createNodeByIdLoaderClass } from './createNodeByIdLoaderClass.js';
+import type { DatabasePool, QuerySqlToken } from 'slonik';
+import type { ZodTypeAny } from 'zod';
 
 export const createNodeByIdLoader = <T extends ZodTypeAny>(
   pool: DatabasePool,

@@ -1,5 +1,5 @@
 import { createHash } from 'node:crypto';
-import { type PrimitiveValueExpression } from 'slonik';
+import type { PrimitiveValueExpression } from 'slonik';
 
 const hash = (subject: string) => {
   return createHash('sha256').update(subject).digest('hex').slice(0, 24);

@@ -21,4 +21,4 @@ export {
   UnexpectedForeignConnectionError,
   UnexpectedStateError,
   UniqueIntegrityConstraintViolationError,
-} from './errors';
+} from './errors.js';

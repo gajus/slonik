@@ -1,7 +1,7 @@
-import { type NamedParameterValues } from '../types';
-import { interpolateNamedParameterReferences } from '../utilities/interpolateNamedParameterReferences';
-import { interpolatePositionalParameterReferences } from '../utilities/interpolatePositionalParameterReferences';
-import { type FragmentSqlToken, type ValueExpression } from 'slonik';
+import type { NamedParameterValues } from '../types.js';
+import { interpolateNamedParameterReferences } from '../utilities/interpolateNamedParameterReferences.js';
+import { interpolatePositionalParameterReferences } from '../utilities/interpolatePositionalParameterReferences.js';
+import type { FragmentSqlToken, ValueExpression } from 'slonik';
 
 export const createRaqSqlToken = (
   sql: string,

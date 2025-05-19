@@ -1,5 +1,6 @@
-import { createNodeByIdLoaderClass } from './createNodeByIdLoaderClass';
-import { createPool, type DatabasePool, sql } from 'slonik';
+import { createNodeByIdLoaderClass } from './createNodeByIdLoaderClass.js';
+import { createPool, sql } from 'slonik';
+import type { DatabasePool } from 'slonik';
 import { afterAll, beforeAll, describe, expect, it, vi } from 'vitest';
 import { z } from 'zod';
 

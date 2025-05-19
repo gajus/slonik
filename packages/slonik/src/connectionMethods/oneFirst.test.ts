@@ -1,5 +1,5 @@
-import { createPool } from '../factories/createPool';
-import { createTestRunner } from '../helpers.test/createTestRunner';
+import { createPool } from '../factories/createPool.js';
+import { createTestRunner } from '../helpers.test/createTestRunner.js';
 import {
   DataIntegrityError,
   NotFoundError,

@@ -1,6 +1,10 @@
 /* eslint-disable no-console */
 
-import { BackendTerminatedUnexpectedlyError, createPool, sql } from '..';
+import {
+  BackendTerminatedUnexpectedlyError,
+  createPool,
+  sql,
+} from '../index.js';
 import test from 'ava';
 import getPort from 'get-port';
 import { execSync, spawn } from 'node:child_process';

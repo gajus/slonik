@@ -1,11 +1,11 @@
 /* eslint-disable canonical/id-match */
 
-import {
-  createDriverFactory,
-  type DriverCommand,
-  type DriverConfiguration,
-  type DriverFactory,
-  type DriverTypeParser,
+import { createDriverFactory } from '@slonik/driver';
+import type {
+  DriverCommand,
+  DriverConfiguration,
+  DriverFactory,
+  DriverTypeParser,
 } from '@slonik/driver';
 import {
   BackendTerminatedError,
@@ -22,14 +22,14 @@ import {
   UnexpectedStateError,
   UniqueIntegrityConstraintViolationError,
 } from '@slonik/errors';
-import { type PrimitiveValueExpression } from '@slonik/sql-tag';
-import { type Field, type Query } from '@slonik/types';
+import type { PrimitiveValueExpression } from '@slonik/sql-tag';
+import type { Field, Query } from '@slonik/types';
 import { parseDsn } from '@slonik/utilities';
 import { Transform } from 'node:stream';
-import {
-  Client,
-  type DatabaseError,
-  type ClientConfig as NativePostgresClientConfiguration,
+import { Client } from 'pg';
+import type {
+  DatabaseError,
+  ClientConfig as NativePostgresClientConfiguration,
 } from 'pg';
 import QueryStream from 'pg-query-stream';
 import { getTypeParser as getNativeTypeParser } from 'pg-types';

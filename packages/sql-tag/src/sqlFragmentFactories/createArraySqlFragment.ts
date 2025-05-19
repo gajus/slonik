@@ -1,10 +1,10 @@
-import { createSqlTokenSqlFragment } from '../factories/createSqlTokenSqlFragment';
-import { FragmentToken } from '../tokens';
-import { type ArraySqlToken, type SqlFragmentToken } from '../types';
-import { escapeIdentifier } from '../utilities/escapeIdentifier';
-import { formatSlonikPlaceholder } from '../utilities/formatSlonikPlaceholder';
-import { isPrimitiveValueExpression } from '../utilities/isPrimitiveValueExpression';
-import { isSqlToken } from '../utilities/isSqlToken';
+import { createSqlTokenSqlFragment } from '../factories/createSqlTokenSqlFragment.js';
+import { FragmentToken } from '../tokens.js';
+import type { ArraySqlToken, SqlFragmentToken } from '../types.js';
+import { escapeIdentifier } from '../utilities/escapeIdentifier.js';
+import { formatSlonikPlaceholder } from '../utilities/formatSlonikPlaceholder.js';
+import { isPrimitiveValueExpression } from '../utilities/isPrimitiveValueExpression.js';
+import { isSqlToken } from '../utilities/isSqlToken.js';
 import { InvalidInputError, UnexpectedStateError } from '@slonik/errors';
 
 export const createArraySqlFragment = (

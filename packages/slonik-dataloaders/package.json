@@ -16,10 +16,11 @@
     "eslint": "9.16.0",
     "slonik": "^47.3.2",
     "typescript": "^5.8.3",
-    "vitest": "^2.1.8"
+    "typescript-eslint": "^8.32.1",
+    "vitest": "^3.1.4"
   },
   "engines": {
-    "node": ">=18"
+    "node": ">=24"
   },
   "keywords": [
     "postgresql",
@@ -41,6 +42,7 @@
     "lint": "eslint ./src && tsc --noEmit",
     "test": "npx vitest run"
   },
+  "type": "module",
   "typings": "./dist/index.d.ts",
   "version": "47.3.2"
 }

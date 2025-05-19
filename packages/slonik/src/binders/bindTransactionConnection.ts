@@ -1,22 +1,22 @@
-import { any } from '../connectionMethods/any';
-import { anyFirst } from '../connectionMethods/anyFirst';
-import { exists } from '../connectionMethods/exists';
-import { many } from '../connectionMethods/many';
-import { manyFirst } from '../connectionMethods/manyFirst';
-import { maybeOne } from '../connectionMethods/maybeOne';
-import { maybeOneFirst } from '../connectionMethods/maybeOneFirst';
-import { nestedTransaction } from '../connectionMethods/nestedTransaction';
-import { one } from '../connectionMethods/one';
-import { oneFirst } from '../connectionMethods/oneFirst';
-import { query as queryMethod } from '../connectionMethods/query';
-import { stream } from '../connectionMethods/stream';
-import { type ConnectionPoolClient } from '../factories/createConnectionPool';
-import { getPoolClientState } from '../state';
-import {
-  type ClientConfiguration,
-  type DatabaseTransactionConnection,
-  type Logger,
-} from '../types';
+import { any } from '../connectionMethods/any.js';
+import { anyFirst } from '../connectionMethods/anyFirst.js';
+import { exists } from '../connectionMethods/exists.js';
+import { many } from '../connectionMethods/many.js';
+import { manyFirst } from '../connectionMethods/manyFirst.js';
+import { maybeOne } from '../connectionMethods/maybeOne.js';
+import { maybeOneFirst } from '../connectionMethods/maybeOneFirst.js';
+import { nestedTransaction } from '../connectionMethods/nestedTransaction.js';
+import { one } from '../connectionMethods/one.js';
+import { oneFirst } from '../connectionMethods/oneFirst.js';
+import { query as queryMethod } from '../connectionMethods/query.js';
+import { stream } from '../connectionMethods/stream.js';
+import type { ConnectionPoolClient } from '../factories/createConnectionPool.js';
+import { getPoolClientState } from '../state.js';
+import type {
+  ClientConfiguration,
+  DatabaseTransactionConnection,
+  Logger,
+} from '../types.js';
 
 export const bindTransactionConnection = (
   parentLog: Logger,

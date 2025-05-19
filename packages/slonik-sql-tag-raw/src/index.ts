@@ -1,1 +1,1 @@
-export { createRaqSqlToken as raw } from './factories/createRaqSqlToken';
+export { createRaqSqlToken as raw } from './factories/createRaqSqlToken.js';

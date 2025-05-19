@@ -1,1 +1,1 @@
-export { createQueryCacheInterceptor } from './factories/createQueryCacheInterceptor';
+export { createQueryCacheInterceptor } from './factories/createQueryCacheInterceptor.js';

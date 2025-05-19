@@ -1,5 +1,5 @@
-import { type InternalQueryMethod } from '../types';
-import { one } from './one';
+import type { InternalQueryMethod } from '../types.js';
+import { one } from './one.js';
 import { UnexpectedStateError } from '@slonik/errors';
 import { generateUid } from '@slonik/utilities';
 

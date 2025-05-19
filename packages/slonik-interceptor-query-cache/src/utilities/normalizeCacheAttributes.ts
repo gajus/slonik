@@ -1,5 +1,5 @@
-import { type CacheAttributes } from '../factories/createQueryCacheInterceptor';
-import { type ExtractedCacheAttributes } from './extractCacheAttributes';
+import type { CacheAttributes } from '../factories/createQueryCacheInterceptor.js';
+import type { ExtractedCacheAttributes } from './extractCacheAttributes.js';
 
 export const normalizeCacheAttributes = (
   extractedCacheAttributes: ExtractedCacheAttributes,

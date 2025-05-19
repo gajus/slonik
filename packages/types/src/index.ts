@@ -5,4 +5,4 @@ export {
   type Query,
   type QueryResultRow,
   type SerializableValue,
-} from './types';
+} from './types.js';

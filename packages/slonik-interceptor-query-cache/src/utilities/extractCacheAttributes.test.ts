@@ -1,4 +1,4 @@
-import { extractCacheAttributes } from './extractCacheAttributes';
+import { extractCacheAttributes } from './extractCacheAttributes.js';
 import test from 'ava';
 
 test('returns null when query does not contain cache attributes', (t) => {

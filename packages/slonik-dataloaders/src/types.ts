@@ -1,4 +1,4 @@
-import { type IdentifierSqlToken } from 'slonik';
+import type { IdentifierSqlToken } from 'slonik';
 
 export type ColumnIdentifiers<TResult> = Record<
   keyof TResult,

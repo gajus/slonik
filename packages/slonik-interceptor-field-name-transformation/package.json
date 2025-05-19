@@ -11,12 +11,12 @@
     "files": [
       "src/**/*.test.ts"
     ],
-    "require": [
-      "ts-node/register/transpile-only"
+    "nodeArguments": [
+      "--import=tsimp"
     ]
   },
   "dependencies": {
-    "camelcase": "^6.2.1"
+    "camelcase": "^8.0.0"
   },
   "description": "Transforms Slonik query result field names.",
   "devDependencies": {
@@ -24,11 +24,12 @@
     "ava": "^6.3.0",
     "eslint": "9.16.0",
     "slonik": "^47.3.2",
-    "ts-node": "^10.4.0",
-    "typescript": "^5.8.3"
+    "tsimp": "^2.0.12",
+    "typescript": "^5.8.3",
+    "typescript-eslint": "^8.32.1"
   },
   "engines": {
-    "node": ">=18"
+    "node": ">=24"
   },
   "keywords": [
     "postgresql",
@@ -50,6 +51,7 @@
     "lint": "eslint ./src && tsc --noEmit",
     "test": "ava --verbose --serial"
   },
-  "typings": "./dist/index.d.ts",
+  "type": "module",
+  "types": "./dist/index.d.ts",
   "version": "47.3.2"
 }

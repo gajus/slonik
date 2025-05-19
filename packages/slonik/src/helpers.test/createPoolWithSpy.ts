@@ -1,6 +1,6 @@
-import { type ConnectionPoolClient } from '../factories/createConnectionPool';
-import { createPool } from '../factories/createPool';
-import { type ClientConfigurationInput } from '../types';
+import type { ConnectionPoolClient } from '../factories/createConnectionPool.js';
+import { createPool } from '../factories/createPool.js';
+import type { ClientConfigurationInput } from '../types.js';
 import EventEmitter from 'node:events';
 import * as sinon from 'sinon';
 

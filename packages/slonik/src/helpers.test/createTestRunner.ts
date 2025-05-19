@@ -1,7 +1,8 @@
-import { sql } from '..';
-import { createPool } from '../factories/createPool';
-import { type DriverFactory } from '@slonik/driver';
-import anyTest, { type TestFn } from 'ava';
+import { createPool } from '../factories/createPool.js';
+import { sql } from '../index.js';
+import type { DriverFactory } from '@slonik/driver';
+import anyTest from 'ava';
+import type { TestFn } from 'ava';
 
 const POSTGRES_DSN =
   // eslint-disable-next-line n/no-process-env
@@ -18,7 +19,7 @@ export const createTestRunner = (
 ) => {
   let testId = 0;
 
-  const test = anyTest as TestFn<TestContextType>;
+  const test = anyTest as unknown as TestFn<TestContextType>;
   const { beforeEach } = test;
 
   const TEMPLATE_DATABASE_NAME = 'slonik_test';

@@ -3,7 +3,7 @@ const {
   // eslint-disable-next-line n/no-process-env
 } = process.env;
 
-module.exports = () => {
+export default () => {
   let files = ['src/**/*.test.ts'];
 
   if (TEST_ONLY === 'utilities') {
@@ -17,7 +17,7 @@ module.exports = () => {
   return {
     extensions: ['ts'],
     files,
-    require: ['ts-node/register/transpile-only'],
+    nodeArguments: ['--import=tsimp'],
     timeout: '30s',
   };
 };

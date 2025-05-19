@@ -1,7 +1,7 @@
-import {
-  type FragmentDefinitionNode,
-  type GraphQLResolveInfo,
-  type SelectionSetNode,
+import type {
+  FragmentDefinitionNode,
+  GraphQLResolveInfo,
+  SelectionSetNode,
 } from 'graphql';
 
 const addFieldNamesFromSelectionSet = (

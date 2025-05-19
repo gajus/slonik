@@ -1,7 +1,7 @@
-import { bindTransactionConnection } from '../binders/bindTransactionConnection';
-import { TRANSACTION_ROLLBACK_ERROR_PREFIX } from '../constants';
-import { getPoolClientState } from '../state';
-import { type InternalNestedTransactionFunction } from '../types';
+import { bindTransactionConnection } from '../binders/bindTransactionConnection.js';
+import { TRANSACTION_ROLLBACK_ERROR_PREFIX } from '../constants.js';
+import { getPoolClientState } from '../state.js';
+import type { InternalNestedTransactionFunction } from '../types.js';
 import { generateUid } from '@slonik/utilities';
 import { serializeError } from 'serialize-error';
 

@@ -1,13 +1,17 @@
-import { Logger } from '../Logger';
-import { type NamedParameterValues } from '../types';
-import { interpolatePositionalParameterReferences } from './interpolatePositionalParameterReferences';
-import { type ValueExpression } from '@slonik/sql-tag';
-import { difference } from 'lodash';
-import { type FragmentSqlToken, InvalidInputError } from 'slonik';
+import { Logger } from '../Logger.js';
+import type { NamedParameterValues } from '../types.js';
+import { interpolatePositionalParameterReferences } from './interpolatePositionalParameterReferences.js';
+import type { ValueExpression } from '@slonik/sql-tag';
+import { InvalidInputError } from 'slonik';
+import type { FragmentSqlToken } from 'slonik';
 
 const log = Logger.child({
   namespace: 'interpolateNamedParameterReferences',
 });
+
+const difference = (a: string[], b: string[]) => {
+  return a.filter((value) => !b.includes(value));
+};
 
 /**
  * @see https://regex101.com/r/KrEe8i/2

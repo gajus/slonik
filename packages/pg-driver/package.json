@@ -11,8 +11,8 @@
     "files": [
       "src/**/*.test.ts"
     ],
-    "require": [
-      "ts-node/register/transpile-only"
+    "nodeArguments": [
+      "--import=tsimp"
     ]
   },
   "dependencies": {
@@ -29,17 +29,17 @@
   "description": "A Node.js PostgreSQL client with strict types, detailed logging and assertions.",
   "devDependencies": {
     "@slonik/eslint-config": "workspace:^",
-    "@types/node": "^22.15.8",
-    "@types/pg": "^8.12.0",
+    "@types/node": "^22.15.19",
+    "@types/pg": "^8.15.2",
     "ava": "^6.3.0",
-    "cspell": "^8.16.0",
-    "eslint": "9.16.0",
-    "nyc": "^15.1.0",
-    "ts-node": "^10.9.1",
-    "typescript": "^5.8.3"
+    "cspell": "^9.0.1",
+    "eslint": "9.27.0",
+    "tsimp": "^2.0.12",
+    "typescript": "^5.8.3",
+    "typescript-eslint": "^8.32.1"
   },
   "engines": {
-    "node": ">=18"
+    "node": ">=24"
   },
   "files": [
     "./src",
@@ -53,24 +53,6 @@
   "license": "BSD-3-Clause",
   "main": "./dist/index.js",
   "name": "@slonik/pg-driver",
-  "nyc": {
-    "all": true,
-    "exclude": [
-      "**/*.d.ts"
-    ],
-    "include": [
-      "src/**/*.ts"
-    ],
-    "reporter": [
-      "html",
-      "text-summary"
-    ],
-    "require": [
-      "ts-node/register/transpile-only"
-    ],
-    "silent": true,
-    "sourceMap": false
-  },
   "peerDependencies": {
     "zod": "^3"
   },
@@ -84,8 +66,9 @@
     "lint:cspell": "cspell . --no-progress --gitignore",
     "lint:eslint": "eslint --cache ./src",
     "lint:tsc": "tsc --noEmit",
-    "test": "nyc ava --verbose --serial"
+    "test": "ava --verbose --serial"
   },
+  "type": "module",
   "types": "./dist/index.d.ts",
   "version": "47.3.2"
 }

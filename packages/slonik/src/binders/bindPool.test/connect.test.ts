@@ -1,5 +1,5 @@
-import { createPoolWithSpy } from '../../helpers.test/createPoolWithSpy';
-import { createTestRunner } from '../../helpers.test/createTestRunner';
+import { createPoolWithSpy } from '../../helpers.test/createPoolWithSpy.js';
+import { createTestRunner } from '../../helpers.test/createTestRunner.js';
 import { createPgDriverFactory } from '@slonik/pg-driver';
 import { createSqlTag } from '@slonik/sql-tag';
 

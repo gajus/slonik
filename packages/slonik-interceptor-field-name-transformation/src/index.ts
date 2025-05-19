@@ -1,1 +1,1 @@
-export { createFieldNameTransformationInterceptor } from './factories/createFieldNameTransformationInterceptor';
+export { createFieldNameTransformationInterceptor } from './factories/createFieldNameTransformationInterceptor.js';

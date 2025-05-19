@@ -1,15 +1,16 @@
-import { Logger } from '../Logger';
-import { type DatabasePoolEventEmitter } from '../types';
+import { Logger } from '../Logger.js';
+import type { DatabasePoolEventEmitter } from '../types.js';
 import { SpanStatusCode, trace } from '@opentelemetry/api';
-import {
-  type Driver,
-  type DriverClientEventEmitter,
-  type DriverClientState,
-  type DriverQueryResult,
-  type DriverStream,
-  type DriverStreamResult,
+import type {
+  Driver,
+  DriverClientEventEmitter,
+  DriverClientState,
+  DriverQueryResult,
+  DriverStream,
+  DriverStreamResult,
 } from '@slonik/driver';
-import { defer, type DeferredPromise, generateUid } from '@slonik/utilities';
+import { defer, generateUid } from '@slonik/utilities';
+import type { DeferredPromise } from '@slonik/utilities';
 import { setTimeout as delay } from 'node:timers/promises';
 import { serializeError } from 'serialize-error';
 

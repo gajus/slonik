@@ -1,7 +1,9 @@
 /* cspell:ignore slonikqueryindex */
 
-import { type CommonQueryMethods, type QuerySqlToken, sql } from 'slonik';
-import { type AnyZodObject, z } from 'zod';
+import { sql } from 'slonik';
+import type { CommonQueryMethods, QuerySqlToken } from 'slonik';
+import { z } from 'zod';
+import type { AnyZodObject } from 'zod';
 
 /**
  * Uses UNION to batch multiple queries that have the same shape.

@@ -1,5 +1,5 @@
 import camelcase from 'camelcase';
-import { type Field, type Interceptor, type QueryResultRow } from 'slonik';
+import type { Field, Interceptor, QueryResultRow } from 'slonik';
 
 export const createFieldNameTransformationInterceptor = ({
   test,

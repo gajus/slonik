@@ -1,4 +1,4 @@
-import { isAutoExplainJsonMessage } from './isAutoExplainJsonMessage';
+import { isAutoExplainJsonMessage } from './isAutoExplainJsonMessage.js';
 import test from 'ava';
 
 test('recognizes notice containing JSON', (t) => {

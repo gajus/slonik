@@ -1,9 +1,9 @@
-import {
-  type ConnectionPool,
-  type ConnectionPoolClient,
-} from '../factories/createConnectionPool';
-import { poolClientStateMap } from '../state';
-import { type Logger } from '../types';
+import type {
+  ConnectionPool,
+  ConnectionPoolClient,
+} from '../factories/createConnectionPool.js';
+import { poolClientStateMap } from '../state.js';
+import type { Logger } from '../types.js';
 import { ConnectionError, UnexpectedStateError } from '@slonik/errors';
 import { generateUid } from '@slonik/utilities';
 import { serializeError } from 'serialize-error';
