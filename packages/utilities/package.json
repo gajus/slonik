@@ -27,7 +27,6 @@
     "ava": "^6.3.0",
     "cspell": "^9.0.1",
     "eslint": "9.27.0",
-    "nyc": "^17.1.0",
     "tsimp": "^2.0.12",
     "typescript": "^5.8.3",
     "typescript-eslint": "^8.32.1",
@@ -48,21 +47,6 @@
   "license": "BSD-3-Clause",
   "main": "./dist/index.js",
   "name": "@slonik/utilities",
-  "nyc": {
-    "all": true,
-    "exclude": [
-      "**/*.d.ts"
-    ],
-    "include": [
-      "src/**/*.ts"
-    ],
-    "reporter": [
-      "html",
-      "text-summary"
-    ],
-    "silent": true,
-    "sourceMap": false
-  },
   "peerDependencies": {
     "zod": "^3"
   },
@@ -76,7 +60,7 @@
     "lint:cspell": "cspell . --no-progress --gitignore",
     "lint:eslint": "eslint --cache ./src",
     "lint:tsc": "tsc --noEmit",
-    "test": "nyc ava --verbose --serial"
+    "test": "ava --verbose --serial"
   },
   "type": "module",
   "types": "./dist/index.d.ts",
