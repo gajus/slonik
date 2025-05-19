@@ -1,11 +1,11 @@
 import { transaction } from '../connectionMethods/transaction.js';
 import { createConnection } from '../factories/createConnection.js';
-import { type ConnectionPool } from '../factories/createConnectionPool.js';
-import {
-  type ClientConfiguration,
-  type DatabasePool,
-  type DatabasePoolEventEmitter,
-  type Logger,
+import type { ConnectionPool } from '../factories/createConnectionPool.js';
+import type {
+  ClientConfiguration,
+  DatabasePool,
+  DatabasePoolEventEmitter,
+  Logger,
 } from '../types.js';
 
 export const bindPool = (

@@ -2,21 +2,21 @@
 
 import { TRANSACTION_ROLLBACK_ERROR_PREFIX } from '../constants.js';
 import { transactionContext } from '../contexts/transactionContext.js';
-import { type ConnectionPoolClient } from '../factories/createConnectionPool.js';
+import type { ConnectionPoolClient } from '../factories/createConnectionPool.js';
 import { getPoolClientState } from '../state.js';
-import {
-  type ClientConfiguration,
-  type Interceptor,
-  type Logger,
-  type Query,
-  type QueryContext,
-  type QueryId,
-  type QueryResult,
-  type QueryResultRow,
-  type StreamResult,
+import type {
+  ClientConfiguration,
+  Interceptor,
+  Logger,
+  Query,
+  QueryContext,
+  QueryId,
+  QueryResult,
+  QueryResultRow,
+  StreamResult,
 } from '../types.js';
 import { SpanStatusCode, trace } from '@opentelemetry/api';
-import { type DriverNotice } from '@slonik/driver';
+import type { DriverNotice } from '@slonik/driver';
 import {
   BackendTerminatedError,
   BackendTerminatedUnexpectedlyError,
@@ -26,10 +26,7 @@ import {
   UnexpectedForeignConnectionError,
   UnexpectedStateError,
 } from '@slonik/errors';
-import {
-  type PrimitiveValueExpression,
-  type QuerySqlToken,
-} from '@slonik/sql-tag';
+import type { PrimitiveValueExpression, QuerySqlToken } from '@slonik/sql-tag';
 import { defer, generateUid } from '@slonik/utilities';
 import { getStackTrace } from 'get-stack-trace';
 import pLimit from 'p-limit';

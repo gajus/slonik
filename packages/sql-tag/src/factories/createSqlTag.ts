@@ -1,5 +1,5 @@
 import { Logger } from '../Logger.js';
-import { type UUID } from '../sqlFragmentFactories/createUuidSqlFragment.js';
+import type { UUID } from '../sqlFragmentFactories/createUuidSqlFragment.js';
 import {
   ArrayToken,
   BinaryToken,
@@ -15,10 +15,10 @@ import {
   UnnestToken,
   UuidToken,
 } from '../tokens.js';
-import {
-  type PrimitiveValueExpression,
-  type SqlTag,
-  type ValueExpression,
+import type {
+  PrimitiveValueExpression,
+  SqlTag,
+  ValueExpression,
 } from '../types.js';
 import { escapeLiteralValue } from '../utilities/escapeLiteralValue.js';
 import { formatSlonikPlaceholder } from '../utilities/formatSlonikPlaceholder.js';
@@ -27,7 +27,8 @@ import { isSqlToken } from '../utilities/isSqlToken.js';
 import { safeStringify } from '../utilities/safeStringify.js';
 import { createSqlTokenSqlFragment } from './createSqlTokenSqlFragment.js';
 import { InvalidInputError } from '@slonik/errors';
-import { z, type ZodTypeAny } from 'zod';
+import { z } from 'zod';
+import type { ZodTypeAny } from 'zod';
 
 const log = Logger.child({
   namespace: 'sql',

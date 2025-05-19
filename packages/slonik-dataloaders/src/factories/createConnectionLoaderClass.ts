@@ -1,7 +1,7 @@
-import {
-  type ColumnIdentifiers,
-  type Connection,
-  type OrderDirection,
+import type {
+  ColumnIdentifiers,
+  Connection,
+  OrderDirection,
 } from '../types.js';
 import { batchQueries } from '../utilities/batchQueries.js';
 import { fromCursor } from '../utilities/fromCursor.js';
@@ -10,14 +10,11 @@ import { getRequestedFields } from '../utilities/getRequestedFields.js';
 import { snakeCase } from '../utilities/snakeCase.js';
 import { toCursor } from '../utilities/toCursor.js';
 import DataLoader from 'dataloader';
-import { type GraphQLResolveInfo } from 'graphql';
-import {
-  type CommonQueryMethods,
-  type QuerySqlToken,
-  sql,
-  type SqlToken,
-} from 'slonik';
-import { type AnyZodObject, z, type ZodTypeAny } from 'zod';
+import type { GraphQLResolveInfo } from 'graphql';
+import { sql } from 'slonik';
+import type { CommonQueryMethods, QuerySqlToken, SqlToken } from 'slonik';
+import { z } from 'zod';
+import type { AnyZodObject, ZodTypeAny } from 'zod';
 
 type DataLoaderKey<TResult> = {
   cursor?: null | string;

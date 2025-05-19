@@ -1,4 +1,4 @@
-import { type ConnectionOptions } from '@slonik/types';
+import type { ConnectionOptions } from '@slonik/types';
 import { stringify } from 'node:querystring';
 
 type NamedParameters = {

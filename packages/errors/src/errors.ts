@@ -1,9 +1,9 @@
-import {
-  type PrimitiveValueExpression,
-  type Query,
-  type QueryResultRow,
+import type {
+  PrimitiveValueExpression,
+  Query,
+  QueryResultRow,
 } from '@slonik/types';
-import { type ZodIssue } from 'zod';
+import type { ZodIssue } from 'zod';
 
 type IntegrityConstraintViolationErrorCause = Error & {
   column?: string;

@@ -1,8 +1,8 @@
 import { FragmentToken } from '../tokens.js';
-import {
-  type PrimitiveValueExpression,
-  type SqlFragmentToken,
-  type UnnestSqlToken,
+import type {
+  PrimitiveValueExpression,
+  SqlFragmentToken,
+  UnnestSqlToken,
 } from '../types.js';
 import { countArrayDimensions } from '../utilities/countArrayDimensions.js';
 import { escapeIdentifier } from '../utilities/escapeIdentifier.js';

@@ -1,12 +1,11 @@
-import { type PrimitiveValueExpression } from '../types.js';
+import type { PrimitiveValueExpression } from '../types.js';
 import { FragmentToken } from '@slonik/sql-tag';
 import {
   createSqlTokenSqlFragment,
-  type FragmentSqlToken,
   InvalidInputError,
   isSqlToken,
-  type ValueExpression,
 } from 'slonik';
+import type { FragmentSqlToken, ValueExpression } from 'slonik';
 
 const slonikPlaceholderRegexRule = /\$(?:slonik_)?(\d+)/gu;
 

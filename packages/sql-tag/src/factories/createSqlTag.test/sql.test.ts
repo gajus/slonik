@@ -1,7 +1,8 @@
 import { FragmentToken } from '../../tokens.js';
 import { createSqlTag } from '../createSqlTag.js';
 import { InvalidInputError } from '@slonik/errors';
-import anyTest, { type TestFn } from 'ava';
+import anyTest from 'ava';
+import type { TestFn } from 'ava';
 import { ROARR } from 'roarr';
 
 const test = anyTest as TestFn<{

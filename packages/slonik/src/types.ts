@@ -1,21 +1,21 @@
-import { type ConnectionPoolClient } from './factories/createConnectionPool.js';
-import {
-  type DriverFactory,
-  type DriverNotice,
-  type DriverStream,
-  type DriverTypeParser,
+import type { ConnectionPoolClient } from './factories/createConnectionPool.js';
+import type {
+  DriverFactory,
+  DriverNotice,
+  DriverStream,
+  DriverTypeParser,
 } from '@slonik/driver';
-import { type SlonikError } from '@slonik/errors';
-import {
-  type PrimitiveValueExpression,
-  type QuerySqlToken,
-  type SqlToken,
+import type { SlonikError } from '@slonik/errors';
+import type {
+  PrimitiveValueExpression,
+  QuerySqlToken,
+  SqlToken,
 } from '@slonik/sql-tag';
 import type EventEmitter from 'node:events';
-import { type ConnectionOptions as TlsConnectionOptions } from 'node:tls';
-import { type Logger } from 'roarr';
-import { type StrictEventEmitter } from 'strict-event-emitter-types';
-import { type z, type ZodTypeAny } from 'zod';
+import type { ConnectionOptions as TlsConnectionOptions } from 'node:tls';
+import type { Logger } from 'roarr';
+import type { StrictEventEmitter } from 'strict-event-emitter-types';
+import type { z, ZodTypeAny } from 'zod';
 
 export type ClientConfiguration = {
   /**

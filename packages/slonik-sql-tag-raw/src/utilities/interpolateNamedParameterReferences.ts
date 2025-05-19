@@ -1,9 +1,10 @@
 import { Logger } from '../Logger.js';
-import { type NamedParameterValues } from '../types.js';
+import type { NamedParameterValues } from '../types.js';
 import { interpolatePositionalParameterReferences } from './interpolatePositionalParameterReferences.js';
-import { type ValueExpression } from '@slonik/sql-tag';
+import type { ValueExpression } from '@slonik/sql-tag';
 import { difference } from 'lodash';
-import { type FragmentSqlToken, InvalidInputError } from 'slonik';
+import { InvalidInputError } from 'slonik';
+import type { FragmentSqlToken } from 'slonik';
 
 const log = Logger.child({
   namespace: 'interpolateNamedParameterReferences',

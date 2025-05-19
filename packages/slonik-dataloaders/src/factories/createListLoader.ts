@@ -1,6 +1,6 @@
 import { createConnectionLoader } from './createConnectionLoader.js';
-import { type DatabasePool, type QuerySqlToken } from 'slonik';
-import { type ZodTypeAny } from 'zod';
+import type { DatabasePool, QuerySqlToken } from 'slonik';
+import type { ZodTypeAny } from 'zod';
 
 export const createListLoader = <T extends ZodTypeAny>(
   pool: DatabasePool,

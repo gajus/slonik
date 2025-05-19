@@ -10,11 +10,11 @@ import { oneFirst } from '../connectionMethods/oneFirst.js';
 import { query as queryMethod } from '../connectionMethods/query.js';
 import { stream } from '../connectionMethods/stream.js';
 import { transaction } from '../connectionMethods/transaction.js';
-import { type ConnectionPoolClient } from '../factories/createConnectionPool.js';
-import {
-  type ClientConfiguration,
-  type DatabasePoolConnection,
-  type Logger,
+import type { ConnectionPoolClient } from '../factories/createConnectionPool.js';
+import type {
+  ClientConfiguration,
+  DatabasePoolConnection,
+  Logger,
 } from '../types.js';
 
 export const bindPoolConnection = (

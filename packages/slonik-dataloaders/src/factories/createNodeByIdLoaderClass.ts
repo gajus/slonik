@@ -1,14 +1,14 @@
 import { snakeCase } from '../utilities/snakeCase.js';
 import DataLoader from 'dataloader';
-import {
-  type CommonQueryMethods,
-  type FragmentSqlToken,
-  type PrimitiveValueExpression,
-  type QuerySqlToken,
-  sql,
-  type TypeNameIdentifier,
+import { sql } from 'slonik';
+import type {
+  CommonQueryMethods,
+  FragmentSqlToken,
+  PrimitiveValueExpression,
+  QuerySqlToken,
+  TypeNameIdentifier,
 } from 'slonik';
-import { type z, type ZodTypeAny } from 'zod';
+import type { z, ZodTypeAny } from 'zod';
 
 const TABLE_ALIAS = 't1';
 

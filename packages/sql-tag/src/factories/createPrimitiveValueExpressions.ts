@@ -1,5 +1,5 @@
 import { Logger } from '../Logger.js';
-import { type PrimitiveValueExpression } from '../types.js';
+import type { PrimitiveValueExpression } from '../types.js';
 import { safeStringify } from '../utilities/safeStringify.js';
 import { UnexpectedStateError } from '@slonik/errors';
 

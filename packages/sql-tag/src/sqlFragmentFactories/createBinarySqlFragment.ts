@@ -1,5 +1,5 @@
 import { FragmentToken } from '../tokens.js';
-import { type BinarySqlToken, type SqlFragmentToken } from '../types.js';
+import type { BinarySqlToken, SqlFragmentToken } from '../types.js';
 import { formatSlonikPlaceholder } from '../utilities/formatSlonikPlaceholder.js';
 import { InvalidInputError } from '@slonik/errors';
 

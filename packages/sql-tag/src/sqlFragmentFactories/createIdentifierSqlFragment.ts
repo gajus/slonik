@@ -1,5 +1,5 @@
 import { FragmentToken } from '../tokens.js';
-import { type IdentifierSqlToken, type SqlFragmentToken } from '../types.js';
+import type { IdentifierSqlToken, SqlFragmentToken } from '../types.js';
 import { escapeIdentifier } from '../utilities/escapeIdentifier.js';
 import { InvalidInputError } from '@slonik/errors';
 

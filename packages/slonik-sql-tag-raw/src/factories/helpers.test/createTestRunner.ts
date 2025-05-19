@@ -1,4 +1,5 @@
-import anyTest, { type TestFn } from 'ava';
+import anyTest from 'ava';
+import type { TestFn } from 'ava';
 import { createPool, sql } from 'slonik';
 
 // TODO deduplicate with slonik/src/factories/createTestRunner.ts

@@ -11,7 +11,10 @@ export default tseslint.config(
   {
     files: ['**/*.ts'],
     rules: {
+      'canonical/prefer-inline-type-import': 0,
+      'import/consistent-type-specifier-style': ['error', 'prefer-top-level'],
       'import/extensions': ['error', 'always'],
+      'import/no-duplicates': 0,
       'import/no-useless-path-segments': 0,
     },
   },

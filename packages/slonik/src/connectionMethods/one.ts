@@ -1,4 +1,4 @@
-import { type InternalQueryMethod } from '../types.js';
+import type { InternalQueryMethod } from '../types.js';
 import { query } from './query.js';
 import { DataIntegrityError, NotFoundError } from '@slonik/errors';
 import { generateUid } from '@slonik/utilities';

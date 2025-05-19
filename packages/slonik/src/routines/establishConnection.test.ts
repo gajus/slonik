@@ -1,4 +1,4 @@
-import { type ConnectionPool } from '../factories/createConnectionPool.js';
+import type { ConnectionPool } from '../factories/createConnectionPool.js';
 import { Logger } from '../Logger.js';
 import { establishConnection } from './establishConnection.js';
 import test from 'ava';

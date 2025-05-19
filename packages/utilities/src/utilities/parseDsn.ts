@@ -1,7 +1,7 @@
 // cspell:ignore sslrootcert, sslcert
 
 import { UnexpectedStateError } from '@slonik/errors';
-import { type ConnectionOptions } from '@slonik/types';
+import type { ConnectionOptions } from '@slonik/types';
 import { readFileSync } from 'node:fs';
 import { z } from 'zod';
 

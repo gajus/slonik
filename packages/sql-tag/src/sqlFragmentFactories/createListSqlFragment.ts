@@ -1,10 +1,10 @@
 import { createPrimitiveValueExpressions } from '../factories/createPrimitiveValueExpressions.js';
 import { createSqlTokenSqlFragment } from '../factories/createSqlTokenSqlFragment.js';
 import { FragmentToken } from '../tokens.js';
-import {
-  type ListSqlToken,
-  type PrimitiveValueExpression,
-  type SqlFragmentToken,
+import type {
+  ListSqlToken,
+  PrimitiveValueExpression,
+  SqlFragmentToken,
 } from '../types.js';
 import { formatSlonikPlaceholder } from '../utilities/formatSlonikPlaceholder.js';
 import { isPrimitiveValueExpression } from '../utilities/isPrimitiveValueExpression.js';

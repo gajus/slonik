@@ -1,4 +1,4 @@
-import { type DriverTypeParser } from '@slonik/driver';
+import type { DriverTypeParser } from '@slonik/driver';
 
 // eslint-disable-next-line unicorn/prefer-native-coercion-functions
 const bigintParser = (value: string) => {

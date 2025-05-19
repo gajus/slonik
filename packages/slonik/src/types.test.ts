@@ -4,7 +4,7 @@
  */
 
 import { createPool, createSqlTag } from './index.js';
-import { type QueryResult } from './types.js';
+import type { QueryResult } from './types.js';
 import test from 'ava';
 import { expectTypeOf } from 'expect-type';
 import { z } from 'zod';

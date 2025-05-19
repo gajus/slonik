@@ -1,6 +1,6 @@
 import { createSqlTokenSqlFragment } from '../factories/createSqlTokenSqlFragment.js';
 import { FragmentToken } from '../tokens.js';
-import { type ArraySqlToken, type SqlFragmentToken } from '../types.js';
+import type { ArraySqlToken, SqlFragmentToken } from '../types.js';
 import { escapeIdentifier } from '../utilities/escapeIdentifier.js';
 import { formatSlonikPlaceholder } from '../utilities/formatSlonikPlaceholder.js';
 import { isPrimitiveValueExpression } from '../utilities/isPrimitiveValueExpression.js';

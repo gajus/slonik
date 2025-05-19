@@ -1,18 +1,13 @@
 import { createConnectionLoaderClass } from './createConnectionLoaderClass.js';
-import { type Query, type QueryResultRow } from '@slonik/types';
-import {
-  type FieldNode,
-  type GraphQLResolveInfo,
-  type OperationDefinitionNode,
-  parse,
+import type { Query, QueryResultRow } from '@slonik/types';
+import { parse } from 'graphql';
+import type {
+  FieldNode,
+  GraphQLResolveInfo,
+  OperationDefinitionNode,
 } from 'graphql';
-import {
-  createPool,
-  type DatabasePool,
-  type Interceptor,
-  SchemaValidationError,
-  sql,
-} from 'slonik';
+import { createPool, SchemaValidationError, sql } from 'slonik';
+import type { DatabasePool, Interceptor } from 'slonik';
 import { afterAll, beforeAll, beforeEach, describe, expect, it } from 'vitest';
 import { z } from 'zod';
 

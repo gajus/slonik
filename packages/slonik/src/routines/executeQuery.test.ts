@@ -1,10 +1,11 @@
 import { createClientConfiguration } from '../helpers.test/createClientConfiguration.js';
 import { createErrorWithCode } from '../helpers.test/createErrorWithCode.js';
-import { type QuerySqlToken } from '../index.js';
+import type { QuerySqlToken } from '../index.js';
 import { poolClientStateMap } from '../state.js';
 import { executeQuery } from './executeQuery.js';
 import { InvalidInputError } from '@slonik/errors';
-import anyTest, { type TestFn } from 'ava';
+import anyTest from 'ava';
+import type { TestFn } from 'ava';
 import { Roarr } from 'roarr';
 import * as sinon from 'sinon';
 

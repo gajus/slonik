@@ -1,9 +1,9 @@
 import { Logger } from '../Logger.js';
 import { FragmentToken } from '../tokens.js';
-import {
-  type JsonBinarySqlToken,
-  type JsonSqlToken,
-  type SqlFragmentToken,
+import type {
+  JsonBinarySqlToken,
+  JsonSqlToken,
+  SqlFragmentToken,
 } from '../types.js';
 import { formatSlonikPlaceholder } from '../utilities/formatSlonikPlaceholder.js';
 import { isPlainObject } from '../utilities/isPlainObject.js';

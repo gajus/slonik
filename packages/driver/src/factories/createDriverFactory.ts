@@ -1,14 +1,14 @@
 /* eslint-disable @typescript-eslint/consistent-type-definitions */
 
 import { Logger } from '../Logger.js';
-import { type Field } from '@slonik/types';
+import type { Field } from '@slonik/types';
 import { generateUid } from '@slonik/utilities';
 import EventEmitter from 'node:events';
-import { type Readable } from 'node:stream';
+import type { Readable } from 'node:stream';
 import { setTimeout as delay } from 'node:timers/promises';
-import { type ConnectionOptions as TlsConnectionOptions } from 'node:tls';
+import type { ConnectionOptions as TlsConnectionOptions } from 'node:tls';
 import { serializeError } from 'serialize-error';
-import { type StrictEventEmitter } from 'strict-event-emitter-types';
+import type { StrictEventEmitter } from 'strict-event-emitter-types';
 
 export type Driver = {
   createClient: () => Promise<DriverClient>;

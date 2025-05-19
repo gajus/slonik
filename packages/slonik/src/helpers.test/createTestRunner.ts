@@ -1,7 +1,8 @@
 import { createPool } from '../factories/createPool.js';
 import { sql } from '../index.js';
-import { type DriverFactory } from '@slonik/driver';
-import anyTest, { type TestFn } from 'ava';
+import type { DriverFactory } from '@slonik/driver';
+import anyTest from 'ava';
+import type { TestFn } from 'ava';
 
 const POSTGRES_DSN =
   // eslint-disable-next-line n/no-process-env

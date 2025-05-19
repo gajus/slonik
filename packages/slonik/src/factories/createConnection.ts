@@ -1,21 +1,21 @@
 import { bindPoolConnection } from '../binders/bindPoolConnection.js';
 import { establishConnection } from '../routines/establishConnection.js';
 import { getPoolClientState } from '../state.js';
-import {
-  type ClientConfiguration,
-  type Connection,
-  type DatabasePool,
-  type DatabasePoolConnection,
-  type Logger,
-  type MaybePromise,
+import type {
+  ClientConfiguration,
+  Connection,
+  DatabasePool,
+  DatabasePoolConnection,
+  Logger,
+  MaybePromise,
 } from '../types.js';
-import {
-  type ConnectionPool,
-  type ConnectionPoolClient,
+import type {
+  ConnectionPool,
+  ConnectionPoolClient,
 } from './createConnectionPool.js';
 import { SpanStatusCode, trace } from '@opentelemetry/api';
 import { UnexpectedStateError } from '@slonik/errors';
-import { type QuerySqlToken } from '@slonik/sql-tag';
+import type { QuerySqlToken } from '@slonik/sql-tag';
 import { defer } from '@slonik/utilities';
 
 const tracer = trace.getTracer('slonik.interceptors');

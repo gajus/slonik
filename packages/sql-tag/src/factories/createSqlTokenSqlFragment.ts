@@ -25,10 +25,7 @@ import {
   UnnestToken,
   UuidToken,
 } from '../tokens.js';
-import {
-  type SqlFragmentToken,
-  type SqlToken as SqlTokenType,
-} from '../types.js';
+import type { SqlFragmentToken, SqlToken as SqlTokenType } from '../types.js';
 import { UnexpectedStateError } from '@slonik/errors';
 
 export const createSqlTokenSqlFragment = (

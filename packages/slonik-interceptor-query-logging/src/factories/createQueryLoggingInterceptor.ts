@@ -2,7 +2,7 @@ import { getAutoExplainPayload } from '../utilities/getAutoExplainPayload.js';
 import { isAutoExplainJsonMessage } from '../utilities/isAutoExplainJsonMessage.js';
 import prettyMs from 'pretty-ms';
 import { serializeError } from 'serialize-error';
-import { type Interceptor } from 'slonik';
+import type { Interceptor } from 'slonik';
 
 /**
  * @property logValues Dictates whether to include parameter values used to execute the query. (default: true)

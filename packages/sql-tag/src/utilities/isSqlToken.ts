@@ -14,7 +14,7 @@ import {
   UnnestToken,
   UuidToken,
 } from '../tokens.js';
-import { type SqlToken as SqlTokenType } from '../types.js';
+import type { SqlToken as SqlTokenType } from '../types.js';
 import { hasOwnProperty } from './hasOwnProperty.js';
 import { UnexpectedStateError } from '@slonik/errors';
 

@@ -1,6 +1,6 @@
 import { slonikPlaceholderRegexRule } from '../regexRules/slonikPlaceholderRegexRule.js';
 import { FragmentToken } from '../tokens.js';
-import { type QuerySqlToken, type SqlFragmentToken } from '../types.js';
+import type { QuerySqlToken, SqlFragmentToken } from '../types.js';
 import { formatSlonikPlaceholder } from '../utilities/formatSlonikPlaceholder.js';
 import { UnexpectedStateError } from '@slonik/errors';
 

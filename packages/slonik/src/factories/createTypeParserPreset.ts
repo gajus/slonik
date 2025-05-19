@@ -4,7 +4,7 @@ import { createIntervalTypeParser } from './typeParsers/createIntervalTypeParser
 import { createNumericTypeParser } from './typeParsers/createNumericTypeParser.js';
 import { createTimestampTypeParser } from './typeParsers/createTimestampTypeParser.js';
 import { createTimestampWithTimeZoneTypeParser } from './typeParsers/createTimestampWithTimeZoneTypeParser.js';
-import { type DriverTypeParser } from '@slonik/driver';
+import type { DriverTypeParser } from '@slonik/driver';
 
 export const createTypeParserPreset = (): readonly DriverTypeParser[] => {
   return [

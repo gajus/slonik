@@ -1,9 +1,8 @@
 import { parseDsn } from './parseDsn.js';
-import { type ConnectionOptions } from '@slonik/types';
 import test from 'ava';
 import { readFileSync } from 'node:fs';
 
-const testParse = test.macro((t, connectionOptions: ConnectionOptions) => {
+const testParse = test.macro((t, connectionOptions) => {
   t.deepEqual(parseDsn(t.title), connectionOptions);
 });
 
