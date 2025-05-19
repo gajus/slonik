@@ -37,8 +37,6 @@ export class BackendTerminatedUnexpectedlyError extends SlonikError {
 }
 
 export class IntegrityConstraintViolationError extends SlonikError {
-  public cause?: Error;
-
   public column: null | string;
 
   public constraint: null | string;
