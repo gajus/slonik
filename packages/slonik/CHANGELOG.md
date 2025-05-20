@@ -1,5 +1,20 @@
 # slonik
 
+## 48.1.0
+
+### Minor Changes
+
+- [#695](https://github.com/gajus/slonik/pull/695) [`b8e0936`](https://github.com/gajus/slonik/commit/b8e0936cc7c845803d8f20ada3c58bbc1906e125) Thanks [@gajus](https://github.com/gajus)! - adopt standard schema
+
+### Patch Changes
+
+- Updated dependencies []:
+  - @slonik/driver@48.1.0
+  - @slonik/errors@48.1.0
+  - @slonik/pg-driver@48.1.0
+  - @slonik/sql-tag@48.1.0
+  - @slonik/utilities@48.1.0
+
 ## 48.0.0
 
 ### Major Changes

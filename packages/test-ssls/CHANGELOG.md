@@ -1,5 +1,7 @@
 # @slonik/test-ssls
 
+## 48.1.0
+
 ## 48.0.0
 
 ### Major Changes
