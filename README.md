@@ -1409,11 +1409,11 @@ try {
 You can infer the TypeScript type of the query result. There are couple of ways of doing it:
 
 ```ts
-// Infer using z.infer<typeof yourSchema>
+// Infer using StandardSchemaV1.<typeof yourSchema>
 // https://github.com/colinhacks/zod#type-inference
-type Person = z.infer<typeof personObject>;
+type Person = StandardSchemaV1.InferOutput<typeof personObject>;
 // from sql tagged template `parser` property
-type Person = z.infer<
+type Person = StandardSchemaV1.InferOutput<
   personQuery.parser
 >;
 ```

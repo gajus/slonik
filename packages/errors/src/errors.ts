@@ -3,7 +3,7 @@ import type {
   Query,
   QueryResultRow,
 } from '@slonik/types';
-import type { ZodIssue } from 'zod';
+import type { StandardSchemaV1 } from '@standard-schema/spec';
 
 type IntegrityConstraintViolationErrorCause = Error & {
   column?: string;
@@ -134,7 +134,7 @@ export class NotNullIntegrityConstraintViolationError extends IntegrityConstrain
 }
 
 export class SchemaValidationError extends SlonikError {
-  public issues: ZodIssue[];
+  public issues: readonly StandardSchemaV1.Issue[];
 
   public row: QueryResultRow;
 
@@ -142,7 +142,11 @@ export class SchemaValidationError extends SlonikError {
 
   public values: readonly PrimitiveValueExpression[];
 
-  public constructor(query: Query, row: QueryResultRow, issues: ZodIssue[]) {
+  public constructor(
+    query: Query,
+    row: QueryResultRow,
+    issues: readonly StandardSchemaV1.Issue[],
+  ) {
     super('Query returned rows that do not conform with the schema.');
 
     this.sql = query.sql;

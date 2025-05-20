@@ -27,8 +27,8 @@ import { isSqlToken } from '../utilities/isSqlToken.js';
 import { safeStringify } from '../utilities/safeStringify.js';
 import { createSqlTokenSqlFragment } from './createSqlTokenSqlFragment.js';
 import { InvalidInputError } from '@slonik/errors';
+import type { StandardSchemaV1 } from '@standard-schema/spec';
 import { z } from 'zod';
-import type { ZodTypeAny } from 'zod';
 
 const log = Logger.child({
   namespace: 'sql',
@@ -109,7 +109,7 @@ const createFragment = (
 
 export const createSqlTag = <
   K extends PropertyKey,
-  P extends ZodTypeAny,
+  P extends StandardSchemaV1,
   Z extends Record<K, P>,
 >(
   configuration: {

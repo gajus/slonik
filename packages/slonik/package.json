@@ -11,13 +11,15 @@
     "@slonik/pg-driver": "^48.0.0",
     "@slonik/sql-tag": "^48.0.0",
     "@slonik/utilities": "^48.0.0",
+    "@standard-schema/spec": "^1.0.0",
     "get-stack-trace": "^3.1.1",
     "iso8601-duration": "^2.1.2",
     "p-limit": "^6.2.0",
     "postgres-interval": "^4.0.2",
     "roarr": "^7.21.1",
     "serialize-error": "^12.0.0",
-    "strict-event-emitter-types": "^2.0.0"
+    "strict-event-emitter-types": "^2.0.0",
+    "zod": "^3.25.7"
   },
   "description": "A Node.js PostgreSQL client with strict types, detailed logging and assertions.",
   "devDependencies": {
@@ -32,8 +34,7 @@
     "sinon": "^20.0.0",
     "tsimp": "^2.0.12",
     "typescript": "^5.8.3",
-    "typescript-eslint": "^8.32.1",
-    "zod": "^3.25.7"
+    "typescript-eslint": "^8.32.1"
   },
   "engines": {
     "node": ">=24"
@@ -50,9 +51,6 @@
   "license": "BSD-3-Clause",
   "main": "./dist/index.js",
   "name": "slonik",
-  "peerDependencies": {
-    "zod": "^3"
-  },
   "repository": {
     "type": "git",
     "url": "https://github.com/gajus/slonik"

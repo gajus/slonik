@@ -1,6 +1,6 @@
 import type * as tokens from './tokens.js';
 import type { PrimitiveValueExpression } from '@slonik/types';
-import type { ZodTypeAny } from 'zod';
+import type { StandardSchemaV1 } from '@standard-schema/spec';
 
 export { type PrimitiveValueExpression } from '@slonik/types';
 
@@ -62,7 +62,10 @@ export type ListSqlToken = {
   readonly type: typeof tokens.ListToken;
 };
 
-export type QuerySqlToken<T extends ZodTypeAny = ZodTypeAny> = {
+export type QuerySqlToken<
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  T extends StandardSchemaV1 = StandardSchemaV1<any, any>,
+> = {
   readonly parser: T;
   readonly sql: string;
   readonly type: typeof tokens.QueryToken;
@@ -88,7 +91,7 @@ export type SqlFragmentToken = {
 };
 
 export type SqlTag<
-  Z extends Record<string, ZodTypeAny> = Record<string, ZodTypeAny>,
+  Z extends Record<string, StandardSchemaV1> = Record<string, StandardSchemaV1>,
 > = {
   array: (
     values: readonly PrimitiveValueExpression[],
@@ -110,7 +113,7 @@ export type SqlTag<
   jsonb: (value: SerializableValue) => JsonBinarySqlToken;
   literalValue: (value: string) => SqlFragmentToken;
   timestamp: (date: Date) => TimestampSqlToken;
-  type: <Y extends ZodTypeAny>(
+  type: <Y extends StandardSchemaV1>(
     parser: Y,
   ) => (
     template: TemplateStringsArray,

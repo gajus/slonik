@@ -11,11 +11,11 @@ import type {
   QuerySqlToken,
   SqlToken,
 } from '@slonik/sql-tag';
+import type { StandardSchemaV1 } from '@standard-schema/spec';
 import type EventEmitter from 'node:events';
 import type { ConnectionOptions as TlsConnectionOptions } from 'node:tls';
 import type { Logger } from 'roarr';
 import type { StrictEventEmitter } from 'strict-event-emitter-types';
-import type { z, ZodTypeAny } from 'zod';
 
 export type ClientConfiguration = {
   /**
@@ -288,16 +288,16 @@ export type QueryContext = {
   readonly poolId: string;
   readonly queryId: QueryId;
   readonly queryInputTime: bigint | number;
-  readonly resultParser?: ZodTypeAny;
+  readonly resultParser?: StandardSchemaV1;
   readonly sandbox: Record<string, unknown>;
   readonly stackTrace: null | readonly CallSite[];
   readonly transactionId: null | string;
 };
 
-export type QueryFunction = <T extends ZodTypeAny>(
+export type QueryFunction = <T extends StandardSchemaV1>(
   sql: QuerySqlToken<T>,
   values?: PrimitiveValueExpression[],
-) => Promise<QueryResult<z.infer<T>>>;
+) => Promise<QueryResult<StandardSchemaV1.InferOutput<T>>>;
 
 export type QueryId = string;
 
@@ -375,46 +375,58 @@ type PoolState = {
 };
 
 type PoolStateName = 'ACTIVE' | 'ENDED' | 'ENDING';
-type QueryAnyFirstFunction = <T extends ZodTypeAny>(
+type QueryAnyFirstFunction = <T extends StandardSchemaV1>(
   sql: QuerySqlToken<T>,
   values?: PrimitiveValueExpression[],
-) => Promise<ReadonlyArray<z.infer<T>[keyof z.infer<T>]>>;
-type QueryAnyFunction = <T extends ZodTypeAny>(
+) => Promise<
+  ReadonlyArray<
+    StandardSchemaV1.InferOutput<T>[keyof StandardSchemaV1.InferOutput<T>]
+  >
+>;
+type QueryAnyFunction = <T extends StandardSchemaV1>(
   sql: QuerySqlToken<T>,
   values?: PrimitiveValueExpression[],
-) => Promise<ReadonlyArray<z.infer<T>>>;
-type QueryExistsFunction = <T extends ZodTypeAny>(
+) => Promise<ReadonlyArray<StandardSchemaV1.InferOutput<T>>>;
+type QueryExistsFunction = <T extends StandardSchemaV1>(
   sql: QuerySqlToken<T>,
   values?: PrimitiveValueExpression[],
 ) => Promise<boolean>;
-type QueryManyFirstFunction = <T extends ZodTypeAny>(
+type QueryManyFirstFunction = <T extends StandardSchemaV1>(
   sql: QuerySqlToken<T>,
   values?: PrimitiveValueExpression[],
-) => Promise<ReadonlyArray<z.infer<T>[keyof z.infer<T>]>>;
-type QueryManyFunction = <T extends ZodTypeAny>(
+) => Promise<
+  ReadonlyArray<
+    StandardSchemaV1.InferOutput<T>[keyof StandardSchemaV1.InferOutput<T>]
+  >
+>;
+type QueryManyFunction = <T extends StandardSchemaV1>(
   sql: QuerySqlToken<T>,
   values?: PrimitiveValueExpression[],
-) => Promise<ReadonlyArray<z.infer<T>>>;
-type QueryMaybeOneFirstFunction = <T extends ZodTypeAny>(
+) => Promise<ReadonlyArray<StandardSchemaV1.InferOutput<T>>>;
+type QueryMaybeOneFirstFunction = <T extends StandardSchemaV1>(
   sql: QuerySqlToken<T>,
   values?: PrimitiveValueExpression[],
-) => Promise<null | z.infer<T>[keyof z.infer<T>]>;
-type QueryMaybeOneFunction = <T extends ZodTypeAny>(
+) => Promise<
+  null | StandardSchemaV1.InferOutput<T>[keyof StandardSchemaV1.InferOutput<T>]
+>;
+type QueryMaybeOneFunction = <T extends StandardSchemaV1>(
   sql: QuerySqlToken<T>,
   values?: PrimitiveValueExpression[],
-) => Promise<null | z.infer<T>>;
-type QueryOneFirstFunction = <T extends ZodTypeAny>(
+) => Promise<null | StandardSchemaV1.InferOutput<T>>;
+type QueryOneFirstFunction = <T extends StandardSchemaV1>(
   sql: QuerySqlToken<T>,
   values?: PrimitiveValueExpression[],
-) => Promise<z.infer<T>[keyof z.infer<T>]>;
-type QueryOneFunction = <T extends ZodTypeAny>(
+) => Promise<
+  StandardSchemaV1.InferOutput<T>[keyof StandardSchemaV1.InferOutput<T>]
+>;
+type QueryOneFunction = <T extends StandardSchemaV1>(
   sql: QuerySqlToken<T>,
   values?: PrimitiveValueExpression[],
-) => Promise<z.infer<T>>;
+) => Promise<StandardSchemaV1.InferOutput<T>>;
 
-type StreamFunction = <T extends ZodTypeAny>(
+type StreamFunction = <T extends StandardSchemaV1>(
   sql: QuerySqlToken<T>,
-  streamHandler: StreamHandler<z.infer<T>>,
+  streamHandler: StreamHandler<StandardSchemaV1.InferOutput<T>>,
 ) => Promise<StreamResult>;
 
 type TransactionFunction<T> = (
