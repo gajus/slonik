@@ -62,7 +62,10 @@ export type ListSqlToken = {
   readonly type: typeof tokens.ListToken;
 };
 
-export type QuerySqlToken<T extends StandardSchemaV1 = StandardSchemaV1> = {
+export type QuerySqlToken<
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  T extends StandardSchemaV1 = StandardSchemaV1<any, any>,
+> = {
   readonly parser: T;
   readonly sql: string;
   readonly type: typeof tokens.QueryToken;

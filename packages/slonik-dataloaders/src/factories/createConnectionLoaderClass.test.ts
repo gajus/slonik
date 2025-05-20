@@ -520,17 +520,21 @@ describe('createConnectionLoaderClass (with validation)', () => {
             return row;
           }
 
-          const validationResult = resultParser.safeParse(row);
+          const validationResult = resultParser['~standard']?.validate(row);
 
-          if (validationResult.success !== true) {
+          if (validationResult instanceof Promise) {
+            throw new TypeError('Expected validation result to be synchronous');
+          }
+
+          if (validationResult.issues) {
             throw new SchemaValidationError(
               actualQuery,
               row,
-              validationResult.error.issues,
+              validationResult.issues,
             );
           }
 
-          return validationResult.data as QueryResultRow;
+          return validationResult.value as QueryResultRow;
         },
       };
     };

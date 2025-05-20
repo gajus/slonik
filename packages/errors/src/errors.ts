@@ -134,7 +134,7 @@ export class NotNullIntegrityConstraintViolationError extends IntegrityConstrain
 }
 
 export class SchemaValidationError extends SlonikError {
-  public issues: StandardSchemaV1.Issue[];
+  public issues: readonly StandardSchemaV1.Issue[];
 
   public row: QueryResultRow;
 
@@ -145,7 +145,7 @@ export class SchemaValidationError extends SlonikError {
   public constructor(
     query: Query,
     row: QueryResultRow,
-    issues: StandardSchemaV1.Issue[],
+    issues: readonly StandardSchemaV1.Issue[],
   ) {
     super('Query returned rows that do not conform with the schema.');
 

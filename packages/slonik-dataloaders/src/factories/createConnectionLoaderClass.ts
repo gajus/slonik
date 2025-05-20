@@ -9,12 +9,13 @@ import { getColumnIdentifiers } from '../utilities/getColumnIdentifiers.js';
 import { getRequestedFields } from '../utilities/getRequestedFields.js';
 import { snakeCase } from '../utilities/snakeCase.js';
 import { toCursor } from '../utilities/toCursor.js';
+import type { StandardSchemaV1 } from '@standard-schema/spec';
 import DataLoader from 'dataloader';
 import type { GraphQLResolveInfo } from 'graphql';
 import { sql } from 'slonik';
 import type { CommonQueryMethods, QuerySqlToken, SqlToken } from 'slonik';
 import { z } from 'zod';
-import type { AnyZodObject, ZodTypeAny } from 'zod';
+import type { AnyZodObject } from 'zod';
 
 type DataLoaderKey<TResult> = {
   cursor?: null | string;
@@ -31,7 +32,9 @@ type DataLoaderKey<TResult> = {
 const SORT_COLUMN_ALIAS = 's1';
 const TABLE_ALIAS = 't1';
 
-export const createConnectionLoaderClass = <T extends ZodTypeAny>(config: {
+export const createConnectionLoaderClass = <
+  T extends StandardSchemaV1,
+>(config: {
   columnNameTransformer?: (column: string) => string;
   query: QuerySqlToken<T>;
   resolverFieldsThatRequireFetchingEdges?: string[];
@@ -41,21 +44,20 @@ export const createConnectionLoaderClass = <T extends ZodTypeAny>(config: {
   const fieldsThatRequireFetchingEdges =
     config.resolverFieldsThatRequireFetchingEdges ?? ['pageInfo', 'edges'];
 
-  const columnIdentifiers = getColumnIdentifiers<z.infer<T>>(
-    TABLE_ALIAS,
-    columnNameTransformer,
-  );
+  const columnIdentifiers = getColumnIdentifiers<
+    StandardSchemaV1.InferOutput<T>
+  >(TABLE_ALIAS, columnNameTransformer);
 
   return class ConnectionLoaderClass extends DataLoader<
-    DataLoaderKey<z.infer<T>>,
-    Connection<z.infer<T>>,
+    DataLoaderKey<StandardSchemaV1.InferOutput<T>>,
+    Connection<StandardSchemaV1.InferOutput<T>>,
     string
   > {
     public constructor(
       pool: CommonQueryMethods,
       dataLoaderOptions?: DataLoader.Options<
-        DataLoaderKey<z.infer<T>>,
-        Connection<z.infer<T>>,
+        DataLoaderKey<StandardSchemaV1.InferOutput<T>>,
+        Connection<StandardSchemaV1.InferOutput<T>>,
         string
       >,
     ) {
