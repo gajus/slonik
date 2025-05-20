@@ -37,16 +37,16 @@ importers:
         specifier: ^3.4.5
         version: 3.4.5
       slonik:
-        specifier: ^47.3.2
+        specifier: ^48.0.0
         version: link:../slonik
 
   packages/driver:
     dependencies:
       '@slonik/types':
-        specifier: ^47.3.2
+        specifier: ^48.0.0
         version: link:../types
       '@slonik/utilities':
-        specifier: ^47.3.2
+        specifier: ^48.0.0
         version: link:../utilities
       roarr:
         specifier: ^7.21.1
@@ -59,7 +59,7 @@ importers:
         version: 2.0.0
       zod:
         specifier: ^3
-        version: 3.25.6
+        version: 3.25.7
     devDependencies:
       '@slonik/eslint-config':
         specifier: workspace:^
@@ -89,12 +89,15 @@ importers:
   packages/errors:
     dependencies:
       '@slonik/types':
-        specifier: ^47.3.2
+        specifier: ^48.0.0
         version: link:../types
     devDependencies:
       '@slonik/eslint-config':
         specifier: workspace:^
         version: link:../eslint-config
+      '@standard-schema/spec':
+        specifier: ^1.0.0
+        version: 1.0.0
       '@types/node':
         specifier: ^22.15.19
         version: 22.15.19
@@ -116,9 +119,6 @@ importers:
       typescript-eslint:
         specifier: ^8.32.1
         version: 8.32.1(eslint@9.27.0(jiti@2.4.2))(typescript@5.8.3)
-      zod:
-        specifier: ^3.25.7
-        version: 3.25.7
 
   packages/eslint-config:
     dependencies:
@@ -133,19 +133,19 @@ importers:
   packages/pg-driver:
     dependencies:
       '@slonik/driver':
-        specifier: ^47.3.2
+        specifier: ^48.0.0
         version: link:../driver
       '@slonik/errors':
-        specifier: ^47.3.2
+        specifier: ^48.0.0
         version: link:../errors
       '@slonik/sql-tag':
-        specifier: ^47.3.2
+        specifier: ^48.0.0
         version: link:../sql-tag
       '@slonik/types':
-        specifier: ^47.3.2
+        specifier: ^48.0.0
         version: link:../types
       '@slonik/utilities':
-        specifier: ^47.3.2
+        specifier: ^48.0.0
         version: link:../utilities
       pg:
         specifier: ^8.13.1
@@ -161,7 +161,7 @@ importers:
         version: 3.0.4
       zod:
         specifier: ^3
-        version: 3.25.6
+        version: 3.25.7
     devDependencies:
       '@slonik/eslint-config':
         specifier: workspace:^
@@ -197,20 +197,23 @@ importers:
         specifier: ^1.9.0
         version: 1.9.0
       '@slonik/driver':
-        specifier: ^47.3.2
+        specifier: ^48.0.0
         version: link:../driver
       '@slonik/errors':
-        specifier: ^47.3.2
+        specifier: ^48.0.0
         version: link:../errors
       '@slonik/pg-driver':
-        specifier: ^47.3.2
+        specifier: ^48.0.0
         version: link:../pg-driver
       '@slonik/sql-tag':
-        specifier: ^47.3.2
+        specifier: ^48.0.0
         version: link:../sql-tag
       '@slonik/utilities':
-        specifier: ^47.3.2
+        specifier: ^48.0.0
         version: link:../utilities
+      '@standard-schema/spec':
+        specifier: ^1.0.0
+        version: 1.0.0
       get-stack-trace:
         specifier: ^3.1.1
         version: 3.1.1
@@ -232,6 +235,9 @@ importers:
       strict-event-emitter-types:
         specifier: ^2.0.0
         version: 2.0.0
+      zod:
+        specifier: ^3.25.7
+        version: 3.25.7
     devDependencies:
       '@slonik/eslint-config':
         specifier: workspace:^
@@ -269,9 +275,6 @@ importers:
       typescript-eslint:
         specifier: ^8.32.1
         version: 8.32.1(eslint@9.27.0(jiti@2.4.2))(typescript@5.8.3)
-      zod:
-        specifier: ^3.25.7
-        version: 3.25.7
 
   packages/slonik-dataloaders:
     dependencies:
@@ -289,13 +292,16 @@ importers:
         specifier: workspace:^
         version: link:../eslint-config
       '@slonik/types':
-        specifier: ^47.3.2
+        specifier: ^48.0.0
         version: link:../types
+      '@standard-schema/spec':
+        specifier: ^1.0.0
+        version: 1.0.0
       eslint:
         specifier: 9.27.0
         version: 9.27.0(jiti@2.4.2)
       slonik:
-        specifier: ^47.3.2
+        specifier: ^48.0.0
         version: link:../slonik
       typescript:
         specifier: ^5.8.3
@@ -323,7 +329,7 @@ importers:
         specifier: 9.27.0
         version: 9.27.0(jiti@2.4.2)
       slonik:
-        specifier: ^47.3.2
+        specifier: ^48.0.0
         version: link:../slonik
       tsimp:
         specifier: ^2.0.12
@@ -351,7 +357,7 @@ importers:
         specifier: 9.27.0
         version: 9.27.0(jiti@2.4.2)
       slonik:
-        specifier: ^47.3.2
+        specifier: ^48.0.0
         version: link:../slonik
       tsimp:
         specifier: ^2.0.12
@@ -385,7 +391,7 @@ importers:
         specifier: 9.27.0
         version: 9.27.0(jiti@2.4.2)
       slonik:
-        specifier: ^47.3.2
+        specifier: ^48.0.0
         version: link:../slonik
       tsimp:
         specifier: ^2.0.12
@@ -400,7 +406,7 @@ importers:
   packages/slonik-sql-tag-raw:
     dependencies:
       '@slonik/sql-tag':
-        specifier: ^47.3.2
+        specifier: ^48.0.0
         version: link:../sql-tag
       roarr:
         specifier: ^7.21.1
@@ -416,7 +422,7 @@ importers:
         specifier: 9.27.0
         version: 9.27.0(jiti@2.4.2)
       slonik:
-        specifier: ^47.3.2
+        specifier: ^48.0.0
         version: link:../slonik
       tsimp:
         specifier: ^2.0.12
@@ -431,10 +437,10 @@ importers:
   packages/sql-tag:
     dependencies:
       '@slonik/errors':
-        specifier: ^47.3.2
+        specifier: ^48.0.0
         version: link:../errors
       '@slonik/types':
-        specifier: ^47.3.2
+        specifier: ^48.0.0
         version: link:../types
       roarr:
         specifier: ^7.21.1
@@ -445,10 +451,16 @@ importers:
       serialize-error:
         specifier: ^12.0.0
         version: 12.0.0
+      zod:
+        specifier: ^3.25.7
+        version: 3.25.7
     devDependencies:
       '@slonik/eslint-config':
         specifier: workspace:^
         version: link:../eslint-config
+      '@standard-schema/spec':
+        specifier: ^1.0.0
+        version: 1.0.0
       '@types/node':
         specifier: ^22.15.19
         version: 22.15.19
@@ -470,21 +482,18 @@ importers:
       typescript-eslint:
         specifier: ^8.32.1
         version: 8.32.1(eslint@9.27.0(jiti@2.4.2))(typescript@5.8.3)
-      zod:
-        specifier: ^3.25.7
-        version: 3.25.7
 
   packages/test-ssls:
     dependencies:
       zod:
         specifier: ^3
-        version: 3.25.6
+        version: 3.25.7
 
   packages/types:
     dependencies:
       zod:
         specifier: ^3
-        version: 3.25.6
+        version: 3.25.7
     devDependencies:
       '@slonik/eslint-config':
         specifier: workspace:^
@@ -514,10 +523,10 @@ importers:
   packages/utilities:
     dependencies:
       '@slonik/errors':
-        specifier: workspace:^47.3.2
+        specifier: workspace:^48.0.0
         version: link:../errors
       '@slonik/types':
-        specifier: ^47.3.2
+        specifier: ^48.0.0
         version: link:../types
     devDependencies:
       '@slonik/eslint-config':
@@ -1562,6 +1571,9 @@ packages:
 
   '@sinonjs/samsam@8.0.2':
     resolution: {integrity: sha512-v46t/fwnhejRSFTGqbpn9u+LQ9xJDse10gNnPgAcxgdoCDMXj/G2asWAC/8Qs+BAZDicX+MNZouXT1A7c83kVw==}
+
+  '@standard-schema/spec@1.0.0':
+    resolution: {integrity: sha512-m2bOd0f2RT9k8QJx1JN85cZYyH1RqFBdlwtkSlf4tBDYLCiiZnv1fIIwacK6cqwXavOydf0NPToMQgpKq+dVlA==}
 
   '@stylistic/eslint-plugin@4.2.0':
     resolution: {integrity: sha512-8hXezgz7jexGHdo5WN6JBEIPHCSFyyU4vgbxevu4YLVS5vl+sxqAAGyXSzfNDyR6xMNSH5H1x67nsXcYMOHtZA==}
@@ -5031,9 +5043,6 @@ packages:
     peerDependencies:
       zod: ^3.24.4
 
-  zod@3.25.6:
-    resolution: {integrity: sha512-kA1wikWvfsP+z3L6mzUJJRQz1Y28BR0Bu/MTWeYbfaFJ8c+OLOt1Bb8d4V3Mk1480H+poPYG6BjS/I4kJ1U8WA==}
-
   zod@3.25.7:
     resolution: {integrity: sha512-YGdT1cVRmKkOg6Sq7vY7IkxdphySKnXhaUmFI4r4FcuFVNgpCb9tZfNwXbT6BPjD5oz0nubFsoo9pIqKrDcCvg==}
 
@@ -6156,6 +6165,8 @@ snapshots:
       '@sinonjs/commons': 3.0.1
       lodash.get: 4.4.2
       type-detect: 4.1.0
+
+  '@standard-schema/spec@1.0.0': {}
 
   '@stylistic/eslint-plugin@4.2.0(eslint@9.27.0(jiti@2.4.2))(typescript@5.8.3)':
     dependencies:
@@ -10053,7 +10064,5 @@ snapshots:
   zod-validation-error@3.4.1(zod@3.25.7):
     dependencies:
       zod: 3.25.7
-
-  zod@3.25.6: {}
 
   zod@3.25.7: {}

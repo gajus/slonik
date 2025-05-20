@@ -20,19 +20,20 @@
     "@slonik/types": "^48.0.0",
     "roarr": "^7.21.1",
     "safe-stable-stringify": "^2.5.0",
-    "serialize-error": "^12.0.0"
+    "serialize-error": "^12.0.0",
+    "zod": "^3.25.7"
   },
   "description": "A Node.js PostgreSQL client with strict types, detailed logging and assertions.",
   "devDependencies": {
     "@slonik/eslint-config": "workspace:^",
+    "@standard-schema/spec": "^1.0.0",
     "@types/node": "^22.15.19",
     "ava": "^6.3.0",
     "cspell": "^9.0.1",
     "eslint": "9.27.0",
     "tsimp": "^2.0.12",
     "typescript": "^5.8.3",
-    "typescript-eslint": "^8.32.1",
-    "zod": "^3.25.7"
+    "typescript-eslint": "^8.32.1"
   },
   "engines": {
     "node": ">=24"
@@ -49,9 +50,6 @@
   "license": "BSD-3-Clause",
   "main": "./dist/index.js",
   "name": "@slonik/sql-tag",
-  "peerDependencies": {
-    "zod": "^3"
-  },
   "repository": {
     "type": "git",
     "url": "https://github.com/gajus/slonik"
