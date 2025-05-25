@@ -1,5 +1,0 @@
----
-"slonik": patch
----
-
-update dependencies
