@@ -23,14 +23,14 @@
   "devDependencies": {
     "@slonik/eslint-config": "workspace:^",
     "@slonik/test-ssls": "workspace:^",
-    "@types/node": "^22.15.19",
+    "@types/node": "^22.15.21",
     "ava": "^6.3.0",
-    "cspell": "^9.0.1",
+    "cspell": "^9.0.2",
     "eslint": "9.27.0",
     "tsimp": "^2.0.12",
     "typescript": "^5.8.3",
     "typescript-eslint": "^8.32.1",
-    "zod": "^3.25.7"
+    "zod": "^3.25.28"
   },
   "engines": {
     "node": ">=24"
