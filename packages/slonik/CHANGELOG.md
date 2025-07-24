@@ -1,5 +1,20 @@
 # slonik
 
+## 48.2.0
+
+### Minor Changes
+
+- [#703](https://github.com/gajus/slonik/pull/703) [`7b8e200`](https://github.com/gajus/slonik/commit/7b8e2003e3d3d7a0dae25548284a92ee3e94baea) Thanks [@gajus](https://github.com/gajus)! - add transaction events
+
+### Patch Changes
+
+- Updated dependencies []:
+  - @slonik/driver@48.2.0
+  - @slonik/errors@48.2.0
+  - @slonik/pg-driver@48.2.0
+  - @slonik/sql-tag@48.2.0
+  - @slonik/utilities@48.2.0
+
 ## 48.1.2
 
 ### Patch Changes
