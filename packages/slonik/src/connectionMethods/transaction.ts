@@ -2,9 +2,13 @@ import { bindTransactionConnection } from '../binders/bindTransactionConnection.
 import { TRANSACTION_ROLLBACK_ERROR_PREFIX } from '../constants.js';
 import { transactionContext } from '../contexts/transactionContext.js';
 import { getPoolClientState } from '../state.js';
-import type { InternalTransactionFunction } from '../types.js';
+import type {
+  DatabaseTransactionEventEmitter,
+  InternalTransactionFunction,
+} from '../types.js';
 import { BackendTerminatedError, UnexpectedStateError } from '@slonik/errors';
 import { generateUid } from '@slonik/utilities';
+import EventEmitter from 'node:events';
 import { serializeError } from 'serialize-error';
 
 const execTransaction: InternalTransactionFunction = async (
@@ -12,6 +16,9 @@ const execTransaction: InternalTransactionFunction = async (
   connection,
   clientConfiguration,
   handler,
+  transactionRetryLimit,
+  eventEmitter?: DatabaseTransactionEventEmitter,
+  transactionId?: string,
 ) => {
   const poolClientState = getPoolClientState(connection);
 
@@ -23,6 +30,12 @@ const execTransaction: InternalTransactionFunction = async (
     );
   }
 
+  if (!eventEmitter || !transactionId) {
+    throw new UnexpectedStateError(
+      'Event emitter and transaction ID are required for transaction execution.',
+    );
+  }
+
   try {
     const result = await handler(
       bindTransactionConnection(
@@ -30,6 +43,8 @@ const execTransaction: InternalTransactionFunction = async (
         connection,
         clientConfiguration,
         poolClientState.transactionDepth,
+        eventEmitter,
+        transactionId,
       ),
     );
 
@@ -38,6 +53,14 @@ const execTransaction: InternalTransactionFunction = async (
     }
 
     await connection.query('COMMIT');
+
+    if (poolClientState.transactionDepth === 0) {
+      eventEmitter.emit(
+        'commit',
+        transactionId,
+        poolClientState.transactionDepth,
+      );
+    }
 
     return result;
   } catch (error) {
@@ -52,6 +75,13 @@ const execTransaction: InternalTransactionFunction = async (
       );
     }
 
+    eventEmitter.emit(
+      'rollback',
+      transactionId,
+      poolClientState.transactionDepth,
+      error as Error,
+    );
+
     throw error;
   }
 };
@@ -64,6 +94,8 @@ const retryTransaction: InternalTransactionFunction = async (
   clientConfiguration,
   handler,
   transactionRetryLimit,
+  eventEmitter?: DatabaseTransactionEventEmitter,
+  transactionId?: string,
 ) => {
   const poolClientState = getPoolClientState(connection);
 
@@ -89,6 +121,9 @@ const retryTransaction: InternalTransactionFunction = async (
         connection,
         clientConfiguration,
         handler,
+        transactionRetryLimit,
+        eventEmitter,
+        transactionId,
       );
 
       // If the attempt succeeded break out of the loop
@@ -118,6 +153,7 @@ export const transaction: InternalTransactionFunction = async (
   transactionRetryLimit,
 ) => {
   const transactionId = generateUid();
+  const eventEmitter = new EventEmitter() as DatabaseTransactionEventEmitter;
 
   return transactionContext.run(
     {
@@ -145,6 +181,9 @@ export const transaction: InternalTransactionFunction = async (
           connection,
           clientConfiguration,
           handler,
+          transactionRetryLimit,
+          eventEmitter,
+          transactionId,
         );
       } catch (error) {
         const transactionRetryLimitToUse =
@@ -162,6 +201,8 @@ export const transaction: InternalTransactionFunction = async (
             clientConfiguration,
             handler,
             transactionRetryLimit,
+            eventEmitter,
+            transactionId,
           );
         } else {
           throw error;
