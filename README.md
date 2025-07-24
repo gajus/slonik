@@ -34,6 +34,7 @@ Note: Using this project does not require TypeScript. It is a regular ES6 module
 * [Safe transaction handling](#protecting-against-unsafe-transaction-handling).
 * [Safe value interpolation](#protecting-against-unsafe-value-interpolation).
 * [Transaction nesting](#transaction-nesting).
+* [Transaction events](#transaction-events).
 * [Transaction retrying](#transaction-retrying).
 * [Query retrying](#query-retrying).
 * Detailed [logging](#debugging).
@@ -2564,6 +2565,74 @@ Transactions that are failing with [Transaction Rollback](https://www.postgresql
 A failing transaction will be rolled back and the callback function passed to the transaction method call will be executed again. Nested transactions are also retried until the retry limit is reached. If the nested transaction keeps failing with a [Transaction Rollback](https://www.postgresql.org/docs/current/errcodes-appendix.html) error, then the parent transaction will be retried until the retry limit is reached.
 
 How many times a transaction is retried is controlled using `transactionRetryLimit` configuration (default: 5) and the `transactionRetryLimit` parameter of the `transaction` method (default: undefined). If a `transactionRetryLimit` is given to the method call then it is used otherwise the `transactionRetryLimit` configuration is used.
+
+#### Transaction events
+
+Transaction connections provide event emitter functionality to monitor transaction lifecycle events. This allows you to listen for transaction commits, rollbacks, and savepoint operations.
+
+```ts
+await connection.transaction(async (transactionConnection) => {
+  // Listen for commit events
+  transactionConnection.on('commit', ({transactionId, transactionDepth}) => {
+    console.log(`Transaction ${transactionId} committed at depth ${transactionDepth}`);
+  });
+
+  // Listen for rollback events
+  transactionConnection.on('rollback', ({transactionId, transactionDepth, error}) => {
+    console.log(`Transaction ${transactionId} rolled back:`, error.message);
+  });
+
+  // Access transaction metadata
+  console.log('Transaction ID:', transactionConnection.transactionId);
+  console.log('Transaction Depth:', transactionConnection.transactionDepth);
+
+  await transactionConnection.query(sql.unsafe`INSERT INTO foo (bar) VALUES ('baz')`);
+  
+  // Commit event will be emitted automatically when transaction completes
+});
+```
+
+**Available Events:**
+
+- **`commit`** - Emitted when a top-level transaction (depth = 0) commits successfully
+  - Parameters: `(event: {transactionId: string, transactionDepth: number})`
+- **`rollback`** - Emitted when any transaction rolls back due to an error
+  - Parameters: `(event: {transactionId: string, transactionDepth: number, error: Error})`
+- **`savepoint`** - Emitted when a nested transaction creates a savepoint (depth > 0)
+  - Parameters: `(event: {transactionId: string, transactionDepth: number})`
+- **`rollbackToSavepoint`** - Emitted when a nested transaction rolls back to its savepoint
+  - Parameters: `(event: {transactionId: string, transactionDepth: number, error: Error})`
+
+**Nested Transaction Events:**
+
+```ts
+await connection.transaction(async (outerTransaction) => {
+  outerTransaction.on('savepoint', ({transactionId, transactionDepth}) => {
+    console.log(`Savepoint created at depth ${transactionDepth}`);
+  });
+
+  outerTransaction.on('commit', ({transactionId, transactionDepth}) => {
+    console.log(`Transaction committed at depth ${transactionDepth}`);
+  });
+
+  await outerTransaction.transaction(async (innerTransaction) => {
+    // This will emit a 'savepoint' event
+    // innerTransaction shares the same event emitter as outerTransaction
+    await innerTransaction.query(sql.unsafe`INSERT INTO nested (value) VALUES ('test')`);
+  });
+
+  // Only the outer transaction will emit a 'commit' event
+});
+```
+
+**Transaction Metadata:**
+
+Transaction connections provide access to transaction metadata:
+
+- **`transactionId`** - Unique identifier for the transaction (consistent across nested levels)
+- **`transactionDepth`** - Current nesting level (0 for top-level, 1+ for nested transactions)
+
+All standard EventEmitter methods are available: `on()`, `off()`, `once()`, `removeListener()`, `removeAllListeners()`, etc.
 
 #### Query retrying
 
