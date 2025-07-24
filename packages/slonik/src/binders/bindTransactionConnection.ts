@@ -15,6 +15,7 @@ import { getPoolClientState } from '../state.js';
 import type {
   ClientConfiguration,
   DatabaseTransactionConnection,
+  DatabaseTransactionEventEmitter,
   Logger,
 } from '../types.js';
 
@@ -23,6 +24,8 @@ export const bindTransactionConnection = (
   connection: ConnectionPoolClient,
   clientConfiguration: ClientConfiguration,
   transactionDepth: number,
+  eventEmitter: DatabaseTransactionEventEmitter,
+  transactionId: string,
 ): DatabaseTransactionConnection => {
   const poolClientState = getPoolClientState(connection);
 
@@ -33,6 +36,7 @@ export const bindTransactionConnection = (
   };
 
   return {
+    addListener: eventEmitter.addListener.bind(eventEmitter),
     any: (slonikSql) => {
       assertTransactionDepth();
 
@@ -43,6 +47,8 @@ export const bindTransactionConnection = (
 
       return anyFirst(parentLog, connection, clientConfiguration, slonikSql);
     },
+    emit: eventEmitter.emit.bind(eventEmitter),
+    eventNames: eventEmitter.eventNames.bind(eventEmitter),
     exists: async (slonikSql) => {
       assertTransactionDepth();
 
@@ -53,6 +59,9 @@ export const bindTransactionConnection = (
         slonikSql,
       );
     },
+    getMaxListeners: eventEmitter.getMaxListeners.bind(eventEmitter),
+    listenerCount: eventEmitter.listenerCount.bind(eventEmitter),
+    listeners: eventEmitter.listeners.bind(eventEmitter),
     many: (slonikSql) => {
       assertTransactionDepth();
 
@@ -78,6 +87,9 @@ export const bindTransactionConnection = (
         slonikSql,
       );
     },
+    off: eventEmitter.off.bind(eventEmitter),
+    on: eventEmitter.on.bind(eventEmitter),
+    once: eventEmitter.once.bind(eventEmitter),
     one: (slonikSql) => {
       assertTransactionDepth();
 
@@ -88,11 +100,17 @@ export const bindTransactionConnection = (
 
       return oneFirst(parentLog, connection, clientConfiguration, slonikSql);
     },
+    prependListener: eventEmitter.prependListener.bind(eventEmitter),
+    prependOnceListener: eventEmitter.prependOnceListener.bind(eventEmitter),
     query: (slonikSql) => {
       assertTransactionDepth();
 
       return queryMethod(parentLog, connection, clientConfiguration, slonikSql);
     },
+    rawListeners: eventEmitter.rawListeners.bind(eventEmitter),
+    removeAllListeners: eventEmitter.removeAllListeners.bind(eventEmitter),
+    removeListener: eventEmitter.removeListener.bind(eventEmitter),
+    setMaxListeners: eventEmitter.setMaxListeners.bind(eventEmitter),
     stream: async (slonikSql, streamHandler) => {
       assertTransactionDepth();
 
@@ -114,7 +132,11 @@ export const bindTransactionConnection = (
         handler,
         transactionDepth,
         transactionRetryLimit,
+        eventEmitter,
+        transactionId,
       );
     },
+    transactionDepth,
+    transactionId,
   };
 };

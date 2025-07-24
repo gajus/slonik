@@ -156,7 +156,35 @@ export type DatabasePoolEventEmitter = StrictEventEmitter<
   }
 >;
 
-export type DatabaseTransactionConnection = CommonQueryMethods;
+export type DatabaseTransactionConnection = CommonQueryMethods &
+  DatabaseTransactionEventEmitter & {
+    readonly transactionDepth: number;
+    readonly transactionId: string;
+  };
+
+export type DatabaseTransactionEventEmitter = StrictEventEmitter<
+  EventEmitter,
+  {
+    commit: (event: {
+      transactionDepth: number;
+      transactionId: string;
+    }) => void;
+    rollback: (event: {
+      error: Error;
+      transactionDepth: number;
+      transactionId: string;
+    }) => void;
+    rollbackToSavepoint: (event: {
+      error: Error;
+      transactionDepth: number;
+      transactionId: string;
+    }) => void;
+    savepoint: (event: {
+      transactionDepth: number;
+      transactionId: string;
+    }) => void;
+  }
+>;
 
 export type Field = {
   readonly dataTypeId: number;
@@ -224,6 +252,8 @@ export type InternalNestedTransactionFunction = <T>(
   handler: TransactionFunction<T>,
   transactionDepth: number,
   transactionRetryLimit?: number,
+  eventEmitter?: DatabaseTransactionEventEmitter,
+  transactionId?: string,
 ) => Promise<T>;
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -250,6 +280,8 @@ export type InternalTransactionFunction = <T>(
   clientConfiguration: ClientConfiguration,
   handler: TransactionFunction<T>,
   transactionRetryLimit?: number,
+  eventEmitter?: DatabaseTransactionEventEmitter,
+  transactionId?: string,
 ) => Promise<T>;
 
 export type MaybePromise<T> = Promise<T> | T;

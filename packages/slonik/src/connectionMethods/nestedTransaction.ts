@@ -1,7 +1,11 @@
 import { bindTransactionConnection } from '../binders/bindTransactionConnection.js';
 import { TRANSACTION_ROLLBACK_ERROR_PREFIX } from '../constants.js';
 import { getPoolClientState } from '../state.js';
-import type { InternalNestedTransactionFunction } from '../types.js';
+import type {
+  DatabaseTransactionEventEmitter,
+  InternalNestedTransactionFunction,
+} from '../types.js';
+import { UnexpectedStateError } from '@slonik/errors';
 import { generateUid } from '@slonik/utilities';
 import { serializeError } from 'serialize-error';
 
@@ -11,10 +15,24 @@ const execNestedTransaction: InternalNestedTransactionFunction = async (
   clientConfiguration,
   handler,
   newTransactionDepth,
+  transactionRetryLimit,
+  eventEmitter?: DatabaseTransactionEventEmitter,
+  transactionId?: string,
 ) => {
   await connection.query(
     'SAVEPOINT slonik_savepoint_' + String(newTransactionDepth),
   );
+
+  if (!eventEmitter || !transactionId) {
+    throw new UnexpectedStateError(
+      'Event emitter and transaction ID are required for nested transaction execution.',
+    );
+  }
+
+  eventEmitter.emit('savepoint', {
+    transactionDepth: newTransactionDepth,
+    transactionId,
+  });
 
   try {
     const result = await handler(
@@ -23,6 +41,8 @@ const execNestedTransaction: InternalNestedTransactionFunction = async (
         connection,
         clientConfiguration,
         newTransactionDepth,
+        eventEmitter,
+        transactionId,
       ),
     );
 
@@ -31,6 +51,14 @@ const execNestedTransaction: InternalNestedTransactionFunction = async (
     await connection.query(
       'ROLLBACK TO SAVEPOINT slonik_savepoint_' + String(newTransactionDepth),
     );
+
+    if (eventEmitter && transactionId) {
+      eventEmitter.emit('rollbackToSavepoint', {
+        error: error as Error,
+        transactionDepth: newTransactionDepth,
+        transactionId,
+      });
+    }
 
     parentLog.error(
       {
@@ -52,6 +80,8 @@ const retryNestedTransaction: InternalNestedTransactionFunction = async (
   handler,
   transactionDepth,
   transactionRetryLimit,
+  eventEmitter?: DatabaseTransactionEventEmitter,
+  transactionId?: string,
 ) => {
   const poolClientState = getPoolClientState(connection);
 
@@ -78,6 +108,9 @@ const retryNestedTransaction: InternalNestedTransactionFunction = async (
         clientConfiguration,
         handler,
         transactionDepth,
+        transactionRetryLimit,
+        eventEmitter,
+        transactionId,
       );
 
       // If the attempt succeeded break out of the loop
@@ -106,6 +139,8 @@ export const nestedTransaction: InternalNestedTransactionFunction = async (
   handler,
   transactionDepth,
   transactionRetryLimit,
+  eventEmitter?: DatabaseTransactionEventEmitter,
+  transactionId?: string,
 ) => {
   const poolClientState = getPoolClientState(connection);
 
@@ -124,6 +159,9 @@ export const nestedTransaction: InternalNestedTransactionFunction = async (
       clientConfiguration,
       handler,
       newTransactionDepth,
+      transactionRetryLimit,
+      eventEmitter,
+      transactionId,
     );
   } catch (error) {
     const transactionRetryLimitToUse =
@@ -142,6 +180,8 @@ export const nestedTransaction: InternalNestedTransactionFunction = async (
         handler,
         newTransactionDepth,
         transactionRetryLimit,
+        eventEmitter,
+        transactionId,
       );
     } else {
       throw error;
