@@ -55,11 +55,10 @@ const execTransaction: InternalTransactionFunction = async (
     await connection.query('COMMIT');
 
     if (poolClientState.transactionDepth === 0) {
-      eventEmitter.emit(
-        'commit',
+      eventEmitter.emit('commit', {
+        transactionDepth: poolClientState.transactionDepth,
         transactionId,
-        poolClientState.transactionDepth,
-      );
+      });
     }
 
     return result;
@@ -75,12 +74,11 @@ const execTransaction: InternalTransactionFunction = async (
       );
     }
 
-    eventEmitter.emit(
-      'rollback',
+    eventEmitter.emit('rollback', {
+      error: error as Error,
+      transactionDepth: poolClientState.transactionDepth,
       transactionId,
-      poolClientState.transactionDepth,
-      error as Error,
-    );
+    });
 
     throw error;
   }

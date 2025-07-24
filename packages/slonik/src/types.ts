@@ -165,18 +165,24 @@ export type DatabaseTransactionConnection = CommonQueryMethods &
 export type DatabaseTransactionEventEmitter = StrictEventEmitter<
   EventEmitter,
   {
-    commit: (transactionId: string, transactionDepth: number) => void;
-    rollback: (
-      transactionId: string,
-      transactionDepth: number,
-      error: Error,
-    ) => void;
-    rollbackToSavepoint: (
-      transactionId: string,
-      transactionDepth: number,
-      error: Error,
-    ) => void;
-    savepoint: (transactionId: string, transactionDepth: number) => void;
+    commit: (event: {
+      transactionDepth: number;
+      transactionId: string;
+    }) => void;
+    rollback: (event: {
+      error: Error;
+      transactionDepth: number;
+      transactionId: string;
+    }) => void;
+    rollbackToSavepoint: (event: {
+      error: Error;
+      transactionDepth: number;
+      transactionId: string;
+    }) => void;
+    savepoint: (event: {
+      transactionDepth: number;
+      transactionId: string;
+    }) => void;
   }
 >;
 

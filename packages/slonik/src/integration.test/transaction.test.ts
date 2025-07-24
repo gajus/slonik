@@ -21,7 +21,7 @@ test('transaction events - emits commit event for successful transaction', async
 
   await pool.transaction(async (connection) => {
     // Set up event listener
-    connection.on('commit', (transactionId, transactionDepth) => {
+    connection.on('commit', ({ transactionDepth, transactionId }) => {
       commitEventEmitted = true;
       capturedTransactionId = transactionId;
       capturedTransactionDepth = transactionDepth;
@@ -56,12 +56,15 @@ test('transaction events - emits rollback event for failed transaction', async (
   await t.throwsAsync(
     pool.transaction(async (connection) => {
       // Set up event listener
-      connection.on('rollback', (transactionId, transactionDepth, error) => {
-        rollbackEventEmitted = true;
-        capturedTransactionId = transactionId;
-        capturedTransactionDepth = transactionDepth;
-        capturedError = error;
-      });
+      connection.on(
+        'rollback',
+        ({ error, transactionDepth, transactionId }) => {
+          rollbackEventEmitted = true;
+          capturedTransactionId = transactionId;
+          capturedTransactionDepth = transactionDepth;
+          capturedError = error;
+        },
+      );
 
       // Perform a database operation then throw error
       await connection.query(sql.unsafe`SELECT 1 as test`);
@@ -89,7 +92,7 @@ test('transaction events - emits savepoint event for nested transaction', async 
 
   await pool.transaction(async (outerConnection) => {
     // Set up event listener on outer transaction
-    outerConnection.on('savepoint', (transactionId, transactionDepth) => {
+    outerConnection.on('savepoint', ({ transactionDepth, transactionId }) => {
       savepointEventEmitted = true;
       capturedTransactionId = transactionId;
       capturedTransactionDepth = transactionDepth;
@@ -130,7 +133,7 @@ test('transaction events - emits rollbackToSavepoint event for failed nested tra
     // Set up event listener
     outerConnection.on(
       'rollbackToSavepoint',
-      (transactionId, transactionDepth, error) => {
+      ({ error, transactionDepth, transactionId }) => {
         rollbackToSavepointEventEmitted = true;
         capturedTransactionId = transactionId;
         capturedTransactionDepth = transactionDepth;

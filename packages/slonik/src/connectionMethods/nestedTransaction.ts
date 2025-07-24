@@ -29,7 +29,10 @@ const execNestedTransaction: InternalNestedTransactionFunction = async (
     );
   }
 
-  eventEmitter.emit('savepoint', transactionId, newTransactionDepth);
+  eventEmitter.emit('savepoint', {
+    transactionDepth: newTransactionDepth,
+    transactionId,
+  });
 
   try {
     const result = await handler(
@@ -50,12 +53,11 @@ const execNestedTransaction: InternalNestedTransactionFunction = async (
     );
 
     if (eventEmitter && transactionId) {
-      eventEmitter.emit(
-        'rollbackToSavepoint',
+      eventEmitter.emit('rollbackToSavepoint', {
+        error: error as Error,
+        transactionDepth: newTransactionDepth,
         transactionId,
-        newTransactionDepth,
-        error as Error,
-      );
+      });
     }
 
     parentLog.error(
