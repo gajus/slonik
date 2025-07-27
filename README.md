@@ -980,6 +980,12 @@ type Interceptor = {
     queryContext: QueryContext,
     query: Query
   ) => MaybePromise<null>,
+  dataIntegrityError?: (
+    queryContext: QueryContext,
+    query: Query,
+    error: DataIntegrityError,
+    result: QueryResult<QueryResultRow>
+  ) => MaybePromise<null>,
   queryExecutionError?: (
     queryContext: QueryContext,
     query: Query,
@@ -1054,6 +1060,12 @@ pool.connect(async () => {
 Executed if query execution produces an error.
 
 Use `queryExecutionError` to log and/ or re-throw another error.
+
+#### <code>dataIntegrityError</code>
+
+Executed when a data integrity validation fails (e.g., when a query returns an unexpected number of rows or columns).
+
+Use `dataIntegrityError` to log data integrity violations, perform custom validation logic, or handle data consistency issues. This middleware is called before the `DataIntegrityError` is thrown, allowing you to inspect the query result and error details.
 
 #### <code>transformQuery</code>
 
