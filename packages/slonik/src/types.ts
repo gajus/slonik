@@ -6,7 +6,7 @@ import type {
   DriverStream,
   DriverTypeParser,
 } from '@slonik/driver';
-import type { SlonikError } from '@slonik/errors';
+import type { DataIntegrityError, SlonikError } from '@slonik/errors';
 import type {
   PrimitiveValueExpression,
   QuerySqlToken,
@@ -223,6 +223,12 @@ export type Interceptor = {
   readonly beforeTransformQuery?: (
     queryContext: QueryContext,
     query: Query,
+  ) => MaybePromise<null>;
+  readonly dataIntegrityError?: (
+    queryContext: QueryContext,
+    query: Query,
+    error: DataIntegrityError,
+    result: QueryResult<QueryResultRow>,
   ) => MaybePromise<null>;
   readonly name: string;
   readonly queryExecutionError?: (

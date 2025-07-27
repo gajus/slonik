@@ -414,7 +414,11 @@ const executeQueryInternal = async (
 
   const interceptors: Interceptor[] = clientConfiguration.interceptors.slice();
 
-  if (result.type === 'QueryResult') {
+  if (result.type !== 'QueryResult') {
+    return result;
+  }
+
+  try {
     if (integrityValidation) {
       if (integrityValidation.validationType === 'ONE_ROW') {
         if (result.rows.length === 0) {
@@ -511,152 +515,160 @@ const executeQueryInternal = async (
         }
       }
     }
-
-    for (const interceptor of interceptors) {
-      const afterQueryExecution = interceptor.afterQueryExecution;
-
-      if (afterQueryExecution) {
-        await tracer.startActiveSpan(
-          'slonik.interceptor.afterQueryExecution',
-          async (span) => {
-            span.setAttribute('interceptor.name', interceptor.name);
-
-            try {
-              await afterQueryExecution(
-                executionContext,
-                actualQuery,
-                result as QueryResult<QueryResultRow>,
-              );
-            } catch (error) {
-              span.recordException(error);
-              span.setStatus({
-                code: SpanStatusCode.ERROR,
-                message: String(error),
-              });
-
-              throw error;
-            } finally {
-              span.end();
-            }
-          },
+  } catch (error) {
+    for (const interceptor of clientConfiguration.interceptors) {
+      if (interceptor.dataIntegrityError) {
+        await interceptor.dataIntegrityError(
+          executionContext,
+          actualQuery,
+          error,
+          result,
         );
       }
     }
 
-    for (const interceptor of interceptors) {
-      const transformRow = interceptor.transformRow;
+    throw error;
+  }
 
-      if (transformRow) {
-        const { fields, rows } = result;
+  for (const interceptor of interceptors) {
+    const afterQueryExecution = interceptor.afterQueryExecution;
 
-        const transformedRows: QueryResultRow[] = await tracer.startActiveSpan(
-          'slonik.interceptor.transformRow',
-          async (span) => {
-            span.setAttribute('interceptor.name', interceptor.name);
-            span.setAttribute('rows.length', rows.length);
+    if (afterQueryExecution) {
+      await tracer.startActiveSpan(
+        'slonik.interceptor.afterQueryExecution',
+        async (span) => {
+          span.setAttribute('interceptor.name', interceptor.name);
 
-            try {
-              return rows.map((row) => {
-                return transformRow(executionContext, actualQuery, row, fields);
-              });
-            } catch (error) {
-              span.recordException(error);
-              span.setStatus({
-                code: SpanStatusCode.ERROR,
-                message: String(error),
-              });
+          try {
+            await afterQueryExecution(
+              executionContext,
+              actualQuery,
+              result as QueryResult<QueryResultRow>,
+            );
+          } catch (error) {
+            span.recordException(error);
+            span.setStatus({
+              code: SpanStatusCode.ERROR,
+              message: String(error),
+            });
 
-              throw error;
-            } finally {
-              span.end();
-            }
-          },
-        );
-
-        result = {
-          ...result,
-          rows: transformedRows,
-        };
-      }
+            throw error;
+          } finally {
+            span.end();
+          }
+        },
+      );
     }
+  }
 
-    for (const interceptor of interceptors) {
-      const transformRowAsync = interceptor.transformRowAsync;
+  for (const interceptor of interceptors) {
+    const transformRow = interceptor.transformRow;
 
-      if (transformRowAsync) {
-        const { fields, rows } = result;
+    if (transformRow) {
+      const { fields, rows } = result;
 
-        const transformedRows: QueryResultRow[] = await tracer.startActiveSpan(
-          'slonik.interceptor.transformRowAsync',
-          async (span) => {
-            span.setAttribute('interceptor.name', interceptor.name);
-            span.setAttribute('rows.length', rows.length);
+      const transformedRows: QueryResultRow[] = await tracer.startActiveSpan(
+        'slonik.interceptor.transformRow',
+        async (span) => {
+          span.setAttribute('interceptor.name', interceptor.name);
+          span.setAttribute('rows.length', rows.length);
 
-            try {
-              const limit = pLimit(10);
+          try {
+            return rows.map((row) => {
+              return transformRow(executionContext, actualQuery, row, fields);
+            });
+          } catch (error) {
+            span.recordException(error);
+            span.setStatus({
+              code: SpanStatusCode.ERROR,
+              message: String(error),
+            });
 
-              return await Promise.all(
-                rows.map((row) => {
-                  return limit(() =>
-                    transformRowAsync(
-                      executionContext,
-                      actualQuery,
-                      row,
-                      fields,
-                    ),
-                  );
-                }),
-              );
-            } catch (error) {
-              span.recordException(error);
-              span.setStatus({
-                code: SpanStatusCode.ERROR,
-                message: String(error),
-              });
+            throw error;
+          } finally {
+            span.end();
+          }
+        },
+      );
 
-              throw error;
-            } finally {
-              span.end();
-            }
-          },
-        );
-
-        result = {
-          ...result,
-          rows: transformedRows,
-        };
-      }
+      result = {
+        ...result,
+        rows: transformedRows,
+      };
     }
+  }
 
-    for (const interceptor of interceptors) {
-      const beforeQueryResult = interceptor.beforeQueryResult;
+  for (const interceptor of interceptors) {
+    const transformRowAsync = interceptor.transformRowAsync;
 
-      if (beforeQueryResult) {
-        await tracer.startActiveSpan(
-          'slonik.interceptor.beforeQueryResult',
-          async (span) => {
-            span.setAttribute('interceptor.name', interceptor.name);
+    if (transformRowAsync) {
+      const { fields, rows } = result;
 
-            try {
-              await beforeQueryResult(
-                executionContext,
-                actualQuery,
-                result as QueryResult<QueryResultRow>,
-              );
-            } catch (error) {
-              span.recordException(error);
-              span.setStatus({
-                code: SpanStatusCode.ERROR,
-                message: String(error),
-              });
+      const transformedRows: QueryResultRow[] = await tracer.startActiveSpan(
+        'slonik.interceptor.transformRowAsync',
+        async (span) => {
+          span.setAttribute('interceptor.name', interceptor.name);
+          span.setAttribute('rows.length', rows.length);
 
-              throw error;
-            } finally {
-              span.end();
-            }
-          },
-        );
-      }
+          try {
+            const limit = pLimit(10);
+
+            return await Promise.all(
+              rows.map((row) => {
+                return limit(() =>
+                  transformRowAsync(executionContext, actualQuery, row, fields),
+                );
+              }),
+            );
+          } catch (error) {
+            span.recordException(error);
+            span.setStatus({
+              code: SpanStatusCode.ERROR,
+              message: String(error),
+            });
+
+            throw error;
+          } finally {
+            span.end();
+          }
+        },
+      );
+
+      result = {
+        ...result,
+        rows: transformedRows,
+      };
+    }
+  }
+
+  for (const interceptor of interceptors) {
+    const beforeQueryResult = interceptor.beforeQueryResult;
+
+    if (beforeQueryResult) {
+      await tracer.startActiveSpan(
+        'slonik.interceptor.beforeQueryResult',
+        async (span) => {
+          span.setAttribute('interceptor.name', interceptor.name);
+
+          try {
+            await beforeQueryResult(
+              executionContext,
+              actualQuery,
+              result as QueryResult<QueryResultRow>,
+            );
+          } catch (error) {
+            span.recordException(error);
+            span.setStatus({
+              code: SpanStatusCode.ERROR,
+              message: String(error),
+            });
+
+            throw error;
+          } finally {
+            span.end();
+          }
+        },
+      );
     }
   }
 
