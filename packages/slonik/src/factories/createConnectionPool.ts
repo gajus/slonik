@@ -9,6 +9,7 @@ import type {
   DriverStream,
   DriverStreamResult,
 } from '@slonik/driver';
+import { UnexpectedStateError } from '@slonik/errors';
 import { defer, generateUid } from '@slonik/utilities';
 import type { DeferredPromise } from '@slonik/utilities';
 import { setTimeout as delay } from 'node:timers/promises';
@@ -208,7 +209,7 @@ export const createConnectionPool = ({
             const indexOfConnection = connections.indexOf(connection);
 
             if (indexOfConnection === -1) {
-              logger.error(
+              throw new UnexpectedStateError(
                 'Unable to find connection in `connections` array to remove.',
               );
             } else {
