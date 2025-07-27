@@ -1,23 +1,25 @@
 import type { InternalQueryMethod } from '../types.js';
-import { any } from './any.js';
-import { DataIntegrityError } from '@slonik/errors';
+import { query } from './query.js';
 import { generateUid } from '@slonik/utilities';
 
 export const anyFirst: InternalQueryMethod = async (
   log,
   connection,
   clientConfigurationType,
-  query,
+  slonikQuery,
   inheritedQueryId,
 ) => {
   const queryId = inheritedQueryId ?? generateUid();
 
-  const rows = await any(
+  const { rows } = await query(
     log,
     connection,
     clientConfigurationType,
-    query,
+    slonikQuery,
     queryId,
+    {
+      validationType: 'MAYBE_MANY_ROWS_ONE_COLUMN',
+    },
   );
 
   if (rows.length === 0) {
@@ -27,17 +29,6 @@ export const anyFirst: InternalQueryMethod = async (
   const firstRow = rows[0];
 
   const keys = Object.keys(firstRow as Record<string, unknown>);
-
-  if (keys.length !== 1) {
-    log.error(
-      {
-        queryId,
-      },
-      'result row has no columns',
-    );
-
-    throw new DataIntegrityError(query);
-  }
 
   const firstColumnName = keys[0];
 

@@ -76,8 +76,8 @@ export class DataIntegrityError extends SlonikError {
 
   public values: readonly PrimitiveValueExpression[];
 
-  public constructor(query: Query) {
-    super('Query returned an unexpected result.');
+  public constructor(message: string, query: Query) {
+    super(message);
 
     this.sql = query.sql;
     this.values = query.values;
@@ -114,18 +114,7 @@ export class InvalidConfigurationError extends SlonikError {}
 
 export class InvalidInputError extends SlonikError {}
 
-export class NotFoundError extends SlonikError {
-  public sql: string;
-
-  public values: readonly PrimitiveValueExpression[];
-
-  public constructor(query: Query) {
-    super('Resource not found.');
-
-    this.sql = query.sql;
-    this.values = query.values;
-  }
-}
+export class NotFoundError extends DataIntegrityError {}
 
 export class NotNullIntegrityConstraintViolationError extends IntegrityConstraintViolationError {
   public constructor(error: IntegrityConstraintViolationErrorCause) {

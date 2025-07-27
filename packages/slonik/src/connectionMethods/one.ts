@@ -1,6 +1,5 @@
 import type { InternalQueryMethod } from '../types.js';
 import { query } from './query.js';
-import { DataIntegrityError, NotFoundError } from '@slonik/errors';
 import { generateUid } from '@slonik/utilities';
 
 /**
@@ -23,29 +22,10 @@ export const one: InternalQueryMethod = async (
     clientConfiguration,
     slonikQuery,
     queryId,
+    {
+      validationType: 'ONE_ROW',
+    },
   );
-
-  if (rows.length === 0) {
-    log.error(
-      {
-        queryId,
-      },
-      'NotFoundError',
-    );
-
-    throw new NotFoundError(slonikQuery);
-  }
-
-  if (rows.length > 1) {
-    log.error(
-      {
-        queryId,
-      },
-      'DataIntegrityError',
-    );
-
-    throw new DataIntegrityError(slonikQuery);
-  }
 
   return rows[0];
 };

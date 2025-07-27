@@ -1,4 +1,5 @@
 import type { ConnectionPoolClient } from './factories/createConnectionPool.js';
+import type { IntegrityValidation } from './routines/executeQuery.js';
 import type {
   DriverFactory,
   DriverNotice,
@@ -263,6 +264,7 @@ export type InternalQueryMethod<R = any> = (
   clientConfiguration: ClientConfiguration,
   slonikSql: QuerySqlToken,
   uid?: QueryId,
+  integrityValidation?: IntegrityValidation,
 ) => R;
 
 export type InternalStreamFunction = <T>(

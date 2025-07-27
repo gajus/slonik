@@ -24,6 +24,9 @@ export const oneFirst: InternalQueryMethod = async (
     clientConfiguration,
     slonikSql,
     queryId,
+    {
+      validationType: 'ONE_COLUMN',
+    },
   );
 
   const keys = Object.keys(row);

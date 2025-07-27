@@ -1,6 +1,5 @@
 import type { InternalQueryMethod } from '../types.js';
-import { maybeOne } from './maybeOne.js';
-import { DataIntegrityError } from '@slonik/errors';
+import { query } from './query.js';
 import { generateUid } from '@slonik/utilities';
 
 /**
@@ -12,35 +11,25 @@ export const maybeOneFirst: InternalQueryMethod = async (
   log,
   connection,
   clientConfiguration,
-  query,
+  slonikQuery,
   inheritedQueryId,
 ) => {
   const queryId = inheritedQueryId ?? generateUid();
 
-  const row = await maybeOne(
+  const { rows } = await query(
     log,
     connection,
     clientConfiguration,
-    query,
+    slonikQuery,
     queryId,
+    {
+      validationType: 'MAYBE_ONE_COLUMN',
+    },
   );
 
-  if (!row) {
+  if (rows.length === 0) {
     return null;
   }
 
-  const keys = Object.keys(row);
-
-  if (keys.length !== 1) {
-    log.error(
-      {
-        queryId,
-      },
-      'DataIntegrityError',
-    );
-
-    throw new DataIntegrityError(query);
-  }
-
-  return row[keys[0]];
+  return rows[0][Object.keys(rows[0])[0]];
 };

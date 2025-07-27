@@ -20,7 +20,9 @@ import type { DriverNotice } from '@slonik/driver';
 import {
   BackendTerminatedError,
   BackendTerminatedUnexpectedlyError,
+  DataIntegrityError,
   InvalidInputError,
+  NotFoundError,
   SlonikError,
   TupleMovedToAnotherPartitionError,
   UnexpectedForeignConnectionError,
@@ -31,6 +33,18 @@ import { defer, generateUid } from '@slonik/utilities';
 import { getStackTrace } from 'get-stack-trace';
 import pLimit from 'p-limit';
 import { serializeError } from 'serialize-error';
+
+export type IntegrityValidation = {
+  validationType:
+    | 'MANY_COLUMNS'
+    | 'MANY_ROWS'
+    | 'MANY_ROWS_ONE_COLUMN'
+    | 'MAYBE_MANY_ROWS_ONE_COLUMN'
+    | 'MAYBE_ONE_COLUMN'
+    | 'MAYBE_ONE_ROW'
+    | 'ONE_COLUMN'
+    | 'ONE_ROW';
+};
 
 const tracer = trace.getTracer('slonik.interceptors');
 
@@ -124,6 +138,7 @@ const executeQueryInternal = async (
   query: QuerySqlToken,
   inheritedQueryId: QueryId | undefined,
   executionRoutine: ExecutionRoutine,
+  integrityValidation?: IntegrityValidation,
   stream: boolean = false,
 ): Promise<
   QueryResult<Record<string, PrimitiveValueExpression>> | StreamResult
@@ -400,6 +415,103 @@ const executeQueryInternal = async (
   const interceptors: Interceptor[] = clientConfiguration.interceptors.slice();
 
   if (result.type === 'QueryResult') {
+    if (integrityValidation) {
+      if (integrityValidation.validationType === 'ONE_ROW') {
+        if (result.rows.length === 0) {
+          throw new NotFoundError('Query returned no rows.', actualQuery);
+        }
+
+        if (result.rows.length > 1) {
+          throw new DataIntegrityError(
+            'Query returned multiple rows.',
+            actualQuery,
+          );
+        }
+      }
+
+      if (
+        integrityValidation.validationType === 'MAYBE_ONE_ROW' &&
+        result.rows.length > 1
+      ) {
+        throw new DataIntegrityError(
+          'Query returned multiple rows.',
+          actualQuery,
+        );
+      }
+
+      if (integrityValidation.validationType === 'ONE_COLUMN') {
+        if (result.rows.length === 0) {
+          throw new NotFoundError('Query returned no rows.', actualQuery);
+        }
+
+        if (result.rows.length !== 1) {
+          throw new DataIntegrityError(
+            'Query returned multiple rows.',
+            actualQuery,
+          );
+        }
+
+        if (Object.keys(result.rows[0]).length !== 1) {
+          throw new DataIntegrityError(
+            'Query returned rows with multiple columns.',
+            actualQuery,
+          );
+        }
+      }
+
+      if (integrityValidation.validationType === 'MAYBE_ONE_COLUMN') {
+        if (result.rows.length > 1) {
+          throw new DataIntegrityError(
+            'Query returned multiple rows.',
+            actualQuery,
+          );
+        }
+
+        if (
+          result.rows.length === 1 &&
+          Object.keys(result.rows[0]).length !== 1
+        ) {
+          throw new DataIntegrityError(
+            'Query returned rows with multiple columns.',
+            actualQuery,
+          );
+        }
+      }
+
+      if (
+        integrityValidation.validationType === 'MANY_ROWS' &&
+        result.rows.length === 0
+      ) {
+        throw new NotFoundError('Query returned no rows.', actualQuery);
+      }
+
+      if (integrityValidation.validationType === 'MANY_ROWS_ONE_COLUMN') {
+        if (result.rows.length === 0) {
+          throw new NotFoundError('Query returned no rows.', actualQuery);
+        }
+
+        for (const row of result.rows) {
+          if (Object.keys(row).length !== 1) {
+            throw new DataIntegrityError(
+              'Query returned rows with multiple columns.',
+              actualQuery,
+            );
+          }
+        }
+      }
+
+      if (integrityValidation.validationType === 'MAYBE_MANY_ROWS_ONE_COLUMN') {
+        for (const row of result.rows) {
+          if (Object.keys(row).length !== 1) {
+            throw new DataIntegrityError(
+              'Query returned rows with multiple columns.',
+              actualQuery,
+            );
+          }
+        }
+      }
+    }
+
     for (const interceptor of interceptors) {
       const afterQueryExecution = interceptor.afterQueryExecution;
 
@@ -558,6 +670,7 @@ export const executeQuery = async (
   query: QuerySqlToken,
   inheritedQueryId: QueryId | undefined,
   executionRoutine: ExecutionRoutine,
+  integrityValidation?: IntegrityValidation,
   stream: boolean = false,
 ): Promise<
   QueryResult<Record<string, PrimitiveValueExpression>> | StreamResult
@@ -573,6 +686,7 @@ export const executeQuery = async (
         query,
         inheritedQueryId,
         executionRoutine,
+        integrityValidation,
         stream,
       );
     } catch (error) {

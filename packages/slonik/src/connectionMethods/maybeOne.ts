@@ -1,6 +1,5 @@
 import type { InternalQueryMethod } from '../types.js';
 import { query } from './query.js';
-import { DataIntegrityError } from '@slonik/errors';
 import { generateUid } from '@slonik/utilities';
 
 /**
@@ -22,21 +21,13 @@ export const maybeOne: InternalQueryMethod = async (
     clientConfiguration,
     slonikQuery,
     queryId,
+    {
+      validationType: 'MAYBE_ONE_ROW',
+    },
   );
 
   if (rows.length === 0) {
     return null;
-  }
-
-  if (rows.length > 1) {
-    log.error(
-      {
-        queryId,
-      },
-      'DataIntegrityError',
-    );
-
-    throw new DataIntegrityError(slonikQuery);
   }
 
   return rows[0];

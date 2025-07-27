@@ -1,9 +1,9 @@
 import type { InternalQueryMethod } from '../types.js';
 import { query } from './query.js';
-import { DataIntegrityError } from '@slonik/errors';
 import type { QuerySqlToken } from '@slonik/sql-tag';
 import { generateUid } from '@slonik/utilities';
 
+// TODO deprecate exists
 export const exists: InternalQueryMethod<Promise<boolean>> = async (
   log,
   connection,
@@ -22,18 +22,10 @@ export const exists: InternalQueryMethod<Promise<boolean>> = async (
       values: slonikQuery.values,
     } as QuerySqlToken,
     queryId,
+    {
+      validationType: 'ONE_ROW',
+    },
   );
-
-  if (rows.length !== 1) {
-    log.error(
-      {
-        queryId,
-      },
-      'DataIntegrityError',
-    );
-
-    throw new DataIntegrityError(slonikQuery);
-  }
 
   return Boolean((rows[0] as Record<string, unknown>).exists);
 };

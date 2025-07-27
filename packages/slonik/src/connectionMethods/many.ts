@@ -1,6 +1,5 @@
 import type { InternalQueryMethod } from '../types.js';
 import { query } from './query.js';
-import { NotFoundError } from '@slonik/errors';
 import { generateUid } from '@slonik/utilities';
 
 /**
@@ -22,18 +21,10 @@ export const many: InternalQueryMethod = async (
     clientConfiguration,
     slonikQuery,
     queryId,
+    {
+      validationType: 'MANY_ROWS',
+    },
   );
-
-  if (rows.length === 0) {
-    log.error(
-      {
-        queryId,
-      },
-      'NotFoundError',
-    );
-
-    throw new NotFoundError(slonikQuery);
-  }
 
   return rows;
 };

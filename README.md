@@ -2785,6 +2785,9 @@ try {
 
 ### Handling <code>NotFoundError</code>
 
+> [!NOTE]
+> `NotFoundError` extends from `DataIntegrityError`.
+
 To handle the case where query returns less than one row, catch `NotFoundError` error.
 
 ```ts

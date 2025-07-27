@@ -48,6 +48,7 @@ export const query: InternalQueryMethod = async (
   clientConfiguration,
   slonikSql,
   inheritedQueryId,
+  integrityValidation,
 ) => {
   try {
     return await executeQuery(
@@ -57,6 +58,7 @@ export const query: InternalQueryMethod = async (
       slonikSql,
       inheritedQueryId,
       executionRoutine,
+      integrityValidation,
     );
   } catch (error) {
     if (error instanceof SlonikError) {
