@@ -58,6 +58,7 @@ export const query: InternalQueryMethod = async (
       slonikSql,
       inheritedQueryId,
       executionRoutine,
+      false,
       integrityValidation,
     );
   } catch (error) {

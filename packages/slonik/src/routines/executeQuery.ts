@@ -682,8 +682,8 @@ export const executeQuery = async (
   query: QuerySqlToken,
   inheritedQueryId: QueryId | undefined,
   executionRoutine: ExecutionRoutine,
+  stream: boolean,
   integrityValidation?: IntegrityValidation,
-  stream: boolean = false,
 ): Promise<
   QueryResult<Record<string, PrimitiveValueExpression>> | StreamResult
 > => {
