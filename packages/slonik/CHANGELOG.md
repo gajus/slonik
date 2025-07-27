@@ -1,5 +1,20 @@
 # slonik
 
+## 48.3.0
+
+### Minor Changes
+
+- [`14f39c3`](https://github.com/gajus/slonik/commit/14f39c396f1a9be3866211b37e79a0ae2d052d42) Thanks [@gajus](https://github.com/gajus)! - add dateIntegrityError middleware
+
+### Patch Changes
+
+- Updated dependencies []:
+  - @slonik/driver@48.3.0
+  - @slonik/errors@48.3.0
+  - @slonik/pg-driver@48.3.0
+  - @slonik/sql-tag@48.3.0
+  - @slonik/utilities@48.3.0
+
 ## 48.2.0
 
 ### Minor Changes
