@@ -586,7 +586,7 @@ export const createPoolTests = (
     );
   });
 
-  test('waits for every client to be assigned', async (t) => {
+  test('waits for active connections but rejects waiting clients', async (t) => {
     const pool = await createPool(t.context.dsn, {
       driverFactory,
       maximumPoolSize: 1,
@@ -612,8 +612,13 @@ export const createPoolTests = (
 
     await t.notThrowsAsync(pool.end());
 
+    // connection1 should complete since it was already active
     t.is(await connection1, 'connection 1');
-    t.is(await connection2, 'connection 2');
+
+    // connection2 should be rejected since it was waiting for a connection
+    await t.throwsAsync(connection2, {
+      message: 'Connection pool is being terminated.',
+    });
   });
 
   test('pool.end() resolves only when pool ends', async (t) => {
