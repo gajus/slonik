@@ -1,5 +1,20 @@
 # slonik
 
+## 48.4.0
+
+### Minor Changes
+
+- [`ae6bd40`](https://github.com/gajus/slonik/commit/ae6bd4070cedaca1fe6050f47e56d3a35b48a63a) Thanks [@gajus](https://github.com/gajus)! - add maximumConnectionAge
+
+### Patch Changes
+
+- Updated dependencies []:
+  - @slonik/driver@48.4.0
+  - @slonik/errors@48.4.0
+  - @slonik/pg-driver@48.4.0
+  - @slonik/sql-tag@48.4.0
+  - @slonik/utilities@48.4.0
+
 ## 48.3.0
 
 ### Minor Changes
