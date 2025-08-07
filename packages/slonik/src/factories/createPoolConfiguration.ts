@@ -3,6 +3,7 @@ import type { ClientConfiguration } from '../types.js';
 
 type PoolConfiguration = {
   idleTimeout: number;
+  maximumConnectionAge: number;
   maximumPoolSize: number;
   minimumPoolSize: number;
 };
@@ -12,6 +13,7 @@ export const createPoolConfiguration = (
 ): PoolConfiguration => {
   const poolConfiguration = {
     idleTimeout: 10_000,
+    maximumConnectionAge: 30 * 60 * 1_000, // 30 minutes
     maximumPoolSize: 10,
     minimumPoolSize: 0,
   };

@@ -1,3 +1,5 @@
+/* eslint-disable promise/prefer-await-to-then */
+
 import { Logger } from '../Logger.js';
 import type { DatabasePoolEventEmitter } from '../types.js';
 import { SpanStatusCode, trace } from '@opentelemetry/api';
@@ -45,6 +47,11 @@ export type ConnectionPoolClient = {
   ) => DriverStream<DriverStreamResult>;
 };
 
+type ConnectionMetadata = {
+  createdAt: number;
+  idleTimer?: ReturnType<typeof setTimeout>;
+};
+
 /**
  * @property {number} acquiredConnections - The number of connections that are currently acquired.
  */
@@ -67,12 +74,19 @@ type WaitingClient = {
 export const createConnectionPool = ({
   driver,
   events,
+  idleTimeout,
+  maximumConnectionAge,
   maximumPoolSize,
   minimumPoolSize,
 }: {
   driver: Driver;
   events: DatabasePoolEventEmitter;
   idleTimeout: number;
+  /**
+   * The maximum age of a connection in milliseconds.
+   * After this age, the connection will be destroyed.
+   */
+  maximumConnectionAge: number;
   maximumPoolSize: number;
   minimumPoolSize: number;
 }): ConnectionPool => {
@@ -81,6 +95,12 @@ export const createConnectionPool = ({
   const pendingConnections: Array<Promise<ConnectionPoolClient>> = [];
 
   const connections: ConnectionPoolClient[] = [];
+
+  // Track metadata for each connection
+  const connectionMetadata = new WeakMap<
+    ConnectionPoolClient,
+    ConnectionMetadata
+  >();
 
   const waitingClients: WaitingClient[] = [];
 
@@ -91,7 +111,96 @@ export const createConnectionPool = ({
 
   let poolEndPromise: null | Promise<void> = null;
 
+  const validateConnection = async (
+    connection: ConnectionPoolClient,
+  ): Promise<boolean> => {
+    try {
+      const result = await connection.query('SELECT 1');
+      return result.rows.length === 1;
+    } catch (error) {
+      logger.warn(
+        {
+          connectionId: connection.id(),
+          error: serializeError(error),
+        },
+        'connection validation failed',
+      );
+
+      return false;
+    }
+  };
+
+  const clearIdleTimer = (connection: ConnectionPoolClient) => {
+    const metadata = connectionMetadata.get(connection);
+
+    if (metadata?.idleTimer) {
+      clearTimeout(metadata.idleTimer);
+
+      metadata.idleTimer = undefined;
+    }
+  };
+
+  const setIdleTimer = (connection: ConnectionPoolClient) => {
+    if (connections.length <= minimumPoolSize) {
+      return;
+    }
+
+    const metadata = connectionMetadata.get(connection);
+
+    if (!metadata) {
+      return;
+    }
+
+    clearIdleTimer(connection);
+
+    metadata.idleTimer = setTimeout(async () => {
+      if (
+        connection.state() === 'IDLE' &&
+        connections.length > minimumPoolSize
+      ) {
+        logger.debug(
+          {
+            connectionId: connection.id(),
+            idleTimeout,
+          },
+          'destroying idle connection due to idle timeout',
+        );
+
+        try {
+          await connection.destroy();
+        } catch (error) {
+          logger.error(
+            {
+              connectionId: connection.id(),
+              error: serializeError(error),
+            },
+            'error destroying idle connection',
+          );
+        }
+      }
+    }, idleTimeout);
+  };
+
+  const isConnectionTooOld = (connection: ConnectionPoolClient): boolean => {
+    const metadata = connectionMetadata.get(connection);
+
+    if (!metadata) {
+      return false;
+    }
+
+    const age = Date.now() - metadata.createdAt;
+
+    return age > maximumConnectionAge;
+  };
+
   const endPool = async () => {
+    // Clear all idle timers first
+    for (const connection of connections) {
+      clearIdleTimer(connection);
+    }
+
+    // Waiting clients are already rejected in end() method
+
     try {
       await Promise.all(pendingConnections);
     } catch (error) {
@@ -103,28 +212,16 @@ export const createConnectionPool = ({
       );
     }
 
-    try {
-      await Promise.all(
-        waitingClients.map((waitingClient) => waitingClient.deferred.promise),
-      );
-    } catch (error) {
-      logger.error(
-        {
-          error: serializeError(error),
-        },
-        'error in pool termination sequence while waiting for waiting clients to be resolved',
-      );
-    }
-
     // This is needed to ensure that all pending connections were assigned a waiting client.
-    // e.g. "waits for all connections to be established before attempting to terminate the pool" test
     await delay(0);
 
     // Make a copy of `connections` array as items are removed from it during the map iteration.
-    // If `connections` array is used directly, the loop will skip some items.
     await Promise.all(
       [...connections].map((connection) => connection.destroy()),
     );
+
+    // Mark as ended after cleanup
+    isEnded = true;
   };
 
   const acquire = async () => {
@@ -139,28 +236,30 @@ export const createConnectionPool = ({
         span.setAttribute('slonik.pool.waitingClients', waitingClients.length);
         span.setAttribute('slonik.pool.maximumSize', maximumPoolSize);
 
-        if (isEnding) {
-          span.setStatus({
-            code: SpanStatusCode.ERROR,
-            message: 'Connection pool is being terminated',
-          });
-
-          throw new Error('Connection pool is being terminated.');
-        }
-
         if (isEnded) {
           span.setStatus({
             code: SpanStatusCode.ERROR,
             message: 'Connection pool has ended',
           });
 
-          throw new Error('Connection pool has ended.');
+          throw new UnexpectedStateError('Connection pool has ended.');
+        }
+
+        if (isEnding) {
+          span.setStatus({
+            code: SpanStatusCode.ERROR,
+            message: 'Connection pool is being terminated',
+          });
+
+          throw new UnexpectedStateError(
+            'Connection pool is being terminated.',
+          );
         }
 
         const addConnection = async () => {
           const pendingConnection = driver
             .createClient()
-            // eslint-disable-next-line promise/prefer-await-to-then
+
             .then((resolvedConnection) => {
               return {
                 ...resolvedConnection,
@@ -184,17 +283,52 @@ export const createConnectionPool = ({
             throw error;
           });
 
+          connectionMetadata.set(connection, {
+            createdAt: Date.now(),
+          });
+
           const onRelease = () => {
             if (connection.state() !== 'IDLE') {
+              return;
+            }
+
+            if (isConnectionTooOld(connection)) {
+              logger.debug(
+                {
+                  connectionId: connection.id(),
+                  maxAge: maximumConnectionAge,
+                },
+                'destroying connection due to maximum age',
+              );
+
+              connection.destroy().catch((error) => {
+                logger.error(
+                  {
+                    connectionId: connection.id(),
+                    error: serializeError(error),
+                  },
+                  'error destroying old connection',
+                );
+              });
+
+              return;
+            }
+
+            // Don't assign connections to waiting clients if pool is ending
+            if (isEnding || isEnded) {
               return;
             }
 
             const waitingClient = waitingClients.shift();
 
             if (!waitingClient) {
+              // Set idle timer when connection becomes idle with no waiting clients
+              setIdleTimer(connection);
               return;
             }
 
+            // Clear idle timer when connection is being reused
+            clearIdleTimer(connection);
             connection.acquire();
 
             waitingClient.deferred.resolve(connection);
@@ -203,8 +337,13 @@ export const createConnectionPool = ({
           connection.on('release', onRelease);
 
           const onDestroy = () => {
+            // Clear idle timer when connection is destroyed
+            clearIdleTimer(connection);
+
             connection.removeListener('release', onRelease);
             connection.removeListener('destroy', onDestroy);
+
+            connectionMetadata.delete(connection);
 
             const indexOfConnection = connections.indexOf(connection);
 
@@ -216,21 +355,22 @@ export const createConnectionPool = ({
               connections.splice(indexOfConnection, 1);
             }
 
-            const waitingClient = waitingClients.shift();
+            // Don't try to fulfill waiting clients if pool is ending
+            if (!isEnding && !isEnded) {
+              const waitingClient = waitingClients.shift();
 
-            if (waitingClient) {
-              // eslint-disable-next-line promise/prefer-await-to-then
-              acquire().then(
-                waitingClient.deferred.resolve,
-                waitingClient.deferred.reject,
-              );
+              if (waitingClient) {
+                acquire().then(
+                  waitingClient.deferred.resolve,
+                  waitingClient.deferred.reject,
+                );
 
-              return;
+                return;
+              }
             }
 
             // In the case that there are no waiting clients and we're below the minimum pool size, add a new connection
             if (!isEnding && !isEnded && connections.length < minimumPoolSize) {
-              // eslint-disable-next-line promise/prefer-await-to-then
               addConnection().catch((error) => {
                 logger.error(
                   {
@@ -264,13 +404,71 @@ export const createConnectionPool = ({
           return connection;
         };
 
-        const idleConnection = connections.find(
-          (connection) => connection.state() === 'IDLE',
-        );
+        // Find and validate an idle connection
+        let idleConnection: ConnectionPoolClient | undefined;
+
+        for (const connection of connections) {
+          if (connection.state() === 'IDLE') {
+            clearIdleTimer(connection);
+
+            if (isConnectionTooOld(connection)) {
+              logger.debug(
+                {
+                  connectionId: connection.id(),
+                  maxAge: maximumConnectionAge,
+                },
+                'skipping old connection, will be destroyed',
+              );
+
+              connection.destroy().catch((error) => {
+                logger.error(
+                  {
+                    connectionId: connection.id(),
+                    error: serializeError(error),
+                  },
+                  'error destroying old connection during acquire',
+                );
+              });
+
+              continue;
+            }
+
+            // Acquire connection temporarily for validation
+            connection.acquire();
+
+            const isValid = await validateConnection(connection);
+
+            if (!isValid) {
+              await connection.release();
+
+              logger.warn(
+                {
+                  connectionId: connection.id(),
+                },
+                'connection validation failed, destroying connection',
+              );
+
+              connection.destroy().catch((error) => {
+                logger.error(
+                  {
+                    connectionId: connection.id(),
+                    error: serializeError(error),
+                  },
+                  'error destroying invalid connection',
+                );
+              });
+
+              continue;
+            }
+
+            // Connection is valid and not too old
+            idleConnection = connection;
+            break;
+          }
+        }
 
         if (idleConnection) {
-          idleConnection.acquire();
-
+          // Connection is already acquired from validation
           span.setAttribute('slonik.connection.id', idleConnection.id());
           span.setAttribute('method', 'acquire:reuse-idle');
           span.setStatus({ code: SpanStatusCode.OK });
@@ -288,6 +486,17 @@ export const createConnectionPool = ({
           span.setStatus({ code: SpanStatusCode.OK });
 
           return newConnection;
+        }
+
+        if (isEnding || isEnded) {
+          span.setStatus({
+            code: SpanStatusCode.ERROR,
+            message: 'Connection pool is being terminated',
+          });
+
+          throw new UnexpectedStateError(
+            'Connection pool is being terminated.',
+          );
         }
 
         const deferred = defer<ConnectionPoolClient>();
@@ -309,7 +518,6 @@ export const createConnectionPool = ({
           `connection pool full; client has been queued`,
         );
 
-        // eslint-disable-next-line promise/prefer-await-to-then
         return deferred.promise.then((connection) => {
           logger.debug(
             {
@@ -348,13 +556,20 @@ export const createConnectionPool = ({
     end: async () => {
       isEnding = true;
 
+      while (waitingClients.length > 0) {
+        const waitingClient = waitingClients.shift();
+        if (waitingClient) {
+          waitingClient.deferred.reject(
+            new Error('Connection pool is being terminated.'),
+          );
+        }
+      }
+
       if (poolEndPromise) {
         return poolEndPromise;
       }
 
       poolEndPromise = endPool();
-
-      isEnded = true;
 
       return poolEndPromise;
     },
@@ -372,9 +587,6 @@ export const createConnectionPool = ({
         pendingReleaseConnections: 0,
       };
 
-      // TODO add pendingAcquireConnections
-      // TODO add destroyedConnections
-
       for (const connection of connections) {
         if (connection.state() === 'ACQUIRED') {
           state.acquiredConnections++;
@@ -390,10 +602,6 @@ export const createConnectionPool = ({
 
         if (connection.state() === 'PENDING_DESTROY') {
           state.pendingDestroyConnections++;
-        }
-
-        if (connection.state() === 'DESTROYED') {
-          state.pendingReleaseConnections++;
         }
       }
 

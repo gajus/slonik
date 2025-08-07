@@ -91,9 +91,47 @@ const createExecutionRoutine = <T>(
       actualQuery,
     );
 
+    let streamDestroyError: Error | null = null;
+
+    const originalDestroy = transformStream.destroy.bind(transformStream);
+    transformStream.destroy = function (error?: Error) {
+      if (error && !streamDestroyError) {
+        streamDestroyError = error;
+      }
+
+      return originalDestroy(error);
+    };
+
+    const streamErrorPromise = new Promise<void>((resolve, reject) => {
+      transformStream.once('error', reject);
+      transformStream.once('end', resolve);
+      transformStream.once('finish', resolve);
+    });
+
     onStream(transformStream);
 
-    await pipeline(queryStream, transformStream);
+    try {
+      await Promise.race([
+        pipeline(queryStream, transformStream),
+        streamErrorPromise,
+      ]);
+    } catch (error) {
+      if (streamDestroyError) {
+        queryStream.destroy();
+        if (!transformStream.destroyed) {
+          transformStream.destroy();
+        }
+
+        throw streamDestroyError;
+      }
+
+      queryStream.destroy();
+      if (!transformStream.destroyed) {
+        transformStream.destroy();
+      }
+
+      throw error;
+    }
 
     return {
       notices: [],
