@@ -1,5 +1,18 @@
 # slonik
 
+## 48.4.1
+
+### Patch Changes
+
+- [`3cc5531`](https://github.com/gajus/slonik/commit/3cc5531ea17427efabf1dab5b23fadc6b6a3fe33) Thanks [@gajus](https://github.com/gajus)! - expose maximum connection age param
+
+- Updated dependencies []:
+  - @slonik/driver@48.4.1
+  - @slonik/errors@48.4.1
+  - @slonik/pg-driver@48.4.1
+  - @slonik/sql-tag@48.4.1
+  - @slonik/utilities@48.4.1
+
 ## 48.4.0
 
 ### Minor Changes
