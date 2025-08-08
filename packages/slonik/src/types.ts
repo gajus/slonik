@@ -60,6 +60,12 @@ export type ClientConfiguration = {
    */
   readonly interceptors: readonly Interceptor[];
   /**
+   * The maximum age of a connection allowed in the pool.
+   * After this age, the connection will be destroyed.
+   * @default 30 minutes
+   */
+  readonly maximumConnectionAge?: number;
+  /**
    * Do not allow more than this many connections. (Default: 10)
    */
   readonly maximumPoolSize?: number;

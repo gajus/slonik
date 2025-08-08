@@ -3,6 +3,11 @@ import type { ClientConfiguration } from '../types.js';
 
 type PoolConfiguration = {
   idleTimeout: number;
+  /**
+   * The maximum age of a connection allowed in the pool.
+   * After this age, the connection will be destroyed.
+   * @default 30 minutes
+   */
   maximumConnectionAge: number;
   maximumPoolSize: number;
   minimumPoolSize: number;
@@ -13,7 +18,7 @@ export const createPoolConfiguration = (
 ): PoolConfiguration => {
   const poolConfiguration = {
     idleTimeout: 10_000,
-    maximumConnectionAge: 30 * 60 * 1_000, // 30 minutes
+    maximumConnectionAge: 30 * 60 * 1_000,
     maximumPoolSize: 10,
     minimumPoolSize: 0,
   };

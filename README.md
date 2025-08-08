@@ -650,6 +650,7 @@ createPool(
  * @property idleInTransactionSessionTimeout Timeout (in milliseconds) after which idle clients are closed. Use 'DISABLE_TIMEOUT' constant to disable the timeout. (Default: 60000)
  * @property idleTimeout Timeout (in milliseconds) after which idle clients are closed. Use 'DISABLE_TIMEOUT' constant to disable the timeout. (Default: 5000)
  * @property interceptors An array of [Slonik interceptors](https://github.com/gajus/slonik#interceptors).
+ * @property maximumConnectionAge The maximum age of a connection allowed in the pool. After this age, the connection will be destroyed. (Default: 30 minutes)
  * @property maximumPoolSize Do not allow more than this many connections. (Default: 10)
  * @property minimumPoolSize Ensure that at least this many connections are available in the pool. (Default: 0)
  * @property queryRetryLimit Number of times a query failing with Transaction Rollback class error, that doesn't belong to a transaction, is retried. (Default: 5)
@@ -667,8 +668,9 @@ type ClientConfiguration = {
   idleInTransactionSessionTimeout?: number | 'DISABLE_TIMEOUT',
   idleTimeout?: number | 'DISABLE_TIMEOUT',
   interceptors?: Interceptor[],
+  maximumConnectionAge?: number,
   maximumPoolSize?: number,
-  maximumPoolSize?: number,
+  minimumPoolSize?: number,
   queryRetryLimit?: number,
   ssl?: Parameters<tls.connect>[0],
   statementTimeout?: number | 'DISABLE_TIMEOUT',
