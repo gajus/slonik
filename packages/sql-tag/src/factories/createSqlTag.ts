@@ -16,8 +16,11 @@ import {
   UuidToken,
 } from '../tokens.js';
 import type {
+  ArraySqlToken,
   PrimitiveValueExpression,
+  SqlFragmentToken,
   SqlTag,
+  TypeNameIdentifier,
   ValueExpression,
 } from '../types.js';
 import { escapeLiteralValue } from '../utilities/escapeLiteralValue.js';
@@ -119,12 +122,15 @@ export const createSqlTag = <
   const typeAliases = configuration.typeAliases;
 
   return {
-    array: (values, memberType) => {
+    array: <T extends SqlFragmentToken | TypeNameIdentifier>(
+      values: readonly PrimitiveValueExpression[],
+      memberType: T,
+    ) => {
       return Object.freeze({
         memberType,
         type: ArrayToken,
         values,
-      });
+      }) as ArraySqlToken<T>;
     },
     binary: (data) => {
       return Object.freeze({

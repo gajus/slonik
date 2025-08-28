@@ -7,8 +7,8 @@ import { isPrimitiveValueExpression } from '../utilities/isPrimitiveValueExpress
 import { isSqlToken } from '../utilities/isSqlToken.js';
 import { InvalidInputError, UnexpectedStateError } from '@slonik/errors';
 
-export const createArraySqlFragment = (
-  token: ArraySqlToken,
+export const createArraySqlFragment = <T extends SqlFragmentToken | string>(
+  token: ArraySqlToken<T>,
   greatestParameterPosition: number,
 ): SqlFragmentToken => {
   let placeholderIndex = greatestParameterPosition;
