@@ -111,25 +111,6 @@ export const createConnectionPool = ({
 
   let poolEndPromise: null | Promise<void> = null;
 
-  const validateConnection = async (
-    connection: ConnectionPoolClient,
-  ): Promise<boolean> => {
-    try {
-      const result = await connection.query('SELECT 1');
-      return result.rows.length === 1;
-    } catch (error) {
-      logger.warn(
-        {
-          connectionId: connection.id(),
-          error: serializeError(error),
-        },
-        'connection validation failed',
-      );
-
-      return false;
-    }
-  };
-
   const clearIdleTimer = (connection: ConnectionPoolClient) => {
     const metadata = connectionMetadata.get(connection);
 
@@ -435,31 +416,6 @@ export const createConnectionPool = ({
 
             // Acquire connection temporarily for validation
             connection.acquire();
-
-            const isValid = await validateConnection(connection);
-
-            if (!isValid) {
-              await connection.release();
-
-              logger.warn(
-                {
-                  connectionId: connection.id(),
-                },
-                'connection validation failed, destroying connection',
-              );
-
-              connection.destroy().catch((error) => {
-                logger.error(
-                  {
-                    connectionId: connection.id(),
-                    error: serializeError(error),
-                  },
-                  'error destroying invalid connection',
-                );
-              });
-
-              continue;
-            }
 
             // Connection is valid and not too old
             idleConnection = connection;
