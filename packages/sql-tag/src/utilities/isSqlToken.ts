@@ -1,7 +1,6 @@
 import {
   ArrayToken,
   BinaryToken,
-  BooleanToken,
   ComparisonPredicateToken,
   DateToken,
   FragmentToken,
@@ -22,7 +21,6 @@ import { UnexpectedStateError } from '@slonik/errors';
 const Tokens = [
   ArrayToken,
   BinaryToken,
-  BooleanToken,
   ComparisonPredicateToken,
   DateToken,
   FragmentToken,
