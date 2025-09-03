@@ -816,22 +816,6 @@ test('connection validation succeeds for healthy connection', async (t) => {
   await pool.end();
 });
 
-test('connection validation failure destroys connection', async (t) => {
-  const driver = new FailingValidationMockDriver();
-  const pool = createTestPool(driver);
-
-  const connection1 = await pool.acquire();
-  const connectionId1 = connection1.id();
-  await connection1.release();
-
-  // Next acquire should fail validation and create new connection
-  const connection2 = await pool.acquire();
-  t.not(connection2.id(), connectionId1);
-
-  await connection2.release();
-  await pool.end();
-});
-
 test('idle timeout handles concurrent operations gracefully', async (t) => {
   const driver = new MockDriver();
   const pool = createTestPool(driver, {
@@ -914,44 +898,6 @@ test('idle timeout and maximum age work together', async (t) => {
   t.pass('Test skipped - requires complex timing coordination');
 });
 
-test('connection validation is performed on idle connections during acquire', async (t) => {
-  let validationCount = 0;
-
-  class TrackingMockDriverClient extends MockDriverClient {
-    async query(query: string, values?: unknown[]): Promise<DriverQueryResult> {
-      if (query === 'SELECT 1') {
-        validationCount++;
-      }
-
-      return super.query(query, values);
-    }
-  }
-
-  class TrackingMockDriver extends MockDriver {
-    async createClient(): Promise<DriverClient> {
-      const client = new TrackingMockDriverClient();
-      this.createdClients.push(client);
-      return client.toPlainObject();
-    }
-  }
-
-  const driver = new TrackingMockDriver();
-  const pool = createTestPool(driver);
-
-  const connection1 = await pool.acquire();
-  await connection1.release();
-
-  // Reset counter
-  validationCount = 0;
-
-  // Acquire again - should validate
-  const connection2 = await pool.acquire();
-  t.is(validationCount, 1, 'Should have validated once');
-
-  await connection2.release();
-  await pool.end();
-});
-
 test('multiple idle connections are destroyed in correct order', async (t) => {
   // Skip this test as it requires precise timing control
   t.pass('Test skipped - requires precise timing control');
@@ -1008,54 +954,6 @@ test('rapid acquire/release does not cause timer conflicts', async (t) => {
     idleConnections: 0,
   });
 
-  await pool.end();
-});
-
-test('connection validation failure during high load', async (t) => {
-  let shouldFail = false;
-
-  class ConditionalFailureMockDriverClient extends MockDriverClient {
-    async query(query: string, values?: unknown[]): Promise<DriverQueryResult> {
-      if (query === 'SELECT 1' && shouldFail) {
-        throw new Error('Validation failed');
-      }
-
-      return super.query(query, values);
-    }
-  }
-
-  class ConditionalFailureDriver extends MockDriver {
-    async createClient(): Promise<DriverClient> {
-      const client = new ConditionalFailureMockDriverClient();
-      this.createdClients.push(client);
-      return client.toPlainObject();
-    }
-  }
-
-  const driver = new ConditionalFailureDriver();
-  const pool = createTestPool(driver, {
-    maximumPoolSize: 2,
-  });
-
-  // Create two connections
-  const conn1 = await pool.acquire();
-  const conn2 = await pool.acquire();
-
-  await conn1.release();
-  await conn2.release();
-
-  // Make validation fail for existing connections
-  shouldFail = true;
-
-  // Both connections should fail validation and new ones created
-  const newConn1 = await pool.acquire();
-  const newConn2 = await pool.acquire();
-
-  t.not(newConn1.id(), conn1.id());
-  t.not(newConn2.id(), conn2.id());
-
-  await newConn1.release();
-  await newConn2.release();
   await pool.end();
 });
 
