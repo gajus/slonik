@@ -3,6 +3,7 @@ export { createSqlTokenSqlFragment } from './factories/createSqlTokenSqlFragment
 export {
   ArrayToken,
   BinaryToken,
+  BooleanToken,
   ComparisonPredicateToken,
   DateToken,
   FragmentToken,
@@ -19,6 +20,7 @@ export {
 export {
   type ArraySqlToken,
   type BinarySqlToken,
+  type BooleanSqlToken,
   type DateSqlToken,
   type FragmentSqlToken,
   type IdentifierSqlToken,
