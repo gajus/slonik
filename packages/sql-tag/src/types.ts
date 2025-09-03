@@ -15,6 +15,11 @@ export type BinarySqlToken = {
   readonly type: typeof tokens.BinaryToken;
 };
 
+export type BooleanSqlToken = {
+  readonly type: typeof tokens.BooleanToken;
+  readonly value: boolean;
+};
+
 export type DateSqlToken = {
   readonly date: Date;
   readonly type: typeof tokens.DateToken;
@@ -98,6 +103,7 @@ export type SqlTag<
     memberType: SqlFragmentToken | TypeNameIdentifier,
   ) => ArraySqlToken;
   binary: (data: Buffer) => BinarySqlToken;
+  boolean: (value: boolean) => BooleanSqlToken;
   date: (date: Date) => DateSqlToken;
   fragment: (
     template: TemplateStringsArray,
@@ -145,6 +151,7 @@ export type SqlTag<
 export type SqlToken =
   | ArraySqlToken
   | BinarySqlToken
+  | BooleanSqlToken
   | DateSqlToken
   | FragmentSqlToken
   | IdentifierSqlToken

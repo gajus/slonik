@@ -100,6 +100,7 @@ Note: Using this project does not require TypeScript. It is a regular ES6 module
     * [Query building](#query-building)
         * [`sql.array`](#sqlarray)
         * [`sql.binary`](#sqlbinary)
+        * [`sql.boolean`](#sqlboolean)
         * [`sql.date`](#sqldate)
         * [`sql.fragment`](#sqlfragment)
         * [`sql.identifier`](#sqlidentifier)
@@ -1738,6 +1739,31 @@ Produces:
   values: [
     Buffer.from('foo')
   ]
+}
+```
+
+### <code>sql.boolean</code>
+
+```ts
+(
+  value: boolean
+) => BooleanSqlToken;
+```
+
+Binds a boolean value, e.g.
+
+```ts
+await connection.query(sql.unsafe`
+  SELECT ${sql.boolean(true)}
+`);
+```
+
+Produces:
+
+```ts
+{
+  sql: 'SELECT $1::boolean',
+  values: [true]
 }
 ```
 

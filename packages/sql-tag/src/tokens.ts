@@ -1,5 +1,6 @@
 export const ArrayToken = Symbol.for('SLONIK_TOKEN_ARRAY');
 export const BinaryToken = Symbol.for('SLONIK_TOKEN_BINARY');
+export const BooleanToken = Symbol.for('SLONIK_TOKEN_BOOLEAN');
 export const ComparisonPredicateToken = Symbol.for(
   'SLONIK_TOKEN_COMPARISON_PREDICATE',
 );

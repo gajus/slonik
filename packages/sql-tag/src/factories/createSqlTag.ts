@@ -3,6 +3,7 @@ import type { UUID } from '../sqlFragmentFactories/createUuidSqlFragment.js';
 import {
   ArrayToken,
   BinaryToken,
+  BooleanToken,
   DateToken,
   FragmentToken,
   IdentifierToken,
@@ -130,6 +131,12 @@ export const createSqlTag = <
       return Object.freeze({
         data,
         type: BinaryToken,
+      });
+    },
+    boolean: (value) => {
+      return Object.freeze({
+        type: BooleanToken,
+        value: value as boolean,
       });
     },
     date: (date) => {
