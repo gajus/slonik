@@ -80,7 +80,6 @@ export {
 export {
   type ArraySqlToken,
   type BinarySqlToken,
-  type BooleanSqlToken,
   createSqlTag,
   createSqlTokenSqlFragment,
   type FragmentSqlToken,

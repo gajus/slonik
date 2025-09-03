@@ -1,6 +1,5 @@
 import { createArraySqlFragment } from '../sqlFragmentFactories/createArraySqlFragment.js';
 import { createBinarySqlFragment } from '../sqlFragmentFactories/createBinarySqlFragment.js';
-import { createBooleanSqlFragment } from '../sqlFragmentFactories/createBooleanSqlFragment.js';
 import { createDateSqlFragment } from '../sqlFragmentFactories/createDateSqlFragment.js';
 import { createFragmentSqlFragment } from '../sqlFragmentFactories/createFragmentSqlFragment.js';
 import { createIdentifierSqlFragment } from '../sqlFragmentFactories/createIdentifierSqlFragment.js';
@@ -14,7 +13,6 @@ import { createUuidSqlFragment } from '../sqlFragmentFactories/createUuidSqlFrag
 import {
   ArrayToken,
   BinaryToken,
-  BooleanToken,
   DateToken,
   FragmentToken,
   IdentifierToken,
@@ -38,8 +36,6 @@ export const createSqlTokenSqlFragment = (
     return createArraySqlFragment(token, greatestParameterPosition);
   } else if (token.type === BinaryToken) {
     return createBinarySqlFragment(token, greatestParameterPosition);
-  } else if (token.type === BooleanToken) {
-    return createBooleanSqlFragment(token, greatestParameterPosition);
   } else if (token.type === DateToken) {
     return createDateSqlFragment(token, greatestParameterPosition);
   } else if (token.type === FragmentToken) {
