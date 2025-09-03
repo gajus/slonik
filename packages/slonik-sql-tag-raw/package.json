@@ -16,7 +16,7 @@
     ]
   },
   "dependencies": {
-    "@slonik/sql-tag": "^48.4.2",
+    "@slonik/sql-tag": "^48.5.0",
     "roarr": "^7.21.1"
   },
   "description": "Logs Slonik queries.",
@@ -24,7 +24,7 @@
     "@slonik/eslint-config": "workspace:^",
     "ava": "^6.3.0",
     "eslint": "9.28.0",
-    "slonik": "^48.4.2",
+    "slonik": "^48.5.0",
     "tsimp": "^2.0.12",
     "typescript": "^5.8.3",
     "typescript-eslint": "^8.33.0"
@@ -54,5 +54,5 @@
   },
   "type": "module",
   "types": "./dist/index.d.ts",
-  "version": "48.4.2"
+  "version": "48.5.0"
 }
