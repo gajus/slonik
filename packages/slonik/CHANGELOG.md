@@ -1,5 +1,18 @@
 # slonik
 
+## 48.4.2
+
+### Patch Changes
+
+- [`a777bcf`](https://github.com/gajus/slonik/commit/a777bcfe14cae1e281f184063c268bb983b93c24) Thanks [@gajus](https://github.com/gajus)! - remove validate connection step
+
+- Updated dependencies []:
+  - @slonik/driver@48.4.2
+  - @slonik/errors@48.4.2
+  - @slonik/pg-driver@48.4.2
+  - @slonik/sql-tag@48.4.2
+  - @slonik/utilities@48.4.2
+
 ## 48.4.1
 
 ### Patch Changes
