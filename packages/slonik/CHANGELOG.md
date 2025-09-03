@@ -1,5 +1,20 @@
 # slonik
 
+## 48.5.0
+
+### Minor Changes
+
+- [#714](https://github.com/gajus/slonik/pull/714) [`86d232c`](https://github.com/gajus/slonik/commit/86d232c20b092f59426ef9e90b250d2a69ab3eb7) Thanks [@gajus](https://github.com/gajus)! - add sql.boolean utility
+
+### Patch Changes
+
+- Updated dependencies []:
+  - @slonik/driver@48.5.0
+  - @slonik/errors@48.5.0
+  - @slonik/pg-driver@48.5.0
+  - @slonik/sql-tag@48.5.0
+  - @slonik/utilities@48.5.0
+
 ## 48.4.2
 
 ### Patch Changes
