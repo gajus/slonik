@@ -4,8 +4,8 @@ import type { StandardSchemaV1 } from '@standard-schema/spec';
 
 export { type PrimitiveValueExpression } from '@slonik/types';
 
-export type ArraySqlToken = {
-  readonly memberType: SqlFragmentToken | TypeNameIdentifier;
+export type ArraySqlToken<T extends TypeNameIdentifier = TypeNameIdentifier> = {
+  readonly memberType: SqlFragmentToken | T;
   readonly type: typeof tokens.ArrayToken;
   readonly values: readonly PrimitiveValueExpression[];
 };
@@ -93,10 +93,10 @@ export type SqlFragmentToken = {
 export type SqlTag<
   Z extends Record<string, StandardSchemaV1> = Record<string, StandardSchemaV1>,
 > = {
-  array: (
+  array: <T extends TypeNameIdentifier>(
     values: readonly PrimitiveValueExpression[],
-    memberType: SqlFragmentToken | TypeNameIdentifier,
-  ) => ArraySqlToken;
+    memberType: SqlFragmentToken | T,
+  ) => ArraySqlToken<T>;
   binary: (data: Buffer) => BinarySqlToken;
   date: (date: Date) => DateSqlToken;
   fragment: (
@@ -143,7 +143,7 @@ export type SqlTag<
 };
 
 export type SqlToken =
-  | ArraySqlToken
+  | ArraySqlToken<TypeNameIdentifier>
   | BinarySqlToken
   | DateSqlToken
   | FragmentSqlToken
@@ -162,6 +162,24 @@ export type TimestampSqlToken = {
   readonly type: typeof tokens.TimestampToken;
 };
 
+/**
+ * "string" type covers all type name identifiers – the literal values are added only to assist developer
+ * experience with auto suggestions for commonly used type name identifiers.
+ */
+export type TypeNameIdentifier =
+  | 'bool'
+  | 'bytea'
+  | 'float4'
+  | 'float8'
+  | 'int2'
+  | 'int4'
+  | 'int8'
+  | 'json'
+  | 'text'
+  | 'timestamptz'
+  | 'uuid'
+  | string;
+
 export type UnnestSqlToken = {
   readonly columnTypes:
     | Array<[...string[], TypeNameIdentifier]>
@@ -179,21 +197,3 @@ export type ValueExpression =
   | PrimitiveValueExpression
   | SqlFragmentToken
   | SqlToken;
-
-/**
- * "string" type covers all type name identifiers – the literal values are added only to assist developer
- * experience with auto suggestions for commonly used type name identifiers.
- */
-type TypeNameIdentifier =
-  | 'bool'
-  | 'bytea'
-  | 'float4'
-  | 'float8'
-  | 'int2'
-  | 'int4'
-  | 'int8'
-  | 'json'
-  | 'text'
-  | 'timestamptz'
-  | 'uuid'
-  | string;
