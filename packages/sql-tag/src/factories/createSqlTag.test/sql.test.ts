@@ -174,3 +174,13 @@ test('copes with dollar-number in function definitions', (t) => {
     values: [],
   });
 });
+
+test('interpolates literal boolean values', (t) => {
+  const query = sql.fragment`SELECT ${true}, ${false}`;
+
+  t.deepEqual(query, {
+    sql: 'SELECT $slonik_1, $slonik_2',
+    type: FragmentToken,
+    values: [true, false],
+  });
+});
