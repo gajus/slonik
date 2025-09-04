@@ -1,5 +1,20 @@
 # slonik
 
+## 48.6.0
+
+### Minor Changes
+
+- [#717](https://github.com/gajus/slonik/pull/717) [`652d2ff`](https://github.com/gajus/slonik/commit/652d2ffee4eeb5cef791bb2673bb4092ef2abbeb) Thanks [@gajus](https://github.com/gajus)! - parameterize ArraySqlToken
+
+### Patch Changes
+
+- Updated dependencies []:
+  - @slonik/driver@48.6.0
+  - @slonik/errors@48.6.0
+  - @slonik/pg-driver@48.6.0
+  - @slonik/sql-tag@48.6.0
+  - @slonik/utilities@48.6.0
+
 ## 48.5.0
 
 ### Minor Changes
