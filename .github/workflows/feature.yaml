@@ -53,7 +53,7 @@ jobs:
           POSTGRES_DB: postgres
           POSTGRES_PASSWORD: postgres
           POSTGRES_USER: postgres
-        image: postgres
+        image: postgres:17
         options: >-
           --health-cmd pg_isready
           --health-interval 5s
