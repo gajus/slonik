@@ -6,16 +6,14 @@ const stringify = configure({
   strict: true,
 });
 
-export const safeStringify = (
-  subject: unknown,
-  replacer?:
-    | ((key: string, value: unknown) => unknown)
-    | Array<number | string>
-    | null
-    | undefined,
-  space?: number | string,
-): string => {
-  const result = stringify(subject, replacer, space);
+export const safeStringify = (subject: unknown): string => {
+  try {
+    return JSON.stringify(subject);
+  } catch {
+    // Ignore
+  }
+
+  const result = stringify(subject);
 
   if (result === undefined) {
     throw new Error('Expected result to be string');
