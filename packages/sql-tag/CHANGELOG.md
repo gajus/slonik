@@ -1,5 +1,17 @@
 # @slonik/sql-tag
 
+## 48.7.0
+
+### Minor Changes
+
+- [`3e66d88`](https://github.com/gajus/slonik/commit/3e66d881b6b5785396a59883f3368fde29a19726) Thanks [@gajus](https://github.com/gajus)! - first attempt JSON.stringify
+
+### Patch Changes
+
+- Updated dependencies []:
+  - @slonik/errors@48.7.0
+  - @slonik/types@48.7.0
+
 ## 48.6.0
 
 ### Patch Changes
