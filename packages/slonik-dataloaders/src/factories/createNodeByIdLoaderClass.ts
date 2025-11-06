@@ -8,11 +8,11 @@ import type {
   QuerySqlToken,
   TypeNameIdentifier,
 } from 'slonik';
-import type { z, ZodTypeAny } from 'zod';
+import type { z, ZodType } from 'zod';
 
 const TABLE_ALIAS = 't1';
 
-export const createNodeByIdLoaderClass = <T extends ZodTypeAny>(config: {
+export const createNodeByIdLoaderClass = <T extends ZodType>(config: {
   column?: {
     name?: Extract<keyof z.infer<T>, string> | undefined;
     type?: FragmentSqlToken | TypeNameIdentifier;
@@ -40,7 +40,9 @@ export const createNodeByIdLoaderClass = <T extends ZodTypeAny>(config: {
       >,
     ) {
       super(
-        async (loaderKeys) => {
+        async (
+          loaderKeys: readonly PrimitiveValueExpression[],
+        ): Promise<Array<Error | z.infer<T>>> => {
           const where = sql.fragment`${sql.identifier([
             TABLE_ALIAS,
             columnNameTransformer(columnName),
@@ -56,19 +58,20 @@ export const createNodeByIdLoaderClass = <T extends ZodTypeAny>(config: {
             `,
           );
 
-          const recordsByLoaderKey = loaderKeys.map((value) => {
+          return loaderKeys.map((value) => {
             const targetRecord = records.find((record) => {
-              return String(record[columnName]) === String(value);
+              return (
+                String(record[columnName as keyof typeof record]) ===
+                String(value)
+              );
             });
 
             if (targetRecord) {
-              return targetRecord;
+              return targetRecord as z.infer<T>;
             }
 
-            return null;
+            return null as unknown as Error;
           });
-
-          return recordsByLoaderKey;
         },
         {
           ...loaderOptions,
