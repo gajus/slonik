@@ -3,7 +3,7 @@
 import { sql } from 'slonik';
 import type { CommonQueryMethods, QuerySqlToken } from 'slonik';
 import { z } from 'zod';
-import type { AnyZodObject } from 'zod';
+import type { ZodObject } from 'zod';
 
 /**
  * Uses UNION to batch multiple queries that have the same shape.
@@ -13,7 +13,7 @@ import type { AnyZodObject } from 'zod';
  * This approach also has the benefit that it is compatible with
  * Slonik interceptors that validate the shape of the result set.
  */
-export const batchQueries = async <T extends AnyZodObject>(
+export const batchQueries = async <T extends ZodObject>(
   pool: CommonQueryMethods,
   zodSchema: T,
   queries: readonly QuerySqlToken[],
@@ -45,7 +45,7 @@ export const batchQueries = async <T extends AnyZodObject>(
         // eslint-disable-next-line @typescript-eslint/no-unused-vars
         const { slonikqueryindex, ...rest } = result;
 
-        return rest;
+        return rest as z.infer<T>;
       });
   });
 };

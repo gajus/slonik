@@ -1,8 +1,8 @@
 import { createConnectionLoader } from './createConnectionLoader.js';
 import type { DatabasePool, QuerySqlToken } from 'slonik';
-import type { ZodTypeAny } from 'zod';
+import type { ZodType } from 'zod';
 
-export const createListLoader = <T extends ZodTypeAny>(
+export const createListLoader = <T extends ZodType>(
   pool: DatabasePool,
   query: QuerySqlToken<T>,
 ) => {
@@ -23,7 +23,7 @@ export const createListLoader = <T extends ZodTypeAny>(
       });
 
       for (const edge of connection.edges) {
-        nodes.push(edge.node);
+        nodes.push(edge.node as T);
       }
 
       return nodes;

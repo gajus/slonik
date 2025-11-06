@@ -15,7 +15,7 @@ import type { GraphQLResolveInfo } from 'graphql';
 import { sql } from 'slonik';
 import type { CommonQueryMethods, QuerySqlToken, SqlToken } from 'slonik';
 import { z } from 'zod';
-import type { AnyZodObject } from 'zod';
+import type { ZodObject } from 'zod';
 
 type DataLoaderKey<TResult> = {
   cursor?: null | string;
@@ -196,7 +196,7 @@ export const createConnectionLoaderClass = <
             }
           }
 
-          let edgeSchema: AnyZodObject;
+          let edgeSchema: ZodObject;
 
           if ('shape' in query.parser) {
             edgeSchema = z
