@@ -54,7 +54,7 @@
   "main": "./dist/index.js",
   "name": "@slonik/pg-driver",
   "peerDependencies": {
-    "zod": "^3"
+    "zod": "^3 || ^4.0.0"
   },
   "repository": {
     "type": "git",
