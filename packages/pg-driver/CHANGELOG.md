@@ -1,5 +1,18 @@
 # @slonik/pg-driver
 
+## 48.7.1
+
+### Patch Changes
+
+- [#726](https://github.com/gajus/slonik/pull/726) [`a78a9a1`](https://github.com/gajus/slonik/commit/a78a9a146b54dba1f4e1ca33650ab3875cd93bda) Thanks [@erwinssaget](https://github.com/erwinssaget)! - Update zod peer dependency version range to fix #707
+
+- Updated dependencies []:
+  - @slonik/driver@48.7.1
+  - @slonik/errors@48.7.1
+  - @slonik/sql-tag@48.7.1
+  - @slonik/types@48.7.1
+  - @slonik/utilities@48.7.1
+
 ## 48.7.0
 
 ### Patch Changes
