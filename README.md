@@ -1279,7 +1279,7 @@ const createResultParserInterceptor = (): Interceptor => {
     // If you are not going to transform results using Zod, then you should use `afterQueryExecution` instead.
     // Future versions of Zod will provide a more efficient parser when parsing without transformations.
     // You can even combine the two – use `afterQueryExecution` to validate results, and (conditionally)
-    // transform results as needed in `transformRow`.
+    // transform results as needed in `transformRowAsync`.
     transformRowAsync: async (executionContext, actualQuery, row) => {
       const { log, resultParser } = executionContext;
 
