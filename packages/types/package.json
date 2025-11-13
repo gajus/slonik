@@ -42,7 +42,7 @@
   "main": "./dist/index.js",
   "name": "@slonik/types",
   "peerDependencies": {
-    "zod": "^3"
+    "zod": "^3 || ^4.0.0"
   },
   "repository": {
     "type": "git",
