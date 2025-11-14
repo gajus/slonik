@@ -130,7 +130,6 @@ type StackCrumb = {
   lineNumber: null | number;
 };
 
-// eslint-disable-next-line complexity
 const executeQueryInternal = async (
   connectionLogger: Logger,
   connection: ConnectionPoolClient,
@@ -142,6 +141,7 @@ const executeQueryInternal = async (
   stream: boolean = false,
 ): Promise<
   QueryResult<Record<string, PrimitiveValueExpression>> | StreamResult
+  // eslint-disable-next-line complexity
 > => {
   const poolClientState = getPoolClientState(connection);
 
