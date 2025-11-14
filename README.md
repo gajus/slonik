@@ -1276,11 +1276,12 @@ import {
 
 const createResultParserInterceptor = (): Interceptor => {
   return {
+    name: 'slonik-interceptor-zod-validation',
     // If you are not going to transform results using Zod, then you should use `afterQueryExecution` instead.
     // Future versions of Zod will provide a more efficient parser when parsing without transformations.
     // You can even combine the two – use `afterQueryExecution` to validate results, and (conditionally)
-    // transform results as needed in `transformRow`.
-    transformRow: async (executionContext, actualQuery, row) => {
+    // transform results as needed in `transformRowAsync`.
+    transformRowAsync: async (executionContext, actualQuery, row) => {
       const { log, resultParser } = executionContext;
 
       if (!resultParser) {
@@ -1288,17 +1289,17 @@ const createResultParserInterceptor = (): Interceptor => {
       }
 
       // It is recommended (but not required) to parse async to avoid blocking the event loop during validation
-      const validationResult = await resultParser.safeParseAsync(row);
+      const validationResult = await resultParser["~standard"].validate(row);
 
-      if (!validationResult.success) {
+      if (!validationResult.issues) {
         throw new SchemaValidationError(
           actualQuery,
           row,
-          validationResult.error.issues
+          validationResult.issues
         );
       }
 
-      return validationResult.data as QueryResultRow;
+      return validationResult.value as QueryResultRow;
     },
   };
 };
