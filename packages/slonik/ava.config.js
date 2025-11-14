@@ -18,6 +18,7 @@ export default () => {
     extensions: ['ts'],
     files,
     nodeArguments: ['--import=tsimp'],
+    serial: true,
     timeout: '30s',
   };
 };
