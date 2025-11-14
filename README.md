@@ -3010,12 +3010,3 @@ For more information, refer to the [JavaScript Tagged Template Literal Grammar E
 The [`vscode-sql-lit` extension](https://marketplace.visualstudio.com/items?itemName=thebearingedge.vscode-sql-lit) provides syntax highlighting for VS Code:
 ![Syntax highlighting in VS Code](./.README/vscode-syntax-highlighting.png)
 
-## Development
-
-Running Slonik tests requires having a local PostgreSQL instance.
-
-The easiest way to setup a temporary instance for testing is using Docker, e.g.
-
-```bash
-docker run --name slonik-test --rm -it -e POSTGRES_PASSWORD=postgres -p 5432:5432 postgres -N 1000
-```
