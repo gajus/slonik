@@ -1,5 +1,20 @@
 # slonik
 
+## 48.8.0
+
+### Minor Changes
+
+- [`0166816`](https://github.com/gajus/slonik/commit/0166816b9608addbf19802b34c250a3039534f09) Thanks [@gajus](https://github.com/gajus)! - only discard connection on release
+
+### Patch Changes
+
+- Updated dependencies []:
+  - @slonik/driver@48.8.0
+  - @slonik/errors@48.8.0
+  - @slonik/pg-driver@48.8.0
+  - @slonik/sql-tag@48.8.0
+  - @slonik/utilities@48.8.0
+
 ## 48.7.1
 
 ### Patch Changes
