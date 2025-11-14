@@ -3,7 +3,7 @@
   "private": true,
   "dependencies": {
     "benny": "^3.7.1",
-    "pg": "^8.16.0",
+    "pg": "^8.16.3",
     "pg-promise": "^11.13.0",
     "postgres": "^3.4.7",
     "slonik": "^48.7.1"

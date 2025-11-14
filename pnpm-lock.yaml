@@ -28,25 +28,25 @@ importers:
         specifier: ^3.7.1
         version: 3.7.1
       pg:
-        specifier: ^8.16.0
-        version: 8.16.0
+        specifier: ^8.16.3
+        version: 8.16.3
       pg-promise:
         specifier: ^11.13.0
-        version: 11.13.0(pg-query-stream@4.10.0(pg@8.16.0))
+        version: 11.13.0(pg-query-stream@4.10.3(pg@8.16.3))
       postgres:
         specifier: ^3.4.7
         version: 3.4.7
       slonik:
-        specifier: ^48.7.0
+        specifier: ^48.7.1
         version: link:../slonik
 
   packages/driver:
     dependencies:
       '@slonik/types':
-        specifier: ^48.7.0
+        specifier: ^48.7.1
         version: link:../types
       '@slonik/utilities':
-        specifier: ^48.7.0
+        specifier: ^48.7.1
         version: link:../utilities
       roarr:
         specifier: ^7.21.1
@@ -89,7 +89,7 @@ importers:
   packages/errors:
     dependencies:
       '@slonik/types':
-        specifier: ^48.7.0
+        specifier: ^48.7.1
         version: link:../types
     devDependencies:
       '@slonik/eslint-config':
@@ -133,35 +133,35 @@ importers:
   packages/pg-driver:
     dependencies:
       '@slonik/driver':
-        specifier: ^48.7.0
+        specifier: ^48.7.1
         version: link:../driver
       '@slonik/errors':
-        specifier: ^48.7.0
+        specifier: ^48.7.1
         version: link:../errors
       '@slonik/sql-tag':
-        specifier: ^48.7.0
+        specifier: ^48.7.1
         version: link:../sql-tag
       '@slonik/types':
-        specifier: ^48.7.0
+        specifier: ^48.7.1
         version: link:../types
       '@slonik/utilities':
-        specifier: ^48.7.0
+        specifier: ^48.7.1
         version: link:../utilities
       pg:
-        specifier: ^8.13.1
-        version: 8.16.0
+        specifier: ^8.16.3
+        version: 8.16.3
       pg-query-stream:
-        specifier: ^4.9.6
-        version: 4.10.0(pg@8.16.0)
+        specifier: ^4.10.3
+        version: 4.10.3(pg@8.16.3)
       pg-types:
-        specifier: ^4.0.2
-        version: 4.0.2
+        specifier: ^4.1.0
+        version: 4.1.0
       postgres-array:
         specifier: ^3.0.4
         version: 3.0.4
       zod:
-        specifier: ^3
-        version: 3.25.7
+        specifier: ^3 || ^4.0.0
+        version: 4.1.12
     devDependencies:
       '@slonik/eslint-config':
         specifier: workspace:^
@@ -170,8 +170,8 @@ importers:
         specifier: ^22.15.29
         version: 22.15.29
       '@types/pg':
-        specifier: ^8.15.3
-        version: 8.15.3
+        specifier: ^8.15.6
+        version: 8.15.6
       ava:
         specifier: ^6.3.0
         version: 6.3.0(rollup@4.41.0)
@@ -197,19 +197,19 @@ importers:
         specifier: ^1.9.0
         version: 1.9.0
       '@slonik/driver':
-        specifier: ^48.7.0
+        specifier: ^48.7.1
         version: link:../driver
       '@slonik/errors':
-        specifier: ^48.7.0
+        specifier: ^48.7.1
         version: link:../errors
       '@slonik/pg-driver':
-        specifier: ^48.7.0
+        specifier: ^48.7.1
         version: link:../pg-driver
       '@slonik/sql-tag':
-        specifier: ^48.7.0
+        specifier: ^48.7.1
         version: link:../sql-tag
       '@slonik/utilities':
-        specifier: ^48.7.0
+        specifier: ^48.7.1
         version: link:../utilities
       '@standard-schema/spec':
         specifier: ^1.0.0
@@ -292,7 +292,7 @@ importers:
         specifier: workspace:^
         version: link:../eslint-config
       '@slonik/types':
-        specifier: ^48.7.0
+        specifier: ^48.7.1
         version: link:../types
       '@standard-schema/spec':
         specifier: ^1.0.0
@@ -301,7 +301,7 @@ importers:
         specifier: 9.28.0
         version: 9.28.0(jiti@2.4.2)
       slonik:
-        specifier: ^48.7.0
+        specifier: ^48.7.1
         version: link:../slonik
       typescript:
         specifier: ^5.8.3
@@ -329,7 +329,7 @@ importers:
         specifier: 9.28.0
         version: 9.28.0(jiti@2.4.2)
       slonik:
-        specifier: ^48.7.0
+        specifier: ^48.7.1
         version: link:../slonik
       tsimp:
         specifier: ^2.0.12
@@ -357,7 +357,7 @@ importers:
         specifier: 9.28.0
         version: 9.28.0(jiti@2.4.2)
       slonik:
-        specifier: ^48.7.0
+        specifier: ^48.7.1
         version: link:../slonik
       tsimp:
         specifier: ^2.0.12
@@ -391,7 +391,7 @@ importers:
         specifier: 9.28.0
         version: 9.28.0(jiti@2.4.2)
       slonik:
-        specifier: ^48.7.0
+        specifier: ^48.7.1
         version: link:../slonik
       tsimp:
         specifier: ^2.0.12
@@ -406,7 +406,7 @@ importers:
   packages/slonik-sql-tag-raw:
     dependencies:
       '@slonik/sql-tag':
-        specifier: ^48.7.0
+        specifier: ^48.7.1
         version: link:../sql-tag
       roarr:
         specifier: ^7.21.1
@@ -422,7 +422,7 @@ importers:
         specifier: 9.28.0
         version: 9.28.0(jiti@2.4.2)
       slonik:
-        specifier: ^48.7.0
+        specifier: ^48.7.1
         version: link:../slonik
       tsimp:
         specifier: ^2.0.12
@@ -437,10 +437,10 @@ importers:
   packages/sql-tag:
     dependencies:
       '@slonik/errors':
-        specifier: ^48.7.0
+        specifier: ^48.7.1
         version: link:../errors
       '@slonik/types':
-        specifier: ^48.7.0
+        specifier: ^48.7.1
         version: link:../types
       roarr:
         specifier: ^7.21.1
@@ -523,10 +523,10 @@ importers:
   packages/utilities:
     dependencies:
       '@slonik/errors':
-        specifier: workspace:^48.7.0
+        specifier: workspace:^48.7.1
         version: link:../errors
       '@slonik/types':
-        specifier: ^48.7.0
+        specifier: ^48.7.1
         version: link:../types
     devDependencies:
       '@slonik/eslint-config':
@@ -941,14 +941,14 @@ packages:
   '@emnapi/core@1.4.3':
     resolution: {integrity: sha512-4m62DuCE07lw01soJwPiBGC0nAww0Q+RY70VZ+n49yDIO13yyinhbWCeNnaob0lakDtWQzSdtNWzJeOJt2ma+g==}
 
-  '@emnapi/core@1.7.0':
-    resolution: {integrity: sha512-pJdKGq/1iquWYtv1RRSljZklxHCOCAJFJrImO5ZLKPJVJlVUcs8yFwNQlqS0Lo8xT1VAXXTCZocF9n26FWEKsw==}
+  '@emnapi/core@1.7.1':
+    resolution: {integrity: sha512-o1uhUASyo921r2XtHYOHy7gdkGLge8ghBEQHMWmyJFoXlpU58kIrhhN3w26lpQb6dspetweapMn2CSNwQ8I4wg==}
 
   '@emnapi/runtime@1.4.3':
     resolution: {integrity: sha512-pBPWdu6MLKROBX05wSNKcNb++m5Er+KQ9QkB+WVM+pW2Kx9hoSrVTnu3BdkI5eBLZoKu/J6mW/B6i6bJB2ytXQ==}
 
-  '@emnapi/runtime@1.7.0':
-    resolution: {integrity: sha512-oAYoQnCYaQZKVS53Fq23ceWMRxq5EhQsE0x0RdQ55jT7wagMu5k+fS39v1fiSLrtrLQlXwVINenqhLMtTrV/1Q==}
+  '@emnapi/runtime@1.7.1':
+    resolution: {integrity: sha512-PVtJr5CmLwYAU9PZDMITZoR5iAOShYREoR45EyyLrbntV50mdePTgUn4AmOw90Ifcj+x2kRjdzr1HP3RrNiHGA==}
 
   '@emnapi/wasi-threads@1.0.2':
     resolution: {integrity: sha512-5n3nTJblwRi8LlXkJ9eBzu+kZR8Yxcc7ubakyQTFzPMtIhFpUBRbsnc2Dv88IZDIbCDlBiWrknhB4Lsz7mg6BA==}
@@ -1622,8 +1622,8 @@ packages:
   '@types/normalize-package-data@2.4.4':
     resolution: {integrity: sha512-37i+OaWTh9qeK4LSHPsyRC7NahnGotNuZvjLSgcPzblpHB3rrCJxAOgI5gCdKm7coonsaX1Of0ILiTcnZjbfxA==}
 
-  '@types/pg@8.15.3':
-    resolution: {integrity: sha512-/566mCD6naXuDdCO9LN9IBGYuuLfmCbew3PjdDT1LTQNAWWNYk/zTSNQ4I8oq4F4tN9p4UWQieJyFmuvK98A4A==}
+  '@types/pg@8.15.6':
+    resolution: {integrity: sha512-NoaMtzhxOrubeL/7UZuNTrejB4MPAJ0RpxZqXQf2qXuVlTPuG6Y8p4u9dKRaue4yjmC7ZhzVO2/Yyyn25znrPQ==}
 
   '@types/sinon@17.0.4':
     resolution: {integrity: sha512-RHnIrhfPO3+tJT0s7cFaXGZvsL4bbR3/k7z3P312qMS4JaS2Tk+KiwiLx1S0rQ56ERj00u1/BtdyVd0FY+Pdew==}
@@ -1704,8 +1704,8 @@ packages:
     resolution: {integrity: sha512-DKuXOKpM5IDT1FA2g9x9x1Ug81YuKrzf4mYX8FAVSNu5Wo/LELHWQyM1pQaDkI42bX15PWl0vNPt1uGiIFUOpg==}
     engines: {node: ^18.18.0 || ^20.9.0 || >=21.1.0}
 
-  '@typescript-eslint/types@8.46.3':
-    resolution: {integrity: sha512-G7Ok9WN/ggW7e/tOf8TQYMaxgID3Iujn231hfi0Pc7ZheztIJVpO44ekY00b7akqc6nZcvregk0Jpah3kep6hA==}
+  '@typescript-eslint/types@8.46.4':
+    resolution: {integrity: sha512-USjyxm3gQEePdUwJBFjjGNG18xY9A2grDVGuk7/9AkjIF1L+ZrVnwR5VAU5JXtUnBL/Nwt3H31KlRDaksnM7/w==}
     engines: {node: ^18.18.0 || ^20.9.0 || >=21.1.0}
 
   '@typescript-eslint/typescript-estree@8.32.1':
@@ -4197,17 +4197,17 @@ packages:
   pg-cloudflare@1.1.1:
     resolution: {integrity: sha512-xWPagP/4B6BgFO+EKz3JONXv3YDgvkbVrGw2mTo3D6tVDQRh1e7cqVGvyR3BE+eQgAvx1XhW/iEASj4/jCWl3Q==}
 
-  pg-cloudflare@1.2.5:
-    resolution: {integrity: sha512-OOX22Vt0vOSRrdoUPKJ8Wi2OpE/o/h9T8X1s4qSkCedbNah9ei2W2765be8iMVxQUsvgT7zIAT2eIa9fs5+vtg==}
+  pg-cloudflare@1.2.7:
+    resolution: {integrity: sha512-YgCtzMH0ptvZJslLM1ffsY4EuGaU0cx4XSdXLRFae8bPP4dS5xL1tNB3k2o/N64cHJpwU7dxKli/nZ2lUa5fLg==}
 
   pg-connection-string@2.7.0:
     resolution: {integrity: sha512-PI2W9mv53rXJQEOb8xNR8lH7Hr+EKa6oJa38zsK0S/ky2er16ios1wLKhZyxzD7jUReiWokc9WK5nxSnC7W1TA==}
 
-  pg-connection-string@2.9.0:
-    resolution: {integrity: sha512-P2DEBKuvh5RClafLngkAuGe9OUlFV7ebu8w1kmaaOgPcpJd1RIFh7otETfI6hAR8YupOLFTY7nuvvIn7PLciUQ==}
+  pg-connection-string@2.9.1:
+    resolution: {integrity: sha512-nkc6NpDcvPVpZXxrreI/FOtX3XemeLl8E0qFr6F2Lrm/I8WOnaWNhIPK2Z7OHpw7gh5XJThi6j6ppgNoaT1w4w==}
 
-  pg-cursor@2.15.0:
-    resolution: {integrity: sha512-sO3SQP9seXoaV7sddeKrPQk3zhnrMchCr71cYjkyNHCC6n3mA5AAyhK5foxy+yBtnBZuPqxzoiVxz3jKyV7D3g==}
+  pg-cursor@2.15.3:
+    resolution: {integrity: sha512-eHw63TsiGtFEfAd7tOTZ+TLy+i/2ePKS20H84qCQ+aQ60pve05Okon9tKMC+YN3j6XyeFoHnaim7Lt9WVafQsA==}
     peerDependencies:
       pg: ^8
 
@@ -4223,8 +4223,8 @@ packages:
     resolution: {integrity: sha512-BM/Thnrw5jm2kKLE5uJkXqqExRUY/toLHda65XgFTBTFYZyopbKjBe29Ii3RbkvlsMoFwD+tHeGaCjjv0gHlyw==}
     engines: {node: '>=4'}
 
-  pg-pool@3.10.0:
-    resolution: {integrity: sha512-DzZ26On4sQ0KmqnO34muPcmKbhrjmyiO4lCCR0VwEd7MjmiKf5NTg/6+apUEu0NF7ESa37CGzFxH513CoUmWnA==}
+  pg-pool@3.10.1:
+    resolution: {integrity: sha512-Tu8jMlcX+9d8+QVzKIvM/uJtp07PKr82IUOYEphaWcoBhIYkoHpLXN3qO59nAI11ripznDsEzEv8nUxBVWajGg==}
     peerDependencies:
       pg: '>=8.0'
 
@@ -4239,14 +4239,14 @@ packages:
     peerDependencies:
       pg-query-stream: 4.8.1
 
-  pg-protocol@1.10.0:
-    resolution: {integrity: sha512-IpdytjudNuLv8nhlHs/UrVBhU0e78J0oIS/0AVdTbWxSOkFUVdsHC/NrorO6nXsQNDTT1kzDSOMJubBQviX18Q==}
+  pg-protocol@1.10.3:
+    resolution: {integrity: sha512-6DIBgBQaTKDJyxnXaLiLR8wBpQQcGWuAESkRBX/t6OwA8YsqP+iVSiond2EDy6Y/dsGk8rh/jtax3js5NeV7JQ==}
 
   pg-protocol@1.9.5:
     resolution: {integrity: sha512-DYTWtWpfd5FOro3UnAfwvhD8jh59r2ig8bPtc9H8Ds7MscE/9NYruUQWFAOuraRl29jwcT2kyMFQ3MxeaVjUhg==}
 
-  pg-query-stream@4.10.0:
-    resolution: {integrity: sha512-w4h/zgnjI5mIEkK9Bufeo+V4EsHp4lTt9HD8f4Zqt3kYMb30bn/2iLq/UyZb4MMxhZO78Lr6kBLyfGsqq4H7Fw==}
+  pg-query-stream@4.10.3:
+    resolution: {integrity: sha512-h2utrzpOIzeT9JfaqfvBbVuvCfBjH86jNfVrGGTbyepKAIOyTfDew0lAt8bbJjs9n/I5bGDl7S2sx6h5hPyJxw==}
     peerDependencies:
       pg: ^8
 
@@ -4254,8 +4254,8 @@ packages:
     resolution: {integrity: sha512-qTAAlrEsl8s4OiEQY69wDvcMIdQN6wdz5ojQiOy6YRMuynxenON0O5oCpJI6lshc6scgAY8qvJ2On/p+CXY0GA==}
     engines: {node: '>=4'}
 
-  pg-types@4.0.2:
-    resolution: {integrity: sha512-cRL3JpS3lKMGsKaWndugWQoLOCoP+Cic8oseVcbr0qhPzYD5DWXK+RZ9LY9wxRf7RQia4SCwQlXk0q6FCPrVng==}
+  pg-types@4.1.0:
+    resolution: {integrity: sha512-o2XFanIMy/3+mThw69O8d4n1E5zsLhdO+OPqswezu7Z5ekP4hYDqlDjlmOpYMbzY2Br0ufCwJLdDIXeNVwcWFg==}
     engines: {node: '>=10'}
 
   pg@8.14.1:
@@ -4267,9 +4267,9 @@ packages:
       pg-native:
         optional: true
 
-  pg@8.16.0:
-    resolution: {integrity: sha512-7SKfdvP8CTNXjMUzfcVTaI+TDzBEeaUnVwiVGZQD1Hh33Kpev7liQba9uLd4CfN8r9mCVsD0JIpq03+Unpz+kg==}
-    engines: {node: '>= 8.0.0'}
+  pg@8.16.3:
+    resolution: {integrity: sha512-enxc1h0jA/aq5oSDMvqyW3q89ra6XIIDZgCX9vkMrnz5DFTw/Ny3Li2lFQ+pt3L6MCgm/5o2o8HW9hiJji+xvw==}
+    engines: {node: '>= 16.0.0'}
     peerDependencies:
       pg-native: '>=3.0.1'
     peerDependenciesMeta:
@@ -5795,7 +5795,7 @@ snapshots:
       tslib: 2.8.1
     optional: true
 
-  '@emnapi/core@1.7.0':
+  '@emnapi/core@1.7.1':
     dependencies:
       '@emnapi/wasi-threads': 1.1.0
       tslib: 2.8.1
@@ -5806,7 +5806,7 @@ snapshots:
       tslib: 2.8.1
     optional: true
 
-  '@emnapi/runtime@1.7.0':
+  '@emnapi/runtime@1.7.1':
     dependencies:
       tslib: 2.8.1
     optional: true
@@ -6280,8 +6280,8 @@ snapshots:
 
   '@napi-rs/wasm-runtime@0.2.12':
     dependencies:
-      '@emnapi/core': 1.7.0
-      '@emnapi/runtime': 1.7.0
+      '@emnapi/core': 1.7.1
+      '@emnapi/runtime': 1.7.1
       '@tybys/wasm-util': 0.10.1
     optional: true
 
@@ -6473,10 +6473,10 @@ snapshots:
 
   '@types/normalize-package-data@2.4.4': {}
 
-  '@types/pg@8.15.3':
+  '@types/pg@8.15.6':
     dependencies:
       '@types/node': 22.15.29
-      pg-protocol: 1.10.0
+      pg-protocol: 1.10.3
       pg-types: 2.2.0
 
   '@types/sinon@17.0.4':
@@ -6596,7 +6596,7 @@ snapshots:
 
   '@typescript-eslint/types@8.33.0': {}
 
-  '@typescript-eslint/types@8.46.3': {}
+  '@typescript-eslint/types@8.46.4': {}
 
   '@typescript-eslint/typescript-estree@8.32.1(typescript@5.8.3)':
     dependencies:
@@ -7948,7 +7948,7 @@ snapshots:
 
   eslint-plugin-import-x@4.16.1(@typescript-eslint/utils@8.33.0(eslint@9.28.0(jiti@2.4.2))(typescript@5.8.3))(eslint-import-resolver-node@0.3.9)(eslint@9.28.0(jiti@2.4.2)):
     dependencies:
-      '@typescript-eslint/types': 8.46.3
+      '@typescript-eslint/types': 8.46.4
       comment-parser: 1.4.1
       debug: 4.4.3
       eslint: 9.28.0(jiti@2.4.2)
@@ -9375,16 +9375,16 @@ snapshots:
   pg-cloudflare@1.1.1:
     optional: true
 
-  pg-cloudflare@1.2.5:
+  pg-cloudflare@1.2.7:
     optional: true
 
   pg-connection-string@2.7.0: {}
 
-  pg-connection-string@2.9.0: {}
+  pg-connection-string@2.9.1: {}
 
-  pg-cursor@2.15.0(pg@8.16.0):
+  pg-cursor@2.15.3(pg@8.16.3):
     dependencies:
-      pg: 8.16.0
+      pg: 8.16.3
 
   pg-int8@1.0.1: {}
 
@@ -9392,32 +9392,32 @@ snapshots:
 
   pg-numeric@1.0.2: {}
 
-  pg-pool@3.10.0(pg@8.16.0):
+  pg-pool@3.10.1(pg@8.16.3):
     dependencies:
-      pg: 8.16.0
+      pg: 8.16.3
 
   pg-pool@3.9.6(pg@8.14.1):
     dependencies:
       pg: 8.14.1
 
-  pg-promise@11.13.0(pg-query-stream@4.10.0(pg@8.16.0)):
+  pg-promise@11.13.0(pg-query-stream@4.10.3(pg@8.16.3)):
     dependencies:
       assert-options: 0.8.2
       pg: 8.14.1
       pg-minify: 1.7.0
-      pg-query-stream: 4.10.0(pg@8.16.0)
+      pg-query-stream: 4.10.3(pg@8.16.3)
       spex: 3.4.0
     transitivePeerDependencies:
       - pg-native
 
-  pg-protocol@1.10.0: {}
+  pg-protocol@1.10.3: {}
 
   pg-protocol@1.9.5: {}
 
-  pg-query-stream@4.10.0(pg@8.16.0):
+  pg-query-stream@4.10.3(pg@8.16.3):
     dependencies:
-      pg: 8.16.0
-      pg-cursor: 2.15.0(pg@8.16.0)
+      pg: 8.16.3
+      pg-cursor: 2.15.3(pg@8.16.3)
 
   pg-types@2.2.0:
     dependencies:
@@ -9427,7 +9427,7 @@ snapshots:
       postgres-date: 1.0.7
       postgres-interval: 1.2.0
 
-  pg-types@4.0.2:
+  pg-types@4.1.0:
     dependencies:
       pg-int8: 1.0.1
       pg-numeric: 1.0.2
@@ -9447,15 +9447,15 @@ snapshots:
     optionalDependencies:
       pg-cloudflare: 1.1.1
 
-  pg@8.16.0:
+  pg@8.16.3:
     dependencies:
-      pg-connection-string: 2.9.0
-      pg-pool: 3.10.0(pg@8.16.0)
-      pg-protocol: 1.10.0
+      pg-connection-string: 2.9.1
+      pg-pool: 3.10.1(pg@8.16.3)
+      pg-protocol: 1.10.3
       pg-types: 2.2.0
       pgpass: 1.0.5
     optionalDependencies:
-      pg-cloudflare: 1.2.5
+      pg-cloudflare: 1.2.7
 
   pgpass@1.0.5:
     dependencies:
