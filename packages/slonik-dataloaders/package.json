@@ -41,7 +41,7 @@
   "scripts": {
     "build": "rm -fr ./dist && tsc",
     "lint": "eslint ./src && tsc --noEmit",
-    "test": "npx vitest run"
+    "test": "npx vitest run --maxWorkers=1"
   },
   "type": "module",
   "typings": "./dist/index.d.ts",

@@ -21,7 +21,7 @@ const FooByIdLoader = createNodeByIdLoaderClass({
   `,
 });
 
-describe('createRecordByUniqueColumnLoader', () => {
+describe('createRecordByUniqueColumnLoader', { sequential: true }, () => {
   let pool: DatabasePool;
 
   beforeAll(async () => {

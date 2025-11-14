@@ -49,7 +49,7 @@ const PersonConnectionLoader = createConnectionLoaderClass({
 
 const getNodeIds = (edges) => edges.map(({ node }) => node.id);
 
-describe('createConnectionLoaderClass', () => {
+describe('createConnectionLoaderClass', { sequential: true }, () => {
   let pool: DatabasePool;
 
   let queries: Query[] = [];
