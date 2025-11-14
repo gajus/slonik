@@ -9,6 +9,8 @@ pnpm install
 ## Running tests
 
 ```bash
+pnpm run -r build
+pnpm run -r lint
 pnpm run -r test
 ```
 

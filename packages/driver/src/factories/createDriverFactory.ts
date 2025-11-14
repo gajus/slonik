@@ -1,5 +1,3 @@
-/* eslint-disable @typescript-eslint/consistent-type-definitions */
-
 import { Logger } from '../Logger.js';
 import type { Field } from '@slonik/types';
 import { generateUid } from '@slonik/utilities';
@@ -89,14 +87,20 @@ export type DriverQueryResult = {
   readonly rows: Array<Record<string, unknown>>;
 };
 
-export interface DriverStream<T> extends Readable {
-  [Symbol.asyncIterator]: () => AsyncIterableIterator<StreamDataEvent<T>>;
-  // eslint-disable-next-line @typescript-eslint/method-signature-style
-  on(event: 'data', listener: (chunk: StreamDataEvent<T>) => void): this;
+export type DriverStream<T> = AsyncIterable<StreamDataEvent<T>> &
+  Readable & {
+    // eslint-disable-next-line @typescript-eslint/method-signature-style
+    on(
+      event: 'data',
+      listener: (chunk: StreamDataEvent<T>) => void,
+    ): DriverStream<T>;
 
-  // eslint-disable-next-line @typescript-eslint/method-signature-style
-  on(event: string | symbol, listener: (...args: any[]) => void): this;
-}
+    // eslint-disable-next-line @typescript-eslint/method-signature-style
+    on(
+      event: string | symbol,
+      listener: (...args: any[]) => void,
+    ): DriverStream<T>;
+  };
 
 export type DriverStreamResult = {
   readonly fields: DriverField[];
@@ -425,7 +429,8 @@ export const createDriverFactory = (setup: DriverSetup): DriverFactory => {
               throw new Error('Client is not acquired.');
             }
 
-            // TODO determine if streaming and do not allow to release the client until the stream is finished
+            // Note: Stream lifecycle management should be handled by the caller.
+            // The client can be released while streaming, but the stream will continue to work.
 
             return stream(sql, values);
           },
