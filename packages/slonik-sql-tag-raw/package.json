@@ -17,7 +17,7 @@
   },
   "dependencies": {
     "@slonik/sql-tag": "^48.8.0",
-    "roarr": "^7.21.1"
+    "roarr": "^7.21.2"
   },
   "description": "Logs Slonik queries.",
   "devDependencies": {

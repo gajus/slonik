@@ -9,8 +9,8 @@ importers:
   .:
     dependencies:
       '@changesets/cli':
-        specifier: ^2.29.4
-        version: 2.29.4
+        specifier: ^2.29.7
+        version: 2.29.7(@types/node@24.10.1)
     devDependencies:
       '@changesets/changelog-github':
         specifier: ^0.5.1
@@ -31,26 +31,26 @@ importers:
         specifier: ^8.16.3
         version: 8.16.3
       pg-promise:
-        specifier: ^11.13.0
-        version: 11.13.0(pg-query-stream@4.10.3(pg@8.16.3))
+        specifier: ^11.15.0
+        version: 11.15.0(pg-query-stream@4.10.3(pg@8.16.3))
       postgres:
         specifier: ^3.4.7
         version: 3.4.7
       slonik:
-        specifier: ^48.7.1
+        specifier: ^48.8.0
         version: link:../slonik
 
   packages/driver:
     dependencies:
       '@slonik/types':
-        specifier: ^48.7.1
+        specifier: ^48.8.0
         version: link:../types
       '@slonik/utilities':
-        specifier: ^48.7.1
+        specifier: ^48.8.0
         version: link:../utilities
       roarr:
-        specifier: ^7.21.1
-        version: 7.21.1
+        specifier: ^7.21.2
+        version: 7.21.2
       serialize-error:
         specifier: ^12.0.0
         version: 12.0.0
@@ -89,7 +89,7 @@ importers:
   packages/errors:
     dependencies:
       '@slonik/types':
-        specifier: ^48.7.1
+        specifier: ^48.8.0
         version: link:../types
     devDependencies:
       '@slonik/eslint-config':
@@ -133,19 +133,19 @@ importers:
   packages/pg-driver:
     dependencies:
       '@slonik/driver':
-        specifier: ^48.7.1
+        specifier: ^48.8.0
         version: link:../driver
       '@slonik/errors':
-        specifier: ^48.7.1
+        specifier: ^48.8.0
         version: link:../errors
       '@slonik/sql-tag':
-        specifier: ^48.7.1
+        specifier: ^48.8.0
         version: link:../sql-tag
       '@slonik/types':
-        specifier: ^48.7.1
+        specifier: ^48.8.0
         version: link:../types
       '@slonik/utilities':
-        specifier: ^48.7.1
+        specifier: ^48.8.0
         version: link:../utilities
       pg:
         specifier: ^8.16.3
@@ -197,19 +197,19 @@ importers:
         specifier: ^1.9.0
         version: 1.9.0
       '@slonik/driver':
-        specifier: ^48.7.1
+        specifier: ^48.8.0
         version: link:../driver
       '@slonik/errors':
-        specifier: ^48.7.1
+        specifier: ^48.8.0
         version: link:../errors
       '@slonik/pg-driver':
-        specifier: ^48.7.1
+        specifier: ^48.8.0
         version: link:../pg-driver
       '@slonik/sql-tag':
-        specifier: ^48.7.1
+        specifier: ^48.8.0
         version: link:../sql-tag
       '@slonik/utilities':
-        specifier: ^48.7.1
+        specifier: ^48.8.0
         version: link:../utilities
       '@standard-schema/spec':
         specifier: ^1.0.0
@@ -218,8 +218,8 @@ importers:
         specifier: ^3.1.1
         version: 3.1.1
       iso8601-duration:
-        specifier: ^2.1.2
-        version: 2.1.2
+        specifier: ^2.1.3
+        version: 2.1.3
       p-limit:
         specifier: ^6.2.0
         version: 6.2.0
@@ -227,8 +227,8 @@ importers:
         specifier: ^4.0.2
         version: 4.0.2
       roarr:
-        specifier: ^7.21.1
-        version: 7.21.1
+        specifier: ^7.21.2
+        version: 7.21.2
       serialize-error:
         specifier: ^12.0.0
         version: 12.0.0
@@ -282,8 +282,8 @@ importers:
         specifier: ^2.2.2
         version: 2.2.3
       graphql:
-        specifier: ^16.8.1
-        version: 16.11.0
+        specifier: ^16.12.0
+        version: 16.12.0
       zod:
         specifier: ^4.1.12
         version: 4.1.12
@@ -292,7 +292,7 @@ importers:
         specifier: workspace:^
         version: link:../eslint-config
       '@slonik/types':
-        specifier: ^48.7.1
+        specifier: ^48.8.0
         version: link:../types
       '@standard-schema/spec':
         specifier: ^1.0.0
@@ -301,7 +301,7 @@ importers:
         specifier: 9.39.1
         version: 9.39.1(jiti@2.6.1)
       slonik:
-        specifier: ^48.7.1
+        specifier: ^48.8.0
         version: link:../slonik
       typescript:
         specifier: ^5.9.3
@@ -329,7 +329,7 @@ importers:
         specifier: 9.39.1
         version: 9.39.1(jiti@2.6.1)
       slonik:
-        specifier: ^48.7.1
+        specifier: ^48.8.0
         version: link:../slonik
       tsimp:
         specifier: ^2.0.12
@@ -344,8 +344,8 @@ importers:
   packages/slonik-interceptor-query-cache:
     dependencies:
       roarr:
-        specifier: ^7.21.1
-        version: 7.21.1
+        specifier: ^7.21.2
+        version: 7.21.2
     devDependencies:
       '@slonik/eslint-config':
         specifier: workspace:^
@@ -357,7 +357,7 @@ importers:
         specifier: 9.39.1
         version: 9.39.1(jiti@2.6.1)
       slonik:
-        specifier: ^48.7.1
+        specifier: ^48.8.0
         version: link:../slonik
       tsimp:
         specifier: ^2.0.12
@@ -375,8 +375,8 @@ importers:
         specifier: ^1.3.0
         version: 1.3.0
       pretty-ms:
-        specifier: ^9.2.0
-        version: 9.2.0
+        specifier: ^9.3.0
+        version: 9.3.0
       serialize-error:
         specifier: ^12.0.0
         version: 12.0.0
@@ -391,7 +391,7 @@ importers:
         specifier: 9.39.1
         version: 9.39.1(jiti@2.6.1)
       slonik:
-        specifier: ^48.7.1
+        specifier: ^48.8.0
         version: link:../slonik
       tsimp:
         specifier: ^2.0.12
@@ -406,11 +406,11 @@ importers:
   packages/slonik-sql-tag-raw:
     dependencies:
       '@slonik/sql-tag':
-        specifier: ^48.7.1
+        specifier: ^48.8.0
         version: link:../sql-tag
       roarr:
-        specifier: ^7.21.1
-        version: 7.21.1
+        specifier: ^7.21.2
+        version: 7.21.2
     devDependencies:
       '@slonik/eslint-config':
         specifier: workspace:^
@@ -422,7 +422,7 @@ importers:
         specifier: 9.39.1
         version: 9.39.1(jiti@2.6.1)
       slonik:
-        specifier: ^48.7.1
+        specifier: ^48.8.0
         version: link:../slonik
       tsimp:
         specifier: ^2.0.12
@@ -437,14 +437,14 @@ importers:
   packages/sql-tag:
     dependencies:
       '@slonik/errors':
-        specifier: ^48.7.1
+        specifier: ^48.8.0
         version: link:../errors
       '@slonik/types':
-        specifier: ^48.7.1
+        specifier: ^48.8.0
         version: link:../types
       roarr:
-        specifier: ^7.21.1
-        version: 7.21.1
+        specifier: ^7.21.2
+        version: 7.21.2
       safe-stable-stringify:
         specifier: ^2.5.0
         version: 2.5.0
@@ -492,8 +492,8 @@ importers:
   packages/types:
     dependencies:
       zod:
-        specifier: ^3
-        version: 3.25.7
+        specifier: ^3 || ^4.0.0
+        version: 4.1.12
     devDependencies:
       '@slonik/eslint-config':
         specifier: workspace:^
@@ -523,10 +523,10 @@ importers:
   packages/utilities:
     dependencies:
       '@slonik/errors':
-        specifier: workspace:^48.7.1
+        specifier: workspace:^48.8.0
         version: link:../errors
       '@slonik/types':
-        specifier: ^48.7.1
+        specifier: ^48.8.0
         version: link:../types
     devDependencies:
       '@slonik/eslint-config':
@@ -658,11 +658,11 @@ packages:
     resolution: {integrity: sha512-+EzkxvLNfiUeKMgy/3luqfsCWFRXLb7U6wNQTk60tovuckwB15B191tJWvpp4HjiQWdJkCxO3Wbvc6jlk3Xb2Q==}
     engines: {node: '>=6.9.0'}
 
-  '@changesets/apply-release-plan@7.0.12':
-    resolution: {integrity: sha512-EaET7As5CeuhTzvXTQCRZeBUcisoYPDDcXvgTE/2jmmypKp0RC7LxKj/yzqeh/1qFTZI7oDGFcL1PHRuQuketQ==}
+  '@changesets/apply-release-plan@7.0.13':
+    resolution: {integrity: sha512-BIW7bofD2yAWoE8H4V40FikC+1nNFEKBisMECccS16W1rt6qqhNTBDmIw5HaqmMgtLNz9e7oiALiEUuKrQ4oHg==}
 
-  '@changesets/assemble-release-plan@6.0.8':
-    resolution: {integrity: sha512-y8+8LvZCkKJdbUlpXFuqcavpzJR80PN0OIfn8HZdwK7Sh6MgLXm4hKY5vu6/NDoKp8lAlM4ERZCqRMLxP4m+MQ==}
+  '@changesets/assemble-release-plan@6.0.9':
+    resolution: {integrity: sha512-tPgeeqCHIwNo8sypKlS3gOPmsS3wP0zHt67JDuL20P4QcXiw/O4Hl7oXiuLnP9yg+rXLQ2sScdV1Kkzde61iSQ==}
 
   '@changesets/changelog-git@0.2.1':
     resolution: {integrity: sha512-x/xEleCFLH28c3bQeQIyeZf8lFXyDFVn1SgcBiR2Tw/r4IAWlk1fzxCEZ6NxQAjF2Nwtczoen3OA2qR+UawQ8Q==}
@@ -670,8 +670,8 @@ packages:
   '@changesets/changelog-github@0.5.1':
     resolution: {integrity: sha512-BVuHtF+hrhUScSoHnJwTELB4/INQxVFc+P/Qdt20BLiBFIHFJDDUaGsZw+8fQeJTRP5hJZrzpt3oZWh0G19rAQ==}
 
-  '@changesets/cli@2.29.4':
-    resolution: {integrity: sha512-VW30x9oiFp/un/80+5jLeWgEU6Btj8IqOgI+X/zAYu4usVOWXjPIK5jSSlt5jsCU7/6Z7AxEkarxBxGUqkAmNg==}
+  '@changesets/cli@2.29.7':
+    resolution: {integrity: sha512-R7RqWoaksyyKXbKXBTbT4REdy22yH81mcFK6sWtqSanxUCbUi9Uf+6aqxZtDQouIqPdem2W56CdxXgsxdq7FLQ==}
     hasBin: true
 
   '@changesets/config@3.1.1':
@@ -686,8 +686,8 @@ packages:
   '@changesets/get-github-info@0.6.0':
     resolution: {integrity: sha512-v/TSnFVXI8vzX9/w3DU2Ol+UlTZcu3m0kXTjTT4KlAdwSvwutcByYwyYn9hwerPWfPkT2JfpoX0KgvCEi8Q/SA==}
 
-  '@changesets/get-release-plan@4.0.12':
-    resolution: {integrity: sha512-KukdEgaafnyGryUwpHG2kZ7xJquOmWWWk5mmoeQaSvZTWH1DC5D/Sw6ClgGFYtQnOMSQhgoEbDxAbpIIayKH1g==}
+  '@changesets/get-release-plan@4.0.13':
+    resolution: {integrity: sha512-DWG1pus72FcNeXkM12tx+xtExyH/c9I1z+2aXlObH3i9YA7+WZEVaiHzHl03thpvAgWTRaH64MpfHxozfF7Dvg==}
 
   '@changesets/get-version-range-type@0.4.0':
     resolution: {integrity: sha512-hwawtob9DryoGTpixy1D3ZXbGgJu1Rhr+ySH2PvTLHvkZuQ7sRT4oQwMh0hbqZH1weAooedEjRsbrWcGLCeyVQ==}
@@ -1325,6 +1325,15 @@ packages:
   '@humanwhocodes/retry@0.4.3':
     resolution: {integrity: sha512-bV0Tgo9K4hfPCek+aMAn81RppFKv2ySDQeMoSZuvTASywNTnVJCArCZE2FWqpvIatKu7VMRLWlR1EazvVhDyhQ==}
     engines: {node: '>=18.18'}
+
+  '@inquirer/external-editor@1.0.3':
+    resolution: {integrity: sha512-RWbSrDiYmO4LbejWY7ttpxczuwQyZLBUyygsA9Nsv95hpzUWwnNTVQmAq3xuh7vNwCp07UTmE5i11XAEExx4RA==}
+    engines: {node: '>=18'}
+    peerDependencies:
+      '@types/node': '>=18'
+    peerDependenciesMeta:
+      '@types/node':
+        optional: true
 
   '@isaacs/balanced-match@4.0.1':
     resolution: {integrity: sha512-yzMTt9lEb8Gv7zRioUilSglI0c0smZ9k5D65677DLWLtWJaXIS3CqcGyUFByYKlnUj6TkjLVs54fBl6+TiGQDQ==}
@@ -2215,9 +2224,9 @@ packages:
   asn1@0.2.6:
     resolution: {integrity: sha512-ix/FxPn0MDjeyJ7i/yoHGFt/EX6LyNbxSEhPPXODPL+KB0VPk86UYfL0lMdy+KCnv+fmvIzySwaK5COwqVbWTQ==}
 
-  assert-options@0.8.2:
-    resolution: {integrity: sha512-XaXoMxY0zuwAb0YuZjxIm8FeWvNq0aWNIbrzHhFjme8Smxw4JlPoyrAKQ6808k5UvQdhvnWqHZCphq5mXd4TDA==}
-    engines: {node: '>=10.0.0'}
+  assert-options@0.8.3:
+    resolution: {integrity: sha512-s6v4HnA+vYSGO4eZX+F+I3gvF74wPk+m6Z1Q3w1Dsg4Pnv/R24vhKAasoMVZGvDpOOfTg1Qz4ptZnEbuy95XsQ==}
+    engines: {node: '>=14.0.0'}
 
   assert-plus@1.0.0:
     resolution: {integrity: sha512-NfJ4UzBCcQGLDlQq7nHxH+tv3kyZ0hHQqF5BO6J7tNJeP5do1llPr8dZ8zHonfhAu0PHAdMkSo+8o0wxg9lZWw==}
@@ -2376,8 +2385,8 @@ packages:
     resolution: {integrity: sha512-7NzBL0rN6fMUW+f7A6Io4h40qQlG+xGmtMxfbnH/K7TAtt8JQWVQK+6g0UXKMeVJoyV5EkkNsErQ8pVD3bLHbA==}
     engines: {node: ^12.17.0 || ^14.13 || >=16.0.0}
 
-  chardet@0.7.0:
-    resolution: {integrity: sha512-mT8iDcrh03qDGRRmoA2hmBJnxpllMR+0/0qlzjqZES6NdiWDcZkCNAk4rPFZ9Q85r27unkiNNg8ZOiwZXBHwcA==}
+  chardet@2.1.1:
+    resolution: {integrity: sha512-PsezH1rqdV9VvyNhxxOW32/d75r01NY7TQCmOqomRo15ZSOKbpTFVsfjghxo6JloQUCGnH4k1LGu0R4yCLlWQQ==}
 
   chownr@3.0.0:
     resolution: {integrity: sha512-+IxzY9BZOQd/XuYPRmrvEVjF/nqj5kgT4kEq7VofrDoM1MxoRjEWkrCC3EtLi59TVawxTAn+orJwFQcrqEN1+g==}
@@ -3144,10 +3153,6 @@ packages:
   extendable-error@0.1.7:
     resolution: {integrity: sha512-UOiS2in6/Q0FK0R0q6UY9vYpQ21mr/Qn1KOnte7vsACuNJf514WvCCUHSRCPcgjPT2bAhNIJdlE6bVap1GKmeg==}
 
-  external-editor@3.1.0:
-    resolution: {integrity: sha512-hMQ4CX1p1izmuLYyZqLMO/qGNw10wSv9QDCPfzXfyFrOaCSSoRfqE1Kf1s5an66J5JZC62NewG+mK49jOCtQew==}
-    engines: {node: '>=4'}
-
   extsprintf@1.3.0:
     resolution: {integrity: sha512-11Ndz7Nv+mvAC1j0ktTa7fAb0vLyGGX+rMHNBYQviQDGU0Hw7lhctJANqbPhu9nV9/izT/IntTgZ7Im/9LJs9g==}
     engines: {'0': node >=0.6.0}
@@ -3435,6 +3440,10 @@ packages:
     resolution: {integrity: sha512-mS1lbMsxgQj6hge1XZ6p7GPhbrtFwUFYi3wRzXAC/FmYnyXMTvvI3td3rjmQ2u8ewXueaSvRPWaEcgVVOT9Jnw==}
     engines: {node: ^12.22.0 || ^14.16.0 || ^16.0.0 || >=17.0.0}
 
+  graphql@16.12.0:
+    resolution: {integrity: sha512-DKKrynuQRne0PNpEbzuEdHlYOMksHSUI8Zc9Unei5gTsMNA2/vMpoMz/yKba50pejK56qj98qM0SjYxAKi13gQ==}
+    engines: {node: ^12.22.0 || ^14.16.0 || ^16.0.0 || >=17.0.0}
+
   har-schema@2.0.0:
     resolution: {integrity: sha512-Oqluz6zhGX8cyRaTQlFMPw80bSJVG2x/cFb8ZPhUILGgHka9SsokCCOQgpveePerqidZOrT14ipqfJb7ILcW5Q==}
     engines: {node: '>=4'}
@@ -3495,8 +3504,8 @@ packages:
     engines: {node: '>=18'}
     hasBin: true
 
-  iconv-lite@0.4.24:
-    resolution: {integrity: sha512-v3MXnZAcvnywkTUEZomIActle7RXXeedOR31wwl7VlyoXO4Qi9arvSenNQWne1TcRwhCL1HwLI21bEqdpj8/rA==}
+  iconv-lite@0.7.0:
+    resolution: {integrity: sha512-cf6L2Ds3h57VVmkZe+Pn+5APsT7FpqJtEhhieDCvrE2MK5Qk9MyffgQyuxQTm6BChfeZNtcOLHp9IcWRVcIcBQ==}
     engines: {node: '>=0.10.0'}
 
   ignore-by-default@2.1.0:
@@ -3713,8 +3722,8 @@ packages:
   isexe@2.0.0:
     resolution: {integrity: sha512-RHxMLp9lnKHGHRng9QFhRCMbYAcVpn69smSGcq3f36xjgVVWThj4qqLbTLlq7Ssj8B+fIQ1EuCEGI2lKsyQeIw==}
 
-  iso8601-duration@2.1.2:
-    resolution: {integrity: sha512-yXteYUiKv6x8seaDzyBwnZtPpmx766KfvQuaVNyPifYOjmPdOo3ajd4phDNa7Y5mTQGnXsNEcXFtVun1FjYXxQ==}
+  iso8601-duration@2.1.3:
+    resolution: {integrity: sha512-OwkROKDXYhqKTl9uyB+/+lQ/Tx+L9LVb9tNRcsO4LtCSBDrmYbzyJLg9rGjYKAPDabD6IVdjMyUnnULHpejrCg==}
 
   isomorphic-ws@5.0.0:
     resolution: {integrity: sha512-muId7Zzn9ywDsyXgTIafTry2sV3nySZeUDe6YedVd1Hvuuep5AsIlqK+XefWpYTyJG5e503F2xIuT2lcU6rCSw==}
@@ -4133,10 +4142,6 @@ packages:
     resolution: {integrity: sha512-6IpQ7mKUxRcZNLIObR0hz7lxsapSSIYNZJwXPGeF0mTVqGKFIXj1DQcMoT22S3ROcLyY/rz0PWaWZ9ayWmad9g==}
     engines: {node: '>= 0.8.0'}
 
-  os-tmpdir@1.0.2:
-    resolution: {integrity: sha512-D2FR03Vir7FIu45XBY20mTb+/ZSWB00sjU9jdQXt83gDrI4Ztz5Fs7/yy74g2N5SVQY4xY1qDr4rNddwYRVX0g==}
-    engines: {node: '>=0.10.0'}
-
   outdent@0.5.0:
     resolution: {integrity: sha512-/jHxFIzoMXdqPzTaCpFzAAWhpkSjZPF4Vsn6jAfNpmbH/ymsmd7Qc6VE9BGn0L6YMj6uwpQLxCECpus4ukKS9Q==}
 
@@ -4255,14 +4260,8 @@ packages:
   performance-now@2.1.0:
     resolution: {integrity: sha512-7EAHlyLHI56VEIdK57uwHdHKIaAGbnXPiw0yWbarQZOKaKpvUIgW0jWRVLiatnM+XXlSwsanIBH/hzGMJulMow==}
 
-  pg-cloudflare@1.1.1:
-    resolution: {integrity: sha512-xWPagP/4B6BgFO+EKz3JONXv3YDgvkbVrGw2mTo3D6tVDQRh1e7cqVGvyR3BE+eQgAvx1XhW/iEASj4/jCWl3Q==}
-
   pg-cloudflare@1.2.7:
     resolution: {integrity: sha512-YgCtzMH0ptvZJslLM1ffsY4EuGaU0cx4XSdXLRFae8bPP4dS5xL1tNB3k2o/N64cHJpwU7dxKli/nZ2lUa5fLg==}
-
-  pg-connection-string@2.7.0:
-    resolution: {integrity: sha512-PI2W9mv53rXJQEOb8xNR8lH7Hr+EKa6oJa38zsK0S/ky2er16ios1wLKhZyxzD7jUReiWokc9WK5nxSnC7W1TA==}
 
   pg-connection-string@2.9.1:
     resolution: {integrity: sha512-nkc6NpDcvPVpZXxrreI/FOtX3XemeLl8E0qFr6F2Lrm/I8WOnaWNhIPK2Z7OHpw7gh5XJThi6j6ppgNoaT1w4w==}
@@ -4276,9 +4275,9 @@ packages:
     resolution: {integrity: sha512-WCtabS6t3c8SkpDBUlb1kjOs7l66xsGdKpIPZsg4wR+B3+u9UAum2odSsF9tnvxg80h4ZxLWMy4pRjOsFIqQpw==}
     engines: {node: '>=4.0.0'}
 
-  pg-minify@1.7.0:
-    resolution: {integrity: sha512-kFPxAWAhPMvOqnY7klP3scdU5R7bxpAYOm8vGExuIkcSIwuFkZYl4C4XIPQ8DtXY2NzVmAX1aFHpvFSXQ/qQmA==}
-    engines: {node: '>=14.0.0'}
+  pg-minify@1.8.0:
+    resolution: {integrity: sha512-jO/oJOununpx8DzKgvSsWm61P8JjwXlaxSlbbfTBo1nvSWoo/+I6qZYaSN96jm/KDwa5d+JMQwPGgcP6HXDRow==}
+    engines: {node: '>=16.0.0'}
 
   pg-numeric@1.0.2:
     resolution: {integrity: sha512-BM/Thnrw5jm2kKLE5uJkXqqExRUY/toLHda65XgFTBTFYZyopbKjBe29Ii3RbkvlsMoFwD+tHeGaCjjv0gHlyw==}
@@ -4289,22 +4288,14 @@ packages:
     peerDependencies:
       pg: '>=8.0'
 
-  pg-pool@3.9.6:
-    resolution: {integrity: sha512-rFen0G7adh1YmgvrmE5IPIqbb+IgEzENUm+tzm6MLLDSlPRoZVhzU1WdML9PV2W5GOdRA9qBKURlbt1OsXOsPw==}
+  pg-promise@11.15.0:
+    resolution: {integrity: sha512-EUXpXn90yPVPKxQH4qqUAEVcApd2tp/JdR3wG6LzBUgaXTUYqwmuXG4vFhhZTCctzhfzRA20EbORb9H4aAgUHA==}
+    engines: {node: '>=16.0'}
     peerDependencies:
-      pg: '>=8.0'
-
-  pg-promise@11.13.0:
-    resolution: {integrity: sha512-NWCsh1gnELfYRF5hNhfXPcSxuCk9C3FyM9MhmGkVTmepczAC2aXuBkyXhipVlHzp0V/IVzyCZOrlH48Ma3i7YQ==}
-    engines: {node: '>=14.0'}
-    peerDependencies:
-      pg-query-stream: 4.8.1
+      pg-query-stream: 4.10.3
 
   pg-protocol@1.10.3:
     resolution: {integrity: sha512-6DIBgBQaTKDJyxnXaLiLR8wBpQQcGWuAESkRBX/t6OwA8YsqP+iVSiond2EDy6Y/dsGk8rh/jtax3js5NeV7JQ==}
-
-  pg-protocol@1.9.5:
-    resolution: {integrity: sha512-DYTWtWpfd5FOro3UnAfwvhD8jh59r2ig8bPtc9H8Ds7MscE/9NYruUQWFAOuraRl29jwcT2kyMFQ3MxeaVjUhg==}
 
   pg-query-stream@4.10.3:
     resolution: {integrity: sha512-h2utrzpOIzeT9JfaqfvBbVuvCfBjH86jNfVrGGTbyepKAIOyTfDew0lAt8bbJjs9n/I5bGDl7S2sx6h5hPyJxw==}
@@ -4318,15 +4309,6 @@ packages:
   pg-types@4.1.0:
     resolution: {integrity: sha512-o2XFanIMy/3+mThw69O8d4n1E5zsLhdO+OPqswezu7Z5ekP4hYDqlDjlmOpYMbzY2Br0ufCwJLdDIXeNVwcWFg==}
     engines: {node: '>=10'}
-
-  pg@8.14.1:
-    resolution: {integrity: sha512-0TdbqfjwIun9Fm/r89oB7RFQ0bLgduAhiIqIXOsyKoiC/L54DbuAAzIEN/9Op0f1Po9X7iCPXGoa/Ah+2aI8Xw==}
-    engines: {node: '>= 8.0.0'}
-    peerDependencies:
-      pg-native: '>=3.0.1'
-    peerDependenciesMeta:
-      pg-native:
-        optional: true
 
   pg@8.16.3:
     resolution: {integrity: sha512-enxc1h0jA/aq5oSDMvqyW3q89ra6XIIDZgCX9vkMrnz5DFTw/Ny3Li2lFQ+pt3L6MCgm/5o2o8HW9hiJji+xvw==}
@@ -4446,10 +4428,6 @@ packages:
     resolution: {integrity: sha512-QQtaxnoDJeAkDvDKWCLiwIXkTgRhwYDEQCghU9Z6q03iyek/rxRh/2lC3HB7P8sWT2xC/y5JDctPLBIGzHKbhw==}
     engines: {node: '>=14'}
     hasBin: true
-
-  pretty-ms@9.2.0:
-    resolution: {integrity: sha512-4yf0QO/sllf/1zbZWYnvWw3NxCQwLXKzIj0G849LSufP15BXKM0rbD2Z3wVnkMfjdn/CB0Dpp444gYAACdsplg==}
-    engines: {node: '>=18'}
 
   pretty-ms@9.3.0:
     resolution: {integrity: sha512-gjVS5hOP+M3wMm5nmNOucbIrqudzs9v/57bWRHQWLYklXqoXKrVfYW2W9+glfGsqtPgpiz5WwyEEB+ksXIx3gQ==}
@@ -4593,8 +4571,8 @@ packages:
     engines: {node: 20 || >=22}
     hasBin: true
 
-  roarr@7.21.1:
-    resolution: {integrity: sha512-3niqt5bXFY1InKU8HKWqqYTYjtrBaxBMnXELXCXUYgtNYGUtZM5rB46HIC430AyacL95iEniGf7RgqsesykLmQ==}
+  roarr@7.21.2:
+    resolution: {integrity: sha512-RyXI+aNxwVyfF71a9cqz/jhXWbycnVh7GXnnJUniIBXKTOJQF3rmpNexStXt8TUcKyiXCwyfYzboZLMYUllPDA==}
     engines: {node: '>=18.0'}
 
   rollup@4.53.2:
@@ -4762,8 +4740,8 @@ packages:
   spdx-license-ids@3.0.21:
     resolution: {integrity: sha512-Bvg/8F5XephndSK3JffaRqdT+gyhfqIPwDHpX80tJrF8QQRYMo8sNMeaZ2Dp5+jhwKnUmIOyFFQfHRkjJm5nXg==}
 
-  spex@3.4.0:
-    resolution: {integrity: sha512-8JeZJ7QlEBnSj1W1fKXgbB2KUPA8k4BxFMf6lZX/c1ZagU/1b9uZWZK0yD6yjfzqAIuTNG4YlRmtMpQiXuohsg==}
+  spex@3.4.1:
+    resolution: {integrity: sha512-Br0Mu3S+c70kr4keXF+6K4B8ohR+aJjI9s7SbdsI3hliE1Riz4z+FQk7FQL+r7X1t90KPkpuKwQyITpCIQN9mg==}
     engines: {node: '>=14.0.0'}
 
   split2@4.2.0:
@@ -4934,10 +4912,6 @@ packages:
   tinyrainbow@3.0.3:
     resolution: {integrity: sha512-PSkbLUoxOFRzJYjjxHJt9xro7D+iilgMX/C9lawzVuYiIdcihh9DXmVibBe8lmcFrRi/VzlPjBxbN7rH24q8/Q==}
     engines: {node: '>=14.0.0'}
-
-  tmp@0.0.33:
-    resolution: {integrity: sha512-jRCJlojKnZ3addtTOjdIqoRuPEKBvNXcGYqzO6zWZX8KfKEpnGY5jfggJQ3EjKuu8D4bJRr0y+cYJFmYbImXGw==}
-    engines: {node: '>=0.6.0'}
 
   to-regex-range@5.0.1:
     resolution: {integrity: sha512-65P7iz6X5yEr1cwcgvQxbbIw7Uk3gOy5dIdtZ4rDveLqhrdJP+Li/Hx6tyK0NEb+2GCyneCMJiGqrADCSNk8sQ==}
@@ -5463,7 +5437,7 @@ snapshots:
       '@babel/helper-string-parser': 7.27.1
       '@babel/helper-validator-identifier': 7.27.1
 
-  '@changesets/apply-release-plan@7.0.12':
+  '@changesets/apply-release-plan@7.0.13':
     dependencies:
       '@changesets/config': 3.1.1
       '@changesets/get-version-range-type': 0.4.0
@@ -5479,7 +5453,7 @@ snapshots:
       resolve-from: 5.0.0
       semver: 7.7.2
 
-  '@changesets/assemble-release-plan@6.0.8':
+  '@changesets/assemble-release-plan@6.0.9':
     dependencies:
       '@changesets/errors': 0.2.0
       '@changesets/get-dependents-graph': 2.1.3
@@ -5500,15 +5474,15 @@ snapshots:
     transitivePeerDependencies:
       - encoding
 
-  '@changesets/cli@2.29.4':
+  '@changesets/cli@2.29.7(@types/node@24.10.1)':
     dependencies:
-      '@changesets/apply-release-plan': 7.0.12
-      '@changesets/assemble-release-plan': 6.0.8
+      '@changesets/apply-release-plan': 7.0.13
+      '@changesets/assemble-release-plan': 6.0.9
       '@changesets/changelog-git': 0.2.1
       '@changesets/config': 3.1.1
       '@changesets/errors': 0.2.0
       '@changesets/get-dependents-graph': 2.1.3
-      '@changesets/get-release-plan': 4.0.12
+      '@changesets/get-release-plan': 4.0.13
       '@changesets/git': 3.0.4
       '@changesets/logger': 0.1.1
       '@changesets/pre': 2.0.2
@@ -5516,11 +5490,11 @@ snapshots:
       '@changesets/should-skip-package': 0.1.2
       '@changesets/types': 6.1.0
       '@changesets/write': 0.4.0
+      '@inquirer/external-editor': 1.0.3(@types/node@24.10.1)
       '@manypkg/get-packages': 1.1.3
       ansi-colors: 4.1.3
       ci-info: 3.9.0
       enquirer: 2.4.1
-      external-editor: 3.1.0
       fs-extra: 7.0.1
       mri: 1.2.0
       p-limit: 2.3.0
@@ -5530,6 +5504,8 @@ snapshots:
       semver: 7.7.2
       spawndamnit: 3.0.1
       term-size: 2.2.1
+    transitivePeerDependencies:
+      - '@types/node'
 
   '@changesets/config@3.1.1':
     dependencies:
@@ -5559,9 +5535,9 @@ snapshots:
     transitivePeerDependencies:
       - encoding
 
-  '@changesets/get-release-plan@4.0.12':
+  '@changesets/get-release-plan@4.0.13':
     dependencies:
-      '@changesets/assemble-release-plan': 6.0.8
+      '@changesets/assemble-release-plan': 6.0.9
       '@changesets/config': 3.1.1
       '@changesets/pre': 2.0.2
       '@changesets/read': 0.6.5
@@ -6251,6 +6227,13 @@ snapshots:
   '@humanwhocodes/module-importer@1.0.1': {}
 
   '@humanwhocodes/retry@0.4.3': {}
+
+  '@inquirer/external-editor@1.0.3(@types/node@24.10.1)':
+    dependencies:
+      chardet: 2.1.1
+      iconv-lite: 0.7.0
+    optionalDependencies:
+      '@types/node': 24.10.1
 
   '@isaacs/balanced-match@4.0.1': {}
 
@@ -7143,7 +7126,7 @@ snapshots:
       safer-buffer: 2.1.2
     optional: true
 
-  assert-options@0.8.2: {}
+  assert-options@0.8.3: {}
 
   assert-plus@1.0.0:
     optional: true
@@ -7332,7 +7315,7 @@ snapshots:
 
   chalk@5.6.2: {}
 
-  chardet@0.7.0: {}
+  chardet@2.1.1: {}
 
   chownr@3.0.0: {}
 
@@ -8028,7 +8011,7 @@ snapshots:
       lodash: 4.17.21
       natural-orderby: 5.0.0
       recast: 0.23.11
-      roarr: 7.21.1
+      roarr: 7.21.2
       tsconfig-paths: 4.2.0
     transitivePeerDependencies:
       - '@typescript-eslint/parser'
@@ -8385,12 +8368,6 @@ snapshots:
 
   extendable-error@0.1.7: {}
 
-  external-editor@3.1.0:
-    dependencies:
-      chardet: 0.7.0
-      iconv-lite: 0.4.24
-      tmp: 0.0.33
-
   extsprintf@1.3.0:
     optional: true
 
@@ -8695,6 +8672,8 @@ snapshots:
 
   graphql@16.11.0: {}
 
+  graphql@16.12.0: {}
+
   har-schema@2.0.0:
     optional: true
 
@@ -8758,7 +8737,7 @@ snapshots:
 
   husky@9.1.7: {}
 
-  iconv-lite@0.4.24:
+  iconv-lite@0.7.0:
     dependencies:
       safer-buffer: 2.1.2
 
@@ -8965,7 +8944,7 @@ snapshots:
 
   isexe@2.0.0: {}
 
-  iso8601-duration@2.1.2: {}
+  iso8601-duration@2.1.3: {}
 
   isomorphic-ws@5.0.0(ws@8.18.2):
     dependencies:
@@ -9368,8 +9347,6 @@ snapshots:
       type-check: 0.4.0
       word-wrap: 1.2.5
 
-  os-tmpdir@1.0.2: {}
-
   outdent@0.5.0: {}
 
   own-keys@1.0.1:
@@ -9498,13 +9475,8 @@ snapshots:
   performance-now@2.1.0:
     optional: true
 
-  pg-cloudflare@1.1.1:
-    optional: true
-
   pg-cloudflare@1.2.7:
     optional: true
-
-  pg-connection-string@2.7.0: {}
 
   pg-connection-string@2.9.1: {}
 
@@ -9514,7 +9486,7 @@ snapshots:
 
   pg-int8@1.0.1: {}
 
-  pg-minify@1.7.0: {}
+  pg-minify@1.8.0: {}
 
   pg-numeric@1.0.2: {}
 
@@ -9522,23 +9494,17 @@ snapshots:
     dependencies:
       pg: 8.16.3
 
-  pg-pool@3.9.6(pg@8.14.1):
+  pg-promise@11.15.0(pg-query-stream@4.10.3(pg@8.16.3)):
     dependencies:
-      pg: 8.14.1
-
-  pg-promise@11.13.0(pg-query-stream@4.10.3(pg@8.16.3)):
-    dependencies:
-      assert-options: 0.8.2
-      pg: 8.14.1
-      pg-minify: 1.7.0
+      assert-options: 0.8.3
+      pg: 8.16.3
+      pg-minify: 1.8.0
       pg-query-stream: 4.10.3(pg@8.16.3)
-      spex: 3.4.0
+      spex: 3.4.1
     transitivePeerDependencies:
       - pg-native
 
   pg-protocol@1.10.3: {}
-
-  pg-protocol@1.9.5: {}
 
   pg-query-stream@4.10.3(pg@8.16.3):
     dependencies:
@@ -9562,16 +9528,6 @@ snapshots:
       postgres-date: 2.1.0
       postgres-interval: 3.0.0
       postgres-range: 1.1.4
-
-  pg@8.14.1:
-    dependencies:
-      pg-connection-string: 2.7.0
-      pg-pool: 3.9.6(pg@8.14.1)
-      pg-protocol: 1.9.5
-      pg-types: 2.2.0
-      pgpass: 1.0.5
-    optionalDependencies:
-      pg-cloudflare: 1.1.1
 
   pg@8.16.3:
     dependencies:
@@ -9655,10 +9611,6 @@ snapshots:
   prettier@2.8.8: {}
 
   prettier@3.5.3: {}
-
-  pretty-ms@9.2.0:
-    dependencies:
-      parse-ms: 4.0.0
 
   pretty-ms@9.3.0:
     dependencies:
@@ -9834,7 +9786,7 @@ snapshots:
       glob: 11.0.2
       package-json-from-dist: 1.0.1
 
-  roarr@7.21.1:
+  roarr@7.21.2:
     dependencies:
       fast-printf: 1.6.9
       safe-stable-stringify: 2.4.3
@@ -10045,7 +9997,7 @@ snapshots:
 
   spdx-license-ids@3.0.21: {}
 
-  spex@3.4.0: {}
+  spex@3.4.1: {}
 
   split2@4.2.0: {}
 
@@ -10235,10 +10187,6 @@ snapshots:
       picomatch: 4.0.3
 
   tinyrainbow@3.0.3: {}
-
-  tmp@0.0.33:
-    dependencies:
-      os-tmpdir: 1.0.2
 
   to-regex-range@5.0.1:
     dependencies:
