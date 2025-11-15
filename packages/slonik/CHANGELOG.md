@@ -1,5 +1,18 @@
 # slonik
 
+## 48.8.1
+
+### Patch Changes
+
+- [`d548a71`](https://github.com/gajus/slonik/commit/d548a71c19cd97bc957b3b26e3f9d17afcc687f7) Thanks [@gajus](https://github.com/gajus)! - minor performance optimization
+
+- Updated dependencies []:
+  - @slonik/driver@48.8.1
+  - @slonik/errors@48.8.1
+  - @slonik/pg-driver@48.8.1
+  - @slonik/sql-tag@48.8.1
+  - @slonik/utilities@48.8.1
+
 ## 48.8.0
 
 ### Minor Changes
