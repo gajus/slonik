@@ -494,6 +494,8 @@ const executeQueryInternal = async (
           throw new NotFoundError('Query returned no rows.', actualQuery);
         }
 
+        // It is safe to assume that whatever the first row is, it will be the same for all rows.
+        // eslint-disable-next-line no-unreachable-loop
         for (const row of result.rows) {
           if (Object.keys(row).length !== 1) {
             throw new DataIntegrityError(
@@ -501,10 +503,14 @@ const executeQueryInternal = async (
               actualQuery,
             );
           }
+
+          break;
         }
       }
 
       if (integrityValidation.validationType === 'MAYBE_MANY_ROWS_ONE_COLUMN') {
+        // It is safe to assume that whatever the first row is, it will be the same for all rows.
+        // eslint-disable-next-line no-unreachable-loop
         for (const row of result.rows) {
           if (Object.keys(row).length !== 1) {
             throw new DataIntegrityError(
@@ -512,6 +518,8 @@ const executeQueryInternal = async (
               actualQuery,
             );
           }
+
+          break;
         }
       }
     }
