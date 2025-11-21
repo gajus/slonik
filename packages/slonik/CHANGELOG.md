@@ -1,5 +1,18 @@
 # slonik
 
+## 48.8.4
+
+### Patch Changes
+
+- [`3238a49`](https://github.com/gajus/slonik/commit/3238a499e998e818408429d211602605546ef859) Thanks [@gajus](https://github.com/gajus)! - remove unnecessary async/await
+
+- Updated dependencies []:
+  - @slonik/driver@48.8.4
+  - @slonik/errors@48.8.4
+  - @slonik/pg-driver@48.8.4
+  - @slonik/sql-tag@48.8.4
+  - @slonik/utilities@48.8.4
+
 ## 48.8.3
 
 ### Patch Changes
