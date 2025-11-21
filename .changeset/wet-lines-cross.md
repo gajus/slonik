@@ -1,5 +1,0 @@
----
-"slonik": patch
----
-
-refactor ZodTypeAny
