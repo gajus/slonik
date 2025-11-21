@@ -1,5 +1,18 @@
 # slonik
 
+## 48.8.3
+
+### Patch Changes
+
+- [`872c0a7`](https://github.com/gajus/slonik/commit/872c0a728e3b58854bafb6afcfb44bca02a72cd0) Thanks [@gajus](https://github.com/gajus)! - refactor ZodTypeAny
+
+- Updated dependencies []:
+  - @slonik/driver@48.8.3
+  - @slonik/errors@48.8.3
+  - @slonik/pg-driver@48.8.3
+  - @slonik/sql-tag@48.8.3
+  - @slonik/utilities@48.8.3
+
 ## 48.8.2
 
 ### Patch Changes
