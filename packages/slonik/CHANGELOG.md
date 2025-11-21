@@ -1,5 +1,18 @@
 # slonik
 
+## 48.8.5
+
+### Patch Changes
+
+- [`d6629d3`](https://github.com/gajus/slonik/commit/d6629d39ff0c5fd8f7edc5b6e4959ecf2a24905d) Thanks [@gajus](https://github.com/gajus)! - correct types for stream
+
+- Updated dependencies []:
+  - @slonik/driver@48.8.5
+  - @slonik/errors@48.8.5
+  - @slonik/pg-driver@48.8.5
+  - @slonik/sql-tag@48.8.5
+  - @slonik/utilities@48.8.5
+
 ## 48.8.4
 
 ### Patch Changes
