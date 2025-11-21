@@ -16,7 +16,7 @@
   "license": "BSD-3-Clause",
   "name": "@slonik/test-ssls",
   "peerDependencies": {
-    "zod": "^3"
+    "zod": "^3.25 || ^4"
   },
   "repository": {
     "type": "git",
