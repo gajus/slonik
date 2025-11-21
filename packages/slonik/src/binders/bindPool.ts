@@ -15,170 +15,170 @@ export const bindPool = (
   clientConfiguration: ClientConfiguration,
 ): DatabasePool => {
   const boundPool = {
-    any: async (query) => {
-      return await createConnection(
+    any: (query) => {
+      return createConnection(
         parentLog,
         pool,
         clientConfiguration,
         'IMPLICIT_QUERY',
-        async (connectionLog, connection, boundConnection) => {
-          return await boundConnection.any(query);
+        (connectionLog, connection, boundConnection) => {
+          return boundConnection.any(query);
         },
-        async (newPool) => {
-          return await newPool.any(query);
+        (newPool) => {
+          return newPool.any(query);
         },
         query,
       );
     },
-    anyFirst: async (query) => {
-      return await createConnection(
+    anyFirst: (query) => {
+      return createConnection(
         parentLog,
         pool,
         clientConfiguration,
         'IMPLICIT_QUERY',
-        async (connectionLog, connection, boundConnection) => {
-          return await boundConnection.anyFirst(query);
+        (connectionLog, connection, boundConnection) => {
+          return boundConnection.anyFirst(query);
         },
-        async (newPool) => {
-          return await newPool.anyFirst(query);
+        (newPool) => {
+          return newPool.anyFirst(query);
         },
         query,
       );
     },
     configuration: clientConfiguration,
-    connect: async (connectionHandler) => {
-      return await createConnection(
+    connect: (connectionHandler) => {
+      return createConnection(
         parentLog,
         pool,
         clientConfiguration,
         'EXPLICIT',
-        async (connectionLog, connection, boundConnection) => {
-          return await connectionHandler(boundConnection);
+        (connectionLog, connection, boundConnection) => {
+          return connectionHandler(boundConnection);
         },
-        async (newPool) => {
-          return await newPool.connect(connectionHandler);
+        (newPool) => {
+          return newPool.connect(connectionHandler);
         },
       );
     },
     end: async () => {
       await pool.end();
     },
-    exists: async (query) => {
-      return await createConnection(
+    exists: (query) => {
+      return createConnection(
         parentLog,
         pool,
         clientConfiguration,
         'IMPLICIT_QUERY',
-        async (connectionLog, connection, boundConnection) => {
-          return await boundConnection.exists(query);
+        (connectionLog, connection, boundConnection) => {
+          return boundConnection.exists(query);
         },
-        async (newPool) => {
-          return await newPool.exists(query);
+        (newPool) => {
+          return newPool.exists(query);
         },
         query,
       );
     },
-    many: async (query) => {
-      return await createConnection(
+    many: (query) => {
+      return createConnection(
         parentLog,
         pool,
         clientConfiguration,
         'IMPLICIT_QUERY',
-        async (connectionLog, connection, boundConnection) => {
-          return await boundConnection.many(query);
+        (connectionLog, connection, boundConnection) => {
+          return boundConnection.many(query);
         },
-        async (newPool) => {
-          return await newPool.many(query);
+        (newPool) => {
+          return newPool.many(query);
         },
         query,
       );
     },
-    manyFirst: async (query) => {
-      return await createConnection(
+    manyFirst: (query) => {
+      return createConnection(
         parentLog,
         pool,
         clientConfiguration,
         'IMPLICIT_QUERY',
-        async (connectionLog, connection, boundConnection) => {
-          return await boundConnection.manyFirst(query);
+        (connectionLog, connection, boundConnection) => {
+          return boundConnection.manyFirst(query);
         },
-        async (newPool) => {
-          return await newPool.manyFirst(query);
+        (newPool) => {
+          return newPool.manyFirst(query);
         },
         query,
       );
     },
-    maybeOne: async (query) => {
-      return await createConnection(
+    maybeOne: (query) => {
+      return createConnection(
         parentLog,
         pool,
         clientConfiguration,
         'IMPLICIT_QUERY',
-        async (connectionLog, connection, boundConnection) => {
-          return await boundConnection.maybeOne(query);
+        (connectionLog, connection, boundConnection) => {
+          return boundConnection.maybeOne(query);
         },
-        async (newPool) => {
-          return await newPool.maybeOne(query);
+        (newPool) => {
+          return newPool.maybeOne(query);
         },
         query,
       );
     },
-    maybeOneFirst: async (query) => {
-      return await createConnection(
+    maybeOneFirst: (query) => {
+      return createConnection(
         parentLog,
         pool,
         clientConfiguration,
         'IMPLICIT_QUERY',
-        async (connectionLog, connection, boundConnection) => {
-          return await boundConnection.maybeOneFirst(query);
+        (connectionLog, connection, boundConnection) => {
+          return boundConnection.maybeOneFirst(query);
         },
-        async (newPool) => {
-          return await newPool.maybeOneFirst(query);
+        (newPool) => {
+          return newPool.maybeOneFirst(query);
         },
         query,
       );
     },
-    one: async (query) => {
-      return await createConnection(
+    one: (query) => {
+      return createConnection(
         parentLog,
         pool,
         clientConfiguration,
         'IMPLICIT_QUERY',
-        async (connectionLog, connection, boundConnection) => {
-          return await boundConnection.one(query);
+        (connectionLog, connection, boundConnection) => {
+          return boundConnection.one(query);
         },
-        async (newPool) => {
-          return await newPool.one(query);
+        (newPool) => {
+          return newPool.one(query);
         },
         query,
       );
     },
-    oneFirst: async (query) => {
-      return await createConnection(
+    oneFirst: (query) => {
+      return createConnection(
         parentLog,
         pool,
         clientConfiguration,
         'IMPLICIT_QUERY',
-        async (connectionLog, connection, boundConnection) => {
-          return await boundConnection.oneFirst(query);
+        (connectionLog, connection, boundConnection) => {
+          return boundConnection.oneFirst(query);
         },
-        async (newPool) => {
-          return await newPool.oneFirst(query);
+        (newPool) => {
+          return newPool.oneFirst(query);
         },
         query,
       );
     },
-    query: async (query) => {
-      return await createConnection(
+    query: (query) => {
+      return createConnection(
         parentLog,
         pool,
         clientConfiguration,
         'IMPLICIT_QUERY',
-        async (connectionLog, connection, boundConnection) => {
-          return await boundConnection.query(query);
+        (connectionLog, connection, boundConnection) => {
+          return boundConnection.query(query);
         },
-        async (newPool) => {
-          return await newPool.query(query);
+        (newPool) => {
+          return newPool.query(query);
         },
         query,
       );
@@ -186,29 +186,29 @@ export const bindPool = (
     state: () => {
       return pool.state();
     },
-    stream: async (streamQuery, streamHandler) => {
-      return await createConnection(
+    stream: (streamQuery, streamHandler) => {
+      return createConnection(
         parentLog,
         pool,
         clientConfiguration,
         'IMPLICIT_QUERY',
-        async (connectionLog, connection, boundConnection) => {
-          return await boundConnection.stream(streamQuery, streamHandler);
+        (connectionLog, connection, boundConnection) => {
+          return boundConnection.stream(streamQuery, streamHandler);
         },
-        async (newPool) => {
-          return await newPool.stream(streamQuery, streamHandler);
+        (newPool) => {
+          return newPool.stream(streamQuery, streamHandler);
         },
         streamQuery,
       );
     },
-    transaction: async (transactionHandler, transactionRetryLimit) => {
-      return await createConnection(
+    transaction: (transactionHandler, transactionRetryLimit) => {
+      return createConnection(
         parentLog,
         pool,
         clientConfiguration,
         'IMPLICIT_TRANSACTION',
-        async (connectionLog, connection) => {
-          return await transaction(
+        (connectionLog, connection) => {
+          return transaction(
             connectionLog,
             connection,
             clientConfiguration,
@@ -216,8 +216,8 @@ export const bindPool = (
             transactionRetryLimit,
           );
         },
-        async (newPool) => {
-          return await newPool.transaction(transactionHandler);
+        (newPool) => {
+          return newPool.transaction(transactionHandler);
         },
       );
     },

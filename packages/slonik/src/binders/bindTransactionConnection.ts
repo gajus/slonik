@@ -49,15 +49,10 @@ export const bindTransactionConnection = (
     },
     emit: eventEmitter.emit.bind(eventEmitter),
     eventNames: eventEmitter.eventNames.bind(eventEmitter),
-    exists: async (slonikSql) => {
+    exists: (slonikSql) => {
       assertTransactionDepth();
 
-      return await exists(
-        parentLog,
-        connection,
-        clientConfiguration,
-        slonikSql,
-      );
+      return exists(parentLog, connection, clientConfiguration, slonikSql);
     },
     getMaxListeners: eventEmitter.getMaxListeners.bind(eventEmitter),
     listenerCount: eventEmitter.listenerCount.bind(eventEmitter),
@@ -111,10 +106,10 @@ export const bindTransactionConnection = (
     removeAllListeners: eventEmitter.removeAllListeners.bind(eventEmitter),
     removeListener: eventEmitter.removeListener.bind(eventEmitter),
     setMaxListeners: eventEmitter.setMaxListeners.bind(eventEmitter),
-    stream: async (slonikSql, streamHandler) => {
+    stream: (slonikSql, streamHandler) => {
       assertTransactionDepth();
 
-      return await stream(
+      return stream(
         parentLog,
         connection,
         clientConfiguration,
@@ -122,10 +117,10 @@ export const bindTransactionConnection = (
         streamHandler,
       );
     },
-    transaction: async (handler, transactionRetryLimit) => {
+    transaction: (handler, transactionRetryLimit) => {
       assertTransactionDepth();
 
-      return await nestedTransaction(
+      return nestedTransaction(
         parentLog,
         connection,
         clientConfiguration,

@@ -29,13 +29,8 @@ export const bindPoolConnection = (
     anyFirst: (slonikSql) => {
       return anyFirst(parentLog, connection, clientConfiguration, slonikSql);
     },
-    exists: async (slonikSql) => {
-      return await exists(
-        parentLog,
-        connection,
-        clientConfiguration,
-        slonikSql,
-      );
+    exists: (slonikSql) => {
+      return exists(parentLog, connection, clientConfiguration, slonikSql);
     },
     many: (slonikSql) => {
       return many(parentLog, connection, clientConfiguration, slonikSql);
@@ -63,8 +58,8 @@ export const bindPoolConnection = (
     query: (slonikSql) => {
       return queryMethod(parentLog, connection, clientConfiguration, slonikSql);
     },
-    stream: async (slonikSql, streamHandler) => {
-      return await stream(
+    stream: (slonikSql, streamHandler) => {
+      return stream(
         parentLog,
         connection,
         clientConfiguration,
@@ -73,8 +68,8 @@ export const bindPoolConnection = (
         undefined,
       );
     },
-    transaction: async (handler, transactionRetryLimit) => {
-      return await transaction(
+    transaction: (handler, transactionRetryLimit) => {
+      return transaction(
         parentLog,
         connection,
         clientConfiguration,
