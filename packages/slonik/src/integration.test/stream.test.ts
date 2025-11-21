@@ -481,10 +481,10 @@ test('streams over a transaction', async (t) => {
 
   await pool.transaction(async (transaction) => {
     await transaction.stream(
-      sql.unsafe`
-      SELECT name
-      FROM person
-    `,
+      sql.type(z.object({ name: z.string() }))`
+        SELECT name
+        FROM person
+      `,
       (stream) => {
         stream.on('data', (datum) => {
           messages.push(datum);

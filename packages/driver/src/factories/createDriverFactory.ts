@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/consistent-type-definitions */
 import { Logger } from '../Logger.js';
 import type { Field } from '@slonik/types';
 import { generateUid } from '@slonik/utilities';
@@ -87,20 +88,12 @@ export type DriverQueryResult = {
   readonly rows: Array<Record<string, unknown>>;
 };
 
-export type DriverStream<T> = AsyncIterable<StreamDataEvent<T>> &
-  Readable & {
-    // eslint-disable-next-line @typescript-eslint/method-signature-style
-    on(
-      event: 'data',
-      listener: (chunk: StreamDataEvent<T>) => void,
-    ): DriverStream<T>;
-
-    // eslint-disable-next-line @typescript-eslint/method-signature-style
-    on(
-      event: string | symbol,
-      listener: (...args: any[]) => void,
-    ): DriverStream<T>;
-  };
+export interface DriverStream<T>
+  extends Omit<Readable, 'on' | typeof Symbol.asyncIterator> {
+  [Symbol.asyncIterator]: () => AsyncIterableIterator<StreamDataEvent<T>>;
+  on: ((event: 'data', listener: (chunk: StreamDataEvent<T>) => void) => this) &
+    ((event: string | symbol, listener: (...args: any[]) => void) => this);
+}
 
 export type DriverStreamResult = {
   readonly fields: DriverField[];

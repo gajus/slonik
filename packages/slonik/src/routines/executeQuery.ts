@@ -190,7 +190,8 @@ const executeQueryInternal = async (
   };
 
   let actualQuery = {
-    ...originalQuery,
+    sql: originalQuery.sql,
+    values: originalQuery.values,
   };
 
   const executionContext: QueryContext = {
