@@ -1,5 +1,18 @@
 # slonik
 
+## 48.8.2
+
+### Patch Changes
+
+- [`046be14`](https://github.com/gajus/slonik/commit/046be1476c96ea801fbb62d9cd7fde6a1e8da273) Thanks [@gajus](https://github.com/gajus)! - correct peer dep version range
+
+- Updated dependencies []:
+  - @slonik/driver@48.8.2
+  - @slonik/errors@48.8.2
+  - @slonik/pg-driver@48.8.2
+  - @slonik/sql-tag@48.8.2
+  - @slonik/utilities@48.8.2
+
 ## 48.8.1
 
 ### Patch Changes
