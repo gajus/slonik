@@ -3,7 +3,7 @@
     "eslint-config-canonical": "44.9.5"
   },
   "devDependencies": {
-    "typescript-eslint": "^8.46.4"
+    "typescript-eslint": "^8.47.0"
   },
   "main": "./eslint.config.js",
   "name": "@slonik/eslint-config",
