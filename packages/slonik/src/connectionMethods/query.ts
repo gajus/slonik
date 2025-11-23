@@ -7,7 +7,6 @@ import type {
   QueryResultRow,
 } from '../types.js';
 import type { DriverNotice, DriverQueryResult } from '@slonik/driver';
-import { SlonikError } from '@slonik/errors';
 
 const executionRoutine: ExecutionRoutine = async (
   finalConnection,
@@ -42,7 +41,7 @@ const executionRoutine: ExecutionRoutine = async (
   };
 };
 
-export const query: InternalQueryMethod = async (
+export const query: InternalQueryMethod = (
   connectionLogger,
   connection,
   clientConfiguration,
@@ -50,22 +49,14 @@ export const query: InternalQueryMethod = async (
   inheritedQueryId,
   integrityValidation,
 ) => {
-  try {
-    return await executeQuery(
-      connectionLogger,
-      connection,
-      clientConfiguration,
-      slonikSql,
-      inheritedQueryId,
-      executionRoutine,
-      false,
-      integrityValidation,
-    );
-  } catch (error) {
-    if (error instanceof SlonikError) {
-      connection.events.emit('error', error);
-    }
-
-    throw error;
-  }
+  return executeQuery(
+    connectionLogger,
+    connection,
+    clientConfiguration,
+    slonikSql,
+    inheritedQueryId,
+    executionRoutine,
+    false,
+    integrityValidation,
+  );
 };

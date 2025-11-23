@@ -1,0 +1,5 @@
+---
+"slonik": patch
+---
+
+reduce microtasks

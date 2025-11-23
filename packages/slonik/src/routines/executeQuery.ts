@@ -711,6 +711,10 @@ export const executeQuery = async (
         stream,
       );
     } catch (error) {
+      if (error instanceof SlonikError) {
+        connection.events.emit('error', error);
+      }
+
       span.recordException(error);
       span.setStatus({
         code: SpanStatusCode.ERROR,
