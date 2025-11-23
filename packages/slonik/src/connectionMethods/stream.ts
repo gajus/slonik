@@ -10,6 +10,7 @@ import type {
   StreamHandler,
 } from '../types.js';
 import type { DriverStreamResult } from '@slonik/driver';
+import { SlonikError } from '@slonik/errors';
 import { Transform } from 'node:stream';
 import { pipeline } from 'node:stream/promises';
 
@@ -147,19 +148,29 @@ export const stream: InternalStreamFunction = async (
   onStream,
   uid,
 ) => {
-  const result = await executeQuery(
-    connectionLogger,
-    connection,
-    clientConfiguration,
-    slonikSql,
-    uid,
-    createExecutionRoutine(clientConfiguration, onStream),
-    true,
-  );
+  try {
+    const result = await executeQuery(
+      connectionLogger,
+      connection,
+      clientConfiguration,
+      slonikSql,
+      uid,
+      createExecutionRoutine(clientConfiguration, onStream),
+      true,
+    );
 
-  if (result.type === 'QueryResult') {
-    throw new Error('Query result cannot be returned in a streaming context.');
+    if (result.type === 'QueryResult') {
+      throw new Error(
+        'Query result cannot be returned in a streaming context.',
+      );
+    }
+
+    return result;
+  } catch (error) {
+    if (error instanceof SlonikError) {
+      connection.events.emit('error', error);
+    }
+
+    throw error;
   }
-
-  return result;
 };
