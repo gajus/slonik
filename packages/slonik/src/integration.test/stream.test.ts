@@ -235,9 +235,9 @@ test('reading stream using custom type parsers', async (t) => {
   await pool.query(sql.unsafe`
     INSERT INTO person (name, molecules)
     VALUES 
-      ('foo', ${BigInt('6022000000000000000')}),
-      ('bar', ${BigInt('6022000000000000001')}),
-      ('baz', ${BigInt('6022000000000000002')})
+      ('foo', ${6_022_000_000_000_000_000n}),
+      ('bar', ${6_022_000_000_000_000_001n}),
+      ('baz', ${6_022_000_000_000_000_002n})
   `);
 
   const persons: bigint[] = [];
@@ -259,9 +259,9 @@ test('reading stream using custom type parsers', async (t) => {
   );
 
   t.deepEqual(persons, [
-    BigInt('6022000000000000000'),
-    BigInt('6022000000000000001'),
-    BigInt('6022000000000000002'),
+    6_022_000_000_000_000_000n,
+    6_022_000_000_000_000_001n,
+    6_022_000_000_000_000_002n,
   ]);
 
   await pool.end();
