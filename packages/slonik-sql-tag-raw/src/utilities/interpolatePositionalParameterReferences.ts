@@ -25,7 +25,7 @@ export const interpolatePositionalParameterReferences = (
         10,
       );
     })
-    .sort();
+    .toSorted();
 
   if (bindingNames[bindingNames.length - 1] > inputValues.length) {
     throw new InvalidInputError(
