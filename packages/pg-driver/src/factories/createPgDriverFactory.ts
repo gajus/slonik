@@ -167,16 +167,12 @@ const queryTypeOverrides = async (
 ): Promise<TypeOverrides> => {
   const client = new Client(pgClientConfiguration);
 
-  await client.connect();
-
-  const typeOverrides = await createTypeOverrides(
-    client,
-    driverConfiguration.typeParsers,
-  );
-
-  await client.end();
-
-  return typeOverrides;
+  try {
+    await client.connect();
+    return await createTypeOverrides(client, driverConfiguration.typeParsers);
+  } finally {
+    await client.end();
+  }
 };
 
 const isErrorWithCode = (error: Error): error is DatabaseError => {
