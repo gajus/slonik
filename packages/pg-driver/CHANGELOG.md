@@ -1,5 +1,22 @@
 # @slonik/pg-driver
 
+## 48.8.6
+
+### Patch Changes
+
+- [`6b0eb76`](https://github.com/gajus/slonik/commit/6b0eb76e426594b351dd50a19a57f9a78c41551a) Thanks [@gajus](https://github.com/gajus)! - minor memory leak
+
+- [`0bf9f16`](https://github.com/gajus/slonik/commit/0bf9f166b85f3ec70b82759d10d162d867ce1cf6) Thanks [@gajus](https://github.com/gajus)! - fixes potential leak if createTypeOverrides fails
+
+- [`5a9ef19`](https://github.com/gajus/slonik/commit/5a9ef19f27993746a9fd4f6542cf51e75b8480bc) Thanks [@gajus](https://github.com/gajus)! - fix minor memory leak in stream
+
+- Updated dependencies [[`84bf1d2`](https://github.com/gajus/slonik/commit/84bf1d23ec6700284013435c0d315cc908c3b8fa)]:
+  - @slonik/driver@48.8.6
+  - @slonik/errors@48.8.6
+  - @slonik/sql-tag@48.8.6
+  - @slonik/types@48.8.6
+  - @slonik/utilities@48.8.6
+
 ## 48.8.5
 
 ### Patch Changes
