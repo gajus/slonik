@@ -429,7 +429,13 @@ export const createDriverFactory = (setup: DriverSetup): DriverFactory => {
           },
         };
 
-        await connect();
+        try {
+          await connect();
+        } catch (error) {
+          clientEventEmitter.off('error', onError);
+
+          throw error;
+        }
 
         return client;
       },
