@@ -292,7 +292,14 @@ export const createPgDriverFactory = (): DriverFactory => {
 
         return {
           connect: async () => {
-            await client.connect();
+            try {
+              await client.connect();
+            } catch (error) {
+              client.removeListener('error', onError);
+              client.removeListener('notice', onNotice);
+
+              throw error;
+            }
           },
           end: async () => {
             await client.end();
