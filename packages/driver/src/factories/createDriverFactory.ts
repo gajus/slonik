@@ -320,15 +320,14 @@ export const createDriverFactory = (setup: DriverSetup): DriverFactory => {
         };
 
         const release = () => {
-          if (destroyPromise) {
-            return destroyPromise;
-          }
-
           if (releasePromise) {
             return releasePromise;
           }
 
-          releasePromise = internalRelease();
+          // eslint-disable-next-line promise/prefer-await-to-then
+          releasePromise = internalRelease().finally(() => {
+            releasePromise = null;
+          });
 
           return releasePromise;
         };
