@@ -340,13 +340,22 @@ export const createPgDriverFactory = (): DriverFactory => {
             // `rowDescription` will not fire if the query produces a syntax error.
             // Also, `rowDescription` won't fire until client starts consuming the stream.
             // This is why we cannot simply await for `rowDescription` event before starting to pipe the stream.
-            client.connection.once('rowDescription', (rowDescription) => {
+            const onRowDescription = (rowDescription) => {
               fields = rowDescription.fields.map((field) => {
                 return {
                   dataTypeId: field.dataTypeID,
                   name: field.name,
                 };
               });
+            };
+
+            client.connection.once('rowDescription', onRowDescription);
+
+            stream.once('close', () => {
+              client.connection.removeListener(
+                'rowDescription',
+                onRowDescription,
+              );
             });
 
             const transform = new Transform({
