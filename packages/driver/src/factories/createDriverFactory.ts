@@ -88,8 +88,10 @@ export type DriverQueryResult = {
   readonly rows: Array<Record<string, unknown>>;
 };
 
-export interface DriverStream<T>
-  extends Omit<Readable, 'on' | typeof Symbol.asyncIterator> {
+export interface DriverStream<T> extends Omit<
+  Readable,
+  'on' | typeof Symbol.asyncIterator
+> {
   [Symbol.asyncIterator]: () => AsyncIterableIterator<StreamDataEvent<T>>;
   on: ((event: 'data', listener: (chunk: StreamDataEvent<T>) => void) => this) &
     ((event: string | symbol, listener: (...args: any[]) => void) => this);

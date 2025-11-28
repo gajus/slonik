@@ -148,7 +148,7 @@ test('produces ArraySqlToken<"text"> for text arrays', (t) => {
 });
 
 test('type inference with different PostgreSQL types', (t) => {
-  const int8Array = sql.array([BigInt(1), BigInt(2)], 'int8');
+  const int8Array = sql.array([1n, 2n], 'int8');
   assertType<ArraySqlToken<'int8'>>(int8Array);
   t.is(int8Array.memberType, 'int8');
 
