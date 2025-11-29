@@ -1,5 +1,15 @@
 # @slonik/driver
 
+## 48.8.6
+
+### Patch Changes
+
+- [`84bf1d2`](https://github.com/gajus/slonik/commit/84bf1d23ec6700284013435c0d315cc908c3b8fa) Thanks [@gajus](https://github.com/gajus)! - handle minor memory leak
+
+- Updated dependencies []:
+  - @slonik/types@48.8.6
+  - @slonik/utilities@48.8.6
+
 ## 48.8.5
 
 ### Patch Changes
