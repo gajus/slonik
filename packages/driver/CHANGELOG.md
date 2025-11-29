@@ -1,5 +1,13 @@
 # @slonik/driver
 
+## 48.8.7
+
+### Patch Changes
+
+- Updated dependencies []:
+  - @slonik/types@48.8.7
+  - @slonik/utilities@48.8.7
+
 ## 48.8.6
 
 ### Patch Changes
