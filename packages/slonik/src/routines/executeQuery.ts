@@ -238,9 +238,9 @@ const executeQueryInternal = async (
     const transformQuery = interceptor.transformQuery;
 
     if (transformQuery) {
-      actualQuery = await tracer.startActiveSpan(
+      actualQuery = tracer.startActiveSpan(
         'slonik.interceptor.transformQuery',
-        async (span) => {
+        (span) => {
           span.setAttribute('interceptor.name', interceptor.name);
 
           try {
@@ -576,9 +576,9 @@ const executeQueryInternal = async (
     if (transformRow) {
       const { fields, rows } = result;
 
-      const transformedRows: QueryResultRow[] = await tracer.startActiveSpan(
+      const transformedRows: QueryResultRow[] = tracer.startActiveSpan(
         'slonik.interceptor.transformRow',
-        async (span) => {
+        (span) => {
           span.setAttribute('interceptor.name', interceptor.name);
           span.setAttribute('rows.length', rows.length);
 
