@@ -1,3 +1,4 @@
+import type { ColumnIdentifiers } from '../types';
 import { createConnectionLoaderClass } from './createConnectionLoaderClass.js';
 import type { Query, QueryResultRow } from '@slonik/types';
 import { parse } from 'graphql';
@@ -508,7 +509,6 @@ describe('createConnectionLoaderClass (with validation)', () => {
   let pool: DatabasePool;
 
   beforeAll(async () => {
-    // eslint-disable-next-line unicorn/consistent-function-scoping
     const createResultParserInterceptor = (): Interceptor => {
       return {
         name: 'foo',
@@ -599,7 +599,9 @@ describe('createConnectionLoaderClass (with validation)', () => {
     const loader = new UnsafePersonConnectionLoader(pool);
 
     const result = await loader.load({
-      orderBy: ({ uid }) => [[uid, 'ASC']],
+      orderBy: (identifiers) => [
+        [(identifiers as ColumnIdentifiers<{ uid: string }>).uid, 'ASC'],
+      ],
     });
 
     expect(getNodeIds(result.edges)).toEqual([1, 2, 3, 4, 5, 6, 7, 8, 9, 10]);
