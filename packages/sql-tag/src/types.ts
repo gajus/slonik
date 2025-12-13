@@ -63,8 +63,7 @@ export type ListSqlToken = {
 };
 
 export type QuerySqlToken<
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  T extends StandardSchemaV1 = StandardSchemaV1<any, any>,
+  T extends StandardSchemaV1 = StandardSchemaV1<unknown, unknown>,
 > = {
   readonly parser: T;
   readonly sql: string;
