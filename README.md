@@ -6,6 +6,9 @@
 
 A [battle-tested](#battle-tested) Node.js PostgreSQL client with strict types, detailed logging and assertions.
 
+> [!NOTE]
+> NEW! Use Slonik with [`eslint-plugin-slonik`](https://github.com/gajus/eslint-plugin-slonik) to validate your SQL queries against your database schema.
+
 ![Tailing Slonik logs](./.README/slonik-log-tailing.gif)
 
 (The above GIF shows Slonik producing [query logs](https://github.com/gajus/slonik#logging). Slonik produces logs using [Roarr](https://github.com/gajus/roarr). Logs include stack trace of the actual query invocation location and values used to execute the query.)
