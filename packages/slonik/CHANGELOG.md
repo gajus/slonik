@@ -1,5 +1,18 @@
 # slonik
 
+## 48.8.8
+
+### Patch Changes
+
+- [`40edc3c`](https://github.com/gajus/slonik/commit/40edc3c02bbfe43478bfba053c8320dc793c8260) Thanks [@gajus](https://github.com/gajus)! - reduce object creation
+
+- Updated dependencies []:
+  - @slonik/driver@48.8.8
+  - @slonik/errors@48.8.8
+  - @slonik/pg-driver@48.8.8
+  - @slonik/sql-tag@48.8.8
+  - @slonik/utilities@48.8.8
+
 ## 48.8.7
 
 ### Patch Changes
