@@ -16,7 +16,7 @@
     ]
   },
   "dependencies": {
-    "roarr": "^7.21.2"
+    "roarr": "^7.21.4"
   },
   "description": "Logs Slonik queries.",
   "devDependencies": {

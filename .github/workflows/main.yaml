@@ -28,6 +28,11 @@ jobs:
       - lint
       - test
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      id-token: write
+      issues: write
+      pull-requests: write
     steps:
       - name: setup repository
         uses: actions/checkout@v4
@@ -46,7 +51,6 @@ jobs:
       - run: pnpm run -r build
       - env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
         uses: changesets/action@v1
         with:
           publish: npx changeset publish
