@@ -1,5 +1,24 @@
 # slonik
 
+## 48.8.12
+
+### Patch Changes
+
+- [`680b5dd`](https://github.com/gajus/slonik/commit/680b5dd245bb981cebd5911d75e668f7aade922e) Thanks [@gajus](https://github.com/gajus)! - minor performance improvements
+
+- [`fddc5b0`](https://github.com/gajus/slonik/commit/fddc5b0231e7398ad1a84848b5219a028af68ce7) Thanks [@gajus](https://github.com/gajus)! - minor performance improvements
+
+- [`f821c59`](https://github.com/gajus/slonik/commit/f821c5994f319c18435ef381bf766bdb79912db9) Thanks [@gajus](https://github.com/gajus)! - minor performance improvements
+
+- [`874cec3`](https://github.com/gajus/slonik/commit/874cec39f333a1772fbccc964c221a725947f328) Thanks [@gajus](https://github.com/gajus)! - use sets to manage connections
+
+- Updated dependencies []:
+  - @slonik/driver@48.8.12
+  - @slonik/errors@48.8.12
+  - @slonik/pg-driver@48.8.12
+  - @slonik/sql-tag@48.8.12
+  - @slonik/utilities@48.8.12
+
 ## 48.8.11
 
 ### Patch Changes
