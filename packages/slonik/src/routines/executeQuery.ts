@@ -270,9 +270,12 @@ const executeQueryInternal = async (
       if (beforeQueryExecution) {
         result = await tracer.startActiveSpan(
           'slonik.interceptor.beforeQueryExecution',
+          {
+            attributes: {
+              'interceptor.name': interceptor.name,
+            },
+          },
           async (span) => {
-            span.setAttribute('interceptor.name', interceptor.name);
-
             try {
               return await beforeQueryExecution(executionContext, actualQuery);
             } catch (error) {
@@ -537,9 +540,12 @@ const executeQueryInternal = async (
     if (afterQueryExecution) {
       await tracer.startActiveSpan(
         'slonik.interceptor.afterQueryExecution',
+        {
+          attributes: {
+            'interceptor.name': interceptor.name,
+          },
+        },
         async (span) => {
-          span.setAttribute('interceptor.name', interceptor.name);
-
           try {
             await afterQueryExecution(
               executionContext,
@@ -570,10 +576,13 @@ const executeQueryInternal = async (
 
       const transformedRows: QueryResultRow[] = tracer.startActiveSpan(
         'slonik.interceptor.transformRow',
+        {
+          attributes: {
+            'interceptor.name': interceptor.name,
+            'rows.length': rows.length,
+          },
+        },
         (span) => {
-          span.setAttribute('interceptor.name', interceptor.name);
-          span.setAttribute('rows.length', rows.length);
-
           try {
             return rows.map((row) => {
               return transformRow(executionContext, actualQuery, row, fields);
@@ -606,10 +615,13 @@ const executeQueryInternal = async (
 
       const transformedRows: QueryResultRow[] = await tracer.startActiveSpan(
         'slonik.interceptor.transformRowAsync',
+        {
+          attributes: {
+            'interceptor.name': interceptor.name,
+            'rows.length': rows.length,
+          },
+        },
         async (span) => {
-          span.setAttribute('interceptor.name', interceptor.name);
-          span.setAttribute('rows.length', rows.length);
-
           try {
             const limit = pLimit(10);
 
@@ -646,9 +658,12 @@ const executeQueryInternal = async (
     if (beforeQueryResult) {
       await tracer.startActiveSpan(
         'slonik.interceptor.beforeQueryResult',
+        {
+          attributes: {
+            'interceptor.name': interceptor.name,
+          },
+        },
         async (span) => {
-          span.setAttribute('interceptor.name', interceptor.name);
-
           try {
             await beforeQueryResult(
               executionContext,
@@ -686,30 +701,36 @@ export const executeQuery = async (
 ): Promise<
   QueryResult<Record<string, PrimitiveValueExpression>> | StreamResult
 > => {
-  return await tracer.startActiveSpan('slonik.executeQuery', async (span) => {
-    span.setAttribute('sql', query.sql);
+  return await tracer.startActiveSpan(
+    'slonik.executeQuery',
+    {
+      attributes: {
+        sql: query.sql,
+      },
+    },
+    async (span) => {
+      try {
+        return await executeQueryInternal(
+          connectionLogger,
+          connection,
+          clientConfiguration,
+          query,
+          inheritedQueryId,
+          executionRoutine,
+          integrityValidation,
+          stream,
+        );
+      } catch (error) {
+        span.recordException(error);
+        span.setStatus({
+          code: SpanStatusCode.ERROR,
+          message: String(error),
+        });
 
-    try {
-      return await executeQueryInternal(
-        connectionLogger,
-        connection,
-        clientConfiguration,
-        query,
-        inheritedQueryId,
-        executionRoutine,
-        integrityValidation,
-        stream,
-      );
-    } catch (error) {
-      span.recordException(error);
-      span.setStatus({
-        code: SpanStatusCode.ERROR,
-        message: String(error),
-      });
-
-      throw error;
-    } finally {
-      span.end();
-    }
-  });
+        throw error;
+      } finally {
+        span.end();
+      }
+    },
+  );
 };
