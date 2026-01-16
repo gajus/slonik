@@ -7,6 +7,7 @@ import type {
   Driver,
   DriverClientEventEmitter,
   DriverClientState,
+  DriverQueryOptions,
   DriverQueryResult,
   DriverStream,
   DriverStreamResult,
@@ -37,7 +38,11 @@ export type ConnectionPoolClient = {
   id: () => string;
   off: DriverClientEventEmitter['off'];
   on: DriverClientEventEmitter['on'];
-  query: (query: string, values?: unknown[]) => Promise<DriverQueryResult>;
+  query: (
+    query: string,
+    values?: unknown[],
+    queryOptions?: DriverQueryOptions,
+  ) => Promise<DriverQueryResult>;
   release: () => Promise<void>;
   removeListener: DriverClientEventEmitter['removeListener'];
   state: () => DriverClientState;

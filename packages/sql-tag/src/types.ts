@@ -66,6 +66,11 @@ export type QuerySqlToken<
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   T extends StandardSchemaV1 = StandardSchemaV1<any, any>,
 > = {
+  /**
+   * Optional name for the prepared statement. When provided, PostgreSQL will
+   * create a named prepared statement that can be reused across multiple executions.
+   */
+  readonly name?: string;
   readonly parser: T;
   readonly sql: string;
   readonly type: typeof tokens.QueryToken;
@@ -112,6 +117,24 @@ export type SqlTag<
   json: (value: SerializableValue) => JsonSqlToken;
   jsonb: (value: SerializableValue) => JsonBinarySqlToken;
   literalValue: (value: string) => SqlFragmentToken;
+  /**
+   * Creates a named prepared statement. The statement name is used by PostgreSQL
+   * to cache the query plan, which can improve performance for frequently executed queries.
+   *
+   * @example
+   * ```ts
+   * const query = sql.prepared('get_user_by_id', z.object({ id: z.number(), name: z.string() }))`
+   *   SELECT id, name FROM users WHERE id = ${userId}
+   * `;
+   * ```
+   */
+  prepared: <Y extends StandardSchemaV1>(
+    statementName: string,
+    parser: Y,
+  ) => (
+    template: TemplateStringsArray,
+    ...values: ValueExpression[]
+  ) => QuerySqlToken<Y>;
   timestamp: (date: Date) => TimestampSqlToken;
   type: <Y extends StandardSchemaV1>(
     parser: Y,

@@ -1553,4 +1553,66 @@ export const createIntegrationTests = (
     expectedResult2: 11,
     isolationLevel: 'SERIALIZABLE',
   });
+
+  test('executes named prepared statement within a connection', async (t) => {
+    const pool = await createPool(t.context.dsn, {
+      driverFactory,
+    });
+
+    const PersonSchema = z.object({
+      id: z.number(),
+    });
+
+    // Named prepared statements work best within a single connection session
+    // because DISCARD ALL (the default resetConnection) deallocates prepared statements
+    await pool.connect(async (connection) => {
+      // Execute the same prepared statement multiple times
+      const result1 = await connection.one(
+        sql.prepared('get_value', PersonSchema)`SELECT 1 AS id`,
+      );
+      const result2 = await connection.one(
+        sql.prepared('get_value', PersonSchema)`SELECT 1 AS id`,
+      );
+
+      t.deepEqual(result1, { id: 1 });
+      t.deepEqual(result2, { id: 1 });
+    });
+
+    await pool.end();
+  });
+
+  test('executes named prepared statement with parameters within a connection', async (t) => {
+    const pool = await createPool(t.context.dsn, {
+      driverFactory,
+    });
+
+    const PersonSchema = z.object({
+      name: z.string(),
+    });
+
+    await pool.query(sql.unsafe`
+      INSERT INTO person (name) VALUES ('Alice'), ('Bob')
+    `);
+
+    // Named prepared statements work best within a single connection session
+    await pool.connect(async (connection) => {
+      const result1 = await connection.one(
+        sql.prepared(
+          'get_person_by_name',
+          PersonSchema,
+        )`SELECT name FROM person WHERE name = ${'Alice'}`,
+      );
+      const result2 = await connection.one(
+        sql.prepared(
+          'get_person_by_name',
+          PersonSchema,
+        )`SELECT name FROM person WHERE name = ${'Bob'}`,
+      );
+
+      t.deepEqual(result1, { name: 'Alice' });
+      t.deepEqual(result2, { name: 'Bob' });
+    });
+
+    await pool.end();
+  });
 };

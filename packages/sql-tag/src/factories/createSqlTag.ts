@@ -188,6 +188,19 @@ export const createSqlTag = <
         values: [],
       });
     },
+    prepared: (statementName, parser) => {
+      return (
+        parts: TemplateStringsArray,
+        ...args: readonly ValueExpression[]
+      ) => {
+        return Object.freeze({
+          ...createFragment(parts, args),
+          name: statementName,
+          parser,
+          type: QueryToken,
+        });
+      };
+    },
     timestamp: (date) => {
       return Object.freeze({
         date,

@@ -303,11 +303,21 @@ export const createPgDriverFactory = (): DriverFactory => {
             client.removeListener('error', onError);
             client.removeListener('notice', onNotice);
           },
-          query: async (sql, values) => {
+          query: async (sql, values, queryOptions) => {
             let result;
 
             try {
-              result = await client.query(sql, values as unknown[]);
+              // Use query config object when statement name is provided
+              // to enable PostgreSQL named prepared statements
+              if (queryOptions?.name) {
+                result = await client.query({
+                  name: queryOptions.name,
+                  text: sql,
+                  values: values as unknown[],
+                });
+              } else {
+                result = await client.query(sql, values as unknown[]);
+              }
             } catch (error) {
               throw wrapError(error, {
                 sql,

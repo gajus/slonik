@@ -13,12 +13,16 @@ const executionRoutine: ExecutionRoutine = async (
   finalConnection,
   finalSql,
   finalValues,
+  _queryContext,
+  query,
 ) => {
   const result: DriverQueryResult & { notices?: DriverNotice[] } =
     await finalConnection.query(
       finalSql,
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       finalValues as any[],
+      // Pass query options including statement name for prepared statements
+      query.name ? { name: query.name } : undefined,
     );
 
   const fields: Field[] = [];

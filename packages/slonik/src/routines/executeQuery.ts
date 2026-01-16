@@ -61,6 +61,7 @@ type GenericQueryResult = QueryResult<QueryResultRow> | StreamResult;
 type TransactionQuery = {
   readonly executionContext: QueryContext;
   readonly executionRoutine: ExecutionRoutine;
+  readonly name?: string;
   readonly sql: string;
   readonly values: readonly PrimitiveValueExpression[];
 };
@@ -99,6 +100,7 @@ const retryQuery = async (
         // It should be needed only for the last query (because other queries will not be processed by the middlewares).
         query.executionContext,
         {
+          name: query.name,
           sql: query.sql,
           values: query.values,
         },
@@ -184,12 +186,15 @@ const executeQueryInternal = async (
   });
 
   const originalQuery = {
+    // Include statement name for prepared statements if provided
+    name: query.name,
     // See comments in `formatSlonikPlaceholder` for more information.
     sql: query.sql.replaceAll('$slonik_', '$'),
     values: query.values,
   };
 
-  let actualQuery = {
+  let actualQuery: Query = {
+    name: originalQuery.name,
     sql: originalQuery.sql,
     values: originalQuery.values,
   };
@@ -322,6 +327,7 @@ const executeQueryInternal = async (
   const queryWithContext = {
     executionContext,
     executionRoutine,
+    name: actualQuery.name,
     sql: actualQuery.sql,
     values: actualQuery.values,
   };

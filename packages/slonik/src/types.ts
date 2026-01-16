@@ -312,6 +312,11 @@ export type PoolContext = {
 };
 
 export type Query = {
+  /**
+   * Optional name for the prepared statement. When provided, PostgreSQL will
+   * create a named prepared statement that can be reused across multiple executions.
+   */
+  readonly name?: string;
   readonly sql: string;
   readonly values: readonly PrimitiveValueExpression[];
 };

@@ -115,6 +115,7 @@ Note: Using this project does not require TypeScript. It is a regular ES6 module
         * [`sql.unnest`](#sqlunnest)
         * [`sql.unsafe`](#sqlunsafe)
         * [`sql.uuid`](#sqluuid)
+        * [`sql.prepared`](#sqlprepared)
     * [Query methods](#query-methods)
         * [`any`](#any)
         * [`anyFirst`](#anyfirst)
@@ -2259,6 +2260,75 @@ Produces:
   ]
 }
 ```
+
+### <code>sql.prepared</code>
+
+```ts
+<Schema extends StandardSchemaV1 | ZodTypeAny>(
+  name: string,
+  schema: Schema
+) => (
+  template: TemplateStringsArray,
+  ...values: ValueExpression[]
+) => QuerySqlToken;
+```
+
+Creates a [named prepared statement](https://www.postgresql.org/docs/current/sql-prepare.html). Named prepared statements allow PostgreSQL to parse and plan a query once, then execute it multiple times with different parameter values. This can significantly improve performance for frequently executed queries.
+
+```ts
+import { z } from 'zod';
+
+const PersonSchema = z.object({
+  id: z.number(),
+  name: z.string(),
+});
+
+// Create a named prepared statement
+const getPersonQuery = sql.prepared('get_person', PersonSchema)`
+  SELECT id, name
+  FROM person
+  WHERE id = ${1}
+`;
+
+// Execute within a connection session
+await pool.connect(async (connection) => {
+  // First execution parses and plans the statement
+  const person1 = await connection.one(
+    sql.prepared('get_person', PersonSchema)`
+      SELECT id, name
+      FROM person
+      WHERE id = ${1}
+    `,
+  );
+
+  // Subsequent executions reuse the prepared statement
+  const person2 = await connection.one(
+    sql.prepared('get_person', PersonSchema)`
+      SELECT id, name
+      FROM person
+      WHERE id = ${2}
+    `,
+  );
+});
+```
+
+> [!IMPORTANT]
+> Named prepared statements are connection-specific in PostgreSQL. They are deallocated when:
+> - The connection is closed
+> - `DISCARD ALL` is executed (which is the default `resetConnection` behavior)
+> - The statement is explicitly deallocated with `DEALLOCATE`
+>
+> For this reason, named prepared statements should be used within a single connection session (using `pool.connect()`) or within a transaction. If you use named prepared statements without `pool.connect()`, each query may be executed on a different connection from the pool, and the prepared statement may not exist.
+
+#### When to use named prepared statements
+
+Named prepared statements are beneficial when:
+
+- You execute the same query many times within a single connection session
+- The query is complex and has a significant parsing/planning cost
+- You want to reduce the overhead of query preparation
+
+For most use cases, the default extended query protocol (which uses unnamed prepared statements) is sufficient and you don't need to use `sql.prepared`.
 
 ## Query methods
 
