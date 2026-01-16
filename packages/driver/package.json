@@ -18,7 +18,7 @@
   "dependencies": {
     "@slonik/types": "^48.8.8",
     "@slonik/utilities": "^48.8.8",
-    "roarr": "^7.21.2",
+    "roarr": "^7.21.4",
     "serialize-error": "^12.0.0",
     "strict-event-emitter-types": "^2.0.0"
   },
