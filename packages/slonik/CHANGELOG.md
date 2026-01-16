@@ -1,5 +1,20 @@
 # slonik
 
+## 48.9.0
+
+### Minor Changes
+
+- [`b9629b3`](https://github.com/gajus/slonik/commit/b9629b385fd75b6126a8356b5cf76d2dc45211d6) Thanks [@gajus](https://github.com/gajus)! - add named prepared statements
+
+### Patch Changes
+
+- Updated dependencies []:
+  - @slonik/driver@48.9.0
+  - @slonik/errors@48.9.0
+  - @slonik/pg-driver@48.9.0
+  - @slonik/sql-tag@48.9.0
+  - @slonik/utilities@48.9.0
+
 ## 48.8.12
 
 ### Patch Changes
