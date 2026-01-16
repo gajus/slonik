@@ -35,17 +35,19 @@ const Tokens = [
   UuidToken,
 ] as const;
 
-const tokenNamess = Tokens.map((token) => {
-  const tokenTypeName = Symbol.keyFor(token);
+const tokenNames = new Set(
+  Tokens.map((token) => {
+    const tokenTypeName = Symbol.keyFor(token);
 
-  if (typeof tokenTypeName !== 'string') {
-    throw new UnexpectedStateError(
-      'Expected token type be a symbol with inferrable key',
-    );
-  }
+    if (typeof tokenTypeName !== 'string') {
+      throw new UnexpectedStateError(
+        'Expected token type be a symbol with inferrable key',
+      );
+    }
 
-  return tokenTypeName;
-});
+    return tokenTypeName;
+  }),
+);
 
 export const isSqlToken = (subject: unknown): subject is SqlTokenType => {
   if (typeof subject !== 'object' || subject === null) {
@@ -81,5 +83,5 @@ export const isSqlToken = (subject: unknown): subject is SqlTokenType => {
   // is because there is because it makes it difficult
   // to version Slonik plugins that are used to
   // construct custom SQL fragments.
-  return tokenNamess.includes(tokenTypeName);
+  return tokenNames.has(tokenTypeName);
 };
