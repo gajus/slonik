@@ -58,5 +58,5 @@
   },
   "type": "module",
   "types": "./dist/index.d.ts",
-  "version": "48.8.11"
+  "version": "48.8.12"
 }
