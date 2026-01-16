@@ -28,7 +28,7 @@
     "@types/sinon": "^20.0.0",
     "ava": "^6.4.1",
     "cspell": "^9.3.2",
-    "eslint": "9.39.1",
+    "eslint": "9.39.2",
     "expect-type": "^1.2.2",
     "get-port": "^7.1.0",
     "sinon": "^21.0.0",
