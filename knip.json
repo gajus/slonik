@@ -5,6 +5,7 @@
     "src/**/*.test.ts"
   ],
   "ignoreDependencies": [
+    "comment-parser",
     "@changesets/cli",
     "@slonik/test-ssls",
     "husky"

@@ -16,7 +16,9 @@
     ]
   },
   "dependencies": {
-    "roarr": "^7.21.4"
+    "@node-rs/xxhash": "^1.7.6",
+    "roarr": "^7.21.4",
+    "tiny-lru": "^11.2.11"
   },
   "description": "Logs Slonik queries.",
   "devDependencies": {

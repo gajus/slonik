@@ -1,6 +1,6 @@
 {
   "dependencies": {
-    "eslint-config-canonical": "47.3.7"
+    "eslint-config-canonical": "47.3.8"
   },
   "devDependencies": {
     "typescript-eslint": "^8.47.0"

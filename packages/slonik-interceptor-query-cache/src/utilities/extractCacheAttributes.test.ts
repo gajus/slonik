@@ -7,11 +7,11 @@ test('returns null when query does not contain cache attributes', (t) => {
 
 test('extracts @cache-ttl', (t) => {
   t.deepEqual(extractCacheAttributes('-- @cache-ttl 60', []), {
-    bodyHash: 'e3b0c44298fc1c149afbf4c8',
+    bodyHash: 'ef46db3751d8e999',
     discardEmpty: false,
     key: 'query:$bodyHash:$valueHash',
     ttl: 60,
-    valueHash: '4f53cda18c2baa0c0354bb5f',
+    valueHash: 'ccab0b28617f1f56',
   });
 });
 
@@ -22,11 +22,11 @@ test('extracts @cache-discard-empty', (t) => {
       [],
     ),
     {
-      bodyHash: '01ba4719c80b6fe911b091a7',
+      bodyHash: 'cafc7706cee4572b',
       discardEmpty: false,
       key: 'query:$bodyHash:$valueHash',
       ttl: 60,
-      valueHash: '4f53cda18c2baa0c0354bb5f',
+      valueHash: 'ccab0b28617f1f56',
     },
   );
 
@@ -36,57 +36,57 @@ test('extracts @cache-discard-empty', (t) => {
       [],
     ),
     {
-      bodyHash: '01ba4719c80b6fe911b091a7',
+      bodyHash: 'cafc7706cee4572b',
       discardEmpty: true,
       key: 'query:$bodyHash:$valueHash',
       ttl: 60,
-      valueHash: '4f53cda18c2baa0c0354bb5f',
+      valueHash: 'ccab0b28617f1f56',
     },
   );
 });
 
 test('computes the parameter value hash', (t) => {
   t.deepEqual(extractCacheAttributes('-- @cache-ttl 60', [1]), {
-    bodyHash: 'e3b0c44298fc1c149afbf4c8',
+    bodyHash: 'ef46db3751d8e999',
     discardEmpty: false,
     key: 'query:$bodyHash:$valueHash',
     ttl: 60,
-    valueHash: '080a9ed428559ef602668b4c',
+    valueHash: '51ce9f3ef4b004a7',
   });
 });
 
 test('computes the body hash; white spaces do not affect the body hash', (t) => {
   t.deepEqual(extractCacheAttributes('-- @cache-ttl 60\nSELECT 1', []), {
-    bodyHash: 'f815101480e0c02658d3bac8',
+    bodyHash: '6d1c807e68464b3b',
     discardEmpty: false,
     key: 'query:$bodyHash:$valueHash',
     ttl: 60,
-    valueHash: '4f53cda18c2baa0c0354bb5f',
+    valueHash: 'ccab0b28617f1f56',
   });
 
   t.deepEqual(extractCacheAttributes('-- @cache-ttl 60\n\nSELECT 1', []), {
-    bodyHash: 'db4396c23e75fa095eddf372',
+    bodyHash: 'fa849a274ca52058',
     discardEmpty: false,
     key: 'query:$bodyHash:$valueHash',
     ttl: 60,
-    valueHash: '4f53cda18c2baa0c0354bb5f',
+    valueHash: 'ccab0b28617f1f56',
   });
 });
 
 test('computes the body hash; comments do not affect the body hash', (t) => {
   t.deepEqual(extractCacheAttributes('-- @cache-ttl 60\nSELECT 1', []), {
-    bodyHash: 'f815101480e0c02658d3bac8',
+    bodyHash: '6d1c807e68464b3b',
     discardEmpty: false,
     key: 'query:$bodyHash:$valueHash',
     ttl: 60,
-    valueHash: '4f53cda18c2baa0c0354bb5f',
+    valueHash: 'ccab0b28617f1f56',
   });
 
   t.deepEqual(extractCacheAttributes('-- @cache-ttl 120\nSELECT 1', []), {
-    bodyHash: 'f815101480e0c02658d3bac8',
+    bodyHash: '6d1c807e68464b3b',
     discardEmpty: false,
     key: 'query:$bodyHash:$valueHash',
     ttl: 120,
-    valueHash: '4f53cda18c2baa0c0354bb5f',
+    valueHash: 'ccab0b28617f1f56',
   });
 });
