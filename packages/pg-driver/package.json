@@ -16,11 +16,11 @@
     ]
   },
   "dependencies": {
-    "@slonik/driver": "^48.8.8",
-    "@slonik/errors": "^48.8.8",
-    "@slonik/sql-tag": "^48.8.8",
-    "@slonik/types": "^48.8.8",
-    "@slonik/utilities": "^48.8.8",
+    "@slonik/driver": "^48.8.9",
+    "@slonik/errors": "^48.8.9",
+    "@slonik/sql-tag": "^48.8.9",
+    "@slonik/types": "^48.8.9",
+    "@slonik/utilities": "^48.8.9",
     "pg": "^8.17.1",
     "pg-query-stream": "^4.10.3",
     "pg-types": "^4.1.0",
@@ -70,5 +70,5 @@
   },
   "type": "module",
   "types": "./dist/index.d.ts",
-  "version": "48.8.8"
+  "version": "48.8.9"
 }
