@@ -25,39 +25,95 @@ import {
   UnnestToken,
   UuidToken,
 } from '../tokens.js';
-import type { SqlFragmentToken, SqlToken as SqlTokenType } from '../types.js';
+import type {
+  ArraySqlToken,
+  BinarySqlToken,
+  DateSqlToken,
+  FragmentSqlToken as FragmentSqlTokenType,
+  IdentifierSqlToken,
+  IntervalSqlToken,
+  JsonBinarySqlToken,
+  JsonSqlToken,
+  ListSqlToken,
+  QuerySqlToken,
+  SqlFragmentToken,
+  SqlToken as SqlTokenType,
+  TimestampSqlToken,
+  UnnestSqlToken,
+  UuidSqlToken,
+} from '../types.js';
 import { UnexpectedStateError } from '@slonik/errors';
+
+type TokenHandler = (
+  token: SqlTokenType,
+  greatestParameterPosition: number,
+) => SqlFragmentToken;
+
+const tokenHandlers = new Map<symbol, TokenHandler>([
+  [
+    ArrayToken,
+    (token, pos) => createArraySqlFragment(token as ArraySqlToken, pos),
+  ],
+  [
+    BinaryToken,
+    (token, pos) => createBinarySqlFragment(token as BinarySqlToken, pos),
+  ],
+  [
+    DateToken,
+    (token, pos) => createDateSqlFragment(token as DateSqlToken, pos),
+  ],
+  [
+    FragmentToken,
+    (token, pos) =>
+      createFragmentSqlFragment(token as FragmentSqlTokenType, pos),
+  ],
+  [
+    IdentifierToken,
+    (token) => createIdentifierSqlFragment(token as IdentifierSqlToken),
+  ],
+  [
+    IntervalToken,
+    (token, pos) => createIntervalSqlFragment(token as IntervalSqlToken, pos),
+  ],
+  [
+    JsonBinaryToken,
+    (token, pos) =>
+      createJsonSqlFragment(token as JsonBinarySqlToken, pos, true),
+  ],
+  [
+    JsonToken,
+    (token, pos) => createJsonSqlFragment(token as JsonSqlToken, pos, false),
+  ],
+  [
+    ListToken,
+    (token, pos) => createListSqlFragment(token as ListSqlToken, pos),
+  ],
+  [
+    QueryToken,
+    (token, pos) => createQuerySqlFragment(token as QuerySqlToken, pos),
+  ],
+  [
+    TimestampToken,
+    (token, pos) => createTimestampSqlFragment(token as TimestampSqlToken, pos),
+  ],
+  [
+    UnnestToken,
+    (token, pos) => createUnnestSqlFragment(token as UnnestSqlToken, pos),
+  ],
+  [
+    UuidToken,
+    (token, pos) => createUuidSqlFragment(token as UuidSqlToken, pos),
+  ],
+]);
 
 export const createSqlTokenSqlFragment = (
   token: SqlTokenType,
   greatestParameterPosition: number,
 ): SqlFragmentToken => {
-  if (token.type === ArrayToken) {
-    return createArraySqlFragment(token, greatestParameterPosition);
-  } else if (token.type === BinaryToken) {
-    return createBinarySqlFragment(token, greatestParameterPosition);
-  } else if (token.type === DateToken) {
-    return createDateSqlFragment(token, greatestParameterPosition);
-  } else if (token.type === FragmentToken) {
-    return createFragmentSqlFragment(token, greatestParameterPosition);
-  } else if (token.type === IdentifierToken) {
-    return createIdentifierSqlFragment(token);
-  } else if (token.type === IntervalToken) {
-    return createIntervalSqlFragment(token, greatestParameterPosition);
-  } else if (token.type === JsonBinaryToken) {
-    return createJsonSqlFragment(token, greatestParameterPosition, true);
-  } else if (token.type === JsonToken) {
-    return createJsonSqlFragment(token, greatestParameterPosition, false);
-  } else if (token.type === ListToken) {
-    return createListSqlFragment(token, greatestParameterPosition);
-  } else if (token.type === QueryToken) {
-    return createQuerySqlFragment(token, greatestParameterPosition);
-  } else if (token.type === TimestampToken) {
-    return createTimestampSqlFragment(token, greatestParameterPosition);
-  } else if (token.type === UnnestToken) {
-    return createUnnestSqlFragment(token, greatestParameterPosition);
-  } else if (token.type === UuidToken) {
-    return createUuidSqlFragment(token, greatestParameterPosition);
+  const handler = tokenHandlers.get(token.type);
+
+  if (handler) {
+    return handler(token, greatestParameterPosition);
   }
 
   throw new UnexpectedStateError('Unexpected token type.');
