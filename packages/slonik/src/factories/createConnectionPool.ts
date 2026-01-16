@@ -106,7 +106,9 @@ export const createConnectionPool = ({
 
   // O(1) idle connection queue - connections are added when released, removed when acquired
   // This avoids O(n) linear search through all connections on every acquire
-  const idleConnections: ConnectionPoolClient[] = [];
+  // Using both a queue (for FIFO ordering) and a Set (for O(1) membership checks)
+  const idleConnectionsQueue: ConnectionPoolClient[] = [];
+  const idleConnectionsSet = new Set<ConnectionPoolClient>();
 
   const id = generateUid();
 
@@ -185,7 +187,8 @@ export const createConnectionPool = ({
     }
 
     // Clear idle queue
-    idleConnections.length = 0;
+    idleConnectionsQueue.length = 0;
+    idleConnectionsSet.clear();
 
     // Waiting clients are already rejected in end() method
 
@@ -303,7 +306,8 @@ export const createConnectionPool = ({
 
             if (!waitingClient) {
               // Add to idle queue for O(1) lookup on next acquire
-              idleConnections.push(connection);
+              idleConnectionsQueue.push(connection);
+              idleConnectionsSet.add(connection);
               // Set idle timer when connection becomes idle with no waiting clients
               setIdleTimer(connection);
               return;
@@ -327,11 +331,10 @@ export const createConnectionPool = ({
 
             connectionMetadata.delete(connection);
 
-            // Remove from idle queue if present
-            const idleIndex = idleConnections.indexOf(connection);
-            if (idleIndex !== -1) {
-              idleConnections.splice(idleIndex, 1);
-            }
+            // Remove from idle queue if present - O(1) operation with Set
+            idleConnectionsSet.delete(connection);
+            // Note: We don't remove from idleConnectionsQueue array to avoid O(n) indexOf/splice
+            // The queue will be cleaned naturally during acquire when we check Set membership
 
             const indexOfConnection = connections.indexOf(connection);
 
@@ -351,7 +354,17 @@ export const createConnectionPool = ({
 
               if (waitingClients.length > 0) {
                 // If we have idle connections, serve from those first
-                const idleConnectionToServe = idleConnections.shift();
+                // Loop to skip destroyed connections (not in Set)
+                let idleConnectionToServe: ConnectionPoolClient | undefined;
+                while (idleConnectionsQueue.length > 0) {
+                  const candidate = idleConnectionsQueue.shift();
+                  if (candidate && idleConnectionsSet.has(candidate)) {
+                    idleConnectionToServe = candidate;
+                    idleConnectionsSet.delete(candidate);
+                    break;
+                  }
+                }
+
                 if (idleConnectionToServe) {
                   const waitingClient = waitingClients.shift();
                   if (waitingClient) {
@@ -360,7 +373,8 @@ export const createConnectionPool = ({
                     waitingClient.deferred.resolve(idleConnectionToServe);
                   } else {
                     // Put it back if no waiting client (race condition)
-                    idleConnections.unshift(idleConnectionToServe);
+                    idleConnectionsQueue.unshift(idleConnectionToServe);
+                    idleConnectionsSet.add(idleConnectionToServe);
                   }
                 } else if (
                   pendingConnections.size + connections.length <
@@ -410,15 +424,24 @@ export const createConnectionPool = ({
         };
 
         // O(1) lookup: Try to get an idle connection from the queue
-        // We iterate through the queue to skip old connections, but typically this is just 1-2 iterations
+        // We iterate through the queue to skip old/destroyed connections, but typically this is just 1-2 iterations
         let idleConnection: ConnectionPoolClient | undefined;
 
-        while (idleConnections.length > 0) {
-          const connection = idleConnections.shift();
+        while (idleConnectionsQueue.length > 0) {
+          const connection = idleConnectionsQueue.shift();
 
           if (!connection) {
             break;
           }
+
+          // Check if connection is still in the Set (not destroyed)
+          if (!idleConnectionsSet.has(connection)) {
+            // Connection was destroyed, skip it
+            continue;
+          }
+
+          // Remove from Set now that we're taking it from the queue
+          idleConnectionsSet.delete(connection);
 
           // Double-check state (should always be IDLE, but defensive programming)
           if (connection.state() !== 'IDLE') {
@@ -458,10 +481,21 @@ export const createConnectionPool = ({
           }
 
           // Connection is valid and not too old
-          connection.acquire();
-
-          idleConnection = connection;
-          break;
+          try {
+            connection.acquire();
+            idleConnection = connection;
+            break;
+          } catch (error) {
+            logger.error(
+              {
+                connectionId: connection.id(),
+                error: serializeError(error),
+              },
+              'error acquiring connection from idle queue',
+            );
+            // Try next connection
+            continue;
+          }
         }
 
         if (idleConnection) {
@@ -506,7 +540,7 @@ export const createConnectionPool = ({
         logger.warn(
           {
             connections: connections.length,
-            idleConnections: idleConnections.length,
+            idleConnections: idleConnectionsSet.size,
             maximumPoolSize,
             minimumPoolSize,
             pendingConnections: pendingConnections.size,
