@@ -613,20 +613,21 @@ export const createConnectionPool = ({
       };
 
       for (const connection of connections) {
-        if (connection.state() === 'ACQUIRED') {
-          state.acquiredConnections++;
-        }
+        const connState = connection.state();
 
-        if (connection.state() === 'IDLE') {
-          state.idleConnections++;
-        }
-
-        if (connection.state() === 'PENDING_RELEASE') {
-          state.pendingReleaseConnections++;
-        }
-
-        if (connection.state() === 'PENDING_DESTROY') {
-          state.pendingDestroyConnections++;
+        switch (connState) {
+          case 'ACQUIRED':
+            state.acquiredConnections++;
+            break;
+          case 'IDLE':
+            state.idleConnections++;
+            break;
+          case 'PENDING_DESTROY':
+            state.pendingDestroyConnections++;
+            break;
+          case 'PENDING_RELEASE':
+            state.pendingReleaseConnections++;
+            break;
         }
       }
 
