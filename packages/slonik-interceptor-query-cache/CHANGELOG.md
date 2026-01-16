@@ -1,5 +1,11 @@
 # slonik-interceptor-query-cache
 
+## 48.10.0
+
+### Minor Changes
+
+- [`ec194cc`](https://github.com/gajus/slonik/commit/ec194cc5e397b50e1de40dd7117b76991387595a) Thanks [@gajus](https://github.com/gajus)! - optimize cache
+
 ## 48.9.0
 
 ## 48.8.12
