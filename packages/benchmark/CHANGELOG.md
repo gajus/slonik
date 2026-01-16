@@ -1,5 +1,12 @@
 # @slonik/benchmark
 
+## 48.8.9
+
+### Patch Changes
+
+- Updated dependencies [[`ebd94dd`](https://github.com/gajus/slonik/commit/ebd94ddc996f9b6ac0f62492a62c112fecc343bc)]:
+  - slonik@48.8.9
+
 ## 48.8.8
 
 ### Patch Changes
