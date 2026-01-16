@@ -1,5 +1,18 @@
 # slonik
 
+## 48.8.11
+
+### Patch Changes
+
+- [`3ce8e14`](https://github.com/gajus/slonik/commit/3ce8e1471c4ab7d471ba04ffbd601b286aae2bf4) Thanks [@gajus](https://github.com/gajus)! - improve connection pooling logic
+
+- Updated dependencies []:
+  - @slonik/driver@48.8.11
+  - @slonik/errors@48.8.11
+  - @slonik/pg-driver@48.8.11
+  - @slonik/sql-tag@48.8.11
+  - @slonik/utilities@48.8.11
+
 ## 48.8.10
 
 ### Patch Changes
