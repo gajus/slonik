@@ -1,5 +1,6 @@
 import { xxh64 } from '@node-rs/xxhash';
 import type { PrimitiveValueExpression } from 'slonik';
+import superjson from 'superjson';
 import { lru } from 'tiny-lru';
 
 /**
@@ -28,49 +29,6 @@ const getBodyHash = (sql: string, strippedSql: string): string => {
   bodyHashCache.set(sql, computed);
 
   return computed;
-};
-
-/**
- * Fast serialization for primitive values.
- * For small arrays, avoids JSON.stringify overhead.
- */
-const serializeValues = (
-  values: readonly PrimitiveValueExpression[],
-): string => {
-  if (values.length === 0) {
-    return '[]';
-  }
-
-  // For small arrays, direct join is faster
-  if (values.length <= 16) {
-    let result = '';
-
-    for (const value of values) {
-      if (result) {
-        result += '\u0000';
-      }
-
-      if (value === null) {
-        // null marker
-        result += '\u0001';
-      } else if (typeof value === 'string') {
-        result += 's' + value;
-      } else if (typeof value === 'number') {
-        result += 'n' + value;
-      } else if (typeof value === 'boolean') {
-        result += value ? 'T' : 'F';
-      } else if (typeof value === 'bigint') {
-        result += 'b' + value;
-      } else {
-        // Fallback for Buffer or other types
-        return JSON.stringify(values);
-      }
-    }
-
-    return result;
-  }
-
-  return JSON.stringify(values);
 };
 
 export type ExtractedCacheAttributes = {
@@ -120,7 +78,7 @@ export const extractCacheAttributes = (
   }
 
   if (needsValueHash) {
-    valueHash = hash(serializeValues(values));
+    valueHash = hash(superjson.stringify(values));
   }
 
   return {
