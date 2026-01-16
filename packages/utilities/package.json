@@ -26,7 +26,7 @@
     "@types/node": "^24.10.1",
     "ava": "^6.4.1",
     "cspell": "^9.3.2",
-    "eslint": "9.39.1",
+    "eslint": "9.39.2",
     "tsimp": "^2.0.12",
     "typescript": "^5.9.3",
     "typescript-eslint": "^8.47.0",

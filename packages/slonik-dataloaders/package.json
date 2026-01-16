@@ -14,7 +14,7 @@
     "@slonik/eslint-config": "workspace:^",
     "@slonik/types": "^48.9.0",
     "@standard-schema/spec": "^1.0.0",
-    "eslint": "9.39.1",
+    "eslint": "9.39.2",
     "slonik": "^48.9.0",
     "typescript": "^5.9.3",
     "typescript-eslint": "^8.47.0",
