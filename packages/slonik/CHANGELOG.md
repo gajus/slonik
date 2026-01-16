@@ -1,5 +1,18 @@
 # slonik
 
+## 48.8.9
+
+### Patch Changes
+
+- [`ebd94dd`](https://github.com/gajus/slonik/commit/ebd94ddc996f9b6ac0f62492a62c112fecc343bc) Thanks [@gajus](https://github.com/gajus)! - update dependencies
+
+- Updated dependencies []:
+  - @slonik/driver@48.8.9
+  - @slonik/errors@48.8.9
+  - @slonik/pg-driver@48.8.9
+  - @slonik/sql-tag@48.8.9
+  - @slonik/utilities@48.8.9
+
 ## 48.8.8
 
 ### Patch Changes
