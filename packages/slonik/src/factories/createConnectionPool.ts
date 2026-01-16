@@ -92,7 +92,7 @@ export const createConnectionPool = ({
 }): ConnectionPool => {
   // See test "waits for all connections to be established before attempting to terminate the pool"
   // for explanation of why `pendingConnections` is needed.
-  const pendingConnections: Array<Promise<ConnectionPoolClient>> = [];
+  const pendingConnections = new Set<Promise<ConnectionPoolClient>>();
 
   const connections: ConnectionPoolClient[] = [];
 
@@ -103,6 +103,10 @@ export const createConnectionPool = ({
   >();
 
   const waitingClients: WaitingClient[] = [];
+
+  // O(1) idle connection queue - connections are added when released, removed when acquired
+  // This avoids O(n) linear search through all connections on every acquire
+  const idleConnections: ConnectionPoolClient[] = [];
 
   const id = generateUid();
 
@@ -180,10 +184,13 @@ export const createConnectionPool = ({
       clearIdleTimer(connection);
     }
 
+    // Clear idle queue
+    idleConnections.length = 0;
+
     // Waiting clients are already rejected in end() method
 
     try {
-      await Promise.all(pendingConnections);
+      await Promise.all(Array.from(pendingConnections));
     } catch (error) {
       logger.error(
         {
@@ -212,7 +219,7 @@ export const createConnectionPool = ({
         span.setAttribute('slonik.pool.connections.total', connections.length);
         span.setAttribute(
           'slonik.pool.connections.pending',
-          pendingConnections.length,
+          pendingConnections.size,
         );
         span.setAttribute('slonik.pool.waitingClients', waitingClients.length);
         span.setAttribute('slonik.pool.maximumSize', maximumPoolSize);
@@ -248,18 +255,10 @@ export const createConnectionPool = ({
               };
             });
 
-          pendingConnections.push(pendingConnection);
+          pendingConnections.add(pendingConnection);
 
           const connection = await pendingConnection.catch((error) => {
-            const index = pendingConnections.indexOf(pendingConnection);
-
-            if (index === -1) {
-              logger.error(
-                'Unable to find pendingConnection in `pendingConnections` array to remove.',
-              );
-            } else {
-              pendingConnections.splice(index, 1);
-            }
+            pendingConnections.delete(pendingConnection);
 
             throw error;
           });
@@ -303,6 +302,8 @@ export const createConnectionPool = ({
             const waitingClient = waitingClients.shift();
 
             if (!waitingClient) {
+              // Add to idle queue for O(1) lookup on next acquire
+              idleConnections.push(connection);
               // Set idle timer when connection becomes idle with no waiting clients
               setIdleTimer(connection);
               return;
@@ -326,6 +327,12 @@ export const createConnectionPool = ({
 
             connectionMetadata.delete(connection);
 
+            // Remove from idle queue if present
+            const idleIndex = idleConnections.indexOf(connection);
+            if (idleIndex !== -1) {
+              idleConnections.splice(idleIndex, 1);
+            }
+
             const indexOfConnection = connections.indexOf(connection);
 
             if (indexOfConnection === -1) {
@@ -338,28 +345,54 @@ export const createConnectionPool = ({
 
             // Don't try to fulfill waiting clients if pool is ending
             if (!isEnding && !isEnded) {
-              const waitingClient = waitingClients.shift();
+              // Try to serve waiting clients by creating new connections or using existing idle ones
+              // This is more efficient than recursively calling acquire()
+              let createdConnectionForWaitingClient = false;
 
-              if (waitingClient) {
-                acquire().then(
-                  waitingClient.deferred.resolve,
-                  waitingClient.deferred.reject,
-                );
-
-                return;
+              if (waitingClients.length > 0) {
+                // If we have idle connections, serve from those first
+                const idleConnectionToServe = idleConnections.shift();
+                if (idleConnectionToServe) {
+                  const waitingClient = waitingClients.shift();
+                  if (waitingClient) {
+                    clearIdleTimer(idleConnectionToServe);
+                    idleConnectionToServe.acquire();
+                    waitingClient.deferred.resolve(idleConnectionToServe);
+                  } else {
+                    // Put it back if no waiting client (race condition)
+                    idleConnections.unshift(idleConnectionToServe);
+                  }
+                } else if (
+                  pendingConnections.size + connections.length <
+                  maximumPoolSize
+                ) {
+                  // Create a new connection for the waiting client
+                  const waitingClient = waitingClients.shift();
+                  if (waitingClient) {
+                    createdConnectionForWaitingClient = true;
+                    addConnection().then((newConnection) => {
+                      newConnection.acquire();
+                      waitingClient.deferred.resolve(newConnection);
+                    }, waitingClient.deferred.reject);
+                  }
+                }
               }
-            }
 
-            // In the case that there are no waiting clients and we're below the minimum pool size, add a new connection
-            if (!isEnding && !isEnded && connections.length < minimumPoolSize) {
-              addConnection().catch((error) => {
-                logger.error(
-                  {
-                    error: serializeError(error),
-                  },
-                  'error while adding a new connection to satisfy the minimum pool size',
-                );
-              });
+              // In the case that there are no waiting clients and we're below the minimum pool size, add a new connection
+              // Don't create if we just created one for a waiting client (it will satisfy minimumPoolSize)
+              if (
+                !createdConnectionForWaitingClient &&
+                connections.length < minimumPoolSize
+              ) {
+                addConnection().catch((error) => {
+                  logger.error(
+                    {
+                      error: serializeError(error),
+                    },
+                    'error while adding a new connection to satisfy the minimum pool size',
+                  );
+                });
+              }
             }
           };
 
@@ -367,16 +400,7 @@ export const createConnectionPool = ({
 
           connections.push(connection);
 
-          const indexOfPendingConnection =
-            pendingConnections.indexOf(pendingConnection);
-
-          if (indexOfPendingConnection === -1) {
-            logger.error(
-              'Unable to find pendingConnection in `pendingConnections` array to remove.',
-            );
-          } else {
-            pendingConnections.splice(indexOfPendingConnection, 1);
-          }
+          pendingConnections.delete(pendingConnection);
 
           span.setAttribute('slonik.connection.id', connection.id());
           span.setAttribute('method', 'acquire:add-connection');
@@ -385,46 +409,62 @@ export const createConnectionPool = ({
           return connection;
         };
 
-        // Find and validate an idle connection
+        // O(1) lookup: Try to get an idle connection from the queue
+        // We iterate through the queue to skip old connections, but typically this is just 1-2 iterations
         let idleConnection: ConnectionPoolClient | undefined;
 
-        for (const connection of connections) {
-          if (connection.state() === 'IDLE') {
-            clearIdleTimer(connection);
+        while (idleConnections.length > 0) {
+          const connection = idleConnections.shift();
 
-            if (isConnectionTooOld(connection)) {
-              logger.debug(
-                {
-                  connectionId: connection.id(),
-                  maxAge: maximumConnectionAge,
-                },
-                'skipping old connection, will be destroyed',
-              );
-
-              connection.destroy().catch((error) => {
-                logger.error(
-                  {
-                    connectionId: connection.id(),
-                    error: serializeError(error),
-                  },
-                  'error destroying old connection during acquire',
-                );
-              });
-
-              continue;
-            }
-
-            // Acquire connection temporarily for validation
-            connection.acquire();
-
-            // Connection is valid and not too old
-            idleConnection = connection;
+          if (!connection) {
             break;
           }
+
+          // Double-check state (should always be IDLE, but defensive programming)
+          if (connection.state() !== 'IDLE') {
+            logger.warn(
+              {
+                connectionId: connection.id(),
+                state: connection.state(),
+              },
+              'connection in idle queue is not in IDLE state',
+            );
+            continue;
+          }
+
+          clearIdleTimer(connection);
+
+          if (isConnectionTooOld(connection)) {
+            logger.debug(
+              {
+                connectionId: connection.id(),
+                maxAge: maximumConnectionAge,
+              },
+              'destroying old connection from idle queue',
+            );
+
+            // Destroy asynchronously, don't block acquire
+            connection.destroy().catch((error) => {
+              logger.error(
+                {
+                  connectionId: connection.id(),
+                  error: serializeError(error),
+                },
+                'error destroying old connection during acquire',
+              );
+            });
+
+            continue;
+          }
+
+          // Connection is valid and not too old
+          connection.acquire();
+
+          idleConnection = connection;
+          break;
         }
 
         if (idleConnection) {
-          // Connection is already acquired from validation
           span.setAttribute('slonik.connection.id', idleConnection.id());
           span.setAttribute('method', 'acquire:reuse-idle');
           span.setStatus({ code: SpanStatusCode.OK });
@@ -432,7 +472,7 @@ export const createConnectionPool = ({
           return idleConnection;
         }
 
-        if (pendingConnections.length + connections.length < maximumPoolSize) {
+        if (pendingConnections.size + connections.length < maximumPoolSize) {
           const newConnection = await addConnection();
 
           newConnection.acquire();
@@ -466,9 +506,10 @@ export const createConnectionPool = ({
         logger.warn(
           {
             connections: connections.length,
+            idleConnections: idleConnections.length,
             maximumPoolSize,
             minimumPoolSize,
-            pendingConnections: pendingConnections.length,
+            pendingConnections: pendingConnections.size,
             waitingClients: waitingClients.length,
           },
           `connection pool full; client has been queued`,
@@ -538,7 +579,7 @@ export const createConnectionPool = ({
       const state = {
         acquiredConnections: 0,
         idleConnections: 0,
-        pendingConnections: pendingConnections.length,
+        pendingConnections: pendingConnections.size,
         pendingDestroyConnections: 0,
         pendingReleaseConnections: 0,
       };
