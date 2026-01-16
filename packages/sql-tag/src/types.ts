@@ -120,7 +120,6 @@ export type SqlTag<
   /**
    * Creates a named prepared statement. The statement name is used by PostgreSQL
    * to cache the query plan, which can improve performance for frequently executed queries.
-   *
    * @example
    * ```ts
    * const query = sql.prepared('get_user_by_id', z.object({ id: z.number(), name: z.string() }))`
