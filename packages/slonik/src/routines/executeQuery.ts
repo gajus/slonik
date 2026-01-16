@@ -634,10 +634,9 @@ const executeQueryInternal = async (
         },
       );
 
-      result = {
-        ...result,
-        rows: transformedRows,
-      };
+      // avoid spreading the result object to avoid performance overhead
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      (result as any).rows = transformedRows;
     }
   }
 
