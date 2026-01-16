@@ -1,5 +1,0 @@
----
-"slonik": minor
----
-
-use superjson

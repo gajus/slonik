@@ -18,7 +18,6 @@
   "dependencies": {
     "@node-rs/xxhash": "^1.7.6",
     "roarr": "^7.21.4",
-    "superjson": "^2.2.2",
     "tiny-lru": "^11.2.11"
   },
   "description": "Logs Slonik queries.",

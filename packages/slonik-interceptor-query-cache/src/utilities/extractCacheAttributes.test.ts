@@ -11,7 +11,7 @@ test('extracts @cache-ttl', (t) => {
     discardEmpty: false,
     key: 'query:$bodyHash:$valueHash',
     ttl: 60,
-    valueHash: '5d85793de0099913',
+    valueHash: 'ccab0b28617f1f56',
   });
 });
 
@@ -26,7 +26,7 @@ test('extracts @cache-discard-empty', (t) => {
       discardEmpty: false,
       key: 'query:$bodyHash:$valueHash',
       ttl: 60,
-      valueHash: '5d85793de0099913',
+      valueHash: 'ccab0b28617f1f56',
     },
   );
 
@@ -40,7 +40,7 @@ test('extracts @cache-discard-empty', (t) => {
       discardEmpty: true,
       key: 'query:$bodyHash:$valueHash',
       ttl: 60,
-      valueHash: '5d85793de0099913',
+      valueHash: 'ccab0b28617f1f56',
     },
   );
 });
@@ -51,7 +51,7 @@ test('computes the parameter value hash', (t) => {
     discardEmpty: false,
     key: 'query:$bodyHash:$valueHash',
     ttl: 60,
-    valueHash: '52b69681e01890ad',
+    valueHash: '51ce9f3ef4b004a7',
   });
 });
 
@@ -61,7 +61,7 @@ test('computes the body hash; white spaces do not affect the body hash', (t) => 
     discardEmpty: false,
     key: 'query:$bodyHash:$valueHash',
     ttl: 60,
-    valueHash: '5d85793de0099913',
+    valueHash: 'ccab0b28617f1f56',
   });
 
   t.deepEqual(extractCacheAttributes('-- @cache-ttl 60\n\nSELECT 1', []), {
@@ -69,7 +69,7 @@ test('computes the body hash; white spaces do not affect the body hash', (t) => 
     discardEmpty: false,
     key: 'query:$bodyHash:$valueHash',
     ttl: 60,
-    valueHash: '5d85793de0099913',
+    valueHash: 'ccab0b28617f1f56',
   });
 });
 
@@ -79,7 +79,7 @@ test('computes the body hash; comments do not affect the body hash', (t) => {
     discardEmpty: false,
     key: 'query:$bodyHash:$valueHash',
     ttl: 60,
-    valueHash: '5d85793de0099913',
+    valueHash: 'ccab0b28617f1f56',
   });
 
   t.deepEqual(extractCacheAttributes('-- @cache-ttl 120\nSELECT 1', []), {
@@ -87,6 +87,6 @@ test('computes the body hash; comments do not affect the body hash', (t) => {
     discardEmpty: false,
     key: 'query:$bodyHash:$valueHash',
     ttl: 120,
-    valueHash: '5d85793de0099913',
+    valueHash: 'ccab0b28617f1f56',
   });
 });
