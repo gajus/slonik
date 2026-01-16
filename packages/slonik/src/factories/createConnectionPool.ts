@@ -602,14 +602,14 @@ export const createConnectionPool = ({
       return id;
     },
     state: () => {
-      const stateName = isEnded ? 'ENDED' : isEnding ? 'ENDING' : 'ACTIVE';
-
-      const state = {
+      const state: ConnectionPoolState = {
         acquiredConnections: 0,
         idleConnections: 0,
         pendingConnections: pendingConnections.size,
         pendingDestroyConnections: 0,
         pendingReleaseConnections: 0,
+        state: isEnded ? 'ENDED' : isEnding ? 'ENDING' : 'ACTIVE',
+        waitingClients: waitingClients.length,
       };
 
       for (const connection of connections) {
@@ -631,11 +631,7 @@ export const createConnectionPool = ({
         }
       }
 
-      return {
-        ...state,
-        state: stateName,
-        waitingClients: waitingClients.length,
-      };
+      return state;
     },
   };
 };
