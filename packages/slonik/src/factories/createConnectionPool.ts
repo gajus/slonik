@@ -94,7 +94,7 @@ export const createConnectionPool = ({
   // for explanation of why `pendingConnections` is needed.
   const pendingConnections = new Set<Promise<ConnectionPoolClient>>();
 
-  const connections: ConnectionPoolClient[] = [];
+  const connections = new Set<ConnectionPoolClient>();
 
   // Track metadata for each connection
   const connectionMetadata = new WeakMap<
@@ -128,7 +128,7 @@ export const createConnectionPool = ({
   };
 
   const setIdleTimer = (connection: ConnectionPoolClient) => {
-    if (connections.length <= minimumPoolSize) {
+    if (connections.size <= minimumPoolSize) {
       return;
     }
 
@@ -143,7 +143,7 @@ export const createConnectionPool = ({
     metadata.idleTimer = setTimeout(async () => {
       if (
         connection.state() === 'IDLE' &&
-        connections.length > minimumPoolSize
+        connections.size > minimumPoolSize
       ) {
         logger.debug(
           {
@@ -206,7 +206,7 @@ export const createConnectionPool = ({
     // This is needed to ensure that all pending connections were assigned a waiting client.
     await delay(0);
 
-    // Make a copy of `connections` array as items are removed from it during the map iteration.
+    // Make a copy of `connections` Set as items are removed from it during the map iteration.
     await Promise.all(
       [...connections].map((connection) => connection.destroy()),
     );
@@ -219,7 +219,7 @@ export const createConnectionPool = ({
     return tracer.startActiveSpan('slonik.connection.acquire', async (span) => {
       try {
         span.setAttribute('slonik.pool.id', id);
-        span.setAttribute('slonik.pool.connections.total', connections.length);
+        span.setAttribute('slonik.pool.connections.total', connections.size);
         span.setAttribute(
           'slonik.pool.connections.pending',
           pendingConnections.size,
@@ -336,14 +336,11 @@ export const createConnectionPool = ({
             // Note: We don't remove from idleConnectionsQueue array to avoid O(n) indexOf/splice
             // The queue will be cleaned naturally during acquire when we check Set membership
 
-            const indexOfConnection = connections.indexOf(connection);
-
-            if (indexOfConnection === -1) {
+            // O(1) removal from connections Set
+            if (!connections.delete(connection)) {
               throw new UnexpectedStateError(
-                'Unable to find connection in `connections` array to remove.',
+                'Unable to find connection in `connections` Set to remove.',
               );
-            } else {
-              connections.splice(indexOfConnection, 1);
             }
 
             // Don't try to fulfill waiting clients if pool is ending
@@ -377,7 +374,7 @@ export const createConnectionPool = ({
                     idleConnectionsSet.add(idleConnectionToServe);
                   }
                 } else if (
-                  pendingConnections.size + connections.length <
+                  pendingConnections.size + connections.size <
                   maximumPoolSize
                 ) {
                   // Create a new connection for the waiting client
@@ -396,7 +393,7 @@ export const createConnectionPool = ({
               // Don't create if we just created one for a waiting client (it will satisfy minimumPoolSize)
               if (
                 !createdConnectionForWaitingClient &&
-                connections.length < minimumPoolSize
+                connections.size < minimumPoolSize
               ) {
                 addConnection().catch((error) => {
                   logger.error(
@@ -412,7 +409,7 @@ export const createConnectionPool = ({
 
           connection.on('destroy', onDestroy);
 
-          connections.push(connection);
+          connections.add(connection);
 
           pendingConnections.delete(pendingConnection);
 
@@ -506,7 +503,7 @@ export const createConnectionPool = ({
           return idleConnection;
         }
 
-        if (pendingConnections.size + connections.length < maximumPoolSize) {
+        if (pendingConnections.size + connections.size < maximumPoolSize) {
           const newConnection = await addConnection();
 
           newConnection.acquire();
@@ -539,7 +536,7 @@ export const createConnectionPool = ({
 
         logger.warn(
           {
-            connections: connections.length,
+            connections: connections.size,
             idleConnections: idleConnectionsSet.size,
             maximumPoolSize,
             minimumPoolSize,
