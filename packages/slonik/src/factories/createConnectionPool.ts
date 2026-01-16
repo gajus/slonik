@@ -141,10 +141,7 @@ export const createConnectionPool = ({
     clearIdleTimer(connection);
 
     metadata.idleTimer = setTimeout(async () => {
-      if (
-        connection.state() === 'IDLE' &&
-        connections.size > minimumPoolSize
-      ) {
+      if (connection.state() === 'IDLE' && connections.size > minimumPoolSize) {
         logger.debug(
           {
             connectionId: connection.id(),
