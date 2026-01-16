@@ -14,7 +14,7 @@ const executionRoutine: ExecutionRoutine = async (
   finalSql,
   finalValues,
   _queryContext,
-  query,
+  queryTokens,
 ) => {
   const result: DriverQueryResult & { notices?: DriverNotice[] } =
     await finalConnection.query(
@@ -22,7 +22,7 @@ const executionRoutine: ExecutionRoutine = async (
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       finalValues as any[],
       // Pass query options including statement name for prepared statements
-      query.name ? { name: query.name } : undefined,
+      queryTokens.name ? { name: queryTokens.name } : undefined,
     );
 
   const fields: Field[] = [];

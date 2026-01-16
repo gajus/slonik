@@ -40,7 +40,9 @@ test('passes statement name to driver for prepared statements', async (t) => {
     id: z.number(),
   });
 
-  await pool.query(sql.prepared('my_prepared_statement', ResultSchema)`SELECT 1 AS id`);
+  await pool.query(
+    sql.prepared('my_prepared_statement', ResultSchema)`SELECT 1 AS id`,
+  );
 
   // Verify the statement name is passed as the third argument (queryOptions)
   t.deepEqual(spy.query.firstCall.args[2], { name: 'my_prepared_statement' });
