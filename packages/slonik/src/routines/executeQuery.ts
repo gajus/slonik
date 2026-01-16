@@ -444,6 +444,11 @@ const executeQueryInternal = async (
         );
       }
 
+      // Cache the column count from the first row to avoid repeated Object.keys() calls.
+      // It is safe to assume that whatever the first row is, it will be the same for all rows.
+      const firstRowColumnCount =
+        result.rows.length > 0 ? Object.keys(result.rows[0]).length : 0;
+
       if (integrityValidation.validationType === 'ONE_COLUMN') {
         if (result.rows.length === 0) {
           throw new NotFoundError('Query returned no rows.', actualQuery);
@@ -456,7 +461,7 @@ const executeQueryInternal = async (
           );
         }
 
-        if (Object.keys(result.rows[0]).length !== 1) {
+        if (firstRowColumnCount !== 1) {
           throw new DataIntegrityError(
             'Query returned rows with multiple columns.',
             actualQuery,
@@ -472,10 +477,7 @@ const executeQueryInternal = async (
           );
         }
 
-        if (
-          result.rows.length === 1 &&
-          Object.keys(result.rows[0]).length !== 1
-        ) {
+        if (result.rows.length === 1 && firstRowColumnCount !== 1) {
           throw new DataIntegrityError(
             'Query returned rows with multiple columns.',
             actualQuery,
@@ -495,33 +497,23 @@ const executeQueryInternal = async (
           throw new NotFoundError('Query returned no rows.', actualQuery);
         }
 
-        // It is safe to assume that whatever the first row is, it will be the same for all rows.
-        // eslint-disable-next-line no-unreachable-loop
-        for (const row of result.rows) {
-          if (Object.keys(row).length !== 1) {
-            throw new DataIntegrityError(
-              'Query returned rows with multiple columns.',
-              actualQuery,
-            );
-          }
-
-          break;
+        if (firstRowColumnCount !== 1) {
+          throw new DataIntegrityError(
+            'Query returned rows with multiple columns.',
+            actualQuery,
+          );
         }
       }
 
-      if (integrityValidation.validationType === 'MAYBE_MANY_ROWS_ONE_COLUMN') {
-        // It is safe to assume that whatever the first row is, it will be the same for all rows.
-        // eslint-disable-next-line no-unreachable-loop
-        for (const row of result.rows) {
-          if (Object.keys(row).length !== 1) {
-            throw new DataIntegrityError(
-              'Query returned rows with multiple columns.',
-              actualQuery,
-            );
-          }
-
-          break;
-        }
+      if (
+        integrityValidation.validationType === 'MAYBE_MANY_ROWS_ONE_COLUMN' &&
+        result.rows.length > 0 &&
+        firstRowColumnCount !== 1
+      ) {
+        throw new DataIntegrityError(
+          'Query returned rows with multiple columns.',
+          actualQuery,
+        );
       }
     }
   } catch (error) {
