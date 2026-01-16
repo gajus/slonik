@@ -14,10 +14,10 @@
     "lint": "npm run lint:knip"
   },
   "dependencies": {
-    "@changesets/cli": "^2.29.7"
+    "@changesets/cli": "^2.29.8"
   },
   "devDependencies": {
-    "@changesets/changelog-github": "^0.5.1",
+    "@changesets/changelog-github": "^0.5.2",
     "husky": "^9.1.7",
     "knip": "^5.70.1"
   }
