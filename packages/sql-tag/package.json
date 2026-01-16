@@ -16,8 +16,8 @@
     ]
   },
   "dependencies": {
-    "@slonik/errors": "^48.9.0",
-    "@slonik/types": "^48.9.0",
+    "@slonik/errors": "^48.10.0",
+    "@slonik/types": "^48.10.0",
     "roarr": "^7.21.4",
     "safe-stable-stringify": "^2.5.0",
     "serialize-error": "^12.0.0",
@@ -64,5 +64,5 @@
   },
   "type": "module",
   "types": "./dist/index.d.ts",
-  "version": "48.9.0"
+  "version": "48.10.0"
 }
