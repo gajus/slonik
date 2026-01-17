@@ -61,6 +61,7 @@ type GenericQueryResult = QueryResult<QueryResultRow> | StreamResult;
 type TransactionQuery = {
   readonly executionContext: QueryContext;
   readonly executionRoutine: ExecutionRoutine;
+  readonly name?: string;
   readonly sql: string;
   readonly values: readonly PrimitiveValueExpression[];
 };
@@ -99,6 +100,7 @@ const retryQuery = async (
         // It should be needed only for the last query (because other queries will not be processed by the middlewares).
         query.executionContext,
         {
+          name: query.name,
           sql: query.sql,
           values: query.values,
         },
@@ -184,12 +186,15 @@ const executeQueryInternal = async (
   });
 
   const originalQuery = {
+    // Include statement name for prepared statements if provided
+    name: query.name,
     // See comments in `formatSlonikPlaceholder` for more information.
     sql: query.sql.replaceAll('$slonik_', '$'),
     values: query.values,
   };
 
-  let actualQuery = {
+  let actualQuery: Query = {
+    name: originalQuery.name,
     sql: originalQuery.sql,
     values: originalQuery.values,
   };
@@ -270,9 +275,12 @@ const executeQueryInternal = async (
       if (beforeQueryExecution) {
         result = await tracer.startActiveSpan(
           'slonik.interceptor.beforeQueryExecution',
+          {
+            attributes: {
+              'interceptor.name': interceptor.name,
+            },
+          },
           async (span) => {
-            span.setAttribute('interceptor.name', interceptor.name);
-
             try {
               return await beforeQueryExecution(executionContext, actualQuery);
             } catch (error) {
@@ -319,6 +327,7 @@ const executeQueryInternal = async (
   const queryWithContext = {
     executionContext,
     executionRoutine,
+    name: actualQuery.name,
     sql: actualQuery.sql,
     values: actualQuery.values,
   };
@@ -444,6 +453,11 @@ const executeQueryInternal = async (
         );
       }
 
+      // Cache the column count from the first row to avoid repeated Object.keys() calls.
+      // It is safe to assume that whatever the first row is, it will be the same for all rows.
+      const firstRowColumnCount =
+        result.rows.length > 0 ? Object.keys(result.rows[0]).length : 0;
+
       if (integrityValidation.validationType === 'ONE_COLUMN') {
         if (result.rows.length === 0) {
           throw new NotFoundError('Query returned no rows.', actualQuery);
@@ -456,7 +470,7 @@ const executeQueryInternal = async (
           );
         }
 
-        if (Object.keys(result.rows[0]).length !== 1) {
+        if (firstRowColumnCount !== 1) {
           throw new DataIntegrityError(
             'Query returned rows with multiple columns.',
             actualQuery,
@@ -472,10 +486,7 @@ const executeQueryInternal = async (
           );
         }
 
-        if (
-          result.rows.length === 1 &&
-          Object.keys(result.rows[0]).length !== 1
-        ) {
+        if (result.rows.length === 1 && firstRowColumnCount !== 1) {
           throw new DataIntegrityError(
             'Query returned rows with multiple columns.',
             actualQuery,
@@ -495,33 +506,23 @@ const executeQueryInternal = async (
           throw new NotFoundError('Query returned no rows.', actualQuery);
         }
 
-        // It is safe to assume that whatever the first row is, it will be the same for all rows.
-        // eslint-disable-next-line no-unreachable-loop
-        for (const row of result.rows) {
-          if (Object.keys(row).length !== 1) {
-            throw new DataIntegrityError(
-              'Query returned rows with multiple columns.',
-              actualQuery,
-            );
-          }
-
-          break;
+        if (firstRowColumnCount !== 1) {
+          throw new DataIntegrityError(
+            'Query returned rows with multiple columns.',
+            actualQuery,
+          );
         }
       }
 
-      if (integrityValidation.validationType === 'MAYBE_MANY_ROWS_ONE_COLUMN') {
-        // It is safe to assume that whatever the first row is, it will be the same for all rows.
-        // eslint-disable-next-line no-unreachable-loop
-        for (const row of result.rows) {
-          if (Object.keys(row).length !== 1) {
-            throw new DataIntegrityError(
-              'Query returned rows with multiple columns.',
-              actualQuery,
-            );
-          }
-
-          break;
-        }
+      if (
+        integrityValidation.validationType === 'MAYBE_MANY_ROWS_ONE_COLUMN' &&
+        result.rows.length > 0 &&
+        firstRowColumnCount !== 1
+      ) {
+        throw new DataIntegrityError(
+          'Query returned rows with multiple columns.',
+          actualQuery,
+        );
       }
     }
   } catch (error) {
@@ -545,9 +546,12 @@ const executeQueryInternal = async (
     if (afterQueryExecution) {
       await tracer.startActiveSpan(
         'slonik.interceptor.afterQueryExecution',
+        {
+          attributes: {
+            'interceptor.name': interceptor.name,
+          },
+        },
         async (span) => {
-          span.setAttribute('interceptor.name', interceptor.name);
-
           try {
             await afterQueryExecution(
               executionContext,
@@ -578,10 +582,13 @@ const executeQueryInternal = async (
 
       const transformedRows: QueryResultRow[] = tracer.startActiveSpan(
         'slonik.interceptor.transformRow',
+        {
+          attributes: {
+            'interceptor.name': interceptor.name,
+            'rows.length': rows.length,
+          },
+        },
         (span) => {
-          span.setAttribute('interceptor.name', interceptor.name);
-          span.setAttribute('rows.length', rows.length);
-
           try {
             return rows.map((row) => {
               return transformRow(executionContext, actualQuery, row, fields);
@@ -614,10 +621,13 @@ const executeQueryInternal = async (
 
       const transformedRows: QueryResultRow[] = await tracer.startActiveSpan(
         'slonik.interceptor.transformRowAsync',
+        {
+          attributes: {
+            'interceptor.name': interceptor.name,
+            'rows.length': rows.length,
+          },
+        },
         async (span) => {
-          span.setAttribute('interceptor.name', interceptor.name);
-          span.setAttribute('rows.length', rows.length);
-
           try {
             const limit = pLimit(10);
 
@@ -642,10 +652,9 @@ const executeQueryInternal = async (
         },
       );
 
-      result = {
-        ...result,
-        rows: transformedRows,
-      };
+      // avoid spreading the result object to avoid performance overhead
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      (result as any).rows = transformedRows;
     }
   }
 
@@ -655,9 +664,12 @@ const executeQueryInternal = async (
     if (beforeQueryResult) {
       await tracer.startActiveSpan(
         'slonik.interceptor.beforeQueryResult',
+        {
+          attributes: {
+            'interceptor.name': interceptor.name,
+          },
+        },
         async (span) => {
-          span.setAttribute('interceptor.name', interceptor.name);
-
           try {
             await beforeQueryResult(
               executionContext,
@@ -695,30 +707,36 @@ export const executeQuery = async (
 ): Promise<
   QueryResult<Record<string, PrimitiveValueExpression>> | StreamResult
 > => {
-  return await tracer.startActiveSpan('slonik.executeQuery', async (span) => {
-    span.setAttribute('sql', query.sql);
+  return await tracer.startActiveSpan(
+    'slonik.executeQuery',
+    {
+      attributes: {
+        sql: query.sql,
+      },
+    },
+    async (span) => {
+      try {
+        return await executeQueryInternal(
+          connectionLogger,
+          connection,
+          clientConfiguration,
+          query,
+          inheritedQueryId,
+          executionRoutine,
+          integrityValidation,
+          stream,
+        );
+      } catch (error) {
+        span.recordException(error);
+        span.setStatus({
+          code: SpanStatusCode.ERROR,
+          message: String(error),
+        });
 
-    try {
-      return await executeQueryInternal(
-        connectionLogger,
-        connection,
-        clientConfiguration,
-        query,
-        inheritedQueryId,
-        executionRoutine,
-        integrityValidation,
-        stream,
-      );
-    } catch (error) {
-      span.recordException(error);
-      span.setStatus({
-        code: SpanStatusCode.ERROR,
-        message: String(error),
-      });
-
-      throw error;
-    } finally {
-      span.end();
-    }
-  });
+        throw error;
+      } finally {
+        span.end();
+      }
+    },
+  );
 };

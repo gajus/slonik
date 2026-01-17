@@ -1,5 +1,53 @@
 # @slonik/sql-tag
 
+## 48.10.0
+
+### Patch Changes
+
+- Updated dependencies []:
+  - @slonik/errors@48.10.0
+  - @slonik/types@48.10.0
+
+## 48.9.0
+
+### Patch Changes
+
+- Updated dependencies []:
+  - @slonik/errors@48.9.0
+  - @slonik/types@48.9.0
+
+## 48.8.12
+
+### Patch Changes
+
+- Updated dependencies []:
+  - @slonik/errors@48.8.12
+  - @slonik/types@48.8.12
+
+## 48.8.11
+
+### Patch Changes
+
+- Updated dependencies []:
+  - @slonik/errors@48.8.11
+  - @slonik/types@48.8.11
+
+## 48.8.10
+
+### Patch Changes
+
+- Updated dependencies []:
+  - @slonik/errors@48.8.10
+  - @slonik/types@48.8.10
+
+## 48.8.9
+
+### Patch Changes
+
+- Updated dependencies []:
+  - @slonik/errors@48.8.9
+  - @slonik/types@48.8.9
+
 ## 48.8.8
 
 ### Patch Changes

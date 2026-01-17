@@ -9,6 +9,7 @@ export {
   type DriverEventEmitter,
   type DriverFactory,
   type DriverNotice,
+  type DriverQueryOptions,
   type DriverQueryResult,
   type DriverStream,
   type DriverStreamResult,

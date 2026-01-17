@@ -29,22 +29,22 @@ type ConnectionHandlerType = (
 
 type PoolHandlerType = (pool: DatabasePool) => Promise<unknown>;
 
-const destroyBoundConnection = (boundConnection: DatabasePoolConnection) => {
-  const boundConnectionMethods = [
-    'any',
-    'anyFirst',
-    'exists',
-    'many',
-    'manyFirst',
-    'maybeOne',
-    'maybeOneFirst',
-    'one',
-    'oneFirst',
-    'query',
-    'stream',
-    'transaction',
-  ];
+const boundConnectionMethods = [
+  'any',
+  'anyFirst',
+  'exists',
+  'many',
+  'manyFirst',
+  'maybeOne',
+  'maybeOneFirst',
+  'one',
+  'oneFirst',
+  'query',
+  'stream',
+  'transaction',
+];
 
+const destroyBoundConnection = (boundConnection: DatabasePoolConnection) => {
   for (const boundConnectionMethod of boundConnectionMethods) {
     boundConnection[boundConnectionMethod] = async () => {
       throw new Error('Cannot use released connection');

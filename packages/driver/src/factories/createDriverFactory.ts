@@ -19,7 +19,11 @@ export type DriverClient = {
   id: () => string;
   off: DriverClientEventEmitter['off'];
   on: DriverClientEventEmitter['on'];
-  query: (query: string, values?: unknown[]) => Promise<DriverQueryResult>;
+  query: (
+    query: string,
+    values?: unknown[],
+    queryOptions?: DriverQueryOptions,
+  ) => Promise<DriverQueryResult>;
   release: () => Promise<void>;
   removeListener: DriverClientEventEmitter['removeListener'];
   state: () => DriverClientState;
@@ -81,6 +85,15 @@ export type DriverNotice = {
   message: string;
 };
 
+/**
+ * Options for query execution.
+ * @property name - Optional name for the prepared statement. When provided,
+ *   PostgreSQL will create a named prepared statement that can be reused.
+ */
+export type DriverQueryOptions = {
+  readonly name?: string;
+};
+
 export type DriverQueryResult = {
   readonly command: DriverCommand;
   readonly fields: DriverField[];
@@ -135,7 +148,11 @@ type DriverSetup = ({
 type InternalPoolClient = {
   connect: () => Promise<void>;
   end: () => Promise<void>;
-  query: (query: string, values?: unknown[]) => Promise<DriverQueryResult>;
+  query: (
+    query: string,
+    values?: unknown[],
+    queryOptions?: DriverQueryOptions,
+  ) => Promise<DriverQueryResult>;
   stream: (
     query: string,
     values?: unknown[],
@@ -367,7 +384,7 @@ export const createDriverFactory = (setup: DriverSetup): DriverFactory => {
           on: (event, listener) => {
             return clientEventEmitter.on(event, listener);
           },
-          query: async (sql, values) => {
+          query: async (sql, values, queryOptions) => {
             const currentState = state();
 
             if (currentState === 'PENDING_DESTROY') {
@@ -387,7 +404,7 @@ export const createDriverFactory = (setup: DriverSetup): DriverFactory => {
             }
 
             try {
-              activeQueryPromise = query(sql, values);
+              activeQueryPromise = query(sql, values, queryOptions);
 
               const result = await activeQueryPromise;
 

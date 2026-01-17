@@ -11,7 +11,7 @@ jobs:
       - name: setup node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '20'
+          node-version: '24'
       - uses: pnpm/action-setup@v4
         name: install pnpm
         with:
@@ -41,7 +41,7 @@ jobs:
       - name: setup node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '20'
+          node-version: '24'
       - uses: pnpm/action-setup@v4
         name: install pnpm
         with:
@@ -51,6 +51,9 @@ jobs:
       - run: pnpm run -r build
       - env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          # Use OIDC for npm authentication instead of NPM_TOKEN
+          # https://github.com/changesets/changesets/issues/1152#issuecomment-3190884868
+          NPM_TOKEN: ''
         uses: changesets/action@v1
         with:
           publish: npx changeset publish

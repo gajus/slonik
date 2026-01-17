@@ -1,5 +1,5 @@
-import { randomUUID } from 'node:crypto';
+import { randomBytes } from 'node:crypto';
 
 export const generateUid = (): string => {
-  return randomUUID().split('-', 1)[0];
+  return randomBytes(4).toString('hex');
 };

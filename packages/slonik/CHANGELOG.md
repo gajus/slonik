@@ -1,5 +1,89 @@
 # slonik
 
+## 48.10.0
+
+### Patch Changes
+
+- Updated dependencies []:
+  - @slonik/driver@48.10.0
+  - @slonik/errors@48.10.0
+  - @slonik/pg-driver@48.10.0
+  - @slonik/sql-tag@48.10.0
+  - @slonik/utilities@48.10.0
+
+## 48.9.0
+
+### Minor Changes
+
+- [`b9629b3`](https://github.com/gajus/slonik/commit/b9629b385fd75b6126a8356b5cf76d2dc45211d6) Thanks [@gajus](https://github.com/gajus)! - add named prepared statements
+
+### Patch Changes
+
+- Updated dependencies []:
+  - @slonik/driver@48.9.0
+  - @slonik/errors@48.9.0
+  - @slonik/pg-driver@48.9.0
+  - @slonik/sql-tag@48.9.0
+  - @slonik/utilities@48.9.0
+
+## 48.8.12
+
+### Patch Changes
+
+- [`680b5dd`](https://github.com/gajus/slonik/commit/680b5dd245bb981cebd5911d75e668f7aade922e) Thanks [@gajus](https://github.com/gajus)! - minor performance improvements
+
+- [`fddc5b0`](https://github.com/gajus/slonik/commit/fddc5b0231e7398ad1a84848b5219a028af68ce7) Thanks [@gajus](https://github.com/gajus)! - minor performance improvements
+
+- [`f821c59`](https://github.com/gajus/slonik/commit/f821c5994f319c18435ef381bf766bdb79912db9) Thanks [@gajus](https://github.com/gajus)! - minor performance improvements
+
+- [`874cec3`](https://github.com/gajus/slonik/commit/874cec39f333a1772fbccc964c221a725947f328) Thanks [@gajus](https://github.com/gajus)! - use sets to manage connections
+
+- Updated dependencies []:
+  - @slonik/driver@48.8.12
+  - @slonik/errors@48.8.12
+  - @slonik/pg-driver@48.8.12
+  - @slonik/sql-tag@48.8.12
+  - @slonik/utilities@48.8.12
+
+## 48.8.11
+
+### Patch Changes
+
+- [`3ce8e14`](https://github.com/gajus/slonik/commit/3ce8e1471c4ab7d471ba04ffbd601b286aae2bf4) Thanks [@gajus](https://github.com/gajus)! - improve connection pooling logic
+
+- Updated dependencies []:
+  - @slonik/driver@48.8.11
+  - @slonik/errors@48.8.11
+  - @slonik/pg-driver@48.8.11
+  - @slonik/sql-tag@48.8.11
+  - @slonik/utilities@48.8.11
+
+## 48.8.10
+
+### Patch Changes
+
+- [`0380c06`](https://github.com/gajus/slonik/commit/0380c069fef3376ee618d434695d0937312c339a) Thanks [@gajus](https://github.com/gajus)! - use trusted publishing
+
+- Updated dependencies []:
+  - @slonik/driver@48.8.10
+  - @slonik/errors@48.8.10
+  - @slonik/pg-driver@48.8.10
+  - @slonik/sql-tag@48.8.10
+  - @slonik/utilities@48.8.10
+
+## 48.8.9
+
+### Patch Changes
+
+- [`ebd94dd`](https://github.com/gajus/slonik/commit/ebd94ddc996f9b6ac0f62492a62c112fecc343bc) Thanks [@gajus](https://github.com/gajus)! - update dependencies
+
+- Updated dependencies []:
+  - @slonik/driver@48.8.9
+  - @slonik/errors@48.8.9
+  - @slonik/pg-driver@48.8.9
+  - @slonik/sql-tag@48.8.9
+  - @slonik/utilities@48.8.9
+
 ## 48.8.8
 
 ### Patch Changes

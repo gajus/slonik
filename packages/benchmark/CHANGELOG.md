@@ -1,5 +1,47 @@
 # @slonik/benchmark
 
+## 48.10.0
+
+### Patch Changes
+
+- Updated dependencies []:
+  - slonik@48.10.0
+
+## 48.9.0
+
+### Patch Changes
+
+- Updated dependencies [[`b9629b3`](https://github.com/gajus/slonik/commit/b9629b385fd75b6126a8356b5cf76d2dc45211d6)]:
+  - slonik@48.9.0
+
+## 48.8.12
+
+### Patch Changes
+
+- Updated dependencies [[`680b5dd`](https://github.com/gajus/slonik/commit/680b5dd245bb981cebd5911d75e668f7aade922e), [`fddc5b0`](https://github.com/gajus/slonik/commit/fddc5b0231e7398ad1a84848b5219a028af68ce7), [`f821c59`](https://github.com/gajus/slonik/commit/f821c5994f319c18435ef381bf766bdb79912db9), [`874cec3`](https://github.com/gajus/slonik/commit/874cec39f333a1772fbccc964c221a725947f328)]:
+  - slonik@48.8.12
+
+## 48.8.11
+
+### Patch Changes
+
+- Updated dependencies [[`3ce8e14`](https://github.com/gajus/slonik/commit/3ce8e1471c4ab7d471ba04ffbd601b286aae2bf4)]:
+  - slonik@48.8.11
+
+## 48.8.10
+
+### Patch Changes
+
+- Updated dependencies [[`0380c06`](https://github.com/gajus/slonik/commit/0380c069fef3376ee618d434695d0937312c339a)]:
+  - slonik@48.8.10
+
+## 48.8.9
+
+### Patch Changes
+
+- Updated dependencies [[`ebd94dd`](https://github.com/gajus/slonik/commit/ebd94ddc996f9b6ac0f62492a62c112fecc343bc)]:
+  - slonik@48.8.9
+
 ## 48.8.8
 
 ### Patch Changes
