@@ -38,7 +38,7 @@ export const queryMethods = async (): Promise<void> => {
 
   // any
   const any = await client.any(sql.unsafe``);
-  expectTypeOf(any).toEqualTypeOf<readonly any[]>();
+  expectTypeOf(any).toEqualTypeOf<readonly unknown[]>();
 
   const anyZodTypedQuery = await client.any(sql.type(ZodRow)``);
   expectTypeOf(anyZodTypedQuery).toEqualTypeOf<readonly Row[]>();
@@ -48,7 +48,7 @@ export const queryMethods = async (): Promise<void> => {
 
   // anyFirst
   const anyFirst = await client.anyFirst(sql.unsafe``);
-  expectTypeOf(anyFirst).toEqualTypeOf<readonly any[]>();
+  expectTypeOf(anyFirst).toEqualTypeOf<readonly unknown[]>();
 
   const anyFirstZodTypedQuery = await client.anyFirst(sql.type(ZodRow)``);
   expectTypeOf(anyFirstZodTypedQuery).toEqualTypeOf<
@@ -57,14 +57,14 @@ export const queryMethods = async (): Promise<void> => {
 
   // many
   const many = await client.many(sql.unsafe``);
-  expectTypeOf(many).toEqualTypeOf<readonly any[]>();
+  expectTypeOf(many).toEqualTypeOf<readonly unknown[]>();
 
   const manyZodTypedQuery = await client.many(sql.type(ZodRow)``);
   expectTypeOf(manyZodTypedQuery).toEqualTypeOf<readonly Row[]>();
 
   // manyFirst
   const manyFirst = await client.manyFirst(sql.unsafe``);
-  expectTypeOf(manyFirst).toEqualTypeOf<readonly any[]>();
+  expectTypeOf(manyFirst).toEqualTypeOf<readonly unknown[]>();
 
   const manyFirstZodTypedQuery = await client.manyFirst(sql.type(ZodRow)``);
   expectTypeOf(manyFirstZodTypedQuery).toEqualTypeOf<
@@ -73,14 +73,14 @@ export const queryMethods = async (): Promise<void> => {
 
   // maybeOne
   const maybeOne = await client.maybeOne(sql.unsafe``);
-  expectTypeOf(maybeOne).toEqualTypeOf<any>();
+  expectTypeOf(maybeOne).toEqualTypeOf<unknown>();
 
   const maybeOneZodTypedQuery = await client.maybeOne(sql.type(ZodRow)``);
   expectTypeOf(maybeOneZodTypedQuery).toEqualTypeOf<null | Row>();
 
   // maybeOneFirst
   const maybeOneFirst = await client.maybeOneFirst(sql.unsafe``);
-  expectTypeOf(maybeOneFirst).toEqualTypeOf<any>();
+  expectTypeOf(maybeOneFirst).toEqualTypeOf<unknown>();
 
   const maybeOneFirstZodTypedQuery = await client.maybeOneFirst(
     sql.type(ZodRow)``,
@@ -91,14 +91,14 @@ export const queryMethods = async (): Promise<void> => {
 
   // one
   const one = await client.one(sql.unsafe``);
-  expectTypeOf(one).toEqualTypeOf<any>();
+  expectTypeOf(one).toEqualTypeOf<unknown>();
 
   const oneZodTypedQuery = await client.one(sql.type(ZodRow)``);
   expectTypeOf(oneZodTypedQuery).toEqualTypeOf<Row>();
 
   // oneFirst
   const oneFirst = await client.oneFirst(sql.unsafe``);
-  expectTypeOf(oneFirst).toEqualTypeOf<any>();
+  expectTypeOf(oneFirst).toEqualTypeOf<unknown>();
 
   const oneFirstZodTypedQuery = await client.oneFirst(sql.type(ZodRow)``);
   expectTypeOf(oneFirstZodTypedQuery).toEqualTypeOf<boolean | string>();
