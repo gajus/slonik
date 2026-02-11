@@ -10,6 +10,7 @@ import { createPool, SchemaValidationError, sql } from 'slonik';
 import type { DatabasePool, Interceptor } from 'slonik';
 import { afterAll, beforeAll, beforeEach, describe, expect, it } from 'vitest';
 import { z } from 'zod';
+import { ColumnIdentifiers } from '../types.js';
 
 const POSTGRES_DSN =
   // eslint-disable-next-line n/no-process-env
@@ -599,7 +600,7 @@ describe('createConnectionLoaderClass (with validation)', () => {
     const loader = new UnsafePersonConnectionLoader(pool);
 
     const result = await loader.load({
-      orderBy: ({ uid }) => [[uid, 'ASC']],
+      orderBy: ({ uid }: ColumnIdentifiers<{ uid: string }>) => [[uid, 'ASC']],
     });
 
     expect(getNodeIds(result.edges)).toEqual([1, 2, 3, 4, 5, 6, 7, 8, 9, 10]);
