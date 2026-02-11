@@ -28,7 +28,7 @@
     "slonik": "^48.10.0",
     "tsimp": "^2.0.12",
     "typescript": "^5.9.3",
-    "typescript-eslint": "^8.47.0"
+    "typescript-eslint": "^8.55.0"
   },
   "engines": {
     "node": ">=24"
