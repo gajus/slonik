@@ -16,6 +16,7 @@ export default tseslint.config(
       'import/extensions': ['error', 'always'],
       'import/no-duplicates': 0,
       'import/no-useless-path-segments': 0,
+      'perfectionist/sort-modules': 0,
     },
   },
   {
