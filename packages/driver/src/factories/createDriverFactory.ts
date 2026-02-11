@@ -329,7 +329,7 @@ export const createDriverFactory = (setup: DriverSetup): DriverFactory => {
               void destroy();
 
               idleTimeout = null;
-            }, driverConfiguration.idleTimeout).unref();
+            }, driverConfiguration.idleTimeout).unref?.();
           }
 
           isAcquired = false;
