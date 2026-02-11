@@ -20,6 +20,6 @@
     "@changesets/changelog-github": "^0.5.2",
     "comment-parser": "1.4.1",
     "husky": "^9.1.7",
-    "knip": "^5.70.1"
+    "knip": "^5.83.1"
   }
 }

@@ -262,15 +262,18 @@ export const createDriverFactory = (setup: DriverSetup): DriverFactory => {
 
           clearIdleTimeout();
 
-          if (activeQueryPromise) {
+          // activeQueryPromise and releasePromise are mutually exclusive
+          // (release throws if a query is active). Either one can hang if the
+          // database is unreachable (e.g. DISCARD ALL during release), causing
+          // the connection to stay in PENDING_DESTROY and count toward
+          // maximumPoolSize, which blocks the pool from creating new connections.
+          const pendingOperation = activeQueryPromise ?? releasePromise;
+
+          if (pendingOperation) {
             await Promise.race([
               delay(driverConfiguration.gracefulTerminationTimeout),
-              activeQueryPromise,
+              pendingOperation,
             ]);
-          }
-
-          if (releasePromise) {
-            await releasePromise;
           }
 
           isDestroyed = true;
