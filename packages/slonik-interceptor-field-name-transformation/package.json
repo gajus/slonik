@@ -23,7 +23,7 @@
     "@slonik/eslint-config": "workspace:^",
     "ava": "^6.4.1",
     "eslint": "9.39.2",
-    "slonik": "^48.10.0",
+    "slonik": "^48.10.1",
     "tsimp": "^2.0.12",
     "typescript": "^5.9.3",
     "typescript-eslint": "^8.55.0"
@@ -53,5 +53,5 @@
   },
   "type": "module",
   "types": "./dist/index.d.ts",
-  "version": "48.10.0"
+  "version": "48.10.1"
 }
