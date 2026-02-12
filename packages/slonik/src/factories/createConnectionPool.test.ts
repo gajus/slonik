@@ -508,6 +508,131 @@ test('connection destroy removes it from pool', async (t) => {
   await pool.end();
 });
 
+test('all waiting clients are rejected when all connections are destroyed and replacements fail', async (t) => {
+  let failAfterInitial = false;
+
+  class CrashingDriver extends MockDriver {
+    async createClient(): Promise<DriverClient> {
+      if (failAfterInitial) {
+        throw new Error('Connection refused');
+      }
+
+      return super.createClient();
+    }
+  }
+
+  const driver = new CrashingDriver();
+  const pool = createTestPool(driver, { maximumPoolSize: 2 });
+
+  // Acquire both connections (fills the pool)
+  const conn1 = await pool.acquire();
+  const conn2 = await pool.acquire();
+
+  // Queue up 4 waiting clients
+  const waiters = [
+    pool.acquire(),
+    pool.acquire(),
+    pool.acquire(),
+    pool.acquire(),
+  ];
+
+  await wait(10);
+
+  assertPoolState(t, pool, {
+    acquiredConnections: 2,
+    waitingClients: 4,
+  });
+
+  // Simulate DB crash: new connections will fail from now on
+  failAfterInitial = true;
+
+  // Destroy both connections (simulates error events from DB crash)
+  await conn1.destroy();
+  await conn2.destroy();
+
+  // Wait for replacement connection attempts to fail
+  await wait(50);
+
+  // All waiting clients should have been rejected (not stuck forever)
+  for (const waiter of waiters) {
+    await t.throwsAsync(waiter, { message: 'Connection refused' });
+  }
+
+  // Pool should be in a clean state with no orphaned waiters
+  assertPoolState(t, pool, {
+    acquiredConnections: 0,
+    idleConnections: 0,
+    pendingConnections: 0,
+    waitingClients: 0,
+  });
+
+  await pool.end();
+});
+
+test('pool recovers after all connections destroyed and DB comes back', async (t) => {
+  let shouldFail = false;
+
+  class RecoveringDriver extends MockDriver {
+    async createClient(): Promise<DriverClient> {
+      if (shouldFail) {
+        throw new Error('Connection refused');
+      }
+
+      return super.createClient();
+    }
+  }
+
+  const driver = new RecoveringDriver();
+  const pool = createTestPool(driver, { maximumPoolSize: 2 });
+
+  // Fill the pool
+  const conn1 = await pool.acquire();
+  const conn2 = await pool.acquire();
+
+  // Queue a waiting client (pool is full so it will be queued)
+  const waiterPromise = pool.acquire();
+  await wait(10);
+
+  assertPoolState(t, pool, {
+    acquiredConnections: 2,
+    waitingClients: 1,
+  });
+
+  // DB crashes: new connections will fail
+  shouldFail = true;
+
+  // Destroy both connections
+  await conn1.destroy();
+  await conn2.destroy();
+
+  // Wait for replacement connection attempts to fail
+  await wait(50);
+
+  // The waiting client should have been rejected
+  await t.throwsAsync(waiterPromise, { message: 'Connection refused' });
+
+  assertPoolState(t, pool, {
+    acquiredConnections: 0,
+    idleConnections: 0,
+    pendingConnections: 0,
+    waitingClients: 0,
+  });
+
+  // DB comes back
+  shouldFail = false;
+
+  // Pool should work normally again
+  const newConn = await pool.acquire();
+  t.truthy(newConn);
+
+  assertPoolState(t, pool, {
+    acquiredConnections: 1,
+  });
+
+  await newConn.release();
+  await pool.end();
+});
+
 test('destroyed connection triggers new connection for waiting clients', async (t) => {
   const driver = new MockDriver();
   const pool = createTestPool(driver, { maximumPoolSize: 1 });

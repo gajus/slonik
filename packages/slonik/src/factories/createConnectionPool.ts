@@ -122,6 +122,39 @@ export const createConnectionPool = ({
 
   let poolEndPromise: null | Promise<void> = null;
 
+  // When a connection fails to be created and the pool has no connections
+  // and no pending connections, all waiting clients are orphaned — no
+  // onRelease or onDestroy event will ever fire to serve them. Reject
+  // them immediately so callers can retry through normal error handling.
+  const drainWaitingClientsOnConnectionFailure = (originalError: unknown) => {
+    if (
+      connections.size === 0 &&
+      pendingConnections.size === 0 &&
+      waitingClients.length > 0 &&
+      !isEnding &&
+      !isEnded
+    ) {
+      const error =
+        originalError instanceof Error
+          ? originalError
+          : new Error(String(originalError));
+
+      logger.warn(
+        {
+          waitingClients: waitingClients.length,
+        },
+        'pool has no connections and no pending connections; rejecting all waiting clients',
+      );
+
+      while (waitingClients.length > 0) {
+        const orphanedClient = waitingClients.shift();
+        if (orphanedClient) {
+          orphanedClient.deferred.reject(error);
+        }
+      }
+    }
+  };
+
   const clearIdleTimer = (connection: ConnectionPoolClient) => {
     const metadata = connectionMetadata.get(connection);
 
@@ -383,10 +416,16 @@ export const createConnectionPool = ({
                   const waitingClient = waitingClients.shift();
                   if (waitingClient) {
                     createdConnectionForWaitingClient = true;
-                    addConnection().then((newConnection) => {
-                      newConnection.acquire();
-                      waitingClient.deferred.resolve(newConnection);
-                    }, waitingClient.deferred.reject);
+                    addConnection().then(
+                      (newConnection) => {
+                        newConnection.acquire();
+                        waitingClient.deferred.resolve(newConnection);
+                      },
+                      (error) => {
+                        waitingClient.deferred.reject(error);
+                        drainWaitingClientsOnConnectionFailure(error);
+                      },
+                    );
                   }
                 }
               }
@@ -404,6 +443,7 @@ export const createConnectionPool = ({
                     },
                     'error while adding a new connection to satisfy the minimum pool size',
                   );
+                  drainWaitingClientsOnConnectionFailure(error);
                 });
               }
             }
