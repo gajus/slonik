@@ -1,5 +1,15 @@
 # @slonik/driver
 
+## 48.10.1
+
+### Patch Changes
+
+- [#753](https://github.com/gajus/slonik/pull/753) [`1f68743`](https://github.com/gajus/slonik/commit/1f68743aea6303dd4cfedab831f9b68c4423acc2) Thanks [@Weldawadyathink](https://github.com/Weldawadyathink)! - Improve support for runtimes without setTimeout().unref() (Cloudflare Workers)
+
+- Updated dependencies []:
+  - @slonik/types@48.10.1
+  - @slonik/utilities@48.10.1
+
 ## 48.10.0
 
 ### Patch Changes

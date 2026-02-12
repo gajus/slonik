@@ -1,5 +1,20 @@
 # slonik
 
+## 48.10.1
+
+### Patch Changes
+
+- [`383d6e0`](https://github.com/gajus/slonik/commit/383d6e06ce8c6e399f090cca3eba2ab29f7844d2) Thanks [@gajus](https://github.com/gajus)! - update dependencies
+
+- [`61a8b67`](https://github.com/gajus/slonik/commit/61a8b6795fb5495f6221121cd5350b425f7f726c) Thanks [@gajus](https://github.com/gajus)! - add timeout to releasePromise in connection destroy path
+
+- Updated dependencies [[`1f68743`](https://github.com/gajus/slonik/commit/1f68743aea6303dd4cfedab831f9b68c4423acc2)]:
+  - @slonik/driver@48.10.1
+  - @slonik/errors@48.10.1
+  - @slonik/pg-driver@48.10.1
+  - @slonik/sql-tag@48.10.1
+  - @slonik/utilities@48.10.1
+
 ## 48.10.0
 
 ### Patch Changes
