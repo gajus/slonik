@@ -1,5 +1,18 @@
 # slonik
 
+## 48.10.3
+
+### Patch Changes
+
+- [`31dfd11`](https://github.com/gajus/slonik/commit/31dfd11f4004b0ff77d481362901faf43f92d040) Thanks [@gajus](https://github.com/gajus)! - Fix connection pool bug where minimumPoolSize replacement connections were never added to the
+
+- Updated dependencies []:
+  - @slonik/driver@48.10.3
+  - @slonik/errors@48.10.3
+  - @slonik/pg-driver@48.10.3
+  - @slonik/sql-tag@48.10.3
+  - @slonik/utilities@48.10.3
+
 ## 48.10.2
 
 ### Patch Changes
