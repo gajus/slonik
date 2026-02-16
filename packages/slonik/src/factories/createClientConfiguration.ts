@@ -18,6 +18,7 @@ export const createClientConfiguration = (
     connectionTimeout: 5_000,
     connectionUri,
     dangerouslyAllowForeignConnections: false,
+    deferResetConnection: false,
     gracefulTerminationTimeout: 5_000,
     idleInTransactionSessionTimeout: 60_000,
     idleTimeout: 5_000,

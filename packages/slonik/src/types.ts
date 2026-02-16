@@ -40,6 +40,14 @@ export type ClientConfiguration = {
    */
   readonly dangerouslyAllowForeignConnections: boolean;
   /**
+   * When true, resetConnection (e.g. DISCARD ALL) runs in the background
+   * after release instead of blocking it. This reduces latency for callers
+   * at the cost of the connection not being immediately available for reuse.
+   * The connection is only returned to the idle pool after the reset completes.
+   * (Default: false)
+   */
+  readonly deferResetConnection: boolean;
+  /**
    * Overrides the default DriverFactory. (Default: "pg" driver factory)
    */
   readonly driverFactory?: DriverFactory;

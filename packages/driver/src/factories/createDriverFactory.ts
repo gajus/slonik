@@ -56,6 +56,14 @@ export type DriverCommand = 'COPY' | 'DELETE' | 'INSERT' | 'SELECT' | 'UPDATE';
 export type DriverConfiguration = {
   readonly connectionTimeout: 'DISABLE_TIMEOUT' | number;
   readonly connectionUri: string;
+  /**
+   * When true, resetConnection runs in the background after the connection
+   * is released, instead of blocking the release. This reduces latency for
+   * callers at the cost of the connection not being immediately available
+   * for reuse. The connection is only returned to the idle pool after the
+   * reset completes. (Default: false)
+   */
+  readonly deferResetConnection?: boolean;
   readonly gracefulTerminationTimeout?: number;
   readonly idleInTransactionSessionTimeout: 'DISABLE_TIMEOUT' | number;
   readonly idleTimeout?: 'DISABLE_TIMEOUT' | number;
@@ -213,9 +221,11 @@ export const createDriverFactory = (setup: DriverSetup): DriverFactory => {
 
         let isAcquired = false;
         let isDestroyed = false;
+        let isResetting = false;
         let idleTimeout: NodeJS.Timeout | null = null;
 
         let activeQueryPromise: null | Promise<DriverQueryResult> = null;
+        let deferredResetPromise: null | Promise<void> = null;
         let destroyPromise: null | Promise<void> = null;
         let releasePromise: null | Promise<void> = null;
 
@@ -246,6 +256,10 @@ export const createDriverFactory = (setup: DriverSetup): DriverFactory => {
             return 'ACQUIRED';
           }
 
+          if (isResetting) {
+            return 'PENDING_RELEASE';
+          }
+
           return 'IDLE';
         };
 
@@ -262,12 +276,14 @@ export const createDriverFactory = (setup: DriverSetup): DriverFactory => {
 
           clearIdleTimeout();
 
-          // activeQueryPromise and releasePromise are mutually exclusive
-          // (release throws if a query is active). Either one can hang if the
-          // database is unreachable (e.g. DISCARD ALL during release), causing
-          // the connection to stay in PENDING_DESTROY and count toward
-          // maximumPoolSize, which blocks the pool from creating new connections.
-          const pendingOperation = activeQueryPromise ?? releasePromise;
+          // activeQueryPromise, releasePromise, and deferredResetPromise are
+          // mutually exclusive (release throws if a query is active, deferred
+          // reset runs after release). Any of these can hang if the database is
+          // unreachable (e.g. DISCARD ALL during release), causing the connection
+          // to stay in PENDING_DESTROY and count toward maximumPoolSize, which
+          // blocks the pool from creating new connections.
+          const pendingOperation =
+            activeQueryPromise ?? releasePromise ?? deferredResetPromise;
 
           if (pendingOperation) {
             await Promise.race([
@@ -295,6 +311,20 @@ export const createDriverFactory = (setup: DriverSetup): DriverFactory => {
           return destroyPromise;
         };
 
+        const setIdleTimeoutAndEmitRelease = () => {
+          if (driverConfiguration.idleTimeout !== 'DISABLE_TIMEOUT') {
+            clearIdleTimeout();
+
+            idleTimeout = setTimeout(() => {
+              void destroy();
+
+              idleTimeout = null;
+            }, driverConfiguration.idleTimeout).unref?.();
+          }
+
+          clientEventEmitter.emit('release');
+        };
+
         const internalRelease = async () => {
           const currentState = state();
 
@@ -314,7 +344,7 @@ export const createDriverFactory = (setup: DriverSetup): DriverFactory => {
             throw new Error('Client has an active query.');
           }
 
-          if (resetConnection) {
+          if (resetConnection && !driverConfiguration.deferResetConnection) {
             await resetConnection({
               query: async (sql) => {
                 await query(sql);
@@ -322,21 +352,47 @@ export const createDriverFactory = (setup: DriverSetup): DriverFactory => {
             });
           }
 
-          if (driverConfiguration.idleTimeout !== 'DISABLE_TIMEOUT') {
-            clearIdleTimeout();
-
-            idleTimeout = setTimeout(() => {
-              void destroy();
-
-              idleTimeout = null;
-            }, driverConfiguration.idleTimeout).unref?.();
-          }
-
           isAcquired = false;
 
           releasePromise = null;
 
-          clientEventEmitter.emit('release');
+          if (resetConnection && driverConfiguration.deferResetConnection) {
+            isResetting = true;
+
+            deferredResetPromise = (async () => {
+              try {
+                await resetConnection({
+                  query: async (sql) => {
+                    await query(sql);
+                  },
+                });
+              } catch (error) {
+                Logger.warn(
+                  {
+                    error: serializeError(error),
+                    namespace: 'driverClient',
+                  },
+                  'deferred resetConnection failed; destroying connection',
+                );
+
+                isResetting = false;
+                deferredResetPromise = null;
+
+                void destroy();
+
+                return;
+              }
+
+              isResetting = false;
+              deferredResetPromise = null;
+
+              setIdleTimeoutAndEmitRelease();
+            })();
+
+            return;
+          }
+
+          setIdleTimeoutAndEmitRelease();
         };
 
         const release = () => {
