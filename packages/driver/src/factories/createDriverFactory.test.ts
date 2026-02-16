@@ -84,50 +84,9 @@ const createDefaultDriverConfig = (
   };
 };
 
-// ─── deferResetConnection tests ────────────────────────────────────────────
+// ─── resetConnection runs in the background ────────────────────────────────
 
-test('release blocks on resetConnection when deferResetConnection is false', async (t) => {
-  const order: string[] = [];
-
-  const { setup } = createMockSetup({
-    queryFn: async (sql) => {
-      order.push(`query:${sql}`);
-      await new Promise<void>((resolve) => {
-        setTimeout(resolve, 50);
-      });
-      order.push(`query-done:${sql}`);
-
-      return defaultQueryResult;
-    },
-  });
-
-  const factory = createDriverFactory(setup);
-  const driver = await factory({
-    driverConfiguration: createDefaultDriverConfig({
-      deferResetConnection: false,
-      resetConnection: async ({ query }) => {
-        await query('DISCARD ALL');
-      },
-    }),
-  });
-
-  const client = await driver.createClient();
-  client.acquire();
-
-  order.push('release-start');
-  await client.release();
-  order.push('release-done');
-
-  // With deferResetConnection: false, release should have waited for DISCARD ALL
-  t.deepEqual(order, [
-    'release-start',
-    'query:DISCARD ALL',
-    'query-done:DISCARD ALL',
-    'release-done',
-  ]);
-});
-
-test('release resolves immediately when deferResetConnection is true', async (t) => {
+test('release resolves before resetConnection completes', async (t) => {
   const order: string[] = [];
 
   let resolveQuery: (() => void) | null = null;
@@ -151,7 +110,6 @@ test('release resolves immediately when deferResetConnection is true', async (t)
   const factory = createDriverFactory(setup);
   const driver = await factory({
     driverConfiguration: createDefaultDriverConfig({
-      deferResetConnection: true,
       resetConnection: async ({ query }) => {
         await query('DISCARD ALL');
       },
@@ -165,12 +123,11 @@ test('release resolves immediately when deferResetConnection is true', async (t)
   await client.release();
   order.push('release-done');
 
-  // With deferResetConnection: true, release should resolve before DISCARD ALL completes
-  // The DISCARD ALL query should have started but NOT finished
+  // Release should resolve before resetConnection completes
   t.true(order.includes('query:DISCARD ALL'));
   t.false(order.includes('query-done:DISCARD ALL'));
 
-  // Complete the deferred reset
+  // Complete the reset
   resolveQuery!();
   await waitTick();
   await waitTick();
@@ -178,7 +135,7 @@ test('release resolves immediately when deferResetConnection is true', async (t)
   t.true(order.includes('query-done:DISCARD ALL'));
 });
 
-test('connection state is PENDING_RELEASE during deferred reset', async (t) => {
+test('connection state is PENDING_RELEASE during reset', async (t) => {
   let resolveQuery: (() => void) | null = null;
 
   const { setup } = createMockSetup({
@@ -196,7 +153,6 @@ test('connection state is PENDING_RELEASE during deferred reset', async (t) => {
   const factory = createDriverFactory(setup);
   const driver = await factory({
     driverConfiguration: createDefaultDriverConfig({
-      deferResetConnection: true,
       resetConnection: async ({ query }) => {
         await query('DISCARD ALL');
       },
@@ -210,10 +166,10 @@ test('connection state is PENDING_RELEASE during deferred reset', async (t) => {
 
   await client.release();
 
-  // During deferred reset, state should be PENDING_RELEASE (not IDLE)
+  // During reset, state should be PENDING_RELEASE
   t.is(client.state(), 'PENDING_RELEASE');
 
-  // Complete the deferred reset
+  // Complete the reset
   let releaseEmitted = false;
 
   client.on('release', () => {
@@ -228,7 +184,7 @@ test('connection state is PENDING_RELEASE during deferred reset', async (t) => {
   t.true(releaseEmitted);
 });
 
-test('release event is emitted only after deferred reset completes', async (t) => {
+test('release event is emitted only after reset completes', async (t) => {
   let resolveQuery: (() => void) | null = null;
   let releaseEmitted = false;
 
@@ -247,7 +203,6 @@ test('release event is emitted only after deferred reset completes', async (t) =
   const factory = createDriverFactory(setup);
   const driver = await factory({
     driverConfiguration: createDefaultDriverConfig({
-      deferResetConnection: true,
       resetConnection: async ({ query }) => {
         await query('DISCARD ALL');
       },
@@ -263,10 +218,10 @@ test('release event is emitted only after deferred reset completes', async (t) =
   client.acquire();
   await client.release();
 
-  // Release event should NOT have fired yet (deferred reset still in progress)
+  // Release event should NOT have fired yet
   t.false(releaseEmitted);
 
-  // Complete the deferred reset
+  // Complete the reset
   resolveQuery!();
   await waitTick();
   await waitTick();
@@ -275,7 +230,7 @@ test('release event is emitted only after deferred reset completes', async (t) =
   t.true(releaseEmitted);
 });
 
-test('failed deferred reset destroys the connection', async (t) => {
+test('failed resetConnection destroys the connection', async (t) => {
   let destroyEmitted = false;
 
   const { setup } = createMockSetup({
@@ -291,7 +246,6 @@ test('failed deferred reset destroys the connection', async (t) => {
   const factory = createDriverFactory(setup);
   const driver = await factory({
     driverConfiguration: createDefaultDriverConfig({
-      deferResetConnection: true,
       resetConnection: async ({ query }) => {
         await query('DISCARD ALL');
       },
@@ -307,7 +261,7 @@ test('failed deferred reset destroys the connection', async (t) => {
   client.acquire();
   await client.release();
 
-  // Give the deferred reset time to fail and trigger destroy
+  // Give the reset time to fail and trigger destroy
   await waitTick();
   await waitTick();
   await new Promise<void>((resolve) => {
@@ -317,7 +271,7 @@ test('failed deferred reset destroys the connection', async (t) => {
   t.true(destroyEmitted);
 });
 
-test('destroy waits for deferred reset via graceful termination timeout', async (t) => {
+test('destroy waits for in-progress reset via graceful termination timeout', async (t) => {
   let resolveQuery: (() => void) | null = null;
   const order: string[] = [];
 
@@ -338,7 +292,6 @@ test('destroy waits for deferred reset via graceful termination timeout', async 
   const factory = createDriverFactory(setup);
   const driver = await factory({
     driverConfiguration: createDefaultDriverConfig({
-      deferResetConnection: true,
       gracefulTerminationTimeout: 5_000,
       resetConnection: async ({ query }) => {
         await query('DISCARD ALL');
@@ -350,10 +303,10 @@ test('destroy waits for deferred reset via graceful termination timeout', async 
   client.acquire();
   await client.release();
 
-  // Start destroy while deferred reset is running
+  // Start destroy while reset is running
   const destroyPromise = client.destroy();
 
-  // Let the deferred reset complete
+  // Let the reset complete
   resolveQuery!();
 
   await destroyPromise;
@@ -364,7 +317,7 @@ test('destroy waits for deferred reset via graceful termination timeout', async 
   t.true(order.includes('destroy-done'));
 });
 
-test('connection cannot be acquired during deferred reset', async (t) => {
+test('connection cannot be acquired during reset', async (t) => {
   let resolveQuery: (() => void) | null = null;
 
   const { setup } = createMockSetup({
@@ -382,7 +335,6 @@ test('connection cannot be acquired during deferred reset', async (t) => {
   const factory = createDriverFactory(setup);
   const driver = await factory({
     driverConfiguration: createDefaultDriverConfig({
-      deferResetConnection: true,
       resetConnection: async ({ query }) => {
         await query('DISCARD ALL');
       },
@@ -393,7 +345,7 @@ test('connection cannot be acquired during deferred reset', async (t) => {
   client.acquire();
   await client.release();
 
-  // State is PENDING_RELEASE during deferred reset — acquire should throw
+  // State is PENDING_RELEASE during reset — acquire should throw
   t.is(client.state(), 'PENDING_RELEASE');
   t.throws(() => client.acquire(), {
     message: 'Client is pending release.',
@@ -405,17 +357,14 @@ test('connection cannot be acquired during deferred reset', async (t) => {
   await waitTick();
 });
 
-test('without resetConnection, deferResetConnection has no effect', async (t) => {
+test('without resetConnection, release emits immediately', async (t) => {
   let releaseEmitted = false;
 
   const { setup } = createMockSetup();
 
   const factory = createDriverFactory(setup);
   const driver = await factory({
-    driverConfiguration: createDefaultDriverConfig({
-      deferResetConnection: true,
-      // No resetConnection provided
-    }),
+    driverConfiguration: createDefaultDriverConfig(),
   });
 
   const client = await driver.createClient();

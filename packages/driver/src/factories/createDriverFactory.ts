@@ -56,14 +56,6 @@ export type DriverCommand = 'COPY' | 'DELETE' | 'INSERT' | 'SELECT' | 'UPDATE';
 export type DriverConfiguration = {
   readonly connectionTimeout: 'DISABLE_TIMEOUT' | number;
   readonly connectionUri: string;
-  /**
-   * When true, resetConnection runs in the background after the connection
-   * is released, instead of blocking the release. This reduces latency for
-   * callers at the cost of the connection not being immediately available
-   * for reuse. The connection is only returned to the idle pool after the
-   * reset completes. (Default: false)
-   */
-  readonly deferResetConnection?: boolean;
   readonly gracefulTerminationTimeout?: number;
   readonly idleInTransactionSessionTimeout: 'DISABLE_TIMEOUT' | number;
   readonly idleTimeout?: 'DISABLE_TIMEOUT' | number;
@@ -344,19 +336,11 @@ export const createDriverFactory = (setup: DriverSetup): DriverFactory => {
             throw new Error('Client has an active query.');
           }
 
-          if (resetConnection && !driverConfiguration.deferResetConnection) {
-            await resetConnection({
-              query: async (sql) => {
-                await query(sql);
-              },
-            });
-          }
-
           isAcquired = false;
 
           releasePromise = null;
 
-          if (resetConnection && driverConfiguration.deferResetConnection) {
+          if (resetConnection) {
             isResetting = true;
 
             deferredResetPromise = (async () => {
@@ -372,7 +356,7 @@ export const createDriverFactory = (setup: DriverSetup): DriverFactory => {
                     error: serializeError(error),
                     namespace: 'driverClient',
                   },
-                  'deferred resetConnection failed; destroying connection',
+                  'resetConnection failed; destroying connection',
                 );
 
                 isResetting = false;
