@@ -384,9 +384,8 @@ export const createConnectionPool = ({
               // This is more efficient than recursively calling acquire()
               let createdConnectionForWaitingClient = false;
 
-              if (waitingClients.length > 0) {
-                // If we have idle connections, serve from those first
-                // Loop to skip destroyed connections (not in Set)
+              // Match all available idle connections to waiting clients
+              while (waitingClients.length > 0) {
                 let idleConnectionToServe: ConnectionPoolClient | undefined;
                 while (idleConnectionsQueue.length > 0) {
                   const candidate = idleConnectionsQueue.shift();
@@ -427,24 +426,46 @@ export const createConnectionPool = ({
                       },
                     );
                   }
+                  // Only create one connection at a time to avoid overshooting pool size
+                  break;
+                } else {
+                  // Pool is at capacity and no idle connections available
+                  break;
                 }
               }
 
-              // In the case that there are no waiting clients and we're below the minimum pool size, add a new connection
-              // Don't create if we just created one for a waiting client (it will satisfy minimumPoolSize)
+              // If we're below the minimum pool size, add a new connection.
+              // Don't create if we just created one for a waiting client (it will satisfy minimumPoolSize).
+              // If there are waiting clients, create for them instead of an idle connection.
               if (
                 !createdConnectionForWaitingClient &&
                 connections.size < minimumPoolSize
               ) {
-                addConnection().catch((error) => {
-                  logger.error(
-                    {
-                      error: serializeError(error),
-                    },
-                    'error while adding a new connection to satisfy the minimum pool size',
-                  );
-                  drainWaitingClientsOnConnectionFailure(error);
-                });
+                addConnection().then(
+                  (newConnection) => {
+                    // Check for waiting clients at resolution time, not at creation time,
+                    // because new clients may have queued while the connection was being created.
+                    const waitingClient = waitingClients.shift();
+                    if (waitingClient) {
+                      newConnection.acquire();
+                      waitingClient.deferred.resolve(newConnection);
+                    } else {
+                      // No waiting client — add to idle queue so acquire() can find it
+                      idleConnectionsQueue.push(newConnection);
+                      idleConnectionsSet.add(newConnection);
+                      setIdleTimer(newConnection);
+                    }
+                  },
+                  (error) => {
+                    logger.error(
+                      {
+                        error: serializeError(error),
+                      },
+                      'error while adding a new connection to satisfy the minimum pool size',
+                    );
+                    drainWaitingClientsOnConnectionFailure(error);
+                  },
+                );
               }
             }
           };
