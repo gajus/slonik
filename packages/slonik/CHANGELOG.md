@@ -1,5 +1,18 @@
 # slonik
 
+## 48.10.2
+
+### Patch Changes
+
+- [`7cf3abc`](https://github.com/gajus/slonik/commit/7cf3abc560f1de937a044c0140a5d5e99f434f67) Thanks [@gajus](https://github.com/gajus)! - handle waiting clients that are orphaned
+
+- Updated dependencies []:
+  - @slonik/driver@48.10.2
+  - @slonik/errors@48.10.2
+  - @slonik/pg-driver@48.10.2
+  - @slonik/sql-tag@48.10.2
+  - @slonik/utilities@48.10.2
+
 ## 48.10.1
 
 ### Patch Changes

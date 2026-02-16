@@ -9,5 +9,5 @@
   "name": "@slonik/eslint-config",
   "private": true,
   "type": "module",
-  "version": "48.10.1"
+  "version": "48.10.2"
 }
