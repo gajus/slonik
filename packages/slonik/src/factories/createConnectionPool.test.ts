@@ -1351,3 +1351,98 @@ test('memory leak prevention with WeakMap cleanup', async (t) => {
 
   await pool.end();
 });
+
+test('minimumPoolSize replacement connection is reachable by acquire', async (t) => {
+  const driver = new MockDriver();
+  const pool = createTestPool(driver, {
+    maximumPoolSize: 2,
+    minimumPoolSize: 2,
+  });
+
+  // Fill pool to max
+  const c1 = await pool.acquire();
+  const c2 = await pool.acquire();
+
+  // Release c1 so it becomes idle
+  await c1.release();
+
+  // Destroy c2 → connections.size drops to 1, below minimumPoolSize=2
+  // onDestroy should create a replacement connection
+  await c2.destroy();
+
+  // Wait for the replacement connection to be created
+  await wait(50);
+
+  // Pool should have 2 idle connections, both reachable
+  assertPoolState(t, pool, {
+    acquiredConnections: 0,
+    idleConnections: 2,
+  });
+
+  // Both idle connections must be acquirable from the idle queue.
+  // Before the fix, the minimumPoolSize replacement was not in the idle queue,
+  // so the second acquire would create a third connection instead of reusing it.
+  const a1 = await pool.acquire();
+  const a2 = await pool.acquire();
+
+  t.truthy(a1);
+  t.truthy(a2);
+
+  assertPoolState(t, pool, {
+    acquiredConnections: 2,
+    idleConnections: 0,
+  });
+
+  // Verify only 3 total connections were created (c1, c2, replacement)
+  // not 4 (which would happen if replacement was unreachable and acquire created another)
+  t.is(driver.getCreatedClients().length, 3);
+
+  await a1.release();
+  await a2.release();
+  await pool.end();
+});
+
+test('minimumPoolSize replacement serves waiting client that arrived after destruction', async (t) => {
+  const driver = new MockDriver({ connectionDelay: 20 });
+  const pool = createTestPool(driver, {
+    maximumPoolSize: 2,
+    minimumPoolSize: 2,
+  });
+
+  const c1 = await pool.acquire();
+  const c2 = await pool.acquire();
+
+  // Release c1 (becomes idle)
+  await c1.release();
+
+  // Destroy c2 → pool drops to 1, triggers minimumPoolSize replacement (async, 20ms delay)
+  await c2.destroy();
+
+  // Immediately acquire the idle c1
+  const a1 = await pool.acquire();
+  t.is(a1.id(), c1.id());
+
+  // Pool is at capacity: pendingConnections=1 + connections=1 = maximumPoolSize=2
+  // This acquire will queue as a waiting client
+  const a2Promise = pool.acquire();
+
+  await wait(10);
+
+  assertPoolState(t, pool, {
+    acquiredConnections: 1,
+    waitingClients: 1,
+  });
+
+  // When the minimumPoolSize replacement resolves, it should serve the waiting client
+  const a2 = await a2Promise;
+  t.truthy(a2);
+
+  assertPoolState(t, pool, {
+    acquiredConnections: 2,
+    waitingClients: 0,
+  });
+
+  await a1.release();
+  await a2.release();
+  await pool.end();
+});
