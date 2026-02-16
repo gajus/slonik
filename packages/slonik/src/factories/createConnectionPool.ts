@@ -427,6 +427,7 @@ export const createConnectionPool = ({
                     );
                   }
                   // Only create one connection at a time to avoid overshooting pool size
+
                   break;
                 } else {
                   // Pool is at capacity and no idle connections available
