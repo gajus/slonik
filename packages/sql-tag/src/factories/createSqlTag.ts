@@ -247,7 +247,7 @@ export const createSqlTag = <
     unsafe: (parts, ...args) => {
       return Object.freeze({
         ...createFragment(parts, args),
-        parser: z.any(),
+        parser: z.unknown(),
         type: QueryToken,
       });
     },

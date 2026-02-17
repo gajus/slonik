@@ -9,6 +9,7 @@ import type { TestFn } from 'ava';
 import { randomUUID } from 'node:crypto';
 import { setTimeout as delay } from 'node:timers/promises';
 import * as sinon from 'sinon';
+import { z } from 'zod';
 
 export const createPoolTests = (
   test: TestFn<TestContextType>,
@@ -389,7 +390,11 @@ export const createPoolTests = (
     let firstConnectionPid: number | undefined;
 
     await pool.connect(async (connection) => {
-      firstConnectionPid = await connection.oneFirst(sql.unsafe`
+      firstConnectionPid = await connection.oneFirst(sql.type(
+        z.object({
+          pg_backend_pid: z.int(),
+        })
+      )`
         SELECT pg_backend_pid();
       `);
     });
@@ -397,7 +402,11 @@ export const createPoolTests = (
     let secondConnectionPid: number | undefined;
 
     await pool.connect(async (connection) => {
-      secondConnectionPid = await connection.oneFirst(sql.unsafe`
+      secondConnectionPid = await connection.oneFirst(sql.type(
+        z.object({
+          pg_backend_pid: z.int(),
+        })
+      )`
         SELECT pg_backend_pid();
       `);
     });
@@ -414,7 +423,11 @@ export const createPoolTests = (
     let firstConnectionPid: number | undefined;
 
     await pool.transaction(async (transaction) => {
-      firstConnectionPid = await transaction.oneFirst(sql.unsafe`
+      firstConnectionPid = await transaction.oneFirst(sql.type(
+        z.object({
+          pg_backend_pid: z.int(),
+        })
+      )`
         SELECT pg_backend_pid();
       `);
     });
@@ -422,7 +435,11 @@ export const createPoolTests = (
     let secondConnectionPid: number | undefined;
 
     await pool.transaction(async (transaction) => {
-      secondConnectionPid = await transaction.oneFirst(sql.unsafe`
+      secondConnectionPid = await transaction.oneFirst(sql.type(
+        z.object({
+          pg_backend_pid: z.int(),
+        })
+      )`
         SELECT pg_backend_pid();
       `);
     });
@@ -723,14 +740,22 @@ export const createPoolTests = (
       maximumPoolSize: 1,
     });
 
-    const firstConnectionPid = await pool.oneFirst(sql.unsafe`
+    const firstConnectionPid = await pool.oneFirst(sql.type(
+      z.object({
+        pg_backend_pid: z.int(),
+      })
+    )`
       SELECT pg_backend_pid();
     `);
 
     // Confirm that the same connection is re-used.
-    await t.is(
+    t.is(
       firstConnectionPid,
-      await pool.oneFirst(sql.unsafe`
+      await pool.oneFirst(sql.type(
+        z.object({
+          pg_backend_pid: z.int(),
+        })
+      )`
         SELECT pg_backend_pid();
       `),
     );
@@ -773,14 +798,22 @@ export const createPoolTests = (
       maximumPoolSize: 1,
     });
 
-    const firstConnectionPid = await pool.oneFirst(sql.unsafe`
+    const firstConnectionPid = await pool.oneFirst(sql.type(
+      z.object({
+        pg_backend_pid: z.int(),
+      })
+    )`
       SELECT pg_backend_pid();
     `);
 
     // Confirm that the same connection is re-used.
-    await t.is(
+    t.is(
       firstConnectionPid,
-      await pool.oneFirst(sql.unsafe`
+      await pool.oneFirst(sql.type(
+        z.object({
+          pg_backend_pid: z.int(),
+        })
+      )`
         SELECT pg_backend_pid();
       `),
     );

@@ -2215,7 +2215,7 @@ Produces:
 ) => QuerySqlToken;
 ```
 
-Creates a query with Zod `any` type. The result of such a query has TypeScript type `any`.
+Creates a query with Zod `unknown` type. The result of such a query has TypeScript type `unknown`.
 
 ```ts
 const result = await connection.one(sql.unsafe`
@@ -2223,10 +2223,10 @@ const result = await connection.one(sql.unsafe`
   FROM bar
 `);
 
-// `result` type is `any`
+// `result` type is `unknown`
 ```
 
-`sql.unsafe` is effectively a shortcut to `sql.type(z.any())`.
+`sql.unsafe` is effectively a shortcut to `sql.type(z.unknown())`.
 
 `sql.unsafe` is as a convenience method for development. Your production code must not use `sql.unsafe`. Instead,
 
