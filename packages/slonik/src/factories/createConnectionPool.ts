@@ -574,7 +574,10 @@ export const createConnectionPool = ({
           return idleConnection;
         }
 
-        if (pendingConnections.size + connections.size - destroyedInLoop < maximumPoolSize) {
+        if (
+          pendingConnections.size + connections.size - destroyedInLoop <
+          maximumPoolSize
+        ) {
           const newConnection = await addConnection(span);
 
           newConnection.acquire();
@@ -657,7 +660,7 @@ export const createConnectionPool = ({
 
     const warmupPromises: Array<Promise<void>> = [];
 
-    for (let i = 0; i < minimumPoolSize; i++) {
+    for (let index = 0; index < minimumPoolSize; index++) {
       warmupPromises.push(
         addConnection().then((connection) => {
           idleConnectionsQueue.push(connection);
