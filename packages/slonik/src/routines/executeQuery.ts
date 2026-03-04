@@ -30,7 +30,7 @@ import {
 } from '@slonik/errors';
 import type { PrimitiveValueExpression, QuerySqlToken } from '@slonik/sql-tag';
 import { defer, generateUid } from '@slonik/utilities';
-import { getStackTrace } from 'get-stack-trace';
+import { getStackTrace } from './getStackTrace.js';
 import pLimit from 'p-limit';
 import { serializeError } from 'serialize-error';
 
