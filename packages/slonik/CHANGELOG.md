@@ -1,5 +1,18 @@
 # slonik
 
+## 48.12.1
+
+### Patch Changes
+
+- [`1deeb3b`](https://github.com/gajus/slonik/commit/1deeb3bcd0d8b1e914a62763df47b7edc662f437) Thanks [@gajus](https://github.com/gajus)! - fix: prevent pool deadlock when connections are stuck in PENDING_DESTROY
+
+- Updated dependencies []:
+  - @slonik/driver@48.12.1
+  - @slonik/errors@48.12.1
+  - @slonik/pg-driver@48.12.1
+  - @slonik/sql-tag@48.12.1
+  - @slonik/utilities@48.12.1
+
 ## 48.12.0
 
 ### Minor Changes
