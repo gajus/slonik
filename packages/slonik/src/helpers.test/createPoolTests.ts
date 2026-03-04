@@ -887,8 +887,7 @@ export const createPoolTests = (
       pool.state(),
       {
         acquiredConnections: 0,
-        // TODO we might want to add an option to warm up the pool, in which case this value should be 1
-        idleConnections: 0,
+        idleConnections: 1,
         pendingConnections: 0,
         pendingDestroyConnections: 0,
         pendingReleaseConnections: 0,
@@ -965,9 +964,9 @@ export const createPoolTests = (
     t.deepEqual(
       pool.state(),
       {
-        acquiredConnections: 0,
+        acquiredConnections: 1,
         idleConnections: 0,
-        pendingConnections: 1,
+        pendingConnections: 0,
         pendingDestroyConnections: 0,
         pendingReleaseConnections: 0,
         state: 'ACTIVE',
