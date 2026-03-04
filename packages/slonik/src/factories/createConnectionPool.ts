@@ -56,6 +56,11 @@ export type ConnectionPoolClient = {
 
 type ConnectionMetadata = {
   createdAt: number;
+  // Per-connection jittered max age to prevent thundering herd when many
+  // connections are created at the same time (e.g. minimumPoolSize at startup).
+  // Without jitter, all connections hit maximumConnectionAge simultaneously,
+  // triggering mass recycling that can exhaust the pool.
+  effectiveMaxAge: number;
   idleTimer?: ReturnType<typeof setTimeout>;
 };
 
@@ -124,13 +129,31 @@ export const createConnectionPool = ({
 
   let poolEndPromise: null | Promise<void> = null;
 
-  // When a connection fails to be created and the pool has no connections
-  // and no pending connections, all waiting clients are orphaned — no
-  // onRelease or onDestroy event will ever fire to serve them. Reject
+  // Count connections that are usable (not being destroyed). Connections in
+  // PENDING_DESTROY may never complete destruction (e.g. broken TCP), so they
+  // must not count toward maximumPoolSize — otherwise the pool considers itself
+  // full and cannot create replacements, starving all waiting clients.
+  const activeConnectionCount = () => {
+    let count = 0;
+
+    for (const connection of connections) {
+      if (connection.state() !== 'PENDING_DESTROY') {
+        count++;
+      }
+    }
+
+    return count;
+  };
+
+  // When a connection fails to be created and the pool has no usable
+  // connections and no pending connections, all waiting clients are orphaned —
+  // no onRelease or onDestroy event will ever fire to serve them. Reject
   // them immediately so callers can retry through normal error handling.
+  // This also covers the case where all connections are stuck in
+  // PENDING_DESTROY (e.g. database became unreachable).
   const drainWaitingClientsOnConnectionFailure = (originalError: unknown) => {
     if (
-      connections.size === 0 &&
+      activeConnectionCount() === 0 &&
       pendingConnections.size === 0 &&
       waitingClients.length > 0 &&
       !isEnding &&
@@ -214,7 +237,7 @@ export const createConnectionPool = ({
 
     const age = Date.now() - metadata.createdAt;
 
-    return age > maximumConnectionAge;
+    return age > metadata.effectiveMaxAge;
   };
 
   const addConnection = async (span?: Span) => {
@@ -236,8 +259,14 @@ export const createConnectionPool = ({
       throw error;
     });
 
+    // Apply ±10% jitter to maximumConnectionAge so connections created at the
+    // same time (e.g. minimumPoolSize at startup) don't all expire together.
+    // For a 60-minute max age, this spreads recycling over a ~12-minute window.
+    const jitter = maximumConnectionAge * (0.9 + Math.random() * 0.2);
+
     connectionMetadata.set(connection, {
       createdAt: Date.now(),
+      effectiveMaxAge: jitter,
     });
 
     const onRelease = () => {
@@ -343,7 +372,7 @@ export const createConnectionPool = ({
               idleConnectionsSet.add(idleConnectionToServe);
             }
           } else if (
-            pendingConnections.size + connections.size <
+            pendingConnections.size + activeConnectionCount() <
             maximumPoolSize
           ) {
             // Create a new connection for the waiting client
@@ -375,7 +404,7 @@ export const createConnectionPool = ({
         // If there are waiting clients, create for them instead of an idle connection.
         if (
           !createdConnectionForWaitingClient &&
-          connections.size < minimumPoolSize
+          activeConnectionCount() < minimumPoolSize
         ) {
           addConnection().then(
             (newConnection) => {
@@ -575,7 +604,7 @@ export const createConnectionPool = ({
         }
 
         if (
-          pendingConnections.size + connections.size - destroyedInLoop <
+          pendingConnections.size + activeConnectionCount() - destroyedInLoop <
           maximumPoolSize
         ) {
           const newConnection = await addConnection(span);

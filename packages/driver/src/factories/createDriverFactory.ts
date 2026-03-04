@@ -280,7 +280,15 @@ export const createDriverFactory = (setup: DriverSetup): DriverFactory => {
 
           clientEventEmitter.emit('destroy');
 
-          await end();
+          // end() calls pg client.end() which sends a termination message and
+          // waits for the TCP connection to close. On broken connections (half-open
+          // TCP, network partition) this can hang indefinitely. Apply the same
+          // graceful termination timeout to prevent leaked promises that block
+          // pool.end() and callers awaiting connection.destroy().
+          await Promise.race([
+            end(),
+            delay(driverConfiguration.gracefulTerminationTimeout),
+          ]);
 
           clientEventEmitter.off('error', onError);
         };
