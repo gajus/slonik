@@ -282,6 +282,7 @@ const createTestPool = (
   driver: Driver,
   options: Partial<{
     idleTimeout: number;
+    maximumConnectionAge: number;
     maximumPoolSize: number;
     minimumPoolSize: number;
   }> = {},
@@ -292,7 +293,7 @@ const createTestPool = (
     driver,
     events,
     idleTimeout: options.idleTimeout || 1_000,
-    maximumConnectionAge: 30 * 60 * 1_000, // 30 minutes
+    maximumConnectionAge: options.maximumConnectionAge ?? 30 * 60 * 1_000, // 30 minutes
     maximumPoolSize: options.maximumPoolSize || 10,
     minimumPoolSize: options.minimumPoolSize || 0,
   });
@@ -1444,5 +1445,108 @@ test('minimumPoolSize replacement serves waiting client that arrived after destr
 
   await a1.release();
   await a2.release();
+  await pool.end();
+});
+
+test('warmup creates minimumPoolSize idle connections', async (t) => {
+  const driver = new MockDriver();
+  const pool = createTestPool(driver, {
+    maximumPoolSize: 5,
+    minimumPoolSize: 3,
+  });
+
+  await pool.warmup();
+
+  assertPoolState(t, pool, {
+    acquiredConnections: 0,
+    idleConnections: 3,
+    pendingConnections: 0,
+  });
+
+  t.is(driver.getCreatedClients().length, 3);
+
+  await pool.end();
+});
+
+test('warmup connections are reusable via acquire', async (t) => {
+  const driver = new MockDriver();
+  const pool = createTestPool(driver, {
+    maximumPoolSize: 5,
+    minimumPoolSize: 2,
+  });
+
+  await pool.warmup();
+
+  // Acquire both warmed-up connections
+  const c1 = await pool.acquire();
+  const c2 = await pool.acquire();
+
+  t.truthy(c1);
+  t.truthy(c2);
+
+  assertPoolState(t, pool, {
+    acquiredConnections: 2,
+    idleConnections: 0,
+  });
+
+  // Should not have created any extra connections beyond warmup
+  t.is(driver.getCreatedClients().length, 2);
+
+  await c1.release();
+  await c2.release();
+  await pool.end();
+});
+
+test('warmup with minimumPoolSize=0 is a no-op', async (t) => {
+  const driver = new MockDriver();
+  const pool = createTestPool(driver, {
+    maximumPoolSize: 5,
+    minimumPoolSize: 0,
+  });
+
+  await pool.warmup();
+
+  assertPoolState(t, pool, {
+    acquiredConnections: 0,
+    idleConnections: 0,
+    pendingConnections: 0,
+  });
+
+  t.is(driver.getCreatedClients().length, 0);
+
+  await pool.end();
+});
+
+test('acquire creates new connection when all idle connections are too old (batch eviction)', async (t) => {
+  const driver = new MockDriver();
+  const pool = createTestPool(driver, {
+    maximumConnectionAge: 50, // 50ms
+    maximumPoolSize: 3,
+    minimumPoolSize: 0,
+  });
+
+  // Create 3 connections and release them to idle
+  const connections = await acquireConnections(pool, 3);
+  await releaseConnections(connections);
+
+  assertPoolState(t, pool, {
+    acquiredConnections: 0,
+    idleConnections: 3,
+  });
+
+  // Wait for all connections to exceed maximumConnectionAge
+  await wait(60);
+
+  // Acquire should evict all old connections and create a new one inline
+  // Without the fix, it would queue the request thinking the pool is full
+  const freshConnection = await pool.acquire();
+  t.truthy(freshConnection);
+  t.is(freshConnection.state(), 'ACQUIRED');
+
+  // The 3 old connections should have been destroyed, and 1 new one created
+  // Total created: 3 original + 1 fresh = 4
+  t.is(driver.getCreatedClients().length, 4);
+
+  await freshConnection.release();
   await pool.end();
 });

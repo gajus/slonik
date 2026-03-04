@@ -40,6 +40,8 @@ export const createPool = async (
     ...createPoolConfiguration(clientConfiguration),
   });
 
+  await pool.warmup();
+
   return bindPool(
     events,
     Logger.child({
