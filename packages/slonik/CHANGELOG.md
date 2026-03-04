@@ -1,5 +1,20 @@
 # slonik
 
+## 48.12.0
+
+### Minor Changes
+
+- [`e89dc6a`](https://github.com/gajus/slonik/commit/e89dc6aa3470ce1e186428a59ce70a1ee12a1f69) Thanks [@gajus](https://github.com/gajus)! - drop get-stack-trace dependency
+
+### Patch Changes
+
+- Updated dependencies []:
+  - @slonik/driver@48.12.0
+  - @slonik/errors@48.12.0
+  - @slonik/pg-driver@48.12.0
+  - @slonik/sql-tag@48.12.0
+  - @slonik/utilities@48.12.0
+
 ## 48.11.0
 
 ### Minor Changes
