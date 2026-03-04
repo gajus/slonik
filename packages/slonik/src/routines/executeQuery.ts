@@ -15,6 +15,7 @@ import type {
   QueryResultRow,
   StreamResult,
 } from '../types.js';
+import { getStackTrace } from './getStackTrace.js';
 import { SpanStatusCode, trace } from '@opentelemetry/api';
 import type { DriverNotice } from '@slonik/driver';
 import {
@@ -30,7 +31,6 @@ import {
 } from '@slonik/errors';
 import type { PrimitiveValueExpression, QuerySqlToken } from '@slonik/sql-tag';
 import { defer, generateUid } from '@slonik/utilities';
-import { getStackTrace } from './getStackTrace.js';
 import pLimit from 'p-limit';
 import { serializeError } from 'serialize-error';
 
