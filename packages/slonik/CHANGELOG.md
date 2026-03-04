@@ -1,5 +1,20 @@
 # slonik
 
+## 48.11.0
+
+### Minor Changes
+
+- [`b3a0539`](https://github.com/gajus/slonik/commit/b3a053941d4abb73f4c4228890b1637bb499127b) Thanks [@gajus](https://github.com/gajus)! - warm up min connection pool
+
+### Patch Changes
+
+- Updated dependencies []:
+  - @slonik/driver@48.11.0
+  - @slonik/errors@48.11.0
+  - @slonik/pg-driver@48.11.0
+  - @slonik/sql-tag@48.11.0
+  - @slonik/utilities@48.11.0
+
 ## 48.10.3
 
 ### Patch Changes
