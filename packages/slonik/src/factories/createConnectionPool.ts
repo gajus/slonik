@@ -226,6 +226,8 @@ export const createConnectionPool = ({
         }
       }
     }, idleTimeout);
+
+    metadata.idleTimer.unref?.();
   };
 
   const isConnectionTooOld = (connection: ConnectionPoolClient): boolean => {
