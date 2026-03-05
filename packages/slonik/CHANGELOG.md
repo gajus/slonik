@@ -1,5 +1,18 @@
 # slonik
 
+## 48.12.2
+
+### Patch Changes
+
+- [`c477b3f`](https://github.com/gajus/slonik/commit/c477b3f9b3fb3f9522796451ad4c4105286b13c6) Thanks [@gajus](https://github.com/gajus)! - added .unref?.() to the idle timer
+
+- Updated dependencies []:
+  - @slonik/driver@48.12.2
+  - @slonik/errors@48.12.2
+  - @slonik/pg-driver@48.12.2
+  - @slonik/sql-tag@48.12.2
+  - @slonik/utilities@48.12.2
+
 ## 48.12.1
 
 ### Patch Changes
