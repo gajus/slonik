@@ -4,7 +4,11 @@ import type { Field } from '@slonik/types';
 import { generateUid } from '@slonik/utilities';
 import EventEmitter from 'node:events';
 import type { Readable } from 'node:stream';
-import { setTimeout as delay } from 'node:timers/promises';
+const delay = (ms: number) =>
+  new Promise<void>((resolve) => {
+    const timer = setTimeout(resolve, ms);
+    timer.unref();
+  });
 import type { ConnectionOptions as TlsConnectionOptions } from 'node:tls';
 import { serializeError } from 'serialize-error';
 import type { StrictEventEmitter } from 'strict-event-emitter-types';
