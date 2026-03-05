@@ -4,7 +4,7 @@ import type { Field } from '@slonik/types';
 import { generateUid } from '@slonik/utilities';
 import EventEmitter from 'node:events';
 import type { Readable } from 'node:stream';
-const delay = (ms: number) =>
+const delay = (ms: number | undefined) =>
   new Promise<void>((resolve) => {
     const timer = setTimeout(resolve, ms);
     timer.unref();
