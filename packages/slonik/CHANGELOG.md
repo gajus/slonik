@@ -1,5 +1,18 @@
 # slonik
 
+## 48.12.3
+
+### Patch Changes
+
+- [`e44b096`](https://github.com/gajus/slonik/commit/e44b096c65e5dbc8ac1c40a227dbcb6050f3d5aa) Thanks [@gajus](https://github.com/gajus)! - unref delay timers in driver to prevent blocking process exit
+
+- Updated dependencies []:
+  - @slonik/driver@48.12.3
+  - @slonik/errors@48.12.3
+  - @slonik/pg-driver@48.12.3
+  - @slonik/sql-tag@48.12.3
+  - @slonik/utilities@48.12.3
+
 ## 48.12.2
 
 ### Patch Changes
