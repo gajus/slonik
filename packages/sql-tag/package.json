@@ -32,8 +32,8 @@
     "test": "ava --verbose --serial"
   },
   "dependencies": {
-    "@slonik/errors": "^48.13.2",
-    "@slonik/types": "^48.13.2",
+    "@slonik/errors": "workspace:^",
+    "@slonik/types": "workspace:^",
     "roarr": "^7.21.4",
     "safe-stable-stringify": "^2.5.0",
     "serialize-error": "^12.0.0",

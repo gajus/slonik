@@ -10,6 +10,6 @@
     "pg": "^8.18.0",
     "pg-promise": "^11.15.0",
     "postgres": "^3.4.7",
-    "slonik": "^48.13.2"
+    "slonik": "workspace:^"
   }
 }

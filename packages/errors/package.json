@@ -32,7 +32,7 @@
     "test": "ava --verbose --serial"
   },
   "dependencies": {
-    "@slonik/types": "^48.13.2"
+    "@slonik/types": "workspace:^"
   },
   "devDependencies": {
     "@standard-schema/spec": "^1.0.0",

@@ -30,7 +30,7 @@
   },
   "devDependencies": {
     "ava": "^6.4.1",
-    "slonik": "^48.13.2",
+    "slonik": "workspace:^",
     "tsimp": "^2.0.12",
     "typescript": "^5.9.3"
   },
