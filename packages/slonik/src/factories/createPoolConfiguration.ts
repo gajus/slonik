@@ -37,6 +37,12 @@ export const createPoolConfiguration = (
 
   if (clientConfiguration.maximumConnectionAge === 'DISABLE_TIMEOUT') {
     poolConfiguration.maximumConnectionAge = 'DISABLE_TIMEOUT';
+  } else if (clientConfiguration.maximumConnectionAge === 0) {
+    log.warn(
+      'maximumConnectionAge=0 sets age to 0 milliseconds; use maximumConnectionAge=DISABLE_TIMEOUT to disable age-based recycling',
+    );
+
+    poolConfiguration.maximumConnectionAge = 1;
   } else if (clientConfiguration.maximumConnectionAge) {
     poolConfiguration.maximumConnectionAge =
       clientConfiguration.maximumConnectionAge;
