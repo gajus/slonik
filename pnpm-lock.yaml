@@ -40,17 +40,17 @@ importers:
         specifier: ^3.4.7
         version: 3.4.8
       slonik:
-        specifier: ^48.10.3
-        version: link:../slonik
+        specifier: ^48.12.3
+        version: 48.12.3
 
   packages/driver:
     dependencies:
       '@slonik/types':
-        specifier: ^48.10.3
-        version: link:../types
+        specifier: ^48.12.3
+        version: 48.12.3(zod@4.3.5)
       '@slonik/utilities':
-        specifier: ^48.10.3
-        version: link:../utilities
+        specifier: ^48.12.3
+        version: 48.12.3(zod@4.3.5)
       roarr:
         specifier: ^7.21.4
         version: 7.21.4
@@ -92,8 +92,8 @@ importers:
   packages/errors:
     dependencies:
       '@slonik/types':
-        specifier: ^48.10.3
-        version: link:../types
+        specifier: ^48.12.3
+        version: 48.12.3(zod@4.3.6)
     devDependencies:
       '@slonik/eslint-config':
         specifier: workspace:^
@@ -136,20 +136,20 @@ importers:
   packages/pg-driver:
     dependencies:
       '@slonik/driver':
-        specifier: ^48.10.3
-        version: link:../driver
+        specifier: ^48.12.3
+        version: 48.12.3(zod@4.3.5)
       '@slonik/errors':
-        specifier: ^48.10.3
-        version: link:../errors
+        specifier: ^48.12.3
+        version: 48.12.3(zod@4.3.5)
       '@slonik/sql-tag':
-        specifier: ^48.10.3
-        version: link:../sql-tag
+        specifier: ^48.12.3
+        version: 48.12.3
       '@slonik/types':
-        specifier: ^48.10.3
-        version: link:../types
+        specifier: ^48.12.3
+        version: 48.12.3(zod@4.3.5)
       '@slonik/utilities':
-        specifier: ^48.10.3
-        version: link:../utilities
+        specifier: ^48.12.3
+        version: 48.12.3(zod@4.3.5)
       pg:
         specifier: ^8.18.0
         version: 8.18.0
@@ -200,20 +200,20 @@ importers:
         specifier: ^1.9.0
         version: 1.9.0
       '@slonik/driver':
-        specifier: ^48.10.3
-        version: link:../driver
+        specifier: ^48.12.3
+        version: 48.12.3(zod@4.3.6)
       '@slonik/errors':
-        specifier: ^48.10.3
-        version: link:../errors
+        specifier: ^48.12.3
+        version: 48.12.3(zod@4.3.6)
       '@slonik/pg-driver':
-        specifier: ^48.10.3
-        version: link:../pg-driver
+        specifier: ^48.12.3
+        version: 48.12.3(zod@4.3.6)
       '@slonik/sql-tag':
-        specifier: ^48.10.3
-        version: link:../sql-tag
+        specifier: ^48.12.3
+        version: 48.12.3
       '@slonik/utilities':
-        specifier: ^48.10.3
-        version: link:../utilities
+        specifier: ^48.12.3
+        version: 48.12.3(zod@4.3.6)
       '@standard-schema/spec':
         specifier: ^1.0.0
         version: 1.1.0
@@ -292,8 +292,8 @@ importers:
         specifier: workspace:^
         version: link:../eslint-config
       '@slonik/types':
-        specifier: ^48.10.3
-        version: link:../types
+        specifier: ^48.12.3
+        version: 48.12.3(zod@4.3.6)
       '@standard-schema/spec':
         specifier: ^1.0.0
         version: 1.1.0
@@ -301,8 +301,8 @@ importers:
         specifier: 9.39.2
         version: 9.39.2(jiti@2.6.1)
       slonik:
-        specifier: ^48.10.3
-        version: link:../slonik
+        specifier: ^48.12.3
+        version: 48.12.3
       typescript:
         specifier: ^5.9.3
         version: 5.9.3
@@ -329,8 +329,8 @@ importers:
         specifier: 9.39.2
         version: 9.39.2(jiti@2.6.1)
       slonik:
-        specifier: ^48.10.3
-        version: link:../slonik
+        specifier: ^48.12.3
+        version: 48.12.3
       tsimp:
         specifier: ^2.0.12
         version: 2.0.12(typescript@5.9.3)
@@ -363,8 +363,8 @@ importers:
         specifier: 9.39.2
         version: 9.39.2(jiti@2.6.1)
       slonik:
-        specifier: ^48.10.3
-        version: link:../slonik
+        specifier: ^48.12.3
+        version: 48.12.3
       tsimp:
         specifier: ^2.0.12
         version: 2.0.12(typescript@5.9.3)
@@ -397,8 +397,8 @@ importers:
         specifier: 9.39.2
         version: 9.39.2(jiti@2.6.1)
       slonik:
-        specifier: ^48.10.3
-        version: link:../slonik
+        specifier: ^48.12.3
+        version: 48.12.3
       tsimp:
         specifier: ^2.0.12
         version: 2.0.12(typescript@5.9.3)
@@ -412,8 +412,8 @@ importers:
   packages/slonik-sql-tag-raw:
     dependencies:
       '@slonik/sql-tag':
-        specifier: ^48.10.3
-        version: link:../sql-tag
+        specifier: ^48.12.3
+        version: 48.12.3
       roarr:
         specifier: ^7.21.4
         version: 7.21.4
@@ -428,8 +428,8 @@ importers:
         specifier: 9.39.2
         version: 9.39.2(jiti@2.6.1)
       slonik:
-        specifier: ^48.10.3
-        version: link:../slonik
+        specifier: ^48.12.3
+        version: 48.12.3
       tsimp:
         specifier: ^2.0.12
         version: 2.0.12(typescript@5.9.3)
@@ -443,11 +443,11 @@ importers:
   packages/sql-tag:
     dependencies:
       '@slonik/errors':
-        specifier: ^48.10.3
-        version: link:../errors
+        specifier: ^48.12.3
+        version: 48.12.3(zod@4.3.6)
       '@slonik/types':
-        specifier: ^48.10.3
-        version: link:../types
+        specifier: ^48.12.3
+        version: 48.12.3(zod@4.3.6)
       roarr:
         specifier: ^7.21.4
         version: 7.21.4
@@ -529,11 +529,11 @@ importers:
   packages/utilities:
     dependencies:
       '@slonik/errors':
-        specifier: workspace:^48.10.3
+        specifier: workspace:^48.12.3
         version: link:../errors
       '@slonik/types':
-        specifier: ^48.10.3
-        version: link:../types
+        specifier: ^48.12.3
+        version: 48.12.3(zod@4.3.6)
     devDependencies:
       '@slonik/eslint-config':
         specifier: workspace:^
@@ -1775,6 +1775,38 @@ packages:
 
   '@sinonjs/samsam@8.0.3':
     resolution: {integrity: sha512-hw6HbX+GyVZzmaYNh82Ecj1vdGZrqVIn/keDTg63IgAwiQPO+xCz99uG6Woqgb4tM0mUiFENKZ4cqd7IX94AXQ==}
+
+  '@slonik/driver@48.12.3':
+    resolution: {integrity: sha512-GEzTmobwVXWlDCUiKQB8ecC45PUoI5Rs6g86rAqHkRiqPNT+4uS2VnBwiv2s9Q9D9p56ACGq6QOiv2WJlOJKBg==}
+    engines: {node: '>=24'}
+    peerDependencies:
+      zod: ^3.25 || ^4
+
+  '@slonik/errors@48.12.3':
+    resolution: {integrity: sha512-0Mk86SbVmhGcxZ5Mr+dvHxMdZOYUMm7wzSYtccXY/BlQyqKT4nYvAXeDXDmPbA/8BONGWhao21MXhH5pF1Ln+g==}
+    engines: {node: '>=24'}
+
+  '@slonik/pg-driver@48.12.3':
+    resolution: {integrity: sha512-cgVq6gmn2pMesYusg+SPLy1reJU5ZsuOXHKGMo5fot6CYjoZ1uBU66vI4R+xm+QTVScqxAxA5t/S5qVQ2Hy6CA==}
+    engines: {node: '>=24'}
+    peerDependencies:
+      zod: ^3.25 || ^4
+
+  '@slonik/sql-tag@48.12.3':
+    resolution: {integrity: sha512-O7TwL1ejSOwZ9JGfuA50AliWGUt22ysjd+lsQrArTljcYMM3rSYyO6JRv2UEFzwtJh9Rx97ZDRJ6ZjJweT6thQ==}
+    engines: {node: '>=24'}
+
+  '@slonik/types@48.12.3':
+    resolution: {integrity: sha512-ITaqG5Lya6k9ibHvNJahZeoQDB+YyvCNUHBP25FuwwFAogCooZF/XexM+odTRrLJCF2kP07OpF1hy4qsnDGysw==}
+    engines: {node: '>=24'}
+    peerDependencies:
+      zod: ^3.25 || ^4
+
+  '@slonik/utilities@48.12.3':
+    resolution: {integrity: sha512-rPI/bnwRy6SjzPikGa26ClKYKbecFw26tC9dguJnNvB/Kq2TBbUZUcKv7S4ExOiPJP1mK3lRbkH4Wm+R6lCrDg==}
+    engines: {node: '>=24'}
+    peerDependencies:
+      zod: ^3.25 || ^4
 
   '@standard-schema/spec@1.1.0':
     resolution: {integrity: sha512-l2aFy5jALhniG5HgqrD6jXLi/rUWrKvqN/qJx6yoJsgKhblVd+iqqU4RCXavm/jPityDo5TCvKMnpjKnOriy0w==}
@@ -4498,6 +4530,10 @@ packages:
     resolution: {integrity: sha512-FC+lgizVPfie0kkhqUScwRu1O/lF6NOgJmlCgK+/LYxDCTk8sGelYaHDhFcDN+Sn3Cv+3VSa4Byeo+IMCzpMgQ==}
     engines: {node: '>=12'}
 
+  slonik@48.12.3:
+    resolution: {integrity: sha512-6SMpZkX2aihmde7IKrSqkk+h6DWuTF3DyXLI1vjzQf13LHc3jqeg+a0nUkuqsuSNiTLIQT7dgdiTGRBPIzcLTw==}
+    engines: {node: '>=24'}
+
   smol-toml@1.6.0:
     resolution: {integrity: sha512-4zemZi0HvTnYwLfrpk/CF9LOd9Lt87kAt50GnqhMpyF9U3poDAP2+iukq2bZsO/ufegbYehBkqINbsWxj4l4cw==}
     engines: {node: '>= 18'}
@@ -6310,6 +6346,80 @@ snapshots:
       '@sinonjs/commons': 3.0.1
       type-detect: 4.1.0
 
+  '@slonik/driver@48.12.3(zod@4.3.5)':
+    dependencies:
+      '@slonik/types': 48.12.3(zod@4.3.5)
+      '@slonik/utilities': 48.12.3(zod@4.3.5)
+      roarr: 7.21.4
+      serialize-error: 12.0.0
+      strict-event-emitter-types: 2.0.0
+      zod: 4.3.5
+
+  '@slonik/driver@48.12.3(zod@4.3.6)':
+    dependencies:
+      '@slonik/types': 48.12.3(zod@4.3.6)
+      '@slonik/utilities': 48.12.3(zod@4.3.6)
+      roarr: 7.21.4
+      serialize-error: 12.0.0
+      strict-event-emitter-types: 2.0.0
+      zod: 4.3.6
+
+  '@slonik/errors@48.12.3(zod@4.3.5)':
+    dependencies:
+      '@slonik/types': 48.12.3(zod@4.3.5)
+    transitivePeerDependencies:
+      - zod
+
+  '@slonik/errors@48.12.3(zod@4.3.6)':
+    dependencies:
+      '@slonik/types': 48.12.3(zod@4.3.6)
+    transitivePeerDependencies:
+      - zod
+
+  '@slonik/pg-driver@48.12.3(zod@4.3.6)':
+    dependencies:
+      '@slonik/driver': 48.12.3(zod@4.3.6)
+      '@slonik/errors': 48.12.3(zod@4.3.6)
+      '@slonik/sql-tag': 48.12.3
+      '@slonik/types': 48.12.3(zod@4.3.6)
+      '@slonik/utilities': 48.12.3(zod@4.3.6)
+      pg: 8.18.0
+      pg-query-stream: 4.12.0(pg@8.18.0)
+      pg-types: 4.1.0
+      postgres-array: 3.0.4
+      zod: 4.3.6
+    transitivePeerDependencies:
+      - pg-native
+
+  '@slonik/sql-tag@48.12.3':
+    dependencies:
+      '@slonik/errors': 48.12.3(zod@4.3.6)
+      '@slonik/types': 48.12.3(zod@4.3.6)
+      roarr: 7.21.4
+      safe-stable-stringify: 2.5.0
+      serialize-error: 12.0.0
+      zod: 4.3.6
+
+  '@slonik/types@48.12.3(zod@4.3.5)':
+    dependencies:
+      zod: 4.3.5
+
+  '@slonik/types@48.12.3(zod@4.3.6)':
+    dependencies:
+      zod: 4.3.6
+
+  '@slonik/utilities@48.12.3(zod@4.3.5)':
+    dependencies:
+      '@slonik/errors': 48.12.3(zod@4.3.5)
+      '@slonik/types': 48.12.3(zod@4.3.5)
+      zod: 4.3.5
+
+  '@slonik/utilities@48.12.3(zod@4.3.6)':
+    dependencies:
+      '@slonik/errors': 48.12.3(zod@4.3.6)
+      '@slonik/types': 48.12.3(zod@4.3.6)
+      zod: 4.3.6
+
   '@standard-schema/spec@1.1.0': {}
 
   '@stylistic/eslint-plugin@5.7.0(eslint@9.39.2(jiti@2.6.1))':
@@ -7475,12 +7585,12 @@ snapshots:
   eslint-compat-utils@0.5.1(eslint@9.39.2(jiti@2.6.1)):
     dependencies:
       eslint: 9.39.2(jiti@2.6.1)
-      semver: 7.7.3
+      semver: 7.7.4
 
   eslint-compat-utils@0.6.5(eslint@9.39.2(jiti@2.6.1)):
     dependencies:
       eslint: 9.39.2(jiti@2.6.1)
-      semver: 7.7.3
+      semver: 7.7.4
 
   eslint-config-canonical@47.3.8(@types/node@25.2.3)(@typescript-eslint/utils@8.55.0(eslint@9.39.2(jiti@2.6.1))(typescript@5.9.3))(eslint-plugin-import-x@4.16.1(@typescript-eslint/utils@8.55.0(eslint@9.39.2(jiti@2.6.1))(typescript@5.9.3))(eslint@9.39.2(jiti@2.6.1)))(eslint@9.39.2(jiti@2.6.1))(typescript@5.9.3)(vitest@4.0.18(@opentelemetry/api@1.9.0)(@types/node@25.2.3)(jiti@2.6.1)(yaml@2.8.2)):
     dependencies:
@@ -8573,7 +8683,7 @@ snapshots:
       acorn: 8.15.0
       eslint-visitor-keys: 3.4.3
       espree: 9.6.1
-      semver: 7.7.3
+      semver: 7.7.4
 
   jsonfile@4.0.0:
     optionalDependencies:
@@ -9389,6 +9499,25 @@ snapshots:
     dependencies:
       ansi-styles: 6.2.3
       is-fullwidth-code-point: 4.0.0
+
+  slonik@48.12.3:
+    dependencies:
+      '@opentelemetry/api': 1.9.0
+      '@slonik/driver': 48.12.3(zod@4.3.6)
+      '@slonik/errors': 48.12.3(zod@4.3.6)
+      '@slonik/pg-driver': 48.12.3(zod@4.3.6)
+      '@slonik/sql-tag': 48.12.3
+      '@slonik/utilities': 48.12.3(zod@4.3.6)
+      '@standard-schema/spec': 1.1.0
+      iso8601-duration: 2.1.3
+      p-limit: 6.2.0
+      postgres-interval: 4.0.2
+      roarr: 7.21.4
+      serialize-error: 12.0.0
+      strict-event-emitter-types: 2.0.0
+      zod: 4.3.6
+    transitivePeerDependencies:
+      - pg-native
 
   smol-toml@1.6.0: {}
 
