@@ -2,13 +2,13 @@ import { Logger as log } from '../Logger.js';
 import type { ClientConfiguration } from '../types.js';
 
 type PoolConfiguration = {
-  idleTimeout: number;
+  idleTimeout: 'DISABLE_TIMEOUT' | number;
   /**
    * The maximum age of a connection allowed in the pool.
    * After this age, the connection will be destroyed.
    * @default 30 minutes
    */
-  maximumConnectionAge: number;
+  maximumConnectionAge: 'DISABLE_TIMEOUT' | number;
   maximumPoolSize: number;
   minimumPoolSize: number;
 };
@@ -16,23 +16,23 @@ type PoolConfiguration = {
 export const createPoolConfiguration = (
   clientConfiguration: ClientConfiguration,
 ): PoolConfiguration => {
-  const poolConfiguration = {
+  const poolConfiguration: PoolConfiguration = {
     idleTimeout: 10_000,
     maximumConnectionAge: 30 * 60 * 1_000,
     maximumPoolSize: 10,
     minimumPoolSize: 0,
   };
 
-  if (clientConfiguration.idleTimeout !== 'DISABLE_TIMEOUT') {
-    if (clientConfiguration.idleTimeout === 0) {
-      log.warn(
-        'idleTimeout=0 sets timeout to 0 milliseconds; use idleTimeout=DISABLE_TIMEOUT to disable timeout',
-      );
+  if (clientConfiguration.idleTimeout === 'DISABLE_TIMEOUT') {
+    poolConfiguration.idleTimeout = 'DISABLE_TIMEOUT';
+  } else if (clientConfiguration.idleTimeout === 0) {
+    log.warn(
+      'idleTimeout=0 sets timeout to 0 milliseconds; use idleTimeout=DISABLE_TIMEOUT to disable timeout',
+    );
 
-      poolConfiguration.idleTimeout = 1;
-    } else {
-      poolConfiguration.idleTimeout = clientConfiguration.idleTimeout;
-    }
+    poolConfiguration.idleTimeout = 1;
+  } else {
+    poolConfiguration.idleTimeout = clientConfiguration.idleTimeout;
   }
 
   if (clientConfiguration.maximumPoolSize) {

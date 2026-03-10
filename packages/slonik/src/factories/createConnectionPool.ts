@@ -93,12 +93,12 @@ export const createConnectionPool = ({
 }: {
   driver: Driver;
   events: DatabasePoolEventEmitter;
-  idleTimeout: number;
+  idleTimeout: 'DISABLE_TIMEOUT' | number;
   /**
    * The maximum age of a connection in milliseconds.
    * After this age, the connection will be destroyed.
    */
-  maximumConnectionAge: number;
+  maximumConnectionAge: 'DISABLE_TIMEOUT' | number;
   maximumPoolSize: number;
   minimumPoolSize: number;
 }): ConnectionPool => {
@@ -191,6 +191,10 @@ export const createConnectionPool = ({
   };
 
   const setIdleTimer = (connection: ConnectionPoolClient) => {
+    if (idleTimeout === 'DISABLE_TIMEOUT') {
+      return;
+    }
+
     if (connections.size <= minimumPoolSize) {
       return;
     }
@@ -264,11 +268,16 @@ export const createConnectionPool = ({
     // Apply ±10% jitter to maximumConnectionAge so connections created at the
     // same time (e.g. minimumPoolSize at startup) don't all expire together.
     // For a 60-minute max age, this spreads recycling over a ~12-minute window.
-    const jitter = maximumConnectionAge * (0.9 + Math.random() * 0.2);
+    // When maximumConnectionAge is 'DISABLE_TIMEOUT', use Infinity so
+    // isConnectionTooOld always returns false.
+    const effectiveMaxAge =
+      maximumConnectionAge === 'DISABLE_TIMEOUT'
+        ? Infinity
+        : maximumConnectionAge * (0.9 + Math.random() * 0.2);
 
     connectionMetadata.set(connection, {
       createdAt: Date.now(),
-      effectiveMaxAge: jitter,
+      effectiveMaxAge,
     });
 
     const onRelease = () => {
