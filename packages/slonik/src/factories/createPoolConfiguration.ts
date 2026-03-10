@@ -2,13 +2,13 @@ import { Logger as log } from "../Logger.js";
 import type { ClientConfiguration } from "../types.js";
 
 type PoolConfiguration = {
-  idleTimeout: 'DISABLE_TIMEOUT' | number;
+  idleTimeout: "DISABLE_TIMEOUT" | number;
   /**
    * The maximum age of a connection allowed in the pool.
    * After this age, the connection will be destroyed.
    * @default 30 minutes
    */
-  maximumConnectionAge: 'DISABLE_TIMEOUT' | number;
+  maximumConnectionAge: "DISABLE_TIMEOUT" | number;
   maximumPoolSize: number;
   minimumPoolSize: number;
 };
@@ -33,6 +33,13 @@ export const createPoolConfiguration = (
     poolConfiguration.idleTimeout = 1;
   } else {
     poolConfiguration.idleTimeout = clientConfiguration.idleTimeout;
+  }
+
+  if (clientConfiguration.maximumConnectionAge === "DISABLE_TIMEOUT") {
+    poolConfiguration.maximumConnectionAge = "DISABLE_TIMEOUT";
+  } else if (clientConfiguration.maximumConnectionAge) {
+    poolConfiguration.maximumConnectionAge =
+      clientConfiguration.maximumConnectionAge;
   }
 
   if (clientConfiguration.maximumPoolSize) {
