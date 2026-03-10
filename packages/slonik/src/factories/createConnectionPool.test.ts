@@ -278,6 +278,17 @@ const assertPoolState = (
   }
 };
 
+const resolveTestTimeout = (
+  value: 'DISABLE_TIMEOUT' | number | undefined,
+  defaultValue: number,
+): number => {
+  if (value === 'DISABLE_TIMEOUT') {
+    return Number.POSITIVE_INFINITY;
+  }
+
+  return value ?? defaultValue;
+};
+
 const createTestPool = (
   driver: Driver,
   options: Partial<{
@@ -292,8 +303,11 @@ const createTestPool = (
   return createConnectionPool({
     driver,
     events,
-    idleTimeout: options.idleTimeout ?? 1_000,
-    maximumConnectionAge: options.maximumConnectionAge ?? 30 * 60 * 1_000, // 30 minutes
+    idleTimeout: resolveTestTimeout(options.idleTimeout, 1_000),
+    maximumConnectionAge: resolveTestTimeout(
+      options.maximumConnectionAge,
+      30 * 60 * 1_000,
+    ),
     maximumPoolSize: options.maximumPoolSize || 10,
     minimumPoolSize: options.minimumPoolSize || 0,
   });

@@ -2,15 +2,41 @@ import { Logger as log } from '../Logger.js';
 import type { ClientConfiguration } from '../types.js';
 
 type PoolConfiguration = {
-  idleTimeout: 'DISABLE_TIMEOUT' | number;
+  idleTimeout: number;
   /**
    * The maximum age of a connection allowed in the pool.
    * After this age, the connection will be destroyed.
    * @default 30 minutes
    */
-  maximumConnectionAge: 'DISABLE_TIMEOUT' | number;
+  maximumConnectionAge: number;
   maximumPoolSize: number;
   minimumPoolSize: number;
+};
+
+/**
+ * Resolves a timeout field that accepts either a millisecond value or
+ * 'DISABLE_TIMEOUT'. Passing 0 is treated as a misconfiguration: a warning
+ * is emitted and the value is clamped to 1ms so the timeout still fires.
+ * 'DISABLE_TIMEOUT' maps to Number.POSITIVE_INFINITY so internal pool logic
+ * can use plain numeric comparisons without handling the sentinel string.
+ */
+const resolveTimeout = <T extends 'DISABLE_TIMEOUT' | number | undefined>(
+  field: string,
+  value: T,
+): T extends undefined ? number | undefined : number => {
+  if (value === 'DISABLE_TIMEOUT') {
+    return Number.POSITIVE_INFINITY;
+  }
+
+  if (value === 0) {
+    log.warn(
+      `${field}=0 sets timeout to 0 milliseconds; use ${field}=DISABLE_TIMEOUT to disable`,
+    );
+
+    return 1;
+  }
+
+  return value as never;
 };
 
 export const createPoolConfiguration = (
@@ -23,29 +49,18 @@ export const createPoolConfiguration = (
     minimumPoolSize: 0,
   };
 
-  if (clientConfiguration.idleTimeout === 'DISABLE_TIMEOUT') {
-    poolConfiguration.idleTimeout = 'DISABLE_TIMEOUT';
-  } else if (clientConfiguration.idleTimeout === 0) {
-    log.warn(
-      'idleTimeout=0 sets timeout to 0 milliseconds; use idleTimeout=DISABLE_TIMEOUT to disable timeout',
-    );
+  poolConfiguration.idleTimeout = resolveTimeout(
+    'idleTimeout',
+    clientConfiguration.idleTimeout,
+  );
 
-    poolConfiguration.idleTimeout = 1;
-  } else {
-    poolConfiguration.idleTimeout = clientConfiguration.idleTimeout;
-  }
+  const resolvedMaxAge = resolveTimeout(
+    'maximumConnectionAge',
+    clientConfiguration.maximumConnectionAge,
+  );
 
-  if (clientConfiguration.maximumConnectionAge === 'DISABLE_TIMEOUT') {
-    poolConfiguration.maximumConnectionAge = 'DISABLE_TIMEOUT';
-  } else if (clientConfiguration.maximumConnectionAge === 0) {
-    log.warn(
-      'maximumConnectionAge=0 sets age to 0 milliseconds; use maximumConnectionAge=DISABLE_TIMEOUT to disable age-based recycling',
-    );
-
-    poolConfiguration.maximumConnectionAge = 1;
-  } else if (clientConfiguration.maximumConnectionAge) {
-    poolConfiguration.maximumConnectionAge =
-      clientConfiguration.maximumConnectionAge;
+  if (resolvedMaxAge !== undefined) {
+    poolConfiguration.maximumConnectionAge = resolvedMaxAge;
   }
 
   if (clientConfiguration.maximumPoolSize) {

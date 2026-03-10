@@ -8,7 +8,7 @@ import type {
 import { createClientConfiguration } from './createClientConfiguration.js';
 import { createConnectionPool } from './createConnectionPool.js';
 import { createPoolConfiguration } from './createPoolConfiguration.js';
-import type { DriverFactory } from '@slonik/driver';
+import type { DriverConfiguration, DriverFactory } from '@slonik/driver';
 import { createPgDriverFactory } from '@slonik/pg-driver';
 import EventEmitter from 'node:events';
 
@@ -29,7 +29,7 @@ export const createPool = async (
 
   const driver = await createDriver({
     // TODO resolve name conflict between ClientConfiguration and DriverConfiguration
-    driverConfiguration: clientConfiguration,
+    driverConfiguration: clientConfiguration as unknown as DriverConfiguration,
   });
 
   const events = new EventEmitter() as DatabasePoolEventEmitter;

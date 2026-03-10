@@ -64,7 +64,7 @@ export type DriverConfiguration = {
   readonly gracefulTerminationTimeout?: number;
   readonly idleInTransactionSessionTimeout: 'DISABLE_TIMEOUT' | number;
   readonly idleTimeout?: 'DISABLE_TIMEOUT' | number;
-  readonly maximumConnectionAge?: number;
+  readonly maximumConnectionAge?: 'DISABLE_TIMEOUT' | number;
   readonly maximumPoolSize?: number;
   readonly minimumPoolSize?: number;
   readonly resetConnection?: (connection: BasicConnection) => Promise<void>;
