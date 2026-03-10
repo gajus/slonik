@@ -261,8 +261,8 @@ const assertPoolState = (
 const createTestPool = (
   driver: Driver,
   options: Partial<{
-    idleTimeout: number;
-    maximumConnectionAge: number;
+    idleTimeout: 'DISABLE_TIMEOUT' | number;
+    maximumConnectionAge: 'DISABLE_TIMEOUT' | number;
     maximumPoolSize: number;
     minimumPoolSize: number;
   }> = {},
@@ -272,7 +272,7 @@ const createTestPool = (
   return createConnectionPool({
     driver,
     events,
-    idleTimeout: options.idleTimeout || 1_000,
+    idleTimeout: options.idleTimeout ?? 1_000,
     maximumConnectionAge: options.maximumConnectionAge ?? 30 * 60 * 1_000, // 30 minutes
     maximumPoolSize: options.maximumPoolSize || 10,
     minimumPoolSize: options.minimumPoolSize || 0,
@@ -842,6 +842,36 @@ test("idle timeout does not destroy connections at or below minimum pool size", 
   await wait(150);
 
   // Should still have minimum pool size
+  assertPoolState(t, pool, {
+    acquiredConnections: 0,
+    idleConnections: 2,
+  });
+
+  await pool.end();
+});
+
+test("idle timeout is disabled when idleTimeout is DISABLE_TIMEOUT", async (t) => {
+  const driver = new MockDriver();
+  const pool = createTestPool(driver, {
+    idleTimeout: "DISABLE_TIMEOUT",
+    maximumPoolSize: 3,
+    minimumPoolSize: 0,
+  });
+
+  // Create connections above minimumPoolSize so idle timer would normally fire
+  const connections = await acquireConnections(pool, 2);
+  await releaseConnections(connections);
+
+  assertPoolState(t, pool, {
+    acquiredConnections: 0,
+    idleConnections: 2,
+  });
+
+  // Wait well beyond the default 10s timeout (using a short wait since
+  // DISABLE_TIMEOUT means no timer is ever set)
+  await wait(150);
+
+  // Connections should NOT have been destroyed
   assertPoolState(t, pool, {
     acquiredConnections: 0,
     idleConnections: 2,
