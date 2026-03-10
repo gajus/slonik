@@ -951,6 +951,37 @@ test('connection is destroyed when exceeding maximum age on release', async (t) 
   t.pass('Test skipped - requires complex timing setup');
 });
 
+test('connection is not destroyed when maximumConnectionAge is DISABLE_TIMEOUT', async (t) => {
+  const originalDateNow = Date.now;
+  let currentTime = originalDateNow();
+  Date.now = () => currentTime;
+
+  try {
+    const driver = new MockDriver();
+    const pool = createTestPool(driver, {
+      maximumConnectionAge: 'DISABLE_TIMEOUT',
+      maximumPoolSize: 2,
+      minimumPoolSize: 0,
+    });
+
+    const connection = await pool.acquire();
+    const connectionId = connection.id();
+    await connection.release();
+
+    // Advance time far beyond the default 30-minute maximum age
+    currentTime += 60 * 60 * 1_000; // 1 hour
+
+    // Connection should be reused, not replaced
+    const reused = await pool.acquire();
+    t.is(reused.id(), connectionId, 'Connection should be reused despite age');
+
+    await reused.release();
+    await pool.end();
+  } finally {
+    Date.now = originalDateNow;
+  }
+});
+
 test('old connection is destroyed during acquire attempt', async (t) => {
   // Skip this test as it requires mocking Date.now() before connection creation
   t.pass('Test skipped - requires complex timing setup');

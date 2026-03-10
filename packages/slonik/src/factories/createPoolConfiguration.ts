@@ -35,6 +35,13 @@ export const createPoolConfiguration = (
     poolConfiguration.idleTimeout = clientConfiguration.idleTimeout;
   }
 
+  if (clientConfiguration.maximumConnectionAge === 'DISABLE_TIMEOUT') {
+    poolConfiguration.maximumConnectionAge = 'DISABLE_TIMEOUT';
+  } else if (clientConfiguration.maximumConnectionAge) {
+    poolConfiguration.maximumConnectionAge =
+      clientConfiguration.maximumConnectionAge;
+  }
+
   if (clientConfiguration.maximumPoolSize) {
     poolConfiguration.maximumPoolSize = clientConfiguration.maximumPoolSize;
   }
