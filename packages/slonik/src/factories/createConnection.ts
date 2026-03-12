@@ -96,137 +96,116 @@ export const createConnection = async (
     );
   }
 
-  return await tracer.startActiveSpan(
-    'slonik.createConnection',
-    async (span) => {
-      for (const interceptor of clientConfiguration.interceptors) {
-        const beforePoolConnection = interceptor.beforePoolConnection;
+  for (const interceptor of clientConfiguration.interceptors) {
+    const beforePoolConnection = interceptor.beforePoolConnection;
 
-        if (beforePoolConnection) {
-          const maybeNewPool = await tracer.startActiveSpan(
-            'slonik.interceptor.beforePoolConnection',
-            async (interceptorSpan) => {
-              span.setAttribute('interceptor.name', interceptor.name);
+    if (beforePoolConnection) {
+      const maybeNewPool = await tracer.startActiveSpan(
+        'slonik.interceptor.beforePoolConnection',
+        async (interceptorSpan) => {
+          interceptorSpan.setAttribute('interceptor.name', interceptor.name);
 
-              try {
-                return await beforePoolConnection({
-                  log: parentLog,
-                  poolId,
-                  query,
-                });
-              } catch (error) {
-                interceptorSpan.recordException(error);
-                interceptorSpan.setStatus({
-                  code: SpanStatusCode.ERROR,
-                  message: String(error),
-                });
+          try {
+            return await beforePoolConnection({
+              log: parentLog,
+              poolId,
+              query,
+            });
+          } catch (error) {
+            interceptorSpan.recordException(error);
+            interceptorSpan.setStatus({
+              code: SpanStatusCode.ERROR,
+              message: String(error),
+            });
 
-                throw error;
-              } finally {
-                interceptorSpan.end();
-              }
-            },
-          );
-
-          if (maybeNewPool) {
-            return await poolHandler(maybeNewPool);
+            throw error;
+          } finally {
+            interceptorSpan.end();
           }
+        },
+      );
+
+      if (maybeNewPool) {
+        return await poolHandler(maybeNewPool);
+      }
+    }
+  }
+
+  const connection = await establishConnection(
+    parentLog,
+    pool,
+    clientConfiguration.connectionRetryLimit,
+  );
+
+  const { connectionId } = getPoolClientState(connection);
+
+  return await raceError(connection, async () => {
+    const connectionLog = parentLog.child({
+      connectionId,
+    });
+
+    const connectionContext = {
+      connectionId,
+      connectionType,
+      log: connectionLog,
+      poolId,
+    };
+
+    const boundConnection = bindPoolConnection(
+      connectionLog,
+      connection,
+      clientConfiguration,
+    );
+
+    try {
+      for (const interceptor of clientConfiguration.interceptors) {
+        if (interceptor.afterPoolConnection) {
+          await interceptor.afterPoolConnection(
+            connectionContext,
+            boundConnection,
+          );
         }
       }
+    } catch (error) {
+      await connection.destroy();
 
-      try {
-        const connection = await establishConnection(
-          parentLog,
-          pool,
-          clientConfiguration.connectionRetryLimit,
-        );
+      throw error;
+    }
 
-        const { connectionId, poolId: poolIdFromState } =
-          getPoolClientState(connection);
+    let result;
 
-        span.setAttribute('slonik.connection.id', connectionId);
-        span.setAttribute('slonik.pool.id', poolIdFromState);
+    try {
+      result = await connectionHandler(
+        connectionLog,
+        connection,
+        boundConnection,
+        clientConfiguration,
+      );
+    } catch (error) {
+      await connection.destroy();
 
-        return await raceError(connection, async () => {
-          const connectionLog = parentLog.child({
-            connectionId,
-          });
+      throw error;
+    }
 
-          const connectionContext = {
-            connectionId,
-            connectionType,
-            log: connectionLog,
-            poolId,
-          };
-
-          const boundConnection = bindPoolConnection(
-            connectionLog,
-            connection,
-            clientConfiguration,
+    try {
+      for (const interceptor of clientConfiguration.interceptors) {
+        if (interceptor.beforePoolConnectionRelease) {
+          await interceptor.beforePoolConnectionRelease(
+            connectionContext,
+            boundConnection,
           );
-
-          try {
-            for (const interceptor of clientConfiguration.interceptors) {
-              if (interceptor.afterPoolConnection) {
-                await interceptor.afterPoolConnection(
-                  connectionContext,
-                  boundConnection,
-                );
-              }
-            }
-          } catch (error) {
-            await connection.destroy();
-
-            throw error;
-          }
-
-          let result;
-
-          try {
-            result = await connectionHandler(
-              connectionLog,
-              connection,
-              boundConnection,
-              clientConfiguration,
-            );
-          } catch (error) {
-            await connection.destroy();
-
-            throw error;
-          }
-
-          try {
-            for (const interceptor of clientConfiguration.interceptors) {
-              if (interceptor.beforePoolConnectionRelease) {
-                await interceptor.beforePoolConnectionRelease(
-                  connectionContext,
-                  boundConnection,
-                );
-              }
-            }
-          } catch (error) {
-            await connection.destroy();
-
-            throw error;
-          }
-
-          destroyBoundConnection(boundConnection);
-
-          await connection.release();
-
-          return result;
-        });
-      } catch (error) {
-        span.recordException(error);
-        span.setStatus({
-          code: SpanStatusCode.ERROR,
-          message: String(error),
-        });
-
-        throw error;
-      } finally {
-        span.end();
+        }
       }
-    },
-  );
+    } catch (error) {
+      await connection.destroy();
+
+      throw error;
+    }
+
+    destroyBoundConnection(boundConnection);
+
+    await connection.release();
+
+    return result;
+  });
 };
