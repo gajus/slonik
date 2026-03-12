@@ -1,8 +1,8 @@
-import type { ConnectionPoolClient } from '../factories/createConnectionPool.js';
-import { createPool } from '../factories/createPool.js';
-import type { ClientConfigurationInput } from '../types.js';
-import EventEmitter from 'node:events';
-import * as sinon from 'sinon';
+import type { ConnectionPoolClient } from "../factories/createConnectionPool.js";
+import { createPool } from "../factories/createPool.js";
+import type { ClientConfigurationInput } from "../types.js";
+import EventEmitter from "node:events";
+import * as sinon from "sinon";
 
 export const createPoolWithSpy = async (
   dsn: string,
@@ -20,7 +20,7 @@ export const createPoolWithSpy = async (
   const pool = await createPool(dsn, {
     driverFactory: async (...args) => {
       if (!driverFactory) {
-        throw new Error('Driver is required');
+        throw new Error("Driver is required");
       }
 
       const driver = await driverFactory(...args);
@@ -41,10 +41,10 @@ export const createPoolWithSpy = async (
             };
           });
 
-          spy.acquire = sinon.spy(connection, 'acquire');
-          spy.destroy = sinon.spy(connection, 'destroy');
-          spy.query = sinon.spy(connection, 'query');
-          spy.release = sinon.spy(connection, 'release');
+          spy.acquire = sinon.spy(connection, "acquire");
+          spy.destroy = sinon.spy(connection, "destroy");
+          spy.query = sinon.spy(connection, "query");
+          spy.release = sinon.spy(connection, "release");
 
           return connection;
         },

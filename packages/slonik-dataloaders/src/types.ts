@@ -1,9 +1,6 @@
-import type { IdentifierSqlToken } from 'slonik';
+import type { IdentifierSqlToken } from "slonik";
 
-export type ColumnIdentifiers<TResult> = Record<
-  keyof TResult,
-  IdentifierSqlToken
->;
+export type ColumnIdentifiers<TResult> = Record<keyof TResult, IdentifierSqlToken>;
 
 export type Connection<TResult> = {
   count: number;
@@ -11,7 +8,7 @@ export type Connection<TResult> = {
   pageInfo: PageInfo;
 };
 
-export type OrderDirection = 'ASC' | 'DESC';
+export type OrderDirection = "ASC" | "DESC";
 
 type PageInfo = {
   endCursor: null | string;

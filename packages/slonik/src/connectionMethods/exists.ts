@@ -1,7 +1,7 @@
-import type { InternalQueryMethod } from '../types.js';
-import { query } from './query.js';
-import type { QuerySqlToken } from '@slonik/sql-tag';
-import { generateUid } from '@slonik/utilities';
+import type { InternalQueryMethod } from "../types.js";
+import { query } from "./query.js";
+import type { QuerySqlToken } from "@slonik/sql-tag";
+import { generateUid } from "@slonik/utilities";
 
 // TODO deprecate exists
 export const exists: InternalQueryMethod<Promise<boolean>> = async (
@@ -18,12 +18,12 @@ export const exists: InternalQueryMethod<Promise<boolean>> = async (
     connection,
     clientConfiguration,
     {
-      sql: 'SELECT EXISTS(' + slonikQuery.sql + ')',
+      sql: "SELECT EXISTS(" + slonikQuery.sql + ")",
       values: slonikQuery.values,
     } as QuerySqlToken,
     queryId,
     {
-      validationType: 'ONE_ROW',
+      validationType: "ONE_ROW",
     },
   );
 

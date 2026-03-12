@@ -11,7 +11,7 @@ jobs:
       - name: setup node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '24'
+          node-version: "24"
       - uses: pnpm/action-setup@v4
         name: install pnpm
         with:
@@ -32,7 +32,7 @@ jobs:
       - name: setup node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '24'
+          node-version: "24"
       - uses: pnpm/action-setup@v4
         name: install pnpm
         with:
@@ -45,7 +45,7 @@ jobs:
     timeout-minutes: 10
   test:
     environment: release
-    name: 'Test node_version:${{ matrix.node_version }} test_only:${{ matrix.test_only }}'
+    name: "Test node_version:${{ matrix.node_version }} test_only:${{ matrix.test_only }}"
     runs-on: ubuntu-latest
     services:
       postgres:
@@ -83,7 +83,7 @@ jobs:
       - name: setup node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '${{ matrix.node_version }}'
+          node-version: "${{ matrix.node_version }}"
       - uses: pnpm/action-setup@v4
         name: install pnpm
         with:
@@ -92,8 +92,8 @@ jobs:
             - recursive: true
       - run: pnpm run -r build
       - env:
-          POSTGRES_DSN: 'postgres://postgres:postgres@localhost:5432'
-          TEST_ONLY: '${{ matrix.test_only }}'
+          POSTGRES_DSN: "postgres://postgres:postgres@localhost:5432"
+          TEST_ONLY: "${{ matrix.test_only }}"
         run: pnpm run -r test
     strategy:
       fail-fast: false
@@ -111,12 +111,12 @@ on:
     branches:
       - main
     paths-ignore:
-      - '.editorconfig'
-      - '.husky/**'
-      - '.lintstagedrc.js'
-      - '.mergify.yml'
-      - '.nvmrc'
-      - 'README.md'
+      - ".editorconfig"
+      - ".husky/**"
+      - ".lintstagedrc.js"
+      - ".mergify.yml"
+      - ".nvmrc"
+      - "README.md"
     types:
       - opened
       - synchronize

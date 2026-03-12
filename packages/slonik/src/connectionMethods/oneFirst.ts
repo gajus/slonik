@@ -1,7 +1,7 @@
-import type { InternalQueryMethod } from '../types.js';
-import { one } from './one.js';
-import { UnexpectedStateError } from '@slonik/errors';
-import { generateUid } from '@slonik/utilities';
+import type { InternalQueryMethod } from "../types.js";
+import { one } from "./one.js";
+import { UnexpectedStateError } from "@slonik/errors";
+import { generateUid } from "@slonik/utilities";
 
 /**
  * Makes a query and expects exactly one result.
@@ -18,16 +18,9 @@ export const oneFirst: InternalQueryMethod = async (
 ) => {
   const queryId = inheritedQueryId ?? generateUid();
 
-  const row = await one(
-    log,
-    connection,
-    clientConfiguration,
-    slonikSql,
-    queryId,
-    {
-      validationType: 'ONE_COLUMN',
-    },
-  );
+  const row = await one(log, connection, clientConfiguration, slonikSql, queryId, {
+    validationType: "ONE_COLUMN",
+  });
 
   const keys = Object.keys(row);
 
@@ -36,11 +29,11 @@ export const oneFirst: InternalQueryMethod = async (
       {
         queryId,
       },
-      'DataIntegrityError',
+      "DataIntegrityError",
     );
 
     throw new UnexpectedStateError(
-      'Expected query to return one result, but received multiple results.',
+      "Expected query to return one result, but received multiple results.",
     );
   }
 

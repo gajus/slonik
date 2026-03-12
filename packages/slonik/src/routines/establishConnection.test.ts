@@ -1,10 +1,10 @@
-import type { ConnectionPool } from '../factories/createConnectionPool.js';
-import { Logger } from '../Logger.js';
-import { establishConnection } from './establishConnection.js';
-import test from 'ava';
-import * as sinon from 'sinon';
+import type { ConnectionPool } from "../factories/createConnectionPool.js";
+import { Logger } from "../Logger.js";
+import { establishConnection } from "./establishConnection.js";
+import test from "ava";
+import * as sinon from "sinon";
 
-test('attempts to connection X times', async (t) => {
+test("attempts to connection X times", async (t) => {
   const pool = {
     acquire: sinon.stub(),
   };
@@ -12,17 +12,13 @@ test('attempts to connection X times', async (t) => {
   const connectionRetryLimit = 3;
 
   await t.throwsAsync(
-    establishConnection(
-      Logger,
-      pool as unknown as ConnectionPool,
-      connectionRetryLimit,
-    ),
+    establishConnection(Logger, pool as unknown as ConnectionPool, connectionRetryLimit),
   );
 
   t.is(pool.acquire.callCount, connectionRetryLimit);
 });
 
-test('does not attempt to retry connection when set to 0', async (t) => {
+test("does not attempt to retry connection when set to 0", async (t) => {
   const pool = {
     acquire: sinon.stub(),
   };
@@ -30,11 +26,7 @@ test('does not attempt to retry connection when set to 0', async (t) => {
   const connectionRetryLimit = 0;
 
   await t.throwsAsync(
-    establishConnection(
-      Logger,
-      pool as unknown as ConnectionPool,
-      connectionRetryLimit,
-    ),
+    establishConnection(Logger, pool as unknown as ConnectionPool, connectionRetryLimit),
   );
 
   t.is(pool.acquire.callCount, 1);

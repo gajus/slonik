@@ -1,13 +1,13 @@
-import { createPoolWithSpy } from '../../../helpers.test/createPoolWithSpy.js';
-import { createTestRunner } from '../../../helpers.test/createTestRunner.js';
-import { createPgDriverFactory } from '@slonik/pg-driver';
-import * as sinon from 'sinon';
+import { createPoolWithSpy } from "../../../helpers.test/createPoolWithSpy.js";
+import { createTestRunner } from "../../../helpers.test/createTestRunner.js";
+import { createPgDriverFactory } from "@slonik/pg-driver";
+import * as sinon from "sinon";
 
 const driverFactory = createPgDriverFactory();
 
-const { test } = createTestRunner(driverFactory, 'pg');
+const { test } = createTestRunner(driverFactory, "pg");
 
-test('`beforePoolConnection` is called before `connect`', async (t) => {
+test("`beforePoolConnection` is called before `connect`", async (t) => {
   const beforePoolConnection = sinon.stub();
 
   const { pool, spy } = await createPoolWithSpy(t.context.dsn, {
@@ -15,13 +15,13 @@ test('`beforePoolConnection` is called before `connect`', async (t) => {
     interceptors: [
       {
         beforePoolConnection,
-        name: 'foo',
+        name: "foo",
       },
     ],
   });
 
   await pool.connect(async () => {
-    return 'foo';
+    return "foo";
   });
 
   t.true(beforePoolConnection.calledBefore(spy.acquire));

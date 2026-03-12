@@ -11,15 +11,19 @@
   ],
   "scripts": {
     "lint:knip": "knip",
-    "lint": "npm run lint:knip"
+    "lint:oxlint": "oxlint",
+    "lint:oxfmt": "oxfmt --check .",
+    "lint": "npm run lint:knip && npm run lint:oxlint && npm run lint:oxfmt"
   },
   "dependencies": {
     "@changesets/cli": "^2.29.8"
   },
   "devDependencies": {
     "@changesets/changelog-github": "^0.5.2",
-    "comment-parser": "1.4.1",
     "husky": "^9.1.7",
-    "knip": "^5.83.1"
+    "knip": "^5.83.1",
+    "oxfmt": "^0.40.0",
+    "oxlint": "^1",
+    "oxlint-config-canonical": "^1"
   }
 }

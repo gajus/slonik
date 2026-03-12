@@ -1,6 +1,6 @@
-import { createConnectionLoader } from './createConnectionLoader.js';
-import type { DatabasePool, QuerySqlToken } from 'slonik';
-import type { ZodType } from 'zod';
+import { createConnectionLoader } from "./createConnectionLoader.js";
+import type { DatabasePool, QuerySqlToken } from "slonik";
+import type { ZodType } from "zod";
 
 export const createListLoader = <T extends ZodType>(
   pool: DatabasePool,
@@ -12,8 +12,8 @@ export const createListLoader = <T extends ZodType>(
 
   return {
     load: async (args: {
-      orderBy?: LoadParameters['orderBy'];
-      where?: LoadParameters['where'];
+      orderBy?: LoadParameters["orderBy"];
+      where?: LoadParameters["where"];
     }) => {
       const nodes: T[] = [];
 

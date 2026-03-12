@@ -1,52 +1,47 @@
-import type {
-  ColumnIdentifiers,
-  Connection,
-  OrderDirection,
-} from '../types.js';
-import { batchQueries } from '../utilities/batchQueries.js';
-import { fromCursor } from '../utilities/fromCursor.js';
-import { getColumnIdentifiers } from '../utilities/getColumnIdentifiers.js';
-import { getRequestedFields } from '../utilities/getRequestedFields.js';
-import { snakeCase } from '../utilities/snakeCase.js';
-import { toCursor } from '../utilities/toCursor.js';
-import type { StandardSchemaV1 } from '@standard-schema/spec';
-import DataLoader from 'dataloader';
-import type { GraphQLResolveInfo } from 'graphql';
-import { sql } from 'slonik';
-import type { CommonQueryMethods, QuerySqlToken, SqlToken } from 'slonik';
-import { z } from 'zod';
-import type { ZodObject } from 'zod';
+import type { ColumnIdentifiers, Connection, OrderDirection } from "../types.js";
+import { batchQueries } from "../utilities/batchQueries.js";
+import { fromCursor } from "../utilities/fromCursor.js";
+import { getColumnIdentifiers } from "../utilities/getColumnIdentifiers.js";
+import { getRequestedFields } from "../utilities/getRequestedFields.js";
+import { snakeCase } from "../utilities/snakeCase.js";
+import { toCursor } from "../utilities/toCursor.js";
+import type { StandardSchemaV1 } from "@standard-schema/spec";
+import DataLoader from "dataloader";
+import type { GraphQLResolveInfo } from "graphql";
+import { sql } from "slonik";
+import type { CommonQueryMethods, QuerySqlToken, SqlToken } from "slonik";
+import { z } from "zod";
+import type { ZodObject } from "zod";
 
 type DataLoaderKey<TResult> = {
   cursor?: null | string;
-  info?: Pick<GraphQLResolveInfo, 'fieldNodes' | 'fragments'>;
+  info?: Pick<GraphQLResolveInfo, "fieldNodes" | "fragments">;
   limit?: null | number;
   offset?: null | number;
-  orderBy?: (
-    identifiers: ColumnIdentifiers<TResult>,
-  ) => Array<[SqlToken, OrderDirection]>;
+  orderBy?: (identifiers: ColumnIdentifiers<TResult>) => Array<[SqlToken, OrderDirection]>;
   reverse?: boolean;
   where?: (identifiers: ColumnIdentifiers<TResult>) => SqlToken;
 };
 
-const SORT_COLUMN_ALIAS = 's1';
-const TABLE_ALIAS = 't1';
+const SORT_COLUMN_ALIAS = "s1";
+const TABLE_ALIAS = "t1";
 
-export const createConnectionLoaderClass = <
-  T extends StandardSchemaV1,
->(config: {
+export const createConnectionLoaderClass = <T extends StandardSchemaV1>(config: {
   columnNameTransformer?: (column: string) => string;
   query: QuerySqlToken<T>;
   resolverFieldsThatRequireFetchingEdges?: string[];
 }) => {
   const { columnNameTransformer = snakeCase, query } = config;
 
-  const fieldsThatRequireFetchingEdges =
-    config.resolverFieldsThatRequireFetchingEdges ?? ['pageInfo', 'edges'];
+  const fieldsThatRequireFetchingEdges = config.resolverFieldsThatRequireFetchingEdges ?? [
+    "pageInfo",
+    "edges",
+  ];
 
-  const columnIdentifiers = getColumnIdentifiers<
-    StandardSchemaV1.InferOutput<T>
-  >(TABLE_ALIAS, columnNameTransformer);
+  const columnIdentifiers = getColumnIdentifiers<StandardSchemaV1.InferOutput<T>>(
+    TABLE_ALIAS,
+    columnNameTransformer,
+  );
 
   return class ConnectionLoaderClass extends DataLoader<
     DataLoaderKey<StandardSchemaV1.InferOutput<T>>,
@@ -67,26 +62,18 @@ export const createConnectionLoaderClass = <
           const countQueries: Array<null | QuerySqlToken> = [];
 
           for (const loaderKey of loaderKeys.values()) {
-            const {
-              cursor,
-              info,
-              limit,
-              offset,
-              orderBy,
-              reverse = false,
-              where,
-            } = loaderKey;
+            const { cursor, info, limit, offset, orderBy, reverse = false, where } = loaderKey;
 
             // If a GraphQLResolveInfo object was not provided, we will assume both pageInfo and edges were requested
             const requestedFields = info
               ? getRequestedFields(info)
-              : new Set(['count', 'edges', 'pageInfo']);
+              : new Set(["count", "edges", "pageInfo"]);
 
             const conditions: SqlToken[] = where
               ? [sql.fragment`(${where(columnIdentifiers)})`]
               : [];
 
-            if (requestedFields.has('count')) {
+            if (requestedFields.has("count")) {
               countQueries.push(
                 sql.unsafe`(
                   -- @count-query
@@ -96,10 +83,7 @@ export const createConnectionLoaderClass = <
                   ) ${sql.identifier([TABLE_ALIAS])}
                   WHERE ${
                     conditions.length
-                      ? sql.fragment`${sql.join(
-                          conditions,
-                          sql.fragment` AND `,
-                        )}`
+                      ? sql.fragment`${sql.join(conditions, sql.fragment` AND `)}`
                       : sql.fragment`TRUE`
                   }
                 )`,
@@ -108,13 +92,14 @@ export const createConnectionLoaderClass = <
               countQueries.push(null);
             }
 
-            const shouldFetchEdges = fieldsThatRequireFetchingEdges.some(
-              (field) => requestedFields.has(field),
+            const shouldFetchEdges = fieldsThatRequireFetchingEdges.some((field) =>
+              requestedFields.has(field),
             );
 
             if (shouldFetchEdges) {
-              const orderByExpressions: Array<[SqlToken, OrderDirection]> =
-                orderBy ? orderBy(columnIdentifiers) : [];
+              const orderByExpressions: Array<[SqlToken, OrderDirection]> = orderBy
+                ? orderBy(columnIdentifiers)
+                : [];
 
               const selectExpressions = [
                 sql.fragment`${sql.identifier([TABLE_ALIAS])}.*`,
@@ -133,7 +118,7 @@ export const createConnectionLoaderClass = <
                     orderByExpressions.map(
                       ([expression, direction]) =>
                         sql.fragment`${expression} ${
-                          direction === (reverse ? 'DESC' : 'ASC')
+                          direction === (reverse ? "DESC" : "ASC")
                             ? sql.fragment`ASC`
                             : sql.fragment`DESC`
                         }`,
@@ -147,24 +132,19 @@ export const createConnectionLoaderClass = <
                 conditions.push(
                   sql.fragment`(${sql.join(
                     orderByExpressions.map((_orderByExpression, outerIndex) => {
-                      const expressions = orderByExpressions.slice(
-                        0,
-                        outerIndex + 1,
-                      );
+                      const expressions = orderByExpressions.slice(0, outerIndex + 1);
                       return sql.fragment`(${sql.join(
-                        expressions.map(
-                          ([expression, direction], innerIndex) => {
-                            let comparisonOperator = sql.fragment`=`;
-                            if (innerIndex === expressions.length - 1) {
-                              comparisonOperator =
-                                direction === (reverse ? 'DESC' : 'ASC')
-                                  ? sql.fragment`>`
-                                  : sql.fragment`<`;
-                            }
+                        expressions.map(([expression, direction], innerIndex) => {
+                          let comparisonOperator = sql.fragment`=`;
+                          if (innerIndex === expressions.length - 1) {
+                            comparisonOperator =
+                              direction === (reverse ? "DESC" : "ASC")
+                                ? sql.fragment`>`
+                                : sql.fragment`<`;
+                          }
 
-                            return sql.fragment`${expression} ${comparisonOperator} ${values[innerIndex]}`;
-                          },
-                        ),
+                          return sql.fragment`${expression} ${comparisonOperator} ${values[innerIndex]}`;
+                        }),
                         sql.fragment` AND `,
                       )})`;
                     }),
@@ -198,7 +178,7 @@ export const createConnectionLoaderClass = <
 
           let edgeSchema: ZodObject;
 
-          if ('shape' in query.parser) {
+          if ("shape" in query.parser) {
             edgeSchema = z
               .object({
                 [SORT_COLUMN_ALIAS]: z.array(z.any()),
@@ -222,9 +202,7 @@ export const createConnectionLoaderClass = <
             batchQueries(
               pool,
               edgeSchema,
-              edgesQueries.filter(
-                (edgeQuery) => edgeQuery !== null,
-              ) as QuerySqlToken[],
+              edgesQueries.filter((edgeQuery) => edgeQuery !== null) as QuerySqlToken[],
             ).then((results) => {
               return edgesQueries.map((edgeQuery) => {
                 return edgeQuery === null ? [] : results.shift();
@@ -233,9 +211,7 @@ export const createConnectionLoaderClass = <
             batchQueries(
               pool,
               countSchema,
-              countQueries.filter(
-                (countQuery) => countQuery !== null,
-              ) as QuerySqlToken[],
+              countQueries.filter((countQuery) => countQuery !== null) as QuerySqlToken[],
             )
               .then((results) => {
                 return countQueries.map((countQuery) => {
@@ -279,10 +255,7 @@ export const createConnectionLoaderClass = <
               };
             });
 
-            const slicedEdges = edges.slice(
-              0,
-              limit === null ? undefined : limit,
-            );
+            const slicedEdges = edges.slice(0, limit === null ? undefined : limit);
 
             if (reverse) {
               slicedEdges.reverse();
@@ -309,18 +282,10 @@ export const createConnectionLoaderClass = <
         },
         {
           ...dataLoaderOptions,
-          cacheKeyFn: ({
-            cursor,
-            info,
-            limit,
-            offset,
-            orderBy,
-            reverse = false,
-            where,
-          }) => {
+          cacheKeyFn: ({ cursor, info, limit, offset, orderBy, reverse = false, where }) => {
             const requestedFields = info
               ? getRequestedFields(info)
-              : new Set(['edges', 'pageInfo']);
+              : new Set(["edges", "pageInfo"]);
 
             return JSON.stringify({
               cursor,

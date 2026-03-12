@@ -14,7 +14,7 @@ export type ConnectionOptions = {
     key?: string;
     rejectUnauthorized: boolean;
   };
-  sslMode?: 'disable' | 'no-verify' | 'require';
+  sslMode?: "disable" | "no-verify" | "require";
   username?: string;
 };
 

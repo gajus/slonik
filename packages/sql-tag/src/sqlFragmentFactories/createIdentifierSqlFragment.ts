@@ -1,22 +1,18 @@
-import { FragmentToken } from '../tokens.js';
-import type { IdentifierSqlToken, SqlFragmentToken } from '../types.js';
-import { escapeIdentifier } from '../utilities/escapeIdentifier.js';
-import { InvalidInputError } from '@slonik/errors';
+import { FragmentToken } from "../tokens.js";
+import type { IdentifierSqlToken, SqlFragmentToken } from "../types.js";
+import { escapeIdentifier } from "../utilities/escapeIdentifier.js";
+import { InvalidInputError } from "@slonik/errors";
 
-export const createIdentifierSqlFragment = (
-  token: IdentifierSqlToken,
-): SqlFragmentToken => {
+export const createIdentifierSqlFragment = (token: IdentifierSqlToken): SqlFragmentToken => {
   const sql = token.names
     .map((identifierName) => {
-      if (typeof identifierName !== 'string') {
-        throw new InvalidInputError(
-          'Identifier name array member type must be a string.',
-        );
+      if (typeof identifierName !== "string") {
+        throw new InvalidInputError("Identifier name array member type must be a string.");
       }
 
       return escapeIdentifier(identifierName);
     })
-    .join('.');
+    .join(".");
 
   return {
     sql,

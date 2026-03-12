@@ -1,16 +1,16 @@
-import { createPool } from '../factories/createPool.js';
-import { createTestRunner } from '../helpers.test/createTestRunner.js';
-import { NotFoundError } from '@slonik/errors';
-import { createPgDriverFactory } from '@slonik/pg-driver';
-import { createSqlTag } from '@slonik/sql-tag';
+import { createPool } from "../factories/createPool.js";
+import { createTestRunner } from "../helpers.test/createTestRunner.js";
+import { NotFoundError } from "@slonik/errors";
+import { createPgDriverFactory } from "@slonik/pg-driver";
+import { createSqlTag } from "@slonik/sql-tag";
 
 const driverFactory = createPgDriverFactory();
 
-const { test } = createTestRunner(driverFactory, 'pg');
+const { test } = createTestRunner(driverFactory, "pg");
 
 const sql = createSqlTag();
 
-test('returns the query results rows', async (t) => {
+test("returns the query results rows", async (t) => {
   const pool = await createPool(t.context.dsn, {
     driverFactory,
   });
@@ -30,7 +30,7 @@ test('returns the query results rows', async (t) => {
   ]);
 });
 
-test('throws an error if no rows are returned', async (t) => {
+test("throws an error if no rows are returned", async (t) => {
   const pool = await createPool(t.context.dsn, {
     driverFactory,
   });

@@ -9,8 +9,7 @@ type StackFrame = {
 //   at functionName (file:line:col)
 //   at functionName (file:line)
 //   at file:line:col
-const v8Re =
-  /^\s*at (?:(.*?) ?\()?((?:\/|[a-z]:\\|\\\\|file:|node:).*?):(\d+)(?::(\d+))?\)?\s*$/iu;
+const v8Re = /^\s*at (?:(.*?) ?\()?((?:\/|[a-z]:\\|\\\\|file:|node:).*?):(\d+)(?::(\d+))?\)?\s*$/iu;
 
 export const getStackTrace = (): StackFrame[] => {
   // eslint-disable-next-line unicorn/error-message
@@ -22,7 +21,7 @@ export const getStackTrace = (): StackFrame[] => {
 
   const frames: StackFrame[] = [];
 
-  for (const line of stack.split('\n')) {
+  for (const line of stack.split("\n")) {
     const match = v8Re.exec(line);
 
     if (match) {

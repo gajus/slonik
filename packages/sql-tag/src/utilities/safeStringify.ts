@@ -1,8 +1,8 @@
-import { configure } from 'safe-stable-stringify';
+import { configure } from "safe-stable-stringify";
 
 const stringify = configure({
   bigint: true,
-  circularValue: '[Circular]',
+  circularValue: "[Circular]",
   strict: true,
 });
 
@@ -16,7 +16,7 @@ export const safeStringify = (subject: unknown): string => {
   const result = stringify(subject);
 
   if (result === undefined) {
-    throw new Error('Expected result to be string');
+    throw new Error("Expected result to be string");
   }
 
   return result;

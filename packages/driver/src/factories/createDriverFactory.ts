@@ -1,12 +1,12 @@
 /* eslint-disable @typescript-eslint/consistent-type-definitions */
-import { Logger } from '../Logger.js';
-import type { Field } from '@slonik/types';
-import { generateUid } from '@slonik/utilities';
-import EventEmitter from 'node:events';
-import type { Readable } from 'node:stream';
-import type { ConnectionOptions as TlsConnectionOptions } from 'node:tls';
-import { serializeError } from 'serialize-error';
-import type { StrictEventEmitter } from 'strict-event-emitter-types';
+import { Logger } from "../Logger.js";
+import type { Field } from "@slonik/types";
+import { generateUid } from "@slonik/utilities";
+import EventEmitter from "node:events";
+import type { Readable } from "node:stream";
+import type { ConnectionOptions as TlsConnectionOptions } from "node:tls";
+import { serializeError } from "serialize-error";
+import type { StrictEventEmitter } from "strict-event-emitter-types";
 
 const delay = (ms: number | undefined) =>
   new Promise<void>((resolve) => {
@@ -22,20 +22,17 @@ export type DriverClient = {
   acquire: () => void;
   destroy: () => Promise<void>;
   id: () => string;
-  off: DriverClientEventEmitter['off'];
-  on: DriverClientEventEmitter['on'];
+  off: DriverClientEventEmitter["off"];
+  on: DriverClientEventEmitter["on"];
   query: (
     query: string,
     values?: unknown[],
     queryOptions?: DriverQueryOptions,
   ) => Promise<DriverQueryResult>;
   release: () => Promise<void>;
-  removeListener: DriverClientEventEmitter['removeListener'];
+  removeListener: DriverClientEventEmitter["removeListener"];
   state: () => DriverClientState;
-  stream: (
-    query: string,
-    values?: unknown[],
-  ) => DriverStream<DriverStreamResult>;
+  stream: (query: string, values?: unknown[]) => DriverStream<DriverStreamResult>;
 };
 
 export type DriverClientEventEmitter = StrictEventEmitter<
@@ -50,26 +47,26 @@ export type DriverClientEventEmitter = StrictEventEmitter<
 >;
 
 export type DriverClientState =
-  | 'ACQUIRED'
-  | 'DESTROYED'
-  | 'IDLE'
-  | 'PENDING_DESTROY'
-  | 'PENDING_RELEASE';
+  | "ACQUIRED"
+  | "DESTROYED"
+  | "IDLE"
+  | "PENDING_DESTROY"
+  | "PENDING_RELEASE";
 
-export type DriverCommand = 'COPY' | 'DELETE' | 'INSERT' | 'SELECT' | 'UPDATE';
+export type DriverCommand = "COPY" | "DELETE" | "INSERT" | "SELECT" | "UPDATE";
 
 export type DriverConfiguration = {
-  readonly connectionTimeout: 'DISABLE_TIMEOUT' | number;
+  readonly connectionTimeout: "DISABLE_TIMEOUT" | number;
   readonly connectionUri: string;
   readonly gracefulTerminationTimeout?: number;
-  readonly idleInTransactionSessionTimeout: 'DISABLE_TIMEOUT' | number;
-  readonly idleTimeout?: 'DISABLE_TIMEOUT' | number;
+  readonly idleInTransactionSessionTimeout: "DISABLE_TIMEOUT" | number;
+  readonly idleTimeout?: "DISABLE_TIMEOUT" | number;
   readonly maximumConnectionAge?: number;
   readonly maximumPoolSize?: number;
   readonly minimumPoolSize?: number;
   readonly resetConnection?: (connection: BasicConnection) => Promise<void>;
   readonly ssl?: TlsConnectionOptions;
-  readonly statementTimeout: 'DISABLE_TIMEOUT' | number;
+  readonly statementTimeout: "DISABLE_TIMEOUT" | number;
   readonly typeParsers: readonly DriverTypeParser[];
 };
 
@@ -106,12 +103,9 @@ export type DriverQueryResult = {
   readonly rows: Array<Record<string, unknown>>;
 };
 
-export interface DriverStream<T> extends Omit<
-  Readable,
-  'on' | typeof Symbol.asyncIterator
-> {
+export interface DriverStream<T> extends Omit<Readable, "on" | typeof Symbol.asyncIterator> {
   [Symbol.asyncIterator]: () => AsyncIterableIterator<StreamDataEvent<T>>;
-  on: ((event: 'data', listener: (chunk: StreamDataEvent<T>) => void) => this) &
+  on: ((event: "data", listener: (chunk: StreamDataEvent<T>) => void) => this) &
     ((event: string | symbol, listener: (...args: any[]) => void) => this);
 }
 
@@ -158,10 +152,7 @@ type InternalPoolClient = {
     values?: unknown[],
     queryOptions?: DriverQueryOptions,
   ) => Promise<DriverQueryResult>;
-  stream: (
-    query: string,
-    values?: unknown[],
-  ) => DriverStream<DriverStreamResult>;
+  stream: (query: string, values?: unknown[]) => DriverStream<DriverStreamResult>;
 };
 
 type InternalPoolClientFactory = {
@@ -204,13 +195,13 @@ export const createDriverFactory = (setup: DriverSetup): DriverFactory => {
           Logger.warn(
             {
               error: serializeError(error),
-              namespace: 'driverClient',
+              namespace: "driverClient",
             },
-            'unhandled driver client error',
+            "unhandled driver client error",
           );
         };
 
-        clientEventEmitter.on('error', onError);
+        clientEventEmitter.on("error", onError);
 
         const { connect, end, query, stream } = await createPoolClient({
           clientEventEmitter,
@@ -236,33 +227,33 @@ export const createDriverFactory = (setup: DriverSetup): DriverFactory => {
 
         const state = () => {
           if (destroyPromise) {
-            return 'PENDING_DESTROY';
+            return "PENDING_DESTROY";
           }
 
           if (releasePromise) {
-            return 'PENDING_RELEASE';
+            return "PENDING_RELEASE";
           }
 
           if (isDestroyed) {
-            return 'DESTROYED';
+            return "DESTROYED";
           }
 
           if (isAcquired) {
-            return 'ACQUIRED';
+            return "ACQUIRED";
           }
 
-          return 'IDLE';
+          return "IDLE";
         };
 
         const internalDestroy = async () => {
           const currentState = state();
 
-          if (currentState === 'PENDING_DESTROY') {
-            throw new Error('Client is pending destroy.');
+          if (currentState === "PENDING_DESTROY") {
+            throw new Error("Client is pending destroy.");
           }
 
-          if (currentState === 'DESTROYED') {
-            throw new Error('Client is destroyed.');
+          if (currentState === "DESTROYED") {
+            throw new Error("Client is destroyed.");
           }
 
           clearIdleTimeout();
@@ -283,19 +274,16 @@ export const createDriverFactory = (setup: DriverSetup): DriverFactory => {
 
           isDestroyed = true;
 
-          clientEventEmitter.emit('destroy');
+          clientEventEmitter.emit("destroy");
 
           // end() calls pg client.end() which sends a termination message and
           // waits for the TCP connection to close. On broken connections (half-open
           // TCP, network partition) this can hang indefinitely. Apply the same
           // graceful termination timeout to prevent leaked promises that block
           // pool.end() and callers awaiting connection.destroy().
-          await Promise.race([
-            end(),
-            delay(driverConfiguration.gracefulTerminationTimeout),
-          ]);
+          await Promise.race([end(), delay(driverConfiguration.gracefulTerminationTimeout)]);
 
-          clientEventEmitter.off('error', onError);
+          clientEventEmitter.off("error", onError);
         };
 
         destroy = async () => {
@@ -311,20 +299,20 @@ export const createDriverFactory = (setup: DriverSetup): DriverFactory => {
         const internalRelease = async () => {
           const currentState = state();
 
-          if (currentState === 'PENDING_DESTROY') {
-            throw new Error('Client is pending destroy.');
+          if (currentState === "PENDING_DESTROY") {
+            throw new Error("Client is pending destroy.");
           }
 
-          if (currentState === 'DESTROYED') {
-            throw new Error('Client is destroyed.');
+          if (currentState === "DESTROYED") {
+            throw new Error("Client is destroyed.");
           }
 
-          if (currentState !== 'ACQUIRED') {
-            throw new Error('Client is not acquired.');
+          if (currentState !== "ACQUIRED") {
+            throw new Error("Client is not acquired.");
           }
 
           if (activeQueryPromise) {
-            throw new Error('Client has an active query.');
+            throw new Error("Client has an active query.");
           }
 
           if (resetConnection) {
@@ -335,7 +323,7 @@ export const createDriverFactory = (setup: DriverSetup): DriverFactory => {
             });
           }
 
-          if (driverConfiguration.idleTimeout !== 'DISABLE_TIMEOUT') {
+          if (driverConfiguration.idleTimeout !== "DISABLE_TIMEOUT") {
             clearIdleTimeout();
 
             idleTimeout = setTimeout(() => {
@@ -349,7 +337,7 @@ export const createDriverFactory = (setup: DriverSetup): DriverFactory => {
 
           releasePromise = null;
 
-          clientEventEmitter.emit('release');
+          clientEventEmitter.emit("release");
         };
 
         const release = () => {
@@ -370,27 +358,27 @@ export const createDriverFactory = (setup: DriverSetup): DriverFactory => {
           acquire: () => {
             const currentState = state();
 
-            if (currentState === 'PENDING_DESTROY') {
-              throw new Error('Client is pending destroy.');
+            if (currentState === "PENDING_DESTROY") {
+              throw new Error("Client is pending destroy.");
             }
 
-            if (currentState === 'PENDING_RELEASE') {
-              throw new Error('Client is pending release.');
+            if (currentState === "PENDING_RELEASE") {
+              throw new Error("Client is pending release.");
             }
 
-            if (currentState === 'DESTROYED') {
-              throw new Error('Client is destroyed.');
+            if (currentState === "DESTROYED") {
+              throw new Error("Client is destroyed.");
             }
 
-            if (currentState === 'ACQUIRED') {
-              throw new Error('Client is already acquired.');
+            if (currentState === "ACQUIRED") {
+              throw new Error("Client is already acquired.");
             }
 
             clearIdleTimeout();
 
             isAcquired = true;
 
-            clientEventEmitter.emit('acquire');
+            clientEventEmitter.emit("acquire");
           },
           destroy,
           id: () => id,
@@ -403,20 +391,20 @@ export const createDriverFactory = (setup: DriverSetup): DriverFactory => {
           query: async (sql, values, queryOptions) => {
             const currentState = state();
 
-            if (currentState === 'PENDING_DESTROY') {
-              throw new Error('Client is pending destroy.');
+            if (currentState === "PENDING_DESTROY") {
+              throw new Error("Client is pending destroy.");
             }
 
-            if (currentState === 'PENDING_RELEASE') {
-              throw new Error('Client is pending release.');
+            if (currentState === "PENDING_RELEASE") {
+              throw new Error("Client is pending release.");
             }
 
-            if (currentState === 'DESTROYED') {
-              throw new Error('Client is destroyed.');
+            if (currentState === "DESTROYED") {
+              throw new Error("Client is destroyed.");
             }
 
-            if (currentState !== 'ACQUIRED') {
-              throw new Error('Client is not acquired.');
+            if (currentState !== "ACQUIRED") {
+              throw new Error("Client is not acquired.");
             }
 
             try {
@@ -425,7 +413,7 @@ export const createDriverFactory = (setup: DriverSetup): DriverFactory => {
               const result = await activeQueryPromise;
 
               if (!activeQueryPromise) {
-                throw new Error('Expected `activeQueryPromise` to be set.');
+                throw new Error("Expected `activeQueryPromise` to be set.");
               }
 
               return result;
@@ -441,20 +429,20 @@ export const createDriverFactory = (setup: DriverSetup): DriverFactory => {
           stream: (sql, values) => {
             const currentState = state();
 
-            if (currentState === 'PENDING_DESTROY') {
-              throw new Error('Client is pending destroy.');
+            if (currentState === "PENDING_DESTROY") {
+              throw new Error("Client is pending destroy.");
             }
 
-            if (currentState === 'PENDING_RELEASE') {
-              throw new Error('Client is pending release.');
+            if (currentState === "PENDING_RELEASE") {
+              throw new Error("Client is pending release.");
             }
 
-            if (currentState === 'DESTROYED') {
-              throw new Error('Client is destroyed.');
+            if (currentState === "DESTROYED") {
+              throw new Error("Client is destroyed.");
             }
 
-            if (currentState !== 'ACQUIRED') {
-              throw new Error('Client is not acquired.');
+            if (currentState !== "ACQUIRED") {
+              throw new Error("Client is not acquired.");
             }
 
             // Note: Stream lifecycle management should be handled by the caller.
@@ -467,7 +455,7 @@ export const createDriverFactory = (setup: DriverSetup): DriverFactory => {
         try {
           await connect();
         } catch (error) {
-          clientEventEmitter.off('error', onError);
+          clientEventEmitter.off("error", onError);
 
           throw error;
         }

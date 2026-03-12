@@ -8,7 +8,7 @@ export const escapeLiteralValue = (subject: string): string => {
   for (const character of subject) {
     if (character === "'") {
       escaped += character + character;
-    } else if (character === '\\') {
+    } else if (character === "\\") {
       escaped += character + character;
       hasBackslash = true;
     } else {
@@ -19,7 +19,7 @@ export const escapeLiteralValue = (subject: string): string => {
   escaped += "'";
 
   if (hasBackslash === true) {
-    escaped = 'E' + escaped;
+    escaped = "E" + escaped;
   }
 
   return escaped;

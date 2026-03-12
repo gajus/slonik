@@ -1,29 +1,22 @@
-import { createConnectionLoaderClass } from './createConnectionLoaderClass.js';
-import type { Query, QueryResultRow } from '@slonik/types';
-import { parse } from 'graphql';
-import type {
-  FieldNode,
-  GraphQLResolveInfo,
-  OperationDefinitionNode,
-} from 'graphql';
-import { createPool, SchemaValidationError, sql } from 'slonik';
-import type { DatabasePool, Interceptor } from 'slonik';
-import { afterAll, beforeAll, beforeEach, describe, expect, it } from 'vitest';
-import { z } from 'zod';
+import { createConnectionLoaderClass } from "./createConnectionLoaderClass.js";
+import type { Query, QueryResultRow } from "@slonik/types";
+import { parse } from "graphql";
+import type { FieldNode, GraphQLResolveInfo, OperationDefinitionNode } from "graphql";
+import { createPool, SchemaValidationError, sql } from "slonik";
+import type { DatabasePool, Interceptor } from "slonik";
+import { afterAll, beforeAll, beforeEach, describe, expect, it } from "vitest";
+import { z } from "zod";
 
 const POSTGRES_DSN =
   // eslint-disable-next-line n/no-process-env
-  process.env.POSTGRES_DSN ?? 'postgres://postgres:postgres@localhost:5432';
+  process.env.POSTGRES_DSN ?? "postgres://postgres:postgres@localhost:5432";
 
-const getInfo = (
-  fields: string[],
-): Pick<GraphQLResolveInfo, 'fieldNodes' | 'fragments'> => {
-  const document = parse(`{ connection { ${fields.join(' ')} } }`);
+const getInfo = (fields: string[]): Pick<GraphQLResolveInfo, "fieldNodes" | "fragments"> => {
+  const document = parse(`{ connection { ${fields.join(" ")} } }`);
 
   return {
     fieldNodes: [
-      (document.definitions[0] as OperationDefinitionNode).selectionSet
-        .selections[0] as FieldNode,
+      (document.definitions[0] as OperationDefinitionNode).selectionSet.selections[0] as FieldNode,
     ],
     fragments: {},
   };
@@ -49,7 +42,7 @@ const PersonConnectionLoader = createConnectionLoaderClass({
 
 const getNodeIds = (edges) => edges.map(({ node }) => node.id);
 
-describe('createConnectionLoaderClass', { sequential: true }, () => {
+describe("createConnectionLoaderClass", { sequential: true }, () => {
   let pool: DatabasePool;
 
   let queries: Query[] = [];
@@ -63,7 +56,7 @@ describe('createConnectionLoaderClass', { sequential: true }, () => {
 
             return null;
           },
-          name: 'foo',
+          name: "foo",
         },
       ],
     });
@@ -110,7 +103,7 @@ describe('createConnectionLoaderClass', { sequential: true }, () => {
   const countTaggedQueries = (tagName: string) =>
     queries.filter((query) => query.sql.includes(tagName)).length;
 
-  it('loads all records with no additional options', async () => {
+  it("loads all records with no additional options", async () => {
     const loader = new PersonConnectionLoader(pool);
     const result = await loader.load({});
 
@@ -123,40 +116,40 @@ describe('createConnectionLoaderClass', { sequential: true }, () => {
       },
     });
 
-    expect(countTaggedQueries('@count-query')).toEqual(1);
-    expect(countTaggedQueries('@edges-query')).toEqual(1);
+    expect(countTaggedQueries("@count-query")).toEqual(1);
+    expect(countTaggedQueries("@edges-query")).toEqual(1);
 
     expect(result.edges).toHaveLength(10);
   });
 
-  it('loads records in ascending order', async () => {
+  it("loads records in ascending order", async () => {
     const loader = new PersonConnectionLoader(pool);
     const result = await loader.load({
-      orderBy: ({ uid }) => [[uid, 'ASC']],
+      orderBy: ({ uid }) => [[uid, "ASC"]],
     });
 
     expect(result.edges[0].node.id).toEqual(1);
     expect(result.edges[9].node.id).toEqual(10);
   });
 
-  it('loads records in descending order', async () => {
+  it("loads records in descending order", async () => {
     const loader = new PersonConnectionLoader(pool);
     const result = await loader.load({
-      orderBy: ({ uid }) => [[uid, 'DESC']],
+      orderBy: ({ uid }) => [[uid, "DESC"]],
     });
 
     expect(result.edges[0].node.id).toEqual(10);
     expect(result.edges[9].node.id).toEqual(1);
   });
 
-  it('loads records with ORDER expression (batch)', async () => {
+  it("loads records with ORDER expression (batch)", async () => {
     const loader = new PersonConnectionLoader(pool);
     const [a, b] = await Promise.all([
       loader.load({
-        orderBy: ({ uid }) => [[uid, 'ASC']],
+        orderBy: ({ uid }) => [[uid, "ASC"]],
       }),
       loader.load({
-        orderBy: ({ uid }) => [[uid, 'DESC']],
+        orderBy: ({ uid }) => [[uid, "DESC"]],
       }),
     ]);
 
@@ -164,28 +157,28 @@ describe('createConnectionLoaderClass', { sequential: true }, () => {
     expect(getNodeIds(b.edges)).toEqual([10, 9, 8, 7, 6, 5, 4, 3, 2, 1]);
   });
 
-  it('loads records with multiple ORDER BY expressions', async () => {
+  it("loads records with multiple ORDER BY expressions", async () => {
     const loader = new PersonConnectionLoader(pool);
     const result = await loader.load({
       orderBy: ({ name, uid }) => [
-        [name, 'ASC'],
-        [uid, 'DESC'],
+        [name, "ASC"],
+        [uid, "DESC"],
       ],
     });
 
     expect(getNodeIds(result.edges)).toEqual([2, 1, 4, 3, 6, 5, 8, 7, 10, 9]);
   });
 
-  it('loads records with complex ORDER BY expression', async () => {
+  it("loads records with complex ORDER BY expression", async () => {
     const loader = new PersonConnectionLoader(pool);
     const result = await loader.load({
-      orderBy: ({ uid }) => [[sql.fragment`${uid}`, 'ASC']],
+      orderBy: ({ uid }) => [[sql.fragment`${uid}`, "ASC"]],
     });
 
     expect(getNodeIds(result.edges)).toEqual([1, 2, 3, 4, 5, 6, 7, 8, 9, 10]);
   });
 
-  it('loads records with WHERE expression', async () => {
+  it("loads records with WHERE expression", async () => {
     const loader = new PersonConnectionLoader(pool);
     const result = await loader.load({
       where: ({ name }) => sql.fragment`${name} = 'eee'`,
@@ -194,7 +187,7 @@ describe('createConnectionLoaderClass', { sequential: true }, () => {
     expect(getNodeIds(result.edges)).toEqual([9, 10]);
   });
 
-  it('loads records with WHERE expression (batch)', async () => {
+  it("loads records with WHERE expression (batch)", async () => {
     const loader = new PersonConnectionLoader(pool);
     const [a, b] = await Promise.all([
       loader.load({
@@ -209,7 +202,7 @@ describe('createConnectionLoaderClass', { sequential: true }, () => {
     expect(getNodeIds(b.edges)).toEqual([3, 4]);
   });
 
-  it('loads records with WHERE expression (batch; miss)', async () => {
+  it("loads records with WHERE expression (batch; miss)", async () => {
     const loader = new PersonConnectionLoader(pool);
 
     const [a, b, c] = await Promise.all([
@@ -229,32 +222,32 @@ describe('createConnectionLoaderClass', { sequential: true }, () => {
     expect(getNodeIds(c.edges)).toEqual([3, 4]);
   });
 
-  it('loads records with LIMIT', async () => {
+  it("loads records with LIMIT", async () => {
     const loader = new PersonConnectionLoader(pool);
     const result = await loader.load({
       limit: 4,
-      orderBy: ({ uid }) => [[uid, 'ASC']],
+      orderBy: ({ uid }) => [[uid, "ASC"]],
     });
 
     expect(getNodeIds(result.edges)).toEqual([1, 2, 3, 4]);
   });
 
-  it('loads records with LIMIT and OFFSET', async () => {
+  it("loads records with LIMIT and OFFSET", async () => {
     const loader = new PersonConnectionLoader(pool);
     const result = await loader.load({
       limit: 4,
       offset: 4,
-      orderBy: ({ uid }) => [[uid, 'ASC']],
+      orderBy: ({ uid }) => [[uid, "ASC"]],
     });
 
     expect(getNodeIds(result.edges)).toEqual([5, 6, 7, 8]);
   });
 
-  it('paginates through the records forwards', async () => {
+  it("paginates through the records forwards", async () => {
     const loader = new PersonConnectionLoader(pool);
     const firstResult = await loader.load({
       limit: 4,
-      orderBy: ({ uid }) => [[uid, 'ASC']],
+      orderBy: ({ uid }) => [[uid, "ASC"]],
     });
 
     expect(getNodeIds(firstResult.edges)).toEqual([1, 2, 3, 4]);
@@ -266,7 +259,7 @@ describe('createConnectionLoaderClass', { sequential: true }, () => {
     const secondResult = await loader.load({
       cursor: firstResult.pageInfo.endCursor,
       limit: 4,
-      orderBy: ({ uid }) => [[uid, 'ASC']],
+      orderBy: ({ uid }) => [[uid, "ASC"]],
     });
 
     expect(getNodeIds(secondResult.edges)).toEqual([5, 6, 7, 8]);
@@ -278,7 +271,7 @@ describe('createConnectionLoaderClass', { sequential: true }, () => {
     const thirdResult = await loader.load({
       cursor: secondResult.pageInfo.endCursor,
       limit: 4,
-      orderBy: ({ uid }) => [[uid, 'ASC']],
+      orderBy: ({ uid }) => [[uid, "ASC"]],
     });
 
     expect(getNodeIds(thirdResult.edges)).toEqual([9, 10]);
@@ -290,7 +283,7 @@ describe('createConnectionLoaderClass', { sequential: true }, () => {
     const fourthResult = await loader.load({
       cursor: thirdResult.pageInfo.endCursor,
       limit: 4,
-      orderBy: ({ uid }) => [[uid, 'ASC']],
+      orderBy: ({ uid }) => [[uid, "ASC"]],
     });
 
     expect(getNodeIds(fourthResult.edges)).toEqual([]);
@@ -300,11 +293,11 @@ describe('createConnectionLoaderClass', { sequential: true }, () => {
     });
   });
 
-  it('paginates through the records backwards', async () => {
+  it("paginates through the records backwards", async () => {
     const loader = new PersonConnectionLoader(pool);
     const firstResult = await loader.load({
       limit: 4,
-      orderBy: ({ uid }) => [[uid, 'ASC']],
+      orderBy: ({ uid }) => [[uid, "ASC"]],
       reverse: true,
     });
 
@@ -317,7 +310,7 @@ describe('createConnectionLoaderClass', { sequential: true }, () => {
     const secondResult = await loader.load({
       cursor: firstResult.pageInfo.startCursor,
       limit: 4,
-      orderBy: ({ uid }) => [[uid, 'ASC']],
+      orderBy: ({ uid }) => [[uid, "ASC"]],
       reverse: true,
     });
 
@@ -330,7 +323,7 @@ describe('createConnectionLoaderClass', { sequential: true }, () => {
     const thirdResult = await loader.load({
       cursor: secondResult.pageInfo.startCursor,
       limit: 4,
-      orderBy: ({ uid }) => [[uid, 'ASC']],
+      orderBy: ({ uid }) => [[uid, "ASC"]],
       reverse: true,
     });
 
@@ -343,7 +336,7 @@ describe('createConnectionLoaderClass', { sequential: true }, () => {
     const fourthResult = await loader.load({
       cursor: thirdResult.pageInfo.startCursor,
       limit: 4,
-      orderBy: ({ uid }) => [[uid, 'ASC']],
+      orderBy: ({ uid }) => [[uid, "ASC"]],
       reverse: true,
     });
 
@@ -354,60 +347,56 @@ describe('createConnectionLoaderClass', { sequential: true }, () => {
     });
   });
 
-  it('batches loaded records', async () => {
+  it("batches loaded records", async () => {
     const loader = new PersonConnectionLoader(pool);
 
     const results = await Promise.all([
       loader.load({
-        orderBy: ({ uid }) => [[uid, 'ASC']],
+        orderBy: ({ uid }) => [[uid, "ASC"]],
       }),
       loader.load({
-        orderBy: ({ uid }) => [[uid, 'DESC']],
+        orderBy: ({ uid }) => [[uid, "DESC"]],
       }),
     ]);
 
-    expect(countTaggedQueries('@count-query')).toEqual(1);
-    expect(countTaggedQueries('@edges-query')).toEqual(1);
+    expect(countTaggedQueries("@count-query")).toEqual(1);
+    expect(countTaggedQueries("@edges-query")).toEqual(1);
 
-    expect(getNodeIds(results[0].edges)).toEqual([
-      1, 2, 3, 4, 5, 6, 7, 8, 9, 10,
-    ]);
-    expect(getNodeIds(results[1].edges)).toEqual([
-      10, 9, 8, 7, 6, 5, 4, 3, 2, 1,
-    ]);
+    expect(getNodeIds(results[0].edges)).toEqual([1, 2, 3, 4, 5, 6, 7, 8, 9, 10]);
+    expect(getNodeIds(results[1].edges)).toEqual([10, 9, 8, 7, 6, 5, 4, 3, 2, 1]);
   });
 
-  it('caches loaded records', async () => {
+  it("caches loaded records", async () => {
     const loader = new PersonConnectionLoader(pool);
 
     const resultsA = await loader.load({
-      orderBy: ({ uid }) => [[uid, 'ASC']],
+      orderBy: ({ uid }) => [[uid, "ASC"]],
     });
     const resultsB = await loader.load({
-      orderBy: ({ uid }) => [[uid, 'ASC']],
+      orderBy: ({ uid }) => [[uid, "ASC"]],
     });
 
-    expect(countTaggedQueries('@count-query')).toEqual(1);
-    expect(countTaggedQueries('@edges-query')).toEqual(1);
+    expect(countTaggedQueries("@count-query")).toEqual(1);
+    expect(countTaggedQueries("@edges-query")).toEqual(1);
 
     expect(getNodeIds(resultsA.edges)).toEqual([1, 2, 3, 4, 5, 6, 7, 8, 9, 10]);
     expect(getNodeIds(resultsB.edges)).toEqual([1, 2, 3, 4, 5, 6, 7, 8, 9, 10]);
   });
 
-  it('gets the count', async () => {
+  it("gets the count", async () => {
     const loader = new PersonConnectionLoader(pool);
     const result = await loader.load({
-      info: getInfo(['count']),
+      info: getInfo(["count"]),
       where: ({ name }) => sql.fragment`${name} = 'ccc'`,
     });
 
     expect(result.count).toEqual(2);
   });
 
-  it('gets the count without fetching edges', async () => {
+  it("gets the count without fetching edges", async () => {
     const loader = new PersonConnectionLoader(pool);
     const result = await loader.load({
-      info: getInfo(['count']),
+      info: getInfo(["count"]),
       where: ({ name }) => sql.fragment`${name} = 'ccc'`,
     });
 
@@ -415,15 +404,15 @@ describe('createConnectionLoaderClass', { sequential: true }, () => {
     expect(result.edges.length).toEqual(0);
   });
 
-  it('gets the count without fetching edges (batch)', async () => {
+  it("gets the count without fetching edges (batch)", async () => {
     const loader = new PersonConnectionLoader(pool);
     const results = await Promise.all([
       loader.load({
-        info: getInfo(['count']),
+        info: getInfo(["count"]),
         where: ({ name }) => sql.fragment`${name} = 'ccc'`,
       }),
       loader.load({
-        info: getInfo(['count']),
+        info: getInfo(["count"]),
         where: ({ name }) => sql.fragment`${name} = 'eee'`,
       }),
     ]);
@@ -434,16 +423,16 @@ describe('createConnectionLoaderClass', { sequential: true }, () => {
     expect(results[1].edges.length).toEqual(0);
   });
 
-  it('gets a mix of count and edges (batch)', async () => {
+  it("gets a mix of count and edges (batch)", async () => {
     const loader = new PersonConnectionLoader(pool);
 
     const results = await Promise.all([
       loader.load({
-        info: getInfo(['edges']),
+        info: getInfo(["edges"]),
         where: ({ name }) => sql.fragment`${name} = 'eee'`,
       }),
       loader.load({
-        info: getInfo(['count']),
+        info: getInfo(["count"]),
         where: ({ name }) => sql.fragment`${name} = 'eee'`,
       }),
     ]);
@@ -452,15 +441,15 @@ describe('createConnectionLoaderClass', { sequential: true }, () => {
     expect(results[1].count).toEqual(2);
   });
 
-  it('gets the edges without fetching count', async () => {
+  it("gets the edges without fetching count", async () => {
     const loader = new PersonConnectionLoader(pool);
     const results = await Promise.all([
       loader.load({
-        info: getInfo(['edges']),
+        info: getInfo(["edges"]),
         where: ({ name }) => sql.fragment`${name} = 'ccc'`,
       }),
       loader.load({
-        info: getInfo(['pageInfo']),
+        info: getInfo(["pageInfo"]),
         where: ({ name }) => sql.fragment`${name} = 'eee'`,
       }),
     ]);
@@ -471,7 +460,7 @@ describe('createConnectionLoaderClass', { sequential: true }, () => {
     expect(results[1].edges.length).toEqual(2);
   });
 
-  it('fetches edges for fields provided in resolverFieldsThatRequireFetchingEdges config variable', async () => {
+  it("fetches edges for fields provided in resolverFieldsThatRequireFetchingEdges config variable", async () => {
     const loaderClass = createConnectionLoaderClass({
       query: sql.type(
         z
@@ -488,30 +477,30 @@ describe('createConnectionLoaderClass', { sequential: true }, () => {
           name
         FROM person
       `,
-      resolverFieldsThatRequireFetchingEdges: ['data'],
+      resolverFieldsThatRequireFetchingEdges: ["data"],
     });
 
     const loader = new loaderClass(pool);
     const result = await loader.load({
-      info: getInfo(['data']),
+      info: getInfo(["data"]),
     });
 
-    expect(countTaggedQueries('@count-query')).toEqual(0);
-    expect(countTaggedQueries('@edges-query')).toEqual(1);
+    expect(countTaggedQueries("@count-query")).toEqual(0);
+    expect(countTaggedQueries("@edges-query")).toEqual(1);
 
     expect(result.count).toEqual(0);
     expect(result.edges.length).toEqual(10);
   });
 });
 
-describe('createConnectionLoaderClass (with validation)', () => {
+describe("createConnectionLoaderClass (with validation)", () => {
   let pool: DatabasePool;
 
   beforeAll(async () => {
     // eslint-disable-next-line unicorn/consistent-function-scoping
     const createResultParserInterceptor = (): Interceptor => {
       return {
-        name: 'foo',
+        name: "foo",
         transformRow: (executionContext, actualQuery, row) => {
           const { resultParser } = executionContext;
 
@@ -520,18 +509,14 @@ describe('createConnectionLoaderClass (with validation)', () => {
             return row;
           }
 
-          const validationResult = resultParser['~standard']?.validate(row);
+          const validationResult = resultParser["~standard"]?.validate(row);
 
           if (validationResult instanceof Promise) {
-            throw new TypeError('Expected validation result to be synchronous');
+            throw new TypeError("Expected validation result to be synchronous");
           }
 
           if (validationResult.issues) {
-            throw new SchemaValidationError(
-              actualQuery,
-              row,
-              validationResult.issues,
-            );
+            throw new SchemaValidationError(actualQuery, row, validationResult.issues);
           }
 
           return validationResult.value as QueryResultRow;
@@ -578,14 +563,14 @@ describe('createConnectionLoaderClass (with validation)', () => {
     }
   });
 
-  it('loads all records with row validation', async () => {
+  it("loads all records with row validation", async () => {
     const loader = new PersonConnectionLoader(pool);
     const result = await loader.load({});
 
     expect(result.edges).toHaveLength(10);
   });
 
-  it('loads all records with row validation (unsafe)', async () => {
+  it("loads all records with row validation (unsafe)", async () => {
     const UnsafePersonConnectionLoader = createConnectionLoaderClass({
       query: sql.unsafe`
         SELECT
@@ -599,13 +584,13 @@ describe('createConnectionLoaderClass (with validation)', () => {
     const loader = new UnsafePersonConnectionLoader(pool);
 
     const result = await loader.load({
-      orderBy: ({ uid }) => [[uid, 'ASC']],
+      orderBy: ({ uid }) => [[uid, "ASC"]],
     });
 
     expect(getNodeIds(result.edges)).toEqual([1, 2, 3, 4, 5, 6, 7, 8, 9, 10]);
   });
 
-  it('fails with schema validation error', async () => {
+  it("fails with schema validation error", async () => {
     const BadConnectionLoader = createConnectionLoaderClass({
       query: sql.type(
         z.object({

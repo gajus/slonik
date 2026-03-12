@@ -3,9 +3,9 @@ dist
 node_modules
 *.log
 .*
-!.eslintrc
 !.github
 !.gitignore
 !.husky
 !.README
 !.changeset
+!.oxfmtrc.json

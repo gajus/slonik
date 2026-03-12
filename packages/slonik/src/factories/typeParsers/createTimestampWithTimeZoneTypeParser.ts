@@ -1,11 +1,11 @@
-import type { DriverTypeParser } from '@slonik/driver';
+import type { DriverTypeParser } from "@slonik/driver";
 
 const timestampParser = (value: null | string) => {
-  if (value === 'infinity') {
+  if (value === "infinity") {
     return Number.POSITIVE_INFINITY;
   }
 
-  if (value === '-infinity') {
+  if (value === "-infinity") {
     return Number.NEGATIVE_INFINITY;
   }
 
@@ -14,7 +14,7 @@ const timestampParser = (value: null | string) => {
 
 export const createTimestampWithTimeZoneTypeParser = (): DriverTypeParser => {
   return {
-    name: 'timestamptz',
+    name: "timestamptz",
     parse: timestampParser,
   };
 };

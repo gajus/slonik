@@ -1,13 +1,13 @@
-import { createPool } from '../../factories/createPool.js';
-import { createPoolWithSpy } from '../../helpers.test/createPoolWithSpy.js';
-import { createTestRunner } from '../../helpers.test/createTestRunner.js';
-import { createPgDriverFactory } from '@slonik/pg-driver';
-import { createSqlTag } from '@slonik/sql-tag';
-import { setTimeout as delay } from 'node:timers/promises';
+import { createPool } from "../../factories/createPool.js";
+import { createPoolWithSpy } from "../../helpers.test/createPoolWithSpy.js";
+import { createTestRunner } from "../../helpers.test/createTestRunner.js";
+import { createPgDriverFactory } from "@slonik/pg-driver";
+import { createSqlTag } from "@slonik/sql-tag";
+import { setTimeout as delay } from "node:timers/promises";
 
 const driverFactory = createPgDriverFactory();
 
-const { test } = createTestRunner(driverFactory, 'pg');
+const { test } = createTestRunner(driverFactory, "pg");
 
 const sql = createSqlTag();
 
@@ -17,7 +17,7 @@ const getQueries = (spy: sinon.SinonSpy) => {
   });
 };
 
-test('commits successful transaction', async (t) => {
+test("commits successful transaction", async (t) => {
   const { pool, spy } = await createPoolWithSpy(t.context.dsn, {
     driverFactory,
   });
@@ -28,14 +28,10 @@ test('commits successful transaction', async (t) => {
     });
   });
 
-  t.deepEqual(getQueries(spy.query), [
-    'START TRANSACTION',
-    'SELECT 1',
-    'COMMIT',
-  ]);
+  t.deepEqual(getQueries(spy.query), ["START TRANSACTION", "SELECT 1", "COMMIT"]);
 });
 
-test('rollsback unsuccessful transaction', async (t) => {
+test("rollsback unsuccessful transaction", async (t) => {
   const { pool, spy } = await createPoolWithSpy(t.context.dsn, {
     driverFactory,
   });
@@ -45,19 +41,15 @@ test('rollsback unsuccessful transaction', async (t) => {
       await c1.transaction(async (t1) => {
         await t1.query(sql.unsafe`SELECT 1`);
 
-        return await Promise.reject(new Error('foo'));
+        return await Promise.reject(new Error("foo"));
       });
     }),
   );
 
-  t.deepEqual(getQueries(spy.query), [
-    'START TRANSACTION',
-    'SELECT 1',
-    'ROLLBACK',
-  ]);
+  t.deepEqual(getQueries(spy.query), ["START TRANSACTION", "SELECT 1", "ROLLBACK"]);
 });
 
-test('uses savepoints to nest transactions', async (t) => {
+test("uses savepoints to nest transactions", async (t) => {
   const { pool, spy } = await createPoolWithSpy(t.context.dsn, {
     driverFactory,
   });
@@ -72,15 +64,15 @@ test('uses savepoints to nest transactions', async (t) => {
   });
 
   t.deepEqual(getQueries(spy.query), [
-    'START TRANSACTION',
-    'SELECT 1',
-    'SAVEPOINT slonik_savepoint_1',
-    'SELECT 2',
-    'COMMIT',
+    "START TRANSACTION",
+    "SELECT 1",
+    "SAVEPOINT slonik_savepoint_1",
+    "SELECT 2",
+    "COMMIT",
   ]);
 });
 
-test('rollsback to the last savepoint', async (t) => {
+test("rollsback to the last savepoint", async (t) => {
   const { pool, spy } = await createPoolWithSpy(t.context.dsn, {
     driverFactory,
   });
@@ -93,23 +85,23 @@ test('rollsback to the last savepoint', async (t) => {
         t1.transaction(async (t2) => {
           await t2.query(sql.unsafe`SELECT 2`);
 
-          return await Promise.reject(new Error('foo'));
+          return await Promise.reject(new Error("foo"));
         }),
       );
     });
   });
 
   t.deepEqual(getQueries(spy.query), [
-    'START TRANSACTION',
-    'SELECT 1',
-    'SAVEPOINT slonik_savepoint_1',
-    'SELECT 2',
-    'ROLLBACK TO SAVEPOINT slonik_savepoint_1',
-    'COMMIT',
+    "START TRANSACTION",
+    "SELECT 1",
+    "SAVEPOINT slonik_savepoint_1",
+    "SELECT 2",
+    "ROLLBACK TO SAVEPOINT slonik_savepoint_1",
+    "COMMIT",
   ]);
 });
 
-test('rollsback the entire transaction with multiple savepoints', async (t) => {
+test("rollsback the entire transaction with multiple savepoints", async (t) => {
   const { pool, spy } = await createPoolWithSpy(t.context.dsn, {
     driverFactory,
   });
@@ -122,23 +114,23 @@ test('rollsback the entire transaction with multiple savepoints', async (t) => {
         return await t1.transaction(async (t2) => {
           await t2.query(sql.unsafe`SELECT 2`);
 
-          return await Promise.reject(new Error('foo'));
+          return await Promise.reject(new Error("foo"));
         });
       }),
     );
   });
 
   t.deepEqual(getQueries(spy.query), [
-    'START TRANSACTION',
-    'SELECT 1',
-    'SAVEPOINT slonik_savepoint_1',
-    'SELECT 2',
-    'ROLLBACK TO SAVEPOINT slonik_savepoint_1',
-    'ROLLBACK',
+    "START TRANSACTION",
+    "SELECT 1",
+    "SAVEPOINT slonik_savepoint_1",
+    "SELECT 2",
+    "ROLLBACK TO SAVEPOINT slonik_savepoint_1",
+    "ROLLBACK",
   ]);
 });
 
-test('rollsback the entire transaction with multiple savepoints (multiple depth layers)', async (t) => {
+test("rollsback the entire transaction with multiple savepoints (multiple depth layers)", async (t) => {
   const { pool, spy } = await createPoolWithSpy(t.context.dsn, {
     driverFactory,
   });
@@ -154,7 +146,7 @@ test('rollsback the entire transaction with multiple savepoints (multiple depth 
           return await t2.transaction(async (t3) => {
             await t3.query(sql.unsafe`SELECT 3`);
 
-            return await Promise.reject(new Error('foo'));
+            return await Promise.reject(new Error("foo"));
           });
         });
       }),
@@ -162,19 +154,19 @@ test('rollsback the entire transaction with multiple savepoints (multiple depth 
   });
 
   t.deepEqual(getQueries(spy.query), [
-    'START TRANSACTION',
-    'SELECT 1',
-    'SAVEPOINT slonik_savepoint_1',
-    'SELECT 2',
-    'SAVEPOINT slonik_savepoint_2',
-    'SELECT 3',
-    'ROLLBACK TO SAVEPOINT slonik_savepoint_2',
-    'ROLLBACK TO SAVEPOINT slonik_savepoint_1',
-    'ROLLBACK',
+    "START TRANSACTION",
+    "SELECT 1",
+    "SAVEPOINT slonik_savepoint_1",
+    "SELECT 2",
+    "SAVEPOINT slonik_savepoint_2",
+    "SELECT 3",
+    "ROLLBACK TO SAVEPOINT slonik_savepoint_2",
+    "ROLLBACK TO SAVEPOINT slonik_savepoint_1",
+    "ROLLBACK",
   ]);
 });
 
-test('throws an error if an attempt is made to create a new transaction before the last transaction is completed', async (t) => {
+test("throws an error if an attempt is made to create a new transaction before the last transaction is completed", async (t) => {
   const pool = await createPool(t.context.dsn, { driverFactory });
 
   const connection = pool.connect(async (c1) => {
@@ -192,11 +184,11 @@ test('throws an error if an attempt is made to create a new transaction before t
 
   t.is(
     error?.message,
-    'Cannot use the same connection to start a new transaction before completing the last transaction.',
+    "Cannot use the same connection to start a new transaction before completing the last transaction.",
   );
 });
 
-test('throws an error if an attempt is made to execute a query using the parent transaction before the current transaction is completed', async (t) => {
+test("throws an error if an attempt is made to execute a query using the parent transaction before the current transaction is completed", async (t) => {
   const pool = await createPool(t.context.dsn, { driverFactory });
 
   const connection = pool.connect(async (c1) => {
@@ -209,5 +201,5 @@ test('throws an error if an attempt is made to execute a query using the parent 
 
   const error = await t.throwsAsync(connection);
 
-  t.is(error?.message, 'Cannot run a query using parent transaction.');
+  t.is(error?.message, "Cannot run a query using parent transaction.");
 });

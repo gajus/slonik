@@ -1,58 +1,50 @@
 /* eslint-disable no-console */
 
-import {
-  BackendTerminatedUnexpectedlyError,
-  createPool,
-  sql,
-} from '../index.js';
-import test from 'ava';
-import getPort from 'get-port';
-import { execSync, spawn } from 'node:child_process';
-import { randomUUID } from 'node:crypto';
-import { setTimeout } from 'node:timers/promises';
+import { BackendTerminatedUnexpectedlyError, createPool, sql } from "../index.js";
+import test from "ava";
+import getPort from "get-port";
+import { execSync, spawn } from "node:child_process";
+import { randomUUID } from "node:crypto";
+import { setTimeout } from "node:timers/promises";
 
 export const startTestContainer = async () => {
   const dockerContainerName = `slonik-test-${randomUUID()}`;
   const servicePort = await getPort();
 
   const dockerArgs = [
-    'run',
-    '--name',
+    "run",
+    "--name",
     dockerContainerName,
-    '--rm',
-    '-e',
-    'POSTGRES_HOST_AUTH_METHOD=trust',
-    '-p',
-    servicePort + ':5432',
-    'postgres:14',
-    '-N 1000',
+    "--rm",
+    "-e",
+    "POSTGRES_HOST_AUTH_METHOD=trust",
+    "-p",
+    servicePort + ":5432",
+    "postgres:14",
+    "-N 1000",
   ];
 
-  const dockerProcess = spawn('docker', dockerArgs);
+  const dockerProcess = spawn("docker", dockerArgs);
 
-  dockerProcess.on('error', (error) => {
+  dockerProcess.on("error", (error) => {
     console.error(error);
   });
 
-  dockerProcess.stdout.on('data', (data) => {
+  dockerProcess.stdout.on("data", (data) => {
     console.log(data.toString());
   });
 
-  dockerProcess.stderr.on('data', (data) => {
+  dockerProcess.stderr.on("data", (data) => {
     console.error(data.toString());
   });
 
-  dockerProcess.on('exit', (code) => {
+  dockerProcess.on("exit", (code) => {
     console.log(`Docker process exited with code ${code}`);
   });
 
   await new Promise((resolve) => {
-    dockerProcess.stdout.on('data', (data) => {
-      if (
-        data
-          .toString()
-          .includes('database system is ready to accept connections')
-      ) {
+    dockerProcess.stdout.on("data", (data) => {
+      if (data.toString().includes("database system is ready to accept connections")) {
         resolve(undefined);
       }
     });
@@ -73,13 +65,13 @@ export const startTestContainer = async () => {
 /**
  * @see https://github.com/brianc/node-postgres/issues/3083
  */
-test('handles unexpected backend termination', async (t) => {
+test("handles unexpected backend termination", async (t) => {
   try {
-    const output = execSync('docker --version', { encoding: 'utf8' });
+    const output = execSync("docker --version", { encoding: "utf8" });
 
-    console.log('Docker CLI is available:', output.trim());
+    console.log("Docker CLI is available:", output.trim());
   } catch {
-    console.log('Skipper the test. Docker CLI is not available.');
+    console.log("Skipper the test. Docker CLI is not available.");
 
     return;
   }

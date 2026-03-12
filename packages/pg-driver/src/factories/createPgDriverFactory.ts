@@ -1,12 +1,12 @@
 /* eslint-disable canonical/id-match */
 
-import { createDriverFactory } from '@slonik/driver';
+import { createDriverFactory } from "@slonik/driver";
 import type {
   DriverCommand,
   DriverConfiguration,
   DriverFactory,
   DriverTypeParser,
-} from '@slonik/driver';
+} from "@slonik/driver";
 import {
   BackendTerminatedError,
   BackendTerminatedUnexpectedlyError,
@@ -21,19 +21,16 @@ import {
   StatementTimeoutError,
   UnexpectedStateError,
   UniqueIntegrityConstraintViolationError,
-} from '@slonik/errors';
-import type { PrimitiveValueExpression } from '@slonik/sql-tag';
-import type { Field, Query } from '@slonik/types';
-import { parseDsn } from '@slonik/utilities';
-import { Transform } from 'node:stream';
-import { Client } from 'pg';
-import type {
-  DatabaseError,
-  ClientConfig as NativePostgresClientConfiguration,
-} from 'pg';
-import QueryStream from 'pg-query-stream';
-import { getTypeParser as getNativeTypeParser } from 'pg-types';
-import { parse as parseArray } from 'postgres-array';
+} from "@slonik/errors";
+import type { PrimitiveValueExpression } from "@slonik/sql-tag";
+import type { Field, Query } from "@slonik/types";
+import { parseDsn } from "@slonik/utilities";
+import { Transform } from "node:stream";
+import { Client } from "pg";
+import type { DatabaseError, ClientConfig as NativePostgresClientConfiguration } from "pg";
+import QueryStream from "pg-query-stream";
+import { getTypeParser as getNativeTypeParser } from "pg-types";
+import { parse as parseArray } from "postgres-array";
 
 type PostgresType = {
   oid: string;
@@ -112,44 +109,40 @@ const createClientConfiguration = (
     password: connectionOptions.password,
     port: connectionOptions.port,
     // @ts-expect-error - https://github.com/brianc/node-postgres/pull/3214
-    queryMode: 'extended',
+    queryMode: "extended",
     ssl: false,
     user: connectionOptions.username,
   };
 
   if (clientConfiguration.ssl) {
     poolConfiguration.ssl = clientConfiguration.ssl;
-  } else if (connectionOptions.sslMode === 'disable') {
+  } else if (connectionOptions.sslMode === "disable") {
     poolConfiguration.ssl = false;
-  } else if (connectionOptions.sslMode === 'require') {
+  } else if (connectionOptions.sslMode === "require") {
     poolConfiguration.ssl = true;
-  } else if (connectionOptions.sslMode === 'no-verify') {
+  } else if (connectionOptions.sslMode === "no-verify") {
     poolConfiguration.ssl = {
       rejectUnauthorized: false,
     };
   }
 
-  if (clientConfiguration.connectionTimeout !== 'DISABLE_TIMEOUT') {
+  if (clientConfiguration.connectionTimeout !== "DISABLE_TIMEOUT") {
     if (clientConfiguration.connectionTimeout === 0) {
       poolConfiguration.connectionTimeoutMillis = 1;
     } else {
-      poolConfiguration.connectionTimeoutMillis =
-        clientConfiguration.connectionTimeout;
+      poolConfiguration.connectionTimeoutMillis = clientConfiguration.connectionTimeout;
     }
   }
 
-  if (clientConfiguration.statementTimeout !== 'DISABLE_TIMEOUT') {
+  if (clientConfiguration.statementTimeout !== "DISABLE_TIMEOUT") {
     if (clientConfiguration.statementTimeout === 0) {
       poolConfiguration.statement_timeout = 1;
     } else {
-      poolConfiguration.statement_timeout =
-        clientConfiguration.statementTimeout;
+      poolConfiguration.statement_timeout = clientConfiguration.statementTimeout;
     }
   }
 
-  if (
-    clientConfiguration.idleInTransactionSessionTimeout !== 'DISABLE_TIMEOUT'
-  ) {
+  if (clientConfiguration.idleInTransactionSessionTimeout !== "DISABLE_TIMEOUT") {
     if (clientConfiguration.idleInTransactionSessionTimeout === 0) {
       poolConfiguration.idle_in_transaction_session_timeout = 1;
     } else {
@@ -176,7 +169,7 @@ const queryTypeOverrides = async (
 };
 
 const isErrorWithCode = (error: Error): error is DatabaseError => {
-  return 'code' in error;
+  return "code" in error;
 };
 
 // query is not available for connection-level errors.
@@ -184,13 +177,11 @@ const isErrorWithCode = (error: Error): error is DatabaseError => {
 // I suspect we should not be even using InputSyntaxError as one of the error types.
 // @see https://github.com/gajus/slonik/issues/557
 const wrapError = (error: Error, query: null | Query) => {
-  if (
-    error.message.toLowerCase().includes('connection terminated unexpectedly')
-  ) {
+  if (error.message.toLowerCase().includes("connection terminated unexpectedly")) {
     return new BackendTerminatedUnexpectedlyError(error);
   }
 
-  if (error.message.toLowerCase().includes('connection terminated')) {
+  if (error.message.toLowerCase().includes("connection terminated")) {
     return new BackendTerminatedError(error);
   }
 
@@ -198,53 +189,53 @@ const wrapError = (error: Error, query: null | Query) => {
     return error;
   }
 
-  if (error.code === '22P02') {
+  if (error.code === "22P02") {
     return new InvalidInputError(error.message);
   }
 
-  if (error.code === '25P03') {
+  if (error.code === "25P03") {
     return new IdleTransactionTimeoutError(error);
   }
 
-  if (error.code === '57P01') {
+  if (error.code === "57P01") {
     return new BackendTerminatedError(error);
   }
 
   if (
-    error.code === '57014' &&
+    error.code === "57014" &&
     // The code alone is not enough to distinguish between a statement timeout and a statement cancellation.
-    error.message.includes('canceling statement due to user request')
+    error.message.includes("canceling statement due to user request")
   ) {
     return new StatementCancelledError(error);
   }
 
-  if (error.code === '57014') {
+  if (error.code === "57014") {
     return new StatementTimeoutError(error);
   }
 
-  if (error.code === '23502') {
+  if (error.code === "23502") {
     return new NotNullIntegrityConstraintViolationError(error);
   }
 
-  if (error.code === '23503') {
+  if (error.code === "23503") {
     return new ForeignKeyIntegrityConstraintViolationError(error);
   }
 
-  if (error.code === '23505') {
+  if (error.code === "23505") {
     return new UniqueIntegrityConstraintViolationError(error);
   }
 
-  if (error.code === '23P01') {
+  if (error.code === "23P01") {
     return new CheckExclusionConstraintViolationError(error);
   }
 
-  if (error.code === '23514') {
+  if (error.code === "23514") {
     return new CheckIntegrityConstraintViolationError(error);
   }
 
-  if (error.code === '42601') {
+  if (error.code === "42601") {
     if (!query) {
-      return new UnexpectedStateError('Expected query to be provided');
+      return new UnexpectedStateError("Expected query to be provided");
     }
 
     return new InputSyntaxError(error, query);
@@ -259,10 +250,7 @@ export const createPgDriverFactory = (): DriverFactory => {
 
     // eslint-disable-next-line require-atomic-updates
     clientConfiguration.types = {
-      getTypeParser: await queryTypeOverrides(
-        clientConfiguration,
-        driverConfiguration,
-      ),
+      getTypeParser: await queryTypeOverrides(clientConfiguration, driverConfiguration),
     };
 
     return {
@@ -272,27 +260,27 @@ export const createPgDriverFactory = (): DriverFactory => {
         // We will see this triggered when the connection is terminated, e.g.
         // "terminates transactions that are idle beyond idleInTransactionSessionTimeout" test.
         const onError = (error) => {
-          clientEventEmitter.emit('error', wrapError(error, null));
+          clientEventEmitter.emit("error", wrapError(error, null));
         };
 
         const onNotice = (notice) => {
           if (notice.message) {
-            clientEventEmitter.emit('notice', {
+            clientEventEmitter.emit("notice", {
               message: notice.message,
             });
           }
         };
 
-        client.on('error', onError);
-        client.on('notice', onNotice);
+        client.on("error", onError);
+        client.on("notice", onNotice);
 
         return {
           connect: async () => {
             try {
               await client.connect();
             } catch (error) {
-              client.removeListener('error', onError);
-              client.removeListener('notice', onNotice);
+              client.removeListener("error", onError);
+              client.removeListener("notice", onNotice);
 
               throw error;
             }
@@ -300,8 +288,8 @@ export const createPgDriverFactory = (): DriverFactory => {
           end: async () => {
             await client.end();
 
-            client.removeListener('error', onError);
-            client.removeListener('notice', onNotice);
+            client.removeListener("error", onError);
+            client.removeListener("notice", onNotice);
           },
           query: async (sql, values, queryOptions) => {
             let result;
@@ -326,9 +314,7 @@ export const createPgDriverFactory = (): DriverFactory => {
             }
 
             if (Array.isArray(result)) {
-              throw new InvalidInputError(
-                'Must not use multiple statements in a single query.',
-              );
+              throw new InvalidInputError("Must not use multiple statements in a single query.");
             }
 
             return {
@@ -344,9 +330,7 @@ export const createPgDriverFactory = (): DriverFactory => {
             };
           },
           stream: (sql, values) => {
-            const stream = client.query(
-              new QueryStream(sql, values as unknown[]),
-            );
+            const stream = client.query(new QueryStream(sql, values as unknown[]));
 
             let fields: readonly Field[] = [];
 
@@ -362,20 +346,17 @@ export const createPgDriverFactory = (): DriverFactory => {
               });
             };
 
-            client.connection.once('rowDescription', onRowDescription);
+            client.connection.once("rowDescription", onRowDescription);
 
-            stream.once('close', () => {
-              client.connection.removeListener(
-                'rowDescription',
-                onRowDescription,
-              );
+            stream.once("close", () => {
+              client.connection.removeListener("rowDescription", onRowDescription);
             });
 
             const transform = new Transform({
               objectMode: true,
               async transform(datum, enc, callback) {
                 if (!fields) {
-                  callback(new Error('Fields not available'));
+                  callback(new Error("Fields not available"));
 
                   return;
                 }
@@ -389,9 +370,9 @@ export const createPgDriverFactory = (): DriverFactory => {
               },
             });
 
-            stream.on('error', (error) => {
+            stream.on("error", (error) => {
               transform.emit(
-                'error',
+                "error",
                 wrapError(error, {
                   sql,
                   values: values as PrimitiveValueExpression[],

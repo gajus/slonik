@@ -1,5 +1,5 @@
-import type { CacheAttributes } from '../factories/createQueryCacheInterceptor.js';
-import type { ExtractedCacheAttributes } from './extractCacheAttributes.js';
+import type { CacheAttributes } from "../factories/createQueryCacheInterceptor.js";
+import type { ExtractedCacheAttributes } from "./extractCacheAttributes.js";
 
 export const normalizeCacheAttributes = (
   extractedCacheAttributes: ExtractedCacheAttributes,
@@ -7,8 +7,8 @@ export const normalizeCacheAttributes = (
   return {
     discardEmpty: extractedCacheAttributes.discardEmpty,
     key: extractedCacheAttributes.key
-      .replaceAll('$bodyHash', extractedCacheAttributes.bodyHash)
-      .replaceAll('$valueHash', extractedCacheAttributes.valueHash),
+      .replaceAll("$bodyHash", extractedCacheAttributes.bodyHash)
+      .replaceAll("$valueHash", extractedCacheAttributes.valueHash),
     ttl: extractedCacheAttributes.ttl,
   };
 };

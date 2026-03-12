@@ -1,8 +1,8 @@
-import { getAutoExplainPayload } from '../utilities/getAutoExplainPayload.js';
-import { isAutoExplainJsonMessage } from '../utilities/isAutoExplainJsonMessage.js';
-import prettyMs from 'pretty-ms';
-import { serializeError } from 'serialize-error';
-import type { Interceptor } from 'slonik';
+import { getAutoExplainPayload } from "../utilities/getAutoExplainPayload.js";
+import { isAutoExplainJsonMessage } from "../utilities/isAutoExplainJsonMessage.js";
+import prettyMs from "pretty-ms";
+import { serializeError } from "serialize-error";
+import type { Interceptor } from "slonik";
 
 /**
  * @property logValues Dictates whether to include parameter values used to execute the query. (default: true)
@@ -12,13 +12,7 @@ type UserConfigurationType = {
 };
 
 const stringifyCallSite = (callSite) => {
-  return (
-    (callSite.fileName || '') +
-    ':' +
-    callSite.lineNumber +
-    ':' +
-    callSite.columnNumber
-  );
+  return (callSite.fileName || "") + ":" + callSite.lineNumber + ":" + callSite.columnNumber;
 };
 
 const defaultConfiguration = {
@@ -51,7 +45,7 @@ export const createQueryLoggingInterceptor = (
             {
               autoExplain: getAutoExplainPayload(notice.message),
             },
-            'auto explain',
+            "auto explain",
           );
         }
       }
@@ -59,12 +53,11 @@ export const createQueryLoggingInterceptor = (
       context.log.debug(
         {
           executionTime: prettyMs(
-            Number(process.hrtime.bigint() - BigInt(context.queryInputTime)) /
-              1_000_000,
+            Number(process.hrtime.bigint() - BigInt(context.queryInputTime)) / 1_000_000,
           ),
           rowCount,
         },
-        'query execution result',
+        "query execution result",
       );
 
       return null;
@@ -79,8 +72,8 @@ export const createQueryLoggingInterceptor = (
           // Hide the internal call sites.
           if (
             callSite.fileName !== null &&
-            !callSite.fileName.includes('node_modules/slonik/') &&
-            !callSite.fileName.includes('next_tick')
+            !callSite.fileName.includes("node_modules/slonik/") &&
+            !callSite.fileName.includes("next_tick")
           ) {
             stackTrace.push(stringifyCallSite(callSite));
           }
@@ -94,7 +87,7 @@ export const createQueryLoggingInterceptor = (
 
         for (const value of query.values) {
           if (Buffer.isBuffer(value)) {
-            values.push('[Buffer ' + value.byteLength + ']');
+            values.push("[Buffer " + value.byteLength + "]");
           } else {
             values.push(value);
           }
@@ -107,18 +100,18 @@ export const createQueryLoggingInterceptor = (
           stackTrace,
           values,
         },
-        'executing query',
+        "executing query",
       );
 
       return null;
     },
-    name: 'slonik-interceptor-query-logging',
+    name: "slonik-interceptor-query-logging",
     queryExecutionError: (context, query, error) => {
       context.log.error(
         {
           error: serializeError(error),
         },
-        'query execution produced an error',
+        "query execution produced an error",
       );
 
       return null;

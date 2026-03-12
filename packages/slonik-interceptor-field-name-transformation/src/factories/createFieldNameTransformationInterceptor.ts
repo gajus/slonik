@@ -1,24 +1,21 @@
-import camelcase from 'camelcase';
-import type { Field, Interceptor, QueryResultRow } from 'slonik';
+import camelcase from "camelcase";
+import type { Field, Interceptor, QueryResultRow } from "slonik";
 
 export const createFieldNameTransformationInterceptor = ({
   test,
 }: {
   test: (field: Field) => boolean;
 }): Interceptor => {
-  const cachedMappers = new Map<
-    string,
-    (row: Record<string, unknown>) => QueryResultRow
-  >();
+  const cachedMappers = new Map<string, (row: Record<string, unknown>) => QueryResultRow>();
 
   return {
-    name: 'slonik-interceptor-field-name-transformation',
+    name: "slonik-interceptor-field-name-transformation",
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     transformRow: (context: any, query, row, fields) => {
       let mapper = context.sandbox.mapper;
 
       if (!mapper) {
-        const mapperKey = fields.map((field) => field.name).join(',');
+        const mapperKey = fields.map((field) => field.name).join(",");
 
         mapper = cachedMappers.get(mapperKey);
 
@@ -27,9 +24,7 @@ export const createFieldNameTransformationInterceptor = ({
           const fieldMapping = Object.create(null);
 
           for (const field of fields) {
-            fieldMapping[field.name] = test(field)
-              ? camelcase(field.name)
-              : field.name;
+            fieldMapping[field.name] = test(field) ? camelcase(field.name) : field.name;
           }
 
           const keys = Object.keys(row);

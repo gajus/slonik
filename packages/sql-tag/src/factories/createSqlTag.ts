@@ -1,5 +1,5 @@
-import { Logger } from '../Logger.js';
-import type { UUID } from '../sqlFragmentFactories/createUuidSqlFragment.js';
+import { Logger } from "../Logger.js";
+import type { UUID } from "../sqlFragmentFactories/createUuidSqlFragment.js";
 import {
   ArrayToken,
   BinaryToken,
@@ -14,7 +14,7 @@ import {
   TimestampToken,
   UnnestToken,
   UuidToken,
-} from '../tokens.js';
+} from "../tokens.js";
 import type {
   ArraySqlToken,
   PrimitiveValueExpression,
@@ -22,32 +22,27 @@ import type {
   SqlTag,
   TypeNameIdentifier,
   ValueExpression,
-} from '../types.js';
-import { escapeLiteralValue } from '../utilities/escapeLiteralValue.js';
-import { formatSlonikPlaceholder } from '../utilities/formatSlonikPlaceholder.js';
-import { isPrimitiveValueExpression } from '../utilities/isPrimitiveValueExpression.js';
-import { isSqlToken } from '../utilities/isSqlToken.js';
-import { safeStringify } from '../utilities/safeStringify.js';
-import { createSqlTokenSqlFragment } from './createSqlTokenSqlFragment.js';
-import { InvalidInputError } from '@slonik/errors';
-import type { StandardSchemaV1 } from '@standard-schema/spec';
-import { z } from 'zod';
+} from "../types.js";
+import { escapeLiteralValue } from "../utilities/escapeLiteralValue.js";
+import { formatSlonikPlaceholder } from "../utilities/formatSlonikPlaceholder.js";
+import { isPrimitiveValueExpression } from "../utilities/isPrimitiveValueExpression.js";
+import { isSqlToken } from "../utilities/isSqlToken.js";
+import { safeStringify } from "../utilities/safeStringify.js";
+import { createSqlTokenSqlFragment } from "./createSqlTokenSqlFragment.js";
+import { InvalidInputError } from "@slonik/errors";
+import type { StandardSchemaV1 } from "@standard-schema/spec";
+import { z } from "zod";
 
 const log = Logger.child({
-  namespace: 'sql',
+  namespace: "sql",
 });
 
-const createFragment = (
-  parts: TemplateStringsArray,
-  values: readonly ValueExpression[],
-) => {
+const createFragment = (parts: TemplateStringsArray, values: readonly ValueExpression[]) => {
   if (!Array.isArray(parts.raw) || !Object.isFrozen(parts.raw)) {
-    throw new InvalidInputError(
-      'Function must be called as a template literal.',
-    );
+    throw new InvalidInputError("Function must be called as a template literal.");
   }
 
-  let rawSql = '';
+  let rawSql = "";
 
   const parameterValues: PrimitiveValueExpression[] = [];
 
@@ -69,21 +64,16 @@ const createFragment = (
           parts: JSON.parse(safeStringify(parts)),
           values: JSON.parse(safeStringify(values)),
         },
-        'bound values',
+        "bound values",
       );
 
-      throw new InvalidInputError(
-        `SQL tag cannot be bound to undefined value at index ${index}.`,
-      );
+      throw new InvalidInputError(`SQL tag cannot be bound to undefined value at index ${index}.`);
     } else if (isPrimitiveValueExpression(token)) {
       rawSql += formatSlonikPlaceholder(parameterValues.length + 1);
 
       parameterValues.push(token);
     } else if (isSqlToken(token)) {
-      const sqlFragment = createSqlTokenSqlFragment(
-        token,
-        parameterValues.length,
-      );
+      const sqlFragment = createSqlTokenSqlFragment(token, parameterValues.length);
 
       rawSql += sqlFragment.sql;
 
@@ -97,10 +87,10 @@ const createFragment = (
           index,
           offendingToken: JSON.parse(safeStringify(token)),
         },
-        'unexpected value expression',
+        "unexpected value expression",
       );
 
-      throw new TypeError('Unexpected value expression.');
+      throw new TypeError("Unexpected value expression.");
     }
   }
 
@@ -189,10 +179,7 @@ export const createSqlTag = <
       });
     },
     prepared: (statementName, parser) => {
-      return (
-        parts: TemplateStringsArray,
-        ...args: readonly ValueExpression[]
-      ) => {
+      return (parts: TemplateStringsArray, ...args: readonly ValueExpression[]) => {
         return Object.freeze({
           ...createFragment(parts, args),
           name: statementName,
@@ -208,10 +195,7 @@ export const createSqlTag = <
       });
     },
     type: (parser) => {
-      return (
-        parts: TemplateStringsArray,
-        ...args: readonly ValueExpression[]
-      ) => {
+      return (parts: TemplateStringsArray, ...args: readonly ValueExpression[]) => {
         return Object.freeze({
           ...createFragment(parts, args),
           parser,
@@ -221,15 +205,10 @@ export const createSqlTag = <
     },
     typeAlias: (parserAlias) => {
       if (!typeAliases?.[parserAlias]) {
-        throw new Error(
-          'Type alias "' + String(parserAlias) + '" does not exist.',
-        );
+        throw new Error('Type alias "' + String(parserAlias) + '" does not exist.');
       }
 
-      return (
-        parts: TemplateStringsArray,
-        ...args: readonly ValueExpression[]
-      ) => {
+      return (parts: TemplateStringsArray, ...args: readonly ValueExpression[]) => {
         return Object.freeze({
           ...createFragment(parts, args),
           parser: typeAliases[parserAlias],

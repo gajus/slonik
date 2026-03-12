@@ -13,10 +13,7 @@ There are no known use cases for generating queries using `raw` that aren't cove
 ## Usage
 
 ```js
-import {
-  raw,
-} from 'slonik-sql-tag-raw';
-
+import { raw } from "slonik-sql-tag-raw";
 ```
 
 ### `raw`
@@ -36,7 +33,6 @@ sql`
   SELECT 1
   FROM ${raw('"bar"')}
 `;
-
 ```
 
 Produces:
@@ -53,9 +49,8 @@ The second parameter of the `raw` can be used to bind [positional parameter](htt
 
 ```js
 sql`
-  SELECT ${raw('$1', [1])}
+  SELECT ${raw("$1", [1])}
 `;
-
 ```
 
 Produces:
@@ -76,9 +71,8 @@ Produces:
 
 ```js
 sql`
-  SELECT ${raw(':foo, :bar', {bar: 'BAR', foo: 'FOO'})}
+  SELECT ${raw(":foo, :bar", { bar: "BAR", foo: "FOO" })}
 `;
-
 ```
 
 Produces:

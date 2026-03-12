@@ -1,27 +1,27 @@
 {
-  "author": {
-    "email": "gajus@gajus.com",
-    "name": "Gajus Kuizinas",
-    "url": "http://gajus.com"
-  },
-  "description": "SSLs used for testing Slonik.",
-  "engines": {
-    "node": ">=24"
-  },
-  "exports": {
-    "./root.crt": "./root.crt",
-    "./slonik.crt": "./slonik.crt",
-    "./slonik.key": "./slonik.key"
-  },
-  "license": "BSD-3-Clause",
   "name": "@slonik/test-ssls",
-  "peerDependencies": {
-    "zod": "^3.25 || ^4"
+  "version": "48.12.3",
+  "description": "SSLs used for testing Slonik.",
+  "license": "BSD-3-Clause",
+  "author": {
+    "name": "Gajus Kuizinas",
+    "email": "gajus@gajus.com",
+    "url": "http://gajus.com"
   },
   "repository": {
     "type": "git",
     "url": "https://github.com/gajus/slonik"
   },
   "type": "module",
-  "version": "48.12.3"
+  "exports": {
+    "./root.crt": "./root.crt",
+    "./slonik.crt": "./slonik.crt",
+    "./slonik.key": "./slonik.key"
+  },
+  "peerDependencies": {
+    "zod": "^3.25 || ^4"
+  },
+  "engines": {
+    "node": ">=24"
+  }
 }

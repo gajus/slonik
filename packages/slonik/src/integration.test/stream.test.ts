@@ -1,19 +1,14 @@
-import { createTestRunner } from '../helpers.test/createTestRunner.js';
-import {
-  createBigintTypeParser,
-  createPool,
-  sql,
-  StatementTimeoutError,
-} from '../index.js';
-import { createPgDriverFactory } from '@slonik/pg-driver';
-import * as sinon from 'sinon';
-import { z } from 'zod';
+import { createTestRunner } from "../helpers.test/createTestRunner.js";
+import { createBigintTypeParser, createPool, sql, StatementTimeoutError } from "../index.js";
+import { createPgDriverFactory } from "@slonik/pg-driver";
+import * as sinon from "sinon";
+import { z } from "zod";
 
 const driverFactory = createPgDriverFactory();
 
-const { test } = createTestRunner(driverFactory, 'pg');
+const { test } = createTestRunner(driverFactory, "pg");
 
-test('reading stream after a delay', async (t) => {
+test("reading stream after a delay", async (t) => {
   const pool = await createPool(t.context.dsn, {
     statementTimeout: 1_000,
   });
@@ -28,7 +23,7 @@ test('reading stream after a delay', async (t) => {
       `,
       (stream) => {
         setTimeout(() => {
-          stream.on('data', onData);
+          stream.on("data", onData);
         }, 500);
       },
     ),
@@ -39,7 +34,7 @@ test('reading stream after a delay', async (t) => {
   await pool.end();
 });
 
-test('untapped stream produces statement timeout', async (t) => {
+test("untapped stream produces statement timeout", async (t) => {
   const pool = await createPool(t.context.dsn, {
     statementTimeout: 100,
   });
@@ -54,7 +49,7 @@ test('untapped stream produces statement timeout', async (t) => {
     `,
       (stream) => {
         setTimeout(() => {
-          stream.on('data', onData);
+          stream.on("data", onData);
         }, 500);
       },
     ),
@@ -67,7 +62,7 @@ test('untapped stream produces statement timeout', async (t) => {
   await pool.end();
 });
 
-test('stream pool connection can be re-used after an error', async (t) => {
+test("stream pool connection can be re-used after an error", async (t) => {
   const pool = await createPool(t.context.dsn, {
     maximumPoolSize: 1,
     statementTimeout: 100,
@@ -83,7 +78,7 @@ test('stream pool connection can be re-used after an error', async (t) => {
     `,
       (stream) => {
         setTimeout(() => {
-          stream.on('data', onData);
+          stream.on("data", onData);
         }, 500);
       },
     ),
@@ -98,7 +93,7 @@ test('stream pool connection can be re-used after an error', async (t) => {
   await pool.end();
 });
 
-test('streams rows', async (t) => {
+test("streams rows", async (t) => {
   const pool = await createPool(t.context.dsn);
 
   await pool.query(sql.unsafe`
@@ -118,7 +113,7 @@ test('streams rows', async (t) => {
       FROM person
     `,
     (stream) => {
-      stream.on('data', (datum) => {
+      stream.on("data", (datum) => {
         messages.push(datum);
       });
     },
@@ -127,34 +122,34 @@ test('streams rows', async (t) => {
   t.deepEqual(messages, [
     {
       data: {
-        name: 'foo',
+        name: "foo",
       },
       fields: [
         {
           dataTypeId: 25,
-          name: 'name',
+          name: "name",
         },
       ],
     },
     {
       data: {
-        name: 'bar',
+        name: "bar",
       },
       fields: [
         {
           dataTypeId: 25,
-          name: 'name',
+          name: "name",
         },
       ],
     },
     {
       data: {
-        name: 'baz',
+        name: "baz",
       },
       fields: [
         {
           dataTypeId: 25,
-          name: 'name',
+          name: "name",
         },
       ],
     },
@@ -163,7 +158,7 @@ test('streams rows', async (t) => {
   await pool.end();
 });
 
-test('streams rows (check types)', async (t) => {
+test("streams rows (check types)", async (t) => {
   const pool = await createPool(t.context.dsn);
 
   await pool.query(sql.unsafe`
@@ -183,7 +178,7 @@ test('streams rows (check types)', async (t) => {
       FROM person
     `,
     (stream) => {
-      stream.on('data', (datum) => {
+      stream.on("data", (datum) => {
         // This test was added because earlier types did not accurately reflect stream outputs.
         // By accessing a property of the stream result we ensure that the stream outputs match the types.
         names.push(datum.data.name);
@@ -191,12 +186,12 @@ test('streams rows (check types)', async (t) => {
     },
   );
 
-  t.deepEqual(names, ['foo', 'bar', 'baz']);
+  t.deepEqual(names, ["foo", "bar", "baz"]);
 
   await pool.end();
 });
 
-test('streams rows using AsyncIterator', async (t) => {
+test("streams rows using AsyncIterator", async (t) => {
   const pool = await createPool(t.context.dsn);
 
   await pool.query(sql.unsafe`
@@ -222,12 +217,12 @@ test('streams rows using AsyncIterator', async (t) => {
     },
   );
 
-  t.deepEqual(names, ['foo', 'bar', 'baz']);
+  t.deepEqual(names, ["foo", "bar", "baz"]);
 
   await pool.end();
 });
 
-test('reading stream using custom type parsers', async (t) => {
+test("reading stream using custom type parsers", async (t) => {
   const pool = await createPool(t.context.dsn, {
     typeParsers: [createBigintTypeParser()],
   });
@@ -252,7 +247,7 @@ test('reading stream using custom type parsers', async (t) => {
       FROM person
     `,
     (stream) => {
-      stream.on('data', (datum) => {
+      stream.on("data", (datum) => {
         persons.push(datum.data.molecules);
       });
     },
@@ -267,11 +262,11 @@ test('reading stream using custom type parsers', async (t) => {
   await pool.end();
 });
 
-test('reading stream using row transform interceptors (sync)', async (t) => {
+test("reading stream using row transform interceptors (sync)", async (t) => {
   const pool = await createPool(t.context.dsn, {
     interceptors: [
       {
-        name: 'foo',
+        name: "foo",
         transformRow: (context, query, row) => {
           return {
             ...row,
@@ -300,22 +295,22 @@ test('reading stream using row transform interceptors (sync)', async (t) => {
       FROM person
     `,
     (stream) => {
-      stream.on('data', (datum) => {
+      stream.on("data", (datum) => {
         names.push(datum.data.name);
       });
     },
   );
 
-  t.deepEqual(names, ['FOO', 'BAR', 'BAZ']);
+  t.deepEqual(names, ["FOO", "BAR", "BAZ"]);
 
   await pool.end();
 });
 
-test('reading stream using row transform interceptors (async)', async (t) => {
+test("reading stream using row transform interceptors (async)", async (t) => {
   const pool = await createPool(t.context.dsn, {
     interceptors: [
       {
-        name: 'foo',
+        name: "foo",
         transformRowAsync: async (context, query, row) => {
           return {
             ...row,
@@ -344,18 +339,18 @@ test('reading stream using row transform interceptors (async)', async (t) => {
       FROM person
     `,
     (stream) => {
-      stream.on('data', (datum) => {
+      stream.on("data", (datum) => {
         names.push(datum.data.name);
       });
     },
   );
 
-  t.deepEqual(names, ['FOO', 'BAR', 'BAZ']);
+  t.deepEqual(names, ["FOO", "BAR", "BAZ"]);
 
   await pool.end();
 });
 
-test('streams include notices', async (t) => {
+test("streams include notices", async (t) => {
   const pool = await createPool(t.context.dsn);
 
   await pool.query(sql.unsafe`
@@ -383,7 +378,7 @@ test('streams include notices', async (t) => {
       FROM test_notice(${10})
     `,
     (stream) => {
-      stream.on('data', () => {});
+      stream.on("data", () => {});
     },
   );
 
@@ -392,15 +387,13 @@ test('streams include notices', async (t) => {
   await pool.end();
 });
 
-test('applies type parsers to streamed rows', async (t) => {
+test("applies type parsers to streamed rows", async (t) => {
   const pool = await createPool(t.context.dsn, {
     typeParsers: [
       {
-        name: 'date',
+        name: "date",
         parse: (value) => {
-          return value === null
-            ? value
-            : new Date(value + ' 00:00').getFullYear();
+          return value === null ? value : new Date(value + " 00:00").getFullYear();
         },
       },
     ],
@@ -424,7 +417,7 @@ test('applies type parsers to streamed rows', async (t) => {
     ORDER BY birth_date ASC
   `,
     (stream) => {
-      stream.on('data', (datum) => {
+      stream.on("data", (datum) => {
         messages.push(datum);
       });
     },
@@ -438,7 +431,7 @@ test('applies type parsers to streamed rows', async (t) => {
       fields: [
         {
           dataTypeId: 1_082,
-          name: 'birth_date',
+          name: "birth_date",
         },
       ],
     },
@@ -449,7 +442,7 @@ test('applies type parsers to streamed rows', async (t) => {
       fields: [
         {
           dataTypeId: 1_082,
-          name: 'birth_date',
+          name: "birth_date",
         },
       ],
     },
@@ -460,7 +453,7 @@ test('applies type parsers to streamed rows', async (t) => {
       fields: [
         {
           dataTypeId: 1_082,
-          name: 'birth_date',
+          name: "birth_date",
         },
       ],
     },
@@ -469,7 +462,7 @@ test('applies type parsers to streamed rows', async (t) => {
   await pool.end();
 });
 
-test('streams over a transaction', async (t) => {
+test("streams over a transaction", async (t) => {
   const pool = await createPool(t.context.dsn);
 
   await pool.query(sql.unsafe`
@@ -486,7 +479,7 @@ test('streams over a transaction', async (t) => {
         FROM person
       `,
       (stream) => {
-        stream.on('data', (datum) => {
+        stream.on("data", (datum) => {
           messages.push(datum);
         });
       },
@@ -496,34 +489,34 @@ test('streams over a transaction', async (t) => {
   t.deepEqual(messages, [
     {
       data: {
-        name: 'foo',
+        name: "foo",
       },
       fields: [
         {
           dataTypeId: 25,
-          name: 'name',
+          name: "name",
         },
       ],
     },
     {
       data: {
-        name: 'bar',
+        name: "bar",
       },
       fields: [
         {
           dataTypeId: 25,
-          name: 'name',
+          name: "name",
         },
       ],
     },
     {
       data: {
-        name: 'baz',
+        name: "baz",
       },
       fields: [
         {
           dataTypeId: 25,
-          name: 'name',
+          name: "name",
         },
       ],
     },
@@ -532,7 +525,7 @@ test('streams over a transaction', async (t) => {
   await pool.end();
 });
 
-test('frees connection after destroying a stream', async (t) => {
+test("frees connection after destroying a stream", async (t) => {
   const pool = await createPool(t.context.dsn);
 
   await t.throwsAsync(
@@ -556,7 +549,7 @@ test('frees connection after destroying a stream', async (t) => {
   await pool.end();
 });
 
-test('frees connection after destroying a stream with an error', async (t) => {
+test("frees connection after destroying a stream with an error", async (t) => {
   const pool = await createPool(t.context.dsn);
 
   const error = await t.throwsAsync(
@@ -565,12 +558,12 @@ test('frees connection after destroying a stream with an error', async (t) => {
     SELECT * FROM GENERATE_SERIES(1, 100)
   `,
       (stream) => {
-        stream.destroy(new Error('Foo'));
+        stream.destroy(new Error("Foo"));
       },
     ),
   );
 
-  t.is(error?.message, 'Foo');
+  t.is(error?.message, "Foo");
 
   t.deepEqual(
     await pool.anyFirst(sql.unsafe`
@@ -582,7 +575,7 @@ test('frees connection after destroying a stream with an error', async (t) => {
   await pool.end();
 });
 
-test('stream throws error on syntax errors', async (t) => {
+test("stream throws error on syntax errors", async (t) => {
   const pool = await createPool(t.context.dsn);
 
   const error = await t.throwsAsync(
@@ -591,7 +584,7 @@ test('stream throws error on syntax errors', async (t) => {
         INVALID SYNTAX
       `,
       (stream) => {
-        stream.on('data', () => {});
+        stream.on("data", () => {});
       },
     ),
   );

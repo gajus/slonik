@@ -1,38 +1,35 @@
-import { createPool } from '../factories/createPool.js';
-import { sql } from '../index.js';
-import type { DriverFactory } from '@slonik/driver';
-import anyTest from 'ava';
-import type { TestFn } from 'ava';
+import { createPool } from "../factories/createPool.js";
+import { sql } from "../index.js";
+import type { DriverFactory } from "@slonik/driver";
+import anyTest from "ava";
+import type { TestFn } from "ava";
 
 const POSTGRES_DSN =
   // eslint-disable-next-line n/no-process-env
-  process.env.POSTGRES_DSN ?? 'postgresql://postgres:postgres@localhost:5432';
+  process.env.POSTGRES_DSN ?? "postgresql://postgres:postgres@localhost:5432";
 
 export type TestContextType = {
   dsn: string;
   testDatabaseName: string;
 };
 
-export const createTestRunner = (
-  driverFactory: DriverFactory,
-  name: string,
-) => {
+export const createTestRunner = (driverFactory: DriverFactory, name: string) => {
   let testId = 0;
 
   const test = anyTest as unknown as TestFn<TestContextType>;
   const { beforeEach } = test;
 
-  const TEMPLATE_DATABASE_NAME = 'slonik_test';
+  const TEMPLATE_DATABASE_NAME = "slonik_test";
 
   // eslint-disable-next-line id-length
   beforeEach(async (t) => {
     ++testId;
 
-    const TEST_DATABASE_NAME = ['slonik_test', name, String(testId)].join('_');
+    const TEST_DATABASE_NAME = ["slonik_test", name, String(testId)].join("_");
 
     // eslint-disable-next-line id-length
     t.context = {
-      dsn: POSTGRES_DSN + '/' + TEST_DATABASE_NAME,
+      dsn: POSTGRES_DSN + "/" + TEST_DATABASE_NAME,
       testDatabaseName: TEST_DATABASE_NAME,
     };
 
@@ -50,13 +47,9 @@ export const createTestRunner = (
           datname = ${TEMPLATE_DATABASE_NAME}
       `);
       await connection.query(
-        sql.unsafe`DROP DATABASE IF EXISTS ${sql.identifier([
-          TEST_DATABASE_NAME,
-        ])}`,
+        sql.unsafe`DROP DATABASE IF EXISTS ${sql.identifier([TEST_DATABASE_NAME])}`,
       );
-      await connection.query(
-        sql.unsafe`CREATE DATABASE ${sql.identifier([TEST_DATABASE_NAME])}`,
-      );
+      await connection.query(sql.unsafe`CREATE DATABASE ${sql.identifier([TEST_DATABASE_NAME])}`);
     });
 
     await pool0.end();

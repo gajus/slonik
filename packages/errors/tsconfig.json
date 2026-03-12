@@ -4,9 +4,7 @@
     "declaration": true,
     "declarationMap": true,
     "esModuleInterop": true,
-    "lib": [
-      "es2024"
-    ],
+    "lib": ["es2024"],
     "module": "ES2022",
     "moduleResolution": "node",
     "noImplicitAny": false,
@@ -18,8 +16,5 @@
     "target": "es2024",
     "useUnknownInCatchVariables": false
   },
-  "include": [
-    "eslint.config.js",
-    "src"
-  ]
+  "include": ["eslint.config.js", "src"]
 }

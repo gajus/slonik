@@ -1,8 +1,8 @@
-import { FragmentToken } from '../tokens.js';
-import type { IntervalSqlToken, SqlFragmentToken } from '../types.js';
-import { formatSlonikPlaceholder } from '../utilities/formatSlonikPlaceholder.js';
-import { InvalidInputError } from '@slonik/errors';
-import { z } from 'zod';
+import { FragmentToken } from "../tokens.js";
+import type { IntervalSqlToken, SqlFragmentToken } from "../types.js";
+import { formatSlonikPlaceholder } from "../utilities/formatSlonikPlaceholder.js";
+import { InvalidInputError } from "@slonik/errors";
+import { z } from "zod";
 
 const IntervalInput = z
   .object({
@@ -16,19 +16,11 @@ const IntervalInput = z
   })
   .strict();
 
-const intervalFragments = [
-  'years',
-  'months',
-  'weeks',
-  'days',
-  'hours',
-  'minutes',
-  'seconds',
-];
+const intervalFragments = ["years", "months", "weeks", "days", "hours", "minutes", "seconds"];
 
 const tokenMap = {
-  minutes: 'mins',
-  seconds: 'secs',
+  minutes: "mins",
+  seconds: "secs",
 };
 
 export const createIntervalSqlFragment = (
@@ -40,9 +32,7 @@ export const createIntervalSqlFragment = (
   try {
     intervalInput = IntervalInput.parse(token.interval);
   } catch {
-    throw new InvalidInputError(
-      'Interval input must not contain unknown properties.',
-    );
+    throw new InvalidInputError("Interval input must not contain unknown properties.");
   }
 
   const values: number[] = [];
@@ -58,15 +48,13 @@ export const createIntervalSqlFragment = (
       const mappedToken = tokenMap[intervalFragment] ?? intervalFragment;
 
       intervalTokens.push(
-        mappedToken +
-          ' => ' +
-          formatSlonikPlaceholder(greatestParameterPosition + values.length),
+        mappedToken + " => " + formatSlonikPlaceholder(greatestParameterPosition + values.length),
       );
     }
   }
 
   return {
-    sql: 'make_interval(' + intervalTokens.join(', ') + ')',
+    sql: "make_interval(" + intervalTokens.join(", ") + ")",
     type: FragmentToken,
     values,
   };

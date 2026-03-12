@@ -1,13 +1,13 @@
-import { createClientConfiguration } from '../helpers.test/createClientConfiguration.js';
-import { createErrorWithCode } from '../helpers.test/createErrorWithCode.js';
-import type { QuerySqlToken } from '../index.js';
-import { poolClientStateMap } from '../state.js';
-import { executeQuery } from './executeQuery.js';
-import { InvalidInputError } from '@slonik/errors';
-import anyTest from 'ava';
-import type { TestFn } from 'ava';
-import { Roarr } from 'roarr';
-import * as sinon from 'sinon';
+import { createClientConfiguration } from "../helpers.test/createClientConfiguration.js";
+import { createErrorWithCode } from "../helpers.test/createErrorWithCode.js";
+import type { QuerySqlToken } from "../index.js";
+import { poolClientStateMap } from "../state.js";
+import { executeQuery } from "./executeQuery.js";
+import { InvalidInputError } from "@slonik/errors";
+import anyTest from "ava";
+import type { TestFn } from "ava";
+import { Roarr } from "roarr";
+import * as sinon from "sinon";
 
 const test = anyTest as TestFn<any>;
 const { beforeEach } = test;
@@ -30,66 +30,63 @@ beforeEach((t) => {
   t.context.executionRoutine = () => {};
 
   poolClientStateMap.set(t.context.connection, {
-    connectionId: '1',
-    poolId: '1',
+    connectionId: "1",
+    poolId: "1",
     terminated: null,
     transactionDepth: null,
     transactionId: null,
   });
 });
 
-test('throws a descriptive error if query is empty', async (t) => {
+test("throws a descriptive error if query is empty", async (t) => {
   const error = await t.throwsAsync(async () => {
     return await executeQuery(
       t.context.logger,
       t.context.connection,
       createClientConfiguration(),
       {
-        sql: '',
+        sql: "",
         values: [],
       } as unknown as QuerySqlToken,
-      'foo',
+      "foo",
       t.context.executionRoutine,
       false,
     );
   });
 
   t.true(error instanceof InvalidInputError);
-  t.is(error?.message, 'Unexpected SQL input. Query cannot be empty.');
+  t.is(error?.message, "Unexpected SQL input. Query cannot be empty.");
 });
 
-test('throws a descriptive error if the entire query is a value binding', async (t) => {
+test("throws a descriptive error if the entire query is a value binding", async (t) => {
   const error = await t.throwsAsync(async () => {
     return await executeQuery(
       t.context.logger,
       t.context.connection,
       createClientConfiguration(),
       {
-        sql: '$1',
+        sql: "$1",
         values: [],
       } as unknown as QuerySqlToken,
-      'foo',
+      "foo",
       t.context.executionRoutine,
       false,
     );
   });
 
   t.true(error instanceof InvalidInputError);
-  t.is(
-    error?.message,
-    'Unexpected SQL input. Query cannot be empty. Found only value binding.',
-  );
+  t.is(error?.message, "Unexpected SQL input. Query cannot be empty. Found only value binding.");
 });
 
-test('retries an implicit query that failed due to a transaction error', async (t) => {
+test("retries an implicit query that failed due to a transaction error", async (t) => {
   const executionRoutineStub = sinon.stub();
 
   executionRoutineStub
     .onFirstCall()
-    .rejects(createErrorWithCode('40P01'))
+    .rejects(createErrorWithCode("40P01"))
     .onSecondCall()
     .resolves({
-      command: 'SELECT',
+      command: "SELECT",
       fields: [],
       notices: [],
       rowCount: 1,
@@ -105,17 +102,17 @@ test('retries an implicit query that failed due to a transaction error', async (
     t.context.connection,
     createClientConfiguration(),
     {
-      sql: 'SELECT 1 AS foo',
+      sql: "SELECT 1 AS foo",
       values: [],
     } as unknown as QuerySqlToken,
-    'foo',
+    "foo",
     executionRoutineStub,
     false,
   );
 
   t.is(executionRoutineStub.callCount, 2);
   t.deepEqual(result, {
-    command: 'SELECT',
+    command: "SELECT",
     fields: [],
     notices: [],
     rowCount: 1,
@@ -127,14 +124,14 @@ test('retries an implicit query that failed due to a transaction error', async (
   });
 });
 
-test('returns the thrown transaction error if the retry limit is reached', async (t) => {
+test("returns the thrown transaction error if the retry limit is reached", async (t) => {
   const executionRoutineStub = sinon.stub();
 
   executionRoutineStub
     .onFirstCall()
-    .rejects(createErrorWithCode('40P01'))
+    .rejects(createErrorWithCode("40P01"))
     .onSecondCall()
-    .rejects(createErrorWithCode('40P01'));
+    .rejects(createErrorWithCode("40P01"));
 
   const clientConfiguration = createClientConfiguration();
 
@@ -147,10 +144,10 @@ test('returns the thrown transaction error if the retry limit is reached', async
         queryRetryLimit: 1,
       },
       {
-        sql: 'SELECT 1 AS foo',
+        sql: "SELECT 1 AS foo",
         values: [],
       } as unknown as QuerySqlToken,
-      'foo',
+      "foo",
       executionRoutineStub,
       false,
     ),
@@ -158,23 +155,23 @@ test('returns the thrown transaction error if the retry limit is reached', async
 
   t.is(executionRoutineStub.callCount, 2);
   t.true(error instanceof Error);
-  t.is(error.code, '40P01');
+  t.is(error.code, "40P01");
 });
 
-test('transaction errors are not handled if the function was called by a transaction', async (t) => {
+test("transaction errors are not handled if the function was called by a transaction", async (t) => {
   const connection = createConnectionStub();
 
   poolClientStateMap.set(connection, {
-    connectionId: '1',
-    poolId: '1',
+    connectionId: "1",
+    poolId: "1",
     terminated: null,
     transactionDepth: null,
-    transactionId: '1',
+    transactionId: "1",
   });
 
   const executionRoutineStub = sinon.stub();
 
-  executionRoutineStub.onFirstCall().rejects(createErrorWithCode('40P01'));
+  executionRoutineStub.onFirstCall().rejects(createErrorWithCode("40P01"));
 
   const clientConfiguration = createClientConfiguration();
 
@@ -187,10 +184,10 @@ test('transaction errors are not handled if the function was called by a transac
         queryRetryLimit: 1,
       },
       {
-        sql: 'SELECT 1 AS foo',
+        sql: "SELECT 1 AS foo",
         values: [],
       } as unknown as QuerySqlToken,
-      'foo',
+      "foo",
       executionRoutineStub,
       false,
     ),
@@ -198,5 +195,5 @@ test('transaction errors are not handled if the function was called by a transac
 
   t.is(executionRoutineStub.callCount, 1);
   t.true(error instanceof Error);
-  t.is(error.code, '40P01');
+  t.is(error.code, "40P01");
 });

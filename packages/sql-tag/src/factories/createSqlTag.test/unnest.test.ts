@@ -1,16 +1,16 @@
-import { FragmentToken } from '../../tokens.js';
-import { createSqlTag } from '../createSqlTag.js';
-import test from 'ava';
+import { FragmentToken } from "../../tokens.js";
+import { createSqlTag } from "../createSqlTag.js";
+import test from "ava";
 
 const sql = createSqlTag();
 
-test('creates an unnest expression using primitive values (type name identifier)', (t) => {
+test("creates an unnest expression using primitive values (type name identifier)", (t) => {
   const query = sql.fragment`SELECT * FROM ${sql.unnest(
     [
       [1, 2, 3],
       [4, 5, 6],
     ],
-    ['int4', 'int4', 'int4'],
+    ["int4", "int4", "int4"],
   )}`;
 
   t.deepEqual(query, {
@@ -24,7 +24,7 @@ test('creates an unnest expression using primitive values (type name identifier)
   });
 });
 
-test('creates an unnest expression using primitive values (sql token)', (t) => {
+test("creates an unnest expression using primitive values (sql token)", (t) => {
   const query = sql.fragment`SELECT * FROM ${sql.unnest(
     [
       [1, 2, 3],
@@ -34,7 +34,7 @@ test('creates an unnest expression using primitive values (sql token)', (t) => {
   )}`;
 
   t.deepEqual(query, {
-    sql: 'SELECT * FROM unnest($slonik_1::integer[], $slonik_2::integer[], $slonik_3::integer[])',
+    sql: "SELECT * FROM unnest($slonik_1::integer[], $slonik_2::integer[], $slonik_3::integer[])",
     type: FragmentToken,
     values: [
       [1, 4],
@@ -44,15 +44,15 @@ test('creates an unnest expression using primitive values (sql token)', (t) => {
   });
 });
 
-test('treats type as sql.identifier', (t) => {
+test("treats type as sql.identifier", (t) => {
   const query = sql.fragment`SELECT bar, baz FROM ${sql.unnest(
     [
       [1, 3],
       [2, 4],
     ],
     [
-      ['foo', 'int4'],
-      ['foo', 'int4'],
+      ["foo", "int4"],
+      ["foo", "int4"],
     ],
   )} AS foo(bar, baz)`;
 
@@ -66,13 +66,13 @@ test('treats type as sql.identifier', (t) => {
   });
 });
 
-test('creates an unnest expression using arrays', (t) => {
+test("creates an unnest expression using arrays", (t) => {
   const query = sql.fragment`SELECT * FROM ${sql.unnest(
     [
       [1, 2, 3],
       [4, 5, 6],
     ],
-    ['int4', 'int4', 'int4'],
+    ["int4", "int4", "int4"],
   )}`;
 
   t.deepEqual(query, {
@@ -86,13 +86,13 @@ test('creates an unnest expression using arrays', (t) => {
   });
 });
 
-test('creates incremental alias names if no alias names are provided', (t) => {
+test("creates incremental alias names if no alias names are provided", (t) => {
   const query = sql.fragment`SELECT * FROM ${sql.unnest(
     [
       [1, 2, 3],
       [4, 5, 6],
     ],
-    ['int4', 'int4', 'int4'],
+    ["int4", "int4", "int4"],
   )}`;
 
   t.deepEqual(query, {
@@ -106,11 +106,8 @@ test('creates incremental alias names if no alias names are provided', (t) => {
   });
 });
 
-test('recognizes an array of arrays array', (t) => {
-  const query = sql.fragment`SELECT * FROM ${sql.unnest(
-    [[[[1], [2], [3]]]],
-    ['int4[]'],
-  )}`;
+test("recognizes an array of arrays array", (t) => {
+  const query = sql.fragment`SELECT * FROM ${sql.unnest([[[[1], [2], [3]]]], ["int4[]"])}`;
 
   t.deepEqual(query, {
     sql: 'SELECT * FROM unnest($slonik_1::"int4"[][])',
@@ -119,50 +116,44 @@ test('recognizes an array of arrays array', (t) => {
   });
 });
 
-test('throws if tuple member is not a primitive value expression', (t) => {
+test("throws if tuple member is not a primitive value expression", (t) => {
   const error = t.throws(() => {
     sql.fragment`SELECT * FROM ${sql.unnest(
       [
         [() => {}, 2, 3],
         [4, 5],
       ],
-      ['int4', 'int4', 'int4'],
+      ["int4", "int4", "int4"],
     )}`;
   });
 
-  t.is(
-    error?.message,
-    'Invalid unnest tuple member type. Must be a primitive value expression.',
-  );
+  t.is(error?.message, "Invalid unnest tuple member type. Must be a primitive value expression.");
 });
 
-test('throws if tuple member length varies in a list of tuples', (t) => {
+test("throws if tuple member length varies in a list of tuples", (t) => {
   const error = t.throws(() => {
     sql.fragment`SELECT * FROM ${sql.unnest(
       [
         [1, 2, 3],
         [4, 5],
       ],
-      ['int4', 'int4', 'int4'],
+      ["int4", "int4", "int4"],
     )}`;
   });
 
-  t.is(
-    error?.message,
-    'Each tuple in a list of tuples must have an equal number of members.',
-  );
+  t.is(error?.message, "Each tuple in a list of tuples must have an equal number of members.");
 });
 
-test('throws if tuple member length does not match column types length', (t) => {
+test("throws if tuple member length does not match column types length", (t) => {
   const error = t.throws(() => {
     sql.fragment`SELECT * FROM ${sql.unnest(
       [
         [1, 2, 3],
         [4, 5, 6],
       ],
-      ['int4', 'int4'],
+      ["int4", "int4"],
     )}`;
   });
 
-  t.is(error?.message, 'Column types length must match tuple member length.');
+  t.is(error?.message, "Column types length must match tuple member length.");
 });

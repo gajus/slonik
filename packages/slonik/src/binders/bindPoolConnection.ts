@@ -1,21 +1,17 @@
-import { any } from '../connectionMethods/any.js';
-import { anyFirst } from '../connectionMethods/anyFirst.js';
-import { exists } from '../connectionMethods/exists.js';
-import { many } from '../connectionMethods/many.js';
-import { manyFirst } from '../connectionMethods/manyFirst.js';
-import { maybeOne } from '../connectionMethods/maybeOne.js';
-import { maybeOneFirst } from '../connectionMethods/maybeOneFirst.js';
-import { one } from '../connectionMethods/one.js';
-import { oneFirst } from '../connectionMethods/oneFirst.js';
-import { query as queryMethod } from '../connectionMethods/query.js';
-import { stream } from '../connectionMethods/stream.js';
-import { transaction } from '../connectionMethods/transaction.js';
-import type { ConnectionPoolClient } from '../factories/createConnectionPool.js';
-import type {
-  ClientConfiguration,
-  DatabasePoolConnection,
-  Logger,
-} from '../types.js';
+import { any } from "../connectionMethods/any.js";
+import { anyFirst } from "../connectionMethods/anyFirst.js";
+import { exists } from "../connectionMethods/exists.js";
+import { many } from "../connectionMethods/many.js";
+import { manyFirst } from "../connectionMethods/manyFirst.js";
+import { maybeOne } from "../connectionMethods/maybeOne.js";
+import { maybeOneFirst } from "../connectionMethods/maybeOneFirst.js";
+import { one } from "../connectionMethods/one.js";
+import { oneFirst } from "../connectionMethods/oneFirst.js";
+import { query as queryMethod } from "../connectionMethods/query.js";
+import { stream } from "../connectionMethods/stream.js";
+import { transaction } from "../connectionMethods/transaction.js";
+import type { ConnectionPoolClient } from "../factories/createConnectionPool.js";
+import type { ClientConfiguration, DatabasePoolConnection, Logger } from "../types.js";
 
 export const bindPoolConnection = (
   parentLog: Logger,
@@ -42,12 +38,7 @@ export const bindPoolConnection = (
       return maybeOne(parentLog, connection, clientConfiguration, slonikSql);
     },
     maybeOneFirst: (slonikSql) => {
-      return maybeOneFirst(
-        parentLog,
-        connection,
-        clientConfiguration,
-        slonikSql,
-      );
+      return maybeOneFirst(parentLog, connection, clientConfiguration, slonikSql);
     },
     one: (slonikSql) => {
       return one(parentLog, connection, clientConfiguration, slonikSql);

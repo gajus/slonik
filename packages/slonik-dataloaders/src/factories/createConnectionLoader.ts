@@ -1,6 +1,6 @@
-import { createConnectionLoaderClass } from './createConnectionLoaderClass.js';
-import type { DatabasePool, QuerySqlToken } from 'slonik';
-import type { ZodType } from 'zod';
+import { createConnectionLoaderClass } from "./createConnectionLoaderClass.js";
+import type { DatabasePool, QuerySqlToken } from "slonik";
+import type { ZodType } from "zod";
 
 export const createConnectionLoader = <T extends ZodType>(
   pool: DatabasePool,
@@ -22,10 +22,10 @@ export const createConnectionLoader = <T extends ZodType>(
       after?: null | string;
       before?: null | string;
       first?: null | number;
-      info?: LoadParameters['info'];
+      info?: LoadParameters["info"];
       last?: null | number;
-      orderBy?: LoadParameters['orderBy'];
-      where?: LoadParameters['where'];
+      orderBy?: LoadParameters["orderBy"];
+      where?: LoadParameters["where"];
     }) => {
       const limit = args.first ?? args.last;
       const reverse = Boolean(args.last ?? args.before);

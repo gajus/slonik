@@ -102,9 +102,7 @@ const connection = await loader.load({
 It's possible to request columns that will be exposed as fields on the edge type in your schema, as opposed to on the node type. These fields should be included in your query and the TypeScript type provided to the loader. The loader returns each row of the results as both the `edge` and the `node`, so all requested columns are available inside the resolvers for either type. Note: each requested column should be unique, so if there's a name conflict, you should use an appropriate alias. For example:
 
 ```ts
-const UserConnectionLoader = createConnectionLoaderClass<
-  User & { edgeCreatedAt }
->({
+const UserConnectionLoader = createConnectionLoaderClass<User & { edgeCreatedAt }>({
   query: sql.unsafe`
     SELECT
       user.id,

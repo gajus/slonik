@@ -1,5 +1,5 @@
-import { Logger as log } from '../Logger.js';
-import type { ClientConfiguration } from '../types.js';
+import { Logger as log } from "../Logger.js";
+import type { ClientConfiguration } from "../types.js";
 
 type PoolConfiguration = {
   idleTimeout: number;
@@ -23,10 +23,10 @@ export const createPoolConfiguration = (
     minimumPoolSize: 0,
   };
 
-  if (clientConfiguration.idleTimeout !== 'DISABLE_TIMEOUT') {
+  if (clientConfiguration.idleTimeout !== "DISABLE_TIMEOUT") {
     if (clientConfiguration.idleTimeout === 0) {
       log.warn(
-        'idleTimeout=0 sets timeout to 0 milliseconds; use idleTimeout=DISABLE_TIMEOUT to disable timeout',
+        "idleTimeout=0 sets timeout to 0 milliseconds; use idleTimeout=DISABLE_TIMEOUT to disable timeout",
       );
 
       poolConfiguration.idleTimeout = 1;

@@ -1,6 +1,6 @@
-import { bindPoolConnection } from '../binders/bindPoolConnection.js';
-import { establishConnection } from '../routines/establishConnection.js';
-import { getPoolClientState } from '../state.js';
+import { bindPoolConnection } from "../binders/bindPoolConnection.js";
+import { establishConnection } from "../routines/establishConnection.js";
+import { getPoolClientState } from "../state.js";
 import type {
   ClientConfiguration,
   Connection,
@@ -8,17 +8,14 @@ import type {
   DatabasePoolConnection,
   Logger,
   MaybePromise,
-} from '../types.js';
-import type {
-  ConnectionPool,
-  ConnectionPoolClient,
-} from './createConnectionPool.js';
-import { SpanStatusCode, trace } from '@opentelemetry/api';
-import { UnexpectedStateError } from '@slonik/errors';
-import type { QuerySqlToken } from '@slonik/sql-tag';
-import { defer } from '@slonik/utilities';
+} from "../types.js";
+import type { ConnectionPool, ConnectionPoolClient } from "./createConnectionPool.js";
+import { SpanStatusCode, trace } from "@opentelemetry/api";
+import { UnexpectedStateError } from "@slonik/errors";
+import type { QuerySqlToken } from "@slonik/sql-tag";
+import { defer } from "@slonik/utilities";
 
-const tracer = trace.getTracer('slonik.interceptors');
+const tracer = trace.getTracer("slonik.interceptors");
 
 type ConnectionHandlerType = (
   connectionLog: Logger,
@@ -30,24 +27,24 @@ type ConnectionHandlerType = (
 type PoolHandlerType = (pool: DatabasePool) => Promise<unknown>;
 
 const boundConnectionMethods = [
-  'any',
-  'anyFirst',
-  'exists',
-  'many',
-  'manyFirst',
-  'maybeOne',
-  'maybeOneFirst',
-  'one',
-  'oneFirst',
-  'query',
-  'stream',
-  'transaction',
+  "any",
+  "anyFirst",
+  "exists",
+  "many",
+  "manyFirst",
+  "maybeOne",
+  "maybeOneFirst",
+  "one",
+  "oneFirst",
+  "query",
+  "stream",
+  "transaction",
 ];
 
 const destroyBoundConnection = (boundConnection: DatabasePoolConnection) => {
   for (const boundConnectionMethod of boundConnectionMethods) {
     boundConnection[boundConnectionMethod] = async () => {
-      throw new Error('Cannot use released connection');
+      throw new Error("Cannot use released connection");
     };
   }
 };
@@ -62,12 +59,12 @@ const raceError = async <T>(
     connectionErrorPromise.reject(error);
   };
 
-  connection.on('error', onError);
+  connection.on("error", onError);
 
   try {
     return await Promise.race([connectionErrorPromise.promise, routine()]);
   } finally {
-    connection.removeListener('error', onError);
+    connection.removeListener("error", onError);
   }
 };
 
@@ -84,15 +81,15 @@ export const createConnection = async (
 
   const poolId = pool.id();
 
-  if (state === 'ENDING') {
+  if (state === "ENDING") {
     throw new UnexpectedStateError(
-      'Connection pool is being shut down. Cannot create a new connection.',
+      "Connection pool is being shut down. Cannot create a new connection.",
     );
   }
 
-  if (state === 'ENDED') {
+  if (state === "ENDED") {
     throw new UnexpectedStateError(
-      'Connection pool has been shut down. Cannot create a new connection.',
+      "Connection pool has been shut down. Cannot create a new connection.",
     );
   }
 
@@ -101,9 +98,9 @@ export const createConnection = async (
 
     if (beforePoolConnection) {
       const maybeNewPool = await tracer.startActiveSpan(
-        'slonik.interceptor.beforePoolConnection',
+        "slonik.interceptor.beforePoolConnection",
         async (interceptorSpan) => {
-          interceptorSpan.setAttribute('interceptor.name', interceptor.name);
+          interceptorSpan.setAttribute("interceptor.name", interceptor.name);
 
           try {
             return await beforePoolConnection({
@@ -151,19 +148,12 @@ export const createConnection = async (
       poolId,
     };
 
-    const boundConnection = bindPoolConnection(
-      connectionLog,
-      connection,
-      clientConfiguration,
-    );
+    const boundConnection = bindPoolConnection(connectionLog, connection, clientConfiguration);
 
     try {
       for (const interceptor of clientConfiguration.interceptors) {
         if (interceptor.afterPoolConnection) {
-          await interceptor.afterPoolConnection(
-            connectionContext,
-            boundConnection,
-          );
+          await interceptor.afterPoolConnection(connectionContext, boundConnection);
         }
       }
     } catch (error) {
@@ -190,10 +180,7 @@ export const createConnection = async (
     try {
       for (const interceptor of clientConfiguration.interceptors) {
         if (interceptor.beforePoolConnectionRelease) {
-          await interceptor.beforePoolConnectionRelease(
-            connectionContext,
-            boundConnection,
-          );
+          await interceptor.beforePoolConnectionRelease(connectionContext, boundConnection);
         }
       }
     } catch (error) {

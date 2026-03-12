@@ -1,5 +1,5 @@
-import { Roarr } from 'roarr';
+import { Roarr } from "roarr";
 
 export const Logger = Roarr.child({
-  package: 'slonik-sql-tag-raw',
+  package: "slonik-sql-tag-raw",
 });

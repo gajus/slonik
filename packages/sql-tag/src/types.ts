@@ -1,8 +1,8 @@
-import type * as tokens from './tokens.js';
-import type { PrimitiveValueExpression } from '@slonik/types';
-import type { StandardSchemaV1 } from '@standard-schema/spec';
+import type * as tokens from "./tokens.js";
+import type { PrimitiveValueExpression } from "@slonik/types";
+import type { StandardSchemaV1 } from "@standard-schema/spec";
 
-export { type PrimitiveValueExpression } from '@slonik/types';
+export { type PrimitiveValueExpression } from "@slonik/types";
 
 export type ArraySqlToken<T extends TypeNameIdentifier = TypeNameIdentifier> = {
   readonly memberType: SqlFragmentToken | T;
@@ -95,74 +95,55 @@ export type SqlFragmentToken = {
   readonly values: readonly PrimitiveValueExpression[];
 };
 
-export type SqlTag<
-  Z extends Record<string, StandardSchemaV1> = Record<string, StandardSchemaV1>,
-> = {
-  array: <T extends TypeNameIdentifier>(
-    values: readonly PrimitiveValueExpression[],
-    memberType: SqlFragmentToken | T,
-  ) => ArraySqlToken<T>;
-  binary: (data: Buffer) => BinarySqlToken;
-  date: (date: Date) => DateSqlToken;
-  fragment: (
-    template: TemplateStringsArray,
-    ...values: ValueExpression[]
-  ) => SqlFragmentToken;
-  identifier: (names: readonly string[]) => IdentifierSqlToken;
-  interval: (interval: IntervalInput) => IntervalSqlToken;
-  join: (
-    members: readonly ValueExpression[],
-    glue: SqlFragmentToken,
-  ) => ListSqlToken;
-  json: (value: SerializableValue) => JsonSqlToken;
-  jsonb: (value: SerializableValue) => JsonBinarySqlToken;
-  literalValue: (value: string) => SqlFragmentToken;
-  /**
-   * Creates a named prepared statement. The statement name is used by PostgreSQL
-   * to cache the query plan, which can improve performance for frequently executed queries.
-   * @example
-   * ```ts
-   * const query = sql.prepared('get_user_by_id', z.object({ id: z.number(), name: z.string() }))`
-   *   SELECT id, name FROM users WHERE id = ${userId}
-   * `;
-   * ```
-   */
-  prepared: <Y extends StandardSchemaV1>(
-    statementName: string,
-    parser: Y,
-  ) => (
-    template: TemplateStringsArray,
-    ...values: ValueExpression[]
-  ) => QuerySqlToken<Y>;
-  timestamp: (date: Date) => TimestampSqlToken;
-  type: <Y extends StandardSchemaV1>(
-    parser: Y,
-  ) => (
-    template: TemplateStringsArray,
-    ...values: ValueExpression[]
-  ) => QuerySqlToken<Y>;
-  typeAlias: <K extends keyof Z>(
-    typeAlias: K,
-  ) => (
-    template: TemplateStringsArray,
-    ...values: ValueExpression[]
-  ) => QuerySqlToken<Z[K]>;
-  unnest: (
-    // Value might be ReadonlyArray<ReadonlyArray<PrimitiveValueExpression>>,
-    // or it can be infinitely nested array, e.g.
-    // https://github.com/gajus/slonik/issues/44
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    tuples: ReadonlyArray<readonly any[]>,
-    columnTypes:
-      | Array<[...string[], TypeNameIdentifier]>
-      | Array<SqlFragmentToken | TypeNameIdentifier>,
-  ) => UnnestSqlToken;
-  unsafe: (
-    template: TemplateStringsArray,
-    ...values: ValueExpression[]
-  ) => QuerySqlToken;
-  uuid: (uuid: string) => UuidSqlToken;
-};
+export type SqlTag<Z extends Record<string, StandardSchemaV1> = Record<string, StandardSchemaV1>> =
+  {
+    array: <T extends TypeNameIdentifier>(
+      values: readonly PrimitiveValueExpression[],
+      memberType: SqlFragmentToken | T,
+    ) => ArraySqlToken<T>;
+    binary: (data: Buffer) => BinarySqlToken;
+    date: (date: Date) => DateSqlToken;
+    fragment: (template: TemplateStringsArray, ...values: ValueExpression[]) => SqlFragmentToken;
+    identifier: (names: readonly string[]) => IdentifierSqlToken;
+    interval: (interval: IntervalInput) => IntervalSqlToken;
+    join: (members: readonly ValueExpression[], glue: SqlFragmentToken) => ListSqlToken;
+    json: (value: SerializableValue) => JsonSqlToken;
+    jsonb: (value: SerializableValue) => JsonBinarySqlToken;
+    literalValue: (value: string) => SqlFragmentToken;
+    /**
+     * Creates a named prepared statement. The statement name is used by PostgreSQL
+     * to cache the query plan, which can improve performance for frequently executed queries.
+     * @example
+     * ```ts
+     * const query = sql.prepared('get_user_by_id', z.object({ id: z.number(), name: z.string() }))`
+     *   SELECT id, name FROM users WHERE id = ${userId}
+     * `;
+     * ```
+     */
+    prepared: <Y extends StandardSchemaV1>(
+      statementName: string,
+      parser: Y,
+    ) => (template: TemplateStringsArray, ...values: ValueExpression[]) => QuerySqlToken<Y>;
+    timestamp: (date: Date) => TimestampSqlToken;
+    type: <Y extends StandardSchemaV1>(
+      parser: Y,
+    ) => (template: TemplateStringsArray, ...values: ValueExpression[]) => QuerySqlToken<Y>;
+    typeAlias: <K extends keyof Z>(
+      typeAlias: K,
+    ) => (template: TemplateStringsArray, ...values: ValueExpression[]) => QuerySqlToken<Z[K]>;
+    unnest: (
+      // Value might be ReadonlyArray<ReadonlyArray<PrimitiveValueExpression>>,
+      // or it can be infinitely nested array, e.g.
+      // https://github.com/gajus/slonik/issues/44
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      tuples: ReadonlyArray<readonly any[]>,
+      columnTypes:
+        | Array<[...string[], TypeNameIdentifier]>
+        | Array<SqlFragmentToken | TypeNameIdentifier>,
+    ) => UnnestSqlToken;
+    unsafe: (template: TemplateStringsArray, ...values: ValueExpression[]) => QuerySqlToken;
+    uuid: (uuid: string) => UuidSqlToken;
+  };
 
 export type SqlToken =
   | ArraySqlToken<TypeNameIdentifier>
@@ -189,17 +170,17 @@ export type TimestampSqlToken = {
  * experience with auto suggestions for commonly used type name identifiers.
  */
 export type TypeNameIdentifier =
-  | 'bool'
-  | 'bytea'
-  | 'float4'
-  | 'float8'
-  | 'int2'
-  | 'int4'
-  | 'int8'
-  | 'json'
-  | 'text'
-  | 'timestamptz'
-  | 'uuid'
+  | "bool"
+  | "bytea"
+  | "float4"
+  | "float8"
+  | "int2"
+  | "int4"
+  | "int8"
+  | "json"
+  | "text"
+  | "timestamptz"
+  | "uuid"
   | string;
 
 export type UnnestSqlToken = {
@@ -215,7 +196,4 @@ export type UuidSqlToken = {
   readonly uuid: `${string}-${string}-${string}-${string}-${string}`;
 };
 
-export type ValueExpression =
-  | PrimitiveValueExpression
-  | SqlFragmentToken
-  | SqlToken;
+export type ValueExpression = PrimitiveValueExpression | SqlFragmentToken | SqlToken;

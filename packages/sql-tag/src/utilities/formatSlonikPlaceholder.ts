@@ -11,5 +11,5 @@
  * This way, we can safely detect placeholders that are part of a nested fragment.
  */
 export const formatSlonikPlaceholder = (index: number) => {
-  return '$slonik_' + String(index);
+  return "$slonik_" + String(index);
 };

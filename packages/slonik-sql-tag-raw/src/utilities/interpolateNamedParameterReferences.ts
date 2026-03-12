@@ -1,12 +1,12 @@
-import { Logger } from '../Logger.js';
-import type { NamedParameterValues } from '../types.js';
-import { interpolatePositionalParameterReferences } from './interpolatePositionalParameterReferences.js';
-import type { ValueExpression } from '@slonik/sql-tag';
-import { InvalidInputError } from 'slonik';
-import type { FragmentSqlToken } from 'slonik';
+import { Logger } from "../Logger.js";
+import type { NamedParameterValues } from "../types.js";
+import { interpolatePositionalParameterReferences } from "./interpolatePositionalParameterReferences.js";
+import type { ValueExpression } from "@slonik/sql-tag";
+import { InvalidInputError } from "slonik";
+import type { FragmentSqlToken } from "slonik";
 
 const log = Logger.child({
-  namespace: 'interpolateNamedParameterReferences',
+  namespace: "interpolateNamedParameterReferences",
 });
 
 const difference = (a: string[], b: string[]) => {
@@ -38,9 +38,7 @@ export const interpolateNamedParameterReferences = (
 
   const resultSql = inputSql.replaceAll(namedPlaceholderRegex, (match, g1) => {
     if (!parameterNames.includes(g1)) {
-      throw new InvalidInputError(
-        'Named parameter reference does not have a matching value.',
-      );
+      throw new InvalidInputError("Named parameter reference does not have a matching value.");
     }
 
     usedParameterNames.push(g1);
@@ -57,11 +55,11 @@ export const interpolateNamedParameterReferences = (
       {
         unusedParameterNames,
       },
-      'unused parameter names',
+      "unused parameter names",
     );
 
     throw new InvalidInputError(
-      'Values object contains value(s) not present as named parameter references in the query.',
+      "Values object contains value(s) not present as named parameter references in the query.",
     );
   }
 

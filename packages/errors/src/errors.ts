@@ -1,9 +1,5 @@
-import type {
-  PrimitiveValueExpression,
-  Query,
-  QueryResultRow,
-} from '@slonik/types';
-import type { StandardSchemaV1 } from '@standard-schema/spec';
+import type { PrimitiveValueExpression, Query, QueryResultRow } from "@slonik/types";
+import type { StandardSchemaV1 } from "@standard-schema/spec";
 
 type IntegrityConstraintViolationErrorCause = Error & {
   column?: string;
@@ -26,13 +22,13 @@ export class SlonikError extends Error {
 
 export class BackendTerminatedError extends SlonikError {
   public constructor(error: Error) {
-    super('Backend has been terminated.', { cause: error });
+    super("Backend has been terminated.", { cause: error });
   }
 }
 
 export class BackendTerminatedUnexpectedlyError extends SlonikError {
   public constructor(error: Error) {
-    super('Backend has been terminated unexpectedly.', { cause: error });
+    super("Backend has been terminated unexpectedly.", { cause: error });
   }
 }
 
@@ -43,10 +39,7 @@ export class IntegrityConstraintViolationError extends SlonikError {
 
   public table: null | string;
 
-  public constructor(
-    message: string,
-    error: IntegrityConstraintViolationErrorCause,
-  ) {
+  public constructor(message: string, error: IntegrityConstraintViolationErrorCause) {
     super(message, { cause: error });
 
     this.constraint = error.constraint ?? null;
@@ -59,13 +52,13 @@ export class IntegrityConstraintViolationError extends SlonikError {
 
 export class CheckExclusionConstraintViolationError extends IntegrityConstraintViolationError {
   public constructor(error: IntegrityConstraintViolationErrorCause) {
-    super('Query violates a check exclusion constraint.', error);
+    super("Query violates a check exclusion constraint.", error);
   }
 }
 
 export class CheckIntegrityConstraintViolationError extends IntegrityConstraintViolationError {
   public constructor(error: IntegrityConstraintViolationErrorCause) {
-    super('Query violates a check integrity constraint.', error);
+    super("Query violates a check integrity constraint.", error);
   }
 }
 
@@ -86,13 +79,13 @@ export class DataIntegrityError extends SlonikError {
 
 export class ForeignKeyIntegrityConstraintViolationError extends IntegrityConstraintViolationError {
   public constructor(error: IntegrityConstraintViolationErrorCause) {
-    super('Query violates a foreign key integrity constraint.', error);
+    super("Query violates a foreign key integrity constraint.", error);
   }
 }
 
 export class IdleTransactionTimeoutError extends SlonikError {
   public constructor(error: Error) {
-    super('Connection terminated due to idle-in-transaction timeout.', {
+    super("Connection terminated due to idle-in-transaction timeout.", {
       cause: error,
     });
   }
@@ -118,7 +111,7 @@ export class NotFoundError extends DataIntegrityError {}
 
 export class NotNullIntegrityConstraintViolationError extends IntegrityConstraintViolationError {
   public constructor(error: IntegrityConstraintViolationErrorCause) {
-    super('Query violates a not NULL integrity constraint.', error);
+    super("Query violates a not NULL integrity constraint.", error);
   }
 }
 
@@ -131,12 +124,8 @@ export class SchemaValidationError extends SlonikError {
 
   public values: readonly PrimitiveValueExpression[];
 
-  public constructor(
-    query: Query,
-    row: QueryResultRow,
-    issues: readonly StandardSchemaV1.Issue[],
-  ) {
-    super('Query returned rows that do not conform with the schema.');
+  public constructor(query: Query, row: QueryResultRow, issues: readonly StandardSchemaV1.Issue[]) {
+    super("Query returned rows that do not conform with the schema.");
 
     this.sql = query.sql;
     this.values = query.values;
@@ -147,7 +136,7 @@ export class SchemaValidationError extends SlonikError {
 
 export class StatementCancelledError extends SlonikError {
   public constructor(error: Error) {
-    super('Statement has been cancelled.', { cause: error });
+    super("Statement has been cancelled.", { cause: error });
   }
 }
 
@@ -156,7 +145,7 @@ export class StatementCancelledError extends SlonikError {
 
 export class StatementTimeoutError extends SlonikError {
   public constructor(error: Error) {
-    super('Statement has been cancelled due to a statement_timeout.', {
+    super("Statement has been cancelled due to a statement_timeout.", {
       cause: error,
     });
   }
@@ -164,7 +153,7 @@ export class StatementTimeoutError extends SlonikError {
 
 export class TupleMovedToAnotherPartitionError extends SlonikError {
   public constructor(error: Error) {
-    super('Tuple moved to another partition due to concurrent update.', {
+    super("Tuple moved to another partition due to concurrent update.", {
       cause: error,
     });
   }
@@ -172,9 +161,7 @@ export class TupleMovedToAnotherPartitionError extends SlonikError {
 
 export class UnexpectedForeignConnectionError extends SlonikError {
   public constructor() {
-    super(
-      'Cannot run a query inside a transaction using a foreign connection.',
-    );
+    super("Cannot run a query inside a transaction using a foreign connection.");
   }
 }
 
@@ -182,6 +169,6 @@ export class UnexpectedStateError extends SlonikError {}
 
 export class UniqueIntegrityConstraintViolationError extends IntegrityConstraintViolationError {
   public constructor(error: IntegrityConstraintViolationErrorCause) {
-    super('Query violates a unique integrity constraint.', error);
+    super("Query violates a unique integrity constraint.", error);
   }
 }

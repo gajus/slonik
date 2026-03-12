@@ -1,8 +1,45 @@
 {
+  "name": "@slonik/types",
+  "version": "48.12.3",
+  "description": "A Node.js PostgreSQL client with strict types, detailed logging and assertions.",
+  "keywords": [
+    "postgresql",
+    "promise",
+    "types"
+  ],
+  "license": "BSD-3-Clause",
   "author": {
-    "email": "gajus@gajus.com",
     "name": "Gajus Kuizinas",
+    "email": "gajus@gajus.com",
     "url": "http://gajus.com"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/gajus/slonik"
+  },
+  "files": [
+    "./src",
+    "./dist"
+  ],
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "scripts": {
+    "build": "rm -fr ./dist && tsc --project ./tsconfig.json",
+    "lint": "npm run lint:cspell && npm run lint:tsc",
+    "lint:cspell": "cspell . --no-progress --gitignore",
+    "lint:tsc": "tsc --noEmit",
+    "test": "ava --verbose --serial"
+  },
+  "devDependencies": {
+    "@types/node": "^24.10.13",
+    "ava": "^6.4.1",
+    "cspell": "^9.6.4",
+    "tsimp": "^2.0.12",
+    "typescript": "^5.9.3"
+  },
+  "peerDependencies": {
+    "zod": "^3.25 || ^4"
   },
   "ava": {
     "extensions": [
@@ -15,48 +52,7 @@
       "--import=tsimp"
     ]
   },
-  "description": "A Node.js PostgreSQL client with strict types, detailed logging and assertions.",
-  "devDependencies": {
-    "@slonik/eslint-config": "workspace:^",
-    "@types/node": "^24.10.13",
-    "ava": "^6.4.1",
-    "cspell": "^9.6.4",
-    "eslint": "9.39.2",
-    "tsimp": "^2.0.12",
-    "typescript": "^5.9.3",
-    "typescript-eslint": "^8.55.0"
-  },
   "engines": {
     "node": ">=24"
-  },
-  "files": [
-    "./src",
-    "./dist"
-  ],
-  "keywords": [
-    "postgresql",
-    "promise",
-    "types"
-  ],
-  "license": "BSD-3-Clause",
-  "main": "./dist/index.js",
-  "name": "@slonik/types",
-  "peerDependencies": {
-    "zod": "^3.25 || ^4"
-  },
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/gajus/slonik"
-  },
-  "scripts": {
-    "build": "rm -fr ./dist && tsc --project ./tsconfig.json",
-    "lint": "npm run lint:cspell && npm run lint:eslint && npm run lint:tsc",
-    "lint:cspell": "cspell . --no-progress --gitignore",
-    "lint:eslint": "eslint --cache ./src",
-    "lint:tsc": "tsc --noEmit",
-    "test": "ava --verbose --serial"
-  },
-  "type": "module",
-  "types": "./dist/index.d.ts",
-  "version": "48.12.3"
+  }
 }

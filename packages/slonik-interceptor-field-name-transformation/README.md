@@ -46,23 +46,19 @@ type ConfigurationType = {
 ## Example usage
 
 ```ts
-import {
-  createPool
-} from 'slonik';
-import {
-  createFieldNameTransformationInterceptor
-} from 'slonik-interceptor-field-name-transformation';
+import { createPool } from "slonik";
+import { createFieldNameTransformationInterceptor } from "slonik-interceptor-field-name-transformation";
 
 const interceptors = [
   createFieldNameTransformationInterceptor({
     test: (field) => {
-      return field.name !== '__typename' && /^[\d_a-z]+$/u.test(field.name);
+      return field.name !== "__typename" && /^[\d_a-z]+$/u.test(field.name);
     },
-  })
+  }),
 ];
 
-const connection = createPool('postgres://', {
-  interceptors
+const connection = createPool("postgres://", {
+  interceptors,
 });
 
 connection.any(sql`

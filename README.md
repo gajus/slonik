@@ -22,8 +22,8 @@ If you value my work and want to see Slonik and [many other of my](https://githu
 
 ## Principles
 
-* Promotes writing raw SQL.
-* Discourages ad-hoc dynamic generation of SQL.
+- Promotes writing raw SQL.
+- Discourages ad-hoc dynamic generation of SQL.
 
 Read: [Stop using Knex.js](https://medium.com/@gajus/bf410349856c)
 
@@ -31,130 +31,129 @@ Note: Using this project does not require TypeScript. It is a regular ES6 module
 
 ## Features
 
-* [Runtime validation](#runtime-validation).
-* [Assertions and type safety](#repeating-code-patterns-and-type-safety).
-* [Safe connection handling](#protecting-against-unsafe-connection-handling).
-* [Safe transaction handling](#protecting-against-unsafe-transaction-handling).
-* [Safe value interpolation](#protecting-against-unsafe-value-interpolation).
-* [Transaction nesting](#transaction-nesting).
-* [Transaction events](#transaction-events).
-* [Transaction retrying](#transaction-retrying).
-* [Query retrying](#query-retrying).
-* Detailed [logging](#debugging).
-* [Asynchronous stack trace resolution](#capture-stack-trace).
-* [Middlewares](#interceptors).
-* [Mapped errors](#error-handling).
-* [ESLint plugin](https://github.com/gajus/eslint-plugin-sql).
+- [Runtime validation](#runtime-validation).
+- [Assertions and type safety](#repeating-code-patterns-and-type-safety).
+- [Safe connection handling](#protecting-against-unsafe-connection-handling).
+- [Safe transaction handling](#protecting-against-unsafe-transaction-handling).
+- [Safe value interpolation](#protecting-against-unsafe-value-interpolation).
+- [Transaction nesting](#transaction-nesting).
+- [Transaction events](#transaction-events).
+- [Transaction retrying](#transaction-retrying).
+- [Query retrying](#query-retrying).
+- Detailed [logging](#debugging).
+- [Asynchronous stack trace resolution](#capture-stack-trace).
+- [Middlewares](#interceptors).
+- [Mapped errors](#error-handling).
+- [ESLint plugin](https://github.com/gajus/eslint-plugin-sql).
 
 ## Contents
 
-* [Slonik](#slonik)
-    * [Sponsors](#sponsors)
-    * [Principles](#principles)
-    * [Features](#features)
-    * [Contents](#contents)
-    * [About Slonik](#about-slonik)
-        * [Battle-Tested](#battle-tested)
-        * [Origin of the name](#origin-of-the-name)
-        * [Repeating code patterns and type safety](#repeating-code-patterns-and-type-safety)
-        * [Protecting against unsafe connection handling](#protecting-against-unsafe-connection-handling)
-        * [Protecting against unsafe transaction handling](#protecting-against-unsafe-transaction-handling)
-        * [Protecting against unsafe value interpolation](#protecting-against-unsafe-value-interpolation)
-    * [Documentation](#documentation)
-    * [Usage](#usage)
-        * [Connection URI](#connection-uri)
-        * [Create connection](#create-connection)
-        * [End connection pool](#end-connection-pool)
-        * [Describing the current state of the connection pool](#describing-the-current-state-of-the-connection-pool)
-        * [API](#api)
-        * [Default configuration](#default-configuration)
-        * [Checking out a client from the connection pool](#checking-out-a-client-from-the-connection-pool)
-        * [Events](#events)
-    * [How are they different?](#how-are-they-different)
-        * [`pg` vs `slonik`](#pg-vs-slonik)
-        * [`pg-promise` vs `slonik`](#pg-promise-vs-slonik)
-        * [`postgres` vs `slonik`](#postgres-vs-slonik)
-    * [Type parsers](#type-parsers)
-        * [Built-in type parsers](#built-in-type-parsers)
-    * [Interceptors](#interceptors)
-        * [Interceptor methods](#interceptor-methods)
-        * [Community interceptors](#community-interceptors)
-    * [Recipes](#recipes)
-        * [Inserting large number of rows](#inserting-large-number-of-rows)
-        * [Routing queries to different connections](#routing-queries-to-different-connections)
-        * [Building Utility Statements](#building-utility-statements)
-        * [Inserting vector data](#inserting-vector-data)
-    * [Runtime validation](#runtime-validation)
-        * [Motivation](#motivation)
-        * [Result parser interceptor](#result-parser-interceptor)
-        * [Example use of `sql.type`](#example-use-of-sqltype)
-        * [Performance penalty](#performance-penalty)
-        * [Unknown keys](#unknown-keys)
-        * [Handling schema validation errors](#handling-schema-validation-errors)
-        * [Inferring types](#inferring-types)
-        * [Transforming results](#transforming-results)
-    * [`sql` tag](#sql-tag)
-        * [Type aliases](#type-aliases)
-        * [Typing `sql` tag](#typing-sql-tag)
-    * [Value placeholders](#value-placeholders)
-        * [Tagged template literals](#tagged-template-literals)
-        * [Manually constructing the query](#manually-constructing-the-query)
-        * [Nesting `sql`](#nesting-sql)
-    * [Query building](#query-building)
-        * [`sql.array`](#sqlarray)
-        * [`sql.binary`](#sqlbinary)
-        * [`sql.date`](#sqldate)
-        * [`sql.fragment`](#sqlfragment)
-        * [`sql.identifier`](#sqlidentifier)
-        * [`sql.interval`](#sqlinterval)
-        * [`sql.join`](#sqljoin)
-        * [`sql.json`](#sqljson)
-        * [`sql.jsonb`](#sqljsonb)
-        * [`sql.literalValue`](#sqlliteralvalue)
-        * [`sql.timestamp`](#sqltimestamp)
-        * [`sql.unnest`](#sqlunnest)
-        * [`sql.unsafe`](#sqlunsafe)
-        * [`sql.uuid`](#sqluuid)
-        * [`sql.prepared`](#sqlprepared)
-    * [Query methods](#query-methods)
-        * [`any`](#any)
-        * [`anyFirst`](#anyfirst)
-        * [`exists`](#exists)
-        * [`many`](#many)
-        * [`manyFirst`](#manyfirst)
-        * [`maybeOne`](#maybeone)
-        * [`maybeOneFirst`](#maybeonefirst)
-        * [`one`](#one)
-        * [`oneFirst`](#onefirst)
-        * [`query`](#query)
-        * [`stream`](#stream)
-        * [`transaction`](#transaction)
-    * [Utilities](#utilities)
-        * [`parseDsn`](#parsedsn)
-        * [`stringifyDsn`](#stringifydsn)
-    * [Error handling](#error-handling)
-        * [Original `node-postgres` error](#original-node-postgres-error)
-        * [Handling `BackendTerminatedError`](#handling-backendterminatederror)
-        * [Handling `CheckIntegrityConstraintViolationError`](#handling-checkintegrityconstraintviolationerror)
-        * [Handling `ConnectionError`](#handling-connectionerror)
-        * [Handling `DataIntegrityError`](#handling-dataintegrityerror)
-        * [Handling `ForeignKeyIntegrityConstraintViolationError`](#handling-foreignkeyintegrityconstraintviolationerror)
-        * [Handling `NotFoundError`](#handling-notfounderror)
-        * [Handling `NotNullIntegrityConstraintViolationError`](#handling-notnullintegrityconstraintviolationerror)
-        * [Handling `StatementCancelledError`](#handling-statementcancellederror)
-        * [Handling `StatementTimeoutError`](#handling-statementtimeouterror)
-        * [Handling `UniqueIntegrityConstraintViolationError`](#handling-uniqueintegrityconstraintviolationerror)
-        * [Handling `TupleMovedToAnotherPartitionError`](#handling-tuplemovedtoanotherpartitionerror)
-    * [Migrations](#migrations)
-    * [Types](#types)
-    * [Debugging](#debugging)
-        * [Logging](#logging)
-        * [Capture stack trace](#capture-stack-trace)
-    * [Syntax Highlighting](#syntax-highlighting)
-        * [Atom Syntax Highlighting Plugin](#atom-syntax-highlighting-plugin)
-        * [VS Code Syntax Highlighting Extension](#vs-code-syntax-highlighting-extension)
-    * [Development](#development)
-
+- [Slonik](#slonik)
+  - [Sponsors](#sponsors)
+  - [Principles](#principles)
+  - [Features](#features)
+  - [Contents](#contents)
+  - [About Slonik](#about-slonik)
+    - [Battle-Tested](#battle-tested)
+    - [Origin of the name](#origin-of-the-name)
+    - [Repeating code patterns and type safety](#repeating-code-patterns-and-type-safety)
+    - [Protecting against unsafe connection handling](#protecting-against-unsafe-connection-handling)
+    - [Protecting against unsafe transaction handling](#protecting-against-unsafe-transaction-handling)
+    - [Protecting against unsafe value interpolation](#protecting-against-unsafe-value-interpolation)
+  - [Documentation](#documentation)
+  - [Usage](#usage)
+    - [Connection URI](#connection-uri)
+    - [Create connection](#create-connection)
+    - [End connection pool](#end-connection-pool)
+    - [Describing the current state of the connection pool](#describing-the-current-state-of-the-connection-pool)
+    - [API](#api)
+    - [Default configuration](#default-configuration)
+    - [Checking out a client from the connection pool](#checking-out-a-client-from-the-connection-pool)
+    - [Events](#events)
+  - [How are they different?](#how-are-they-different)
+    - [`pg` vs `slonik`](#pg-vs-slonik)
+    - [`pg-promise` vs `slonik`](#pg-promise-vs-slonik)
+    - [`postgres` vs `slonik`](#postgres-vs-slonik)
+  - [Type parsers](#type-parsers)
+    - [Built-in type parsers](#built-in-type-parsers)
+  - [Interceptors](#interceptors)
+    - [Interceptor methods](#interceptor-methods)
+    - [Community interceptors](#community-interceptors)
+  - [Recipes](#recipes)
+    - [Inserting large number of rows](#inserting-large-number-of-rows)
+    - [Routing queries to different connections](#routing-queries-to-different-connections)
+    - [Building Utility Statements](#building-utility-statements)
+    - [Inserting vector data](#inserting-vector-data)
+  - [Runtime validation](#runtime-validation)
+    - [Motivation](#motivation)
+    - [Result parser interceptor](#result-parser-interceptor)
+    - [Example use of `sql.type`](#example-use-of-sqltype)
+    - [Performance penalty](#performance-penalty)
+    - [Unknown keys](#unknown-keys)
+    - [Handling schema validation errors](#handling-schema-validation-errors)
+    - [Inferring types](#inferring-types)
+    - [Transforming results](#transforming-results)
+  - [`sql` tag](#sql-tag)
+    - [Type aliases](#type-aliases)
+    - [Typing `sql` tag](#typing-sql-tag)
+  - [Value placeholders](#value-placeholders)
+    - [Tagged template literals](#tagged-template-literals)
+    - [Manually constructing the query](#manually-constructing-the-query)
+    - [Nesting `sql`](#nesting-sql)
+  - [Query building](#query-building)
+    - [`sql.array`](#sqlarray)
+    - [`sql.binary`](#sqlbinary)
+    - [`sql.date`](#sqldate)
+    - [`sql.fragment`](#sqlfragment)
+    - [`sql.identifier`](#sqlidentifier)
+    - [`sql.interval`](#sqlinterval)
+    - [`sql.join`](#sqljoin)
+    - [`sql.json`](#sqljson)
+    - [`sql.jsonb`](#sqljsonb)
+    - [`sql.literalValue`](#sqlliteralvalue)
+    - [`sql.timestamp`](#sqltimestamp)
+    - [`sql.unnest`](#sqlunnest)
+    - [`sql.unsafe`](#sqlunsafe)
+    - [`sql.uuid`](#sqluuid)
+    - [`sql.prepared`](#sqlprepared)
+  - [Query methods](#query-methods)
+    - [`any`](#any)
+    - [`anyFirst`](#anyfirst)
+    - [`exists`](#exists)
+    - [`many`](#many)
+    - [`manyFirst`](#manyfirst)
+    - [`maybeOne`](#maybeone)
+    - [`maybeOneFirst`](#maybeonefirst)
+    - [`one`](#one)
+    - [`oneFirst`](#onefirst)
+    - [`query`](#query)
+    - [`stream`](#stream)
+    - [`transaction`](#transaction)
+  - [Utilities](#utilities)
+    - [`parseDsn`](#parsedsn)
+    - [`stringifyDsn`](#stringifydsn)
+  - [Error handling](#error-handling)
+    - [Original `node-postgres` error](#original-node-postgres-error)
+    - [Handling `BackendTerminatedError`](#handling-backendterminatederror)
+    - [Handling `CheckIntegrityConstraintViolationError`](#handling-checkintegrityconstraintviolationerror)
+    - [Handling `ConnectionError`](#handling-connectionerror)
+    - [Handling `DataIntegrityError`](#handling-dataintegrityerror)
+    - [Handling `ForeignKeyIntegrityConstraintViolationError`](#handling-foreignkeyintegrityconstraintviolationerror)
+    - [Handling `NotFoundError`](#handling-notfounderror)
+    - [Handling `NotNullIntegrityConstraintViolationError`](#handling-notnullintegrityconstraintviolationerror)
+    - [Handling `StatementCancelledError`](#handling-statementcancellederror)
+    - [Handling `StatementTimeoutError`](#handling-statementtimeouterror)
+    - [Handling `UniqueIntegrityConstraintViolationError`](#handling-uniqueintegrityconstraintviolationerror)
+    - [Handling `TupleMovedToAnotherPartitionError`](#handling-tuplemovedtoanotherpartitionerror)
+  - [Migrations](#migrations)
+  - [Types](#types)
+  - [Debugging](#debugging)
+    - [Logging](#logging)
+    - [Capture stack trace](#capture-stack-trace)
+  - [Syntax Highlighting](#syntax-highlighting)
+    - [Atom Syntax Highlighting Plugin](#atom-syntax-highlighting-plugin)
+    - [VS Code Syntax Highlighting Extension](#vs-code-syntax-highlighting-extension)
+  - [Development](#development)
 
 ## About Slonik
 
@@ -168,7 +167,7 @@ Slonik has been [battle-tested](https://medium.com/@gajus/lessons-learned-scalin
 
 ![Slonik](./.README/postgresql-elephant.png)
 
-**"Słonik"** is a Polish diminutive of **"słoń,"** meaning “little elephant” or “baby elephant.” The word **"słoń"** itself comes from Proto-Slavic **slonъ*, which was likely borrowed from a Germanic language and may ultimately trace back to Latin.
+**"Słonik"** is a Polish diminutive of **"słoń,"** meaning “little elephant” or “baby elephant.” The word **"słoń"** itself comes from Proto-Slavic \*_slonъ_, which was likely borrowed from a Germanic language and may ultimately trace back to Latin.
 
 ### Repeating code patterns and type safety
 
@@ -177,26 +176,26 @@ Among the primary reasons for developing Slonik, was the motivation to reduce th
 Suppose the requirement is to write a method that retrieves a resource ID given values defining (what we assume to be) a unique constraint. If we did not have the aforementioned helper methods available, then it would need to be written as:
 
 ```ts
-import {
-  sql,
-  type DatabaseConnection
-} from 'slonik';
+import { sql, type DatabaseConnection } from "slonik";
 
 type DatabaseRecordIdType = number;
 
-const getFooIdByBar = async (connection: DatabaseConnection, bar: string): Promise<DatabaseRecordIdType> => {
-  const fooResult = await connection.query(sql.typeAlias('id')`
+const getFooIdByBar = async (
+  connection: DatabaseConnection,
+  bar: string,
+): Promise<DatabaseRecordIdType> => {
+  const fooResult = await connection.query(sql.typeAlias("id")`
     SELECT id
     FROM foo
     WHERE bar = ${bar}
   `);
 
   if (fooResult.rowCount === 0) {
-    throw new Error('Resource not found.');
+    throw new Error("Resource not found.");
   }
 
   if (fooResult.rowCount > 1) {
-    throw new Error('Data integrity constraint violation.');
+    throw new Error("Data integrity constraint violation.");
   }
 
   return fooResult[0].id;
@@ -206,8 +205,11 @@ const getFooIdByBar = async (connection: DatabaseConnection, bar: string): Promi
 `oneFirst` method abstracts all of the above logic into:
 
 ```ts
-const getFooIdByBar = (connection: DatabaseConnection, bar: string): Promise<DatabaseRecordIdType> => {
-  return connection.oneFirst(sql.typeAlias('id')`
+const getFooIdByBar = (
+  connection: DatabaseConnection,
+  bar: string,
+): Promise<DatabaseRecordIdType> => {
+  return connection.oneFirst(sql.typeAlias("id")`
     SELECT id
     FROM foo
     WHERE bar = ${bar}
@@ -217,22 +219,22 @@ const getFooIdByBar = (connection: DatabaseConnection, bar: string): Promise<Dat
 
 `oneFirst` throws:
 
-* `NotFoundError` if query returns no rows
-* `DataIntegrityError` if query returns multiple rows
-* `DataIntegrityError` if query returns multiple columns
+- `NotFoundError` if query returns no rows
+- `DataIntegrityError` if query returns multiple rows
+- `DataIntegrityError` if query returns multiple columns
 
 In the absence of helper methods, the overhead of repeating code becomes particularly visible when writing routines where multiple queries depend on the proceeding query results. Using methods with inbuilt assertions ensures that in case of an error, the error points to the source of the problem. In contrast, unless assertions for all possible outcomes are typed out as in the previous example, the unexpected result of the query will be fed to the next operation. If you are lucky, the next operation will simply break; if you are unlucky, you are risking data corruption and hard-to-locate bugs.
 
 Furthermore, using methods that guarantee the shape of the results allows us to leverage static type checking and catch some of the errors even before executing the code, e.g.
 
 ```ts
-const fooId = await connection.many(sql.typeAlias('id')`
+const fooId = await connection.many(sql.typeAlias("id")`
   SELECT id
   FROM foo
   WHERE bar = ${bar}
 `);
 
-await connection.query(sql.typeAlias('void')`
+await connection.query(sql.typeAlias("void")`
   DELETE FROM baz
   WHERE foo_id = ${fooId}
 `);
@@ -252,7 +254,7 @@ The primary reason for implementing _only_ this connection pooling method is bec
 const main = async () => {
   const connection = await pool.connect();
 
-  await connection.query(sql.typeAlias('foo')`SELECT foo()`);
+  await connection.query(sql.typeAlias("foo")`SELECT foo()`);
 
   await connection.release();
 };
@@ -271,7 +273,7 @@ const main = async () => {
   let lastExecutionResult;
 
   try {
-    lastExecutionResult = await connection.query(sql.typeAlias('foo')`SELECT foo()`);
+    lastExecutionResult = await connection.query(sql.typeAlias("foo")`SELECT foo()`);
   } finally {
     await connection.release();
   }
@@ -285,7 +287,7 @@ Slonik abstracts the latter pattern into `pool#connect()` method.
 ```ts
 const main = () => {
   return pool.connect((connection) => {
-    return connection.query(sql.typeAlias('foo')`SELECT foo()`);
+    return connection.query(sql.typeAlias("foo")`SELECT foo()`);
   });
 };
 ```
@@ -299,37 +301,29 @@ After the connection is released, Slonik resets the connection state. This is to
 The default behaviour is to execute `DISCARD ALL` command. This behaviour can be adjusted by configuring `resetConnection` routine, e.g.
 
 ```ts
-import {
-  createPool,
-  sql,
-} from 'slonik';
-import {
-  createPgDriverFactory,
-} from '@slonik/pg-driver';
+import { createPool, sql } from "slonik";
+import { createPgDriverFactory } from "@slonik/pg-driver";
 
-const pool = createPool('postgres://', {
+const pool = createPool("postgres://", {
   driverFactory: createPgDriverFactory(),
   resetConnection: async (connection) => {
-    await connection.query('DISCARD ALL');
-  }
+    await connection.query("DISCARD ALL");
+  },
 });
 ```
 
 > [!NOTE]
 > Resetting a connection is a heavy operation. Depending on the application requirements, it may make sense to disable connection reset, e.g.
-> ```ts
-> import {
->   createPool,
-> } from 'slonik';
-> import {
->   createPgDriverFactory,
-> } from '@slonik/pg-driver';
 >
-> const pool = createPool('postgres://', {
+> ```ts
+> import { createPool } from "slonik";
+> import { createPgDriverFactory } from "@slonik/pg-driver";
+>
+> const pool = createPool("postgres://", {
 >   driverFactory: createPgDriverFactory(),
->   resetConnection: async () => {}
+>   resetConnection: async () => {},
 > });
-
+> ```
 
 ### Protecting against unsafe transaction handling
 
@@ -337,8 +331,8 @@ Just like in the [unsafe connection handling](#protecting-against-unsafe-connect
 
 ```ts
 connection.transaction(async (transactionConnection) => {
-  await transactionConnection.query(sql.typeAlias('void')`INSERT INTO foo (bar) VALUES ('baz')`);
-  await transactionConnection.query(sql.typeAlias('void')`INSERT INTO qux (quux) VALUES ('quuz')`);
+  await transactionConnection.query(sql.typeAlias("void")`INSERT INTO foo (bar) VALUES ('baz')`);
+  await transactionConnection.query(sql.typeAlias("void")`INSERT INTO qux (quux) VALUES ('quuz')`);
 });
 ```
 
@@ -346,11 +340,13 @@ This pattern ensures that the transaction is either committed or aborted the mom
 
 > [!NOTE]
 > If you receive an error `UnexpectedForeignConnectionError`, then you are trying to execute a query using a connection that is not associated with the transaction. This error is thrown to prevent accidental unsafe transaction handling, e.g.
+>
 > ```ts
 > pool.transaction(async (transactionConnection) => {
->   await pool.query(sql.typeAlias('void')`INSERT INTO foo (bar) VALUES ('baz')`);
+>   await pool.query(sql.typeAlias("void")`INSERT INTO foo (bar) VALUES ('baz')`);
 > });
 > ```
+>
 > In this example, the query is executed using the `connection` that is not associated with the transaction. This is unsafe because the query is not part of the transaction and will not be rolled back if the transaction is aborted.
 > This behaviour can be disabled by setting `dangerouslyAllowForeignConnections` to `true` in the `ClientConfiguration`.
 
@@ -361,9 +357,7 @@ This pattern ensures that the transaction is either committed or aborted the mom
 ```ts
 // This is not valid Slonik API
 
-connection.query('SELECT $1', [
-  userInput
-]);
+connection.query("SELECT $1", [userInput]);
 ```
 
 In this example, the query text (`SELECT $1`) and parameters (`userInput`) are passed separately to the PostgreSQL server where the parameters are safely substituted into the query. This is a safe way to execute a query using user-input.
@@ -373,7 +367,7 @@ The vulnerabilities appear when developers cut corners or when they do not know 
 ```ts
 // This is not valid Slonik API
 
-connection.query('SELECT \'' + userInput + '\'');
+connection.query("SELECT '" + userInput + "'");
 ```
 
 As evident by the history of the data leaks, this happens more often than anyone would like to admit. This security vulnerability is especially a significant risk in Node.js community, where a predominant number of developers are coming from frontend and have not had training working with RDBMSes. Therefore, one of the key selling points of Slonik is that it adds multiple layers of protection to prevent unsafe handling of user input.
@@ -383,7 +377,7 @@ To begin with, Slonik does not allow running plain-text queries.
 ```ts
 // This is not valid Slonik API
 
-connection.query('SELECT 1');
+connection.query("SELECT 1");
 ```
 
 The above invocation would produce an error:
@@ -408,20 +402,20 @@ As Slonik restricts user's ability to generate and execute dynamic SQL, it provi
 
 ```ts
 connection.query(sql.unsafe`
-  SELECT ${sql.identifier(['foo', 'a'])}
+  SELECT ${sql.identifier(["foo", "a"])}
   FROM (
     VALUES
     (
       ${sql.join(
         [
-          sql.join(['a1', 'b1', 'c1'], sql.fragment`, `),
-          sql.join(['a2', 'b2', 'c2'], sql.fragment`, `)
+          sql.join(["a1", "b1", "c1"], sql.fragment`, `),
+          sql.join(["a2", "b2", "c2"], sql.fragment`, `),
         ],
-        sql.fragment`), (`
+        sql.fragment`), (`,
       )}
     )
   ) foo(a, b, c)
-  WHERE foo.b IN (${sql.join(['c1', 'a2'], sql.fragment`, `)})
+  WHERE foo.b IN (${sql.join(["c1", "a2"], sql.fragment`, `)})
 `);
 ```
 
@@ -441,7 +435,6 @@ This query is executed with the parameters provided by the user.
 
 To sum up, Slonik is designed to prevent accidental creation of queries vulnerable to SQL injections.
 
-
 ## Documentation
 
 ## Usage
@@ -456,14 +449,14 @@ postgresql://[user[:password]@][host[:port]][/database name][?name=value[&...]]
 
 Supported parameters:
 
-|Name|Meaning|Default|
-|---|---|---|
-|`application_name`|[`application_name`](https://www.postgresql.org/docs/current/libpq-connect.html#LIBPQ-CONNECT-APPLICATION-NAME)||
-|`options`|[`options`](https://www.postgresql.org/docs/current/libpq-connect.html#LIBPQ-CONNECT-OPTIONS)||
-|`sslcert`|The location of the [certificate](https://www.postgresql.org/docs/current/libpq-ssl.html#LIBPQ-SSL-CLIENTCERT).|-|
-|`sslkey`|The location of the [certificate](https://www.postgresql.org/docs/current/libpq-ssl.html#LIBPQ-SSL-CLIENTCERT).|-|
-|`sslmode`|[`sslmode`](https://www.postgresql.org/docs/current/libpq-ssl.html#LIBPQ-SSL-PROTECTION) (supported values: `disable`, `no-verify`, `require`)|`disable`|
-|`sslrootcert`|The location of the [root certificate]((https://www.postgresql.org/docs/current/libpq-ssl.html#LIBQ-SSL-CERTIFICATES)) file.||
+| Name               | Meaning                                                                                                                                        | Default   |
+| ------------------ | ---------------------------------------------------------------------------------------------------------------------------------------------- | --------- |
+| `application_name` | [`application_name`](https://www.postgresql.org/docs/current/libpq-connect.html#LIBPQ-CONNECT-APPLICATION-NAME)                                |           |
+| `options`          | [`options`](https://www.postgresql.org/docs/current/libpq-connect.html#LIBPQ-CONNECT-OPTIONS)                                                  |           |
+| `sslcert`          | The location of the [certificate](https://www.postgresql.org/docs/current/libpq-ssl.html#LIBPQ-SSL-CLIENTCERT).                                | -         |
+| `sslkey`           | The location of the [certificate](https://www.postgresql.org/docs/current/libpq-ssl.html#LIBPQ-SSL-CLIENTCERT).                                | -         |
+| `sslmode`          | [`sslmode`](https://www.postgresql.org/docs/current/libpq-ssl.html#LIBPQ-SSL-PROTECTION) (supported values: `disable`, `no-verify`, `require`) | `disable` |
+| `sslrootcert`      | The location of the [root certificate](<(https://www.postgresql.org/docs/current/libpq-ssl.html#LIBQ-SSL-CERTIFICATES)>) file.                 |           |
 
 Note that unless listed above, other [libpq parameters](https://www.postgresql.org/docs/current/libpq-connect.html#LIBPQ-PARAMKEYWORDS) are not supported.
 
@@ -493,14 +486,10 @@ Other configurations are available through the [`clientConfiguration` parameter]
 Use `createPool` to create a connection pool, e.g.
 
 ```ts
-import {
-  createPool,
-} from 'slonik';
-import {
-  createPgDriverFactory,
-} from '@slonik/pg-driver';
+import { createPool } from "slonik";
+import { createPgDriverFactory } from "@slonik/pg-driver";
 
-const pool = await createPool('postgres://', {
+const pool = await createPool("postgres://", {
   driverFactory: createPgDriverFactory(),
 });
 ```
@@ -511,7 +500,7 @@ Instance of Slonik connection pool can be then used to create a new connection, 
 
 ```ts
 pool.connect(async (connection) => {
-  await connection.query(sql.typeAlias('id')`SELECT 1 AS id`);
+  await connection.query(sql.typeAlias("id")`SELECT 1 AS id`);
 });
 ```
 
@@ -522,7 +511,7 @@ Refer to [query method](#query-methods) documentation to learn about the connect
 If you do not require having a persistent connection to the same backend, then you can directly use `pool` to run queries, e.g.
 
 ```ts
-pool.query(sql.typeAlias('id')`SELECT 1 AS id`);
+pool.query(sql.typeAlias("id")`SELECT 1 AS id`);
 ```
 
 Beware that in the latter example, the connection picked to execute the query is a random connection from the connection pool, i.e. using the latter method (without explicit `connect()`) does not guarantee that multiple queries will refer to the same backend.
@@ -534,20 +523,15 @@ Use `pool.end()` to end idle connections and prevent creation of new connections
 The result of `pool.end()` is a promise that is resolved when all connections are ended.
 
 ```ts
-import {
-  createPool,
-  sql,
-} from 'slonik';
-import {
-  createPgDriverFactory,
-} from '@slonik/pg-driver';
+import { createPool, sql } from "slonik";
+import { createPgDriverFactory } from "@slonik/pg-driver";
 
-const pool = await createPool('postgres://', {
+const pool = await createPool("postgres://", {
   driverFactory: createPgDriverFactory(),
 });
 
 const main = async () => {
-  await pool.query(sql.typeAlias('id')`
+  await pool.query(sql.typeAlias("id")`
     SELECT 1 AS id
   `);
 
@@ -564,15 +548,10 @@ Note: `pool.end()` does not terminate active connections/ transactions.
 Use `pool.state()` to find out if pool is alive and how many connections are active and idle, and how many clients are waiting for a connection.
 
 ```ts
-import {
-  createPool,
-  sql,
-} from 'slonik';
-import {
-  createPgDriverFactory,
-} from '@slonik/pg-driver';
+import { createPool, sql } from "slonik";
+import { createPgDriverFactory } from "@slonik/pg-driver";
 
-const pool = await createPool('postgres://', {
+const pool = await createPool("postgres://", {
   driverFactory: createPgDriverFactory(),
 });
 
@@ -684,18 +663,14 @@ type ClientConfiguration = {
 Example:
 
 ```ts
-import {
-  createPool
-} from 'slonik';
-import {
-  createPgDriverFactory,
-} from '@slonik/pg-driver';
+import { createPool } from "slonik";
+import { createPgDriverFactory } from "@slonik/pg-driver";
 
-const pool = await createPool('postgres://', {
+const pool = await createPool("postgres://", {
   driverFactory: createPgDriverFactory(),
 });
 
-await pool.query(sql.typeAlias('id')`SELECT 1 AS id`);
+await pool.query(sql.typeAlias("id")`SELECT 1 AS id`);
 ```
 
 ### Default configuration
@@ -710,38 +685,32 @@ Check out [`slonik-interceptor-preset`](https://github.com/gajus/slonik-intercep
 
 These type parsers are enabled by default:
 
-|Type name|Implementation|
-|---|---|
-|`date`|Produces a literal date as a string (format: YYYY-MM-DD).|
-|`int8`|Produces an integer.|
-|`interval`|Produces interval in seconds (integer).|
-|`numeric`|Produces a float.|
-|`timestamp`|Produces a unix timestamp (in milliseconds).|
-|`timestamptz`|Produces a unix timestamp (in milliseconds).|
+| Type name     | Implementation                                            |
+| ------------- | --------------------------------------------------------- |
+| `date`        | Produces a literal date as a string (format: YYYY-MM-DD). |
+| `int8`        | Produces an integer.                                      |
+| `interval`    | Produces interval in seconds (integer).                   |
+| `numeric`     | Produces a float.                                         |
+| `timestamp`   | Produces a unix timestamp (in milliseconds).              |
+| `timestamptz` | Produces a unix timestamp (in milliseconds).              |
 
 To disable the default type parsers, pass an empty array, e.g.
 
 ```ts
-createPool('postgres://', {
-  typeParsers: []
+createPool("postgres://", {
+  typeParsers: [],
 });
 ```
 
 You can create default type parser collection using `createTypeParserPreset`, e.g.
 
 ```ts
-import {
-  createTypeParserPreset
-} from 'slonik';
-import {
-  createPgDriverFactory,
-} from '@slonik/pg-driver';
+import { createTypeParserPreset } from "slonik";
+import { createPgDriverFactory } from "@slonik/pg-driver";
 
-createPool('postgres://', {
+createPool("postgres://", {
   driverFactory: createPgDriverFactory(),
-  typeParsers: [
-    ...createTypeParserPreset()
-  ]
+  typeParsers: [...createTypeParserPreset()],
 });
 ```
 
@@ -749,12 +718,12 @@ createPool('postgres://', {
 
 There are 4 types of configurable timeouts:
 
-|Configuration|Description|Default|
-|---|---|---|
-|`connectionTimeout`|Timeout (in milliseconds) after which an error is raised if connection cannot be established.|5000|
-|`idleInTransactionSessionTimeout`|Timeout (in milliseconds) after which idle clients are closed. Use 'DISABLE_TIMEOUT' constant to disable the timeout.|60000|
-|`idleTimeout`|Timeout (in milliseconds) after which idle clients are closed. Use 'DISABLE_TIMEOUT' constant to disable the timeout.|5000|
-|`statementTimeout`|Timeout (in milliseconds) after which database is instructed to abort the query. Use 'DISABLE_TIMEOUT' constant to disable the timeout.|60000|
+| Configuration                     | Description                                                                                                                             | Default |
+| --------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------- | ------- |
+| `connectionTimeout`               | Timeout (in milliseconds) after which an error is raised if connection cannot be established.                                           | 5000    |
+| `idleInTransactionSessionTimeout` | Timeout (in milliseconds) after which idle clients are closed. Use 'DISABLE_TIMEOUT' constant to disable the timeout.                   | 60000   |
+| `idleTimeout`                     | Timeout (in milliseconds) after which idle clients are closed. Use 'DISABLE_TIMEOUT' constant to disable the timeout.                   | 5000    |
+| `statementTimeout`                | Timeout (in milliseconds) after which database is instructed to abort the query. Use 'DISABLE_TIMEOUT' constant to disable the timeout. | 60000   |
 
 Slonik sets aggressive timeouts by default. These timeouts are designed to provide safe interface to the database. These timeouts might not work for all programs. If your program has long running statements, consider adjusting timeouts just for those statements instead of changing the defaults.
 
@@ -767,27 +736,22 @@ Slonik sets aggressive timeouts by default. These timeouts are designed to provi
 Slonik only allows to check out a connection for the duration of the promise routine supplied to the `pool#connect()` method.
 
 ```ts
-import {
-  createPool,
-} from 'slonik';
-import {
-  createPgDriverFactory,
-} from '@slonik/pg-driver';
+import { createPool } from "slonik";
+import { createPgDriverFactory } from "@slonik/pg-driver";
 
-const pool = await createPool('postgres://localhost', {
+const pool = await createPool("postgres://localhost", {
   driverFactory: createPgDriverFactory(),
 });
 
 const result = await pool.connect(async (connection) => {
-  await connection.query(sql.typeAlias('id')`SELECT 1 AS id`);
-  await connection.query(sql.typeAlias('id')`SELECT 2 AS id`);
+  await connection.query(sql.typeAlias("id")`SELECT 1 AS id`);
+  await connection.query(sql.typeAlias("id")`SELECT 2 AS id`);
 
-  return 'foo';
+  return "foo";
 });
 
 result;
 // 'foo'
-
 ```
 
 Connection is released back to the pool after the promise produced by the function supplied to `connect()` method is either resolved or rejected.
@@ -801,19 +765,14 @@ The `DatabasePool` extends `DatabasePoolEventEmitter` and exposes the following 
 - `error`: `(error: SlonikError) => void` – emitted for all errors that happen within the pool.
 
 ```ts
-import {
-  createPool,
-  type DatabasePoolEventEmitter,
-} from 'slonik';
-import {
-  createPgDriverFactory,
-} from '@slonik/pg-driver';
+import { createPool, type DatabasePoolEventEmitter } from "slonik";
+import { createPgDriverFactory } from "@slonik/pg-driver";
 
-const pool = await createPool('postgres://localhost', {
+const pool = await createPool("postgres://localhost", {
   driverFactory: createPgDriverFactory(),
 });
 
-pool.on('error', (error) => {
+pool.on("error", (error) => {
   console.error(error);
 });
 ```
@@ -834,21 +793,21 @@ As the name suggests, [`pg-promise`](https://github.com/vitaly-t/pg-promise) was
 
 The primary difference between Slonik and `pg-promise`:
 
-* Slonik does not allow to execute raw text queries. Slonik queries can only be constructed using [`sql` tagged template literals](#value-placeholders-tagged-template-literals). This design [protects against unsafe value interpolation](#protecting-against-unsafe-value-interpolation).
-* Slonik implements [interceptor API](#interceptors) (middleware). Middlewares allow to modify connection handling, override queries and modify the query results. Example Slonik interceptors include [field name transformation](https://github.com/gajus/slonik-interceptor-field-name-transformation), [query normalization](https://github.com/gajus/slonik-interceptor-query-normalisation) and [query benchmarking](https://github.com/gajus/slonik-interceptor-query-benchmarking).
+- Slonik does not allow to execute raw text queries. Slonik queries can only be constructed using [`sql` tagged template literals](#value-placeholders-tagged-template-literals). This design [protects against unsafe value interpolation](#protecting-against-unsafe-value-interpolation).
+- Slonik implements [interceptor API](#interceptors) (middleware). Middlewares allow to modify connection handling, override queries and modify the query results. Example Slonik interceptors include [field name transformation](https://github.com/gajus/slonik-interceptor-field-name-transformation), [query normalization](https://github.com/gajus/slonik-interceptor-query-normalisation) and [query benchmarking](https://github.com/gajus/slonik-interceptor-query-benchmarking).
 
 Note: Author of `pg-promise` has [objected to the above claims](https://github.com/gajus/slonik/issues/122). I have removed a difference that was clearly wrong. I maintain that the above two differences remain valid differences: even though `pg-promise` might have substitute functionality for variable interpolation and interceptors, it implements them in a way that does not provide the same benefits that Slonik provides, namely: guaranteed security and support for extending library functionality using multiple plugins.
 
 Other differences are primarily in how the equivalent features are implemented, e.g.
 
-|`pg-promise`|Slonik|
-|---|---|
-|[Custom type formatting](https://github.com/vitaly-t/pg-promise#custom-type-formatting).|Not available in Slonik. The current proposal is to create an interceptor that would have access to the [query fragment constructor](https://github.com/gajus/slonik/issues/21).|
-|[formatting filters](https://github.com/vitaly-t/pg-promise#nested-named-parameters)|Slonik tagged template [value expressions](https://github.com/gajus/slonik#value-placeholders) to construct query fragments and bind parameter values.|
-|[Query files](https://github.com/vitaly-t/pg-promise#query-files).|Use [`slonik-sql-tag-raw`](https://github.com/gajus/slonik-sql-tag-raw).|
-|[Tasks](https://github.com/vitaly-t/pg-promise#tasks).|Use [`pool.connect`](https://github.com/gajus/slonik#create-connection).|
-|Configurable transactions.|Not available in Slonik. Track [this issue](https://github.com/gajus/slonik/issues/30).|
-|Events.|Use [interceptors](https://github.com/gajus/slonik#interceptors).|
+| `pg-promise`                                                                             | Slonik                                                                                                                                                                           |
+| ---------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| [Custom type formatting](https://github.com/vitaly-t/pg-promise#custom-type-formatting). | Not available in Slonik. The current proposal is to create an interceptor that would have access to the [query fragment constructor](https://github.com/gajus/slonik/issues/21). |
+| [formatting filters](https://github.com/vitaly-t/pg-promise#nested-named-parameters)     | Slonik tagged template [value expressions](https://github.com/gajus/slonik#value-placeholders) to construct query fragments and bind parameter values.                           |
+| [Query files](https://github.com/vitaly-t/pg-promise#query-files).                       | Use [`slonik-sql-tag-raw`](https://github.com/gajus/slonik-sql-tag-raw).                                                                                                         |
+| [Tasks](https://github.com/vitaly-t/pg-promise#tasks).                                   | Use [`pool.connect`](https://github.com/gajus/slonik#create-connection).                                                                                                         |
+| Configurable transactions.                                                               | Not available in Slonik. Track [this issue](https://github.com/gajus/slonik/issues/30).                                                                                          |
+| Events.                                                                                  | Use [interceptors](https://github.com/gajus/slonik#interceptors).                                                                                                                |
 
 When weighting which abstraction to use, it would be unfair not to consider that `pg-promise` is a mature project with dozens of contributors. Meanwhile, Slonik is a young project (started in March 2017) that until recently was developed without active community input. However, if you do support the unique features that Slonik adds, the opinionated API design, and are not afraid of adopting a technology in its young days, then I warmly invite you to adopt Slonik and become a contributor to what I intend to make the standard PostgreSQL client in the Node.js community.
 
@@ -864,8 +823,8 @@ Type parsers describe how to parse PostgreSQL types.
 
 ```ts
 type TypeParser = {
-  name: string,
-  parse: (value: string) => *
+  name: string;
+  parse: (value: string) => *;
 };
 ```
 
@@ -896,21 +855,19 @@ Read: [Default type parsers](#default-type-parsers).
 
 ### Built-in type parsers
 
-|Type name|Implementation|Factory function name|
-|---|---|---|
-|`date`|Produces a literal date as a string (format: YYYY-MM-DD).|`createDateTypeParser`|
-|`int8`|Produces an integer.|`createBigintTypeParser`|
-|`interval`|Produces interval in seconds (integer).|`createIntervalTypeParser`|
-|`numeric`|Produces a float.|`createNumericTypeParser`|
-|`timestamp`|Produces a unix timestamp (in milliseconds).|`createTimestampTypeParser`|
-|`timestamptz`|Produces a unix timestamp (in milliseconds).|`createTimestampWithTimeZoneTypeParser`|
+| Type name     | Implementation                                            | Factory function name                   |
+| ------------- | --------------------------------------------------------- | --------------------------------------- |
+| `date`        | Produces a literal date as a string (format: YYYY-MM-DD). | `createDateTypeParser`                  |
+| `int8`        | Produces an integer.                                      | `createBigintTypeParser`                |
+| `interval`    | Produces interval in seconds (integer).                   | `createIntervalTypeParser`              |
+| `numeric`     | Produces a float.                                         | `createNumericTypeParser`               |
+| `timestamp`   | Produces a unix timestamp (in milliseconds).              | `createTimestampTypeParser`             |
+| `timestamptz` | Produces a unix timestamp (in milliseconds).              | `createTimestampWithTimeZoneTypeParser` |
 
 Built-in type parsers can be created using the exported factory functions, e.g.
 
 ```ts
-import {
-  createTimestampTypeParser
-} from 'slonik';
+import { createTimestampTypeParser } from "slonik";
 
 createTimestampTypeParser();
 
@@ -922,7 +879,6 @@ createTimestampTypeParser();
 // }
 ```
 
-
 ## Interceptors
 
 Functionality can be added to Slonik client by adding interceptors (middleware).
@@ -930,18 +886,14 @@ Functionality can be added to Slonik client by adding interceptors (middleware).
 Interceptors are configured using [client configuration](#api), e.g.
 
 ```ts
-import {
-  createPool
-} from 'slonik';
-import {
-  createPgDriverFactory,
-} from '@slonik/pg-driver';
+import { createPool } from "slonik";
+import { createPgDriverFactory } from "@slonik/pg-driver";
 
 const interceptors = [];
 
-const connection = await createPool('postgres://', {
+const connection = await createPool("postgres://", {
   driverFactory: createPgDriverFactory(),
-  interceptors
+  interceptors,
 });
 ```
 
@@ -957,54 +909,46 @@ Interceptor is an object that implements methods that can change the behaviour o
 type Interceptor = {
   afterPoolConnection?: (
     connectionContext: ConnectionContext,
-    connection: DatabasePoolConnection
-  ) => MaybePromise<null>,
+    connection: DatabasePoolConnection,
+  ) => MaybePromise<null>;
   afterQueryExecution?: (
     queryContext: QueryContext,
     query: Query,
-    result: QueryResult<QueryResultRow>
-  ) => MaybePromise<QueryResult<QueryResultRow>>,
-  beforePoolConnection?: (
-    connectionContext: ConnectionContext
-  ) => MaybePromise<?DatabasePool>,
+    result: QueryResult<QueryResultRow>,
+  ) => MaybePromise<QueryResult<QueryResultRow>>;
+  beforePoolConnection?: (connectionContext: ConnectionContext) => MaybePromise<?DatabasePool>;
   beforePoolConnectionRelease?: (
     connectionContext: ConnectionContext,
-    connection: DatabasePoolConnection
-  ) => MaybePromise<null>,
+    connection: DatabasePoolConnection,
+  ) => MaybePromise<null>;
   beforeQueryExecution?: (
     queryContext: QueryContext,
-    query: Query
-  ) => MaybePromise<QueryResult<QueryResultRow>> | MaybePromise<null>,
+    query: Query,
+  ) => MaybePromise<QueryResult<QueryResultRow>> | MaybePromise<null>;
   beforeQueryResult?: (
     queryContext: QueryContext,
     query: Query,
-    result: QueryResult<QueryResultRow>
-  ) => MaybePromise<null>,
-  beforeTransformQuery?: (
-    queryContext: QueryContext,
-    query: Query
-  ) => MaybePromise<null>,
+    result: QueryResult<QueryResultRow>,
+  ) => MaybePromise<null>;
+  beforeTransformQuery?: (queryContext: QueryContext, query: Query) => MaybePromise<null>;
   dataIntegrityError?: (
     queryContext: QueryContext,
     query: Query,
     error: DataIntegrityError,
-    result: QueryResult<QueryResultRow>
-  ) => MaybePromise<null>,
+    result: QueryResult<QueryResultRow>,
+  ) => MaybePromise<null>;
   queryExecutionError?: (
     queryContext: QueryContext,
     query: Query,
-    error: SlonikError
-  ) => MaybePromise<null>,
-  transformQuery?: (
-    queryContext: QueryContext,
-    query: Query
-  ) => Query,
+    error: SlonikError,
+  ) => MaybePromise<null>;
+  transformQuery?: (queryContext: QueryContext, query: Query) => Query;
   transformRow?: (
     queryContext: QueryContext,
     query: Query,
     row: QueryResultRow,
     fields: Field[],
-  ) => MaybePromise<QueryResultRow>
+  ) => MaybePromise<QueryResultRow>;
 };
 ```
 
@@ -1013,7 +957,7 @@ type Interceptor = {
 Executed after a connection is acquired from the connection pool (or a new connection is created), e.g.
 
 ```ts
-const pool = await createPool('postgres://');
+const pool = await createPool("postgres://");
 
 // Interceptor is executed here. ↓
 pool.connect();
@@ -1050,7 +994,7 @@ This function can optionally return a pool to another database, causing a connec
 Executed before connection is released back to the connection pool, e.g.
 
 ```ts
-const pool = await createPool('postgres://');
+const pool = await createPool("postgres://");
 
 pool.connect(async () => {
   await 1;
@@ -1087,16 +1031,15 @@ Use `transformRow` to modify the query result.
 
 ### Community interceptors
 
-|Name|Description|
-|---|---|
-|[`slonik-interceptor-field-name-transformation`](https://github.com/gajus/slonik-interceptor-field-name-transformation)|Transforms Slonik query result field names.|
-|[`slonik-interceptor-query-benchmarking`](https://github.com/gajus/slonik-interceptor-query-benchmarking)|Benchmarks Slonik queries.|
-|[`slonik-interceptor-query-cache`](https://github.com/gajus/slonik-interceptor-query-cache)|Caches Slonik queries.|
-|[`slonik-interceptor-query-logging`](https://github.com/gajus/slonik-interceptor-query-logging)|Logs Slonik queries.|
-|[`slonik-interceptor-query-normalisation`](https://github.com/gajus/slonik-interceptor-query-normalisation)|Normalises Slonik queries.|
+| Name                                                                                                                    | Description                                 |
+| ----------------------------------------------------------------------------------------------------------------------- | ------------------------------------------- |
+| [`slonik-interceptor-field-name-transformation`](https://github.com/gajus/slonik-interceptor-field-name-transformation) | Transforms Slonik query result field names. |
+| [`slonik-interceptor-query-benchmarking`](https://github.com/gajus/slonik-interceptor-query-benchmarking)               | Benchmarks Slonik queries.                  |
+| [`slonik-interceptor-query-cache`](https://github.com/gajus/slonik-interceptor-query-cache)                             | Caches Slonik queries.                      |
+| [`slonik-interceptor-query-logging`](https://github.com/gajus/slonik-interceptor-query-logging)                         | Logs Slonik queries.                        |
+| [`slonik-interceptor-query-normalisation`](https://github.com/gajus/slonik-interceptor-query-normalisation)             | Normalises Slonik queries.                  |
 
 Check out [`slonik-interceptor-preset`](https://github.com/gajus/slonik-interceptor-preset) for an opinionated collection of interceptors.
-
 
 ## Recipes
 
@@ -1111,13 +1054,9 @@ await connection.query(sql.unsafe`
   FROM ${sql.unnest(
     [
       [1, 2, 3],
-      [4, 5, 6]
+      [4, 5, 6],
     ],
-    [
-      'int4',
-      'int4',
-      'int4'
-    ]
+    ["int4", "int4", "int4"],
   )}
 `);
 ```
@@ -1168,13 +1107,13 @@ Note: `pool#transaction` triggers `beforePoolConnection` but has no `query`.
 Note: This particular implementation does not handle [`SELECT INTO`](https://www.postgresql.org/docs/current/sql-selectinto.html).
 
 ```ts
-const readOnlyPool = await createPool('postgres://read-only');
+const readOnlyPool = await createPool("postgres://read-only");
 
-const pool = await createPool('postgres://main', {
+const pool = await createPool("postgres://main", {
   interceptors: [
     {
       beforePoolConnection: (connectionContext) => {
-        if (!connectionContext.query?.sql.trim().startsWith('SELECT ')) {
+        if (!connectionContext.query?.sql.trim().startsWith("SELECT ")) {
           // Returning null falls back to using the DatabasePool from which the query originates.
           return null;
         }
@@ -1185,23 +1124,23 @@ const pool = await createPool('postgres://main', {
         //   /* @volatile */
         //   SELECT write_log()
         // `
-        if (connectionContext.query?.sql.includes('@volatile')) {
+        if (connectionContext.query?.sql.includes("@volatile")) {
           return null;
         }
 
         // Returning an instance of DatabasePool will attempt to run the query using the other connection pool.
         // Note that all other interceptors of the pool that the query originated from are short-circuited.
         return readOnlyPool;
-      }
-    }
-  ]
+      },
+    },
+  ],
 });
 
 // This query will use `postgres://read-only` connection.
-pool.query(sql.typeAlias('id')`SELECT 1 AS id`);
+pool.query(sql.typeAlias("id")`SELECT 1 AS id`);
 
 // This query will use `postgres://main` connection.
-pool.query(sql.typeAlias('id')`UPDATE 1 AS id`);
+pool.query(sql.typeAlias("id")`UPDATE 1 AS id`);
 ```
 
 ### Building Utility Statements
@@ -1210,15 +1149,15 @@ Parameter symbols only work in optimizable SQL commands (SELECT, INSERT, UPDATE,
 
 In the context of Slonik, if you are building utility statements you must use query building methods that interpolate values directly into queries:
 
-* [`sql.identifier`](#sql-identifier) – for identifiers.
-* [`sql.literalValue`](#sql-literalvalue) – for values.
+- [`sql.identifier`](#sql-identifier) – for identifiers.
+- [`sql.literalValue`](#sql-literalvalue) – for values.
 
 Example:
 
 ```ts
-await connection.query(sql.typeAlias('void')`
-  CREATE USER ${sql.identifier(['foo'])}
-  WITH PASSWORD ${sql.literalValue('bar')}
+await connection.query(sql.typeAlias("void")`
+  CREATE USER ${sql.identifier(["foo"])}
+  WITH PASSWORD ${sql.literalValue("bar")}
 `);
 ```
 
@@ -1228,17 +1167,14 @@ If you are using [`pgvector`](https://github.com/pgvector/pgvector) and need to 
 
 ```ts
 const vector = (embeddings: number[]) => {
-  return sql.fragment`${sql.array(
-    Array.from(embeddings),
-    sql.fragment`real[]`,
-  )}::vector`;
+  return sql.fragment`${sql.array(Array.from(embeddings), sql.fragment`real[]`)}::vector`;
 };
 ```
 
 Now you can use the `vector` helper function to insert vector data:
 
 ```ts
-await connection.query(sql.typeAlias('void')`
+await connection.query(sql.typeAlias("void")`
   INSERT INTO embeddings (id, vector)
   VALUES (1, ${vector(embedding.data)})
 `);
@@ -1272,15 +1208,11 @@ Slonik works without the interceptor, but it doesn't validate the query results.
 For context, when Zod parsing was first introduced to Slonik, it was enabled for all queries by default. However, I eventually realized that the baked-in implementation is not going to suit everyone's needs. For this reason, I decided to take out the built-in interceptor in favor of providing examples for common use cases. What follows is based on the original default implementation.
 
 ```ts
-import {
-  type Interceptor,
-  type QueryResultRow,
-  SchemaValidationError,
-} from "slonik";
+import { type Interceptor, type QueryResultRow, SchemaValidationError } from "slonik";
 
 const createResultParserInterceptor = (): Interceptor => {
   return {
-    name: 'slonik-interceptor-zod-validation',
+    name: "slonik-interceptor-zod-validation",
     // If you are not going to transform results using Zod, then you should use `afterQueryExecution` instead.
     // Future versions of Zod will provide a more efficient parser when parsing without transformations.
     // You can even combine the two – use `afterQueryExecution` to validate results, and (conditionally)
@@ -1296,11 +1228,7 @@ const createResultParserInterceptor = (): Interceptor => {
       const validationResult = await resultParser["~standard"].validate(row);
 
       if (!validationResult.issues) {
-        throw new SchemaValidationError(
-          actualQuery,
-          row,
-          validationResult.issues
-        );
+        throw new SchemaValidationError(actualQuery, row, validationResult.issues);
       }
 
       return validationResult.value as QueryResultRow;
@@ -1313,9 +1241,7 @@ To use it, simply add it as a middleware:
 
 ```ts
 import { createPool } from "slonik";
-import {
-  createPgDriverFactory,
-} from '@slonik/pg-driver';
+import { createPgDriverFactory } from "@slonik/pg-driver";
 
 createPool("postgresql://", {
   driverFactory: createPgDriverFactory(),
@@ -1378,10 +1304,10 @@ Just to give an idea, in our sample of data, it takes sub 0.1ms to validate 1 ro
 
 ### Unknown keys
 
-By default Zod object schemas strip unknown keys. If you want to disallow unknown keys, you can add [`.strict()`](https://zod.dev/?id=strict) to your schema:  
+By default Zod object schemas strip unknown keys. If you want to disallow unknown keys, you can add [`.strict()`](https://zod.dev/?id=strict) to your schema:
 
 ```ts
-z.object({ foo: z.string() }).strict()
+z.object({ foo: z.string() }).strict();
 ```
 
 Using the [recommended parser pattern](#result-parser-interceptor), this will produce a `SchemaValidationError`, when a query result includes unknown keys.
@@ -1400,9 +1326,9 @@ If query produces a row that does not satisfy zod object, then `SchemaValidation
 
 `SchemaValidationError` includes properties that describe the query and validation errors:
 
-* `sql` – SQL of the query that produced unexpected row.
-* `row` – row data that did not satisfy the schema.
-* `issues` – array of unmet expectations.
+- `sql` – SQL of the query that produced unexpected row.
+- `row` – row data that did not satisfy the schema.
+- `issues` – array of unmet expectations.
 
 Whenever this error occurs, the same information is also included in the [logs](#logging).
 
@@ -1411,9 +1337,7 @@ In most cases, you shouldn't attempt to handle these errors at individual query 
 However, in cases such as dealing with unstructured data, it might be useful to handle these errors at a query level, e.g.
 
 ```ts
-import {
-  SchemaValidationError
-} from 'slonik';
+import { SchemaValidationError } from "slonik";
 try {
 } catch (error) {
   if (error instanceof SchemaValidationError) {
@@ -1431,9 +1355,7 @@ You can infer the TypeScript type of the query result. There are couple of ways 
 // https://github.com/colinhacks/zod#type-inference
 type Person = StandardSchemaV1.InferOutput<typeof personObject>;
 // from sql tagged template `parser` property
-type Person = StandardSchemaV1.InferOutput<
-  personQuery.parser
->;
+type Person = StandardSchemaV1.InferOutput<personQuery.parser>;
 ```
 
 ### Transforming results
@@ -1442,10 +1364,7 @@ Using zod [transform](https://github.com/colinhacks/zod#transform) you can refin
 
 ```ts
 const coordinatesType = z.string().transform((subject) => {
-  const [
-    x,
-    y,
-  ] = subject.split(',');
+  const [x, y] = subject.split(",");
 
   return {
     x: Number(x),
@@ -1461,7 +1380,7 @@ const query = sql.type(zodObject)`SELECT '1,2' as foo`;
 
 const result = await pool.one(query);
 
-expectTypeOf(result).toMatchTypeOf<{foo: {x: number, y: number, }, }>();
+expectTypeOf(result).toMatchTypeOf<{ foo: { x: number; y: number } }>();
 
 t.deepEqual(result, {
   foo: {
@@ -1471,28 +1390,23 @@ t.deepEqual(result, {
 });
 ```
 
-
 ## <code>sql</code> tag
 
 `sql` tag serves two purposes:
 
-* It is used to construct queries with bound parameter values (see [Value placeholders](#value-placeholders)).
-* It used to generate dynamic query fragments (see [Query building](#query-building)).
+- It is used to construct queries with bound parameter values (see [Value placeholders](#value-placeholders)).
+- It used to generate dynamic query fragments (see [Query building](#query-building)).
 
 `sql` tag can be imported from Slonik package:
 
 ```ts
-import {
-  sql
-} from 'slonik';
+import { sql } from "slonik";
 ```
 
 Sometimes it may be desirable to construct a custom instance of `sql` tag. In those cases, you can use the `createSqlTag` factory, e.g.
 
 ```ts
-import {
-  createSqlTag
-} from 'slonik';
+import { createSqlTag } from "slonik";
 
 const sql = createSqlTag();
 ```
@@ -1514,21 +1428,21 @@ const sql = createSqlTag({
       id: z.number(),
     }),
     void: z.object({}).strict(),
-  }
-})
+  },
+});
 ```
 
 These are documentation specific examples that you are not expected to blindly copy. However, `id` and `void` are recommended aliases as they reflect common patterns, e.g.
 
 ```ts
 const personId = await pool.oneFirst(
-  sql.typeAlias('id')`
+  sql.typeAlias("id")`
     SELECT id
     FROM person
-  `
+  `,
 );
 
-await pool.query(sql.typeAlias('void')`
+await pool.query(sql.typeAlias("void")`
   INSERT INTO person_view (person_id)
   VALUES (${personId})
 `);
@@ -1545,14 +1459,12 @@ See [runtime validation](#runtime-validation).
 Slonik query methods can only be executed using `sql` [tagged template literal](https://developer.mozilla.org/en/docs/Web/JavaScript/Reference/Template_literals#Tagged_template_literals), e.g.
 
 ```ts
-import {
-  sql
-} from 'slonik'
+import { sql } from "slonik";
 
-connection.query(sql.typeAlias('id')`
+connection.query(sql.typeAlias("id")`
   SELECT 1 AS id
   FROM foo
-  WHERE bar = ${'baz'}
+  WHERE bar = ${"baz"}
 `);
 ```
 
@@ -1575,11 +1487,9 @@ There is an internal mechanism that checks to see if query was created using `sq
 
 ```ts
 const query = {
-  sql: 'SELECT 1 AS id FROM foo WHERE bar = $1',
-  type: 'SQL',
-  values: [
-    'baz'
-  ]
+  sql: "SELECT 1 AS id FROM foo WHERE bar = $1",
+  type: "SQL",
+  values: ["baz"],
 };
 
 connection.query(query);
@@ -1598,8 +1508,8 @@ Furthermore, a query object constructed using `sql` tagged template literal is [
 `sql` tagged template literals can be nested, e.g.
 
 ```ts
-const query0 = sql.unsafe`SELECT ${'foo'} FROM bar`;
-const query1 = sql.unsafe`SELECT ${'baz'} FROM (${query0})`;
+const query0 = sql.unsafe`SELECT ${"foo"} FROM bar`;
+const query1 = sql.unsafe`SELECT ${"baz"} FROM (${query0})`;
 ```
 
 Produces:
@@ -1613,7 +1523,6 @@ Produces:
   ]
 }
 ```
-
 
 ## Query building
 
@@ -1633,8 +1542,8 @@ If this is your first time using Slonik, read [Dynamically generating SQL querie
 Creates an array value binding, e.g.
 
 ```ts
-await connection.query(sql.typeAlias('id')`
-  SELECT (${sql.array([1, 2, 3], 'int4')}) AS id
+await connection.query(sql.typeAlias("id")`
+  SELECT (${sql.array([1, 2, 3], "int4")}) AS id
 `);
 ```
 
@@ -1658,7 +1567,7 @@ Produces:
 If `memberType` is a string (`TypeNameIdentifier`), then it is treated as a type name identifier and will be quoted using double quotes, i.e. `sql.array([1, 2, 3], 'int4')` is equivalent to `$1::"int4"[]`. The implication is that keywords that are often used interchangeably with type names are not going to work, e.g. [`int4`](https://github.com/postgres/postgres/blob/69edf4f8802247209e77f69e089799b3d83c13a4/src/include/catalog/pg_type.dat#L74-L78) is a type name identifier and will work. However, [`int`](https://github.com/postgres/postgres/blob/69edf4f8802247209e77f69e089799b3d83c13a4/src/include/parser/kwlist.h#L213) is a keyword and will not work. You can either use type name identifiers or you can construct custom member using `sql.fragment` tag, e.g.
 
 ```ts
-await connection.query(sql.typeAlias('id')`
+await connection.query(sql.typeAlias("id")`
   SELECT (${sql.array([1, 2, 3], sql.fragment`int[]`)}) AS id
 `);
 ```
@@ -1682,18 +1591,18 @@ Produces:
 
 Unlike `sql.join`, `sql.array` generates a stable query of a predictable length, i.e. regardless of the number of values in the array, the generated query remains the same:
 
-* Having a stable query enables [`pg_stat_statements`](https://www.postgresql.org/docs/current/pgstatstatements.html) to aggregate all query execution statistics.
-* Keeping the query length short reduces query parsing time.
+- Having a stable query enables [`pg_stat_statements`](https://www.postgresql.org/docs/current/pgstatstatements.html) to aggregate all query execution statistics.
+- Keeping the query length short reduces query parsing time.
 
 Example:
 
 ```ts
-sql.typeAlias('id')`
+sql.typeAlias("id")`
   SELECT id
   FROM foo
   WHERE id IN (${sql.join([1, 2, 3], sql.fragment`, `)})
 `;
-sql.typeAlias('id')`
+sql.typeAlias("id")`
   SELECT id
   FROM foo
   WHERE id NOT IN (${sql.join([1, 2, 3], sql.fragment`, `)})
@@ -1703,15 +1612,15 @@ sql.typeAlias('id')`
 Is equivalent to:
 
 ```ts
-sql.typeAlias('id')`
+sql.typeAlias("id")`
   SELECT id
   FROM foo
-  WHERE id = ANY(${sql.array([1, 2, 3], 'int4')})
+  WHERE id = ANY(${sql.array([1, 2, 3], "int4")})
 `;
-sql.typeAlias('id')`
+sql.typeAlias("id")`
   SELECT id
   FROM foo
-  WHERE id != ALL(${sql.array([1, 2, 3], 'int4')})
+  WHERE id != ALL(${sql.array([1, 2, 3], "int4")})
 `;
 ```
 
@@ -1720,16 +1629,14 @@ Furthermore, unlike `sql.join`, `sql.array` can be used with an empty array of v
 ### <code>sql.binary</code>
 
 ```ts
-(
-  data: Buffer
-) => BinarySqlToken;
+(data: Buffer) => BinarySqlToken;
 ```
 
 Binds binary ([`bytea`](https://www.postgresql.org/docs/current/datatype-binary.html)) data, e.g.
 
 ```ts
 await connection.query(sql.unsafe`
-  SELECT ${sql.binary(Buffer.from('foo'))}
+  SELECT ${sql.binary(Buffer.from("foo"))}
 `);
 ```
 
@@ -1747,16 +1654,14 @@ Produces:
 ### <code>sql.date</code>
 
 ```ts
-(
-  date: Date
-) => DateSqlToken;
+(date: Date) => DateSqlToken;
 ```
 
 Inserts a date, e.g.
 
 ```ts
 await connection.query(sql.unsafe`
-  SELECT ${sql.date(new Date('2022-08-19T03:27:24.951Z'))}
+  SELECT ${sql.date(new Date("2022-08-19T03:27:24.951Z"))}
 `);
 ```
 
@@ -1774,16 +1679,13 @@ Produces:
 ### <code>sql.fragment</code>
 
 ```ts
-(
-  template: TemplateStringsArray,
-  ...values: ValueExpression[]
-) => SqlFragment;
+(template: TemplateStringsArray, ...values: ValueExpression[]) => SqlFragment;
 ```
 
 A SQL fragment, e.g.
 
 ```ts
-sql.fragment`FOO`
+sql.fragment`FOO`;
 ```
 
 Produces:
@@ -1802,19 +1704,19 @@ const whereFragment = sql.fragment`
   WHERE bar = 'baz';
 `;
 
-sql.typeAlias('id')`
+sql.typeAlias("id")`
   SELECT id
   FROM foo
   ${whereFragment}
-`
+`;
 ```
 
 #### Fragments vs Queries
 
 There are two primary differences:
 
-* Fragments are untyped and they cannot be used as inputs to query methods (use `sql.type` instead).
-* Queries are expected to be valid SQL if executed (e.g. `SELECT * FROM foo`); fragments are expected to be valid _fragments_ of SQL (e.g. `WHERE bar = 1`).
+- Fragments are untyped and they cannot be used as inputs to query methods (use `sql.type` instead).
+- Queries are expected to be valid SQL if executed (e.g. `SELECT * FROM foo`); fragments are expected to be valid _fragments_ of SQL (e.g. `WHERE bar = 1`).
 
 > [!WARNING]
 > Due to the way that Slonik internally represents SQL fragments, your query must not contain `$slonik_` literals.
@@ -1822,17 +1724,15 @@ There are two primary differences:
 ### <code>sql.identifier</code>
 
 ```ts
-(
-  names: string[],
-) => IdentifierSqlToken;
+(names: string[]) => IdentifierSqlToken;
 ```
 
 [Delimited identifiers](https://www.postgresql.org/docs/current/static/sql-syntax-lexical.html#SQL-SYNTAX-IDENTIFIERS) are created by enclosing an arbitrary sequence of characters in double-quotes ("). To create a delimited identifier, create an `sql` tag function placeholder value using `sql.identifier`, e.g.
 
 ```ts
-sql.typeAlias('id')`
+sql.typeAlias("id")`
   SELECT 1 AS id
-  FROM ${sql.identifier(['bar', 'baz'])}
+  FROM ${sql.identifier(["bar", "baz"])}
 `;
 ```
 
@@ -1848,25 +1748,23 @@ Produces:
 ### <code>sql.interval</code>
 
 ```ts
-(
-  interval: {
-    years?: number,
-    months?: number,
-    weeks?: number,
-    days?: number,
-    hours?: number,
-    minutes?: number,
-    seconds?: number,
-  }
-) => IntervalSqlToken;
+(interval: {
+  years?: number;
+  months?: number;
+  weeks?: number;
+  days?: number;
+  hours?: number;
+  minutes?: number;
+  seconds?: number;
+}) => IntervalSqlToken;
 ```
 
 Inserts an [interval](https://www.postgresql.org/docs/current/datatype-datetime.html#DATATYPE-INTERVAL-INPUT), e.g.
 
 ```ts
-sql.typeAlias('id')`
+sql.typeAlias("id")`
   SELECT 1 AS id
-  FROM ${sql.interval({days: 3})}
+  FROM ${sql.interval({ days: 3 })}
 `;
 ```
 
@@ -1883,12 +1781,12 @@ Produces:
 
 You can use `sql.interval` exactly how you would use PostgreSQL [`make_interval` function](https://www.postgresql.org/docs/current/functions-datetime.html). However, notice that Slonik does not use abbreviations, i.e. "secs" is seconds and "mins" is minutes.
 
-|`make_interval`|`sql.interval`|Interval output|
-|---|---|---|
-|`make_interval("days" => 1, "hours" => 2)`|`sql.interval({days: 1, hours: 2})`|`1 day 02:00:00`|
-|`make_interval("mins" => 1)`|`sql.interval({minutes: 1})`|`00:01:00`|
-|`make_interval("secs" => 120)`|`sql.interval({seconds: 120})`|`00:02:00`|
-|`make_interval("secs" => 0.001)`|`sql.interval({seconds: 0.001})`|`00:00:00.001`|
+| `make_interval`                            | `sql.interval`                      | Interval output  |
+| ------------------------------------------ | ----------------------------------- | ---------------- |
+| `make_interval("days" => 1, "hours" => 2)` | `sql.interval({days: 1, hours: 2})` | `1 day 02:00:00` |
+| `make_interval("mins" => 1)`               | `sql.interval({minutes: 1})`        | `00:01:00`       |
+| `make_interval("secs" => 120)`             | `sql.interval({seconds: 120})`      | `00:02:00`       |
+| `make_interval("secs" => 0.001)`           | `sql.interval({seconds: 0.001})`    | `00:00:00.001`   |
 
 #### Dynamic intervals without <code>sql.interval</code>
 
@@ -1897,7 +1795,7 @@ If you need a dynamic interval (e.g. X days), you can achieve this using multipl
 ```ts
 sql.unsafe`
   SELECT ${2} * interval '1 day'
-`
+`;
 ```
 
 The above is equivalent to `interval '2 days'`.
@@ -1907,7 +1805,7 @@ You could also use `make_interval()` directly, e.g.
 ```ts
 sql.unsafe`
   SELECT make_interval("days" => ${2})
-`
+`;
 ```
 
 `sql.interval` was added mostly as a type-safe alternative.
@@ -1915,10 +1813,7 @@ sql.unsafe`
 ### <code>sql.join</code>
 
 ```ts
-(
-  members: SqlSqlToken[],
-  glue: SqlSqlToken
-) => ListSqlToken;
+(members: SqlSqlToken[], glue: SqlSqlToken) => ListSqlToken;
 ```
 
 Concatenates SQL expressions using `glue` separator, e.g.
@@ -1949,7 +1844,7 @@ Boolean expressions:
 ```ts
 sql.unsafe`
   SELECT ${sql.join([1, 2], sql.fragment` AND `)}
-`
+`;
 
 // SELECT $1 AND $2
 ```
@@ -1959,7 +1854,7 @@ Tuple:
 ```ts
 sql.unsafe`
   SELECT (${sql.join([1, 2], sql.fragment`, `)})
-`
+`;
 
 // SELECT ($1, $2)
 ```
@@ -1973,9 +1868,9 @@ sql.unsafe`
       sql.fragment`(${sql.join([1, 2], sql.fragment`, `)})`,
       sql.fragment`(${sql.join([3, 4], sql.fragment`, `)})`,
     ],
-    sql.fragment`, `
+    sql.fragment`, `,
   )}
-`
+`;
 
 // SELECT ($1, $2), ($3, $4)
 ```
@@ -1983,9 +1878,7 @@ sql.unsafe`
 ### <code>sql.json</code>
 
 ```ts
-(
-  value: SerializableValue
-) => JsonSqlToken;
+(value: SerializableValue) => JsonSqlToken;
 ```
 
 Serializes value and binds it as a JSON string literal, e.g.
@@ -2010,9 +1903,7 @@ Produces:
 ### <code>sql.jsonb</code>
 
 ```ts
-(
-  value: SerializableValue
-) => JsonBinarySqlToken;
+(value: SerializableValue) => JsonBinarySqlToken;
 ```
 
 Serializes value and binds it as a JSON binary, e.g.
@@ -2039,16 +1930,14 @@ Produces:
 > ⚠️ Do not use. This method interpolates values as literals and it must be used only for [building utility statements](#building-utility-statements). You are most likely looking for [value placeholders](#value-placeholders).
 
 ```ts
-(
-  value: string,
-) => SqlSqlToken;
+(value: string) => SqlSqlToken;
 ```
 
 Escapes and interpolates a literal value into a query.
 
 ```ts
 await connection.query(sql.unsafe`
-  CREATE USER "foo" WITH PASSWORD ${sql.literalValue('bar')}
+  CREATE USER "foo" WITH PASSWORD ${sql.literalValue("bar")}
 `);
 ```
 
@@ -2056,23 +1945,21 @@ Produces:
 
 ```ts
 {
-  sql: 'CREATE USER "foo" WITH PASSWORD \'bar\''
+  sql: "CREATE USER \"foo\" WITH PASSWORD 'bar'";
 }
 ```
 
 ### <code>sql.timestamp</code>
 
 ```ts
-(
-  date: Date
-) => TimestampSqlToken;
+(date: Date) => TimestampSqlToken;
 ```
 
 Inserts a timestamp, e.g.
 
 ```ts
 await connection.query(sql.unsafe`
-  SELECT ${sql.timestamp(new Date('2022-08-19T03:27:24.951Z'))}
+  SELECT ${sql.timestamp(new Date("2022-08-19T03:27:24.951Z"))}
 `);
 ```
 
@@ -2103,13 +1990,10 @@ await connection.query(sql.unsafe`
   SELECT bar, baz
   FROM ${sql.unnest(
     [
-      [1, 'foo'],
-      [2, 'bar']
+      [1, "foo"],
+      [2, "bar"],
     ],
-    [
-      'int4',
-      'text'
-    ]
+    ["int4", "text"],
   )} AS foo(bar, baz)
 `);
 ```
@@ -2141,13 +2025,10 @@ await connection.query(sql.unsafe`
   SELECT bar, baz
   FROM ${sql.unnest(
     [
-      [1, 'foo'],
-      [2, 'bar']
+      [1, "foo"],
+      [2, "bar"],
     ],
-    [
-      sql.fragment`integer`,
-      sql.fragment`text`
-    ]
+    [sql.fragment`integer`, sql.fragment`text`],
   )} AS foo(bar, baz)
 `);
 ```
@@ -2178,12 +2059,12 @@ await connection.query(sql.unsafe`
   FROM ${sql.unnest(
     [
       [1, 3],
-      [2, 4]
+      [2, 4],
     ],
     [
-      ['foo', 'int4'],
-      ['foo', 'int4']
-    ]
+      ["foo", "int4"],
+      ["foo", "int4"],
+    ],
   )} AS foo(bar, baz)
 `);
 ```
@@ -2209,10 +2090,7 @@ Produces:
 ### <code>sql.unsafe</code>
 
 ```ts
-(
-  template: TemplateStringsArray,
-  ...values: ValueExpression[]
-) => QuerySqlToken;
+(template: TemplateStringsArray, ...values: ValueExpression[]) => QuerySqlToken;
 ```
 
 Creates a query with Zod `any` type. The result of such a query has TypeScript type `any`.
@@ -2230,23 +2108,21 @@ const result = await connection.one(sql.unsafe`
 
 `sql.unsafe` is as a convenience method for development. Your production code must not use `sql.unsafe`. Instead,
 
-* Use `sql.type` to type the query result
-* Use `sql.typeAlias` to alias an existing type
-* Use `sql.fragment` if you are writing a fragment of a query
+- Use `sql.type` to type the query result
+- Use `sql.typeAlias` to alias an existing type
+- Use `sql.fragment` if you are writing a fragment of a query
 
 ### <code>sql.uuid</code>
 
 ```ts
-(
-  uuid: string
-) => TimestampSqlToken;
+(uuid: string) => TimestampSqlToken;
 ```
 
 Inserts a UUID, e.g.
 
 ```ts
 await connection.query(sql.unsafe`
-  SELECT ${sql.uuid('00000000-0000-0000-0000-000000000000')}
+  SELECT ${sql.uuid("00000000-0000-0000-0000-000000000000")}
 `);
 ```
 
@@ -2264,19 +2140,15 @@ Produces:
 ### <code>sql.prepared</code>
 
 ```ts
-<Schema extends StandardSchemaV1 | ZodTypeAny>(
-  name: string,
-  schema: Schema
-) => (
-  template: TemplateStringsArray,
-  ...values: ValueExpression[]
-) => QuerySqlToken;
+<Schema extends StandardSchemaV1 | ZodTypeAny>(name: string, schema: Schema) =>
+  (template: TemplateStringsArray, ...values: ValueExpression[]) =>
+    QuerySqlToken;
 ```
 
 Creates a [named prepared statement](https://www.postgresql.org/docs/current/sql-prepare.html). Named prepared statements allow PostgreSQL to parse and plan a query once, then execute it multiple times with different parameter values. This can significantly improve performance for frequently executed queries.
 
 ```ts
-import { z } from 'zod';
+import { z } from "zod";
 
 const PersonSchema = z.object({
   id: z.number(),
@@ -2284,7 +2156,7 @@ const PersonSchema = z.object({
 });
 
 // Create a named prepared statement
-const getPersonQuery = sql.prepared('get_person', PersonSchema)`
+const getPersonQuery = sql.prepared("get_person", PersonSchema)`
   SELECT id, name
   FROM person
   WHERE id = ${1}
@@ -2294,7 +2166,7 @@ const getPersonQuery = sql.prepared('get_person', PersonSchema)`
 await pool.connect(async (connection) => {
   // First execution parses and plans the statement
   const person1 = await connection.one(
-    sql.prepared('get_person', PersonSchema)`
+    sql.prepared("get_person", PersonSchema)`
       SELECT id, name
       FROM person
       WHERE id = ${1}
@@ -2303,7 +2175,7 @@ await pool.connect(async (connection) => {
 
   // Subsequent executions reuse the prepared statement
   const person2 = await connection.one(
-    sql.prepared('get_person', PersonSchema)`
+    sql.prepared("get_person", PersonSchema)`
       SELECT id, name
       FROM person
       WHERE id = ${2}
@@ -2314,6 +2186,7 @@ await pool.connect(async (connection) => {
 
 > [!IMPORTANT]
 > Named prepared statements are connection-specific in PostgreSQL. They are deallocated when:
+>
 > - The connection is closed
 > - `DISCARD ALL` is executed (which is the default `resetConnection` behavior)
 > - The statement is explicitly deallocated with `DEALLOCATE`
@@ -2339,7 +2212,7 @@ Returns result rows.
 Example:
 
 ```ts
-const rows = await connection.any(sql.typeAlias('foo')`SELECT foo`);
+const rows = await connection.any(sql.typeAlias("foo")`SELECT foo`);
 ```
 
 `#any` is similar to `#query` except that it returns rows without fields information.
@@ -2348,12 +2221,12 @@ const rows = await connection.any(sql.typeAlias('foo')`SELECT foo`);
 
 Returns value of the first column of every row in the result set.
 
-* Throws `DataIntegrityError` if query returns multiple columns.
+- Throws `DataIntegrityError` if query returns multiple columns.
 
 Example:
 
 ```ts
-const fooValues = await connection.anyFirst(sql.typeAlias('foo')`SELECT foo`);
+const fooValues = await connection.anyFirst(sql.typeAlias("foo")`SELECT foo`);
 ```
 
 ### <code>exists</code>
@@ -2363,10 +2236,10 @@ Returns a boolean value indicating whether query produces results.
 The query that is passed to this function is wrapped in `SELECT exists()` prior to it getting executed, i.e.
 
 ```ts
-pool.exists(sql.typeAlias('void')`
+pool.exists(sql.typeAlias("void")`
   SELECT
   LIMIT 1
-`)
+`);
 ```
 
 is equivalent to:
@@ -2377,45 +2250,45 @@ pool.oneFirst(sql.unsafe`
     SELECT
     LIMIT 1
   )
-`)
+`);
 ```
 
 ### <code>many</code>
 
 Returns result rows.
 
-* Throws `NotFoundError` if query returns no rows.
+- Throws `NotFoundError` if query returns no rows.
 
 Example:
 
 ```ts
-const rows = await connection.many(sql.typeAlias('foo')`SELECT foo`);
+const rows = await connection.many(sql.typeAlias("foo")`SELECT foo`);
 ```
 
 ### <code>manyFirst</code>
 
 Returns value of the first column of every row in the result set.
 
-* Throws `NotFoundError` if query returns no rows.
-* Throws `DataIntegrityError` if query returns multiple columns.
+- Throws `NotFoundError` if query returns no rows.
+- Throws `DataIntegrityError` if query returns multiple columns.
 
 Example:
 
 ```ts
-const fooValues = await connection.manyFirst(sql.typeAlias('foo')`SELECT foo`);
+const fooValues = await connection.manyFirst(sql.typeAlias("foo")`SELECT foo`);
 ```
 
 ### <code>maybeOne</code>
 
 Selects the first row from the result.
 
-* Returns `null` if row is not found.
-* Throws `DataIntegrityError` if query returns multiple rows.
+- Returns `null` if row is not found.
+- Throws `DataIntegrityError` if query returns multiple rows.
 
 Example:
 
 ```ts
-const row = await connection.maybeOne(sql.typeAlias('foo')`SELECT foo`);
+const row = await connection.maybeOne(sql.typeAlias("foo")`SELECT foo`);
 
 // row.foo is the result of the `foo` column value of the first row.
 ```
@@ -2424,14 +2297,14 @@ const row = await connection.maybeOne(sql.typeAlias('foo')`SELECT foo`);
 
 Returns value of the first column from the first row.
 
-* Returns `null` if row is not found.
-* Throws `DataIntegrityError` if query returns multiple rows.
-* Throws `DataIntegrityError` if query returns multiple columns.
+- Returns `null` if row is not found.
+- Throws `DataIntegrityError` if query returns multiple rows.
+- Throws `DataIntegrityError` if query returns multiple columns.
 
 Example:
 
 ```ts
-const foo = await connection.maybeOneFirst(sql.typeAlias('foo')`SELECT foo`);
+const foo = await connection.maybeOneFirst(sql.typeAlias("foo")`SELECT foo`);
 
 // foo is the result of the `foo` column value of the first row.
 ```
@@ -2440,13 +2313,13 @@ const foo = await connection.maybeOneFirst(sql.typeAlias('foo')`SELECT foo`);
 
 Selects the first row from the result.
 
-* Throws `NotFoundError` if query returns no rows.
-* Throws `DataIntegrityError` if query returns multiple rows.
+- Throws `NotFoundError` if query returns no rows.
+- Throws `DataIntegrityError` if query returns multiple rows.
 
 Example:
 
 ```ts
-const row = await connection.one(sql.typeAlias('foo')`SELECT foo`);
+const row = await connection.one(sql.typeAlias("foo")`SELECT foo`);
 
 // row.foo is the result of the `foo` column value of the first row.
 ```
@@ -2454,7 +2327,7 @@ const row = await connection.one(sql.typeAlias('foo')`SELECT foo`);
 > Note:
 >
 > I've been asked "What makes this different from [knex.js](http://knexjs.org/) `knex('foo').limit(1)`?".
-> `knex('foo').limit(1)` simply generates "SELECT * FROM foo LIMIT 1" query.
+> `knex('foo').limit(1)` simply generates "SELECT \* FROM foo LIMIT 1" query.
 > `knex` is a query builder; it does not assert the value of the result.
 > Slonik `#one` adds assertions about the result of the query.
 
@@ -2462,14 +2335,14 @@ const row = await connection.one(sql.typeAlias('foo')`SELECT foo`);
 
 Returns value of the first column from the first row.
 
-* Throws `NotFoundError` if query returns no rows.
-* Throws `DataIntegrityError` if query returns multiple rows.
-* Throws `DataIntegrityError` if query returns multiple columns.
+- Throws `NotFoundError` if query returns no rows.
+- Throws `DataIntegrityError` if query returns multiple rows.
+- Throws `DataIntegrityError` if query returns multiple columns.
 
 Example:
 
 ```ts
-const foo = await connection.oneFirst(sql.typeAlias('foo')`SELECT foo`);
+const foo = await connection.oneFirst(sql.typeAlias("foo")`SELECT foo`);
 
 // foo is the result of the `foo` column value of the first row.
 ```
@@ -2481,7 +2354,7 @@ API and the result shape are equivalent to [`pg#query`](https://github.com/brian
 Example:
 
 ```ts
-await connection.query(sql.typeAlias('foo')`SELECT foo`);
+await connection.query(sql.typeAlias("foo")`SELECT foo`);
 
 // {
 //   command: 'SELECT',
@@ -2503,8 +2376,8 @@ Streams query results.
 Example:
 
 ```ts
-await connection.stream(sql.typeAlias('foo')`SELECT foo`, (stream) => {
-  stream.on('data', (row) => {
+await connection.stream(sql.typeAlias("foo")`SELECT foo`, (stream) => {
+  stream.on("data", (row) => {
     row;
     // {
     //   data: {
@@ -2524,7 +2397,7 @@ await connection.stream(sql.typeAlias('foo')`SELECT foo`, (stream) => {
 You can also use the [AsyncIterable](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/AsyncIterator) interface:
 
 ```ts
-await connection.stream(sql.typeAlias('foo')`SELECT foo`, async (stream) => {
+await connection.stream(sql.typeAlias("foo")`SELECT foo`, async (stream) => {
   for await (const row of stream) {
     row;
     // {
@@ -2553,10 +2426,10 @@ const result = await connection.transaction(async (transactionConnection) => {
   await transactionConnection.query(sql.unsafe`INSERT INTO foo (bar) VALUES ('baz')`);
   await transactionConnection.query(sql.unsafe`INSERT INTO qux (quux) VALUES ('corge')`);
 
-  return 'FOO';
+  return "FOO";
 });
 
-result === 'FOO';
+result === "FOO";
 ```
 
 #### Transaction nesting
@@ -2593,11 +2466,9 @@ await connection.transaction(async (t1) => {
     await t1.transaction(async (t2) => {
       await t2.query(sql.unsafe`INSERT INTO qux (quux) VALUES ('corge')`);
 
-      return Promise.reject(new Error('foo'));
+      return Promise.reject(new Error("foo"));
     });
-  } catch (error) {
-
-  }
+  } catch (error) {}
 });
 ```
 
@@ -2616,15 +2487,15 @@ If error is unhandled, then the entire transaction is rolledback, e.g.
 
 ```ts
 await connection.transaction(async (t1) => {
-  await t1.query(sql.typeAlias('void')`INSERT INTO foo (bar) VALUES ('baz')`);
+  await t1.query(sql.typeAlias("void")`INSERT INTO foo (bar) VALUES ('baz')`);
 
   await t1.transaction(async (t2) => {
-    await t2.query(sql.typeAlias('void')`INSERT INTO qux (quux) VALUES ('corge')`);
+    await t2.query(sql.typeAlias("void")`INSERT INTO qux (quux) VALUES ('corge')`);
 
     await t1.transaction(async (t3) => {
-      await t3.query(sql.typeAlias('void')`INSERT INTO uier (grault) VALUES ('garply')`);
+      await t3.query(sql.typeAlias("void")`INSERT INTO uier (grault) VALUES ('garply')`);
 
-      return Promise.reject(new Error('foo'));
+      return Promise.reject(new Error("foo"));
     });
   });
 });
@@ -2659,21 +2530,21 @@ Transaction connections provide event emitter functionality to monitor transacti
 ```ts
 await connection.transaction(async (transactionConnection) => {
   // Listen for commit events
-  transactionConnection.on('commit', ({transactionId, transactionDepth}) => {
+  transactionConnection.on("commit", ({ transactionId, transactionDepth }) => {
     console.log(`Transaction ${transactionId} committed at depth ${transactionDepth}`);
   });
 
   // Listen for rollback events
-  transactionConnection.on('rollback', ({transactionId, transactionDepth, error}) => {
+  transactionConnection.on("rollback", ({ transactionId, transactionDepth, error }) => {
     console.log(`Transaction ${transactionId} rolled back:`, error.message);
   });
 
   // Access transaction metadata
-  console.log('Transaction ID:', transactionConnection.transactionId);
-  console.log('Transaction Depth:', transactionConnection.transactionDepth);
+  console.log("Transaction ID:", transactionConnection.transactionId);
+  console.log("Transaction Depth:", transactionConnection.transactionDepth);
 
   await transactionConnection.query(sql.unsafe`INSERT INTO foo (bar) VALUES ('baz')`);
-  
+
   // Commit event will be emitted automatically when transaction completes
 });
 ```
@@ -2693,11 +2564,11 @@ await connection.transaction(async (transactionConnection) => {
 
 ```ts
 await connection.transaction(async (outerTransaction) => {
-  outerTransaction.on('savepoint', ({transactionId, transactionDepth}) => {
+  outerTransaction.on("savepoint", ({ transactionId, transactionDepth }) => {
     console.log(`Savepoint created at depth ${transactionDepth}`);
   });
 
-  outerTransaction.on('commit', ({transactionId, transactionDepth}) => {
+  outerTransaction.on("commit", ({ transactionId, transactionDepth }) => {
     console.log(`Transaction committed at depth ${transactionDepth}`);
   });
 
@@ -2726,15 +2597,12 @@ A single query (not part of a transaction) failing with a [Transaction Rollback]
 
 How many times it is retried is controlled by using the `queryRetryLimit` configuration (default: 5).
 
-
 ## Utilities
 
 ### <code>parseDsn</code>
 
 ```ts
-(
-  dsn: string,
-) => ConnectionOptions;
+(dsn: string) => ConnectionOptions;
 ```
 
 Parses DSN to `ConnectionOptions` type.
@@ -2742,11 +2610,9 @@ Parses DSN to `ConnectionOptions` type.
 Example:
 
 ```ts
-import {
-  parseDsn,
-} from 'slonik';
+import { parseDsn } from "slonik";
 
-parseDsn('postgresql://foo@localhost/bar?application_name=baz');
+parseDsn("postgresql://foo@localhost/bar?application_name=baz");
 ```
 
 See [supported parameters](#connection-uri).
@@ -2754,9 +2620,7 @@ See [supported parameters](#connection-uri).
 ### <code>stringifyDsn</code>
 
 ```ts
-(
-  connectionOptions: ConnectionOptions,
-) => string;
+(connectionOptions: ConnectionOptions) => string;
 ```
 
 Stringifies `ConnectionOptions` to a DSN.
@@ -2764,27 +2628,22 @@ Stringifies `ConnectionOptions` to a DSN.
 Example:
 
 ```ts
-import {
-  stringifyDsn,
-} from 'slonik';
+import { stringifyDsn } from "slonik";
 
 stringifyDsn({
-  host: 'localhost',
-  username: 'foo',
-  databaseName: 'bar',
-  applicationName: 'baz',
+  host: "localhost",
+  username: "foo",
+  databaseName: "bar",
+  applicationName: "baz",
 });
 ```
-
 
 ## Error handling
 
 All Slonik errors extend from `SlonikError`, i.e. You can catch Slonik specific errors using the following logic.
 
 ```ts
-import {
-  SlonikError
-} from 'slonik';
+import { SlonikError } from "slonik";
 
 try {
   await query();
@@ -2813,14 +2672,16 @@ If you require to extract meta-data about a specific type of error (e.g. constra
 await pool.connect(async (connection0) => {
   try {
     await pool.connect(async (connection1) => {
-      const backendProcessId = await connection1.oneFirst(sql.typeAlias('id')`SELECT pg_backend_pid() AS id`);
+      const backendProcessId = await connection1.oneFirst(
+        sql.typeAlias("id")`SELECT pg_backend_pid() AS id`,
+      );
 
       setTimeout(() => {
-        connection0.query(sql.typeAlias('void')`SELECT pg_cancel_backend(${backendProcessId})`)
+        connection0.query(sql.typeAlias("void")`SELECT pg_cancel_backend(${backendProcessId})`);
       }, 2000);
 
       try {
-        await connection1.query(sql.typeAlias('void')`SELECT pg_sleep(30)`);
+        await connection1.query(sql.typeAlias("void")`SELECT pg_sleep(30)`);
       } catch (error) {
         // This code will not be executed.
       }
@@ -2848,17 +2709,15 @@ await pool.connect(async (connection0) => {
 To handle the case where the data result does not match the expectations, catch `DataIntegrityError` error.
 
 ```ts
-import {
-  DataIntegrityError
-} from 'slonik';
+import { DataIntegrityError } from "slonik";
 
 let row;
 
 try {
-  row = await connection.one(sql.typeAlias('foo')`SELECT foo`);
+  row = await connection.one(sql.typeAlias("foo")`SELECT foo`);
 } catch (error) {
   if (error instanceof DataIntegrityError) {
-    console.error('There is more than one row matching the select criteria.');
+    console.error("There is more than one row matching the select criteria.");
   } else {
     throw error;
   }
@@ -2877,14 +2736,12 @@ try {
 To handle the case where query returns less than one row, catch `NotFoundError` error.
 
 ```ts
-import {
-  NotFoundError
-} from 'slonik';
+import { NotFoundError } from "slonik";
 
 let row;
 
 try {
-  row = await connection.one(sql.typeAlias('foo')`SELECT foo`);
+  row = await connection.one(sql.typeAlias("foo")`SELECT foo`);
 } catch (error) {
   if (!(error instanceof NotFoundError)) {
     throw error;
@@ -2909,14 +2766,16 @@ It should be safe to use the same connection if `StatementCancelledError` is han
 ```ts
 await pool.connect(async (connection0) => {
   await pool.connect(async (connection1) => {
-    const backendProcessId = await connection1.oneFirst(sql.typeAlias('id')`SELECT pg_backend_pid() AS id`);
+    const backendProcessId = await connection1.oneFirst(
+      sql.typeAlias("id")`SELECT pg_backend_pid() AS id`,
+    );
 
     setTimeout(() => {
-      connection0.query(sql.typeAlias('void')`SELECT pg_cancel_backend(${backendProcessId})`)
+      connection0.query(sql.typeAlias("void")`SELECT pg_cancel_backend(${backendProcessId})`);
     }, 2000);
 
     try {
-      await connection1.query(sql.typeAlias('void')`SELECT pg_sleep(30)`);
+      await connection1.query(sql.typeAlias("void")`SELECT pg_sleep(30)`);
     } catch (error) {
       if (error instanceof StatementCancelledError) {
         // Safe to continue using the same connection.
@@ -2940,7 +2799,6 @@ await pool.connect(async (connection0) => {
 
 `TupleMovedToAnotherPartitionError` is thrown when [`affecting tuple moved into different partition`](https://github.com/postgres/postgres/commit/f16241bef7cc271bff60e23de2f827a10e50dde8).
 
-
 ## Migrations
 
 This library intentionally doesn't handle migrations, because a database client and migrations are conceptually distinct problems.
@@ -2949,8 +2807,8 @@ My personal preference is to use [Flyway](https://flywaydb.org/) – it is a ro
 
 The Slonik community has also shared their successes with these Node.js frameworks:
 
-* [`node-pg-migrate`](https://github.com/salsita/node-pg-migrate)
-* [`@slonik/migrator`](https://www.npmjs.com/package/@slonik/migrator)
+- [`node-pg-migrate`](https://github.com/salsita/node-pg-migrate)
+- [`@slonik/migrator`](https://www.npmjs.com/package/@slonik/migrator)
 
 ## Types
 
@@ -2960,24 +2818,19 @@ Refer to [`./packages/slonik/src/types.ts`](./packages/slonik/src/types.ts).
 
 The public interface exports the following types:
 
-* `CommonQueryMethods` (most generic)
-* `DatabaseConnection` (`DatabasePool | DatabasePoolConnection`)
-* `DatabasePool`
-* `DatabasePoolConnection`
-* `DatabaseTransactionConnection`
+- `CommonQueryMethods` (most generic)
+- `DatabaseConnection` (`DatabasePool | DatabasePoolConnection`)
+- `DatabasePool`
+- `DatabasePoolConnection`
+- `DatabaseTransactionConnection`
 
 Use these types to annotate `connection` instance in your code base, e.g.
 
 ```ts
-import {
-  type DatabaseConnection
-} from 'slonik';
+import { type DatabaseConnection } from "slonik";
 
-export default async (
-  connection: DatabaseConnection,
-  code: string
-): Promise<number> => {
-  return await connection.oneFirst(sql.typeAlias('id')`
+export default async (connection: DatabaseConnection, code: string): Promise<number> => {
+  return await connection.oneFirst(sql.typeAlias("id")`
     SELECT id
     FROM country
     WHERE code = ${code}
@@ -3062,7 +2915,6 @@ Use [`@roarr/cli`](https://github.com/gajus/roarr-cli) to pretty-print the outpu
 
 ![Log Roarr pretty-print output.](./.README/log-roarr-pretty-print-output.png)
 
-
 ## Syntax Highlighting
 
 ### Atom Syntax Highlighting Plugin
@@ -3083,4 +2935,3 @@ For more information, refer to the [JavaScript Tagged Template Literal Grammar E
 
 The [`vscode-sql-lit` extension](https://marketplace.visualstudio.com/items?itemName=thebearingedge.vscode-sql-lit) provides syntax highlighting for VS Code:
 ![Syntax highlighting in VS Code](./.README/vscode-syntax-highlighting.png)
-

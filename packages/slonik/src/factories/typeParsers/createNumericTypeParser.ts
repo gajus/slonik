@@ -1,4 +1,4 @@
-import type { DriverTypeParser } from '@slonik/driver';
+import type { DriverTypeParser } from "@slonik/driver";
 
 const numericParser = (value: string) => {
   return Number.parseFloat(value);
@@ -6,7 +6,7 @@ const numericParser = (value: string) => {
 
 export const createNumericTypeParser = (): DriverTypeParser => {
   return {
-    name: 'numeric',
+    name: "numeric",
     parse: numericParser,
   };
 };

@@ -1,14 +1,11 @@
-const {
-  createPool,
-  sql,
-} = require('slonik');
+const { createPool, sql } = require("slonik");
 
 let pool;
 let poolPromise;
 
 const connect = async () => {
   if (!poolPromise) {
-    poolPromise = createPool('postgres://postgres:postgres@127.0.0.1:5432', {
+    poolPromise = createPool("postgres://postgres:postgres@127.0.0.1:5432", {
       captureStackTrace: false,
     });
   }
@@ -30,7 +27,7 @@ const connect = async () => {
 };
 
 module.exports = {
-  name: 'slonik',
+  name: "slonik",
   tests: {
     select: async () => {
       const connection = await connect();
@@ -53,19 +50,21 @@ module.exports = {
         return connection.query(sql.unsafe`
           select
                 ${1} as int,
-                ${'foo'} as string,
+                ${"foo"} as string,
                 ${new Date().toISOString()}::timestamp with time zone as timestamp,
                 ${null} as null,
                 ${false}::bool as boolean,
-                ${Buffer.from('bar').toString()}::bytea as bytea,
-                ${sql.json(JSON.stringify([
-    {
-      foo: 'bar',
-    },
-    {
-      bar: 'baz',
-    },
-  ]))}::jsonb as json
+                ${Buffer.from("bar").toString()}::bytea as bytea,
+                ${sql.json(
+                  JSON.stringify([
+                    {
+                      foo: "bar",
+                    },
+                    {
+                      bar: "baz",
+                    },
+                  ]),
+                )}::jsonb as json
         `);
       };
     },
@@ -73,9 +72,11 @@ module.exports = {
       const connection = await connect();
 
       return () => {
-        return connection.query(sql.unsafe`select * from pg_catalog.pg_type where typname = ${'bool'}`);
+        return connection.query(
+          sql.unsafe`select * from pg_catalog.pg_type where typname = ${"bool"}`,
+        );
       };
     },
   },
-  url: 'https://github.com/gajus/slonik',
+  url: "https://github.com/gajus/slonik",
 };

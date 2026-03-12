@@ -1,10 +1,10 @@
-import { Logger } from '../Logger.js';
-import type { PrimitiveValueExpression } from '../types.js';
-import { safeStringify } from '../utilities/safeStringify.js';
-import { UnexpectedStateError } from '@slonik/errors';
+import { Logger } from "../Logger.js";
+import type { PrimitiveValueExpression } from "../types.js";
+import { safeStringify } from "../utilities/safeStringify.js";
+import { UnexpectedStateError } from "@slonik/errors";
 
 const log = Logger.child({
-  namespace: 'createPrimitiveValueExpressions',
+  namespace: "createPrimitiveValueExpressions",
 });
 
 export const createPrimitiveValueExpressions = (
@@ -19,10 +19,10 @@ export const createPrimitiveValueExpressions = (
     if (
       Array.isArray(value) ||
       Buffer.isBuffer(value) ||
-      typeof value === 'string' ||
-      typeof value === 'number' ||
-      typeof value === 'boolean' ||
-      typeof value === 'bigint' ||
+      typeof value === "string" ||
+      typeof value === "number" ||
+      typeof value === "boolean" ||
+      typeof value === "bigint" ||
       value === null
     ) {
       primitiveValueExpressions.push(value);
@@ -32,10 +32,10 @@ export const createPrimitiveValueExpressions = (
           value: JSON.parse(safeStringify(value)),
           values: JSON.parse(safeStringify(values)),
         },
-        'unexpected value expression',
+        "unexpected value expression",
       );
 
-      throw new UnexpectedStateError('Unexpected value expression.');
+      throw new UnexpectedStateError("Unexpected value expression.");
     }
   }
 

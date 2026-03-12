@@ -1,22 +1,13 @@
-import type { ConnectionPoolClient } from './factories/createConnectionPool.js';
-import type { IntegrityValidation } from './routines/executeQuery.js';
-import type {
-  DriverFactory,
-  DriverNotice,
-  DriverStream,
-  DriverTypeParser,
-} from '@slonik/driver';
-import type { DataIntegrityError, SlonikError } from '@slonik/errors';
-import type {
-  PrimitiveValueExpression,
-  QuerySqlToken,
-  SqlToken,
-} from '@slonik/sql-tag';
-import type { StandardSchemaV1 } from '@standard-schema/spec';
-import type EventEmitter from 'node:events';
-import type { ConnectionOptions as TlsConnectionOptions } from 'node:tls';
-import type { Logger } from 'roarr';
-import type { StrictEventEmitter } from 'strict-event-emitter-types';
+import type { ConnectionPoolClient } from "./factories/createConnectionPool.js";
+import type { IntegrityValidation } from "./routines/executeQuery.js";
+import type { DriverFactory, DriverNotice, DriverStream, DriverTypeParser } from "@slonik/driver";
+import type { DataIntegrityError, SlonikError } from "@slonik/errors";
+import type { PrimitiveValueExpression, QuerySqlToken, SqlToken } from "@slonik/sql-tag";
+import type { StandardSchemaV1 } from "@standard-schema/spec";
+import type EventEmitter from "node:events";
+import type { ConnectionOptions as TlsConnectionOptions } from "node:tls";
+import type { Logger } from "roarr";
+import type { StrictEventEmitter } from "strict-event-emitter-types";
 
 export type ClientConfiguration = {
   /**
@@ -30,7 +21,7 @@ export type ClientConfiguration = {
   /**
    * Timeout (in milliseconds) after which an error is raised if connection cannot cannot be established. (Default: 5000)
    */
-  readonly connectionTimeout: 'DISABLE_TIMEOUT' | number;
+  readonly connectionTimeout: "DISABLE_TIMEOUT" | number;
   /**
    * Connection URI, e.g. `postgres://user:password@localhost/database`.
    */
@@ -50,11 +41,11 @@ export type ClientConfiguration = {
   /**
    * Timeout (in milliseconds) after which idle clients are closed. Use 'DISABLE_TIMEOUT' constant to disable the timeout. (Default: 60000)
    */
-  readonly idleInTransactionSessionTimeout: 'DISABLE_TIMEOUT' | number;
+  readonly idleInTransactionSessionTimeout: "DISABLE_TIMEOUT" | number;
   /**
    * Timeout (in milliseconds) after which idle clients are closed. Use 'DISABLE_TIMEOUT' constant to disable the timeout. (Default: 5000)
    */
-  readonly idleTimeout: 'DISABLE_TIMEOUT' | number;
+  readonly idleTimeout: "DISABLE_TIMEOUT" | number;
   /**
    * An array of [Slonik interceptors](https://github.com/gajus/slonik#slonik-interceptors).
    */
@@ -81,9 +72,7 @@ export type ClientConfiguration = {
    * Routine that's invoked to reset the connection.
    * The default routine invokes `DISCARD ALL`.
    */
-  readonly resetConnection?: (
-    basicConnection: BasicConnection,
-  ) => Promise<void>;
+  readonly resetConnection?: (basicConnection: BasicConnection) => Promise<void>;
   /**
    * tls.connect options *
    */
@@ -91,7 +80,7 @@ export type ClientConfiguration = {
   /**
    * Timeout (in milliseconds) after which database is instructed to abort the query. Use 'DISABLE_TIMEOUT' constant to disable the timeout. (Default: 60000)
    */
-  readonly statementTimeout: 'DISABLE_TIMEOUT' | number;
+  readonly statementTimeout: "DISABLE_TIMEOUT" | number;
   /**
    * Number of times a transaction failing with Transaction Rollback class error is retried. (Default: 5)
    */
@@ -122,7 +111,7 @@ export type CommonQueryMethods = {
   ) => Promise<T>;
 };
 
-export type Connection = 'EXPLICIT' | 'IMPLICIT_QUERY' | 'IMPLICIT_TRANSACTION';
+export type Connection = "EXPLICIT" | "IMPLICIT_QUERY" | "IMPLICIT_TRANSACTION";
 
 /**
  * @see https://www.postgresql.org/docs/current/libpq-connect.html#LIBPQ-PARAMKEYWORDS
@@ -134,22 +123,18 @@ export type ConnectionOptions = {
   options?: string;
   password?: string;
   port?: number;
-  sslMode?: 'disable' | 'no-verify' | 'require';
+  sslMode?: "disable" | "no-verify" | "require";
   username?: string;
 };
 
-export type ConnectionRoutine<T> = (
-  connection: DatabasePoolConnection,
-) => Promise<T>;
+export type ConnectionRoutine<T> = (connection: DatabasePoolConnection) => Promise<T>;
 
 export type DatabaseConnection = DatabasePool | DatabasePoolConnection;
 
 export type DatabasePool = CommonQueryMethods &
   DatabasePoolEventEmitter & {
     readonly configuration: ClientConfiguration;
-    readonly connect: <T>(
-      connectionRoutine: ConnectionRoutine<T>,
-    ) => Promise<T>;
+    readonly connect: <T>(connectionRoutine: ConnectionRoutine<T>) => Promise<T>;
     readonly end: () => Promise<void>;
     readonly state: () => PoolState;
   };
@@ -172,24 +157,14 @@ export type DatabaseTransactionConnection = CommonQueryMethods &
 export type DatabaseTransactionEventEmitter = StrictEventEmitter<
   EventEmitter,
   {
-    commit: (event: {
-      transactionDepth: number;
-      transactionId: string;
-    }) => void;
-    rollback: (event: {
-      error: Error;
-      transactionDepth: number;
-      transactionId: string;
-    }) => void;
+    commit: (event: { transactionDepth: number; transactionId: string }) => void;
+    rollback: (event: { error: Error; transactionDepth: number; transactionId: string }) => void;
     rollbackToSavepoint: (event: {
       error: Error;
       transactionDepth: number;
       transactionId: string;
     }) => void;
-    savepoint: (event: {
-      transactionDepth: number;
-      transactionId: string;
-    }) => void;
+    savepoint: (event: { transactionDepth: number; transactionId: string }) => void;
   }
 >;
 
@@ -226,10 +201,7 @@ export type Interceptor = {
     query: Query,
     result: QueryResult<QueryResultRow>,
   ) => MaybePromise<null>;
-  readonly beforeTransformQuery?: (
-    queryContext: QueryContext,
-    query: Query,
-  ) => MaybePromise<null>;
+  readonly beforeTransformQuery?: (queryContext: QueryContext, query: Query) => MaybePromise<null>;
   readonly dataIntegrityError?: (
     queryContext: QueryContext,
     query: Query,
@@ -353,12 +325,12 @@ export type QueryFunction = <T extends StandardSchemaV1>(
 export type QueryId = string;
 
 export type QueryResult<T> = {
-  readonly command: 'COPY' | 'DELETE' | 'INSERT' | 'SELECT' | 'UPDATE';
+  readonly command: "COPY" | "DELETE" | "INSERT" | "SELECT" | "UPDATE";
   readonly fields: readonly Field[];
   readonly notices: readonly DriverNotice[];
   readonly rowCount: number;
   readonly rows: readonly T[];
-  readonly type: 'QueryResult';
+  readonly type: "QueryResult";
 };
 
 export type QueryResultRow = Record<string, PrimitiveValueExpression>;
@@ -369,7 +341,7 @@ export type StreamHandler<T> = (stream: DriverStream<T>) => void;
 
 export type StreamResult = {
   readonly notices: readonly DriverNotice[];
-  readonly type: 'StreamResult';
+  readonly type: "StreamResult";
 };
 
 /**
@@ -377,17 +349,17 @@ export type StreamResult = {
  * experience with auto suggestions for commonly used type name identifiers.
  */
 export type TypeNameIdentifier =
-  | 'bool'
-  | 'bytea'
-  | 'float4'
-  | 'float8'
-  | 'int2'
-  | 'int4'
-  | 'int8'
-  | 'json'
-  | 'text'
-  | 'timestamptz'
-  | 'uuid'
+  | "bool"
+  | "bytea"
+  | "float4"
+  | "float8"
+  | "int2"
+  | "int4"
+  | "int8"
+  | "json"
+  | "text"
+  | "timestamptz"
+  | "uuid"
   | string;
 
 export type ValueExpression = PrimitiveValueExpression | SqlToken;
@@ -425,15 +397,11 @@ type PoolState = {
   readonly waitingClients: number;
 };
 
-type PoolStateName = 'ACTIVE' | 'ENDED' | 'ENDING';
+type PoolStateName = "ACTIVE" | "ENDED" | "ENDING";
 type QueryAnyFirstFunction = <T extends StandardSchemaV1>(
   sql: QuerySqlToken<T>,
   values?: PrimitiveValueExpression[],
-) => Promise<
-  ReadonlyArray<
-    StandardSchemaV1.InferOutput<T>[keyof StandardSchemaV1.InferOutput<T>]
-  >
->;
+) => Promise<ReadonlyArray<StandardSchemaV1.InferOutput<T>[keyof StandardSchemaV1.InferOutput<T>]>>;
 type QueryAnyFunction = <T extends StandardSchemaV1>(
   sql: QuerySqlToken<T>,
   values?: PrimitiveValueExpression[],
@@ -445,11 +413,7 @@ type QueryExistsFunction = <T extends StandardSchemaV1>(
 type QueryManyFirstFunction = <T extends StandardSchemaV1>(
   sql: QuerySqlToken<T>,
   values?: PrimitiveValueExpression[],
-) => Promise<
-  ReadonlyArray<
-    StandardSchemaV1.InferOutput<T>[keyof StandardSchemaV1.InferOutput<T>]
-  >
->;
+) => Promise<ReadonlyArray<StandardSchemaV1.InferOutput<T>[keyof StandardSchemaV1.InferOutput<T>]>>;
 type QueryManyFunction = <T extends StandardSchemaV1>(
   sql: QuerySqlToken<T>,
   values?: PrimitiveValueExpression[],
@@ -457,9 +421,7 @@ type QueryManyFunction = <T extends StandardSchemaV1>(
 type QueryMaybeOneFirstFunction = <T extends StandardSchemaV1>(
   sql: QuerySqlToken<T>,
   values?: PrimitiveValueExpression[],
-) => Promise<
-  null | StandardSchemaV1.InferOutput<T>[keyof StandardSchemaV1.InferOutput<T>]
->;
+) => Promise<null | StandardSchemaV1.InferOutput<T>[keyof StandardSchemaV1.InferOutput<T>]>;
 type QueryMaybeOneFunction = <T extends StandardSchemaV1>(
   sql: QuerySqlToken<T>,
   values?: PrimitiveValueExpression[],
@@ -467,9 +429,7 @@ type QueryMaybeOneFunction = <T extends StandardSchemaV1>(
 type QueryOneFirstFunction = <T extends StandardSchemaV1>(
   sql: QuerySqlToken<T>,
   values?: PrimitiveValueExpression[],
-) => Promise<
-  StandardSchemaV1.InferOutput<T>[keyof StandardSchemaV1.InferOutput<T>]
->;
+) => Promise<StandardSchemaV1.InferOutput<T>[keyof StandardSchemaV1.InferOutput<T>]>;
 type QueryOneFunction = <T extends StandardSchemaV1>(
   sql: QuerySqlToken<T>,
   values?: PrimitiveValueExpression[],
@@ -480,8 +440,6 @@ type StreamFunction = <T extends StandardSchemaV1>(
   streamHandler: StreamHandler<StandardSchemaV1.InferOutput<T>>,
 ) => Promise<StreamResult>;
 
-type TransactionFunction<T> = (
-  connection: DatabaseTransactionConnection,
-) => Promise<T>;
+type TransactionFunction<T> = (connection: DatabaseTransactionConnection) => Promise<T>;
 
-export type { Logger } from 'roarr';
+export type { Logger } from "roarr";

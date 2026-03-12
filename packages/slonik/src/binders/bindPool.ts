@@ -1,12 +1,12 @@
-import { transaction } from '../connectionMethods/transaction.js';
-import { createConnection } from '../factories/createConnection.js';
-import type { ConnectionPool } from '../factories/createConnectionPool.js';
+import { transaction } from "../connectionMethods/transaction.js";
+import { createConnection } from "../factories/createConnection.js";
+import type { ConnectionPool } from "../factories/createConnectionPool.js";
 import type {
   ClientConfiguration,
   DatabasePool,
   DatabasePoolEventEmitter,
   Logger,
-} from '../types.js';
+} from "../types.js";
 
 export const bindPool = (
   events: DatabasePoolEventEmitter,
@@ -20,7 +20,7 @@ export const bindPool = (
         parentLog,
         pool,
         clientConfiguration,
-        'IMPLICIT_QUERY',
+        "IMPLICIT_QUERY",
         (connectionLog, connection, boundConnection) => {
           return boundConnection.any(query);
         },
@@ -35,7 +35,7 @@ export const bindPool = (
         parentLog,
         pool,
         clientConfiguration,
-        'IMPLICIT_QUERY',
+        "IMPLICIT_QUERY",
         (connectionLog, connection, boundConnection) => {
           return boundConnection.anyFirst(query);
         },
@@ -51,7 +51,7 @@ export const bindPool = (
         parentLog,
         pool,
         clientConfiguration,
-        'EXPLICIT',
+        "EXPLICIT",
         (connectionLog, connection, boundConnection) => {
           return connectionHandler(boundConnection);
         },
@@ -68,7 +68,7 @@ export const bindPool = (
         parentLog,
         pool,
         clientConfiguration,
-        'IMPLICIT_QUERY',
+        "IMPLICIT_QUERY",
         (connectionLog, connection, boundConnection) => {
           return boundConnection.exists(query);
         },
@@ -83,7 +83,7 @@ export const bindPool = (
         parentLog,
         pool,
         clientConfiguration,
-        'IMPLICIT_QUERY',
+        "IMPLICIT_QUERY",
         (connectionLog, connection, boundConnection) => {
           return boundConnection.many(query);
         },
@@ -98,7 +98,7 @@ export const bindPool = (
         parentLog,
         pool,
         clientConfiguration,
-        'IMPLICIT_QUERY',
+        "IMPLICIT_QUERY",
         (connectionLog, connection, boundConnection) => {
           return boundConnection.manyFirst(query);
         },
@@ -113,7 +113,7 @@ export const bindPool = (
         parentLog,
         pool,
         clientConfiguration,
-        'IMPLICIT_QUERY',
+        "IMPLICIT_QUERY",
         (connectionLog, connection, boundConnection) => {
           return boundConnection.maybeOne(query);
         },
@@ -128,7 +128,7 @@ export const bindPool = (
         parentLog,
         pool,
         clientConfiguration,
-        'IMPLICIT_QUERY',
+        "IMPLICIT_QUERY",
         (connectionLog, connection, boundConnection) => {
           return boundConnection.maybeOneFirst(query);
         },
@@ -143,7 +143,7 @@ export const bindPool = (
         parentLog,
         pool,
         clientConfiguration,
-        'IMPLICIT_QUERY',
+        "IMPLICIT_QUERY",
         (connectionLog, connection, boundConnection) => {
           return boundConnection.one(query);
         },
@@ -158,7 +158,7 @@ export const bindPool = (
         parentLog,
         pool,
         clientConfiguration,
-        'IMPLICIT_QUERY',
+        "IMPLICIT_QUERY",
         (connectionLog, connection, boundConnection) => {
           return boundConnection.oneFirst(query);
         },
@@ -173,7 +173,7 @@ export const bindPool = (
         parentLog,
         pool,
         clientConfiguration,
-        'IMPLICIT_QUERY',
+        "IMPLICIT_QUERY",
         (connectionLog, connection, boundConnection) => {
           return boundConnection.query(query);
         },
@@ -191,7 +191,7 @@ export const bindPool = (
         parentLog,
         pool,
         clientConfiguration,
-        'IMPLICIT_QUERY',
+        "IMPLICIT_QUERY",
         (connectionLog, connection, boundConnection) => {
           return boundConnection.stream(streamQuery, streamHandler);
         },
@@ -206,7 +206,7 @@ export const bindPool = (
         parentLog,
         pool,
         clientConfiguration,
-        'IMPLICIT_TRANSACTION',
+        "IMPLICIT_TRANSACTION",
         (connectionLog, connection) => {
           return transaction(
             connectionLog,

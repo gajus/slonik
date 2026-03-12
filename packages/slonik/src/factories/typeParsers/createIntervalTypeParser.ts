@@ -1,9 +1,6 @@
-import type { DriverTypeParser } from '@slonik/driver';
-import {
-  toSeconds as durationToSeconds,
-  parse as parseIsoDuration,
-} from 'iso8601-duration';
-import parseInterval from 'postgres-interval';
+import type { DriverTypeParser } from "@slonik/driver";
+import { toSeconds as durationToSeconds, parse as parseIsoDuration } from "iso8601-duration";
+import parseInterval from "postgres-interval";
 
 const intervalParser = (value: string) => {
   return value === null
@@ -13,7 +10,7 @@ const intervalParser = (value: string) => {
 
 export const createIntervalTypeParser = (): DriverTypeParser => {
   return {
-    name: 'interval',
+    name: "interval",
     parse: intervalParser,
   };
 };

@@ -1,9 +1,9 @@
 /* cspell:ignore slonikqueryindex */
 
-import { sql } from 'slonik';
-import type { CommonQueryMethods, QuerySqlToken } from 'slonik';
-import { z } from 'zod';
-import type { ZodObject } from 'zod';
+import { sql } from "slonik";
+import type { CommonQueryMethods, QuerySqlToken } from "slonik";
+import { z } from "zod";
+import type { ZodObject } from "zod";
 
 /**
  * Uses UNION to batch multiple queries that have the same shape.
@@ -22,9 +22,7 @@ export const batchQueries = async <T extends ZodObject>(
     return [];
   }
 
-  const results = await pool.any(sql.type(
-    zodSchema.extend({ slonikqueryindex: z.string() }),
-  )`
+  const results = await pool.any(sql.type(zodSchema.extend({ slonikqueryindex: z.string() }))`
     ${sql.join(
       queries.map((query, index) => {
         return sql.fragment`

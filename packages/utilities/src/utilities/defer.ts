@@ -14,11 +14,11 @@ export const defer = <T>(): DeferredPromise<T> => {
   });
 
   if (!resolve) {
-    throw new Error('Expected resolve');
+    throw new Error("Expected resolve");
   }
 
   if (!reject) {
-    throw new Error('Expected reject');
+    throw new Error("Expected reject");
   }
 
   return {

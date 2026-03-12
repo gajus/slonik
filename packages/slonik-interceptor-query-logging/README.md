@@ -9,9 +9,7 @@ Logs [Slonik](https://github.com/gajus/slonik) queries.
 ## API
 
 ```ts
-import {
-  createQueryLoggingInterceptor
-} from 'slonik-interceptor-query-logging';
+import { createQueryLoggingInterceptor } from "slonik-interceptor-query-logging";
 ```
 
 ```ts
@@ -30,19 +28,13 @@ type UserConfigurationType = {|
 Note: You must export `ROARR_LOG=true` environment variable for logs to be printed. Refer to [Roarr](https://github.com/gajus/roarr) documentation for more information.
 
 ```ts
-import {
-  createPool
-} from 'slonik';
-import {
-  createQueryLoggingInterceptor
-} from 'slonik-interceptor-query-logging';
+import { createPool } from "slonik";
+import { createQueryLoggingInterceptor } from "slonik-interceptor-query-logging";
 
-const interceptors = [
-  createQueryLoggingInterceptor()
-];
+const interceptors = [createQueryLoggingInterceptor()];
 
-const pool = createPool('postgres://', {
-  interceptors
+const pool = createPool("postgres://", {
+  interceptors,
 });
 
 await connection.any(sql`
@@ -135,7 +127,7 @@ SET client_min_messages=log;
 This can be configured using `afterPoolConnection` interceptor, e.g.
 
 ```ts
-const pool = createPool('postgres://localhost', {
+const pool = createPool("postgres://localhost", {
   interceptors: [
     {
       afterPoolConnection: async (connection) => {
@@ -145,11 +137,10 @@ const pool = createPool('postgres://localhost', {
         await connection.query(sql`SET auto_explain.log_min_duration=0`);
         await connection.query(sql`SET auto_explain.log_timing=true`);
         await connection.query(sql`SET client_min_messages=log`);
-      }
-    }
-  ]
+      },
+    },
+  ],
 });
-
 ```
 
 Slonik logging interceptor recognises and parses the `auto_explain` JSON message e.g.

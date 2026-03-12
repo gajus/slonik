@@ -1,10 +1,7 @@
 # Slonik Driver for `pg`
 
 ```ts
-import {
-  createPgDriverFactory,
-  DatabaseError,
-} from '@slonik/pg-driver';
+import { createPgDriverFactory, DatabaseError } from "@slonik/pg-driver";
 ```
 
 ## Error handling
@@ -12,7 +9,7 @@ import {
 All Slonik errors extend from `SlonikError`. `SlonikError` uses `cause` property to store the original error, which might be a `DatabaseError` from `pg`. Example:
 
 ```ts
-pool.on('error', (error) => {
+pool.on("error", (error) => {
   const cause = error.cause;
 
   if (cause instanceof DatabaseError) {
@@ -28,12 +25,12 @@ Example of handling all errors that could warrant a fatal error:
 ```ts
 const fatalErrorClasses = [
   // Connection Exception
-  '08',
+  "08",
   // Invalid Authorization Specification
-  '28',
+  "28",
 ];
 
-pool.on('error', (error) => {
+pool.on("error", (error) => {
   if (error.cause instanceof DatabaseError) {
     const classCode = error.cause.code.slice(0, 2);
 

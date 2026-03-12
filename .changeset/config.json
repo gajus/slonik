@@ -11,12 +11,7 @@
   ],
   "commit": false,
   "linked": [],
-  "fixed": [
-    [
-      "@slonik/*",
-      "*"
-    ]
-  ],
+  "fixed": [["@slonik/*", "*"]],
   "access": "public",
   "baseBranch": "main",
   "updateInternalDependencies": "patch",

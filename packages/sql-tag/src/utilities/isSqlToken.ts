@@ -13,10 +13,10 @@ import {
   TimestampToken,
   UnnestToken,
   UuidToken,
-} from '../tokens.js';
-import type { SqlToken as SqlTokenType } from '../types.js';
-import { hasOwnProperty } from './hasOwnProperty.js';
-import { UnexpectedStateError } from '@slonik/errors';
+} from "../tokens.js";
+import type { SqlToken as SqlTokenType } from "../types.js";
+import { hasOwnProperty } from "./hasOwnProperty.js";
+import { UnexpectedStateError } from "@slonik/errors";
 
 const Tokens = [
   ArrayToken,
@@ -39,10 +39,8 @@ const tokenNames = new Set(
   Tokens.map((token) => {
     const tokenTypeName = Symbol.keyFor(token);
 
-    if (typeof tokenTypeName !== 'string') {
-      throw new UnexpectedStateError(
-        'Expected token type be a symbol with inferrable key',
-      );
+    if (typeof tokenTypeName !== "string") {
+      throw new UnexpectedStateError("Expected token type be a symbol with inferrable key");
     }
 
     return tokenTypeName;
@@ -50,23 +48,23 @@ const tokenNames = new Set(
 );
 
 export const isSqlToken = (subject: unknown): subject is SqlTokenType => {
-  if (typeof subject !== 'object' || subject === null) {
+  if (typeof subject !== "object" || subject === null) {
     return false;
   }
 
-  if (!hasOwnProperty(subject, 'type')) {
+  if (!hasOwnProperty(subject, "type")) {
     return false;
   }
 
   const tokenType = subject.type;
 
-  if (typeof tokenType !== 'symbol') {
+  if (typeof tokenType !== "symbol") {
     return false;
   }
 
   const tokenTypeName = Symbol.keyFor(tokenType);
 
-  if (typeof tokenTypeName !== 'string') {
+  if (typeof tokenTypeName !== "string") {
     return false;
   }
 

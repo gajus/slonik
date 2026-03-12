@@ -1,10 +1,10 @@
-import { Logger } from '../Logger.js';
-import { extractCacheAttributes } from '../utilities/extractCacheAttributes.js';
-import { normalizeCacheAttributes } from '../utilities/normalizeCacheAttributes.js';
-import type { Interceptor, Query, QueryResult, QueryResultRow } from 'slonik';
+import { Logger } from "../Logger.js";
+import { extractCacheAttributes } from "../utilities/extractCacheAttributes.js";
+import { normalizeCacheAttributes } from "../utilities/normalizeCacheAttributes.js";
+import type { Interceptor, Query, QueryResult, QueryResultRow } from "slonik";
 
 const log = Logger.child({
-  namespace: 'createQueryCacheInterceptor',
+  namespace: "createQueryCacheInterceptor",
 });
 
 export type CacheAttributes = {
@@ -52,24 +52,20 @@ export const createQueryCacheInterceptor = (
         return null;
       }
 
-      const cacheAttributes = (context.sandbox as Sandbox).cache
-        ?.cacheAttributes;
+      const cacheAttributes = (context.sandbox as Sandbox).cache?.cacheAttributes;
 
       if (!cacheAttributes) {
         return null;
       }
 
-      const maybeResult = await configuration.storage.get(
-        query,
-        cacheAttributes,
-      );
+      const maybeResult = await configuration.storage.get(query, cacheAttributes);
 
       if (maybeResult) {
         log.debug(
           {
             queryId: context.queryId,
           },
-          'query is served from cache',
+          "query is served from cache",
         );
 
         return maybeResult;
@@ -82,14 +78,11 @@ export const createQueryCacheInterceptor = (
         return null;
       }
 
-      const cacheAttributes = (context.sandbox as Sandbox).cache
-        ?.cacheAttributes;
+      const cacheAttributes = (context.sandbox as Sandbox).cache?.cacheAttributes;
 
       if (cacheAttributes) {
         if (cacheAttributes.discardEmpty && result.rowCount === 0) {
-          log.debug(
-            '@cache-discard-empty is set and the query result is empty; not caching',
-          );
+          log.debug("@cache-discard-empty is set and the query result is empty; not caching");
         } else {
           await configuration.storage.set(query, cacheAttributes, result);
         }
@@ -102,18 +95,13 @@ export const createQueryCacheInterceptor = (
         return null;
       }
 
-      const extractedCacheAttributes = extractCacheAttributes(
-        query.sql,
-        query.values,
-      );
+      const extractedCacheAttributes = extractCacheAttributes(query.sql, query.values);
 
       if (!extractedCacheAttributes) {
         return null;
       }
 
-      const cacheAttributes = normalizeCacheAttributes(
-        extractedCacheAttributes,
-      );
+      const cacheAttributes = normalizeCacheAttributes(extractedCacheAttributes);
 
       context.sandbox.cache = {
         cacheAttributes,
@@ -121,6 +109,6 @@ export const createQueryCacheInterceptor = (
 
       return null;
     },
-    name: 'slonik-interceptor-query-cache',
+    name: "slonik-interceptor-query-cache",
   };
 };

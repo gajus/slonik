@@ -1,20 +1,20 @@
-import { FragmentToken } from '../../tokens.js';
-import { createSqlTag } from '../createSqlTag.js';
-import test from 'ava';
+import { FragmentToken } from "../../tokens.js";
+import { createSqlTag } from "../createSqlTag.js";
+import test from "ava";
 
 const sql = createSqlTag();
 
-test('creates an empty make_interval invocation', (t) => {
+test("creates an empty make_interval invocation", (t) => {
   const query = sql.fragment`SELECT ${sql.interval({})}`;
 
   t.deepEqual(query, {
-    sql: 'SELECT make_interval()',
+    sql: "SELECT make_interval()",
     type: FragmentToken,
     values: [],
   });
 });
 
-test('creates an interval', (t) => {
+test("creates an interval", (t) => {
   const query = sql.fragment`SELECT ${sql.interval({
     days: 4,
     hours: 5,
@@ -26,19 +26,19 @@ test('creates an interval', (t) => {
   })}`;
 
   t.deepEqual(query, {
-    sql: 'SELECT make_interval(years => $slonik_1, months => $slonik_2, weeks => $slonik_3, days => $slonik_4, hours => $slonik_5, mins => $slonik_6, secs => $slonik_7)',
+    sql: "SELECT make_interval(years => $slonik_1, months => $slonik_2, weeks => $slonik_3, days => $slonik_4, hours => $slonik_5, mins => $slonik_6, secs => $slonik_7)",
     type: FragmentToken,
     values: [1, 2, 3, 4, 5, 6, 7],
   });
 });
 
-test('throws if contains unknown properties', (t) => {
+test("throws if contains unknown properties", (t) => {
   const error = t.throws(() => {
     sql.fragment`SELECT ${sql.interval({
       // @ts-expect-error - intentional
-      foo: 'bar',
+      foo: "bar",
     })}`;
   });
 
-  t.is(error?.message, 'Interval input must not contain unknown properties.');
+  t.is(error?.message, "Interval input must not contain unknown properties.");
 });

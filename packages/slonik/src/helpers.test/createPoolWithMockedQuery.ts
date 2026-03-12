@@ -1,8 +1,8 @@
-import type { ConnectionPoolClient } from '../factories/createConnectionPool.js';
-import { createPool } from '../factories/createPool.js';
-import type { ClientConfigurationInput } from '../types.js';
-import EventEmitter from 'node:events';
-import * as sinon from 'sinon';
+import type { ConnectionPoolClient } from "../factories/createConnectionPool.js";
+import { createPool } from "../factories/createPool.js";
+import type { ClientConfigurationInput } from "../types.js";
+import EventEmitter from "node:events";
+import * as sinon from "sinon";
 
 export const createPoolWithMockedQuery = async (
   dsn: string,
@@ -15,7 +15,7 @@ export const createPoolWithMockedQuery = async (
   const pool = await createPool(dsn, {
     driverFactory: async (...args) => {
       if (!driverFactory) {
-        throw new Error('Driver is required');
+        throw new Error("Driver is required");
       }
 
       const driver = await driverFactory(...args);

@@ -1,19 +1,19 @@
-import { createPool } from '../factories/createPool.js';
-import { createIntegrationTests } from '../helpers.test/createIntegrationTests.js';
-import { createPoolTests } from '../helpers.test/createPoolTests.js';
-import { createTestRunner } from '../helpers.test/createTestRunner.js';
-import { sql } from '../index.js';
-import { createPgDriverFactory } from '@slonik/pg-driver';
+import { createPool } from "../factories/createPool.js";
+import { createIntegrationTests } from "../helpers.test/createIntegrationTests.js";
+import { createPoolTests } from "../helpers.test/createPoolTests.js";
+import { createTestRunner } from "../helpers.test/createTestRunner.js";
+import { sql } from "../index.js";
+import { createPgDriverFactory } from "@slonik/pg-driver";
 
 const driverFactory = createPgDriverFactory();
 
-const { test } = createTestRunner(driverFactory, 'pg');
+const { test } = createTestRunner(driverFactory, "pg");
 
 createIntegrationTests(test, driverFactory);
 
 createPoolTests(test, driverFactory);
 
-test('returns expected query result object (NOTICE)', async (t) => {
+test("returns expected query result object (NOTICE)", async (t) => {
   const pool = await createPool(t.context.dsn, {
     driverFactory,
   });
@@ -39,9 +39,7 @@ test('returns expected query result object (NOTICE)', async (t) => {
     $$;
   `);
 
-  const result = await pool.query(
-    sql.unsafe`SELECT * FROM test_notice(${10});`,
-  );
+  const result = await pool.query(sql.unsafe`SELECT * FROM test_notice(${10});`);
 
   t.is(result.notices.length, 4);
 

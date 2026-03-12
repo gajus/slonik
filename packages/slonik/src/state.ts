@@ -1,6 +1,6 @@
-import type { ConnectionPoolClient } from './factories/createConnectionPool.js';
-import { UnexpectedStateError } from '@slonik/errors';
-import type { DeferredPromise } from '@slonik/utilities';
+import type { ConnectionPoolClient } from "./factories/createConnectionPool.js";
+import { UnexpectedStateError } from "@slonik/errors";
+import type { DeferredPromise } from "@slonik/utilities";
 
 type PoolClientState = {
   activeQuery?: DeferredPromise<null>;
@@ -11,18 +11,13 @@ type PoolClientState = {
   transactionId: null | string;
 };
 
-export const poolClientStateMap = new WeakMap<
-  ConnectionPoolClient,
-  PoolClientState
->();
+export const poolClientStateMap = new WeakMap<ConnectionPoolClient, PoolClientState>();
 
-export const getPoolClientState = (
-  poolClient: ConnectionPoolClient,
-): PoolClientState => {
+export const getPoolClientState = (poolClient: ConnectionPoolClient): PoolClientState => {
   const poolClientState = poolClientStateMap.get(poolClient);
 
   if (!poolClientState) {
-    throw new UnexpectedStateError('Pool Client state is unavailable.');
+    throw new UnexpectedStateError("Pool Client state is unavailable.");
   }
 
   return poolClientState;

@@ -14,23 +14,23 @@ Which queries are cached is controlled using cache attributes. Cache attributes 
 
 ## Behavior
 
-* Does not cache queries inside of a transaction.
+- Does not cache queries inside of a transaction.
 
 ## Cache attributes
 
 #### `@cache-ttl`
 
-|Required|Format|Default|
-|---|---|---|
-|Yes|`/^d+$/`|N/A|
+| Required | Format   | Default |
+| -------- | -------- | ------- |
+| Yes      | `/^d+$/` | N/A     |
 
 Number (in seconds) to cache the query for.
 
 #### `@cache-key`
 
-|Required|Format|Default|
-|---|---|---|
-|No|`/^[$A-Za-z0-9\-_:]+$/`|`$bodyHash:$valueHash`|
+| Required | Format                  | Default                |
+| -------- | ----------------------- | ---------------------- |
+| No       | `/^[$A-Za-z0-9\-_:]+$/` | `$bodyHash:$valueHash` |
 
 Cache key that uniquely identifies the query.
 
@@ -40,9 +40,9 @@ If present, `$valueHash` is substituted with the hash of the parameter values.
 
 #### `@cache-discard-empty`
 
-|Required|Format|Default|
-|---|---|---|
-|No|`/^(false\|true)$/`|`false`|
+| Required | Format              | Default |
+| -------- | ------------------- | ------- |
+| No       | `/^(false\|true)$/` | `false` |
 
 If set to `true`, then `storage.set` is not invoked when query produces no results.
 
@@ -51,13 +51,9 @@ If set to `true`, then `storage.set` is not invoked when query produces no resul
 This example shows how to create a compatible storage service using [`node-cache`](https://www.npmjs.com/package/node-cache).
 
 ```js
-import NodeCache from 'node-cache';
-import {
-  createPool
-} from 'slonik';
-import {
-  createQueryCacheInterceptor
-} from 'slonik-interceptor-query-cache';
+import NodeCache from "node-cache";
+import { createPool } from "slonik";
+import { createQueryCacheInterceptor } from "slonik-interceptor-query-cache";
 
 const nodeCache = new NodeCache({
   checkperiod: 60,
@@ -65,7 +61,7 @@ const nodeCache = new NodeCache({
   useClones: false,
 });
 
-const pool = await createPool('postgres://', {
+const pool = await createPool("postgres://", {
   interceptors: [
     createQueryCacheInterceptor({
       storage: {
@@ -78,7 +74,7 @@ const pool = await createPool('postgres://', {
         },
       },
     }),
-  ]
+  ],
 });
 ```
 

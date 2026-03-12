@@ -1,11 +1,7 @@
-import type { PrimitiveValueExpression } from '../types.js';
-import { FragmentToken } from '@slonik/sql-tag';
-import {
-  createSqlTokenSqlFragment,
-  InvalidInputError,
-  isSqlToken,
-} from 'slonik';
-import type { FragmentSqlToken, ValueExpression } from 'slonik';
+import type { PrimitiveValueExpression } from "../types.js";
+import { FragmentToken } from "@slonik/sql-tag";
+import { createSqlTokenSqlFragment, InvalidInputError, isSqlToken } from "slonik";
+import type { FragmentSqlToken, ValueExpression } from "slonik";
 
 const slonikPlaceholderRegexRule = /\$(?:slonik_)?(\d+)/gu;
 
@@ -20,47 +16,36 @@ export const interpolatePositionalParameterReferences = (
 
   const bindingNames = (inputSql.match(slonikPlaceholderRegexRule) ?? [])
     .map((match) => {
-      return Number.parseInt(
-        match.replace('$slonik_', '').replace('$', ''),
-        10,
-      );
+      return Number.parseInt(match.replace("$slonik_", "").replace("$", ""), 10);
     })
     .toSorted();
 
   if (bindingNames[bindingNames.length - 1] > inputValues.length) {
     throw new InvalidInputError(
-      'The greatest parameter position is greater than the number of parameter values.',
+      "The greatest parameter position is greater than the number of parameter values.",
     );
   }
 
   if (bindingNames.length > 0 && bindingNames[0] !== 1) {
-    throw new InvalidInputError('Parameter position must start at 1.');
+    throw new InvalidInputError("Parameter position must start at 1.");
   }
 
-  const resultSql = inputSql.replaceAll(
-    slonikPlaceholderRegexRule,
-    (match, g1) => {
-      const parameterPosition = Number.parseInt(g1, 10);
-      const boundValue = inputValues[parameterPosition - 1];
+  const resultSql = inputSql.replaceAll(slonikPlaceholderRegexRule, (match, g1) => {
+    const parameterPosition = Number.parseInt(g1, 10);
+    const boundValue = inputValues[parameterPosition - 1];
 
-      if (isSqlToken(boundValue)) {
-        const sqlFragment = createSqlTokenSqlFragment(
-          boundValue,
-          resultValues.length,
-        );
+    if (isSqlToken(boundValue)) {
+      const sqlFragment = createSqlTokenSqlFragment(boundValue, resultValues.length);
 
-        resultValues.push(...sqlFragment.values);
+      resultValues.push(...sqlFragment.values);
 
-        return sqlFragment.sql;
-      } else {
-        resultValues.push(
-          inputValues[parameterPosition - 1] as PrimitiveValueExpression,
-        );
+      return sqlFragment.sql;
+    } else {
+      resultValues.push(inputValues[parameterPosition - 1] as PrimitiveValueExpression);
 
-        return `$slonik_${resultValues.length}`;
-      }
-    },
-  );
+      return `$slonik_${resultValues.length}`;
+    }
+  });
 
   return {
     sql: resultSql,

@@ -1,5 +1,5 @@
 export const isPlainObject = (subject: unknown) => {
-  if (typeof subject !== 'object' || subject === null) {
+  if (typeof subject !== "object" || subject === null) {
     return false;
   }
 

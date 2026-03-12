@@ -1,18 +1,18 @@
-import { normalizeCacheAttributes } from './normalizeCacheAttributes.js';
-import test from 'ava';
+import { normalizeCacheAttributes } from "./normalizeCacheAttributes.js";
+import test from "ava";
 
-test('replaces $bodyHash and $valueHash', (t) => {
+test("replaces $bodyHash and $valueHash", (t) => {
   t.deepEqual(
     normalizeCacheAttributes({
-      bodyHash: 'foo',
+      bodyHash: "foo",
       discardEmpty: false,
-      key: '$bodyHash:$valueHash',
+      key: "$bodyHash:$valueHash",
       ttl: 60,
-      valueHash: 'bar',
+      valueHash: "bar",
     }),
     {
       discardEmpty: false,
-      key: 'foo:bar',
+      key: "foo:bar",
       ttl: 60,
     },
   );

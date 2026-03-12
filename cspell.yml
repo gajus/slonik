@@ -3,13 +3,13 @@ dictionaries:
   - sql
   - typescript
 ignorePaths:
-  - '**/CHANGELOG.md'
+  - "**/CHANGELOG.md"
   - node_modules
   - dist
   - README.md
 language: en
 minWordLength: 5
-version: '0.2'
+version: "0.2"
 words:
   - gajus
   - kuizinas

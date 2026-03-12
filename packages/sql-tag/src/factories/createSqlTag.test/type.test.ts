@@ -1,10 +1,10 @@
-import { createSqlTag } from '../createSqlTag.js';
-import test from 'ava';
-import { z } from 'zod';
+import { createSqlTag } from "../createSqlTag.js";
+import test from "ava";
+import { z } from "zod";
 
 const sql = createSqlTag();
 
-test('describes zod object associated with the query', (t) => {
+test("describes zod object associated with the query", (t) => {
   const zodObject = z.object({
     id: z.number(),
   });

@@ -1,23 +1,23 @@
-import { any } from '../connectionMethods/any.js';
-import { anyFirst } from '../connectionMethods/anyFirst.js';
-import { exists } from '../connectionMethods/exists.js';
-import { many } from '../connectionMethods/many.js';
-import { manyFirst } from '../connectionMethods/manyFirst.js';
-import { maybeOne } from '../connectionMethods/maybeOne.js';
-import { maybeOneFirst } from '../connectionMethods/maybeOneFirst.js';
-import { nestedTransaction } from '../connectionMethods/nestedTransaction.js';
-import { one } from '../connectionMethods/one.js';
-import { oneFirst } from '../connectionMethods/oneFirst.js';
-import { query as queryMethod } from '../connectionMethods/query.js';
-import { stream } from '../connectionMethods/stream.js';
-import type { ConnectionPoolClient } from '../factories/createConnectionPool.js';
-import { getPoolClientState } from '../state.js';
+import { any } from "../connectionMethods/any.js";
+import { anyFirst } from "../connectionMethods/anyFirst.js";
+import { exists } from "../connectionMethods/exists.js";
+import { many } from "../connectionMethods/many.js";
+import { manyFirst } from "../connectionMethods/manyFirst.js";
+import { maybeOne } from "../connectionMethods/maybeOne.js";
+import { maybeOneFirst } from "../connectionMethods/maybeOneFirst.js";
+import { nestedTransaction } from "../connectionMethods/nestedTransaction.js";
+import { one } from "../connectionMethods/one.js";
+import { oneFirst } from "../connectionMethods/oneFirst.js";
+import { query as queryMethod } from "../connectionMethods/query.js";
+import { stream } from "../connectionMethods/stream.js";
+import type { ConnectionPoolClient } from "../factories/createConnectionPool.js";
+import { getPoolClientState } from "../state.js";
 import type {
   ClientConfiguration,
   DatabaseTransactionConnection,
   DatabaseTransactionEventEmitter,
   Logger,
-} from '../types.js';
+} from "../types.js";
 
 export const bindTransactionConnection = (
   parentLog: Logger,
@@ -31,7 +31,7 @@ export const bindTransactionConnection = (
 
   const assertTransactionDepth = () => {
     if (transactionDepth !== poolClientState.transactionDepth) {
-      throw new Error('Cannot run a query using parent transaction.');
+      throw new Error("Cannot run a query using parent transaction.");
     }
   };
 
@@ -75,12 +75,7 @@ export const bindTransactionConnection = (
     maybeOneFirst: (slonikSql) => {
       assertTransactionDepth();
 
-      return maybeOneFirst(
-        parentLog,
-        connection,
-        clientConfiguration,
-        slonikSql,
-      );
+      return maybeOneFirst(parentLog, connection, clientConfiguration, slonikSql);
     },
     off: eventEmitter.off.bind(eventEmitter),
     on: eventEmitter.on.bind(eventEmitter),
@@ -109,13 +104,7 @@ export const bindTransactionConnection = (
     stream: (slonikSql, streamHandler) => {
       assertTransactionDepth();
 
-      return stream(
-        parentLog,
-        connection,
-        clientConfiguration,
-        slonikSql,
-        streamHandler,
-      );
+      return stream(parentLog, connection, clientConfiguration, slonikSql, streamHandler);
     },
     transaction: (handler, transactionRetryLimit) => {
       assertTransactionDepth();

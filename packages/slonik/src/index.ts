@@ -1,16 +1,16 @@
-import { createSqlTag } from '@slonik/sql-tag';
+import { createSqlTag } from "@slonik/sql-tag";
 
-export { createPool } from './factories/createPool.js';
+export { createPool } from "./factories/createPool.js";
 
 export const sql = createSqlTag();
 
-export { createTypeParserPreset } from './factories/createTypeParserPreset.js';
-export { createBigintTypeParser } from './factories/typeParsers/createBigintTypeParser.js';
-export { createDateTypeParser } from './factories/typeParsers/createDateTypeParser.js';
-export { createIntervalTypeParser } from './factories/typeParsers/createIntervalTypeParser.js';
-export { createNumericTypeParser } from './factories/typeParsers/createNumericTypeParser.js';
-export { createTimestampTypeParser } from './factories/typeParsers/createTimestampTypeParser.js';
-export { createTimestampWithTimeZoneTypeParser } from './factories/typeParsers/createTimestampWithTimeZoneTypeParser.js';
+export { createTypeParserPreset } from "./factories/createTypeParserPreset.js";
+export { createBigintTypeParser } from "./factories/typeParsers/createBigintTypeParser.js";
+export { createDateTypeParser } from "./factories/typeParsers/createDateTypeParser.js";
+export { createIntervalTypeParser } from "./factories/typeParsers/createIntervalTypeParser.js";
+export { createNumericTypeParser } from "./factories/typeParsers/createNumericTypeParser.js";
+export { createTimestampTypeParser } from "./factories/typeParsers/createTimestampTypeParser.js";
+export { createTimestampWithTimeZoneTypeParser } from "./factories/typeParsers/createTimestampWithTimeZoneTypeParser.js";
 export type {
   ClientConfiguration,
   ClientConfigurationInput,
@@ -37,7 +37,7 @@ export type {
   QueryResultRowColumn,
   TypeNameIdentifier,
   ValueExpression,
-} from './types.js';
+} from "./types.js";
 export {
   createDriverFactory,
   type Driver,
@@ -52,7 +52,7 @@ export {
   type DriverQueryResult,
   type DriverStreamResult,
   type DriverTypeParser,
-} from '@slonik/driver';
+} from "@slonik/driver";
 export {
   BackendTerminatedError,
   BackendTerminatedUnexpectedlyError,
@@ -76,7 +76,7 @@ export {
   UnexpectedForeignConnectionError,
   UnexpectedStateError,
   UniqueIntegrityConstraintViolationError,
-} from '@slonik/errors';
+} from "@slonik/errors";
 export {
   type ArraySqlToken,
   type BinarySqlToken,
@@ -95,6 +95,6 @@ export {
   type SqlToken,
   type UnnestSqlToken,
   type UuidSqlToken,
-} from '@slonik/sql-tag';
-export { stringifyDsn } from '@slonik/utilities';
-export { parseDsn } from '@slonik/utilities';
+} from "@slonik/sql-tag";
+export { stringifyDsn } from "@slonik/utilities";
+export { parseDsn } from "@slonik/utilities";

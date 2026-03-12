@@ -1,22 +1,18 @@
-import { createPool } from '../factories/createPool.js';
-import { createTestRunner } from '../helpers.test/createTestRunner.js';
-import {
-  DataIntegrityError,
-  NotFoundError,
-  UnexpectedStateError,
-} from '@slonik/errors';
-import { createPgDriverFactory } from '@slonik/pg-driver';
-import { createSqlTag } from '@slonik/sql-tag';
-import { expectTypeOf } from 'expect-type';
-import { z } from 'zod';
+import { createPool } from "../factories/createPool.js";
+import { createTestRunner } from "../helpers.test/createTestRunner.js";
+import { DataIntegrityError, NotFoundError, UnexpectedStateError } from "@slonik/errors";
+import { createPgDriverFactory } from "@slonik/pg-driver";
+import { createSqlTag } from "@slonik/sql-tag";
+import { expectTypeOf } from "expect-type";
+import { z } from "zod";
 
 const driverFactory = createPgDriverFactory();
 
-const { test } = createTestRunner(driverFactory, 'pg');
+const { test } = createTestRunner(driverFactory, "pg");
 
 const sql = createSqlTag();
 
-test('returns value of the first column from the first row', async (t) => {
+test("returns value of the first column from the first row", async (t) => {
   const pool = await createPool(t.context.dsn, {
     driverFactory,
   });
@@ -29,7 +25,7 @@ test('returns value of the first column from the first row', async (t) => {
   t.is(result, 1);
 });
 
-test('throws an error if no rows are returned', async (t) => {
+test("throws an error if no rows are returned", async (t) => {
   const pool = await createPool(t.context.dsn, {
     driverFactory,
   });
@@ -45,7 +41,7 @@ test('throws an error if no rows are returned', async (t) => {
   t.true(error instanceof NotFoundError);
 });
 
-test('throws an error if more than one row is returned', async (t) => {
+test("throws an error if more than one row is returned", async (t) => {
   const pool = await createPool(t.context.dsn, {
     driverFactory,
   });
@@ -60,7 +56,7 @@ test('throws an error if more than one row is returned', async (t) => {
   t.true(error instanceof DataIntegrityError);
 });
 
-test('throws an error if more than one column is returned', async (t) => {
+test("throws an error if more than one column is returned", async (t) => {
   const pool = await createPool(t.context.dsn, {
     driverFactory,
   });
@@ -75,7 +71,7 @@ test('throws an error if more than one column is returned', async (t) => {
   t.true(error instanceof UnexpectedStateError);
 });
 
-test('describes zod object associated with the query', async (t) => {
+test("describes zod object associated with the query", async (t) => {
   const pool = await createPool(t.context.dsn, {
     driverFactory,
   });

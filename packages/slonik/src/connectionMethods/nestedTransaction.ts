@@ -1,13 +1,13 @@
-import { bindTransactionConnection } from '../binders/bindTransactionConnection.js';
-import { TRANSACTION_ROLLBACK_ERROR_PREFIX } from '../constants.js';
-import { getPoolClientState } from '../state.js';
+import { bindTransactionConnection } from "../binders/bindTransactionConnection.js";
+import { TRANSACTION_ROLLBACK_ERROR_PREFIX } from "../constants.js";
+import { getPoolClientState } from "../state.js";
 import type {
   DatabaseTransactionEventEmitter,
   InternalNestedTransactionFunction,
-} from '../types.js';
-import { UnexpectedStateError } from '@slonik/errors';
-import { generateUid } from '@slonik/utilities';
-import { serializeError } from 'serialize-error';
+} from "../types.js";
+import { UnexpectedStateError } from "@slonik/errors";
+import { generateUid } from "@slonik/utilities";
+import { serializeError } from "serialize-error";
 
 const execNestedTransaction: InternalNestedTransactionFunction = async (
   parentLog,
@@ -19,17 +19,15 @@ const execNestedTransaction: InternalNestedTransactionFunction = async (
   eventEmitter?: DatabaseTransactionEventEmitter,
   transactionId?: string,
 ) => {
-  await connection.query(
-    'SAVEPOINT slonik_savepoint_' + String(newTransactionDepth),
-  );
+  await connection.query("SAVEPOINT slonik_savepoint_" + String(newTransactionDepth));
 
   if (!eventEmitter || !transactionId) {
     throw new UnexpectedStateError(
-      'Event emitter and transaction ID are required for nested transaction execution.',
+      "Event emitter and transaction ID are required for nested transaction execution.",
     );
   }
 
-  eventEmitter.emit('savepoint', {
+  eventEmitter.emit("savepoint", {
     transactionDepth: newTransactionDepth,
     transactionId,
   });
@@ -48,12 +46,10 @@ const execNestedTransaction: InternalNestedTransactionFunction = async (
 
     return result;
   } catch (error) {
-    await connection.query(
-      'ROLLBACK TO SAVEPOINT slonik_savepoint_' + String(newTransactionDepth),
-    );
+    await connection.query("ROLLBACK TO SAVEPOINT slonik_savepoint_" + String(newTransactionDepth));
 
     if (eventEmitter && transactionId) {
-      eventEmitter.emit('rollbackToSavepoint', {
+      eventEmitter.emit("rollbackToSavepoint", {
         error: error as Error,
         transactionDepth: newTransactionDepth,
         transactionId,
@@ -64,7 +60,7 @@ const execNestedTransaction: InternalNestedTransactionFunction = async (
       {
         error: serializeError(error),
       },
-      'rolling back transaction due to an error',
+      "rolling back transaction due to an error",
     );
 
     throw error;
@@ -85,8 +81,7 @@ const retryNestedTransaction: InternalNestedTransactionFunction = async (
 ) => {
   const poolClientState = getPoolClientState(connection);
 
-  let remainingRetries =
-    transactionRetryLimit ?? clientConfiguration.transactionRetryLimit;
+  let remainingRetries = transactionRetryLimit ?? clientConfiguration.transactionRetryLimit;
   let attempt = 0;
   let result: Awaited<ReturnType<typeof handler>>;
 
@@ -99,7 +94,7 @@ const retryNestedTransaction: InternalNestedTransactionFunction = async (
           attempt,
           parentTransactionId: poolClientState.transactionId,
         },
-        'retrying nested transaction',
+        "retrying nested transaction",
       );
 
       result = await execNestedTransaction(
@@ -117,7 +112,7 @@ const retryNestedTransaction: InternalNestedTransactionFunction = async (
       break;
     } catch (error) {
       if (
-        typeof error.code === 'string' &&
+        typeof error.code === "string" &&
         error.code.startsWith(TRANSACTION_ROLLBACK_ERROR_PREFIX) &&
         remainingRetries > 0
       ) {
@@ -168,7 +163,7 @@ export const nestedTransaction: InternalNestedTransactionFunction = async (
       transactionRetryLimit ?? clientConfiguration.transactionRetryLimit;
 
     const shouldRetry =
-      typeof error.code === 'string' &&
+      typeof error.code === "string" &&
       error.code.startsWith(TRANSACTION_ROLLBACK_ERROR_PREFIX) &&
       transactionRetryLimitToUse > 0;
 

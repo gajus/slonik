@@ -1,29 +1,29 @@
-import { createPool } from '../../factories/createPool.js';
-import { createErrorWithCode } from '../../helpers.test/createErrorWithCode.js';
-import { createTestRunner } from '../../helpers.test/createTestRunner.js';
-import { createPgDriverFactory } from '@slonik/pg-driver';
-import { createSqlTag } from '@slonik/sql-tag';
-import * as sinon from 'sinon';
+import { createPool } from "../../factories/createPool.js";
+import { createErrorWithCode } from "../../helpers.test/createErrorWithCode.js";
+import { createTestRunner } from "../../helpers.test/createTestRunner.js";
+import { createPgDriverFactory } from "@slonik/pg-driver";
+import { createSqlTag } from "@slonik/sql-tag";
+import * as sinon from "sinon";
 
 const driverFactory = createPgDriverFactory();
 
-const { test } = createTestRunner(driverFactory, 'pg');
+const { test } = createTestRunner(driverFactory, "pg");
 
 export const createErrorWithCodeAndConstraint = (code: string) => {
   const error = createErrorWithCode(code);
 
   // @ts-expect-error – This is a test helper.
-  error.constraint = 'foo';
+  error.constraint = "foo";
 
   return error;
 };
 
 const sql = createSqlTag();
 
-test('ends connection after promise is resolved (explicit connection)', async (t) => {
+test("ends connection after promise is resolved (explicit connection)", async (t) => {
   const eventHandler = sinon.spy();
 
-  process.on('warning', eventHandler);
+  process.on("warning", eventHandler);
 
   const pool = await createPool(t.context.dsn, { driverFactory });
 
@@ -42,7 +42,7 @@ test('ends connection after promise is resolved (explicit connection)', async (t
   t.false(eventHandler.called);
 });
 
-test('executes the query and returns the result', async (t) => {
+test("executes the query and returns the result", async (t) => {
   const pool = await createPool(t.context.dsn, { driverFactory });
 
   const result = await pool.query(sql.unsafe`
@@ -51,11 +51,11 @@ test('executes the query and returns the result', async (t) => {
   `);
 
   t.deepEqual(result, {
-    command: 'SELECT',
+    command: "SELECT",
     fields: [
       {
         dataTypeId: 23,
-        name: 'id',
+        name: "id",
       },
     ],
     notices: [],
@@ -65,6 +65,6 @@ test('executes the query and returns the result', async (t) => {
         id: 1,
       },
     ],
-    type: 'QueryResult',
+    type: "QueryResult",
   });
 });

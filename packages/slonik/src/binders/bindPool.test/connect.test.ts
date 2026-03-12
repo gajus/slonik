@@ -1,15 +1,15 @@
-import { createPoolWithSpy } from '../../helpers.test/createPoolWithSpy.js';
-import { createTestRunner } from '../../helpers.test/createTestRunner.js';
-import { createPgDriverFactory } from '@slonik/pg-driver';
-import { createSqlTag } from '@slonik/sql-tag';
+import { createPoolWithSpy } from "../../helpers.test/createPoolWithSpy.js";
+import { createTestRunner } from "../../helpers.test/createTestRunner.js";
+import { createPgDriverFactory } from "@slonik/pg-driver";
+import { createSqlTag } from "@slonik/sql-tag";
 
 const driverFactory = createPgDriverFactory();
 
-const { test } = createTestRunner(driverFactory, 'pg');
+const { test } = createTestRunner(driverFactory, "pg");
 
 const sql = createSqlTag();
 
-test('release connection after promise is resolved (implicit connection)', async (t) => {
+test("release connection after promise is resolved (implicit connection)", async (t) => {
   const { pool, spy } = await createPoolWithSpy(t.context.dsn, {
     driverFactory,
   });
@@ -20,14 +20,14 @@ test('release connection after promise is resolved (implicit connection)', async
   t.is(spy.release.callCount, 1);
 });
 
-test('destroys connection after promise is rejected', async (t) => {
+test("destroys connection after promise is rejected", async (t) => {
   const { pool, spy } = await createPoolWithSpy(t.context.dsn, {
     driverFactory,
   });
 
   await t.throwsAsync(
     pool.connect(async () => {
-      return await Promise.reject(new Error('foo'));
+      return await Promise.reject(new Error("foo"));
     }),
   );
 
@@ -35,15 +35,15 @@ test('destroys connection after promise is rejected', async (t) => {
   t.is(spy.destroy.callCount, 1);
 });
 
-test('does not connect if `beforePoolConnection` throws an error', async (t) => {
+test("does not connect if `beforePoolConnection` throws an error", async (t) => {
   const { pool, spy } = await createPoolWithSpy(t.context.dsn, {
     driverFactory,
     interceptors: [
       {
         beforePoolConnection: async () => {
-          throw new Error('foo');
+          throw new Error("foo");
         },
-        name: 'foo',
+        name: "foo",
       },
     ],
   });
@@ -58,15 +58,15 @@ test('does not connect if `beforePoolConnection` throws an error', async (t) => 
   t.is(spy.release.callCount, 0);
 });
 
-test('ends connection if `afterPoolConnection` throws an error', async (t) => {
+test("ends connection if `afterPoolConnection` throws an error", async (t) => {
   const { pool, spy } = await createPoolWithSpy(t.context.dsn, {
     driverFactory,
     interceptors: [
       {
         afterPoolConnection: async () => {
-          throw new Error('foo');
+          throw new Error("foo");
         },
-        name: 'foo',
+        name: "foo",
       },
     ],
   });
@@ -81,15 +81,15 @@ test('ends connection if `afterPoolConnection` throws an error', async (t) => {
   t.is(spy.destroy.callCount, 1);
 });
 
-test('ends connection if `beforePoolConnectionRelease` throws an error', async (t) => {
+test("ends connection if `beforePoolConnectionRelease` throws an error", async (t) => {
   const { pool, spy } = await createPoolWithSpy(t.context.dsn, {
     driverFactory,
     interceptors: [
       {
         afterPoolConnection: async () => {
-          throw new Error('foo');
+          throw new Error("foo");
         },
-        name: 'foo',
+        name: "foo",
       },
     ],
   });
@@ -104,7 +104,7 @@ test('ends connection if `beforePoolConnectionRelease` throws an error', async (
   t.is(spy.destroy.callCount, 1);
 });
 
-test('if `beforePoolConnection` returns pool object, then the returned pool object is used to create a new connection (IMPLICIT_QUERY)', async (t) => {
+test("if `beforePoolConnection` returns pool object, then the returned pool object is used to create a new connection (IMPLICIT_QUERY)", async (t) => {
   const { pool: pool0, spy: spy0 } = await createPoolWithSpy(t.context.dsn, {
     driverFactory,
   });
@@ -116,7 +116,7 @@ test('if `beforePoolConnection` returns pool object, then the returned pool obje
         beforePoolConnection: () => {
           return pool0;
         },
-        name: 'foo',
+        name: "foo",
       },
     ],
   });
@@ -130,7 +130,7 @@ test('if `beforePoolConnection` returns pool object, then the returned pool obje
   t.is(spy1.release.callCount, 0);
 });
 
-test('if `beforePoolConnection` returns pool object, then the returned pool object is used to create a connection (IMPLICIT_TRANSACTION)', async (t) => {
+test("if `beforePoolConnection` returns pool object, then the returned pool object is used to create a connection (IMPLICIT_TRANSACTION)", async (t) => {
   const { pool: pool0, spy: spy0 } = await createPoolWithSpy(t.context.dsn, {
     driverFactory,
   });
@@ -142,7 +142,7 @@ test('if `beforePoolConnection` returns pool object, then the returned pool obje
         beforePoolConnection: () => {
           return pool0;
         },
-        name: 'foo',
+        name: "foo",
       },
     ],
   });
@@ -158,7 +158,7 @@ test('if `beforePoolConnection` returns pool object, then the returned pool obje
   t.is(spy1.release.callCount, 0);
 });
 
-test('if `beforePoolConnection` returns pool object, then the returned pool object is used to create a connection (EXPLICIT)', async (t) => {
+test("if `beforePoolConnection` returns pool object, then the returned pool object is used to create a connection (EXPLICIT)", async (t) => {
   const { pool: pool0, spy: spy0 } = await createPoolWithSpy(t.context.dsn, {
     driverFactory,
   });
@@ -170,7 +170,7 @@ test('if `beforePoolConnection` returns pool object, then the returned pool obje
         beforePoolConnection: () => {
           return pool0;
         },
-        name: 'foo',
+        name: "foo",
       },
     ],
   });
@@ -186,7 +186,7 @@ test('if `beforePoolConnection` returns pool object, then the returned pool obje
   t.is(spy1.release.callCount, 0);
 });
 
-test('if `beforePoolConnection` returns null, then the current pool object is used to create a connection', async (t) => {
+test("if `beforePoolConnection` returns null, then the current pool object is used to create a connection", async (t) => {
   const { pool, spy } = await createPoolWithSpy(t.context.dsn, {
     driverFactory,
     interceptors: [
@@ -194,7 +194,7 @@ test('if `beforePoolConnection` returns null, then the current pool object is us
         beforePoolConnection: () => {
           return null;
         },
-        name: 'foo',
+        name: "foo",
       },
     ],
   });

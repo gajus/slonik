@@ -1,7 +1,7 @@
-import { FragmentToken } from '../tokens.js';
-import type { SqlFragmentToken, UuidSqlToken } from '../types.js';
-import { formatSlonikPlaceholder } from '../utilities/formatSlonikPlaceholder.js';
-import { InvalidInputError } from '@slonik/errors';
+import { FragmentToken } from "../tokens.js";
+import type { SqlFragmentToken, UuidSqlToken } from "../types.js";
+import { formatSlonikPlaceholder } from "../utilities/formatSlonikPlaceholder.js";
+import { InvalidInputError } from "@slonik/errors";
 
 export type UUID = `${string}-${string}-${string}-${string}-${string}`;
 
@@ -17,11 +17,11 @@ export const createUuidSqlFragment = (
   greatestParameterPosition: number,
 ): SqlFragmentToken => {
   if (!isValidUuid(token.uuid)) {
-    throw new InvalidInputError('UUID parameter value must be a valid UUID.');
+    throw new InvalidInputError("UUID parameter value must be a valid UUID.");
   }
 
   return {
-    sql: formatSlonikPlaceholder(greatestParameterPosition + 1) + '::uuid',
+    sql: formatSlonikPlaceholder(greatestParameterPosition + 1) + "::uuid",
     type: FragmentToken,
     values: [token.uuid],
   };

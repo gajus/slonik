@@ -1,12 +1,12 @@
 // cspell:ignore sslrootcert, sslcert
 
-import { UnexpectedStateError } from '@slonik/errors';
-import type { ConnectionOptions } from '@slonik/types';
-import { readFileSync } from 'node:fs';
-import { z } from 'zod';
+import { UnexpectedStateError } from "@slonik/errors";
+import type { ConnectionOptions } from "@slonik/types";
+import { readFileSync } from "node:fs";
+import { z } from "zod";
 
 export const parseDsn = (dsn: string): ConnectionOptions => {
-  if (dsn.trim() === '') {
+  if (dsn.trim() === "") {
     return {};
   }
 
@@ -16,10 +16,10 @@ export const parseDsn = (dsn: string): ConnectionOptions => {
 
   if (url.host) {
     connectionOptions.host = decodeURIComponent(url.hostname);
-  } else if (url.searchParams.has('host')) {
-    const host = url.searchParams.get('host');
+  } else if (url.searchParams.has("host")) {
+    const host = url.searchParams.get("host");
 
-    if (typeof host === 'string' && host) {
+    if (typeof host === "string" && host) {
       connectionOptions.host = host;
     }
   }
@@ -28,10 +28,8 @@ export const parseDsn = (dsn: string): ConnectionOptions => {
     connectionOptions.port = Number(url.port);
   }
 
-  if (url.pathname && url.pathname !== '/') {
-    connectionOptions.databaseName = decodeURIComponent(
-      url.pathname.split('/')[1],
-    );
+  if (url.pathname && url.pathname !== "/") {
+    connectionOptions.databaseName = decodeURIComponent(url.pathname.split("/")[1]);
   }
 
   if (url.username) {
@@ -49,19 +47,17 @@ export const parseDsn = (dsn: string): ConnectionOptions => {
       sslcert: z
         .string()
         .optional()
-        .describe('Specifies the file name of the client SSL certificate.'),
+        .describe("Specifies the file name of the client SSL certificate."),
       sslkey: z
         .string()
         .optional()
-        .describe(
-          'Specifies the location for the secret key used for the client certificate.',
-        ),
-      sslmode: z.enum(['disable', 'no-verify', 'require']).optional(),
+        .describe("Specifies the location for the secret key used for the client certificate."),
+      sslmode: z.enum(["disable", "no-verify", "require"]).optional(),
       sslrootcert: z
         .string()
         .optional()
         .describe(
-          'Specifies the name of a file containing SSL certificate authority (CA) certificate(s).',
+          "Specifies the name of a file containing SSL certificate authority (CA) certificate(s).",
         ),
     })
     .parse(Object.fromEntries(url.searchParams));
@@ -84,42 +80,38 @@ export const parseDsn = (dsn: string): ConnectionOptions => {
 
   if (searchParameters.sslcert) {
     try {
-      sslCert = readFileSync(searchParameters.sslcert, 'utf8');
+      sslCert = readFileSync(searchParameters.sslcert, "utf8");
     } catch {
-      throw new UnexpectedStateError('Failed to read SSL certificate file.');
+      throw new UnexpectedStateError("Failed to read SSL certificate file.");
     }
   }
 
   if (searchParameters.sslkey) {
     try {
-      sslKey = readFileSync(searchParameters.sslkey, 'utf8');
+      sslKey = readFileSync(searchParameters.sslkey, "utf8");
     } catch {
-      throw new UnexpectedStateError('Failed to read SSL key file.');
+      throw new UnexpectedStateError("Failed to read SSL key file.");
     }
   }
 
   if (searchParameters.sslrootcert) {
     try {
-      sslRootCert = readFileSync(searchParameters.sslrootcert, 'utf8');
+      sslRootCert = readFileSync(searchParameters.sslrootcert, "utf8");
     } catch {
-      throw new UnexpectedStateError(
-        'Failed to read SSL root certificate file.',
-      );
+      throw new UnexpectedStateError("Failed to read SSL root certificate file.");
     }
   }
 
   if (sslCert || sslKey || sslRootCert) {
     if ((sslCert && !sslKey) || (!sslCert && sslKey)) {
-      throw new UnexpectedStateError(
-        'Both sslcert and sslkey must be provided together.',
-      );
+      throw new UnexpectedStateError("Both sslcert and sslkey must be provided together.");
     }
 
     connectionOptions.ssl = {
       ca: sslRootCert,
       cert: sslCert,
       key: sslKey,
-      rejectUnauthorized: searchParameters.sslmode !== 'no-verify',
+      rejectUnauthorized: searchParameters.sslmode !== "no-verify",
     };
   }
 

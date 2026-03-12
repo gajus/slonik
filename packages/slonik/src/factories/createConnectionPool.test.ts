@@ -1,13 +1,5 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
-/* eslint-disable canonical/id-match */
-/* eslint-disable promise/prefer-await-to-then */
-/* eslint-disable no-promise-executor-return */
-
-import type {
-  ConnectionPool,
-  ConnectionPoolClient,
-} from './createConnectionPool.js';
-import { createConnectionPool } from './createConnectionPool.js';
+import type { ConnectionPool, ConnectionPoolClient } from "./createConnectionPool.js";
+import { createConnectionPool } from "./createConnectionPool.js";
 import type {
   Driver,
   DriverClient,
@@ -16,11 +8,11 @@ import type {
   DriverQueryResult,
   DriverStream,
   DriverStreamResult,
-} from '@slonik/driver';
-import { generateUid } from '@slonik/utilities';
-import test from 'ava';
-import { EventEmitter } from 'node:events';
-import type * as sinon from 'sinon';
+} from "@slonik/driver";
+import { generateUid } from "@slonik/utilities";
+import test from "ava";
+import { EventEmitter } from "node:events";
+import type * as sinon from "sinon";
 
 const acquireConnections = async (
   pool: ConnectionPool,
@@ -34,9 +26,7 @@ const acquireConnections = async (
   return connections;
 };
 
-const releaseConnections = async (
-  connections: ConnectionPoolClient[],
-): Promise<void> => {
+const releaseConnections = async (connections: ConnectionPoolClient[]): Promise<void> => {
   await Promise.all(connections.map((c) => c.release()));
 };
 
@@ -79,72 +69,12 @@ const waitForPoolStabilization = async (
   }
 };
 
-class MockDriver implements Driver {
-  protected connectionDelay: number;
-
-  protected createdClients: MockDriverClient[] = [];
-
-  protected shouldFailConnection: boolean;
-
-  constructor(
-    options: { connectionDelay?: number; shouldFailConnection?: boolean } = {},
-  ) {
-    this.connectionDelay = options.connectionDelay || 0;
-    this.shouldFailConnection = options.shouldFailConnection || false;
-  }
-
-  async createClient(): Promise<DriverClient> {
-    if (this.connectionDelay > 0) {
-      await wait(this.connectionDelay);
-    }
-
-    if (this.shouldFailConnection) {
-      throw new Error('Failed to create client');
-    }
-
-    // eslint-disable-next-line @typescript-eslint/no-use-before-define
-    const client = new MockDriverClient();
-
-    this.createdClients.push(client);
-
-    // Return a plain object that can be spread
-    return client.toPlainObject();
-  }
-
-  getCreatedClients(): MockDriverClient[] {
-    return this.createdClients;
-  }
-}
-
-class FailingValidationMockDriver extends MockDriver {
-  async createClient(): Promise<DriverClient> {
-    if (this.connectionDelay > 0) {
-      await wait(this.connectionDelay);
-    }
-
-    if (this.shouldFailConnection) {
-      throw new Error('Failed to create client');
-    }
-
-    // eslint-disable-next-line @typescript-eslint/no-use-before-define
-    const client = new FailingValidationMockDriverClient();
-    this.createdClients.push(client);
-    return client.toPlainObject();
-  }
-}
-
-class MockDriverClient
-  extends EventEmitter
-  implements DriverClient, DriverClientEventEmitter
-{
-  protected queryBehavior?: (
-    query: string,
-    values?: unknown[],
-  ) => Promise<DriverQueryResult>;
+class MockDriverClient extends EventEmitter implements DriverClient, DriverClientEventEmitter {
+  protected queryBehavior?: (query: string, values?: unknown[]) => Promise<DriverQueryResult>;
 
   private _id: string;
 
-  private _state: DriverClientState = 'IDLE';
+  private _state: DriverClientState = "IDLE";
 
   constructor() {
     super();
@@ -152,18 +82,18 @@ class MockDriverClient
   }
 
   acquire(): void {
-    if (this._state !== 'IDLE') {
+    if (this._state !== "IDLE") {
       throw new Error(`Cannot acquire connection in state ${this._state}`);
     }
 
-    this._state = 'ACQUIRED';
+    this._state = "ACQUIRED";
   }
 
   async destroy(): Promise<void> {
-    this._state = 'PENDING_DESTROY';
+    this._state = "PENDING_DESTROY";
     await waitTick();
-    this._state = 'DESTROYED';
-    this.emit('destroy');
+    this._state = "DESTROYED";
+    this.emit("destroy");
   }
 
   id(): string {
@@ -177,18 +107,18 @@ class MockDriverClient
     }
 
     // Handle connection validation query
-    if (query === 'SELECT 1') {
+    if (query === "SELECT 1") {
       return {
-        command: 'SELECT',
+        command: "SELECT",
         fields: [],
         rowCount: 1,
-        rows: [{ '?column?': 1 }],
+        rows: [{ "?column?": 1 }],
       };
     }
 
     // Default response for other queries
     return {
-      command: 'SELECT',
+      command: "SELECT",
       fields: [],
       rowCount: 0,
       rows: [],
@@ -196,81 +126,131 @@ class MockDriverClient
   }
 
   async release(): Promise<void> {
-    if (this._state !== 'ACQUIRED') {
+    if (this._state !== "ACQUIRED") {
       throw new Error(`Cannot release connection in state ${this._state}`);
     }
 
-    this._state = 'PENDING_RELEASE';
+    this._state = "PENDING_RELEASE";
     await waitTick();
-    this._state = 'IDLE';
-    this.emit('release');
+    this._state = "IDLE";
+    this.emit("release");
   }
 
   state(): DriverClientState {
     return this._state;
   }
 
-  stream(query: string, values?: unknown[]): DriverStream<DriverStreamResult> {
-    throw new Error('Not implemented');
+  stream(_query: string, _values?: unknown[]): DriverStream<DriverStreamResult> {
+    throw new Error("Not implemented");
   }
 
   // Simplified toPlainObject method
   toPlainObject(): DriverClient & DriverClientEventEmitter {
     const methodNames = [
       // DriverClient methods
-      'acquire',
-      'destroy',
-      'id',
-      'query',
-      'release',
-      'state',
-      'stream',
+      "acquire",
+      "destroy",
+      "id",
+      "query",
+      "release",
+      "state",
+      "stream",
 
       // EventEmitter methods
-      'on',
-      'off',
-      'removeListener',
-      'addListener',
-      'emit',
-      'once',
-      'eventNames',
-      'getMaxListeners',
-      'listenerCount',
-      'listeners',
-      'prependListener',
-      'prependOnceListener',
-      'rawListeners',
-      'removeAllListeners',
-      'setMaxListeners',
+      "on",
+      "off",
+      "removeListener",
+      "addListener",
+      "emit",
+      "once",
+      "eventNames",
+      "getMaxListeners",
+      "listenerCount",
+      "listeners",
+      "prependListener",
+      "prependOnceListener",
+      "rawListeners",
+      "removeAllListeners",
+      "setMaxListeners",
     ];
 
     const boundMethods = {};
     for (const method of methodNames) {
-      if (typeof this[method] === 'function') {
+      if (typeof this[method] === "function") {
         boundMethods[method] = this[method].bind(this);
       }
     }
 
-    boundMethods['off'] = this.removeListener.bind(this);
+    boundMethods["off"] = this.removeListener.bind(this);
 
     return boundMethods as DriverClient & DriverClientEventEmitter;
   }
 }
 
+class MockDriver implements Driver {
+  protected connectionDelay: number;
+
+  protected createdClients: MockDriverClient[] = [];
+
+  protected shouldFailConnection: boolean;
+
+  constructor(options: { connectionDelay?: number; shouldFailConnection?: boolean } = {}) {
+    this.connectionDelay = options.connectionDelay || 0;
+    this.shouldFailConnection = options.shouldFailConnection || false;
+  }
+
+  async createClient(): Promise<DriverClient> {
+    if (this.connectionDelay > 0) {
+      await wait(this.connectionDelay);
+    }
+
+    if (this.shouldFailConnection) {
+      throw new Error("Failed to create client");
+    }
+
+    const client = new MockDriverClient();
+
+    this.createdClients.push(client);
+
+    // Return a plain object that can be spread
+    return client.toPlainObject();
+  }
+
+  getCreatedClients(): MockDriverClient[] {
+    return this.createdClients;
+  }
+}
+
 class FailingValidationMockDriverClient extends MockDriverClient {
   async query(query: string, values?: unknown[]): Promise<DriverQueryResult> {
-    if (query === 'SELECT 1') {
-      throw new Error('Connection lost');
+    if (query === "SELECT 1") {
+      throw new Error("Connection lost");
     }
 
     return super.query(query, values);
   }
 }
 
+class FailingValidationMockDriver extends MockDriver {
+  async createClient(): Promise<DriverClient> {
+    if (this.connectionDelay > 0) {
+      await wait(this.connectionDelay);
+    }
+
+    if (this.shouldFailConnection) {
+      throw new Error("Failed to create client");
+    }
+
+    const client = new FailingValidationMockDriverClient();
+    this.createdClients.push(client);
+    return client.toPlainObject();
+  }
+}
+
 const assertPoolState = (
   t: any,
   pool: ConnectionPool,
-  expected: Partial<ReturnType<ConnectionPool['state']>>,
+  expected: Partial<ReturnType<ConnectionPool["state"]>>,
 ): void => {
   const state = pool.state();
   for (const [key, value] of Object.entries(expected)) {
@@ -299,7 +279,7 @@ const createTestPool = (
   });
 };
 
-test('pool initialization and state tracking', async (t) => {
+test("pool initialization and state tracking", async (t) => {
   const driver = new MockDriver();
   const pool1 = createTestPool(driver);
   const pool2 = createTestPool(driver);
@@ -311,7 +291,7 @@ test('pool initialization and state tracking', async (t) => {
   assertPoolState(t, pool1, {
     acquiredConnections: 0,
     idleConnections: 0,
-    state: 'ACTIVE',
+    state: "ACTIVE",
     waitingClients: 0,
   });
 
@@ -321,7 +301,7 @@ test('pool initialization and state tracking', async (t) => {
   assertPoolState(t, pool1, {
     acquiredConnections: 1,
     idleConnections: 0,
-    state: 'ACTIVE',
+    state: "ACTIVE",
   });
 
   // State after releasing
@@ -330,24 +310,24 @@ test('pool initialization and state tracking', async (t) => {
   assertPoolState(t, pool1, {
     acquiredConnections: 0,
     idleConnections: 1,
-    state: 'ACTIVE',
+    state: "ACTIVE",
   });
 
   // State after ending
   await pool1.end();
   assertPoolState(t, pool1, {
-    state: 'ENDED',
+    state: "ENDED",
   });
 });
 
-test('acquire creates new connection when pool is empty', async (t) => {
+test("acquire creates new connection when pool is empty", async (t) => {
   const driver = new MockDriver();
   const pool = createTestPool(driver);
 
   const connection = await pool.acquire();
 
   t.truthy(connection);
-  t.is(connection.state(), 'ACQUIRED');
+  t.is(connection.state(), "ACQUIRED");
 
   assertPoolState(t, pool, {
     acquiredConnections: 1,
@@ -357,7 +337,7 @@ test('acquire creates new connection when pool is empty', async (t) => {
   await pool.end();
 });
 
-test('acquire reuses idle connection', async (t) => {
+test("acquire reuses idle connection", async (t) => {
   const driver = new MockDriver();
   const pool = createTestPool(driver);
 
@@ -374,7 +354,7 @@ test('acquire reuses idle connection', async (t) => {
   await pool.end();
 });
 
-test('acquire respects maximum pool size', async (t) => {
+test("acquire respects maximum pool size", async (t) => {
   const driver = new MockDriver();
   const pool = createTestPool(driver, { maximumPoolSize: 2 });
 
@@ -405,7 +385,7 @@ test('acquire respects maximum pool size', async (t) => {
   await pool.end();
 });
 
-test('pool maintains minimum pool size', async (t) => {
+test("pool maintains minimum pool size", async (t) => {
   const driver = new MockDriver();
   const pool = createTestPool(driver, { minimumPoolSize: 2 });
 
@@ -426,7 +406,7 @@ test('pool maintains minimum pool size', async (t) => {
   await pool.end();
 });
 
-test('end terminates the pool', async (t) => {
+test("end terminates the pool", async (t) => {
   const driver = new MockDriver();
   const pool = createTestPool(driver);
 
@@ -436,16 +416,16 @@ test('end terminates the pool', async (t) => {
   await pool.end();
 
   assertPoolState(t, pool, {
-    state: 'ENDED',
+    state: "ENDED",
   });
 
   // After ending, acquire should throw
   await t.throwsAsync(pool.acquire(), {
-    message: 'Connection pool has ended.',
+    message: "Connection pool has ended.",
   });
 });
 
-test('end waits for pending connections', async (t) => {
+test("end waits for pending connections", async (t) => {
   const driver = new MockDriver({ connectionDelay: 50 });
   const pool = createTestPool(driver);
 
@@ -464,11 +444,11 @@ test('end waits for pending connections', async (t) => {
   await endPromise;
 
   assertPoolState(t, pool, {
-    state: 'ENDED',
+    state: "ENDED",
   });
 });
 
-test('multiple end calls return same promise', async (t) => {
+test("multiple end calls return same promise", async (t) => {
   const driver = new MockDriver();
   const pool = createTestPool(driver);
 
@@ -487,11 +467,11 @@ test('multiple end calls return same promise', async (t) => {
 
   // Verify they were all handled correctly
   assertPoolState(t, pool, {
-    state: 'ENDED',
+    state: "ENDED",
   });
 });
 
-test('connection destroy removes it from pool', async (t) => {
+test("connection destroy removes it from pool", async (t) => {
   const driver = new MockDriver();
   const pool = createTestPool(driver);
 
@@ -509,13 +489,13 @@ test('connection destroy removes it from pool', async (t) => {
   await pool.end();
 });
 
-test('all waiting clients are rejected when all connections are destroyed and replacements fail', async (t) => {
+test("all waiting clients are rejected when all connections are destroyed and replacements fail", async (t) => {
   let failAfterInitial = false;
 
   class CrashingDriver extends MockDriver {
     async createClient(): Promise<DriverClient> {
       if (failAfterInitial) {
-        throw new Error('Connection refused');
+        throw new Error("Connection refused");
       }
 
       return super.createClient();
@@ -530,12 +510,7 @@ test('all waiting clients are rejected when all connections are destroyed and re
   const conn2 = await pool.acquire();
 
   // Queue up 4 waiting clients
-  const waiters = [
-    pool.acquire(),
-    pool.acquire(),
-    pool.acquire(),
-    pool.acquire(),
-  ];
+  const waiters = [pool.acquire(), pool.acquire(), pool.acquire(), pool.acquire()];
 
   await wait(10);
 
@@ -556,7 +531,7 @@ test('all waiting clients are rejected when all connections are destroyed and re
 
   // All waiting clients should have been rejected (not stuck forever)
   for (const waiter of waiters) {
-    await t.throwsAsync(waiter, { message: 'Connection refused' });
+    await t.throwsAsync(waiter, { message: "Connection refused" });
   }
 
   // Pool should be in a clean state with no orphaned waiters
@@ -570,13 +545,13 @@ test('all waiting clients are rejected when all connections are destroyed and re
   await pool.end();
 });
 
-test('pool recovers after all connections destroyed and DB comes back', async (t) => {
+test("pool recovers after all connections destroyed and DB comes back", async (t) => {
   let shouldFail = false;
 
   class RecoveringDriver extends MockDriver {
     async createClient(): Promise<DriverClient> {
       if (shouldFail) {
-        throw new Error('Connection refused');
+        throw new Error("Connection refused");
       }
 
       return super.createClient();
@@ -610,7 +585,7 @@ test('pool recovers after all connections destroyed and DB comes back', async (t
   await wait(50);
 
   // The waiting client should have been rejected
-  await t.throwsAsync(waiterPromise, { message: 'Connection refused' });
+  await t.throwsAsync(waiterPromise, { message: "Connection refused" });
 
   assertPoolState(t, pool, {
     acquiredConnections: 0,
@@ -634,7 +609,7 @@ test('pool recovers after all connections destroyed and DB comes back', async (t
   await pool.end();
 });
 
-test('destroyed connection triggers new connection for waiting clients', async (t) => {
+test("destroyed connection triggers new connection for waiting clients", async (t) => {
   const driver = new MockDriver();
   const pool = createTestPool(driver, { maximumPoolSize: 1 });
 
@@ -658,16 +633,16 @@ test('destroyed connection triggers new connection for waiting clients', async (
   await pool.end();
 });
 
-test('connection failure during acquire throws error', async (t) => {
+test("connection failure during acquire throws error", async (t) => {
   const driver = new MockDriver({ shouldFailConnection: true });
   const pool = createTestPool(driver);
 
-  await t.throwsAsync(pool.acquire(), { message: 'Failed to create client' });
+  await t.throwsAsync(pool.acquire(), { message: "Failed to create client" });
 
   await pool.end();
 });
 
-test('acquire throws when pool is ending', async (t) => {
+test("acquire throws when pool is ending", async (t) => {
   const driver = new MockDriver({ connectionDelay: 100 });
   const pool = createTestPool(driver);
 
@@ -676,13 +651,13 @@ test('acquire throws when pool is ending', async (t) => {
 
   // Try to acquire should fail
   await t.throwsAsync(pool.acquire(), {
-    message: 'Connection pool is being terminated.',
+    message: "Connection pool is being terminated.",
   });
 
   await endPromise;
 });
 
-test('connection events are properly attached and detached', async (t) => {
+test("connection events are properly attached and detached", async (t) => {
   const driver = new MockDriver();
   const pool = createTestPool(driver);
 
@@ -694,8 +669,8 @@ test('connection events are properly attached and detached', async (t) => {
   const underlyingClient = mockClients[0];
 
   // Check that event listeners are attached on the underlying client
-  t.true(underlyingClient.listenerCount('release') > 0);
-  t.true(underlyingClient.listenerCount('destroy') > 0);
+  t.true(underlyingClient.listenerCount("release") > 0);
+  t.true(underlyingClient.listenerCount("destroy") > 0);
 
   await connection.destroy();
 
@@ -703,13 +678,13 @@ test('connection events are properly attached and detached', async (t) => {
   await waitTick();
 
   // Check that event listeners are removed after destroy
-  t.is(underlyingClient.listenerCount('release'), 0);
-  t.is(underlyingClient.listenerCount('destroy'), 0);
+  t.is(underlyingClient.listenerCount("release"), 0);
+  t.is(underlyingClient.listenerCount("destroy"), 0);
 
   await pool.end();
 });
 
-test('pool state correctly tracks multiple connection states', async (t) => {
+test("pool state correctly tracks multiple connection states", async (t) => {
   const driver = new MockDriver();
   const pool = createTestPool(driver, { maximumPoolSize: 3 });
 
@@ -737,7 +712,7 @@ test('pool state correctly tracks multiple connection states', async (t) => {
   await pool.end();
 });
 
-test('waits for all connections to be established before attempting to terminate the pool', async (t) => {
+test("waits for all connections to be established before attempting to terminate the pool", async (t) => {
   const driver = new MockDriver({ connectionDelay: 50 });
   const pool = createTestPool(driver, { maximumPoolSize: 3 });
 
@@ -762,11 +737,11 @@ test('waits for all connections to be established before attempting to terminate
   await endPromise;
 
   assertPoolState(t, pool, {
-    state: 'ENDED',
+    state: "ENDED",
   });
 });
 
-test('queued clients are resolved in FIFO order', async (t) => {
+test("queued clients are resolved in FIFO order", async (t) => {
   const driver = new MockDriver();
   const pool = createTestPool(driver, { maximumPoolSize: 1 });
 
@@ -813,7 +788,7 @@ test('queued clients are resolved in FIFO order', async (t) => {
 // Tests for Idle Timeout, Connection Age, and Validation - Using Sinon
 // ============================================================================
 
-test('idle timeout destroys connections above minimum pool size', async (t) => {
+test("idle timeout destroys connections above minimum pool size", async (t) => {
   const driver = new MockDriver();
   const pool = createTestPool(driver, {
     idleTimeout: 100, // 100ms for testing
@@ -845,7 +820,7 @@ test('idle timeout destroys connections above minimum pool size', async (t) => {
   await pool.end();
 });
 
-test('idle timeout does not destroy connections at or below minimum pool size', async (t) => {
+test("idle timeout does not destroy connections at or below minimum pool size", async (t) => {
   const driver = new MockDriver();
   const pool = createTestPool(driver, {
     idleTimeout: 100,
@@ -875,7 +850,7 @@ test('idle timeout does not destroy connections at or below minimum pool size', 
   await pool.end();
 });
 
-test('idle timer is cleared when connection is reused', async (t) => {
+test("idle timer is cleared when connection is reused", async (t) => {
   const driver = new MockDriver();
   const pool = createTestPool(driver, {
     idleTimeout: 100,
@@ -916,17 +891,17 @@ test('idle timer is cleared when connection is reused', async (t) => {
   await pool.end();
 });
 
-test('connection is destroyed when exceeding maximum age on release', async (t) => {
+test("connection is destroyed when exceeding maximum age on release", async (t) => {
   // Skip this test as it requires mocking Date.now() before connection creation
-  t.pass('Test skipped - requires complex timing setup');
+  t.pass("Test skipped - requires complex timing setup");
 });
 
-test('old connection is destroyed during acquire attempt', async (t) => {
+test("old connection is destroyed during acquire attempt", async (t) => {
   // Skip this test as it requires mocking Date.now() before connection creation
-  t.pass('Test skipped - requires complex timing setup');
+  t.pass("Test skipped - requires complex timing setup");
 });
 
-test('connection validation succeeds for healthy connection', async (t) => {
+test("connection validation succeeds for healthy connection", async (t) => {
   const driver = new MockDriver();
   const pool = createTestPool(driver);
 
@@ -942,7 +917,7 @@ test('connection validation succeeds for healthy connection', async (t) => {
   await pool.end();
 });
 
-test('idle timeout handles concurrent operations gracefully', async (t) => {
+test("idle timeout handles concurrent operations gracefully", async (t) => {
   const driver = new MockDriver();
   const pool = createTestPool(driver, {
     idleTimeout: 100,
@@ -974,7 +949,7 @@ test('idle timeout handles concurrent operations gracefully', async (t) => {
   await pool.end();
 });
 
-test('pool end clears all idle timers', async (t) => {
+test("pool end clears all idle timers", async (t) => {
   const driver = new MockDriver();
   const pool = createTestPool(driver, {
     idleTimeout: 100,
@@ -991,10 +966,10 @@ test('pool end clears all idle timers', async (t) => {
   // Wait a bit to ensure no errors occur
   await wait(150);
 
-  t.pass('No errors from timers after pool end');
+  t.pass("No errors from timers after pool end");
 });
 
-test('connection metadata is properly cleaned up', async (t) => {
+test("connection metadata is properly cleaned up", async (t) => {
   const driver = new MockDriver();
   const pool = createTestPool(driver);
 
@@ -1019,17 +994,17 @@ test('connection metadata is properly cleaned up', async (t) => {
   await pool.end();
 });
 
-test('idle timeout and maximum age work together', async (t) => {
+test("idle timeout and maximum age work together", async (t) => {
   // Skip this test as it requires complex timing coordination
-  t.pass('Test skipped - requires complex timing coordination');
+  t.pass("Test skipped - requires complex timing coordination");
 });
 
-test('multiple idle connections are destroyed in correct order', async (t) => {
+test("multiple idle connections are destroyed in correct order", async (t) => {
   // Skip this test as it requires precise timing control
-  t.pass('Test skipped - requires precise timing control');
+  t.pass("Test skipped - requires precise timing control");
 });
 
-test('connection destroyed due to idle timeout is replaced if below minimum', async (t) => {
+test("connection destroyed due to idle timeout is replaced if below minimum", async (t) => {
   const driver = new MockDriver();
   const pool = createTestPool(driver, {
     idleTimeout: 100,
@@ -1056,7 +1031,7 @@ test('connection destroyed due to idle timeout is replaced if below minimum', as
   await pool.end();
 });
 
-test('rapid acquire/release does not cause timer conflicts', async (t) => {
+test("rapid acquire/release does not cause timer conflicts", async (t) => {
   const driver = new MockDriver();
   const pool = createTestPool(driver, {
     idleTimeout: 100,
@@ -1083,7 +1058,7 @@ test('rapid acquire/release does not cause timer conflicts', async (t) => {
   await pool.end();
 });
 
-test('pool handles mixed connection states during shutdown', async (t) => {
+test("pool handles mixed connection states during shutdown", async (t) => {
   const driver = new MockDriver();
   const pool = createTestPool(driver, {
     idleTimeout: 100,
@@ -1105,7 +1080,7 @@ test('pool handles mixed connection states during shutdown', async (t) => {
   assertPoolState(t, pool, {
     acquiredConnections: 3,
     idleConnections: 0,
-    state: 'ACTIVE',
+    state: "ACTIVE",
   });
 
   // Start a pending acquire that will wait
@@ -1119,7 +1094,7 @@ test('pool handles mixed connection states during shutdown', async (t) => {
 
   // The pending promise should be rejected
   await t.throwsAsync(pendingPromise, {
-    message: 'Connection pool is being terminated.',
+    message: "Connection pool is being terminated.",
   });
 
   // Release all acquired connections
@@ -1130,16 +1105,16 @@ test('pool handles mixed connection states during shutdown', async (t) => {
   await endPromise;
 
   assertPoolState(t, pool, {
-    state: 'ENDED',
+    state: "ENDED",
   });
 });
 
-test('connection age and idle timeout do not interfere with each other', async (t) => {
+test("connection age and idle timeout do not interfere with each other", async (t) => {
   // Skip this test as it requires complex timing coordination
-  t.pass('Test skipped - requires complex timing coordination');
+  t.pass("Test skipped - requires complex timing coordination");
 });
 
-test('destroyed connections are properly handled when pool is at maximum', async (t) => {
+test("destroyed connections are properly handled when pool is at maximum", async (t) => {
   const driver = new MockDriver();
   const pool = createTestPool(driver, {
     maximumPoolSize: 2,
@@ -1164,7 +1139,7 @@ test('destroyed connections are properly handled when pool is at maximum', async
   await pool.end();
 });
 
-test('validation query timeout is handled gracefully', async (t) => {
+test("validation query timeout is handled gracefully", async (t) => {
   // Simple test without slow validation since it's complex with fake timers
   const driver = new MockDriver();
   const pool = createTestPool(driver);
@@ -1174,19 +1149,19 @@ test('validation query timeout is handled gracefully', async (t) => {
 
   // Acquire again - should reuse after validation
   const conn2 = await pool.acquire();
-  t.is(conn2.id(), conn1.id(), 'Should reuse connection after validation');
+  t.is(conn2.id(), conn1.id(), "Should reuse connection after validation");
 
   await conn2.release();
   await pool.end();
 });
 
-test('error in connection creation does not leave pool in inconsistent state', async (t) => {
+test("error in connection creation does not leave pool in inconsistent state", async (t) => {
   let failCount = 0;
 
   class IntermittentFailureDriver extends MockDriver {
     async createClient(): Promise<DriverClient> {
       if (failCount++ < 2) {
-        throw new Error('Temporary failure');
+        throw new Error("Temporary failure");
       }
 
       return super.createClient();
@@ -1197,8 +1172,8 @@ test('error in connection creation does not leave pool in inconsistent state', a
   const pool = createTestPool(driver);
 
   // First two attempts should fail
-  await t.throwsAsync(pool.acquire(), { message: 'Temporary failure' });
-  await t.throwsAsync(pool.acquire(), { message: 'Temporary failure' });
+  await t.throwsAsync(pool.acquire(), { message: "Temporary failure" });
+  await t.throwsAsync(pool.acquire(), { message: "Temporary failure" });
 
   // Third attempt should succeed
   const conn = await pool.acquire();
@@ -1215,12 +1190,12 @@ test('error in connection creation does not leave pool in inconsistent state', a
   await pool.end();
 });
 
-test('connection age check happens before validation', async (t) => {
+test("connection age check happens before validation", async (t) => {
   // Skip this test as it requires mocking Date.now() before connection creation
-  t.pass('Test skipped - requires complex timing setup');
+  t.pass("Test skipped - requires complex timing setup");
 });
 
-test('pool correctly reports state during various operations', async (t) => {
+test("pool correctly reports state during various operations", async (t) => {
   const driver = new MockDriver();
   const pool = createTestPool(driver, {
     idleTimeout: 100,
@@ -1233,7 +1208,7 @@ test('pool correctly reports state during various operations', async (t) => {
     acquiredConnections: 0,
     idleConnections: 0,
     pendingConnections: 0,
-    state: 'ACTIVE',
+    state: "ACTIVE",
   });
 
   // Acquire one
@@ -1280,7 +1255,7 @@ test('pool correctly reports state during various operations', async (t) => {
   await pool.end();
 });
 
-test('concurrent pool operations handle correctly', async (t) => {
+test("concurrent pool operations handle correctly", async (t) => {
   const driver = new MockDriver({ connectionDelay: 10 });
   const pool = createTestPool(driver, {
     maximumPoolSize: 5,
@@ -1295,7 +1270,7 @@ test('concurrent pool operations handle correctly', async (t) => {
       pool.acquire().then(async (conn) => {
         await wait(Math.random() * 50);
         await conn.release();
-        return 'acquired-released';
+        return "acquired-released";
       }),
     );
   }
@@ -1303,7 +1278,7 @@ test('concurrent pool operations handle correctly', async (t) => {
   // Wait for all operations to complete
   const results = await Promise.all(operations);
 
-  t.is(results.filter((r) => r === 'acquired-released').length, 10);
+  t.is(results.filter((r) => r === "acquired-released").length, 10);
 
   // Pool should be stable
   await waitForPoolStabilization(pool);
@@ -1315,7 +1290,7 @@ test('concurrent pool operations handle correctly', async (t) => {
   await pool.end();
 });
 
-test('memory leak prevention with WeakMap cleanup', async (t) => {
+test("memory leak prevention with WeakMap cleanup", async (t) => {
   const driver = new MockDriver();
   const pool = createTestPool(driver, {
     idleTimeout: 50,
@@ -1339,10 +1314,7 @@ test('memory leak prevention with WeakMap cleanup', async (t) => {
   }
 
   // Verify unique connections were created
-  t.true(
-    connectionIds.size > 10,
-    'Should have created many unique connections',
-  );
+  t.true(connectionIds.size > 10, "Should have created many unique connections");
 
   // Final state should be clean
   assertPoolState(t, pool, {
@@ -1353,7 +1325,7 @@ test('memory leak prevention with WeakMap cleanup', async (t) => {
   await pool.end();
 });
 
-test('minimumPoolSize replacement connection is reachable by acquire', async (t) => {
+test("minimumPoolSize replacement connection is reachable by acquire", async (t) => {
   const driver = new MockDriver();
   const pool = createTestPool(driver, {
     maximumPoolSize: 2,
@@ -1403,7 +1375,7 @@ test('minimumPoolSize replacement connection is reachable by acquire', async (t)
   await pool.end();
 });
 
-test('minimumPoolSize replacement serves waiting client that arrived after destruction', async (t) => {
+test("minimumPoolSize replacement serves waiting client that arrived after destruction", async (t) => {
   const driver = new MockDriver({ connectionDelay: 20 });
   const pool = createTestPool(driver, {
     maximumPoolSize: 2,
@@ -1448,7 +1420,7 @@ test('minimumPoolSize replacement serves waiting client that arrived after destr
   await pool.end();
 });
 
-test('warmup creates minimumPoolSize idle connections', async (t) => {
+test("warmup creates minimumPoolSize idle connections", async (t) => {
   const driver = new MockDriver();
   const pool = createTestPool(driver, {
     maximumPoolSize: 5,
@@ -1468,7 +1440,7 @@ test('warmup creates minimumPoolSize idle connections', async (t) => {
   await pool.end();
 });
 
-test('warmup connections are reusable via acquire', async (t) => {
+test("warmup connections are reusable via acquire", async (t) => {
   const driver = new MockDriver();
   const pool = createTestPool(driver, {
     maximumPoolSize: 5,
@@ -1497,7 +1469,7 @@ test('warmup connections are reusable via acquire', async (t) => {
   await pool.end();
 });
 
-test('warmup with minimumPoolSize=0 is a no-op', async (t) => {
+test("warmup with minimumPoolSize=0 is a no-op", async (t) => {
   const driver = new MockDriver();
   const pool = createTestPool(driver, {
     maximumPoolSize: 5,
@@ -1517,7 +1489,7 @@ test('warmup with minimumPoolSize=0 is a no-op', async (t) => {
   await pool.end();
 });
 
-test('acquire creates new connection when all idle connections are too old (batch eviction)', async (t) => {
+test("acquire creates new connection when all idle connections are too old (batch eviction)", async (t) => {
   const driver = new MockDriver();
   const pool = createTestPool(driver, {
     maximumConnectionAge: 50, // 50ms
@@ -1541,7 +1513,7 @@ test('acquire creates new connection when all idle connections are too old (batc
   // Without the fix, it would queue the request thinking the pool is full
   const freshConnection = await pool.acquire();
   t.truthy(freshConnection);
-  t.is(freshConnection.state(), 'ACQUIRED');
+  t.is(freshConnection.state(), "ACQUIRED");
 
   // The 3 old connections should have been destroyed, and 1 new one created
   // Total created: 3 original + 1 fresh = 4

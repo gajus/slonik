@@ -1,6 +1,6 @@
-import { xxh64 } from '@node-rs/xxhash';
-import type { PrimitiveValueExpression } from 'slonik';
-import { lru } from 'tiny-lru';
+import { xxh64 } from "@node-rs/xxhash";
+import type { PrimitiveValueExpression } from "slonik";
+import { lru } from "tiny-lru";
 
 /**
  * LRU cache for body hashes.
@@ -9,7 +9,7 @@ import { lru } from 'tiny-lru';
 const bodyHashCache = lru<string>(1_000);
 
 const hash = (subject: string): string => {
-  return xxh64(subject).toString(16).padStart(16, '0');
+  return xxh64(subject).toString(16).padStart(16, "0");
 };
 
 /**
@@ -34,33 +34,31 @@ const getBodyHash = (sql: string, strippedSql: string): string => {
  * Fast serialization for primitive values.
  * For small arrays, avoids JSON.stringify overhead.
  */
-const serializeValues = (
-  values: readonly PrimitiveValueExpression[],
-): string => {
+const serializeValues = (values: readonly PrimitiveValueExpression[]): string => {
   if (values.length === 0) {
-    return '[]';
+    return "[]";
   }
 
   // For small arrays, direct join is faster
   if (values.length <= 16) {
-    let result = '';
+    let result = "";
 
     for (const value of values) {
       if (result) {
-        result += '\u0000';
+        result += "\u0000";
       }
 
       if (value === null) {
         // null marker
-        result += '\u0001';
-      } else if (typeof value === 'string') {
-        result += 's' + value;
-      } else if (typeof value === 'number') {
-        result += 'n' + value;
-      } else if (typeof value === 'boolean') {
-        result += value ? 'T' : 'F';
-      } else if (typeof value === 'bigint') {
-        result += 'b' + value;
+        result += "\u0001";
+      } else if (typeof value === "string") {
+        result += "s" + value;
+      } else if (typeof value === "number") {
+        result += "n" + value;
+      } else if (typeof value === "boolean") {
+        result += value ? "T" : "F";
+      } else if (typeof value === "bigint") {
+        result += "b" + value;
       } else {
         // Fallback for Buffer or other types
         return JSON.stringify(values);
@@ -92,7 +90,7 @@ export const extractCacheAttributes = (
   values: readonly PrimitiveValueExpression[],
 ): ExtractedCacheAttributes | null => {
   // Fast early bail-out: skip all work for non-cached queries
-  if (!subject.includes('@cache-ttl')) {
+  if (!subject.includes("@cache-ttl")) {
     return null;
   }
 
@@ -103,19 +101,19 @@ export const extractCacheAttributes = (
   }
 
   // Extract key template first to determine which hashes we need
-  const key = subject.match(KeyRegex)?.[1] ?? 'query:$bodyHash:$valueHash';
-  const discardEmpty = subject.match(DiscardEmptyRegex)?.[1] === 'true';
+  const key = subject.match(KeyRegex)?.[1] ?? "query:$bodyHash:$valueHash";
+  const discardEmpty = subject.match(DiscardEmptyRegex)?.[1] === "true";
 
-  const needsBodyHash = key.includes('$bodyHash');
-  const needsValueHash = key.includes('$valueHash');
+  const needsBodyHash = key.includes("$bodyHash");
+  const needsValueHash = key.includes("$valueHash");
 
   // Lazy computation: only compute hashes if they're used in the key
-  let bodyHash = '';
-  let valueHash = '';
+  let bodyHash = "";
+  let valueHash = "";
 
   if (needsBodyHash) {
     // Strip comments and compute hash (with memoization)
-    const strippedSql = subject.replaceAll(CommentRegex, '');
+    const strippedSql = subject.replaceAll(CommentRegex, "");
     bodyHash = getBodyHash(subject, strippedSql);
   }
 

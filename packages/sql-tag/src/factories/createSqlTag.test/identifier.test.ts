@@ -1,33 +1,30 @@
-import { FragmentToken } from '../../tokens.js';
-import { createSqlTag } from '../createSqlTag.js';
-import test from 'ava';
+import { FragmentToken } from "../../tokens.js";
+import { createSqlTag } from "../createSqlTag.js";
+import test from "ava";
 
 const sql = createSqlTag();
 
-test('creates an object describing a query with inlined identifiers', (t) => {
-  const query = sql.fragment`SELECT ${'foo'} FROM ${sql.identifier(['bar'])}`;
+test("creates an object describing a query with inlined identifiers", (t) => {
+  const query = sql.fragment`SELECT ${"foo"} FROM ${sql.identifier(["bar"])}`;
 
   t.deepEqual(query, {
     sql: 'SELECT $slonik_1 FROM "bar"',
     type: FragmentToken,
-    values: ['foo'],
+    values: ["foo"],
   });
 });
 
-test('creates an object describing a query with inlined identifiers (specifier)', (t) => {
-  const query = sql.fragment`SELECT ${'foo'} FROM ${sql.identifier([
-    'bar',
-    'baz',
-  ])}`;
+test("creates an object describing a query with inlined identifiers (specifier)", (t) => {
+  const query = sql.fragment`SELECT ${"foo"} FROM ${sql.identifier(["bar", "baz"])}`;
 
   t.deepEqual(query, {
     sql: 'SELECT $slonik_1 FROM "bar"."baz"',
     type: FragmentToken,
-    values: ['foo'],
+    values: ["foo"],
   });
 });
 
-test('throws if an identifier name array member type is not a string', (t) => {
+test("throws if an identifier name array member type is not a string", (t) => {
   const error = t.throws(() => {
     sql.fragment`${sql.identifier([
       // @ts-expect-error - intentional
@@ -35,5 +32,5 @@ test('throws if an identifier name array member type is not a string', (t) => {
     ])}`;
   });
 
-  t.is(error?.message, 'Identifier name array member type must be a string.');
+  t.is(error?.message, "Identifier name array member type must be a string.");
 });

@@ -1,6 +1,6 @@
-import type { InternalQueryMethod } from '../types.js';
-import { query } from './query.js';
-import { generateUid } from '@slonik/utilities';
+import type { InternalQueryMethod } from "../types.js";
+import { query } from "./query.js";
+import { generateUid } from "@slonik/utilities";
 
 /**
  * Makes a query and expects at least 1 result.
@@ -15,16 +15,9 @@ export const many: InternalQueryMethod = async (
 ) => {
   const queryId = inheritedQueryId ?? generateUid();
 
-  const { rows } = await query(
-    log,
-    connection,
-    clientConfiguration,
-    slonikQuery,
-    queryId,
-    {
-      validationType: 'MANY_ROWS',
-    },
-  );
+  const { rows } = await query(log, connection, clientConfiguration, slonikQuery, queryId, {
+    validationType: "MANY_ROWS",
+  });
 
   return rows;
 };

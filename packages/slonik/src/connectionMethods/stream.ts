@@ -1,5 +1,5 @@
-import { executeQuery } from '../routines/executeQuery.js';
-import type { ExecutionRoutine } from '../routines/executeQuery.js';
+import { executeQuery } from "../routines/executeQuery.js";
+import type { ExecutionRoutine } from "../routines/executeQuery.js";
 import type {
   ClientConfiguration,
   Interceptor,
@@ -8,14 +8,14 @@ import type {
   QueryContext,
   QueryResultRow,
   StreamHandler,
-} from '../types.js';
-import type { DriverStreamResult } from '@slonik/driver';
-import { SlonikError } from '@slonik/errors';
-import { Transform } from 'node:stream';
-import { pipeline } from 'node:stream/promises';
+} from "../types.js";
+import type { DriverStreamResult } from "@slonik/driver";
+import { SlonikError } from "@slonik/errors";
+import { Transform } from "node:stream";
+import { pipeline } from "node:stream/promises";
 
-type AsyncRowTransformer = NonNullable<Interceptor['transformRowAsync']>;
-type RowTransformer = NonNullable<Interceptor['transformRow']>;
+type AsyncRowTransformer = NonNullable<Interceptor["transformRowAsync"]>;
+type RowTransformer = NonNullable<Interceptor["transformRow"]>;
 const createTransformStream = (
   clientConfiguration: ClientConfiguration,
   queryContext: QueryContext,
@@ -60,12 +60,7 @@ const createTransformStream = (
       }
 
       for (const rowTransformer of asyncRowTransformers) {
-        finalRow = await rowTransformer(
-          queryContext,
-          query,
-          finalRow,
-          datum.fields,
-        );
+        finalRow = await rowTransformer(queryContext, query, finalRow, datum.fields);
       }
 
       this.push({
@@ -103,18 +98,15 @@ const createExecutionRoutine = <T>(
     };
 
     const streamErrorPromise = new Promise<void>((resolve, reject) => {
-      transformStream.once('error', reject);
-      transformStream.once('end', resolve);
-      transformStream.once('finish', resolve);
+      transformStream.once("error", reject);
+      transformStream.once("end", resolve);
+      transformStream.once("finish", resolve);
     });
 
     onStream(transformStream);
 
     try {
-      await Promise.race([
-        pipeline(queryStream, transformStream),
-        streamErrorPromise,
-      ]);
+      await Promise.race([pipeline(queryStream, transformStream), streamErrorPromise]);
     } catch (error) {
       if (streamDestroyError) {
         queryStream.destroy();
@@ -135,7 +127,7 @@ const createExecutionRoutine = <T>(
 
     return {
       notices: [],
-      type: 'StreamResult',
+      type: "StreamResult",
     };
   };
 };
@@ -159,16 +151,14 @@ export const stream: InternalStreamFunction = async (
       true,
     );
 
-    if (result.type === 'QueryResult') {
-      throw new Error(
-        'Query result cannot be returned in a streaming context.',
-      );
+    if (result.type === "QueryResult") {
+      throw new Error("Query result cannot be returned in a streaming context.");
     }
 
     return result;
   } catch (error) {
     if (error instanceof SlonikError) {
-      connection.events.emit('error', error);
+      connection.events.emit("error", error);
     }
 
     throw error;

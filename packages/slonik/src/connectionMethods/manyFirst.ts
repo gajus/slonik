@@ -1,6 +1,6 @@
-import type { InternalQueryMethod } from '../types.js';
-import { query } from './query.js';
-import { generateUid } from '@slonik/utilities';
+import type { InternalQueryMethod } from "../types.js";
+import { query } from "./query.js";
+import { generateUid } from "@slonik/utilities";
 
 export const manyFirst: InternalQueryMethod = async (
   log,
@@ -11,16 +11,9 @@ export const manyFirst: InternalQueryMethod = async (
 ) => {
   const queryId = inheritedQueryId ?? generateUid();
 
-  const { rows } = await query(
-    log,
-    connection,
-    clientConfigurationType,
-    slonikQuery,
-    queryId,
-    {
-      validationType: 'MANY_ROWS_ONE_COLUMN',
-    },
-  );
+  const { rows } = await query(log, connection, clientConfigurationType, slonikQuery, queryId, {
+    validationType: "MANY_ROWS_ONE_COLUMN",
+  });
 
   const keys = Object.keys(rows[0] as Record<string, unknown>);
 

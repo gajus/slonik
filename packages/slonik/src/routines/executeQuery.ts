@@ -1,9 +1,9 @@
 /* eslint-disable @typescript-eslint/no-loop-func */
 
-import { TRANSACTION_ROLLBACK_ERROR_PREFIX } from '../constants.js';
-import { transactionContext } from '../contexts/transactionContext.js';
-import type { ConnectionPoolClient } from '../factories/createConnectionPool.js';
-import { getPoolClientState } from '../state.js';
+import { TRANSACTION_ROLLBACK_ERROR_PREFIX } from "../constants.js";
+import { transactionContext } from "../contexts/transactionContext.js";
+import type { ConnectionPoolClient } from "../factories/createConnectionPool.js";
+import { getPoolClientState } from "../state.js";
 import type {
   ClientConfiguration,
   Interceptor,
@@ -14,10 +14,10 @@ import type {
   QueryResult,
   QueryResultRow,
   StreamResult,
-} from '../types.js';
-import { getStackTrace } from './getStackTrace.js';
-import { SpanStatusCode, trace } from '@opentelemetry/api';
-import type { DriverNotice } from '@slonik/driver';
+} from "../types.js";
+import { getStackTrace } from "./getStackTrace.js";
+import { SpanStatusCode, trace } from "@opentelemetry/api";
+import type { DriverNotice } from "@slonik/driver";
 import {
   BackendTerminatedError,
   BackendTerminatedUnexpectedlyError,
@@ -28,25 +28,25 @@ import {
   TupleMovedToAnotherPartitionError,
   UnexpectedForeignConnectionError,
   UnexpectedStateError,
-} from '@slonik/errors';
-import type { PrimitiveValueExpression, QuerySqlToken } from '@slonik/sql-tag';
-import { defer, generateUid } from '@slonik/utilities';
-import pLimit from 'p-limit';
-import { serializeError } from 'serialize-error';
+} from "@slonik/errors";
+import type { PrimitiveValueExpression, QuerySqlToken } from "@slonik/sql-tag";
+import { defer, generateUid } from "@slonik/utilities";
+import pLimit from "p-limit";
+import { serializeError } from "serialize-error";
 
 export type IntegrityValidation = {
   validationType:
-    | 'MANY_COLUMNS'
-    | 'MANY_ROWS'
-    | 'MANY_ROWS_ONE_COLUMN'
-    | 'MAYBE_MANY_ROWS_ONE_COLUMN'
-    | 'MAYBE_ONE_COLUMN'
-    | 'MAYBE_ONE_ROW'
-    | 'ONE_COLUMN'
-    | 'ONE_ROW';
+    | "MANY_COLUMNS"
+    | "MANY_ROWS"
+    | "MANY_ROWS_ONE_COLUMN"
+    | "MAYBE_MANY_ROWS_ONE_COLUMN"
+    | "MAYBE_ONE_COLUMN"
+    | "MAYBE_ONE_ROW"
+    | "ONE_COLUMN"
+    | "ONE_ROW";
 };
 
-const tracer = trace.getTracer('slonik.interceptors');
+const tracer = trace.getTracer("slonik.interceptors");
 
 export type ExecutionRoutine = (
   connection: ConnectionPoolClient,
@@ -86,7 +86,7 @@ const retryQuery = async (
           attempt,
           queryId: query.executionContext.queryId,
         },
-        'retrying query',
+        "retrying query",
       );
 
       result = await query.executionRoutine(
@@ -110,7 +110,7 @@ const retryQuery = async (
       break;
     } catch (error) {
       if (
-        typeof error.code === 'string' &&
+        typeof error.code === "string" &&
         error.code.startsWith(TRANSACTION_ROLLBACK_ERROR_PREFIX) &&
         remainingRetries > 0
       ) {
@@ -151,13 +151,13 @@ const executeQueryInternal = async (
     throw new BackendTerminatedError(poolClientState.terminated);
   }
 
-  if (query.sql.trim() === '') {
-    throw new InvalidInputError('Unexpected SQL input. Query cannot be empty.');
+  if (query.sql.trim() === "") {
+    throw new InvalidInputError("Unexpected SQL input. Query cannot be empty.");
   }
 
-  if (query.sql.trim() === '$1') {
+  if (query.sql.trim() === "$1") {
     throw new InvalidInputError(
-      'Unexpected SQL input. Query cannot be empty. Found only value binding.',
+      "Unexpected SQL input. Query cannot be empty. Found only value binding.",
     );
   }
 
@@ -189,7 +189,7 @@ const executeQueryInternal = async (
     // Include statement name for prepared statements if provided
     name: query.name,
     // See comments in `formatSlonikPlaceholder` for more information.
-    sql: query.sql.replaceAll('$slonik_', '$'),
+    sql: query.sql.replaceAll("$slonik_", "$"),
     values: query.values,
   };
 
@@ -216,26 +216,23 @@ const executeQueryInternal = async (
     const beforeTransformQuery = interceptor.beforeTransformQuery;
 
     if (beforeTransformQuery) {
-      await tracer.startActiveSpan(
-        'slonik.interceptor.beforeTransformQuery',
-        async (span) => {
-          span.setAttribute('interceptor.name', interceptor.name);
+      await tracer.startActiveSpan("slonik.interceptor.beforeTransformQuery", async (span) => {
+        span.setAttribute("interceptor.name", interceptor.name);
 
-          try {
-            await beforeTransformQuery(executionContext, actualQuery);
-          } catch (error) {
-            span.recordException(error);
-            span.setStatus({
-              code: SpanStatusCode.ERROR,
-              message: String(error),
-            });
+        try {
+          await beforeTransformQuery(executionContext, actualQuery);
+        } catch (error) {
+          span.recordException(error);
+          span.setStatus({
+            code: SpanStatusCode.ERROR,
+            message: String(error),
+          });
 
-            throw error;
-          } finally {
-            span.end();
-          }
-        },
-      );
+          throw error;
+        } finally {
+          span.end();
+        }
+      });
     }
   }
 
@@ -243,26 +240,23 @@ const executeQueryInternal = async (
     const transformQuery = interceptor.transformQuery;
 
     if (transformQuery) {
-      actualQuery = tracer.startActiveSpan(
-        'slonik.interceptor.transformQuery',
-        (span) => {
-          span.setAttribute('interceptor.name', interceptor.name);
+      actualQuery = tracer.startActiveSpan("slonik.interceptor.transformQuery", (span) => {
+        span.setAttribute("interceptor.name", interceptor.name);
 
-          try {
-            return transformQuery(executionContext, actualQuery);
-          } catch (error) {
-            span.recordException(error);
-            span.setStatus({
-              code: SpanStatusCode.ERROR,
-              message: String(error),
-            });
+        try {
+          return transformQuery(executionContext, actualQuery);
+        } catch (error) {
+          span.recordException(error);
+          span.setStatus({
+            code: SpanStatusCode.ERROR,
+            message: String(error),
+          });
 
-            throw error;
-          } finally {
-            span.end();
-          }
-        },
-      );
+          throw error;
+        } finally {
+          span.end();
+        }
+      });
     }
   }
 
@@ -274,10 +268,10 @@ const executeQueryInternal = async (
 
       if (beforeQueryExecution) {
         result = await tracer.startActiveSpan(
-          'slonik.interceptor.beforeQueryExecution',
+          "slonik.interceptor.beforeQueryExecution",
           {
             attributes: {
-              'interceptor.name': interceptor.name,
+              "interceptor.name": interceptor.name,
             },
           },
           async (span) => {
@@ -299,7 +293,7 @@ const executeQueryInternal = async (
 
         if (result) {
           log.info(
-            'beforeQueryExecution interceptor produced a result; short-circuiting query execution using beforeQueryExecution result',
+            "beforeQueryExecution interceptor produced a result; short-circuiting query execution using beforeQueryExecution result",
           );
 
           return result;
@@ -322,7 +316,7 @@ const executeQueryInternal = async (
 
   await blockingPromise;
 
-  connection.on('notice', noticeListener);
+  connection.on("notice", noticeListener);
 
   const queryWithContext = {
     executionContext,
@@ -345,7 +339,7 @@ const executeQueryInternal = async (
         );
       } catch (error) {
         const shouldRetry =
-          typeof error.code === 'string' &&
+          typeof error.code === "string" &&
           error.code.startsWith(TRANSACTION_ROLLBACK_ERROR_PREFIX) &&
           clientConfiguration.queryRetryLimit > 0;
 
@@ -370,13 +364,13 @@ const executeQueryInternal = async (
 
       // If the error has been already handled by the driver, then we should not wrap it again.
       if (!(error instanceof SlonikError)) {
-        if (error.message === 'Connection terminated unexpectedly') {
+        if (error.message === "Connection terminated unexpectedly") {
           throw new BackendTerminatedUnexpectedlyError(error);
         }
 
         if (
           error.message.includes(
-            'tuple to be locked was already moved to another partition due to concurrent update',
+            "tuple to be locked was already moved to another partition due to concurrent update",
           )
         ) {
           throw new TupleMovedToAnotherPartitionError(error);
@@ -387,7 +381,7 @@ const executeQueryInternal = async (
 
       throw error;
     } finally {
-      connection.off('notice', noticeListener);
+      connection.off("notice", noticeListener);
 
       activeQuery.resolve(null);
     }
@@ -396,17 +390,12 @@ const executeQueryInternal = async (
       {
         error: serializeError(error),
       },
-      'execution routine produced an error',
+      "execution routine produced an error",
     );
 
     for (const interceptor of clientConfiguration.interceptors) {
       if (interceptor.queryExecutionError) {
-        await interceptor.queryExecutionError(
-          executionContext,
-          actualQuery,
-          error,
-          notices,
-        );
+        await interceptor.queryExecutionError(executionContext, actualQuery, error, notices);
       }
     }
 
@@ -416,7 +405,7 @@ const executeQueryInternal = async (
   }
 
   if (!result) {
-    throw new UnexpectedStateError('Expected query result to be returned.');
+    throw new UnexpectedStateError("Expected query result to be returned.");
   }
 
   // @ts-expect-error -- We want to keep notices as readonly for consumer, but write to it here.
@@ -424,116 +413,80 @@ const executeQueryInternal = async (
 
   const interceptors: Interceptor[] = clientConfiguration.interceptors.slice();
 
-  if (result.type !== 'QueryResult') {
+  if (result.type !== "QueryResult") {
     return result;
   }
 
   try {
     if (integrityValidation) {
-      if (integrityValidation.validationType === 'ONE_ROW') {
+      if (integrityValidation.validationType === "ONE_ROW") {
         if (result.rows.length === 0) {
-          throw new NotFoundError('Query returned no rows.', actualQuery);
+          throw new NotFoundError("Query returned no rows.", actualQuery);
         }
 
         if (result.rows.length > 1) {
-          throw new DataIntegrityError(
-            'Query returned multiple rows.',
-            actualQuery,
-          );
+          throw new DataIntegrityError("Query returned multiple rows.", actualQuery);
         }
       }
 
-      if (
-        integrityValidation.validationType === 'MAYBE_ONE_ROW' &&
-        result.rows.length > 1
-      ) {
-        throw new DataIntegrityError(
-          'Query returned multiple rows.',
-          actualQuery,
-        );
+      if (integrityValidation.validationType === "MAYBE_ONE_ROW" && result.rows.length > 1) {
+        throw new DataIntegrityError("Query returned multiple rows.", actualQuery);
       }
 
       // Cache the column count from the first row to avoid repeated Object.keys() calls.
       // It is safe to assume that whatever the first row is, it will be the same for all rows.
-      const firstRowColumnCount =
-        result.rows.length > 0 ? Object.keys(result.rows[0]).length : 0;
+      const firstRowColumnCount = result.rows.length > 0 ? Object.keys(result.rows[0]).length : 0;
 
-      if (integrityValidation.validationType === 'ONE_COLUMN') {
+      if (integrityValidation.validationType === "ONE_COLUMN") {
         if (result.rows.length === 0) {
-          throw new NotFoundError('Query returned no rows.', actualQuery);
+          throw new NotFoundError("Query returned no rows.", actualQuery);
         }
 
         if (result.rows.length !== 1) {
-          throw new DataIntegrityError(
-            'Query returned multiple rows.',
-            actualQuery,
-          );
+          throw new DataIntegrityError("Query returned multiple rows.", actualQuery);
         }
 
         if (firstRowColumnCount !== 1) {
-          throw new DataIntegrityError(
-            'Query returned rows with multiple columns.',
-            actualQuery,
-          );
+          throw new DataIntegrityError("Query returned rows with multiple columns.", actualQuery);
         }
       }
 
-      if (integrityValidation.validationType === 'MAYBE_ONE_COLUMN') {
+      if (integrityValidation.validationType === "MAYBE_ONE_COLUMN") {
         if (result.rows.length > 1) {
-          throw new DataIntegrityError(
-            'Query returned multiple rows.',
-            actualQuery,
-          );
+          throw new DataIntegrityError("Query returned multiple rows.", actualQuery);
         }
 
         if (result.rows.length === 1 && firstRowColumnCount !== 1) {
-          throw new DataIntegrityError(
-            'Query returned rows with multiple columns.',
-            actualQuery,
-          );
+          throw new DataIntegrityError("Query returned rows with multiple columns.", actualQuery);
         }
       }
 
-      if (
-        integrityValidation.validationType === 'MANY_ROWS' &&
-        result.rows.length === 0
-      ) {
-        throw new NotFoundError('Query returned no rows.', actualQuery);
+      if (integrityValidation.validationType === "MANY_ROWS" && result.rows.length === 0) {
+        throw new NotFoundError("Query returned no rows.", actualQuery);
       }
 
-      if (integrityValidation.validationType === 'MANY_ROWS_ONE_COLUMN') {
+      if (integrityValidation.validationType === "MANY_ROWS_ONE_COLUMN") {
         if (result.rows.length === 0) {
-          throw new NotFoundError('Query returned no rows.', actualQuery);
+          throw new NotFoundError("Query returned no rows.", actualQuery);
         }
 
         if (firstRowColumnCount !== 1) {
-          throw new DataIntegrityError(
-            'Query returned rows with multiple columns.',
-            actualQuery,
-          );
+          throw new DataIntegrityError("Query returned rows with multiple columns.", actualQuery);
         }
       }
 
       if (
-        integrityValidation.validationType === 'MAYBE_MANY_ROWS_ONE_COLUMN' &&
+        integrityValidation.validationType === "MAYBE_MANY_ROWS_ONE_COLUMN" &&
         result.rows.length > 0 &&
         firstRowColumnCount !== 1
       ) {
-        throw new DataIntegrityError(
-          'Query returned rows with multiple columns.',
-          actualQuery,
-        );
+        throw new DataIntegrityError("Query returned rows with multiple columns.", actualQuery);
       }
     }
   } catch (error) {
     for (const interceptor of clientConfiguration.interceptors) {
       if (interceptor.dataIntegrityError) {
-        await interceptor.dataIntegrityError(
-          executionContext,
-          actualQuery,
-          error,
-          result,
-        );
+        await interceptor.dataIntegrityError(executionContext, actualQuery, error, result);
       }
     }
 
@@ -545,10 +498,10 @@ const executeQueryInternal = async (
 
     if (afterQueryExecution) {
       await tracer.startActiveSpan(
-        'slonik.interceptor.afterQueryExecution',
+        "slonik.interceptor.afterQueryExecution",
         {
           attributes: {
-            'interceptor.name': interceptor.name,
+            "interceptor.name": interceptor.name,
           },
         },
         async (span) => {
@@ -581,11 +534,11 @@ const executeQueryInternal = async (
       const { fields, rows } = result;
 
       const transformedRows: QueryResultRow[] = tracer.startActiveSpan(
-        'slonik.interceptor.transformRow',
+        "slonik.interceptor.transformRow",
         {
           attributes: {
-            'interceptor.name': interceptor.name,
-            'rows.length': rows.length,
+            "interceptor.name": interceptor.name,
+            "rows.length": rows.length,
           },
         },
         (span) => {
@@ -620,11 +573,11 @@ const executeQueryInternal = async (
       const { fields, rows } = result;
 
       const transformedRows: QueryResultRow[] = await tracer.startActiveSpan(
-        'slonik.interceptor.transformRowAsync',
+        "slonik.interceptor.transformRowAsync",
         {
           attributes: {
-            'interceptor.name': interceptor.name,
-            'rows.length': rows.length,
+            "interceptor.name": interceptor.name,
+            "rows.length": rows.length,
           },
         },
         async (span) => {
@@ -633,9 +586,7 @@ const executeQueryInternal = async (
 
             return await Promise.all(
               rows.map((row) => {
-                return limit(() =>
-                  transformRowAsync(executionContext, actualQuery, row, fields),
-                );
+                return limit(() => transformRowAsync(executionContext, actualQuery, row, fields));
               }),
             );
           } catch (error) {
@@ -663,10 +614,10 @@ const executeQueryInternal = async (
 
     if (beforeQueryResult) {
       await tracer.startActiveSpan(
-        'slonik.interceptor.beforeQueryResult',
+        "slonik.interceptor.beforeQueryResult",
         {
           attributes: {
-            'interceptor.name': interceptor.name,
+            "interceptor.name": interceptor.name,
           },
         },
         async (span) => {
@@ -704,11 +655,9 @@ export const executeQuery = async (
   executionRoutine: ExecutionRoutine,
   stream: boolean,
   integrityValidation?: IntegrityValidation,
-): Promise<
-  QueryResult<Record<string, PrimitiveValueExpression>> | StreamResult
-> => {
+): Promise<QueryResult<Record<string, PrimitiveValueExpression>> | StreamResult> => {
   return await tracer.startActiveSpan(
-    'slonik.executeQuery',
+    "slonik.executeQuery",
     {
       attributes: {
         sql: query.sql,

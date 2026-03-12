@@ -1,10 +1,7 @@
-import type {
-  ClientConfiguration,
-  ClientConfigurationInput,
-} from '../types.js';
-import { createTypeParserPreset } from './createTypeParserPreset.js';
-import type { DriverTypeParser } from '@slonik/driver';
-import { InvalidConfigurationError } from '@slonik/errors';
+import type { ClientConfiguration, ClientConfigurationInput } from "../types.js";
+import { createTypeParserPreset } from "./createTypeParserPreset.js";
+import type { DriverTypeParser } from "@slonik/driver";
+import { InvalidConfigurationError } from "@slonik/errors";
 
 export const createClientConfiguration = (
   connectionUri: string,
@@ -35,20 +32,16 @@ export const createClientConfiguration = (
   };
 
   if (configuration.maximumPoolSize < 1) {
-    throw new InvalidConfigurationError(
-      'maximumPoolSize must be equal to or greater than 1.',
-    );
+    throw new InvalidConfigurationError("maximumPoolSize must be equal to or greater than 1.");
   }
 
   if (configuration.minimumPoolSize < 0) {
-    throw new InvalidConfigurationError(
-      'minimumPoolSize must be equal to or greater than 0.',
-    );
+    throw new InvalidConfigurationError("minimumPoolSize must be equal to or greater than 0.");
   }
 
   if (configuration.maximumPoolSize < configuration.minimumPoolSize) {
     throw new InvalidConfigurationError(
-      'maximumPoolSize must be equal to or greater than minimumPoolSize.',
+      "maximumPoolSize must be equal to or greater than minimumPoolSize.",
     );
   }
 

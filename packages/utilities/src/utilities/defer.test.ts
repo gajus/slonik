@@ -1,20 +1,20 @@
-import { defer } from './defer.js';
-import test from 'ava';
+import { defer } from "./defer.js";
+import test from "ava";
 
-test('resolves deferred promise', async (t) => {
+test("resolves deferred promise", async (t) => {
   const deferred = defer();
 
-  deferred.resolve('foo');
+  deferred.resolve("foo");
 
-  t.is(await deferred.promise, 'foo');
+  t.is(await deferred.promise, "foo");
 });
 
-test('rejects deferred promise', async (t) => {
+test("rejects deferred promise", async (t) => {
   const deferred = defer();
 
-  deferred.reject(new Error('foo'));
+  deferred.reject(new Error("foo"));
 
   await t.throwsAsync(deferred.promise, {
-    message: 'foo',
+    message: "foo",
   });
 });

@@ -1,15 +1,11 @@
-import { createPrimitiveValueExpressions } from '../factories/createPrimitiveValueExpressions.js';
-import { createSqlTokenSqlFragment } from '../factories/createSqlTokenSqlFragment.js';
-import { FragmentToken } from '../tokens.js';
-import type {
-  ListSqlToken,
-  PrimitiveValueExpression,
-  SqlFragmentToken,
-} from '../types.js';
-import { formatSlonikPlaceholder } from '../utilities/formatSlonikPlaceholder.js';
-import { isPrimitiveValueExpression } from '../utilities/isPrimitiveValueExpression.js';
-import { isSqlToken } from '../utilities/isSqlToken.js';
-import { InvalidInputError } from '@slonik/errors';
+import { createPrimitiveValueExpressions } from "../factories/createPrimitiveValueExpressions.js";
+import { createSqlTokenSqlFragment } from "../factories/createSqlTokenSqlFragment.js";
+import { FragmentToken } from "../tokens.js";
+import type { ListSqlToken, PrimitiveValueExpression, SqlFragmentToken } from "../types.js";
+import { formatSlonikPlaceholder } from "../utilities/formatSlonikPlaceholder.js";
+import { isPrimitiveValueExpression } from "../utilities/isPrimitiveValueExpression.js";
+import { isSqlToken } from "../utilities/isSqlToken.js";
+import { InvalidInputError } from "@slonik/errors";
 
 export const createListSqlFragment = (
   token: ListSqlToken,
@@ -21,7 +17,7 @@ export const createListSqlFragment = (
   let placeholderIndex = greatestParameterPosition;
 
   if (token.members.length === 0) {
-    throw new InvalidInputError('Value list must have at least 1 member.');
+    throw new InvalidInputError("Value list must have at least 1 member.");
   }
 
   for (const member of token.members) {
@@ -37,7 +33,7 @@ export const createListSqlFragment = (
       values.push(member);
     } else {
       throw new InvalidInputError(
-        'Invalid list member type. Must be a SQL token or a primitive value expression.',
+        "Invalid list member type. Must be a SQL token or a primitive value expression.",
       );
     }
   }

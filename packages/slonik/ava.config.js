@@ -4,21 +4,21 @@ const {
 } = process.env;
 
 export default () => {
-  let files = ['src/**/*.test.ts'];
+  let files = ["src/**/*.test.ts"];
 
-  if (TEST_ONLY === 'utilities') {
-    files = ['src/**/*.test.ts', '!src/integration.test'];
+  if (TEST_ONLY === "utilities") {
+    files = ["src/**/*.test.ts", "!src/integration.test"];
   }
 
-  if (TEST_ONLY === 'pg-integration') {
-    files = ['src/integration.test/pg.test.ts'];
+  if (TEST_ONLY === "pg-integration") {
+    files = ["src/integration.test/pg.test.ts"];
   }
 
   return {
-    extensions: ['ts'],
+    extensions: ["ts"],
     files,
-    nodeArguments: ['--import=tsimp'],
+    nodeArguments: ["--import=tsimp"],
     serial: true,
-    timeout: '30s',
+    timeout: "30s",
   };
 };

@@ -1,8 +1,8 @@
-import { createSqlTag } from '../createSqlTag.js';
-import anyTest from 'ava';
-import type { TestFn } from 'ava';
-import { ROARR } from 'roarr';
-import { z } from 'zod';
+import { createSqlTag } from "../createSqlTag.js";
+import anyTest from "ava";
+import type { TestFn } from "ava";
+import { ROARR } from "roarr";
+import { z } from "zod";
 
 const test = anyTest as TestFn<{
   logs: unknown[];
@@ -16,7 +16,7 @@ test.beforeEach((t) => {
   };
 });
 
-test('describes zod object associated with the query', (t) => {
+test("describes zod object associated with the query", (t) => {
   const typeAliases = {
     id: z.object({
       id: z.number(),
@@ -27,14 +27,14 @@ test('describes zod object associated with the query', (t) => {
     typeAliases,
   });
 
-  const query = sql.typeAlias('id')`
+  const query = sql.typeAlias("id")`
     SELECT 1 id
   `;
 
   t.is(query.parser, typeAliases.id);
 });
 
-test('cannot alias unknown fields', (t) => {
+test("cannot alias unknown fields", (t) => {
   const typeAliases = {
     id: z.object({
       id: z.number(),
@@ -47,7 +47,7 @@ test('cannot alias unknown fields', (t) => {
 
   t.throws(() => {
     // @ts-expect-error - intentional
-    sql.typeAlias('void')`
+    sql.typeAlias("void")`
       SELECT 1 id
     `;
   });

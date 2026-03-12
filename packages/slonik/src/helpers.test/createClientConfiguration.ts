@@ -1,11 +1,11 @@
-import type { ClientConfiguration } from '../types.js';
+import type { ClientConfiguration } from "../types.js";
 
 export const createClientConfiguration = (): ClientConfiguration => {
   return {
     captureStackTrace: true,
     connectionRetryLimit: 3,
     connectionTimeout: 5_000,
-    connectionUri: 'postgres://',
+    connectionUri: "postgres://",
     dangerouslyAllowForeignConnections: false,
     gracefulTerminationTimeout: 5_000,
     idleInTransactionSessionTimeout: 60_000,

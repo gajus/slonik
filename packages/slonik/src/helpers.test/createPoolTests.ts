@@ -1,20 +1,17 @@
 /* eslint-disable id-length */
 /* cspell:ignore tstzrange */
 
-import { BackendTerminatedError, createPool, parseDsn, sql } from '../index.js';
-import type { DatabasePoolConnection } from '../index.js';
-import type { TestContextType } from './createTestRunner.js';
-import type { DriverFactory } from '@slonik/driver';
-import type { TestFn } from 'ava';
-import { randomUUID } from 'node:crypto';
-import { setTimeout as delay } from 'node:timers/promises';
-import * as sinon from 'sinon';
+import { BackendTerminatedError, createPool, parseDsn, sql } from "../index.js";
+import type { DatabasePoolConnection } from "../index.js";
+import type { TestContextType } from "./createTestRunner.js";
+import type { DriverFactory } from "@slonik/driver";
+import type { TestFn } from "ava";
+import { randomUUID } from "node:crypto";
+import { setTimeout as delay } from "node:timers/promises";
+import * as sinon from "sinon";
 
-export const createPoolTests = (
-  test: TestFn<TestContextType>,
-  driverFactory: DriverFactory,
-) => {
-  test('uses resetConnection after implicit connection release', async (t) => {
+export const createPoolTests = (test: TestFn<TestContextType>, driverFactory: DriverFactory) => {
+  test("uses resetConnection after implicit connection release", async (t) => {
     const resetConnection = sinon.spy();
 
     const pool = await createPool(t.context.dsn, {
@@ -29,7 +26,7 @@ export const createPoolTests = (
     await pool.end();
   });
 
-  test('uses resetConnection after explicit connection release', async (t) => {
+  test("uses resetConnection after explicit connection release", async (t) => {
     const resetConnection = sinon.spy();
 
     const pool = await createPool(t.context.dsn, {
@@ -46,7 +43,7 @@ export const createPoolTests = (
     await pool.end();
   });
 
-  test('simultaneous releasing and destroying waits for release promise to resolve before proceeding to terminate the backend', async (t) => {
+  test("simultaneous releasing and destroying waits for release promise to resolve before proceeding to terminate the backend", async (t) => {
     await t.notThrowsAsync(async () => {
       let repeat = 10;
 
@@ -66,7 +63,7 @@ export const createPoolTests = (
     });
   });
 
-  test('does not allow to reuse released connection', async (t) => {
+  test("does not allow to reuse released connection", async (t) => {
     const pool = await createPool(t.context.dsn, {
       driverFactory,
     });
@@ -78,7 +75,7 @@ export const createPoolTests = (
     });
 
     if (!firstConnection) {
-      throw new Error('Expected connection object');
+      throw new Error("Expected connection object");
     }
 
     await t.throwsAsync(firstConnection.oneFirst(sql.unsafe`SELECT 1`));
@@ -86,7 +83,7 @@ export const createPoolTests = (
     await pool.end();
   });
 
-  test('serves waiting requests', async (t) => {
+  test("serves waiting requests", async (t) => {
     t.timeout(10_000);
 
     const pool = await createPool(t.context.dsn, {
@@ -111,7 +108,7 @@ export const createPoolTests = (
     t.true(true);
   });
 
-  test('pool.end() resolves when there are no more connections (no connections at start)', async (t) => {
+  test("pool.end() resolves when there are no more connections (no connections at start)", async (t) => {
     const pool = await createPool(t.context.dsn, {
       driverFactory,
     });
@@ -122,7 +119,7 @@ export const createPoolTests = (
       pendingConnections: 0,
       pendingDestroyConnections: 0,
       pendingReleaseConnections: 0,
-      state: 'ACTIVE',
+      state: "ACTIVE",
       waitingClients: 0,
     });
 
@@ -134,12 +131,12 @@ export const createPoolTests = (
       pendingConnections: 0,
       pendingDestroyConnections: 0,
       pendingReleaseConnections: 0,
-      state: 'ENDED',
+      state: "ENDED",
       waitingClients: 0,
     });
   });
 
-  test('pool.end() resolves when there are no more connections (implicit connection)', async (t) => {
+  test("pool.end() resolves when there are no more connections (implicit connection)", async (t) => {
     const pool = await createPool(t.context.dsn, {
       driverFactory,
       idleTimeout: 1_000,
@@ -151,7 +148,7 @@ export const createPoolTests = (
       pendingConnections: 0,
       pendingDestroyConnections: 0,
       pendingReleaseConnections: 0,
-      state: 'ACTIVE',
+      state: "ACTIVE",
       waitingClients: 0,
     });
 
@@ -165,7 +162,7 @@ export const createPoolTests = (
       pendingConnections: 0,
       pendingDestroyConnections: 0,
       pendingReleaseConnections: 0,
-      state: 'ACTIVE',
+      state: "ACTIVE",
       waitingClients: 0,
     });
 
@@ -177,12 +174,12 @@ export const createPoolTests = (
       pendingConnections: 0,
       pendingDestroyConnections: 0,
       pendingReleaseConnections: 0,
-      state: 'ENDED',
+      state: "ENDED",
       waitingClients: 0,
     });
   });
 
-  test('pool.end() resolves when there are no more connections (explicit connection holding pool alive)', async (t) => {
+  test("pool.end() resolves when there are no more connections (explicit connection holding pool alive)", async (t) => {
     const pool = await createPool(t.context.dsn, {
       driverFactory,
     });
@@ -193,7 +190,7 @@ export const createPoolTests = (
       pendingConnections: 0,
       pendingDestroyConnections: 0,
       pendingReleaseConnections: 0,
-      state: 'ACTIVE',
+      state: "ACTIVE",
       waitingClients: 0,
     });
 
@@ -209,7 +206,7 @@ export const createPoolTests = (
       pendingConnections: 0,
       pendingDestroyConnections: 0,
       pendingReleaseConnections: 0,
-      state: 'ACTIVE',
+      state: "ACTIVE",
       waitingClients: 0,
     });
 
@@ -221,17 +218,17 @@ export const createPoolTests = (
       pendingConnections: 0,
       pendingDestroyConnections: 0,
       pendingReleaseConnections: 0,
-      state: 'ENDED',
+      state: "ENDED",
       waitingClients: 0,
     });
   });
 
-  test('pool.end() resolves when there are no more connections (terminates idle connections)', async (t) => {
+  test("pool.end() resolves when there are no more connections (terminates idle connections)", async (t) => {
     t.timeout(1_000);
 
     const pool = await createPool(t.context.dsn, {
       driverFactory,
-      idleTimeout: 'DISABLE_TIMEOUT',
+      idleTimeout: "DISABLE_TIMEOUT",
       maximumPoolSize: 5,
     });
 
@@ -241,7 +238,7 @@ export const createPoolTests = (
       pendingConnections: 0,
       pendingDestroyConnections: 0,
       pendingReleaseConnections: 0,
-      state: 'ACTIVE',
+      state: "ACTIVE",
       waitingClients: 0,
     });
 
@@ -269,7 +266,7 @@ export const createPoolTests = (
       pendingConnections: 0,
       pendingDestroyConnections: 0,
       pendingReleaseConnections: 0,
-      state: 'ACTIVE',
+      state: "ACTIVE",
       waitingClients: 0,
     });
 
@@ -281,12 +278,12 @@ export const createPoolTests = (
       pendingConnections: 0,
       pendingDestroyConnections: 0,
       pendingReleaseConnections: 0,
-      state: 'ENDED',
+      state: "ENDED",
       waitingClients: 0,
     });
   });
 
-  test('waits for all connections to be established before attempting to terminate the pool', async (t) => {
+  test("waits for all connections to be established before attempting to terminate the pool", async (t) => {
     t.timeout(1_000);
 
     const pool = await createPool(t.context.dsn, {
@@ -313,7 +310,7 @@ export const createPoolTests = (
     await promise;
   });
 
-  test('shows waiting clients', async (t) => {
+  test("shows waiting clients", async (t) => {
     const pool = await createPool(t.context.dsn, {
       idleTimeout: 1_000,
       maximumPoolSize: 1,
@@ -327,10 +324,10 @@ export const createPoolTests = (
         pendingConnections: 0,
         pendingDestroyConnections: 0,
         pendingReleaseConnections: 0,
-        state: 'ACTIVE',
+        state: "ACTIVE",
         waitingClients: 0,
       },
-      'initial state',
+      "initial state",
     );
 
     const batch1 = Promise.all([
@@ -352,10 +349,10 @@ export const createPoolTests = (
         pendingConnections: 0,
         pendingDestroyConnections: 0,
         pendingReleaseConnections: 0,
-        state: 'ACTIVE',
+        state: "ACTIVE",
         waitingClients: 1,
       },
-      'shows waiting connections',
+      "shows waiting connections",
     );
 
     await batch1;
@@ -363,7 +360,7 @@ export const createPoolTests = (
     await pool.end();
   });
 
-  test('re-uses connections (implicit)', async (t) => {
+  test("re-uses connections (implicit)", async (t) => {
     const pool = await createPool(t.context.dsn, {
       driverFactory,
       maximumPoolSize: 1,
@@ -380,7 +377,7 @@ export const createPoolTests = (
     t.is(firstConnectionPid, secondConnectionPid);
   });
 
-  test('re-uses connections (explicit)', async (t) => {
+  test("re-uses connections (explicit)", async (t) => {
     const pool = await createPool(t.context.dsn, {
       driverFactory,
       maximumPoolSize: 1,
@@ -405,7 +402,7 @@ export const createPoolTests = (
     t.is(firstConnectionPid, secondConnectionPid);
   });
 
-  test('re-uses connections (transaction)', async (t) => {
+  test("re-uses connections (transaction)", async (t) => {
     const pool = await createPool(t.context.dsn, {
       driverFactory,
       maximumPoolSize: 1,
@@ -430,7 +427,7 @@ export const createPoolTests = (
     t.is(firstConnectionPid, secondConnectionPid);
   });
 
-  test('queues requests when the pool is full', async (t) => {
+  test("queues requests when the pool is full", async (t) => {
     t.timeout(10_000);
 
     const pool = await createPool(t.context.dsn, {
@@ -452,7 +449,7 @@ export const createPoolTests = (
     t.true(Date.now() - startTime >= 200);
   });
 
-  test('does not re-use connection if there was an unhandled error', async (t) => {
+  test("does not re-use connection if there was an unhandled error", async (t) => {
     const pool = await createPool(t.context.dsn, {
       driverFactory,
       maximumPoolSize: 1,
@@ -475,7 +472,7 @@ export const createPoolTests = (
     t.not(firstConnectionPid, secondConnectionPid);
   });
 
-  test('queued connection gets a new connection in case a blocking connection produced an error', async (t) => {
+  test("queued connection gets a new connection in case a blocking connection produced an error", async (t) => {
     const pool = await createPool(t.context.dsn, {
       driverFactory,
       maximumPoolSize: 1,
@@ -507,7 +504,7 @@ export const createPoolTests = (
     t.not(firstConnectionPid, secondConnectionPid);
   });
 
-  test('connections are parallelized', async (t) => {
+  test("connections are parallelized", async (t) => {
     const resetConnection = sinon.spy();
 
     const pool = await createPool(t.context.dsn, {
@@ -534,7 +531,7 @@ export const createPoolTests = (
     await pool.end();
   });
 
-  test('does not re-use transaction connection if there was an error', async (t) => {
+  test("does not re-use transaction connection if there was an error", async (t) => {
     const pool = await createPool(t.context.dsn, {
       driverFactory,
       maximumPoolSize: 1,
@@ -559,7 +556,7 @@ export const createPoolTests = (
     t.not(firstConnectionPid, secondConnectionPid);
   });
 
-  test('connections are reset after they are released', async (t) => {
+  test("connections are reset after they are released", async (t) => {
     const pool = await createPool(t.context.dsn, {
       driverFactory,
       maximumPoolSize: 1,
@@ -574,7 +571,7 @@ export const createPoolTests = (
         await connection.oneFirst(sql.unsafe`
           SELECT current_setting('slonik.foo');
         `),
-        'bar',
+        "bar",
       );
     });
 
@@ -582,11 +579,11 @@ export const createPoolTests = (
       await pool.oneFirst(sql.unsafe`
         SELECT current_setting('slonik.foo');
       `),
-      '',
+      "",
     );
   });
 
-  test('waits for active connections but rejects waiting clients', async (t) => {
+  test("waits for active connections but rejects waiting clients", async (t) => {
     const pool = await createPool(t.context.dsn, {
       driverFactory,
       maximumPoolSize: 1,
@@ -597,7 +594,7 @@ export const createPoolTests = (
         SELECT pg_sleep(0.1);
       `);
 
-      return 'connection 1';
+      return "connection 1";
     });
 
     const connection2 = pool.connect(async (connection) => {
@@ -605,7 +602,7 @@ export const createPoolTests = (
         SELECT pg_sleep(0.1);
       `);
 
-      return 'connection 2';
+      return "connection 2";
     });
 
     await delay(50);
@@ -613,15 +610,15 @@ export const createPoolTests = (
     await t.notThrowsAsync(pool.end());
 
     // connection1 should complete since it was already active
-    t.is(await connection1, 'connection 1');
+    t.is(await connection1, "connection 1");
 
     // connection2 should be rejected since it was waiting for a connection
     await t.throwsAsync(connection2, {
-      message: 'Connection pool is being terminated.',
+      message: "Connection pool is being terminated.",
     });
   });
 
-  test('pool.end() resolves only when pool ends', async (t) => {
+  test("pool.end() resolves only when pool ends", async (t) => {
     const pool = await createPool(t.context.dsn, {
       driverFactory,
       maximumPoolSize: 1,
@@ -643,7 +640,7 @@ export const createPoolTests = (
     await promise;
   });
 
-  test('retains explicit connection beyond the idle timeout', async (t) => {
+  test("retains explicit connection beyond the idle timeout", async (t) => {
     const pool = await createPool(t.context.dsn, {
       driverFactory,
       idleTimeout: 100,
@@ -661,7 +658,7 @@ export const createPoolTests = (
     );
   });
 
-  test('removes connections from the pool after the idle timeout', async (t) => {
+  test("removes connections from the pool after the idle timeout", async (t) => {
     const pool = await createPool(t.context.dsn, {
       driverFactory,
       idleTimeout: 100,
@@ -675,10 +672,10 @@ export const createPoolTests = (
         pendingConnections: 0,
         pendingDestroyConnections: 0,
         pendingReleaseConnections: 0,
-        state: 'ACTIVE',
+        state: "ACTIVE",
         waitingClients: 0,
       },
-      'initial state',
+      "initial state",
     );
 
     await pool.query(sql.unsafe`
@@ -693,10 +690,10 @@ export const createPoolTests = (
         pendingConnections: 0,
         pendingDestroyConnections: 0,
         pendingReleaseConnections: 0,
-        state: 'ACTIVE',
+        state: "ACTIVE",
         waitingClients: 0,
       },
-      'shows idle clients',
+      "shows idle clients",
     );
 
     await delay(100);
@@ -709,14 +706,14 @@ export const createPoolTests = (
         pendingConnections: 0,
         pendingDestroyConnections: 0,
         pendingReleaseConnections: 0,
-        state: 'ACTIVE',
+        state: "ACTIVE",
         waitingClients: 0,
       },
-      'shows no idle clients',
+      "shows no idle clients",
     );
   });
 
-  test('removes connections from the pool after backend termination (connection terminated itself)', async (t) => {
+  test("removes connections from the pool after backend termination (connection terminated itself)", async (t) => {
     const pool = await createPool(t.context.dsn, {
       driverFactory,
       idleTimeout: 5_000,
@@ -766,7 +763,7 @@ export const createPoolTests = (
     await pool.end();
   };
 
-  test('removes connections from the pool after backend termination (connection terminated unexpectedly)', async (t) => {
+  test("removes connections from the pool after backend termination (connection terminated unexpectedly)", async (t) => {
     const pool = await createPool(t.context.dsn, {
       driverFactory,
       idleTimeout: 5_000,
@@ -799,7 +796,7 @@ export const createPoolTests = (
     await pool.end();
   });
 
-  test('connections failing auth are not added to the connection pool', async (t) => {
+  test("connections failing auth are not added to the connection pool", async (t) => {
     const superPool = await createPool(t.context.dsn, {
       driverFactory,
       maximumPoolSize: 1,
@@ -807,7 +804,7 @@ export const createPoolTests = (
 
     const connection = parseDsn(t.context.dsn);
 
-    const testUser = `auth_change_test_${randomUUID().split('-')[0]}`;
+    const testUser = `auth_change_test_${randomUUID().split("-")[0]}`;
 
     await superPool.query(
       sql.unsafe`
@@ -859,7 +856,7 @@ export const createPoolTests = (
     );
 
     // @ts-expect-error TODO
-    t.is(error.cause.code, '28P01');
+    t.is(error.cause.code, "28P01");
 
     // Ensure that the connection was not added to the pool.
     t.like(pool.state(), {
@@ -876,7 +873,7 @@ export const createPoolTests = (
     await superPool.end();
   });
 
-  test('retains a minimum number of connections in the pool', async (t) => {
+  test("retains a minimum number of connections in the pool", async (t) => {
     const pool = await createPool(t.context.dsn, {
       driverFactory,
       idleTimeout: 100,
@@ -891,10 +888,10 @@ export const createPoolTests = (
         pendingConnections: 0,
         pendingDestroyConnections: 0,
         pendingReleaseConnections: 0,
-        state: 'ACTIVE',
+        state: "ACTIVE",
         waitingClients: 0,
       },
-      'initial state',
+      "initial state",
     );
 
     await pool.query(sql.unsafe`
@@ -909,10 +906,10 @@ export const createPoolTests = (
         pendingConnections: 0,
         pendingDestroyConnections: 0,
         pendingReleaseConnections: 0,
-        state: 'ACTIVE',
+        state: "ACTIVE",
         waitingClients: 0,
       },
-      'shows idle clients',
+      "shows idle clients",
     );
 
     await delay(150);
@@ -925,16 +922,16 @@ export const createPoolTests = (
         pendingConnections: 0,
         pendingDestroyConnections: 0,
         pendingReleaseConnections: 0,
-        state: 'ACTIVE',
+        state: "ACTIVE",
         waitingClients: 0,
       },
-      'shows idle clients because minimum pool size is 1',
+      "shows idle clients because minimum pool size is 1",
     );
 
     await pool.end();
   });
 
-  test('destroy creates a new connection to be used by waiting client', async (t) => {
+  test("destroy creates a new connection to be used by waiting client", async (t) => {
     const pool = await createPool(t.context.dsn, {
       driverFactory,
       idleTimeout: 30_000,
@@ -969,10 +966,10 @@ export const createPoolTests = (
         pendingConnections: 0,
         pendingDestroyConnections: 0,
         pendingReleaseConnections: 0,
-        state: 'ACTIVE',
+        state: "ACTIVE",
         waitingClients: 1,
       },
-      'pool state has waiting client',
+      "pool state has waiting client",
     );
 
     const waitingClientResult = await waitingClientPromise;
@@ -986,16 +983,16 @@ export const createPoolTests = (
         pendingConnections: 0,
         pendingDestroyConnections: 0,
         pendingReleaseConnections: 0,
-        state: 'ACTIVE',
+        state: "ACTIVE",
         waitingClients: 0,
       },
-      'pool state after all queries complete',
+      "pool state after all queries complete",
     );
 
     await pool.end();
   });
 
-  test('retains explicit transaction beyond the idle timeout', async (t) => {
+  test("retains explicit transaction beyond the idle timeout", async (t) => {
     const pool = await createPool(t.context.dsn, {
       driverFactory,
       idleTimeout: 100,

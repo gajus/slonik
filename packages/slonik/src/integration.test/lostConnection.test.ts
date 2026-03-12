@@ -1,21 +1,21 @@
 /* eslint-disable no-console */
 
-import { createPool, sql } from '../index.js';
-import { startTestContainer } from './termination.test.js';
-import test from 'ava';
-import { execSync } from 'node:child_process';
+import { createPool, sql } from "../index.js";
+import { startTestContainer } from "./termination.test.js";
+import test from "ava";
+import { execSync } from "node:child_process";
 
 /**
  * @see https://github.com/gajus/slonik/issues/631
  */
-test('releases failed connections', async (t) => {
+test("releases failed connections", async (t) => {
   t.timeout(10_000);
 
   try {
-    const output = execSync('docker --version', { encoding: 'utf8' });
-    console.log('Docker CLI is available:', output.trim());
+    const output = execSync("docker --version", { encoding: "utf8" });
+    console.log("Docker CLI is available:", output.trim());
   } catch {
-    console.log('Skipper the test. Docker CLI is not available.');
+    console.log("Skipper the test. Docker CLI is not available.");
 
     return;
   }
@@ -43,8 +43,5 @@ test('releases failed connections', async (t) => {
     return false;
   };
 
-  t.deepEqual(
-    [await isConnectionAvailable(), await isConnectionAvailable()],
-    [false, false],
-  );
+  t.deepEqual([await isConnectionAvailable(), await isConnectionAvailable()], [false, false]);
 });

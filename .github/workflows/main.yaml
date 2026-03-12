@@ -11,7 +11,7 @@ jobs:
       - name: setup node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '24'
+          node-version: "24"
       - uses: pnpm/action-setup@v4
         name: install pnpm
         with:
@@ -19,6 +19,7 @@ jobs:
           run_install: |
             - recursive: true
       - run: pnpm run -r build
+      - run: pnpm run lint
       - run: pnpm run -r lint
     timeout-minutes: 10
   release:
@@ -41,7 +42,7 @@ jobs:
       - name: setup node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '24'
+          node-version: "24"
       - uses: pnpm/action-setup@v4
         name: install pnpm
         with:
@@ -53,13 +54,13 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           # Use OIDC for npm authentication instead of NPM_TOKEN
           # https://github.com/changesets/changesets/issues/1152#issuecomment-3190884868
-          NPM_TOKEN: ''
+          NPM_TOKEN: ""
         uses: changesets/action@v1
         with:
           publish: npx changeset publish
   test:
     environment: release
-    name: 'Test node_version:${{ matrix.node_version }} test_only:${{ matrix.test_only }}'
+    name: "Test node_version:${{ matrix.node_version }} test_only:${{ matrix.test_only }}"
     runs-on: ubuntu-latest
     services:
       postgres:
@@ -98,7 +99,7 @@ jobs:
       - name: setup node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '${{ matrix.node_version }}'
+          node-version: "${{ matrix.node_version }}"
       - uses: pnpm/action-setup@v4
         name: install pnpm
         with:
@@ -107,8 +108,8 @@ jobs:
             - recursive: true
       - run: pnpm run -r build
       - env:
-          POSTGRES_DSN: 'postgres://postgres:postgres@localhost:5432'
-          TEST_ONLY: '${{ matrix.test_only }}'
+          POSTGRES_DSN: "postgres://postgres:postgres@localhost:5432"
+          TEST_ONLY: "${{ matrix.test_only }}"
         run: pnpm run -r test
     strategy:
       fail-fast: false

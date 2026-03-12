@@ -1,14 +1,14 @@
-import { slonikPlaceholderRegexRule } from '../regexRules/slonikPlaceholderRegexRule.js';
-import { FragmentToken } from '../tokens.js';
-import type { QuerySqlToken, SqlFragmentToken } from '../types.js';
-import { formatSlonikPlaceholder } from '../utilities/formatSlonikPlaceholder.js';
-import { UnexpectedStateError } from '@slonik/errors';
+import { slonikPlaceholderRegexRule } from "../regexRules/slonikPlaceholderRegexRule.js";
+import { FragmentToken } from "../tokens.js";
+import type { QuerySqlToken, SqlFragmentToken } from "../types.js";
+import { formatSlonikPlaceholder } from "../utilities/formatSlonikPlaceholder.js";
+import { UnexpectedStateError } from "@slonik/errors";
 
 export const createQuerySqlFragment = (
   token: QuerySqlToken,
   greatestParameterPosition: number,
 ): SqlFragmentToken => {
-  let sql = '';
+  let sql = "";
 
   let leastMatchedParameterPosition = Number.POSITIVE_INFINITY;
   let greatestMatchedParameterPosition = 0;
@@ -24,14 +24,12 @@ export const createQuerySqlFragment = (
       leastMatchedParameterPosition = parameterPosition;
     }
 
-    return formatSlonikPlaceholder(
-      parameterPosition + greatestParameterPosition,
-    );
+    return formatSlonikPlaceholder(parameterPosition + greatestParameterPosition);
   });
 
   if (greatestMatchedParameterPosition > token.values.length) {
     throw new UnexpectedStateError(
-      'The greatest parameter position is greater than the number of parameter values.',
+      "The greatest parameter position is greater than the number of parameter values.",
     );
   }
 
@@ -39,7 +37,7 @@ export const createQuerySqlFragment = (
     leastMatchedParameterPosition !== Number.POSITIVE_INFINITY &&
     leastMatchedParameterPosition !== 1
   ) {
-    throw new UnexpectedStateError('Parameter position must start at 1.');
+    throw new UnexpectedStateError("Parameter position must start at 1.");
   }
 
   return {

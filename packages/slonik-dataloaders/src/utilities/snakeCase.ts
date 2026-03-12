@@ -8,7 +8,7 @@ const SPLIT_UPPER_UPPER_RE = /(\p{Lu})(\p{Lu}\p{Ll})/gu;
 // Regexp involved with stripping non-word characters from the result.
 const DEFAULT_STRIP_REGEXP = /[^\p{L}\d]+/giu;
 // The replacement value for splits.
-const SPLIT_REPLACE_VALUE = '$1\0$2';
+const SPLIT_REPLACE_VALUE = "$1\0$2";
 
 /**
  * Split any cased input strings into an array of words.
@@ -18,11 +18,11 @@ const split = (input: string): string[] => {
     .replaceAll(SPLIT_LOWER_UPPER_RE, SPLIT_REPLACE_VALUE)
     .replaceAll(SPLIT_UPPER_UPPER_RE, SPLIT_REPLACE_VALUE);
 
-  result = result.replaceAll(DEFAULT_STRIP_REGEXP, '\0');
+  result = result.replaceAll(DEFAULT_STRIP_REGEXP, "\0");
   let start = 0;
   let end = result.length;
   // Trim the delimiter from around the output string.
-  while (result.charAt(start) === '\0') {
+  while (result.charAt(start) === "\0") {
     start++;
   }
 
@@ -30,7 +30,7 @@ const split = (input: string): string[] => {
     return [];
   }
 
-  while (result.charAt(end - 1) === '\0') {
+  while (result.charAt(end - 1) === "\0") {
     end--;
   }
 
@@ -41,5 +41,5 @@ const split = (input: string): string[] => {
 export const snakeCase = (input: string) => {
   return split(input)
     .map((fragment) => fragment.toLowerCase())
-    .join('_');
+    .join("_");
 };

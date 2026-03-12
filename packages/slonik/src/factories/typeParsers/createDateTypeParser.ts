@@ -1,4 +1,4 @@
-import type { DriverTypeParser } from '@slonik/driver';
+import type { DriverTypeParser } from "@slonik/driver";
 
 const dateParser = (value: string) => {
   return value;
@@ -6,7 +6,7 @@ const dateParser = (value: string) => {
 
 export const createDateTypeParser = (): DriverTypeParser => {
   return {
-    name: 'date',
+    name: "date",
     parse: dateParser,
   };
 };

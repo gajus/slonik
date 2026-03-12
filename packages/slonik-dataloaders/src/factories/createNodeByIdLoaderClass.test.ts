@@ -1,12 +1,12 @@
-import { createNodeByIdLoaderClass } from './createNodeByIdLoaderClass.js';
-import { createPool, sql } from 'slonik';
-import type { DatabasePool } from 'slonik';
-import { afterAll, beforeAll, describe, expect, it, vi } from 'vitest';
-import { z } from 'zod';
+import { createNodeByIdLoaderClass } from "./createNodeByIdLoaderClass.js";
+import { createPool, sql } from "slonik";
+import type { DatabasePool } from "slonik";
+import { afterAll, beforeAll, describe, expect, it, vi } from "vitest";
+import { z } from "zod";
 
 const POSTGRES_DSN =
   // eslint-disable-next-line n/no-process-env
-  process.env.POSTGRES_DSN ?? 'postgres://postgres:postgres@localhost:5432';
+  process.env.POSTGRES_DSN ?? "postgres://postgres:postgres@localhost:5432";
 
 const FooByIdLoader = createNodeByIdLoaderClass({
   query: sql.type(
@@ -21,7 +21,7 @@ const FooByIdLoader = createNodeByIdLoaderClass({
   `,
 });
 
-describe('createRecordByUniqueColumnLoader', { sequential: true }, () => {
+describe("createRecordByUniqueColumnLoader", { sequential: true }, () => {
   let pool: DatabasePool;
 
   beforeAll(async () => {
@@ -54,11 +54,11 @@ describe('createRecordByUniqueColumnLoader', { sequential: true }, () => {
     }
   });
 
-  it('loads record by numeric column', async () => {
+  it("loads record by numeric column", async () => {
     const loader = new FooByIdLoader(pool, {});
     const result = await loader.load(2);
 
-    expect(result).toMatchObject({ id: 2, uid: 'b' });
+    expect(result).toMatchObject({ id: 2, uid: "b" });
   });
 
   it("returns null when a match can't be found", async () => {
@@ -68,23 +68,23 @@ describe('createRecordByUniqueColumnLoader', { sequential: true }, () => {
     expect(result).toEqual(null);
   });
 
-  it('batches and caches loaded records', async () => {
+  it("batches and caches loaded records", async () => {
     const loader = new FooByIdLoader(pool, {});
-    const poolAnySpy = vi.spyOn(pool, 'any');
+    const poolAnySpy = vi.spyOn(pool, "any");
     const results = await Promise.all([loader.load(3), loader.load(2)]);
 
     expect(poolAnySpy).toHaveBeenCalledTimes(1);
     expect(results).toMatchObject([
-      { id: 3, uid: 'c' },
-      { id: 2, uid: 'b' },
+      { id: 3, uid: "c" },
+      { id: 2, uid: "b" },
     ]);
   });
 
-  it('loads record by text column', async () => {
+  it("loads record by text column", async () => {
     const FooByUidLoader = createNodeByIdLoaderClass({
       column: {
-        name: 'uid',
-        type: 'text',
+        name: "uid",
+        type: "text",
       },
       query: sql.type(
         z.object({
@@ -98,8 +98,8 @@ describe('createRecordByUniqueColumnLoader', { sequential: true }, () => {
       `,
     });
     const loader = new FooByUidLoader(pool, {});
-    const result = await loader.load('b');
+    const result = await loader.load("b");
 
-    expect(result).toMatchObject({ id: 2, uid: 'b' });
+    expect(result).toMatchObject({ id: 2, uid: "b" });
   });
 });
