@@ -1,6 +1,6 @@
 {
   "name": "slonik-interceptor-query-logging",
-  "version": "48.12.3",
+  "version": "48.13.0",
   "description": "Logs Slonik queries.",
   "keywords": [
     "interceptor",
@@ -32,7 +32,7 @@
   },
   "devDependencies": {
     "ava": "^6.4.1",
-    "slonik": "^48.12.3",
+    "slonik": "^48.13.0",
     "tsimp": "^2.0.12",
     "typescript": "^5.9.3"
   },
