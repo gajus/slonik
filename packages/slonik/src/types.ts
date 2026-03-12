@@ -55,7 +55,7 @@ export type ClientConfiguration = {
    * After this age, the connection will be destroyed.
    * @default 30 minutes
    */
-  readonly maximumConnectionAge?: number;
+  readonly maximumConnectionAge?: "DISABLE_TIMEOUT" | number;
   /**
    * Do not allow more than this many connections. (Default: 10)
    */

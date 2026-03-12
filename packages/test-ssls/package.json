@@ -1,6 +1,6 @@
 {
   "name": "@slonik/test-ssls",
-  "version": "48.12.3",
+  "version": "48.13.0",
   "description": "SSLs used for testing Slonik.",
   "license": "BSD-3-Clause",
   "author": {

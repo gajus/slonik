@@ -258,11 +258,22 @@ const assertPoolState = (
   }
 };
 
+const resolveTestTimeout = (
+  value: "DISABLE_TIMEOUT" | number | undefined,
+  defaultValue: number,
+): number => {
+  if (value === "DISABLE_TIMEOUT") {
+    return Number.POSITIVE_INFINITY;
+  }
+
+  return value ?? defaultValue;
+};
+
 const createTestPool = (
   driver: Driver,
   options: Partial<{
-    idleTimeout: number;
-    maximumConnectionAge: number;
+    idleTimeout: "DISABLE_TIMEOUT" | number;
+    maximumConnectionAge: "DISABLE_TIMEOUT" | number;
     maximumPoolSize: number;
     minimumPoolSize: number;
   }> = {},
@@ -272,8 +283,8 @@ const createTestPool = (
   return createConnectionPool({
     driver,
     events,
-    idleTimeout: options.idleTimeout || 1_000,
-    maximumConnectionAge: options.maximumConnectionAge ?? 30 * 60 * 1_000, // 30 minutes
+    idleTimeout: resolveTestTimeout(options.idleTimeout, 1_000),
+    maximumConnectionAge: resolveTestTimeout(options.maximumConnectionAge, 30 * 60 * 1_000),
     maximumPoolSize: options.maximumPoolSize || 10,
     minimumPoolSize: options.minimumPoolSize || 0,
   });
@@ -850,6 +861,36 @@ test("idle timeout does not destroy connections at or below minimum pool size", 
   await pool.end();
 });
 
+test("idle timeout is disabled when idleTimeout is DISABLE_TIMEOUT", async (t) => {
+  const driver = new MockDriver();
+  const pool = createTestPool(driver, {
+    idleTimeout: "DISABLE_TIMEOUT",
+    maximumPoolSize: 3,
+    minimumPoolSize: 0,
+  });
+
+  // Create connections above minimumPoolSize so idle timer would normally fire
+  const connections = await acquireConnections(pool, 2);
+  await releaseConnections(connections);
+
+  assertPoolState(t, pool, {
+    acquiredConnections: 0,
+    idleConnections: 2,
+  });
+
+  // Wait well beyond the default 10s timeout (using a short wait since
+  // DISABLE_TIMEOUT means no timer is ever set)
+  await wait(150);
+
+  // Connections should NOT have been destroyed
+  assertPoolState(t, pool, {
+    acquiredConnections: 0,
+    idleConnections: 2,
+  });
+
+  await pool.end();
+});
+
 test("idle timer is cleared when connection is reused", async (t) => {
   const driver = new MockDriver();
   const pool = createTestPool(driver, {
@@ -894,6 +935,37 @@ test("idle timer is cleared when connection is reused", async (t) => {
 test("connection is destroyed when exceeding maximum age on release", async (t) => {
   // Skip this test as it requires mocking Date.now() before connection creation
   t.pass("Test skipped - requires complex timing setup");
+});
+
+test("connection is not destroyed when maximumConnectionAge is DISABLE_TIMEOUT", async (t) => {
+  const originalDateNow = Date.now;
+  let currentTime = originalDateNow();
+  Date.now = () => currentTime;
+
+  try {
+    const driver = new MockDriver();
+    const pool = createTestPool(driver, {
+      maximumConnectionAge: "DISABLE_TIMEOUT",
+      maximumPoolSize: 2,
+      minimumPoolSize: 0,
+    });
+
+    const connection = await pool.acquire();
+    const connectionId = connection.id();
+    await connection.release();
+
+    // Advance time far beyond the default 30-minute maximum age
+    currentTime += 60 * 60 * 1_000; // 1 hour
+
+    // Connection should be reused, not replaced
+    const reused = await pool.acquire();
+    t.is(reused.id(), connectionId, "Connection should be reused despite age");
+
+    await reused.release();
+    await pool.end();
+  } finally {
+    Date.now = originalDateNow;
+  }
 });
 
 test("old connection is destroyed during acquire attempt", async (t) => {
