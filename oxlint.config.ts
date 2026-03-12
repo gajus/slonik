@@ -3,7 +3,7 @@ import { defineConfig } from "oxlint";
 
 export default defineConfig({
   extends: [config],
-  ignorePatterns: ["**/dist/", "**/.*/"],
+  ignorePatterns: ["**/dist/", "**/.*/", "**/CHANGELOG.md"],
   overrides: [
     {
       files: ["**/*.{ts,tsx}"],
