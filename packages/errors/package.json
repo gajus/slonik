@@ -1,6 +1,6 @@
 {
   "name": "@slonik/errors",
-  "version": "48.13.1",
+  "version": "48.13.2",
   "description": "A Node.js PostgreSQL client with strict types, detailed logging and assertions.",
   "keywords": [
     "postgresql",
@@ -32,7 +32,7 @@
     "test": "ava --verbose --serial"
   },
   "dependencies": {
-    "@slonik/types": "^48.13.1"
+    "@slonik/types": "^48.13.2"
   },
   "devDependencies": {
     "@standard-schema/spec": "^1.0.0",

@@ -1,5 +1,13 @@
 # @slonik/sql-tag
 
+## 48.13.2
+
+### Patch Changes
+
+- Updated dependencies []:
+  - @slonik/errors@48.13.2
+  - @slonik/types@48.13.2
+
 ## 48.13.1
 
 ### Patch Changes
