@@ -1,5 +1,18 @@
 # slonik
 
+## 48.13.1
+
+### Patch Changes
+
+- [`0cc29b6`](https://github.com/gajus/slonik/commit/0cc29b66efe0e7143639bca5daf7d9abe2fc38c1) Thanks [@gajus](https://github.com/gajus)! - fix resetConnection failures leaking pool capacity
+
+- Updated dependencies []:
+  - @slonik/driver@48.13.1
+  - @slonik/errors@48.13.1
+  - @slonik/pg-driver@48.13.1
+  - @slonik/sql-tag@48.13.1
+  - @slonik/utilities@48.13.1
+
 ## 48.13.0
 
 ### Minor Changes

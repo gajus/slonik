@@ -1,6 +1,6 @@
 {
   "name": "slonik-sql-tag-raw",
-  "version": "48.13.0",
+  "version": "48.13.1",
   "description": "Logs Slonik queries.",
   "keywords": [
     "interceptor",
@@ -26,12 +26,12 @@
     "test": "ava --verbose --serial"
   },
   "dependencies": {
-    "@slonik/sql-tag": "^48.13.0",
+    "@slonik/sql-tag": "^48.13.1",
     "roarr": "^7.21.4"
   },
   "devDependencies": {
     "ava": "^6.4.1",
-    "slonik": "^48.13.0",
+    "slonik": "^48.13.1",
     "tsimp": "^2.0.12",
     "typescript": "^5.9.3"
   },

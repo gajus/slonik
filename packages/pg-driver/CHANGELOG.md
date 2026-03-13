@@ -1,5 +1,16 @@
 # @slonik/pg-driver
 
+## 48.13.1
+
+### Patch Changes
+
+- Updated dependencies []:
+  - @slonik/driver@48.13.1
+  - @slonik/errors@48.13.1
+  - @slonik/sql-tag@48.13.1
+  - @slonik/types@48.13.1
+  - @slonik/utilities@48.13.1
+
 ## 48.13.0
 
 ### Patch Changes
