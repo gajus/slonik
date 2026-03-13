@@ -1,6 +1,6 @@
 {
   "name": "@slonik/pg-driver",
-  "version": "48.13.0",
+  "version": "48.13.1",
   "description": "A Node.js PostgreSQL client with strict types, detailed logging and assertions.",
   "keywords": [
     "postgresql",
@@ -32,11 +32,11 @@
     "test": "ava --verbose --serial"
   },
   "dependencies": {
-    "@slonik/driver": "^48.13.0",
-    "@slonik/errors": "^48.13.0",
-    "@slonik/sql-tag": "^48.13.0",
-    "@slonik/types": "^48.13.0",
-    "@slonik/utilities": "^48.13.0",
+    "@slonik/driver": "^48.13.1",
+    "@slonik/errors": "^48.13.1",
+    "@slonik/sql-tag": "^48.13.1",
+    "@slonik/types": "^48.13.1",
+    "@slonik/utilities": "^48.13.1",
     "pg": "^8.18.0",
     "pg-query-stream": "^4.12.0",
     "pg-types": "^4.1.0",
