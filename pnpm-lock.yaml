@@ -46,16 +46,16 @@ importers:
         specifier: ^3.4.7
         version: 3.4.8
       slonik:
-        specifier: ^48.12.3
+        specifier: ^48.13.0
         version: link:../slonik
 
   packages/driver:
     dependencies:
       '@slonik/types':
-        specifier: ^48.12.3
+        specifier: ^48.13.0
         version: link:../types
       '@slonik/utilities':
-        specifier: ^48.12.3
+        specifier: ^48.13.0
         version: link:../utilities
       roarr:
         specifier: ^7.21.4
@@ -89,7 +89,7 @@ importers:
   packages/errors:
     dependencies:
       '@slonik/types':
-        specifier: ^48.12.3
+        specifier: ^48.13.0
         version: link:../types
     devDependencies:
       '@standard-schema/spec':
@@ -114,19 +114,19 @@ importers:
   packages/pg-driver:
     dependencies:
       '@slonik/driver':
-        specifier: ^48.12.3
+        specifier: ^48.13.0
         version: link:../driver
       '@slonik/errors':
-        specifier: ^48.12.3
+        specifier: ^48.13.0
         version: link:../errors
       '@slonik/sql-tag':
-        specifier: ^48.12.3
+        specifier: ^48.13.0
         version: link:../sql-tag
       '@slonik/types':
-        specifier: ^48.12.3
+        specifier: ^48.13.0
         version: link:../types
       '@slonik/utilities':
-        specifier: ^48.12.3
+        specifier: ^48.13.0
         version: link:../utilities
       pg:
         specifier: ^8.18.0
@@ -169,19 +169,19 @@ importers:
         specifier: ^1.9.0
         version: 1.9.0
       '@slonik/driver':
-        specifier: ^48.12.3
+        specifier: ^48.13.0
         version: link:../driver
       '@slonik/errors':
-        specifier: ^48.12.3
+        specifier: ^48.13.0
         version: link:../errors
       '@slonik/pg-driver':
-        specifier: ^48.12.3
+        specifier: ^48.13.0
         version: link:../pg-driver
       '@slonik/sql-tag':
-        specifier: ^48.12.3
+        specifier: ^48.13.0
         version: link:../sql-tag
       '@slonik/utilities':
-        specifier: ^48.12.3
+        specifier: ^48.13.0
         version: link:../utilities
       '@standard-schema/spec':
         specifier: ^1.0.0
@@ -249,13 +249,13 @@ importers:
         version: 4.3.6
     devDependencies:
       '@slonik/types':
-        specifier: ^48.12.3
+        specifier: ^48.13.0
         version: link:../types
       '@standard-schema/spec':
         specifier: ^1.0.0
         version: 1.1.0
       slonik:
-        specifier: ^48.12.3
+        specifier: ^48.13.0
         version: link:../slonik
       typescript:
         specifier: ^5.9.3
@@ -274,7 +274,7 @@ importers:
         specifier: ^6.4.1
         version: 6.4.1(rollup@4.55.1)
       slonik:
-        specifier: ^48.12.3
+        specifier: ^48.13.0
         version: link:../slonik
       tsimp:
         specifier: ^2.0.12
@@ -299,7 +299,7 @@ importers:
         specifier: ^6.4.1
         version: 6.4.1(rollup@4.55.1)
       slonik:
-        specifier: ^48.12.3
+        specifier: ^48.13.0
         version: link:../slonik
       tsimp:
         specifier: ^2.0.12
@@ -324,7 +324,7 @@ importers:
         specifier: ^6.4.1
         version: 6.4.1(rollup@4.55.1)
       slonik:
-        specifier: ^48.12.3
+        specifier: ^48.13.0
         version: link:../slonik
       tsimp:
         specifier: ^2.0.12
@@ -336,7 +336,7 @@ importers:
   packages/slonik-sql-tag-raw:
     dependencies:
       '@slonik/sql-tag':
-        specifier: ^48.12.3
+        specifier: ^48.13.0
         version: link:../sql-tag
       roarr:
         specifier: ^7.21.4
@@ -346,7 +346,7 @@ importers:
         specifier: ^6.4.1
         version: 6.4.1(rollup@4.55.1)
       slonik:
-        specifier: ^48.12.3
+        specifier: ^48.13.0
         version: link:../slonik
       tsimp:
         specifier: ^2.0.12
@@ -358,10 +358,10 @@ importers:
   packages/sql-tag:
     dependencies:
       '@slonik/errors':
-        specifier: ^48.12.3
+        specifier: ^48.13.0
         version: link:../errors
       '@slonik/types':
-        specifier: ^48.12.3
+        specifier: ^48.13.0
         version: link:../types
       roarr:
         specifier: ^7.21.4
@@ -426,10 +426,10 @@ importers:
   packages/utilities:
     dependencies:
       '@slonik/errors':
-        specifier: workspace:^48.12.3
+        specifier: workspace:^48.13.0
         version: link:../errors
       '@slonik/types':
-        specifier: ^48.12.3
+        specifier: ^48.13.0
         version: link:../types
     devDependencies:
       '@slonik/test-ssls':
