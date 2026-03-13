@@ -916,7 +916,7 @@ type Interceptor = {
     query: Query,
     result: QueryResult<QueryResultRow>,
   ) => MaybePromise<QueryResult<QueryResultRow>>;
-  beforePoolConnection?: (connectionContext: ConnectionContext) => MaybePromise<?DatabasePool>;
+  beforePoolConnection?: (connectionContext: PoolContext) => MaybePromise<?DatabasePool>;
   beforePoolConnectionRelease?: (
     connectionContext: ConnectionContext,
     connection: DatabasePoolConnection,
@@ -951,6 +951,9 @@ type Interceptor = {
   ) => MaybePromise<QueryResultRow>;
 };
 ```
+
+For a given connection attempt, Slonik reuses the same context object across
+`beforePoolConnection`, `afterPoolConnection`, and `beforePoolConnectionRelease`.
 
 #### <code>afterPoolConnection</code>
 

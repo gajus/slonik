@@ -6,6 +6,7 @@ import type {
   Connection,
   DatabasePool,
   DatabasePoolConnection,
+  Interceptor,
   Logger,
   MaybePromise,
 } from "../types.js";
@@ -25,6 +26,22 @@ type ConnectionHandlerType = (
 ) => MaybePromise<unknown>;
 
 type PoolHandlerType = (pool: DatabasePool) => Promise<unknown>;
+
+type AfterPoolConnectionContext = Parameters<NonNullable<Interceptor["afterPoolConnection"]>>[0];
+
+type BeforePoolConnectionContext = Parameters<NonNullable<Interceptor["beforePoolConnection"]>>[0];
+
+type BeforePoolConnectionReleaseContext = Parameters<
+  NonNullable<Interceptor["beforePoolConnectionRelease"]>
+>[0];
+
+type SharedConnectionContext = {
+  connectionId?: string;
+  connectionType?: Connection;
+  log: Logger;
+  poolId: string;
+  query?: null | QuerySqlToken;
+};
 
 const boundConnectionMethods = [
   "any",
@@ -80,6 +97,11 @@ export const createConnection = async (
   const { state } = pool.state();
 
   const poolId = pool.id();
+  const connectionContext: SharedConnectionContext = {
+    log: parentLog,
+    poolId,
+    query,
+  };
 
   if (state === "ENDING") {
     throw new UnexpectedStateError(
@@ -103,11 +125,7 @@ export const createConnection = async (
           interceptorSpan.setAttribute("interceptor.name", interceptor.name);
 
           try {
-            return await beforePoolConnection({
-              log: parentLog,
-              poolId,
-              query,
-            });
+            return await beforePoolConnection(connectionContext as BeforePoolConnectionContext);
           } catch (error) {
             interceptorSpan.recordException(error);
             interceptorSpan.setStatus({
@@ -141,19 +159,21 @@ export const createConnection = async (
       connectionId,
     });
 
-    const connectionContext = {
-      connectionId,
-      connectionType,
-      log: connectionLog,
-      poolId,
-    };
+    connectionContext.connectionId = connectionId;
+    connectionContext.connectionType = connectionType;
+    connectionContext.log = connectionLog;
+
+    delete connectionContext.query;
 
     const boundConnection = bindPoolConnection(connectionLog, connection, clientConfiguration);
 
     try {
       for (const interceptor of clientConfiguration.interceptors) {
         if (interceptor.afterPoolConnection) {
-          await interceptor.afterPoolConnection(connectionContext, boundConnection);
+          await interceptor.afterPoolConnection(
+            connectionContext as AfterPoolConnectionContext,
+            boundConnection,
+          );
         }
       }
     } catch (error) {
@@ -180,7 +200,10 @@ export const createConnection = async (
     try {
       for (const interceptor of clientConfiguration.interceptors) {
         if (interceptor.beforePoolConnectionRelease) {
-          await interceptor.beforePoolConnectionRelease(connectionContext, boundConnection);
+          await interceptor.beforePoolConnectionRelease(
+            connectionContext as BeforePoolConnectionReleaseContext,
+            boundConnection,
+          );
         }
       }
     } catch (error) {
