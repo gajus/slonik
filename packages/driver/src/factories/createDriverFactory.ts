@@ -266,10 +266,20 @@ export const createDriverFactory = (setup: DriverSetup): DriverFactory => {
           const pendingOperation = activeQueryPromise ?? releasePromise;
 
           if (pendingOperation) {
-            await Promise.race([
-              delay(driverConfiguration.gracefulTerminationTimeout),
-              pendingOperation,
-            ]);
+            try {
+              await Promise.race([
+                delay(driverConfiguration.gracefulTerminationTimeout),
+                pendingOperation,
+              ]);
+            } catch (error) {
+              Logger.warn(
+                {
+                  error: serializeError(error),
+                  namespace: "driverClient",
+                },
+                "pending driver operation failed while destroying client",
+              );
+            }
           }
 
           isDestroyed = true;
@@ -315,12 +325,33 @@ export const createDriverFactory = (setup: DriverSetup): DriverFactory => {
             throw new Error("Client has an active query.");
           }
 
-          if (resetConnection) {
-            await resetConnection({
-              query: async (sql) => {
-                await query(sql);
-              },
-            });
+          try {
+            if (resetConnection) {
+              await resetConnection({
+                query: async (sql) => {
+                  await query(sql);
+                },
+              });
+            }
+          } catch (error) {
+            // A failed reset leaves the session state unknown, so the client
+            // must not be returned to the pool.
+            releasePromise = null;
+
+            try {
+              await destroy();
+            } catch (destroyError) {
+              Logger.warn(
+                {
+                  destroyError: serializeError(destroyError),
+                  error: serializeError(error),
+                  namespace: "driverClient",
+                },
+                "failed to destroy client after resetConnection error",
+              );
+            }
+
+            throw error;
           }
 
           if (driverConfiguration.idleTimeout !== "DISABLE_TIMEOUT") {
