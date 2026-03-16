@@ -578,9 +578,15 @@ export const createIntegrationTests = (
 
     const error = await t.throwsAsync(
       pool.connect(async (connection) => {
-        const connectionPid = await connection.oneFirst(sql.unsafe`
-        SELECT pg_backend_pid()
-      `);
+        const connectionPid = await connection.oneFirst(
+          sql.type(
+            z.object({
+              pg_backend_pid: z.int(),
+            }),
+          )`
+          SELECT pg_backend_pid()
+        `,
+        );
 
         setTimeout(() => {
           void pool.query(sql.unsafe`SELECT pg_terminate_backend(${connectionPid})`);
@@ -602,9 +608,15 @@ export const createIntegrationTests = (
 
     const error = await t.throwsAsync(
       pool.connect(async (connection) => {
-        const connectionPid = await connection.oneFirst(sql.unsafe`
+        const connectionPid = await connection.oneFirst(
+          sql.type(
+            z.object({
+              pg_backend_pid: z.int(),
+            }),
+          )`
           SELECT pg_backend_pid()
-        `);
+        `,
+        );
 
         setTimeout(() => {
           void pool.query(sql.unsafe`SELECT pg_cancel_backend(${connectionPid})`);
@@ -690,10 +702,16 @@ export const createIntegrationTests = (
       )
     `);
 
-    const result = await pool.oneFirst(sql.unsafe`
+    const result = await pool.oneFirst(
+      sql.type(
+        z.object({
+          payload: z.instanceof(Buffer),
+        }),
+      )`
       SELECT payload
       FROM person
-    `);
+    `,
+    );
 
     t.is(result.toString(), payload);
 
@@ -766,17 +784,29 @@ export const createIntegrationTests = (
       driverFactory,
     });
 
-    const firstPersonId = await pool.oneFirst(sql.unsafe`
+    const firstPersonId = await pool.oneFirst(
+      sql.type(
+        z.object({
+          id: z.string(),
+        }),
+      )`
       INSERT INTO person (name)
       VALUES ('foo')
       RETURNING id
-    `);
+    `,
+    );
 
-    const secondPersonId = await pool.oneFirst(sql.unsafe`
+    const secondPersonId = await pool.oneFirst(
+      sql.type(
+        z.object({
+          id: z.string(),
+        }),
+      )`
       INSERT INTO person (name)
       VALUES ('bar')
       RETURNING id
-    `);
+    `,
+    );
 
     let transactionCount = 0;
 
@@ -1269,9 +1299,15 @@ export const createIntegrationTests = (
     const error = await t.throwsAsync(
       pool.connect(async (connection) => {
         // connection pid
-        const connectionPid = await connection.oneFirst(sql.unsafe`
-          SELECT pg_backend_pid();
-        `);
+        const connectionPid = await connection.oneFirst(
+          sql.type(
+            z.object({
+              pg_backend_pid: z.int(),
+            }),
+          )`
+          SELECT pg_backend_pid()
+        `,
+        );
 
         setTimeout(() => {
           void pool.query(sql.unsafe`SELECT pg_cancel_backend(${connectionPid})`);
@@ -1294,9 +1330,15 @@ export const createIntegrationTests = (
     const error = await t.throwsAsync(
       pool.connect(async (connection) => {
         // connection pid
-        const connectionPid = await connection.oneFirst(sql.unsafe`
-          SELECT pg_backend_pid();
-        `);
+        const connectionPid = await connection.oneFirst(
+          sql.type(
+            z.object({
+              pg_backend_pid: z.int(),
+            }),
+          )`
+          SELECT pg_backend_pid()
+        `,
+        );
 
         setTimeout(() => {
           void pool.query(sql.unsafe`SELECT pg_terminate_backend(${connectionPid})`);

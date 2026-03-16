@@ -31,9 +31,9 @@
     "zod": "^4.3.6"
   },
   "devDependencies": {
-    "@slonik/types": "^48.13.2",
+    "@slonik/types": "workspace:^",
     "@standard-schema/spec": "^1.0.0",
-    "slonik": "^48.13.2",
+    "slonik": "workspace:^",
     "typescript": "^5.9.3",
     "vitest": "^4.0.18"
   },

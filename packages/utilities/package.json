@@ -32,8 +32,8 @@
     "test": "ava --verbose --serial"
   },
   "dependencies": {
-    "@slonik/errors": "workspace:^48.13.2",
-    "@slonik/types": "^48.13.2"
+    "@slonik/errors": "workspace:^",
+    "@slonik/types": "workspace:^"
   },
   "devDependencies": {
     "@slonik/test-ssls": "workspace:^",
