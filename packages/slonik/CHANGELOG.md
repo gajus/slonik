@@ -1,5 +1,20 @@
 # slonik
 
+## 48.14.0
+
+### Minor Changes
+
+- [#771](https://github.com/gajus/slonik/pull/771) [`21a8b5a`](https://github.com/gajus/slonik/commit/21a8b5acb35407ff81ee4b41656cc51ecb125099) Thanks [@gajus](https://github.com/gajus)! - perf: use Error.prepareStackTrace
+
+### Patch Changes
+
+- Updated dependencies []:
+  - @slonik/driver@48.14.0
+  - @slonik/errors@48.14.0
+  - @slonik/pg-driver@48.14.0
+  - @slonik/sql-tag@48.14.0
+  - @slonik/utilities@48.14.0
+
 ## 48.13.2
 
 ### Patch Changes
