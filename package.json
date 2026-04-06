@@ -22,8 +22,8 @@
     "@changesets/changelog-github": "^0.5.2",
     "husky": "^9.1.7",
     "knip": "^5.83.1",
-    "oxfmt": "^0.40.0",
-    "oxlint": "^1",
+    "oxfmt": "^0.43.0",
+    "oxlint": "^1.58.0",
     "oxlint-config-canonical": "^1"
   }
 }

@@ -132,6 +132,7 @@ type StackCrumb = {
   lineNumber: null | number;
 };
 
+// oxlint-disable-next-line complexity
 const executeQueryInternal = async (
   connectionLogger: Logger,
   connection: ConnectionPoolClient,
