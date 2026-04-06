@@ -1,6 +1,6 @@
 {
   "name": "@slonik/sql-tag",
-  "version": "48.13.2",
+  "version": "48.14.0",
   "description": "A Node.js PostgreSQL client with strict types, detailed logging and assertions.",
   "keywords": [
     "postgresql",
@@ -32,8 +32,8 @@
     "test": "ava --verbose --serial"
   },
   "dependencies": {
-    "@slonik/errors": "^48.13.2",
-    "@slonik/types": "^48.13.2",
+    "@slonik/errors": "^48.14.0",
+    "@slonik/types": "^48.14.0",
     "roarr": "^7.21.4",
     "safe-stable-stringify": "^2.5.0",
     "serialize-error": "^12.0.0",
