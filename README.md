@@ -1230,7 +1230,7 @@ const createResultParserInterceptor = (): Interceptor => {
       // It is recommended (but not required) to parse async to avoid blocking the event loop during validation
       const validationResult = await resultParser["~standard"].validate(row);
 
-      if (!validationResult.issues) {
+      if (validationResult.issues) {
         throw new SchemaValidationError(actualQuery, row, validationResult.issues);
       }
 
