@@ -11,6 +11,7 @@ type PoolConfiguration = {
   maximumConnectionAge: number;
   maximumPoolSize: number;
   minimumPoolSize: number;
+  poolName?: string;
 };
 
 /**
@@ -64,6 +65,10 @@ export const createPoolConfiguration = (
 
   if (clientConfiguration.minimumPoolSize) {
     poolConfiguration.minimumPoolSize = clientConfiguration.minimumPoolSize;
+  }
+
+  if (clientConfiguration.poolName) {
+    poolConfiguration.poolName = clientConfiguration.poolName;
   }
 
   return poolConfiguration;
