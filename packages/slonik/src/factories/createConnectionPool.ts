@@ -87,6 +87,7 @@ export const createConnectionPool = ({
   maximumConnectionAge,
   maximumPoolSize,
   minimumPoolSize,
+  poolName,
 }: {
   driver: Driver;
   events: DatabasePoolEventEmitter;
@@ -102,6 +103,7 @@ export const createConnectionPool = ({
   maximumConnectionAge: number;
   maximumPoolSize: number;
   minimumPoolSize: number;
+  poolName?: string;
 }): ConnectionPool => {
   // See test "waits for all connections to be established before attempting to terminate the pool"
   // for explanation of why `pendingConnections` is needed.
@@ -478,6 +480,9 @@ export const createConnectionPool = ({
     return tracer.startActiveSpan("slonik.connection.acquire", async (span) => {
       try {
         span.setAttribute("slonik.pool.id", id);
+        if (poolName) {
+          span.setAttribute("slonik.pool.name", poolName);
+        }
         span.setAttribute("slonik.pool.connections.total", connections.size);
         span.setAttribute("slonik.pool.connections.pending", pendingConnections.size);
         span.setAttribute("slonik.pool.waitingClients", waitingClients.length);
@@ -623,6 +628,8 @@ export const createConnectionPool = ({
             maximumPoolSize,
             minimumPoolSize,
             pendingConnections: pendingConnections.size,
+            poolId: id,
+            poolName,
             waitingClients: waitingClients.length,
           },
           `connection pool full; client has been queued`,

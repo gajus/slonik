@@ -65,6 +65,11 @@ export type ClientConfiguration = {
    */
   readonly minimumPoolSize?: number;
   /**
+   * Human-readable identifier for distinguishing multiple pools within the same application,
+   * e.g. "read", "write", "replica-us-east-1".
+   */
+  readonly poolName?: string;
+  /**
    * Number of times a query failing with Transaction Rollback class error, that doesn't belong to a transaction, is retried. (Default: 5)
    */
   readonly queryRetryLimit: number;
