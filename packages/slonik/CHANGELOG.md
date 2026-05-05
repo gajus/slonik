@@ -1,5 +1,18 @@
 # slonik
 
+## 48.14.1
+
+### Patch Changes
+
+- [#776](https://github.com/gajus/slonik/pull/776) [`4e822ff`](https://github.com/gajus/slonik/commit/4e822ffd130b701b4be1e41ea80587acb6b8ff64) Thanks [@Boeing787](https://github.com/Boeing787)! - Add support for the `poolName` configuration property to make it easier to distinguish logs and traces when using multiple pools in the same application.
+
+- Updated dependencies []:
+  - @slonik/driver@48.14.1
+  - @slonik/errors@48.14.1
+  - @slonik/pg-driver@48.14.1
+  - @slonik/sql-tag@48.14.1
+  - @slonik/utilities@48.14.1
+
 ## 48.14.0
 
 ### Minor Changes
