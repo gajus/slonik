@@ -1,6 +1,6 @@
 import type { ConnectionPoolClient } from "./factories/createConnectionPool.js";
 import { UnexpectedStateError } from "@slonik/errors";
-type PoolClientState = {
+export type PoolClientState = {
   activeQuery?: PromiseWithResolvers<null>;
   connectionId: string;
   poolId: string;

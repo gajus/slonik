@@ -13,60 +13,91 @@ import { transaction } from "../connectionMethods/transaction.js";
 import type { ConnectionPoolClient } from "../factories/createConnectionPool.js";
 import type { ClientConfiguration, DatabasePoolConnection, Logger } from "../types.js";
 
+class BoundPoolConnection {
+  parentLog: Logger;
+  connection: ConnectionPoolClient;
+  clientConfiguration: ClientConfiguration;
+
+  constructor(
+    parentLog: Logger,
+    connection: ConnectionPoolClient,
+    clientConfiguration: ClientConfiguration,
+  ) {
+    this.parentLog = parentLog;
+    this.connection = connection;
+    this.clientConfiguration = clientConfiguration;
+  }
+
+  any(slonikSql) {
+    return any(this.parentLog, this.connection, this.clientConfiguration, slonikSql);
+  }
+
+  anyFirst(slonikSql) {
+    return anyFirst(this.parentLog, this.connection, this.clientConfiguration, slonikSql);
+  }
+
+  exists(slonikSql) {
+    return exists(this.parentLog, this.connection, this.clientConfiguration, slonikSql);
+  }
+
+  many(slonikSql) {
+    return many(this.parentLog, this.connection, this.clientConfiguration, slonikSql);
+  }
+
+  manyFirst(slonikSql) {
+    return manyFirst(this.parentLog, this.connection, this.clientConfiguration, slonikSql);
+  }
+
+  maybeOne(slonikSql) {
+    return maybeOne(this.parentLog, this.connection, this.clientConfiguration, slonikSql);
+  }
+
+  maybeOneFirst(slonikSql) {
+    return maybeOneFirst(this.parentLog, this.connection, this.clientConfiguration, slonikSql);
+  }
+
+  one(slonikSql) {
+    return one(this.parentLog, this.connection, this.clientConfiguration, slonikSql);
+  }
+
+  oneFirst(slonikSql) {
+    return oneFirst(this.parentLog, this.connection, this.clientConfiguration, slonikSql);
+  }
+
+  query(slonikSql) {
+    return queryMethod(this.parentLog, this.connection, this.clientConfiguration, slonikSql);
+  }
+
+  stream(slonikSql, streamHandler) {
+    return stream(
+      this.parentLog,
+      this.connection,
+      this.clientConfiguration,
+      slonikSql,
+      streamHandler,
+      undefined,
+    );
+  }
+
+  transaction(handler, transactionRetryLimit) {
+    return transaction(
+      this.parentLog,
+      this.connection,
+      this.clientConfiguration,
+      handler,
+      transactionRetryLimit,
+    );
+  }
+}
+
 export const bindPoolConnection = (
   parentLog: Logger,
   connection: ConnectionPoolClient,
   clientConfiguration: ClientConfiguration,
 ): DatabasePoolConnection => {
-  return {
-    any: (slonikSql) => {
-      return any(parentLog, connection, clientConfiguration, slonikSql);
-    },
-    anyFirst: (slonikSql) => {
-      return anyFirst(parentLog, connection, clientConfiguration, slonikSql);
-    },
-    exists: (slonikSql) => {
-      return exists(parentLog, connection, clientConfiguration, slonikSql);
-    },
-    many: (slonikSql) => {
-      return many(parentLog, connection, clientConfiguration, slonikSql);
-    },
-    manyFirst: (slonikSql) => {
-      return manyFirst(parentLog, connection, clientConfiguration, slonikSql);
-    },
-    maybeOne: (slonikSql) => {
-      return maybeOne(parentLog, connection, clientConfiguration, slonikSql);
-    },
-    maybeOneFirst: (slonikSql) => {
-      return maybeOneFirst(parentLog, connection, clientConfiguration, slonikSql);
-    },
-    one: (slonikSql) => {
-      return one(parentLog, connection, clientConfiguration, slonikSql);
-    },
-    oneFirst: (slonikSql) => {
-      return oneFirst(parentLog, connection, clientConfiguration, slonikSql);
-    },
-    query: (slonikSql) => {
-      return queryMethod(parentLog, connection, clientConfiguration, slonikSql);
-    },
-    stream: (slonikSql, streamHandler) => {
-      return stream(
-        parentLog,
-        connection,
-        clientConfiguration,
-        slonikSql,
-        streamHandler,
-        undefined,
-      );
-    },
-    transaction: (handler, transactionRetryLimit) => {
-      return transaction(
-        parentLog,
-        connection,
-        clientConfiguration,
-        handler,
-        transactionRetryLimit,
-      );
-    },
-  };
+  return new BoundPoolConnection(
+    parentLog,
+    connection,
+    clientConfiguration,
+  ) as unknown as DatabasePoolConnection;
 };

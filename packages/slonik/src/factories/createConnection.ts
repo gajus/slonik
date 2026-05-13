@@ -42,6 +42,10 @@ type SharedConnectionContext = {
   query?: null | QuerySqlToken;
 };
 
+const throwReleasedError = async () => {
+  throw new Error("Cannot use released connection");
+};
+
 const boundConnectionMethods = [
   "any",
   "anyFirst",
@@ -59,9 +63,7 @@ const boundConnectionMethods = [
 
 const destroyBoundConnection = (boundConnection: DatabasePoolConnection) => {
   for (const boundConnectionMethod of boundConnectionMethods) {
-    boundConnection[boundConnectionMethod] = async () => {
-      throw new Error("Cannot use released connection");
-    };
+    boundConnection[boundConnectionMethod] = throwReleasedError;
   }
 };
 
