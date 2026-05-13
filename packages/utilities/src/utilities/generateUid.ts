@@ -1,5 +1,5 @@
-import { randomBytes } from "node:crypto";
+let counter = 0;
 
 export const generateUid = (): string => {
-  return randomBytes(4).toString("hex");
+  return (++counter).toString(16);
 };
