@@ -38,6 +38,7 @@ export const createPool = async (
     events,
     Logger.child({
       poolId: pool.id(),
+      poolName: clientConfiguration.poolName,
     }),
     pool,
     clientConfiguration,
