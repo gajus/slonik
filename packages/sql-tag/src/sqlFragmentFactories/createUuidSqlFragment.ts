@@ -5,10 +5,10 @@ import { InvalidInputError } from "@slonik/errors";
 
 export type UUID = `${string}-${string}-${string}-${string}-${string}`;
 
+const uuidRegex = /^[\da-f]{8}(?:-[\da-f]{4}){3}-[\da-f]{12}$/iu;
+
 // eslint-disable-next-line func-style
 function isValidUuid(uuid: string): uuid is UUID {
-  const uuidRegex = /^[\da-f]{8}(?:-[\da-f]{4}){3}-[\da-f]{12}$/iu;
-
   return uuidRegex.test(uuid);
 }
 
