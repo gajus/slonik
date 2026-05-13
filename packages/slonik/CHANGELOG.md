@@ -1,5 +1,18 @@
 # slonik
 
+## 48.14.2
+
+### Patch Changes
+
+- [`2a69b25`](https://github.com/gajus/slonik/commit/2a69b257b416922e53dd0e84363003e78b80f19f) Thanks [@gajus](https://github.com/gajus)! - minor performance improvements
+
+- Updated dependencies []:
+  - @slonik/driver@48.14.2
+  - @slonik/errors@48.14.2
+  - @slonik/pg-driver@48.14.2
+  - @slonik/sql-tag@48.14.2
+  - @slonik/utilities@48.14.2
+
 ## 48.14.1
 
 ### Patch Changes
