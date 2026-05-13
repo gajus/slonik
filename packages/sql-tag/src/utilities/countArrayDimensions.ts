@@ -5,7 +5,7 @@ export const countArrayDimensions = (identifierName: string): number => {
   while (tail.endsWith("[]")) {
     arrayDimensionCount++;
 
-    tail = tail.trim().slice(0, -2);
+    tail = tail.slice(0, -2);
   }
 
   return arrayDimensionCount;
