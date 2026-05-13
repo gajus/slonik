@@ -14,7 +14,6 @@ import type { ConnectionPool, ConnectionPoolClient } from "./createConnectionPoo
 import { SpanStatusCode, trace } from "@opentelemetry/api";
 import { UnexpectedStateError } from "@slonik/errors";
 import type { QuerySqlToken } from "@slonik/sql-tag";
-import { defer } from "@slonik/utilities";
 
 const tracer = trace.getTracer("slonik.interceptors");
 
@@ -70,7 +69,7 @@ const raceError = async <T>(
   connection: ConnectionPoolClient,
   routine: () => Promise<T>,
 ): Promise<T> => {
-  const connectionErrorPromise = defer<T>();
+  const connectionErrorPromise = Promise.withResolvers<T>();
 
   const onError = (error: Error) => {
     connectionErrorPromise.reject(error);

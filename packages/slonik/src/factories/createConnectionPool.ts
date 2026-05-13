@@ -14,8 +14,7 @@ import type {
   DriverStreamResult,
 } from "@slonik/driver";
 import { UnexpectedStateError } from "@slonik/errors";
-import { defer, generateUid } from "@slonik/utilities";
-import type { DeferredPromise } from "@slonik/utilities";
+import { generateUid } from "@slonik/utilities";
 import { setTimeout as delay } from "node:timers/promises";
 import { serializeError } from "serialize-error";
 
@@ -77,7 +76,7 @@ type ConnectionPoolState = {
 type ConnectionPoolStateName = "ACTIVE" | "ENDED" | "ENDING";
 
 type WaitingClient = {
-  deferred: DeferredPromise<ConnectionPoolClient>;
+  deferred: PromiseWithResolvers<ConnectionPoolClient>;
 };
 
 export const createConnectionPool = ({
@@ -613,7 +612,7 @@ export const createConnectionPool = ({
           throw new UnexpectedStateError("Connection pool is being terminated.");
         }
 
-        const deferred = defer<ConnectionPoolClient>();
+        const deferred = Promise.withResolvers<ConnectionPoolClient>();
 
         waitingClients.push({
           deferred,

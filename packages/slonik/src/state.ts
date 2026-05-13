@@ -1,9 +1,7 @@
 import type { ConnectionPoolClient } from "./factories/createConnectionPool.js";
 import { UnexpectedStateError } from "@slonik/errors";
-import type { DeferredPromise } from "@slonik/utilities";
-
 type PoolClientState = {
-  activeQuery?: DeferredPromise<null>;
+  activeQuery?: PromiseWithResolvers<null>;
   connectionId: string;
   poolId: string;
   terminated: Error | null;

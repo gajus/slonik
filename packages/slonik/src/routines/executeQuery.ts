@@ -30,7 +30,7 @@ import {
   UnexpectedStateError,
 } from "@slonik/errors";
 import type { PrimitiveValueExpression, QuerySqlToken } from "@slonik/sql-tag";
-import { defer, generateUid } from "@slonik/utilities";
+import { generateUid } from "@slonik/utilities";
 import pLimit from "p-limit";
 import { serializeError } from "serialize-error";
 
@@ -309,7 +309,7 @@ const executeQueryInternal = async (
     notices.push(notice);
   };
 
-  const activeQuery = defer<null>();
+  const activeQuery = Promise.withResolvers<null>();
 
   const blockingPromise = poolClientState.activeQuery?.promise ?? null;
 
