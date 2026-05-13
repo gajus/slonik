@@ -128,11 +128,11 @@ class BoundTransactionConnection {
     );
   }
 
-  addListener(...args) {
-    return this.eventEmitter.addListener(...args);
+  addListener(event, listener) {
+    return this.eventEmitter.addListener(event, listener);
   }
-  emit(...args) {
-    return this.eventEmitter.emit(...args);
+  emit(event, ...args) {
+    return this.eventEmitter.emit(event, ...args);
   }
   eventNames() {
     return this.eventEmitter.eventNames();
@@ -140,38 +140,38 @@ class BoundTransactionConnection {
   getMaxListeners() {
     return this.eventEmitter.getMaxListeners();
   }
-  listenerCount(...args) {
-    return this.eventEmitter.listenerCount(...args);
+  listenerCount(event) {
+    return this.eventEmitter.listenerCount(event);
   }
-  listeners(...args) {
-    return this.eventEmitter.listeners(...args);
+  listeners(event) {
+    return this.eventEmitter.listeners(event);
   }
-  off(...args) {
-    return this.eventEmitter.off(...args);
+  off(event, listener) {
+    return this.eventEmitter.off(event, listener);
   }
-  on(...args) {
-    return this.eventEmitter.on(...args);
+  on(event, listener) {
+    return this.eventEmitter.on(event, listener);
   }
-  once(...args) {
-    return this.eventEmitter.once(...args);
+  once(event, listener) {
+    return this.eventEmitter.once(event, listener);
   }
-  prependListener(...args) {
-    return this.eventEmitter.prependListener(...args);
+  prependListener(event, listener) {
+    return this.eventEmitter.prependListener(event, listener);
   }
-  prependOnceListener(...args) {
-    return this.eventEmitter.prependOnceListener(...args);
+  prependOnceListener(event, listener) {
+    return this.eventEmitter.prependOnceListener(event, listener);
   }
-  rawListeners(...args) {
-    return this.eventEmitter.rawListeners(...args);
+  rawListeners(event) {
+    return this.eventEmitter.rawListeners(event);
   }
-  removeAllListeners(...args) {
-    return this.eventEmitter.removeAllListeners(...args);
+  removeAllListeners(event?) {
+    return this.eventEmitter.removeAllListeners(event);
   }
-  removeListener(...args) {
-    return this.eventEmitter.removeListener(...args);
+  removeListener(event, listener) {
+    return this.eventEmitter.removeListener(event, listener);
   }
-  setMaxListeners(...args) {
-    return this.eventEmitter.setMaxListeners(...args);
+  setMaxListeners(n) {
+    return this.eventEmitter.setMaxListeners(n);
   }
 }
 
