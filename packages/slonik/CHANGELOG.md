@@ -1,5 +1,18 @@
 # slonik
 
+## 48.14.3
+
+### Patch Changes
+
+- [`906ae67`](https://github.com/gajus/slonik/commit/906ae67e6f9287cd0c8db209f2de274d5bedd59a) Thanks [@gajus](https://github.com/gajus)! - reduce object churn/GC pressure
+
+- Updated dependencies []:
+  - @slonik/driver@48.14.3
+  - @slonik/errors@48.14.3
+  - @slonik/pg-driver@48.14.3
+  - @slonik/sql-tag@48.14.3
+  - @slonik/utilities@48.14.3
+
 ## 48.14.2
 
 ### Patch Changes
