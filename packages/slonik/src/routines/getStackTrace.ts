@@ -17,18 +17,18 @@ export const getStackTrace = (): StackFrame[] => {
     Error.captureStackTrace(error);
     const callSites = error.stack;
 
-    // Skip frame 0 (this function itself)
-    const frames: StackFrame[] = [];
+    const count = callSites.length - 1;
+    const frames = Array.from<StackFrame>({ length: count });
 
-    for (let i = 1; i < callSites.length; i++) {
-      const site = callSites[i];
+    for (let i = 0; i < count; i++) {
+      const site = callSites[i + 1];
 
-      frames.push({
+      frames[i] = {
         columnNumber: site.getColumnNumber(),
         fileName: site.getFileName() ?? null,
         functionName: site.getFunctionName() ?? null,
         lineNumber: site.getLineNumber(),
-      });
+      };
     }
 
     return frames;
