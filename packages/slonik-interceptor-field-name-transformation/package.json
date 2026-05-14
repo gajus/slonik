@@ -1,6 +1,6 @@
 {
   "name": "slonik-interceptor-field-name-transformation",
-  "version": "48.14.3",
+  "version": "48.14.4",
   "description": "Transforms Slonik query result field names.",
   "keywords": [
     "format",
@@ -30,7 +30,7 @@
   },
   "devDependencies": {
     "ava": "^6.4.1",
-    "slonik": "^48.14.3",
+    "slonik": "^48.14.4",
     "tsimp": "^2.0.12",
     "typescript": "^5.9.3"
   },
