@@ -1,6 +1,6 @@
 {
   "name": "@slonik/utilities",
-  "version": "48.14.3",
+  "version": "48.14.4",
   "description": "A Node.js PostgreSQL client with strict types, detailed logging and assertions.",
   "keywords": [
     "postgresql",
@@ -32,8 +32,8 @@
     "test": "ava --verbose --serial"
   },
   "dependencies": {
-    "@slonik/errors": "workspace:^48.14.3",
-    "@slonik/types": "^48.14.3"
+    "@slonik/errors": "workspace:^48.14.4",
+    "@slonik/types": "^48.14.4"
   },
   "devDependencies": {
     "@slonik/test-ssls": "workspace:^",

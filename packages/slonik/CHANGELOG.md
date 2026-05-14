@@ -1,5 +1,18 @@
 # slonik
 
+## 48.14.4
+
+### Patch Changes
+
+- [`9bb15ab`](https://github.com/gajus/slonik/commit/9bb15ab56524788746818b1cf9d0bc214cc3539e) Thanks [@gajus](https://github.com/gajus)! - perf: use single-pass grouping in batchQueries to avoid O(n\*m) iteration
+
+- Updated dependencies []:
+  - @slonik/driver@48.14.4
+  - @slonik/errors@48.14.4
+  - @slonik/pg-driver@48.14.4
+  - @slonik/sql-tag@48.14.4
+  - @slonik/utilities@48.14.4
+
 ## 48.14.3
 
 ### Patch Changes
