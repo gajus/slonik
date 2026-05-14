@@ -36,14 +36,20 @@ export const batchQueries = async <T extends ZodObject>(
     )}
   `);
 
-  return queries.map((query, index) => {
-    return results
-      .filter((result) => result.slonikqueryindex === String(index))
-      .map((result) => {
-        // eslint-disable-next-line @typescript-eslint/no-unused-vars
-        const { slonikqueryindex, ...rest } = result;
+  const grouped = new Map<string, Array<z.infer<T>>>();
 
-        return rest as z.infer<T>;
-      });
-  });
+  for (const result of results) {
+    const { slonikqueryindex, ...rest } = result;
+    const key = String(slonikqueryindex);
+    let group = grouped.get(key);
+
+    if (!group) {
+      group = [];
+      grouped.set(key, group);
+    }
+
+    group.push(rest as z.infer<T>);
+  }
+
+  return queries.map((_, index) => grouped.get(String(index)) ?? []);
 };
