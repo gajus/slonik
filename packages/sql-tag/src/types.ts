@@ -7,8 +7,8 @@ export { type PrimitiveValueExpression } from "@slonik/types";
 export type TemporalPlainDate = {
   readonly day: number;
   readonly month: number;
-  readonly year: number;
   toString(): string;
+  readonly year: number;
 };
 
 export type TemporalInstant = {

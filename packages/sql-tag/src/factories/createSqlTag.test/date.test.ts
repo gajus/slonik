@@ -19,7 +19,7 @@ test("binds a Temporal.PlainDate-like object", (t) => {
     day: 19,
     month: 8,
     toString: () => "2022-08-19",
-    year: 2022,
+    year: 2_022,
   })}`;
 
   t.deepEqual(query, {
