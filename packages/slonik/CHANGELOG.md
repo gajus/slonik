@@ -1,5 +1,20 @@
 # slonik
 
+## 48.15.0
+
+### Minor Changes
+
+- [#781](https://github.com/gajus/slonik/pull/781) [`09712d4`](https://github.com/gajus/slonik/commit/09712d4fb9e62d9749c9dde6330ef7ae519e6961) Thanks [@gajus](https://github.com/gajus)! - support Temporal
+
+### Patch Changes
+
+- Updated dependencies []:
+  - @slonik/driver@48.15.0
+  - @slonik/errors@48.15.0
+  - @slonik/pg-driver@48.15.0
+  - @slonik/sql-tag@48.15.0
+  - @slonik/utilities@48.15.0
+
 ## 48.14.4
 
 ### Patch Changes
