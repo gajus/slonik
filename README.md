@@ -1657,7 +1657,7 @@ Produces:
 ### <code>sql.date</code>
 
 ```ts
-(date: Date) => DateSqlToken;
+(date: Date | TemporalPlainDate) => DateSqlToken;
 ```
 
 Inserts a date, e.g.
@@ -1677,6 +1677,14 @@ Produces:
     '2022-08-19'
   ]
 }
+```
+
+[`Temporal.PlainDate`](https://tc39.es/proposal-temporal/docs/plaindate.html) is also accepted:
+
+```ts
+await connection.query(sql.unsafe`
+  SELECT ${sql.date(Temporal.PlainDate.from("2022-08-19"))}
+`);
 ```
 
 ### <code>sql.fragment</code>
@@ -1759,7 +1767,7 @@ Produces:
   hours?: number;
   minutes?: number;
   seconds?: number;
-}) => IntervalSqlToken;
+} | TemporalDuration) => IntervalSqlToken;
 ```
 
 Inserts an [interval](https://www.postgresql.org/docs/current/datatype-datetime.html#DATATYPE-INTERVAL-INPUT), e.g.
@@ -1780,6 +1788,15 @@ Produces:
     3
   ]
 }
+```
+
+[`Temporal.Duration`](https://tc39.es/proposal-temporal/docs/duration.html) is also accepted (zero-valued fields are omitted):
+
+```ts
+sql.typeAlias("id")`
+  SELECT 1 AS id
+  FROM ${sql.interval(Temporal.Duration.from({ days: 3 }))}
+`;
 ```
 
 You can use `sql.interval` exactly how you would use PostgreSQL [`make_interval` function](https://www.postgresql.org/docs/current/functions-datetime.html). However, notice that Slonik does not use abbreviations, i.e. "secs" is seconds and "mins" is minutes.
@@ -1955,7 +1972,7 @@ Produces:
 ### <code>sql.timestamp</code>
 
 ```ts
-(date: Date) => TimestampSqlToken;
+(date: Date | TemporalInstant) => TimestampSqlToken;
 ```
 
 Inserts a timestamp, e.g.
@@ -1975,6 +1992,14 @@ Produces:
     '1660879644.951'
   ]
 }
+```
+
+[`Temporal.Instant`](https://tc39.es/proposal-temporal/docs/instant.html) and [`Temporal.ZonedDateTime`](https://tc39.es/proposal-temporal/docs/zoneddatetime.html) are also accepted (any object with an `epochMilliseconds` property):
+
+```ts
+await connection.query(sql.unsafe`
+  SELECT ${sql.timestamp(Temporal.Now.instant())}
+`);
 ```
 
 ### <code>sql.unnest</code>
