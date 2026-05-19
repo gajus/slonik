@@ -1,6 +1,6 @@
 {
   "name": "@slonik/dataloaders",
-  "version": "48.14.4",
+  "version": "48.15.0",
   "description": "Utilities for creating DataLoaders using Slonik.",
   "keywords": [
     "interceptor",
@@ -31,9 +31,9 @@
     "zod": "^4.3.6"
   },
   "devDependencies": {
-    "@slonik/types": "^48.14.4",
+    "@slonik/types": "^48.15.0",
     "@standard-schema/spec": "^1.0.0",
-    "slonik": "^48.14.4",
+    "slonik": "^48.15.0",
     "typescript": "^5.9.3",
     "vitest": "^4.0.18"
   },
