@@ -4,6 +4,27 @@ import type { StandardSchemaV1 } from "@standard-schema/spec";
 
 export { type PrimitiveValueExpression } from "@slonik/types";
 
+export type TemporalPlainDate = {
+  readonly day: number;
+  readonly month: number;
+  toString(): string;
+  readonly year: number;
+};
+
+export type TemporalInstant = {
+  readonly epochMilliseconds: number;
+};
+
+export type TemporalDuration = {
+  readonly days: number;
+  readonly hours: number;
+  readonly minutes: number;
+  readonly months: number;
+  readonly seconds: number;
+  readonly weeks: number;
+  readonly years: number;
+};
+
 export type ArraySqlToken<T extends TypeNameIdentifier = TypeNameIdentifier> = {
   readonly memberType: SqlFragmentToken | T;
   readonly type: typeof tokens.ArrayToken;
@@ -16,7 +37,7 @@ export type BinarySqlToken = {
 };
 
 export type DateSqlToken = {
-  readonly date: Date;
+  readonly date: Date | TemporalPlainDate;
   readonly type: typeof tokens.DateToken;
 };
 
@@ -42,7 +63,7 @@ export type IntervalInput = {
 };
 
 export type IntervalSqlToken = {
-  readonly interval: IntervalInput;
+  readonly interval: IntervalInput | TemporalDuration;
   readonly type: typeof tokens.IntervalToken;
 };
 
@@ -102,10 +123,10 @@ export type SqlTag<Z extends Record<string, StandardSchemaV1> = Record<string, S
       memberType: SqlFragmentToken | T,
     ) => ArraySqlToken<T>;
     binary: (data: Buffer) => BinarySqlToken;
-    date: (date: Date) => DateSqlToken;
+    date: (date: Date | TemporalPlainDate) => DateSqlToken;
     fragment: (template: TemplateStringsArray, ...values: ValueExpression[]) => SqlFragmentToken;
     identifier: (names: readonly string[]) => IdentifierSqlToken;
-    interval: (interval: IntervalInput) => IntervalSqlToken;
+    interval: (interval: IntervalInput | TemporalDuration) => IntervalSqlToken;
     join: (members: readonly ValueExpression[], glue: SqlFragmentToken) => ListSqlToken;
     json: (value: SerializableValue) => JsonSqlToken;
     jsonb: (value: SerializableValue) => JsonBinarySqlToken;
@@ -124,7 +145,7 @@ export type SqlTag<Z extends Record<string, StandardSchemaV1> = Record<string, S
       statementName: string,
       parser: Y,
     ) => (template: TemplateStringsArray, ...values: ValueExpression[]) => QuerySqlToken<Y>;
-    timestamp: (date: Date) => TimestampSqlToken;
+    timestamp: (date: Date | TemporalInstant) => TimestampSqlToken;
     type: <Y extends StandardSchemaV1>(
       parser: Y,
     ) => (template: TemplateStringsArray, ...values: ValueExpression[]) => QuerySqlToken<Y>;
@@ -161,7 +182,7 @@ export type SqlToken =
   | UuidSqlToken;
 
 export type TimestampSqlToken = {
-  readonly date: Date;
+  readonly date: Date | TemporalInstant;
   readonly type: typeof tokens.TimestampToken;
 };
 

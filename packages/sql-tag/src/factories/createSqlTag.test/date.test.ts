@@ -14,11 +14,26 @@ test("binds a date", (t) => {
   });
 });
 
-test("throws if not instance of Date", (t) => {
+test("binds a Temporal.PlainDate-like object", (t) => {
+  const query = sql.fragment`SELECT ${sql.date({
+    day: 19,
+    month: 8,
+    toString: () => "2022-08-19",
+    year: 2_022,
+  })}`;
+
+  t.deepEqual(query, {
+    sql: "SELECT $slonik_1::date",
+    type: FragmentToken,
+    values: ["2022-08-19"],
+  });
+});
+
+test("throws if not a Date or Temporal.PlainDate", (t) => {
   const error = t.throws(() => {
     // @ts-expect-error - intentional
     sql.fragment`SELECT ${sql.date(1)}`;
   });
 
-  t.is(error?.message, "Date parameter value must be an instance of Date.");
+  t.is(error?.message, "Date parameter value must be an instance of Date or a Temporal.PlainDate.");
 });
