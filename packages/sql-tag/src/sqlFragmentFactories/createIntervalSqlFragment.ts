@@ -23,16 +23,44 @@ const tokenMap = {
   seconds: "secs",
 };
 
+const isTemporalDuration = (value: unknown): boolean => {
+  if (typeof value !== "object" || value === null) {
+    return false;
+  }
+
+  for (const field of intervalFragments) {
+    if (typeof (value as Record<string, unknown>)[field] !== "number") {
+      return false;
+    }
+  }
+
+  return true;
+};
+
 export const createIntervalSqlFragment = (
   token: IntervalSqlToken,
   greatestParameterPosition: number,
 ): SqlFragmentToken => {
-  let intervalInput;
+  let intervalInput: Record<string, number | undefined>;
 
-  try {
-    intervalInput = IntervalInput.parse(token.interval);
-  } catch {
-    throw new InvalidInputError("Interval input must not contain unknown properties.");
+  const zodResult = IntervalInput.safeParse(token.interval);
+
+  if (zodResult.success) {
+    intervalInput = zodResult.data;
+  } else if (isTemporalDuration(token.interval)) {
+    intervalInput = {};
+
+    for (const field of intervalFragments) {
+      const value = (token.interval as Record<string, number>)[field];
+
+      if (value !== 0) {
+        intervalInput[field] = value;
+      }
+    }
+  } else {
+    throw new InvalidInputError(
+      "Interval input must be a valid IntervalInput object or a Temporal.Duration.",
+    );
   }
 
   const values: number[] = [];
