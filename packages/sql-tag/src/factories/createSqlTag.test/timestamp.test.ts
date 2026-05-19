@@ -15,7 +15,8 @@ test("binds a timestamp", (t) => {
 });
 
 test("binds a Temporal.Instant-like object", (t) => {
-  const query = sql.fragment`SELECT ${sql.timestamp({ epochMilliseconds: 1_660_879_644_951 })}`;
+  const epochMilliseconds = new Date("2022-08-19T03:27:24.951Z").getTime();
+  const query = sql.fragment`SELECT ${sql.timestamp({ epochMilliseconds })}`;
 
   t.deepEqual(query, {
     sql: "SELECT to_timestamp($slonik_1)",
