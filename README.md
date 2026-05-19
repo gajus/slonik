@@ -1759,15 +1759,19 @@ Produces:
 ### <code>sql.interval</code>
 
 ```ts
-(interval: {
-  years?: number;
-  months?: number;
-  weeks?: number;
-  days?: number;
-  hours?: number;
-  minutes?: number;
-  seconds?: number;
-} | TemporalDuration) => IntervalSqlToken;
+(
+  interval:
+    | {
+        years?: number;
+        months?: number;
+        weeks?: number;
+        days?: number;
+        hours?: number;
+        minutes?: number;
+        seconds?: number;
+      }
+    | TemporalDuration,
+) => IntervalSqlToken;
 ```
 
 Inserts an [interval](https://www.postgresql.org/docs/current/datatype-datetime.html#DATATYPE-INTERVAL-INPUT), e.g.

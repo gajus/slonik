@@ -35,8 +35,5 @@ test("throws if not a Date or Temporal.PlainDate", (t) => {
     sql.fragment`SELECT ${sql.date(1)}`;
   });
 
-  t.is(
-    error?.message,
-    "Date parameter value must be an instance of Date or a Temporal.PlainDate.",
-  );
+  t.is(error?.message, "Date parameter value must be an instance of Date or a Temporal.PlainDate.");
 });
