@@ -26,7 +26,7 @@ export type TemporalDuration = {
 };
 
 export type ArraySqlToken<T extends TypeNameIdentifier = TypeNameIdentifier> = {
-  readonly memberType: SqlFragmentToken | T;
+  readonly memberType: FragmentSqlToken | T;
   readonly type: typeof tokens.ArrayToken;
   readonly values: readonly PrimitiveValueExpression[];
 };
@@ -46,6 +46,9 @@ export type FragmentSqlToken = {
   readonly type: typeof tokens.FragmentToken;
   readonly values: readonly PrimitiveValueExpression[];
 };
+
+/** @deprecated Use {@link FragmentSqlToken} instead. */
+export type SqlFragmentToken = FragmentSqlToken;
 
 export type IdentifierSqlToken = {
   readonly names: readonly string[];
@@ -78,7 +81,7 @@ export type JsonSqlToken = {
 };
 
 export type ListSqlToken = {
-  readonly glue: SqlFragmentToken;
+  readonly glue: FragmentSqlToken;
   readonly members: readonly ValueExpression[];
   readonly type: typeof tokens.ListToken;
 };
@@ -110,27 +113,21 @@ export type SerializableValue =
       [key: string]: SerializableValue;
     };
 
-export type SqlFragmentToken = {
-  readonly sql: string;
-  readonly type: typeof tokens.FragmentToken;
-  readonly values: readonly PrimitiveValueExpression[];
-};
-
 export type SqlTag<Z extends Record<string, StandardSchemaV1> = Record<string, StandardSchemaV1>> =
   {
     array: <T extends TypeNameIdentifier>(
       values: readonly PrimitiveValueExpression[],
-      memberType: SqlFragmentToken | T,
+      memberType: FragmentSqlToken | T,
     ) => ArraySqlToken<T>;
     binary: (data: Buffer) => BinarySqlToken;
     date: (date: Date | TemporalPlainDate) => DateSqlToken;
-    fragment: (template: TemplateStringsArray, ...values: ValueExpression[]) => SqlFragmentToken;
+    fragment: (template: TemplateStringsArray, ...values: ValueExpression[]) => FragmentSqlToken;
     identifier: (names: readonly string[]) => IdentifierSqlToken;
     interval: (interval: IntervalInput | TemporalDuration) => IntervalSqlToken;
-    join: (members: readonly ValueExpression[], glue: SqlFragmentToken) => ListSqlToken;
+    join: (members: readonly ValueExpression[], glue: FragmentSqlToken) => ListSqlToken;
     json: (value: SerializableValue) => JsonSqlToken;
     jsonb: (value: SerializableValue) => JsonBinarySqlToken;
-    literalValue: (value: string) => SqlFragmentToken;
+    literalValue: (value: string) => FragmentSqlToken;
     /**
      * Creates a named prepared statement. The statement name is used by PostgreSQL
      * to cache the query plan, which can improve performance for frequently executed queries.
@@ -160,7 +157,7 @@ export type SqlTag<Z extends Record<string, StandardSchemaV1> = Record<string, S
       tuples: ReadonlyArray<readonly any[]>,
       columnTypes:
         | Array<[...string[], TypeNameIdentifier]>
-        | Array<SqlFragmentToken | TypeNameIdentifier>,
+        | Array<FragmentSqlToken | TypeNameIdentifier>,
     ) => UnnestSqlToken;
     unsafe: (template: TemplateStringsArray, ...values: ValueExpression[]) => QuerySqlToken;
     uuid: (uuid: string) => UuidSqlToken;
@@ -207,7 +204,7 @@ export type TypeNameIdentifier =
 export type UnnestSqlToken = {
   readonly columnTypes:
     | Array<[...string[], TypeNameIdentifier]>
-    | Array<SqlFragmentToken | TypeNameIdentifier>;
+    | Array<FragmentSqlToken | TypeNameIdentifier>;
   readonly tuples: ReadonlyArray<readonly ValueExpression[]>;
   readonly type: typeof tokens.UnnestToken;
 };
@@ -217,4 +214,4 @@ export type UuidSqlToken = {
   readonly uuid: `${string}-${string}-${string}-${string}-${string}`;
 };
 
-export type ValueExpression = PrimitiveValueExpression | SqlFragmentToken | SqlToken;
+export type ValueExpression = FragmentSqlToken | PrimitiveValueExpression | SqlToken;

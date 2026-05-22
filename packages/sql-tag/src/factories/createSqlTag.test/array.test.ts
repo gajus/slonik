@@ -1,5 +1,5 @@
 import { FragmentToken } from "../../tokens.js";
-import type { ArraySqlToken, SqlFragmentToken } from "../../types.js";
+import type { ArraySqlToken, FragmentSqlToken } from "../../types.js";
 import { createSqlTag } from "../createSqlTag.js";
 import test from "ava";
 
@@ -182,7 +182,7 @@ test("backward compatibility - existing code without explicit types still works"
   const fragmentArray = sql.array([1, 2, 3], sql.fragment`int[]`);
 
   t.is(typeof fragmentArray.memberType, "object");
-  t.is((fragmentArray.memberType as SqlFragmentToken).type, FragmentToken);
+  t.is((fragmentArray.memberType as FragmentSqlToken).type, FragmentToken);
 
   t.deepEqual(fragmentArray.values, [1, 2, 3]);
 

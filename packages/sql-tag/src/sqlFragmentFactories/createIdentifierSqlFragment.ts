@@ -1,9 +1,9 @@
 import { FragmentToken } from "../tokens.js";
-import type { IdentifierSqlToken, SqlFragmentToken } from "../types.js";
+import type { FragmentSqlToken, IdentifierSqlToken } from "../types.js";
 import { escapeIdentifier } from "../utilities/escapeIdentifier.js";
 import { InvalidInputError } from "@slonik/errors";
 
-export const createIdentifierSqlFragment = (token: IdentifierSqlToken): SqlFragmentToken => {
+export const createIdentifierSqlFragment = (token: IdentifierSqlToken): FragmentSqlToken => {
   const sql = token.names
     .map((identifierName) => {
       if (typeof identifierName !== "string") {

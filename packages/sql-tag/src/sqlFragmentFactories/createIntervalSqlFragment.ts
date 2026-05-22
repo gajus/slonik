@@ -1,5 +1,5 @@
 import { FragmentToken } from "../tokens.js";
-import type { IntervalSqlToken, SqlFragmentToken } from "../types.js";
+import type { FragmentSqlToken, IntervalSqlToken } from "../types.js";
 import { formatSlonikPlaceholder } from "../utilities/formatSlonikPlaceholder.js";
 import { InvalidInputError } from "@slonik/errors";
 import { z } from "zod";
@@ -40,7 +40,7 @@ const isTemporalDuration = (value: unknown): boolean => {
 export const createIntervalSqlFragment = (
   token: IntervalSqlToken,
   greatestParameterPosition: number,
-): SqlFragmentToken => {
+): FragmentSqlToken => {
   let intervalInput: Record<string, number | undefined>;
 
   const zodResult = IntervalInput.safeParse(token.interval);

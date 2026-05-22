@@ -1,13 +1,13 @@
 import { slonikPlaceholderRegexRule } from "../regexRules/slonikPlaceholderRegexRule.js";
 import { FragmentToken } from "../tokens.js";
-import type { FragmentSqlToken, SqlFragmentToken } from "../types.js";
+import type { FragmentSqlToken } from "../types.js";
 import { formatSlonikPlaceholder } from "../utilities/formatSlonikPlaceholder.js";
 import { UnexpectedStateError } from "@slonik/errors";
 
 export const createFragmentSqlFragment = (
   token: FragmentSqlToken,
   greatestParameterPosition: number,
-): SqlFragmentToken => {
+): FragmentSqlToken => {
   let sql = "";
 
   let leastMatchedParameterPosition = Number.POSITIVE_INFINITY;
