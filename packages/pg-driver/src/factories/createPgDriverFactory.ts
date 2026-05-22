@@ -255,12 +255,12 @@ export const createPgDriverFactory = (): DriverFactory => {
 
     return {
       createPoolClient: async ({ clientEventEmitter }) => {
-        // pg mutates the password field after resolving a callback (replacing
-        // the function with the resolved string). Spread a fresh copy per
-        // connection so each client re-invokes the callback.
-        const perConnectionConfig = driverConfiguration.password
-          ? { ...clientConfiguration, password: driverConfiguration.password }
-          : clientConfiguration;
+        let perConnectionConfig = clientConfiguration;
+
+        if (typeof driverConfiguration.password === "function") {
+          const resolvedPassword = await driverConfiguration.password();
+          perConnectionConfig = { ...clientConfiguration, password: resolvedPassword };
+        }
 
         const client = new Client(perConnectionConfig);
 
