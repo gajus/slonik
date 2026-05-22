@@ -14,6 +14,7 @@ export const createClientConfiguration = (): ClientConfiguration => {
     maximumPoolSize: 10,
     queryRetryLimit: 5,
     statementTimeout: 60_000,
+    tracing: false,
     transactionRetryLimit: 5,
     typeParsers: [],
   };

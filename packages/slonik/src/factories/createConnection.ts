@@ -120,26 +120,32 @@ export const createConnection = async (
     const beforePoolConnection = interceptor.beforePoolConnection;
 
     if (beforePoolConnection) {
-      const maybeNewPool = await tracer.startActiveSpan(
-        "slonik.interceptor.beforePoolConnection",
-        async (interceptorSpan) => {
-          interceptorSpan.setAttribute("interceptor.name", interceptor.name);
+      let maybeNewPool;
 
-          try {
-            return await beforePoolConnection(connectionContext as BeforePoolConnectionContext);
-          } catch (error) {
-            interceptorSpan.recordException(error);
-            interceptorSpan.setStatus({
-              code: SpanStatusCode.ERROR,
-              message: String(error),
-            });
+      if (clientConfiguration.tracing) {
+        maybeNewPool = await tracer.startActiveSpan(
+          "slonik.interceptor.beforePoolConnection",
+          async (interceptorSpan) => {
+            interceptorSpan.setAttribute("interceptor.name", interceptor.name);
 
-            throw error;
-          } finally {
-            interceptorSpan.end();
-          }
-        },
-      );
+            try {
+              return await beforePoolConnection(connectionContext as BeforePoolConnectionContext);
+            } catch (error) {
+              interceptorSpan.recordException(error);
+              interceptorSpan.setStatus({
+                code: SpanStatusCode.ERROR,
+                message: String(error),
+              });
+
+              throw error;
+            } finally {
+              interceptorSpan.end();
+            }
+          },
+        );
+      } else {
+        maybeNewPool = await beforePoolConnection(connectionContext as BeforePoolConnectionContext);
+      }
 
       if (maybeNewPool) {
         return await poolHandler(maybeNewPool);
@@ -151,6 +157,7 @@ export const createConnection = async (
     parentLog,
     pool,
     clientConfiguration.connectionRetryLimit,
+    clientConfiguration.tracing,
   );
 
   const { connectionId } = getPoolClientState(connection);
