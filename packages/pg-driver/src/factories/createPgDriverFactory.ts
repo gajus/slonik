@@ -255,7 +255,14 @@ export const createPgDriverFactory = (): DriverFactory => {
 
     return {
       createPoolClient: async ({ clientEventEmitter }) => {
-        const client = new Client(clientConfiguration);
+        // pg mutates the password field after resolving a callback (replacing
+        // the function with the resolved string). Spread a fresh copy per
+        // connection so each client re-invokes the callback.
+        const perConnectionConfig = driverConfiguration.password
+          ? { ...clientConfiguration, password: driverConfiguration.password }
+          : clientConfiguration;
+
+        const client = new Client(perConnectionConfig);
 
         // We will see this triggered when the connection is terminated, e.g.
         // "terminates transactions that are idle beyond idleInTransactionSessionTimeout" test.
