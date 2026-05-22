@@ -106,7 +106,7 @@ const createClientConfiguration = (
     database: connectionOptions.databaseName,
     host: connectionOptions.host,
     options: connectionOptions.options,
-    password: connectionOptions.password,
+    password: clientConfiguration.password ?? connectionOptions.password,
     port: connectionOptions.port,
     // @ts-expect-error - https://github.com/brianc/node-postgres/pull/3214
     queryMode: "extended",
@@ -255,7 +255,14 @@ export const createPgDriverFactory = (): DriverFactory => {
 
     return {
       createPoolClient: async ({ clientEventEmitter }) => {
-        const client = new Client(clientConfiguration);
+        let perConnectionConfig = clientConfiguration;
+
+        if (typeof driverConfiguration.password === "function") {
+          const resolvedPassword = await driverConfiguration.password();
+          perConnectionConfig = { ...clientConfiguration, password: resolvedPassword };
+        }
+
+        const client = new Client(perConnectionConfig);
 
         // We will see this triggered when the connection is terminated, e.g.
         // "terminates transactions that are idle beyond idleInTransactionSessionTimeout" test.

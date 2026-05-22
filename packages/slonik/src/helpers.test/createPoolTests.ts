@@ -1009,4 +1009,27 @@ export const createPoolTests = (test: TestFn<TestContextType>, driverFactory: Dr
       1,
     );
   });
+
+  test("supports password as an async callback", async (t) => {
+    const connectionOptions = parseDsn(t.context.dsn);
+    const uriWithoutPassword = t.context.dsn.replace(
+      `:${encodeURIComponent(connectionOptions.password ?? "")}@`,
+      "@",
+    );
+
+    const passwordCallback = sinon.spy(async () => connectionOptions.password ?? "");
+
+    const pool = await createPool(uriWithoutPassword, {
+      driverFactory,
+      maximumPoolSize: 1,
+      minimumPoolSize: 0,
+      password: passwordCallback,
+    });
+
+    await pool.query(sql.unsafe`SELECT 1`);
+
+    t.true(passwordCallback.callCount >= 1);
+
+    await pool.end();
+  });
 };

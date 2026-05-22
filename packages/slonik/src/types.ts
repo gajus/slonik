@@ -68,6 +68,7 @@ export type ClientConfiguration = {
    * Human-readable identifier for distinguishing multiple pools within the same application,
    * e.g. "read", "write", "replica-us-east-1".
    */
+  readonly password?: (() => Promise<string> | string) | string;
   readonly poolName?: string;
   /**
    * Number of times a query failing with Transaction Rollback class error, that doesn't belong to a transaction, is retried. (Default: 5)

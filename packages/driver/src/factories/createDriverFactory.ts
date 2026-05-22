@@ -64,6 +64,7 @@ export type DriverConfiguration = {
   readonly maximumConnectionAge?: "DISABLE_TIMEOUT" | number;
   readonly maximumPoolSize?: number;
   readonly minimumPoolSize?: number;
+  readonly password?: (() => Promise<string> | string) | string;
   readonly resetConnection?: (connection: BasicConnection) => Promise<void>;
   readonly ssl?: TlsConnectionOptions;
   readonly statementTimeout: "DISABLE_TIMEOUT" | number;

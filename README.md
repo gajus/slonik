@@ -481,6 +481,26 @@ postgresql://%2Fvar%2Flib%2Fpostgresql/dbname
 
 Other configurations are available through the [`clientConfiguration` parameter](https://github.com/gajus/slonik#api).
 
+#### Dynamic passwords
+
+The `password` configuration option supports async callbacks, enabling IAM-based database authentication (AWS RDS IAM, GCP Cloud SQL IAM, Azure AD tokens) where credentials expire and must be refreshed per connection.
+
+```ts
+import { createPool } from "slonik";
+import { createPgDriverFactory } from "@slonik/pg-driver";
+import { generateRdsAuthToken } from "./iam.js";
+
+const pool = await createPool(
+  "postgres://iam_user@mydb.us-east-1.rds.amazonaws.com:5432/mydb?sslmode=require",
+  {
+    driverFactory: createPgDriverFactory(),
+    password: async () => generateRdsAuthToken(),
+  },
+);
+```
+
+When provided, the `password` option overrides any password in the connection URI. It accepts a static string or a callback returning a string (sync or async). The callback is invoked by the underlying `pg` driver each time a new connection is established.
+
 ### Create connection
 
 Use `createPool` to create a connection pool, e.g.
