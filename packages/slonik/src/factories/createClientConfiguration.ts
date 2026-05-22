@@ -26,6 +26,7 @@ export const createClientConfiguration = (
       return query(`DISCARD ALL`);
     },
     statementTimeout: 60_000,
+    tracing: false,
     transactionRetryLimit: 5,
     typeParsers,
     ...clientUserConfigurationInput,

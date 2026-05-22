@@ -88,6 +88,10 @@ export type ClientConfiguration = {
    */
   readonly statementTimeout: "DISABLE_TIMEOUT" | number;
   /**
+   * Controls whether Slonik creates OpenTelemetry spans. (Default: false)
+   */
+  readonly tracing: boolean;
+  /**
    * Number of times a transaction failing with Transaction Rollback class error is retried. (Default: 5)
    */
   readonly transactionRetryLimit: number;

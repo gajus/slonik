@@ -217,23 +217,27 @@ const executeQueryInternal = async (
     const beforeTransformQuery = interceptor.beforeTransformQuery;
 
     if (beforeTransformQuery) {
-      await tracer.startActiveSpan("slonik.interceptor.beforeTransformQuery", async (span) => {
-        span.setAttribute("interceptor.name", interceptor.name);
+      if (clientConfiguration.tracing) {
+        await tracer.startActiveSpan("slonik.interceptor.beforeTransformQuery", async (span) => {
+          span.setAttribute("interceptor.name", interceptor.name);
 
-        try {
-          await beforeTransformQuery(executionContext, actualQuery);
-        } catch (error) {
-          span.recordException(error);
-          span.setStatus({
-            code: SpanStatusCode.ERROR,
-            message: String(error),
-          });
+          try {
+            await beforeTransformQuery(executionContext, actualQuery);
+          } catch (error) {
+            span.recordException(error);
+            span.setStatus({
+              code: SpanStatusCode.ERROR,
+              message: String(error),
+            });
 
-          throw error;
-        } finally {
-          span.end();
-        }
-      });
+            throw error;
+          } finally {
+            span.end();
+          }
+        });
+      } else {
+        await beforeTransformQuery(executionContext, actualQuery);
+      }
     }
   }
 
@@ -241,23 +245,27 @@ const executeQueryInternal = async (
     const transformQuery = interceptor.transformQuery;
 
     if (transformQuery) {
-      actualQuery = tracer.startActiveSpan("slonik.interceptor.transformQuery", (span) => {
-        span.setAttribute("interceptor.name", interceptor.name);
+      if (clientConfiguration.tracing) {
+        actualQuery = tracer.startActiveSpan("slonik.interceptor.transformQuery", (span) => {
+          span.setAttribute("interceptor.name", interceptor.name);
 
-        try {
-          return transformQuery(executionContext, actualQuery);
-        } catch (error) {
-          span.recordException(error);
-          span.setStatus({
-            code: SpanStatusCode.ERROR,
-            message: String(error),
-          });
+          try {
+            return transformQuery(executionContext, actualQuery);
+          } catch (error) {
+            span.recordException(error);
+            span.setStatus({
+              code: SpanStatusCode.ERROR,
+              message: String(error),
+            });
 
-          throw error;
-        } finally {
-          span.end();
-        }
-      });
+            throw error;
+          } finally {
+            span.end();
+          }
+        });
+      } else {
+        actualQuery = transformQuery(executionContext, actualQuery);
+      }
     }
   }
 
@@ -268,29 +276,33 @@ const executeQueryInternal = async (
       const beforeQueryExecution = interceptor.beforeQueryExecution;
 
       if (beforeQueryExecution) {
-        result = await tracer.startActiveSpan(
-          "slonik.interceptor.beforeQueryExecution",
-          {
-            attributes: {
-              "interceptor.name": interceptor.name,
+        if (clientConfiguration.tracing) {
+          result = await tracer.startActiveSpan(
+            "slonik.interceptor.beforeQueryExecution",
+            {
+              attributes: {
+                "interceptor.name": interceptor.name,
+              },
             },
-          },
-          async (span) => {
-            try {
-              return await beforeQueryExecution(executionContext, actualQuery);
-            } catch (error) {
-              span.recordException(error);
-              span.setStatus({
-                code: SpanStatusCode.ERROR,
-                message: String(error),
-              });
+            async (span) => {
+              try {
+                return await beforeQueryExecution(executionContext, actualQuery);
+              } catch (error) {
+                span.recordException(error);
+                span.setStatus({
+                  code: SpanStatusCode.ERROR,
+                  message: String(error),
+                });
 
-              throw error;
-            } finally {
-              span.end();
-            }
-          },
-        );
+                throw error;
+              } finally {
+                span.end();
+              }
+            },
+          );
+        } else {
+          result = await beforeQueryExecution(executionContext, actualQuery);
+        }
 
         if (result) {
           log.info(
@@ -498,33 +510,41 @@ const executeQueryInternal = async (
     const afterQueryExecution = interceptor.afterQueryExecution;
 
     if (afterQueryExecution) {
-      await tracer.startActiveSpan(
-        "slonik.interceptor.afterQueryExecution",
-        {
-          attributes: {
-            "interceptor.name": interceptor.name,
+      if (clientConfiguration.tracing) {
+        await tracer.startActiveSpan(
+          "slonik.interceptor.afterQueryExecution",
+          {
+            attributes: {
+              "interceptor.name": interceptor.name,
+            },
           },
-        },
-        async (span) => {
-          try {
-            await afterQueryExecution(
-              executionContext,
-              actualQuery,
-              result as QueryResult<QueryResultRow>,
-            );
-          } catch (error) {
-            span.recordException(error);
-            span.setStatus({
-              code: SpanStatusCode.ERROR,
-              message: String(error),
-            });
+          async (span) => {
+            try {
+              await afterQueryExecution(
+                executionContext,
+                actualQuery,
+                result as QueryResult<QueryResultRow>,
+              );
+            } catch (error) {
+              span.recordException(error);
+              span.setStatus({
+                code: SpanStatusCode.ERROR,
+                message: String(error),
+              });
 
-            throw error;
-          } finally {
-            span.end();
-          }
-        },
-      );
+              throw error;
+            } finally {
+              span.end();
+            }
+          },
+        );
+      } else {
+        await afterQueryExecution(
+          executionContext,
+          actualQuery,
+          result as QueryResult<QueryResultRow>,
+        );
+      }
     }
   }
 
@@ -534,32 +554,40 @@ const executeQueryInternal = async (
     if (transformRow) {
       const { fields, rows } = result;
 
-      const transformedRows: QueryResultRow[] = tracer.startActiveSpan(
-        "slonik.interceptor.transformRow",
-        {
-          attributes: {
-            "interceptor.name": interceptor.name,
-            "rows.length": rows.length,
-          },
-        },
-        (span) => {
-          try {
-            return rows.map((row) => {
-              return transformRow(executionContext, actualQuery, row, fields);
-            });
-          } catch (error) {
-            span.recordException(error);
-            span.setStatus({
-              code: SpanStatusCode.ERROR,
-              message: String(error),
-            });
+      let transformedRows: QueryResultRow[];
 
-            throw error;
-          } finally {
-            span.end();
-          }
-        },
-      );
+      if (clientConfiguration.tracing) {
+        transformedRows = tracer.startActiveSpan(
+          "slonik.interceptor.transformRow",
+          {
+            attributes: {
+              "interceptor.name": interceptor.name,
+              "rows.length": rows.length,
+            },
+          },
+          (span) => {
+            try {
+              return rows.map((row) => {
+                return transformRow(executionContext, actualQuery, row, fields);
+              });
+            } catch (error) {
+              span.recordException(error);
+              span.setStatus({
+                code: SpanStatusCode.ERROR,
+                message: String(error),
+              });
+
+              throw error;
+            } finally {
+              span.end();
+            }
+          },
+        );
+      } else {
+        transformedRows = rows.map((row) => {
+          return transformRow(executionContext, actualQuery, row, fields);
+        });
+      }
 
       // avoid spreading the result object to avoid performance overhead
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -573,36 +601,48 @@ const executeQueryInternal = async (
     if (transformRowAsync) {
       const { fields, rows } = result;
 
-      const transformedRows: QueryResultRow[] = await tracer.startActiveSpan(
-        "slonik.interceptor.transformRowAsync",
-        {
-          attributes: {
-            "interceptor.name": interceptor.name,
-            "rows.length": rows.length,
+      let transformedRows: QueryResultRow[];
+
+      if (clientConfiguration.tracing) {
+        transformedRows = await tracer.startActiveSpan(
+          "slonik.interceptor.transformRowAsync",
+          {
+            attributes: {
+              "interceptor.name": interceptor.name,
+              "rows.length": rows.length,
+            },
           },
-        },
-        async (span) => {
-          try {
-            const limit = pLimit(10);
+          async (span) => {
+            try {
+              const limit = pLimit(10);
 
-            return await Promise.all(
-              rows.map((row) => {
-                return limit(() => transformRowAsync(executionContext, actualQuery, row, fields));
-              }),
-            );
-          } catch (error) {
-            span.recordException(error);
-            span.setStatus({
-              code: SpanStatusCode.ERROR,
-              message: String(error),
-            });
+              return await Promise.all(
+                rows.map((row) => {
+                  return limit(() => transformRowAsync(executionContext, actualQuery, row, fields));
+                }),
+              );
+            } catch (error) {
+              span.recordException(error);
+              span.setStatus({
+                code: SpanStatusCode.ERROR,
+                message: String(error),
+              });
 
-            throw error;
-          } finally {
-            span.end();
-          }
-        },
-      );
+              throw error;
+            } finally {
+              span.end();
+            }
+          },
+        );
+      } else {
+        const limit = pLimit(10);
+
+        transformedRows = await Promise.all(
+          rows.map((row) => {
+            return limit(() => transformRowAsync(executionContext, actualQuery, row, fields));
+          }),
+        );
+      }
 
       // avoid spreading the result object to avoid performance overhead
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -614,33 +654,41 @@ const executeQueryInternal = async (
     const beforeQueryResult = interceptor.beforeQueryResult;
 
     if (beforeQueryResult) {
-      await tracer.startActiveSpan(
-        "slonik.interceptor.beforeQueryResult",
-        {
-          attributes: {
-            "interceptor.name": interceptor.name,
+      if (clientConfiguration.tracing) {
+        await tracer.startActiveSpan(
+          "slonik.interceptor.beforeQueryResult",
+          {
+            attributes: {
+              "interceptor.name": interceptor.name,
+            },
           },
-        },
-        async (span) => {
-          try {
-            await beforeQueryResult(
-              executionContext,
-              actualQuery,
-              result as QueryResult<QueryResultRow>,
-            );
-          } catch (error) {
-            span.recordException(error);
-            span.setStatus({
-              code: SpanStatusCode.ERROR,
-              message: String(error),
-            });
+          async (span) => {
+            try {
+              await beforeQueryResult(
+                executionContext,
+                actualQuery,
+                result as QueryResult<QueryResultRow>,
+              );
+            } catch (error) {
+              span.recordException(error);
+              span.setStatus({
+                code: SpanStatusCode.ERROR,
+                message: String(error),
+              });
 
-            throw error;
-          } finally {
-            span.end();
-          }
-        },
-      );
+              throw error;
+            } finally {
+              span.end();
+            }
+          },
+        );
+      } else {
+        await beforeQueryResult(
+          executionContext,
+          actualQuery,
+          result as QueryResult<QueryResultRow>,
+        );
+      }
     }
   }
 
@@ -657,6 +705,19 @@ export const executeQuery = async (
   stream: boolean,
   integrityValidation?: IntegrityValidation,
 ): Promise<QueryResult<Record<string, PrimitiveValueExpression>> | StreamResult> => {
+  if (!clientConfiguration.tracing) {
+    return await executeQueryInternal(
+      connectionLogger,
+      connection,
+      clientConfiguration,
+      query,
+      inheritedQueryId,
+      executionRoutine,
+      integrityValidation,
+      stream,
+    );
+  }
+
   return await tracer.startActiveSpan(
     "slonik.executeQuery",
     {

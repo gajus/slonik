@@ -12,6 +12,7 @@ type PoolConfiguration = {
   maximumPoolSize: number;
   minimumPoolSize: number;
   poolName?: string;
+  tracing: boolean;
 };
 
 /**
@@ -46,6 +47,7 @@ export const createPoolConfiguration = (
     maximumConnectionAge: 30 * 60 * 1_000,
     maximumPoolSize: 10,
     minimumPoolSize: 0,
+    tracing: clientConfiguration.tracing,
   };
 
   poolConfiguration.idleTimeout = resolveTimeout("idleTimeout", clientConfiguration.idleTimeout);

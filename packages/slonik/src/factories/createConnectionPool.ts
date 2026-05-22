@@ -87,6 +87,7 @@ export const createConnectionPool = ({
   maximumPoolSize,
   minimumPoolSize,
   poolName,
+  tracing = true,
 }: {
   driver: Driver;
   events: DatabasePoolEventEmitter;
@@ -103,6 +104,7 @@ export const createConnectionPool = ({
   maximumPoolSize: number;
   minimumPoolSize: number;
   poolName?: string;
+  tracing?: boolean;
 }): ConnectionPool => {
   // See test "waits for all connections to be established before attempting to terminate the pool"
   // for explanation of why `pendingConnections` is needed.
@@ -475,7 +477,168 @@ export const createConnectionPool = ({
     isEnded = true;
   };
 
+  const acquireConnection = async (span?: Span) => {
+    if (isEnded) {
+      throw new UnexpectedStateError("Connection pool has ended.");
+    }
+
+    if (isEnding) {
+      throw new UnexpectedStateError("Connection pool is being terminated.");
+    }
+
+    // O(1) lookup: Try to get an idle connection from the queue
+    // We iterate through the queue to skip old/destroyed connections, but typically this is just 1-2 iterations
+    let idleConnection: ConnectionPoolClient | undefined;
+    let destroyedInLoop = 0;
+
+    while (idleConnectionsQueue.length > 0) {
+      const connection = idleConnectionsQueue.shift();
+
+      if (!connection) {
+        break;
+      }
+
+      // Check if connection is still in the Set (not destroyed)
+      if (!idleConnectionsSet.has(connection)) {
+        // Connection was destroyed, skip it
+        continue;
+      }
+
+      // Remove from Set now that we're taking it from the queue
+      idleConnectionsSet.delete(connection);
+
+      // Double-check state (should always be IDLE, but defensive programming)
+      if (connection.state() !== "IDLE") {
+        logger.warn(
+          {
+            connectionId: connection.id(),
+            state: connection.state(),
+          },
+          "connection in idle queue is not in IDLE state",
+        );
+        continue;
+      }
+
+      clearIdleTimer(connection);
+
+      if (isConnectionTooOld(connection)) {
+        destroyedInLoop++;
+
+        logger.debug(
+          {
+            connectionId: connection.id(),
+            maxAge: maximumConnectionAge,
+          },
+          "destroying old connection from idle queue",
+        );
+
+        // Destroy asynchronously, don't block acquire
+        connection.destroy().catch((error) => {
+          logger.error(
+            {
+              connectionId: connection.id(),
+              error: serializeError(error),
+            },
+            "error destroying old connection during acquire",
+          );
+        });
+
+        continue;
+      }
+
+      // Connection is valid and not too old
+      try {
+        connection.acquire();
+        idleConnection = connection;
+        break;
+      } catch (error) {
+        logger.error(
+          {
+            connectionId: connection.id(),
+            error: serializeError(error),
+          },
+          "error acquiring connection from idle queue",
+        );
+        // Try next connection
+        continue;
+      }
+    }
+
+    if (idleConnection) {
+      if (span) {
+        span.setAttribute("slonik.connection.id", idleConnection.id());
+        span.setAttribute("method", "acquire:reuse-idle");
+        span.setStatus({ code: SpanStatusCode.OK });
+      }
+
+      return idleConnection;
+    }
+
+    if (pendingConnections.size + activeConnectionCount() - destroyedInLoop < maximumPoolSize) {
+      const newConnection = await addConnection(span);
+
+      newConnection.acquire();
+
+      if (span) {
+        span.setAttribute("slonik.connection.id", newConnection.id());
+        span.setAttribute("method", "acquire:add-connection");
+        span.setStatus({ code: SpanStatusCode.OK });
+      }
+
+      return newConnection;
+    }
+
+    if (isEnding || isEnded) {
+      throw new UnexpectedStateError("Connection pool is being terminated.");
+    }
+
+    const deferred = Promise.withResolvers<ConnectionPoolClient>();
+
+    waitingClients.push({
+      deferred,
+    });
+
+    const queuedAt = process.hrtime.bigint();
+
+    logger.warn(
+      {
+        connections: connections.size,
+        idleConnections: idleConnectionsSet.size,
+        maximumPoolSize,
+        minimumPoolSize,
+        pendingConnections: pendingConnections.size,
+        poolId: id,
+        poolName,
+        waitingClients: waitingClients.length,
+      },
+      `connection pool full; client has been queued`,
+    );
+
+    return deferred.promise.then((connection) => {
+      logger.debug(
+        {
+          connectionId: connection.id(),
+          duration: Number(process.hrtime.bigint() - queuedAt) / 1e6,
+        },
+        "connection has been acquired from the queue",
+      );
+
+      if (span) {
+        span.setAttribute("queuedMs", Number(process.hrtime.bigint() - queuedAt) / 1e6);
+        span.setAttribute("slonik.connection.id", connection.id());
+        span.setAttribute("method", "acquire:queued");
+        span.setStatus({ code: SpanStatusCode.OK });
+      }
+
+      return connection;
+    });
+  };
+
   const acquire = async () => {
+    if (!tracing) {
+      return acquireConnection();
+    }
+
     return tracer.startActiveSpan("slonik.connection.acquire", async (span) => {
       try {
         span.setAttribute("slonik.pool.id", id);
@@ -487,169 +650,7 @@ export const createConnectionPool = ({
         span.setAttribute("slonik.pool.waitingClients", waitingClients.length);
         span.setAttribute("slonik.pool.maximumSize", maximumPoolSize);
 
-        if (isEnded) {
-          span.setStatus({
-            code: SpanStatusCode.ERROR,
-            message: "Connection pool has ended",
-          });
-
-          throw new UnexpectedStateError("Connection pool has ended.");
-        }
-
-        if (isEnding) {
-          span.setStatus({
-            code: SpanStatusCode.ERROR,
-            message: "Connection pool is being terminated",
-          });
-
-          throw new UnexpectedStateError("Connection pool is being terminated.");
-        }
-
-        // O(1) lookup: Try to get an idle connection from the queue
-        // We iterate through the queue to skip old/destroyed connections, but typically this is just 1-2 iterations
-        let idleConnection: ConnectionPoolClient | undefined;
-        let destroyedInLoop = 0;
-
-        while (idleConnectionsQueue.length > 0) {
-          const connection = idleConnectionsQueue.shift();
-
-          if (!connection) {
-            break;
-          }
-
-          // Check if connection is still in the Set (not destroyed)
-          if (!idleConnectionsSet.has(connection)) {
-            // Connection was destroyed, skip it
-            continue;
-          }
-
-          // Remove from Set now that we're taking it from the queue
-          idleConnectionsSet.delete(connection);
-
-          // Double-check state (should always be IDLE, but defensive programming)
-          if (connection.state() !== "IDLE") {
-            logger.warn(
-              {
-                connectionId: connection.id(),
-                state: connection.state(),
-              },
-              "connection in idle queue is not in IDLE state",
-            );
-            continue;
-          }
-
-          clearIdleTimer(connection);
-
-          if (isConnectionTooOld(connection)) {
-            destroyedInLoop++;
-
-            logger.debug(
-              {
-                connectionId: connection.id(),
-                maxAge: maximumConnectionAge,
-              },
-              "destroying old connection from idle queue",
-            );
-
-            // Destroy asynchronously, don't block acquire
-            connection.destroy().catch((error) => {
-              logger.error(
-                {
-                  connectionId: connection.id(),
-                  error: serializeError(error),
-                },
-                "error destroying old connection during acquire",
-              );
-            });
-
-            continue;
-          }
-
-          // Connection is valid and not too old
-          try {
-            connection.acquire();
-            idleConnection = connection;
-            break;
-          } catch (error) {
-            logger.error(
-              {
-                connectionId: connection.id(),
-                error: serializeError(error),
-              },
-              "error acquiring connection from idle queue",
-            );
-            // Try next connection
-            continue;
-          }
-        }
-
-        if (idleConnection) {
-          span.setAttribute("slonik.connection.id", idleConnection.id());
-          span.setAttribute("method", "acquire:reuse-idle");
-          span.setStatus({ code: SpanStatusCode.OK });
-
-          return idleConnection;
-        }
-
-        if (pendingConnections.size + activeConnectionCount() - destroyedInLoop < maximumPoolSize) {
-          const newConnection = await addConnection(span);
-
-          newConnection.acquire();
-
-          span.setAttribute("slonik.connection.id", newConnection.id());
-          span.setAttribute("method", "acquire:add-connection");
-          span.setStatus({ code: SpanStatusCode.OK });
-
-          return newConnection;
-        }
-
-        if (isEnding || isEnded) {
-          span.setStatus({
-            code: SpanStatusCode.ERROR,
-            message: "Connection pool is being terminated",
-          });
-
-          throw new UnexpectedStateError("Connection pool is being terminated.");
-        }
-
-        const deferred = Promise.withResolvers<ConnectionPoolClient>();
-
-        waitingClients.push({
-          deferred,
-        });
-
-        const queuedAt = process.hrtime.bigint();
-
-        logger.warn(
-          {
-            connections: connections.size,
-            idleConnections: idleConnectionsSet.size,
-            maximumPoolSize,
-            minimumPoolSize,
-            pendingConnections: pendingConnections.size,
-            poolId: id,
-            poolName,
-            waitingClients: waitingClients.length,
-          },
-          `connection pool full; client has been queued`,
-        );
-
-        return deferred.promise.then((connection) => {
-          logger.debug(
-            {
-              connectionId: connection.id(),
-              duration: Number(process.hrtime.bigint() - queuedAt) / 1e6,
-            },
-            "connection has been acquired from the queue",
-          );
-
-          span.setAttribute("queuedMs", Number(process.hrtime.bigint() - queuedAt) / 1e6);
-          span.setAttribute("slonik.connection.id", connection.id());
-          span.setAttribute("method", "acquire:queued");
-          span.setStatus({ code: SpanStatusCode.OK });
-
-          return connection;
-        });
+        return await acquireConnection(span);
       } catch (error) {
         span.recordException(error);
         span.setStatus({
