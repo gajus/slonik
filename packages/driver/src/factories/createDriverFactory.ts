@@ -57,7 +57,7 @@ export type DriverCommand = "COPY" | "DELETE" | "INSERT" | "SELECT" | "UPDATE";
 
 export type DriverConfiguration = {
   readonly connectionTimeout: "DISABLE_TIMEOUT" | number;
-  readonly connectionUri: string;
+  readonly connectionUri: (() => Promise<string> | string) | string;
   readonly gracefulTerminationTimeout?: number;
   readonly idleInTransactionSessionTimeout: "DISABLE_TIMEOUT" | number;
   readonly idleTimeout?: "DISABLE_TIMEOUT" | number;

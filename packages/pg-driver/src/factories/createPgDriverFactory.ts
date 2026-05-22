@@ -96,10 +96,21 @@ const createTypeOverrides = async (
   };
 };
 
+const resolveConnectionUri = async (
+  connectionUri: (() => Promise<string> | string) | string,
+): Promise<string> => {
+  if (typeof connectionUri === "string") {
+    return connectionUri;
+  }
+
+  return connectionUri();
+};
+
 const createClientConfiguration = (
-  clientConfiguration: DriverConfiguration,
+  resolvedUri: string,
+  driverConfiguration: DriverConfiguration,
 ): NativePostgresClientConfiguration => {
-  const connectionOptions = parseDsn(clientConfiguration.connectionUri);
+  const connectionOptions = parseDsn(resolvedUri);
 
   const poolConfiguration: NativePostgresClientConfiguration = {
     application_name: connectionOptions.applicationName,
@@ -114,8 +125,8 @@ const createClientConfiguration = (
     user: connectionOptions.username,
   };
 
-  if (clientConfiguration.ssl) {
-    poolConfiguration.ssl = clientConfiguration.ssl;
+  if (driverConfiguration.ssl) {
+    poolConfiguration.ssl = driverConfiguration.ssl;
   } else if (connectionOptions.sslMode === "disable") {
     poolConfiguration.ssl = false;
   } else if (connectionOptions.sslMode === "require") {
@@ -126,28 +137,28 @@ const createClientConfiguration = (
     };
   }
 
-  if (clientConfiguration.connectionTimeout !== "DISABLE_TIMEOUT") {
-    if (clientConfiguration.connectionTimeout === 0) {
+  if (driverConfiguration.connectionTimeout !== "DISABLE_TIMEOUT") {
+    if (driverConfiguration.connectionTimeout === 0) {
       poolConfiguration.connectionTimeoutMillis = 1;
     } else {
-      poolConfiguration.connectionTimeoutMillis = clientConfiguration.connectionTimeout;
+      poolConfiguration.connectionTimeoutMillis = driverConfiguration.connectionTimeout;
     }
   }
 
-  if (clientConfiguration.statementTimeout !== "DISABLE_TIMEOUT") {
-    if (clientConfiguration.statementTimeout === 0) {
+  if (driverConfiguration.statementTimeout !== "DISABLE_TIMEOUT") {
+    if (driverConfiguration.statementTimeout === 0) {
       poolConfiguration.statement_timeout = 1;
     } else {
-      poolConfiguration.statement_timeout = clientConfiguration.statementTimeout;
+      poolConfiguration.statement_timeout = driverConfiguration.statementTimeout;
     }
   }
 
-  if (clientConfiguration.idleInTransactionSessionTimeout !== "DISABLE_TIMEOUT") {
-    if (clientConfiguration.idleInTransactionSessionTimeout === 0) {
+  if (driverConfiguration.idleInTransactionSessionTimeout !== "DISABLE_TIMEOUT") {
+    if (driverConfiguration.idleInTransactionSessionTimeout === 0) {
       poolConfiguration.idle_in_transaction_session_timeout = 1;
     } else {
       poolConfiguration.idle_in_transaction_session_timeout =
-        clientConfiguration.idleInTransactionSessionTimeout;
+        driverConfiguration.idleInTransactionSessionTimeout;
     }
   }
 
@@ -246,15 +257,20 @@ const wrapError = (error: Error, query: null | Query) => {
 
 export const createPgDriverFactory = (): DriverFactory => {
   return createDriverFactory(async ({ driverConfiguration }) => {
-    const clientConfiguration = createClientConfiguration(driverConfiguration);
+    const initialUri = await resolveConnectionUri(driverConfiguration.connectionUri);
+    const initialClientConfiguration = createClientConfiguration(initialUri, driverConfiguration);
 
-    // eslint-disable-next-line require-atomic-updates
-    clientConfiguration.types = {
-      getTypeParser: await queryTypeOverrides(clientConfiguration, driverConfiguration),
-    };
+    const typeOverrides = await queryTypeOverrides(initialClientConfiguration, driverConfiguration);
 
     return {
       createPoolClient: async ({ clientEventEmitter }) => {
+        const resolvedUri = await resolveConnectionUri(driverConfiguration.connectionUri);
+        const clientConfiguration = createClientConfiguration(resolvedUri, driverConfiguration);
+
+        clientConfiguration.types = {
+          getTypeParser: typeOverrides,
+        };
+
         const client = new Client(clientConfiguration);
 
         // We will see this triggered when the connection is terminated, e.g.

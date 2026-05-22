@@ -9,6 +9,8 @@ import type { ConnectionOptions as TlsConnectionOptions } from "node:tls";
 import type { Logger } from "roarr";
 import type { StrictEventEmitter } from "strict-event-emitter-types";
 
+export type ConnectionUri = (() => Promise<string> | string) | string;
+
 export type ClientConfiguration = {
   /**
    * Dictates whether to capture stack trace before executing query. Middlewares access stack trace through query execution context. (Default: true)
@@ -25,7 +27,7 @@ export type ClientConfiguration = {
   /**
    * Connection URI, e.g. `postgres://user:password@localhost/database`.
    */
-  readonly connectionUri: string;
+  readonly connectionUri: ConnectionUri;
   /**
    * Allow using connections that are not associated with the transaction. (Default: false)
    */
