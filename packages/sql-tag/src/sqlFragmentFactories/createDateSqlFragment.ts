@@ -1,12 +1,12 @@
 import { FragmentToken } from "../tokens.js";
-import type { DateSqlToken, SqlFragmentToken } from "../types.js";
+import type { DateSqlToken, FragmentSqlToken } from "../types.js";
 import { formatSlonikPlaceholder } from "../utilities/formatSlonikPlaceholder.js";
 import { InvalidInputError } from "@slonik/errors";
 
 export const createDateSqlFragment = (
   token: DateSqlToken,
   greatestParameterPosition: number,
-): SqlFragmentToken => {
+): FragmentSqlToken => {
   let dateString: string;
 
   if (token.date instanceof Date) {

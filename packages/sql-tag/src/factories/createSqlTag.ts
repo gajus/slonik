@@ -17,8 +17,8 @@ import {
 } from "../tokens.js";
 import type {
   ArraySqlToken,
+  FragmentSqlToken,
   PrimitiveValueExpression,
-  SqlFragmentToken,
   SqlTag,
   TypeNameIdentifier,
   ValueExpression,
@@ -114,7 +114,7 @@ export const createSqlTag = <
   return {
     array: <T extends TypeNameIdentifier>(
       values: readonly PrimitiveValueExpression[],
-      memberType: SqlFragmentToken | T,
+      memberType: FragmentSqlToken | T,
     ) => {
       return Object.freeze({
         memberType,

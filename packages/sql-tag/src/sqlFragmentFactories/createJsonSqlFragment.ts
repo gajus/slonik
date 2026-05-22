@@ -1,6 +1,6 @@
 import { Logger } from "../Logger.js";
 import { FragmentToken } from "../tokens.js";
-import type { JsonBinarySqlToken, JsonSqlToken, SqlFragmentToken } from "../types.js";
+import type { FragmentSqlToken, JsonBinarySqlToken, JsonSqlToken } from "../types.js";
 import { formatSlonikPlaceholder } from "../utilities/formatSlonikPlaceholder.js";
 import { isPlainObject } from "../utilities/isPlainObject.js";
 import { safeStringify } from "../utilities/safeStringify.js";
@@ -15,7 +15,7 @@ export const createJsonSqlFragment = (
   token: JsonBinarySqlToken | JsonSqlToken,
   greatestParameterPosition: number,
   binary: boolean,
-): SqlFragmentToken => {
+): FragmentSqlToken => {
   let value;
 
   if (token.value === undefined) {

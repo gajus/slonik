@@ -29,14 +29,13 @@ import type {
   ArraySqlToken,
   BinarySqlToken,
   DateSqlToken,
-  FragmentSqlToken as FragmentSqlTokenType,
+  FragmentSqlToken,
   IdentifierSqlToken,
   IntervalSqlToken,
   JsonBinarySqlToken,
   JsonSqlToken,
   ListSqlToken,
   QuerySqlToken,
-  SqlFragmentToken,
   SqlToken as SqlTokenType,
   TimestampSqlToken,
   UnnestSqlToken,
@@ -44,13 +43,13 @@ import type {
 } from "../types.js";
 import { UnexpectedStateError } from "@slonik/errors";
 
-type TokenHandler = (token: SqlTokenType, greatestParameterPosition: number) => SqlFragmentToken;
+type TokenHandler = (token: SqlTokenType, greatestParameterPosition: number) => FragmentSqlToken;
 
 const tokenHandlers = new Map<symbol, TokenHandler>([
   [ArrayToken, (token, pos) => createArraySqlFragment(token as ArraySqlToken, pos)],
   [BinaryToken, (token, pos) => createBinarySqlFragment(token as BinarySqlToken, pos)],
   [DateToken, (token, pos) => createDateSqlFragment(token as DateSqlToken, pos)],
-  [FragmentToken, (token, pos) => createFragmentSqlFragment(token as FragmentSqlTokenType, pos)],
+  [FragmentToken, (token, pos) => createFragmentSqlFragment(token as FragmentSqlToken, pos)],
   [IdentifierToken, (token) => createIdentifierSqlFragment(token as IdentifierSqlToken)],
   [IntervalToken, (token, pos) => createIntervalSqlFragment(token as IntervalSqlToken, pos)],
   [JsonBinaryToken, (token, pos) => createJsonSqlFragment(token as JsonBinarySqlToken, pos, true)],
@@ -65,7 +64,7 @@ const tokenHandlers = new Map<symbol, TokenHandler>([
 export const createSqlTokenSqlFragment = (
   token: SqlTokenType,
   greatestParameterPosition: number,
-): SqlFragmentToken => {
+): FragmentSqlToken => {
   const handler = tokenHandlers.get(token.type);
 
   if (handler) {

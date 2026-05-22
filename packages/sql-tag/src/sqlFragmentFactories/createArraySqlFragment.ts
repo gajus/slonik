@@ -1,6 +1,6 @@
 import { createSqlTokenSqlFragment } from "../factories/createSqlTokenSqlFragment.js";
 import { FragmentToken } from "../tokens.js";
-import type { ArraySqlToken, SqlFragmentToken } from "../types.js";
+import type { ArraySqlToken, FragmentSqlToken } from "../types.js";
 import { escapeIdentifier } from "../utilities/escapeIdentifier.js";
 import { formatSlonikPlaceholder } from "../utilities/formatSlonikPlaceholder.js";
 import { isPrimitiveValueExpression } from "../utilities/isPrimitiveValueExpression.js";
@@ -10,7 +10,7 @@ import { InvalidInputError, UnexpectedStateError } from "@slonik/errors";
 export const createArraySqlFragment = (
   token: ArraySqlToken,
   greatestParameterPosition: number,
-): SqlFragmentToken => {
+): FragmentSqlToken => {
   let placeholderIndex = greatestParameterPosition;
 
   for (const value of token.values) {
