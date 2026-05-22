@@ -1,5 +1,7 @@
 # slonik-interceptor-query-cache
 
+## 48.18.0
+
 ## 48.17.0
 
 ## 48.16.0

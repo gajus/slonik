@@ -1,5 +1,20 @@
 # slonik
 
+## 48.18.0
+
+### Minor Changes
+
+- [#787](https://github.com/gajus/slonik/pull/787) [`87ad6d2`](https://github.com/gajus/slonik/commit/87ad6d245e3b0f7cff6944a77e71f7d9d3f108f7) Thanks [@gajus](https://github.com/gajus)! - allow to opt-out from OTel
+
+### Patch Changes
+
+- Updated dependencies []:
+  - @slonik/driver@48.18.0
+  - @slonik/errors@48.18.0
+  - @slonik/pg-driver@48.18.0
+  - @slonik/sql-tag@48.18.0
+  - @slonik/utilities@48.18.0
+
 ## 48.17.0
 
 ### Minor Changes
