@@ -1,5 +1,20 @@
 # slonik
 
+## 48.16.0
+
+### Minor Changes
+
+- [#783](https://github.com/gajus/slonik/pull/783) [`8ce945a`](https://github.com/gajus/slonik/commit/8ce945aa1063942326489a610ab864d4aa5e2c4e) Thanks [@gajus](https://github.com/gajus)! - dynamic password
+
+### Patch Changes
+
+- Updated dependencies []:
+  - @slonik/driver@48.16.0
+  - @slonik/errors@48.16.0
+  - @slonik/pg-driver@48.16.0
+  - @slonik/sql-tag@48.16.0
+  - @slonik/utilities@48.16.0
+
 ## 48.15.0
 
 ### Minor Changes
