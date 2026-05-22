@@ -1,10 +1,10 @@
-import type { ClientConfiguration, ClientConfigurationInput, ConnectionUri } from "../types.js";
+import type { ClientConfiguration, ClientConfigurationInput } from "../types.js";
 import { createTypeParserPreset } from "./createTypeParserPreset.js";
 import type { DriverTypeParser } from "@slonik/driver";
 import { InvalidConfigurationError } from "@slonik/errors";
 
 export const createClientConfiguration = (
-  connectionUri: ConnectionUri,
+  connectionUri: string,
   clientUserConfigurationInput?: ClientConfigurationInput,
 ): ClientConfiguration => {
   const typeParsers: readonly DriverTypeParser[] = [];

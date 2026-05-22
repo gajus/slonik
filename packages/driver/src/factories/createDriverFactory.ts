@@ -57,13 +57,14 @@ export type DriverCommand = "COPY" | "DELETE" | "INSERT" | "SELECT" | "UPDATE";
 
 export type DriverConfiguration = {
   readonly connectionTimeout: "DISABLE_TIMEOUT" | number;
-  readonly connectionUri: (() => Promise<string> | string) | string;
+  readonly connectionUri: string;
   readonly gracefulTerminationTimeout?: number;
   readonly idleInTransactionSessionTimeout: "DISABLE_TIMEOUT" | number;
   readonly idleTimeout?: "DISABLE_TIMEOUT" | number;
   readonly maximumConnectionAge?: "DISABLE_TIMEOUT" | number;
   readonly maximumPoolSize?: number;
   readonly minimumPoolSize?: number;
+  readonly password?: (() => Promise<string> | string) | string;
   readonly resetConnection?: (connection: BasicConnection) => Promise<void>;
   readonly ssl?: TlsConnectionOptions;
   readonly statementTimeout: "DISABLE_TIMEOUT" | number;

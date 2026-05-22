@@ -1010,45 +1010,25 @@ export const createPoolTests = (test: TestFn<TestContextType>, driverFactory: Dr
     );
   });
 
-  test("supports connectionUri as an async callback", async (t) => {
-    const connectionUriCallback = sinon.spy(async () => t.context.dsn);
+  test("supports password as an async callback", async (t) => {
+    const connectionOptions = parseDsn(t.context.dsn);
+    const uriWithoutPassword = t.context.dsn.replace(
+      `:${encodeURIComponent(connectionOptions.password ?? "")}@`,
+      "@",
+    );
 
-    const pool = await createPool(connectionUriCallback, {
+    const passwordCallback = sinon.spy(async () => connectionOptions.password ?? "");
+
+    const pool = await createPool(uriWithoutPassword, {
       driverFactory,
       maximumPoolSize: 1,
       minimumPoolSize: 0,
+      password: passwordCallback,
     });
 
     await pool.query(sql.unsafe`SELECT 1`);
 
-    t.true(connectionUriCallback.callCount >= 2);
-
-    await pool.end();
-  });
-
-  test("invokes connectionUri callback per connection", async (t) => {
-    let callCount = 0;
-
-    const pool = await createPool(
-      async () => {
-        callCount++;
-        return t.context.dsn;
-      },
-      {
-        driverFactory,
-        maximumPoolSize: 2,
-        minimumPoolSize: 0,
-      },
-    );
-
-    const countBeforeQueries = callCount;
-
-    await Promise.all([
-      pool.query(sql.unsafe`SELECT pg_sleep(0.1)`),
-      pool.query(sql.unsafe`SELECT pg_sleep(0.1)`),
-    ]);
-
-    t.true(callCount > countBeforeQueries);
+    t.true(passwordCallback.callCount >= 1);
 
     await pool.end();
   });

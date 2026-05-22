@@ -483,7 +483,7 @@ Other configurations are available through the [`clientConfiguration` parameter]
 
 #### Dynamic passwords
 
-`createPool` accepts an async callback in place of a static connection URI. The callback is invoked every time a new connection is created, enabling support for short-lived credentials such as IAM-based database authentication (AWS RDS IAM, GCP Cloud SQL IAM, Azure AD tokens).
+The `password` configuration option supports async callbacks, enabling IAM-based database authentication (AWS RDS IAM, GCP Cloud SQL IAM, Azure AD tokens) where credentials expire and must be refreshed per connection.
 
 ```ts
 import { createPool } from "slonik";
@@ -491,17 +491,15 @@ import { createPgDriverFactory } from "@slonik/pg-driver";
 import { generateRdsAuthToken } from "./iam.js";
 
 const pool = await createPool(
-  async () => {
-    const token = await generateRdsAuthToken();
-    return `postgres://iam_user:${encodeURIComponent(token)}@mydb.us-east-1.rds.amazonaws.com:5432/mydb?sslmode=require`;
-  },
+  "postgres://iam_user@mydb.us-east-1.rds.amazonaws.com:5432/mydb?sslmode=require",
   {
     driverFactory: createPgDriverFactory(),
+    password: async () => generateRdsAuthToken(),
   },
 );
 ```
 
-The callback should only vary credentials (password and potentially username). Changing the host, port, or database name across calls is not supported because type metadata is cached from the initial connection.
+When provided, the `password` option overrides any password in the connection URI. It accepts a static string or a callback returning a string (sync or async). The callback is invoked by the underlying `pg` driver each time a new connection is established.
 
 ### Create connection
 
@@ -639,7 +637,7 @@ Note: `pool.end()` does not terminate active connections/ transactions.
  * @param connectionUri PostgreSQL [Connection URI](https://www.postgresql.org/docs/current/libpq-connect.html#LIBPQ-CONNSTRING).
  */
 createPool(
-  connectionUri: string | (() => Promise<string> | string),
+  connectionUri: string,
   clientConfiguration: ClientConfiguration
 ): DatabasePool;
 

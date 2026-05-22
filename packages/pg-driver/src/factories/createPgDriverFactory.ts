@@ -96,28 +96,17 @@ const createTypeOverrides = async (
   };
 };
 
-const resolveConnectionUri = async (
-  connectionUri: (() => Promise<string> | string) | string,
-): Promise<string> => {
-  if (typeof connectionUri === "string") {
-    return connectionUri;
-  }
-
-  return connectionUri();
-};
-
 const createClientConfiguration = (
-  resolvedUri: string,
-  driverConfiguration: DriverConfiguration,
+  clientConfiguration: DriverConfiguration,
 ): NativePostgresClientConfiguration => {
-  const connectionOptions = parseDsn(resolvedUri);
+  const connectionOptions = parseDsn(clientConfiguration.connectionUri);
 
   const poolConfiguration: NativePostgresClientConfiguration = {
     application_name: connectionOptions.applicationName,
     database: connectionOptions.databaseName,
     host: connectionOptions.host,
     options: connectionOptions.options,
-    password: connectionOptions.password,
+    password: clientConfiguration.password ?? connectionOptions.password,
     port: connectionOptions.port,
     // @ts-expect-error - https://github.com/brianc/node-postgres/pull/3214
     queryMode: "extended",
@@ -125,8 +114,8 @@ const createClientConfiguration = (
     user: connectionOptions.username,
   };
 
-  if (driverConfiguration.ssl) {
-    poolConfiguration.ssl = driverConfiguration.ssl;
+  if (clientConfiguration.ssl) {
+    poolConfiguration.ssl = clientConfiguration.ssl;
   } else if (connectionOptions.sslMode === "disable") {
     poolConfiguration.ssl = false;
   } else if (connectionOptions.sslMode === "require") {
@@ -137,28 +126,28 @@ const createClientConfiguration = (
     };
   }
 
-  if (driverConfiguration.connectionTimeout !== "DISABLE_TIMEOUT") {
-    if (driverConfiguration.connectionTimeout === 0) {
+  if (clientConfiguration.connectionTimeout !== "DISABLE_TIMEOUT") {
+    if (clientConfiguration.connectionTimeout === 0) {
       poolConfiguration.connectionTimeoutMillis = 1;
     } else {
-      poolConfiguration.connectionTimeoutMillis = driverConfiguration.connectionTimeout;
+      poolConfiguration.connectionTimeoutMillis = clientConfiguration.connectionTimeout;
     }
   }
 
-  if (driverConfiguration.statementTimeout !== "DISABLE_TIMEOUT") {
-    if (driverConfiguration.statementTimeout === 0) {
+  if (clientConfiguration.statementTimeout !== "DISABLE_TIMEOUT") {
+    if (clientConfiguration.statementTimeout === 0) {
       poolConfiguration.statement_timeout = 1;
     } else {
-      poolConfiguration.statement_timeout = driverConfiguration.statementTimeout;
+      poolConfiguration.statement_timeout = clientConfiguration.statementTimeout;
     }
   }
 
-  if (driverConfiguration.idleInTransactionSessionTimeout !== "DISABLE_TIMEOUT") {
-    if (driverConfiguration.idleInTransactionSessionTimeout === 0) {
+  if (clientConfiguration.idleInTransactionSessionTimeout !== "DISABLE_TIMEOUT") {
+    if (clientConfiguration.idleInTransactionSessionTimeout === 0) {
       poolConfiguration.idle_in_transaction_session_timeout = 1;
     } else {
       poolConfiguration.idle_in_transaction_session_timeout =
-        driverConfiguration.idleInTransactionSessionTimeout;
+        clientConfiguration.idleInTransactionSessionTimeout;
     }
   }
 
@@ -257,20 +246,15 @@ const wrapError = (error: Error, query: null | Query) => {
 
 export const createPgDriverFactory = (): DriverFactory => {
   return createDriverFactory(async ({ driverConfiguration }) => {
-    const initialUri = await resolveConnectionUri(driverConfiguration.connectionUri);
-    const initialClientConfiguration = createClientConfiguration(initialUri, driverConfiguration);
+    const clientConfiguration = createClientConfiguration(driverConfiguration);
 
-    const typeOverrides = await queryTypeOverrides(initialClientConfiguration, driverConfiguration);
+    // eslint-disable-next-line require-atomic-updates
+    clientConfiguration.types = {
+      getTypeParser: await queryTypeOverrides(clientConfiguration, driverConfiguration),
+    };
 
     return {
       createPoolClient: async ({ clientEventEmitter }) => {
-        const resolvedUri = await resolveConnectionUri(driverConfiguration.connectionUri);
-        const clientConfiguration = createClientConfiguration(resolvedUri, driverConfiguration);
-
-        clientConfiguration.types = {
-          getTypeParser: typeOverrides,
-        };
-
         const client = new Client(clientConfiguration);
 
         // We will see this triggered when the connection is terminated, e.g.

@@ -9,8 +9,6 @@ import type { ConnectionOptions as TlsConnectionOptions } from "node:tls";
 import type { Logger } from "roarr";
 import type { StrictEventEmitter } from "strict-event-emitter-types";
 
-export type ConnectionUri = (() => Promise<string> | string) | string;
-
 export type ClientConfiguration = {
   /**
    * Dictates whether to capture stack trace before executing query. Middlewares access stack trace through query execution context. (Default: true)
@@ -27,7 +25,7 @@ export type ClientConfiguration = {
   /**
    * Connection URI, e.g. `postgres://user:password@localhost/database`.
    */
-  readonly connectionUri: ConnectionUri;
+  readonly connectionUri: string;
   /**
    * Allow using connections that are not associated with the transaction. (Default: false)
    */
@@ -70,6 +68,7 @@ export type ClientConfiguration = {
    * Human-readable identifier for distinguishing multiple pools within the same application,
    * e.g. "read", "write", "replica-us-east-1".
    */
+  readonly password?: (() => Promise<string> | string) | string;
   readonly poolName?: string;
   /**
    * Number of times a query failing with Transaction Rollback class error, that doesn't belong to a transaction, is retried. (Default: 5)

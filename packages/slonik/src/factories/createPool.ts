@@ -1,11 +1,6 @@
 import { bindPool } from "../binders/bindPool.js";
 import { Logger } from "../Logger.js";
-import type {
-  ClientConfigurationInput,
-  ConnectionUri,
-  DatabasePool,
-  DatabasePoolEventEmitter,
-} from "../types.js";
+import type { ClientConfigurationInput, DatabasePool, DatabasePoolEventEmitter } from "../types.js";
 import { createClientConfiguration } from "./createClientConfiguration.js";
 import { createConnectionPool } from "./createConnectionPool.js";
 import { createPoolConfiguration } from "./createPoolConfiguration.js";
@@ -17,7 +12,7 @@ import EventEmitter from "node:events";
  * @param connectionUri PostgreSQL [Connection URI](https://www.postgresql.org/docs/current/libpq-connect.html#LIBPQ-CONNSTRING).
  */
 export const createPool = async (
-  connectionUri: ConnectionUri,
+  connectionUri: string,
   clientConfigurationInput?: ClientConfigurationInput,
 ): Promise<DatabasePool> => {
   const clientConfiguration = createClientConfiguration(connectionUri, clientConfigurationInput);

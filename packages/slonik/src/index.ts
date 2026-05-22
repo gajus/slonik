@@ -18,7 +18,6 @@ export type {
   Connection,
   ConnectionOptions,
   ConnectionRoutine,
-  ConnectionUri,
   DatabaseConnection,
   DatabasePool,
   DatabasePoolConnection,
