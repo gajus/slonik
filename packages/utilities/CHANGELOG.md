@@ -1,5 +1,13 @@
 # @slonik/utilities
 
+## 48.17.0
+
+### Patch Changes
+
+- Updated dependencies []:
+  - @slonik/errors@48.17.0
+  - @slonik/types@48.17.0
+
 ## 48.16.0
 
 ### Patch Changes

@@ -1,5 +1,20 @@
 # slonik
 
+## 48.17.0
+
+### Minor Changes
+
+- [#785](https://github.com/gajus/slonik/pull/785) [`6d0df59`](https://github.com/gajus/slonik/commit/6d0df591f807938936c3b7c392a94216d68f2120) Thanks [@gajus](https://github.com/gajus)! - deprecate SqlFragmentToken
+
+### Patch Changes
+
+- Updated dependencies []:
+  - @slonik/driver@48.17.0
+  - @slonik/errors@48.17.0
+  - @slonik/pg-driver@48.17.0
+  - @slonik/sql-tag@48.17.0
+  - @slonik/utilities@48.17.0
+
 ## 48.16.0
 
 ### Minor Changes

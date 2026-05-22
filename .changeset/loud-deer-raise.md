@@ -1,5 +1,0 @@
----
-"slonik": minor
----
-
-deprecate SqlFragmentToken
