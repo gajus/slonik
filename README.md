@@ -1070,45 +1070,21 @@ Check out [`slonik-interceptor-preset`](https://github.com/gajus/slonik-intercep
 
 ### Inserting large number of rows
 
-Use [`sql.unnest`](#sqlunnest) to create a set of rows using `unnest`. Using the `unnest` approach requires only 1 variable per every column; values for each column are passed as an array, e.g.
+Use `jsonb_to_recordset` with [`sql.jsonb`](#sqljsonb) to bulk insert rows. This approach handles nested data (e.g. arrays, JSON) natively without manual data manipulation, and has the same performance as `unnest`.
 
 ```ts
 await connection.query(sql.unsafe`
   INSERT INTO foo (bar, baz, qux)
   SELECT *
-  FROM ${sql.unnest(
-    [
-      [1, 2, 3],
-      [4, 5, 6],
-    ],
-    ["int4", "int4", "int4"],
-  )}
+  FROM jsonb_to_recordset(${sql.jsonb([
+    { bar: 1, baz: 2, qux: 3 },
+    { bar: 4, baz: 5, qux: 6 },
+  ])}) AS t(bar int4, baz int4, qux int4)
 `);
 ```
 
-Produces:
-
-```ts
-{
-  sql: 'INSERT INTO foo (bar, baz, qux) SELECT * FROM unnest($1::int4[], $2::int4[], $3::int4[])',
-  values: [
-    [
-      1,
-      4
-    ],
-    [
-      2,
-      5
-    ],
-    [
-      3,
-      6
-    ]
-  ]
-}
-```
-
-Inserting data this way ensures that the query is stable and reduces the amount of time it takes to parse the query.
+> [!NOTE]
+> Previously this section recommended [`sql.unnest`](#sqlunnest). While `unnest` still works, `jsonb_to_recordset` is preferred because it accepts objects directly (no column-order coupling), handles array/JSON columns without manual serialization, and produces more readable queries. See [Bulk Inserting Nested Data into the Database](https://contra.com/p/P7kB2RPO-bulk-inserting-nested-data-into-the-database-part-ii) for a detailed comparison.
 
 ### Routing queries to different connections
 
@@ -2029,6 +2005,9 @@ await connection.query(sql.unsafe`
 ```
 
 ### <code>sql.unnest</code>
+
+> [!NOTE]
+> For bulk inserts, prefer using `jsonb_to_recordset` with [`sql.jsonb`](#sqljsonb) instead. It offers the same performance with better ergonomics for complex data. See [Inserting large number of rows](#inserting-large-number-of-rows).
 
 ```ts
 (
