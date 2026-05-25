@@ -88,7 +88,7 @@ test("stream pool connection can be re-used after an error", async (t) => {
 
   t.true(onData.callCount < 1_000);
 
-  t.is(await pool.oneFirst(sql.unsafe`SELECT 1`), 1);
+  t.is(await pool.oneFirst(sql.type(z.object({ "?column?": z.number() }))`SELECT 1`), 1);
 
   await pool.end();
 });
