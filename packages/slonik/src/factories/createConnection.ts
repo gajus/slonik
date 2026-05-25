@@ -205,28 +205,32 @@ export const createConnection = async (
       throw error;
     }
 
-    try {
-      for (const interceptor of clientConfiguration.interceptors) {
-        if (interceptor.beforePoolConnectionRelease) {
-          await interceptor.beforePoolConnectionRelease(
-            connectionContext as BeforePoolConnectionReleaseContext,
-            boundConnection,
-          );
+    const releaseConnection = async () => {
+      try {
+        for (const interceptor of clientConfiguration.interceptors) {
+          if (interceptor.beforePoolConnectionRelease) {
+            await interceptor.beforePoolConnectionRelease(
+              connectionContext as BeforePoolConnectionReleaseContext,
+              boundConnection,
+            );
+          }
         }
+      } catch (error) {
+        await connection.destroy();
+
+        throw error;
       }
-    } catch (error) {
-      await connection.destroy();
 
-      throw error;
-    }
+      destroyBoundConnection(boundConnection);
 
-    destroyBoundConnection(boundConnection);
+      try {
+        await connection.release();
+      } catch {
+        await connection.destroy();
+      }
+    };
 
-    try {
-      await connection.release();
-    } catch {
-      await connection.destroy();
-    }
+    releaseConnection().catch(() => {});
 
     return result;
   });

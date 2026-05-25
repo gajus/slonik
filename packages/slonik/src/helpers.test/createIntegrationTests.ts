@@ -22,6 +22,7 @@ import {
 } from "../index.js";
 import type { DatabaseTransactionConnection } from "../index.js";
 import type { TestContextType } from "./createTestRunner.js";
+import { waitForConnectionRelease } from "./waitForConnectionRelease.js";
 import type { DriverFactory } from "@slonik/driver";
 import type { TestFn } from "ava";
 import { setTimeout as delay } from "node:timers/promises";
@@ -1412,11 +1413,15 @@ export const createIntegrationTests = (
           INSERT INTO counter(value) VALUES (0);
         `);
 
-      t.deepEqual(
+      await waitForConnectionRelease(pool);
+
+      // idleConnections is not asserted because connection reset is deferred —
+      // the second query may arrive while the first connection is still resetting,
+      // causing the pool to create a second connection (1 or 2 idle depending on timing).
+      t.like(
         pool.state(),
         {
           acquiredConnections: 0,
-          idleConnections: 1,
           pendingConnections: 0,
           pendingDestroyConnections: 0,
           pendingReleaseConnections: 0,
