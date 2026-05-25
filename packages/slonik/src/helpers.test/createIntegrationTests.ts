@@ -1431,10 +1431,13 @@ export const createIntegrationTests = (
         "initial state",
       );
 
+      // Transaction 1 has a shorter pre-UPDATE delay to ensure it acquires the
+      // row lock first. Without this, lock ordering is non-deterministic when
+      // the pool has multiple idle connections.
       const transaction1 = pool.transaction(async (transaction) => {
         await setIsolationLevel(transaction, isolationLevel);
 
-        await delay(50);
+        await delay(25);
 
         await transaction.query(sql.unsafe`UPDATE counter SET value = value + 1;`);
 
@@ -1446,7 +1449,7 @@ export const createIntegrationTests = (
       const transaction2 = pool.transaction(async (transaction) => {
         await setIsolationLevel(transaction, isolationLevel);
 
-        await delay(50);
+        await delay(75);
 
         await transaction.query(sql.unsafe`UPDATE counter SET value = value + 10;`);
 
