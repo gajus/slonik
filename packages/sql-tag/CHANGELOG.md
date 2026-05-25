@@ -1,5 +1,17 @@
 # @slonik/sql-tag
 
+## 49.0.0
+
+### Major Changes
+
+- [#791](https://github.com/gajus/slonik/pull/791) [`b55f021`](https://github.com/gajus/slonik/commit/b55f02195e233459853c011738cbadf00def997f) Thanks [@gajus](https://github.com/gajus)! - Replaced `any` with `unknown` for `sql.unsafe` query results. `sql.unsafe` now uses `z.unknown()` instead of `z.any()`, and the default `QuerySqlToken` generic is `StandardSchemaV1<unknown, unknown>`. This forces consumers to narrow the type before use, aligning with Slonik's philosophy of enforcing runtime type validation.
+
+### Patch Changes
+
+- Updated dependencies []:
+  - @slonik/errors@49.0.0
+  - @slonik/types@49.0.0
+
 ## 48.19.0
 
 ### Patch Changes
