@@ -47,6 +47,10 @@ class BoundTransactionConnection {
     this.poolClientState = poolClientState;
   }
 
+  get connectionId() {
+    return this.poolClientState.connectionId;
+  }
+
   private assertTransactionDepth() {
     if (this.transactionDepth !== this.poolClientState.transactionDepth) {
       throw new Error("Cannot run a query using parent transaction.");
