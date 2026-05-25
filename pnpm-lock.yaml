@@ -46,16 +46,16 @@ importers:
         specifier: ^3.4.7
         version: 3.4.8
       slonik:
-        specifier: ^48.14.2
+        specifier: ^48.18.0
         version: link:../slonik
 
   packages/driver:
     dependencies:
       '@slonik/types':
-        specifier: ^48.14.2
+        specifier: ^48.18.0
         version: link:../types
       '@slonik/utilities':
-        specifier: ^48.14.2
+        specifier: ^48.18.0
         version: link:../utilities
       roarr:
         specifier: ^7.21.5
@@ -89,7 +89,7 @@ importers:
   packages/errors:
     dependencies:
       '@slonik/types':
-        specifier: ^48.14.2
+        specifier: ^48.18.0
         version: link:../types
     devDependencies:
       '@standard-schema/spec':
@@ -114,19 +114,19 @@ importers:
   packages/pg-driver:
     dependencies:
       '@slonik/driver':
-        specifier: ^48.14.2
+        specifier: ^48.18.0
         version: link:../driver
       '@slonik/errors':
-        specifier: ^48.14.2
+        specifier: ^48.18.0
         version: link:../errors
       '@slonik/sql-tag':
-        specifier: ^48.14.2
+        specifier: ^48.18.0
         version: link:../sql-tag
       '@slonik/types':
-        specifier: ^48.14.2
+        specifier: ^48.18.0
         version: link:../types
       '@slonik/utilities':
-        specifier: ^48.14.2
+        specifier: ^48.18.0
         version: link:../utilities
       pg:
         specifier: ^8.18.0
@@ -169,19 +169,19 @@ importers:
         specifier: ^1.9.0
         version: 1.9.0
       '@slonik/driver':
-        specifier: ^48.14.2
+        specifier: ^48.18.0
         version: link:../driver
       '@slonik/errors':
-        specifier: ^48.14.2
+        specifier: ^48.18.0
         version: link:../errors
       '@slonik/pg-driver':
-        specifier: ^48.14.2
+        specifier: ^48.18.0
         version: link:../pg-driver
       '@slonik/sql-tag':
-        specifier: ^48.14.2
+        specifier: ^48.18.0
         version: link:../sql-tag
       '@slonik/utilities':
-        specifier: ^48.14.2
+        specifier: ^48.18.0
         version: link:../utilities
       '@standard-schema/spec':
         specifier: ^1.0.0
@@ -189,9 +189,9 @@ importers:
       iso8601-duration:
         specifier: ^2.1.3
         version: 2.1.3
-      p-limit:
-        specifier: ^6.2.0
-        version: 6.2.0
+      p-queue:
+        specifier: ^9.3.0
+        version: 9.3.0
       postgres-interval:
         specifier: ^4.0.2
         version: 4.0.2
@@ -249,13 +249,13 @@ importers:
         version: 4.3.6
     devDependencies:
       '@slonik/types':
-        specifier: ^48.14.2
+        specifier: ^48.18.0
         version: link:../types
       '@standard-schema/spec':
         specifier: ^1.0.0
         version: 1.1.0
       slonik:
-        specifier: ^48.14.2
+        specifier: ^48.18.0
         version: link:../slonik
       typescript:
         specifier: ^5.9.3
@@ -274,7 +274,7 @@ importers:
         specifier: ^6.4.1
         version: 6.4.1(rollup@4.55.1)
       slonik:
-        specifier: ^48.14.2
+        specifier: ^48.18.0
         version: link:../slonik
       tsimp:
         specifier: ^2.0.12
@@ -299,7 +299,7 @@ importers:
         specifier: ^6.4.1
         version: 6.4.1(rollup@4.55.1)
       slonik:
-        specifier: ^48.14.2
+        specifier: ^48.18.0
         version: link:../slonik
       tsimp:
         specifier: ^2.0.12
@@ -324,7 +324,7 @@ importers:
         specifier: ^6.4.1
         version: 6.4.1(rollup@4.55.1)
       slonik:
-        specifier: ^48.14.2
+        specifier: ^48.18.0
         version: link:../slonik
       tsimp:
         specifier: ^2.0.12
@@ -336,7 +336,7 @@ importers:
   packages/slonik-sql-tag-raw:
     dependencies:
       '@slonik/sql-tag':
-        specifier: ^48.14.2
+        specifier: ^48.18.0
         version: link:../sql-tag
       roarr:
         specifier: ^7.21.5
@@ -346,7 +346,7 @@ importers:
         specifier: ^6.4.1
         version: 6.4.1(rollup@4.55.1)
       slonik:
-        specifier: ^48.14.2
+        specifier: ^48.18.0
         version: link:../slonik
       tsimp:
         specifier: ^2.0.12
@@ -358,10 +358,10 @@ importers:
   packages/sql-tag:
     dependencies:
       '@slonik/errors':
-        specifier: ^48.14.2
+        specifier: ^48.18.0
         version: link:../errors
       '@slonik/types':
-        specifier: ^48.14.2
+        specifier: ^48.18.0
         version: link:../types
       roarr:
         specifier: ^7.21.5
@@ -426,10 +426,10 @@ importers:
   packages/utilities:
     dependencies:
       '@slonik/errors':
-        specifier: workspace:^48.14.2
+        specifier: workspace:^48.18.0
         version: link:../errors
       '@slonik/types':
-        specifier: ^48.14.2
+        specifier: ^48.18.0
         version: link:../types
     devDependencies:
       '@slonik/test-ssls':
@@ -2206,6 +2206,9 @@ packages:
     resolution: {integrity: sha512-kVscqXk4OCp68SZ0dkgEKVi6/8ij300KBWTJq32P/dYeWTSwK41WyTxalN1eRmA5Z9UU/LX9D7FWSmV9SAYx6g==}
     engines: {node: '>=0.10.0'}
 
+  eventemitter3@5.0.4:
+    resolution: {integrity: sha512-mlsTRyGaPBjPedk6Bvw+aqbsXDtoAyAzm5MO7JgU+yVRyMQ5O8bD4Kcci7BS85f93veegeCPkL8R4GLClnjLFw==}
+
   expect-type@1.3.0:
     resolution: {integrity: sha512-knvyeauYhqjOYvQ66MznSMs83wmHrCycNEN6Ao+2AeYEfxUIkuiVxdEa1qlGEPK+We3n0THiDciYSsCcgW/DoA==}
     engines: {node: '>=12.0.0'}
@@ -2729,10 +2732,6 @@ packages:
     resolution: {integrity: sha512-TYOanM3wGwNGsZN2cVTYPArw454xnXj5qmWF1bEoAc4+cU/ol7GVh7odevjp1FNHduHc3KZMcFduxU5Xc6uJRQ==}
     engines: {node: '>=10'}
 
-  p-limit@6.2.0:
-    resolution: {integrity: sha512-kuUqqHNUqoIWp/c467RI4X6mmyuojY5jGutNU0wVTmEOOfcuwLqyMVoAi9MKi2Ak+5i9+nhmrK4ufZE8069kHA==}
-    engines: {node: '>=18'}
-
   p-locate@4.1.0:
     resolution: {integrity: sha512-R79ZZ/0wAxKGu3oYMlz8jy/kbhsNrS7SKZ7PxEHBgJ5+F2mtFW2fK2cOtBh1cHYkQsbzFV7I+EoRKe6Yt0oK7A==}
     engines: {node: '>=8'}
@@ -2748,6 +2747,14 @@ packages:
   p-map@7.0.4:
     resolution: {integrity: sha512-tkAQEw8ysMzmkhgw8k+1U/iPhWNhykKnSk4Rd5zLoPJCuJaGRPo6YposrZgaxHKzDHdDWWZvE/Sk7hsL2X/CpQ==}
     engines: {node: '>=18'}
+
+  p-queue@9.3.0:
+    resolution: {integrity: sha512-7NED7xhQ74Ngp4JP/2e0VZHp7vSWfJfqeiR92jPgxsz6m0Se4P03YoTKa9dDXyZ3r6P616gUXttrB6nnHYKang==}
+    engines: {node: '>=20'}
+
+  p-timeout@7.0.1:
+    resolution: {integrity: sha512-AxTM2wDGORHGEkPCt8yqxOTMgpfbEHqF51f/5fJCmwFC3C/zNcGT63SymH2ttOAaiIws2zVg4+izQCjrakcwHg==}
+    engines: {node: '>=20'}
 
   p-try@2.2.0:
     resolution: {integrity: sha512-R4nPAVTAU0B9D35/Gk3uJf/7XYbQcyohSKdvAxIRSNghFl4e71hVoGnBNQz9cWaXxO2I10KTC+3jMdvvoKw6dQ==}
@@ -3434,10 +3441,6 @@ packages:
   yocto-queue@0.1.0:
     resolution: {integrity: sha512-rVksvsnNCdJ/ohGc6xgPwyN8eheCxsiLM8mxuE/t/mOVqJewPuO1miLpTHQiRgTKCLexL4MeAFVagts7HmNZ2Q==}
     engines: {node: '>=10'}
-
-  yocto-queue@1.2.2:
-    resolution: {integrity: sha512-4LCcse/U2MHZ63HAJVE+v71o7yOdIe4cZ70Wpf8D/IyjDKYQLV5GD46B+hSTjJsvV5PztjvHoU580EftxjDZFQ==}
-    engines: {node: '>=12.20'}
 
   zod@4.3.5:
     resolution: {integrity: sha512-k7Nwx6vuWx1IJ9Bjuf4Zt1PEllcwe7cls3VNzm4CQ1/hgtFUK2bRNG3rvnpPUhFjmqJKAKtjV576KnUkHocg/g==}
@@ -5119,6 +5122,8 @@ snapshots:
 
   esutils@2.0.3: {}
 
+  eventemitter3@5.0.4: {}
+
   expect-type@1.3.0: {}
 
   extendable-error@0.1.7: {}
@@ -5630,10 +5635,6 @@ snapshots:
     dependencies:
       yocto-queue: 0.1.0
 
-  p-limit@6.2.0:
-    dependencies:
-      yocto-queue: 1.2.2
-
   p-locate@4.1.0:
     dependencies:
       p-limit: 2.3.0
@@ -5645,6 +5646,13 @@ snapshots:
   p-map@2.1.0: {}
 
   p-map@7.0.4: {}
+
+  p-queue@9.3.0:
+    dependencies:
+      eventemitter3: 5.0.4
+      p-timeout: 7.0.1
+
+  p-timeout@7.0.1: {}
 
   p-try@2.2.0: {}
 
@@ -6245,8 +6253,6 @@ snapshots:
       yargs-parser: 21.1.1
 
   yocto-queue@0.1.0: {}
-
-  yocto-queue@1.2.2: {}
 
   zod@4.3.5: {}
 

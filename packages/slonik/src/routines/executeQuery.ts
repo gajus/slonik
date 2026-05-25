@@ -1,5 +1,6 @@
 /* eslint-disable @typescript-eslint/no-loop-func */
 
+import { setImmediate } from "node:timers/promises";
 import { TRANSACTION_ROLLBACK_ERROR_PREFIX } from "../constants.js";
 import { transactionContext } from "../contexts/transactionContext.js";
 import type { ConnectionPoolClient } from "../factories/createConnectionPool.js";
@@ -31,7 +32,7 @@ import {
 } from "@slonik/errors";
 import type { PrimitiveValueExpression, QuerySqlToken } from "@slonik/sql-tag";
 import { generateUid } from "@slonik/utilities";
-import pLimit from "p-limit";
+import PQueue from "p-queue";
 import { serializeError } from "serialize-error";
 
 export type IntegrityValidation = {
@@ -603,6 +604,39 @@ const executeQueryInternal = async (
 
       let transformedRows: QueryResultRow[];
 
+      const processRowsAsync = async (): Promise<QueryResultRow[]> => {
+        const queue = new PQueue({ concurrency: 10 });
+        const results: QueryResultRow[] = [];
+        let firstError: unknown;
+
+        for (let i = 0; i < rows.length; i++) {
+          void queue
+            .add(async () => {
+              // Yield to the macrotask queue periodically so parallel queries
+              // can interleave their row processing instead of monopolizing the event loop.
+              if (i > 0 && i % 100 === 0) {
+                await setImmediate();
+              }
+
+              results[i] = await transformRowAsync(executionContext, actualQuery, rows[i], fields);
+            })
+            .catch((error) => {
+              if (!firstError) {
+                firstError = error;
+                queue.clear();
+              }
+            });
+        }
+
+        await queue.onIdle();
+
+        if (firstError) {
+          throw firstError;
+        }
+
+        return results;
+      };
+
       if (clientConfiguration.tracing) {
         transformedRows = await tracer.startActiveSpan(
           "slonik.interceptor.transformRowAsync",
@@ -614,13 +648,7 @@ const executeQueryInternal = async (
           },
           async (span) => {
             try {
-              const limit = pLimit(10);
-
-              return await Promise.all(
-                rows.map((row) => {
-                  return limit(() => transformRowAsync(executionContext, actualQuery, row, fields));
-                }),
-              );
+              return await processRowsAsync();
             } catch (error) {
               span.recordException(error);
               span.setStatus({
@@ -635,13 +663,7 @@ const executeQueryInternal = async (
           },
         );
       } else {
-        const limit = pLimit(10);
-
-        transformedRows = await Promise.all(
-          rows.map((row) => {
-            return limit(() => transformRowAsync(executionContext, actualQuery, row, fields));
-          }),
-        );
+        transformedRows = await processRowsAsync();
       }
 
       // avoid spreading the result object to avoid performance overhead
