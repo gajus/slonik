@@ -222,7 +222,11 @@ export const createConnection = async (
 
     destroyBoundConnection(boundConnection);
 
-    await connection.release();
+    try {
+      await connection.release();
+    } catch {
+      await connection.destroy();
+    }
 
     return result;
   });
