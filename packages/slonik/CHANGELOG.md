@@ -1,5 +1,20 @@
 # slonik
 
+## 48.19.0
+
+### Minor Changes
+
+- [#789](https://github.com/gajus/slonik/pull/789) [`77869f0`](https://github.com/gajus/slonik/commit/77869f020a700523a5deb4a74894ffe65be9651d) Thanks [@gajus](https://github.com/gajus)! - replace p-limit with p-queue for async row transformation and yield to the event loop during processing to prevent monopolization (fixes #751)
+
+### Patch Changes
+
+- Updated dependencies []:
+  - @slonik/driver@48.19.0
+  - @slonik/errors@48.19.0
+  - @slonik/pg-driver@48.19.0
+  - @slonik/sql-tag@48.19.0
+  - @slonik/utilities@48.19.0
+
 ## 48.18.0
 
 ### Minor Changes
