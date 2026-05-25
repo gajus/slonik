@@ -11,6 +11,7 @@ import { query as queryMethod } from "../connectionMethods/query.js";
 import { stream } from "../connectionMethods/stream.js";
 import { transaction } from "../connectionMethods/transaction.js";
 import type { ConnectionPoolClient } from "../factories/createConnectionPool.js";
+import { getPoolClientState } from "../state.js";
 import type { ClientConfiguration, DatabasePoolConnection, Logger } from "../types.js";
 
 class BoundPoolConnection {
@@ -26,6 +27,10 @@ class BoundPoolConnection {
     this.parentLog = parentLog;
     this.connection = connection;
     this.clientConfiguration = clientConfiguration;
+  }
+
+  get connectionId() {
+    return getPoolClientState(this.connection).connectionId;
   }
 
   any(slonikSql) {

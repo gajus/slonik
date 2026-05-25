@@ -149,7 +149,9 @@ export type DatabasePool = CommonQueryMethods &
     readonly state: () => PoolState;
   };
 
-export type DatabasePoolConnection = CommonQueryMethods;
+export type DatabasePoolConnection = CommonQueryMethods & {
+  readonly connectionId: string;
+};
 
 export type DatabasePoolEventEmitter = StrictEventEmitter<
   EventEmitter,
@@ -160,6 +162,7 @@ export type DatabasePoolEventEmitter = StrictEventEmitter<
 
 export type DatabaseTransactionConnection = CommonQueryMethods &
   DatabaseTransactionEventEmitter & {
+    readonly connectionId: string;
     readonly transactionDepth: number;
     readonly transactionId: string;
   };
