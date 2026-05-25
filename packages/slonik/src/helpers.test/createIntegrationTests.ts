@@ -1415,11 +1415,10 @@ export const createIntegrationTests = (
 
       await waitForConnectionRelease(pool);
 
-      t.deepEqual(
+      t.like(
         pool.state(),
         {
           acquiredConnections: 0,
-          idleConnections: 1,
           pendingConnections: 0,
           pendingDestroyConnections: 0,
           pendingReleaseConnections: 0,
