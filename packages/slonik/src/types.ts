@@ -408,10 +408,16 @@ type PoolState = {
 };
 
 type PoolStateName = "ACTIVE" | "ENDED" | "ENDING";
+
+type InferColumnValue<T extends StandardSchemaV1> =
+  StandardSchemaV1.InferOutput<T> extends Record<string, unknown>
+    ? StandardSchemaV1.InferOutput<T>[keyof StandardSchemaV1.InferOutput<T>]
+    : unknown;
+
 type QueryAnyFirstFunction = <T extends StandardSchemaV1>(
   sql: QuerySqlToken<T>,
   values?: PrimitiveValueExpression[],
-) => Promise<ReadonlyArray<StandardSchemaV1.InferOutput<T>[keyof StandardSchemaV1.InferOutput<T>]>>;
+) => Promise<ReadonlyArray<InferColumnValue<T>>>;
 type QueryAnyFunction = <T extends StandardSchemaV1>(
   sql: QuerySqlToken<T>,
   values?: PrimitiveValueExpression[],
@@ -423,7 +429,7 @@ type QueryExistsFunction = <T extends StandardSchemaV1>(
 type QueryManyFirstFunction = <T extends StandardSchemaV1>(
   sql: QuerySqlToken<T>,
   values?: PrimitiveValueExpression[],
-) => Promise<ReadonlyArray<StandardSchemaV1.InferOutput<T>[keyof StandardSchemaV1.InferOutput<T>]>>;
+) => Promise<ReadonlyArray<InferColumnValue<T>>>;
 type QueryManyFunction = <T extends StandardSchemaV1>(
   sql: QuerySqlToken<T>,
   values?: PrimitiveValueExpression[],
@@ -431,7 +437,7 @@ type QueryManyFunction = <T extends StandardSchemaV1>(
 type QueryMaybeOneFirstFunction = <T extends StandardSchemaV1>(
   sql: QuerySqlToken<T>,
   values?: PrimitiveValueExpression[],
-) => Promise<null | StandardSchemaV1.InferOutput<T>[keyof StandardSchemaV1.InferOutput<T>]>;
+) => Promise<InferColumnValue<T> | null>;
 type QueryMaybeOneFunction = <T extends StandardSchemaV1>(
   sql: QuerySqlToken<T>,
   values?: PrimitiveValueExpression[],
@@ -439,7 +445,7 @@ type QueryMaybeOneFunction = <T extends StandardSchemaV1>(
 type QueryOneFirstFunction = <T extends StandardSchemaV1>(
   sql: QuerySqlToken<T>,
   values?: PrimitiveValueExpression[],
-) => Promise<StandardSchemaV1.InferOutput<T>[keyof StandardSchemaV1.InferOutput<T>]>;
+) => Promise<InferColumnValue<T>>;
 type QueryOneFunction = <T extends StandardSchemaV1>(
   sql: QuerySqlToken<T>,
   values?: PrimitiveValueExpression[],
