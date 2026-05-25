@@ -1,5 +1,18 @@
 # slonik
 
+## 49.0.1
+
+### Patch Changes
+
+- [#793](https://github.com/gajus/slonik/pull/793) [`3c93765`](https://github.com/gajus/slonik/commit/3c93765e365b93743fcdc16740b7fb3813f17f16) Thanks [@gajus](https://github.com/gajus)! - Fixed connection pool leak when `release()` fails due to an in-flight query (fixes #660)
+
+- Updated dependencies []:
+  - @slonik/driver@49.0.1
+  - @slonik/errors@49.0.1
+  - @slonik/pg-driver@49.0.1
+  - @slonik/sql-tag@49.0.1
+  - @slonik/utilities@49.0.1
+
 ## 49.0.0
 
 ### Major Changes
