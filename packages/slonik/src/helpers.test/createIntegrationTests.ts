@@ -1415,6 +1415,9 @@ export const createIntegrationTests = (
 
       await waitForConnectionRelease(pool);
 
+      // idleConnections is not asserted because connection reset is deferred —
+      // the second query may arrive while the first connection is still resetting,
+      // causing the pool to create a second connection (1 or 2 idle depending on timing).
       t.like(
         pool.state(),
         {
