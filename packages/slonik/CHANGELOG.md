@@ -1,5 +1,20 @@
 # slonik
 
+## 49.2.0
+
+### Minor Changes
+
+- [#797](https://github.com/gajus/slonik/pull/797) [`2f1700b`](https://github.com/gajus/slonik/commit/2f1700b84ee15e727649fe19e699315388fd2a2a) Thanks [@gajus](https://github.com/gajus)! - Expose `connectionId` on `DatabasePoolConnection` and `DatabaseTransactionConnection`, enabling correlation between application logs and Slonik's Roarr logs.
+
+### Patch Changes
+
+- Updated dependencies []:
+  - @slonik/driver@49.2.0
+  - @slonik/errors@49.2.0
+  - @slonik/pg-driver@49.2.0
+  - @slonik/sql-tag@49.2.0
+  - @slonik/utilities@49.2.0
+
 ## 49.1.0
 
 ### Minor Changes
