@@ -1,6 +1,6 @@
 {
   "name": "@slonik/types",
-  "version": "49.1.0",
+  "version": "49.2.0",
   "description": "A Node.js PostgreSQL client with strict types, detailed logging and assertions.",
   "keywords": [
     "postgresql",
