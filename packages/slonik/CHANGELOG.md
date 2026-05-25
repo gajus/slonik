@@ -1,5 +1,20 @@
 # slonik
 
+## 49.1.0
+
+### Minor Changes
+
+- [#795](https://github.com/gajus/slonik/pull/795) [`2f55223`](https://github.com/gajus/slonik/commit/2f552238d7b2581bce69d61107c946d86f7e3617) Thanks [@gajus](https://github.com/gajus)! - Return query results immediately without waiting for connection reset (`DISCARD ALL`) to complete (fixes #719)
+
+### Patch Changes
+
+- Updated dependencies []:
+  - @slonik/driver@49.1.0
+  - @slonik/errors@49.1.0
+  - @slonik/pg-driver@49.1.0
+  - @slonik/sql-tag@49.1.0
+  - @slonik/utilities@49.1.0
+
 ## 49.0.1
 
 ### Patch Changes
