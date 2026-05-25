@@ -22,6 +22,7 @@ import {
 } from "../index.js";
 import type { DatabaseTransactionConnection } from "../index.js";
 import type { TestContextType } from "./createTestRunner.js";
+import { waitForConnectionRelease } from "./waitForConnectionRelease.js";
 import type { DriverFactory } from "@slonik/driver";
 import type { TestFn } from "ava";
 import { setTimeout as delay } from "node:timers/promises";
@@ -1411,6 +1412,8 @@ export const createIntegrationTests = (
       await pool.query(sql.unsafe`
           INSERT INTO counter(value) VALUES (0);
         `);
+
+      await waitForConnectionRelease(pool);
 
       t.deepEqual(
         pool.state(),

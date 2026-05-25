@@ -4,6 +4,7 @@
 import { BackendTerminatedError, createPool, parseDsn, sql } from "../index.js";
 import type { DatabasePoolConnection } from "../index.js";
 import type { TestContextType } from "./createTestRunner.js";
+import { waitForConnectionRelease } from "./waitForConnectionRelease.js";
 import type { DriverFactory } from "@slonik/driver";
 import type { TestFn } from "ava";
 import { randomUUID } from "node:crypto";
@@ -157,6 +158,8 @@ export const createPoolTests = (test: TestFn<TestContextType>, driverFactory: Dr
       SELECT 1
     `);
 
+    await waitForConnectionRelease(pool);
+
     t.deepEqual(pool.state(), {
       acquiredConnections: 0,
       idleConnections: 1,
@@ -260,6 +263,8 @@ export const createPoolTests = (test: TestFn<TestContextType>, driverFactory: Dr
         SELECT 1
       `),
     ]);
+
+    await waitForConnectionRelease(pool);
 
     t.deepEqual(pool.state(), {
       acquiredConnections: 0,
@@ -691,6 +696,8 @@ export const createPoolTests = (test: TestFn<TestContextType>, driverFactory: Dr
       SELECT 1
     `);
 
+    await waitForConnectionRelease(pool);
+
     t.deepEqual(
       pool.state(),
       {
@@ -911,6 +918,8 @@ export const createPoolTests = (test: TestFn<TestContextType>, driverFactory: Dr
       SELECT 1
     `);
 
+    await waitForConnectionRelease(pool);
+
     t.deepEqual(
       pool.state(),
       {
@@ -987,6 +996,8 @@ export const createPoolTests = (test: TestFn<TestContextType>, driverFactory: Dr
 
     const waitingClientResult = await waitingClientPromise;
     t.is(waitingClientResult, 1);
+
+    await waitForConnectionRelease(pool);
 
     t.deepEqual(
       pool.state(),
