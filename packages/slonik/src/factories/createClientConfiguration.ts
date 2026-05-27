@@ -9,6 +9,10 @@ export const createClientConfiguration = (
 ): ClientConfiguration => {
   const typeParsers: readonly DriverTypeParser[] = [];
 
+  const definedUserConfiguration = Object.fromEntries(
+    Object.entries(clientUserConfigurationInput ?? {}).filter(([, v]) => v !== undefined),
+  );
+
   const configuration = {
     captureStackTrace: false,
     connectionRetryLimit: 3,
@@ -29,7 +33,7 @@ export const createClientConfiguration = (
     tracing: false,
     transactionRetryLimit: 5,
     typeParsers,
-    ...clientUserConfigurationInput,
+    ...definedUserConfiguration,
   };
 
   if (configuration.maximumPoolSize < 1) {

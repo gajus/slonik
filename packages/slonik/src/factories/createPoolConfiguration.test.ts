@@ -55,3 +55,22 @@ test("idleTimeout positive number is passed through", (t) => {
 
   t.is(poolConfig.idleTimeout, 5_000);
 });
+
+test("explicit undefined for idleTimeout uses default", (t) => {
+  const config = makeConfig({ idleTimeout: undefined });
+  const poolConfig = createPoolConfiguration(config);
+
+  t.is(poolConfig.idleTimeout, 5_000);
+});
+
+test("explicit undefined for statementTimeout uses default", (t) => {
+  const config = makeConfig({ statementTimeout: undefined });
+
+  t.is(config.statementTimeout, 60_000);
+});
+
+test("explicit undefined for idleInTransactionSessionTimeout uses default", (t) => {
+  const config = makeConfig({ idleInTransactionSessionTimeout: undefined });
+
+  t.is(config.idleInTransactionSessionTimeout, 60_000);
+});
