@@ -1,5 +1,17 @@
 # @slonik/sql-tag
 
+## 49.5.0
+
+### Minor Changes
+
+- [`6e07e1e`](https://github.com/gajus/slonik/commit/6e07e1e22d5e3b176577c33e28e084ab5df832f8) Thanks [@gajus](https://github.com/gajus)! - feat: add `sql.list` convenience method for joining SQL expressions with `, `
+
+### Patch Changes
+
+- Updated dependencies []:
+  - @slonik/errors@49.5.0
+  - @slonik/types@49.5.0
+
 ## 49.4.0
 
 ### Minor Changes
