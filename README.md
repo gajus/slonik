@@ -103,14 +103,18 @@ Note: Using this project does not require TypeScript. It is a regular ES6 module
     - [`sql.interval`](#sqlinterval)
     - [`sql.join`](#sqljoin)
     - [`sql.json`](#sqljson)
-    - [`sql.or`](#sqlor)
     - [`sql.jsonb`](#sqljsonb)
+    - [`sql.list`](#sqllist)
+    - [`sql.or`](#sqlor)
     - [`sql.literalValue`](#sqlliteralvalue)
     - [`sql.timestamp`](#sqltimestamp)
     - [`sql.unnest`](#sqlunnest)
     - [`sql.unsafe`](#sqlunsafe)
     - [`sql.uuid`](#sqluuid)
     - [`sql.prepared`](#sqlprepared)
+  - [Tips](#tips)
+    - [Prefer `sql.and`, `sql.or`, and `sql.list` over `sql.join`](#prefer-sqland-sqlor-and-sqllist-over-sqljoin)
+    - [Hoist Zod schemas with `babel-plugin-zod-hoist`](#hoist-zod-schemas-with-babel-plugin-zod-hoist)
   - [Query methods](#query-methods)
     - [`any`](#any)
     - [`anyFirst`](#anyfirst)
@@ -1964,6 +1968,34 @@ Produces:
 }
 ```
 
+### <code>sql.list</code>
+
+```ts
+(members: ValueExpression[]) => ListSqlToken;
+```
+
+Concatenates SQL expressions using `, `. Use for SELECT columns, ORDER BY clauses, tuple construction, and other comma-separated lists:
+
+```ts
+const columns = [sql.fragment`name`, sql.fragment`created_at`];
+
+await connection.query(sql.unsafe`
+  SELECT ${sql.list(columns)}
+  FROM foo
+`);
+```
+
+Produces:
+
+```ts
+{
+  sql: 'SELECT name, created_at FROM foo',
+  values: []
+}
+```
+
+This is equivalent to `sql.join(members, sql.fragment`, `)`.
+
 ### <code>sql.or</code>
 
 ```ts
@@ -2276,6 +2308,68 @@ Named prepared statements are beneficial when:
 - You want to reduce the overhead of query preparation
 
 For most use cases, the default extended query protocol (which uses unnamed prepared statements) is sufficient and you don't need to use `sql.prepared`.
+
+## Tips
+
+### Prefer <code>sql.and</code>, <code>sql.or</code>, and <code>sql.list</code> over <code>sql.join</code>
+
+When building dynamic SQL, prefer the semantic helpers over `sql.join` with an explicit glue fragment:
+
+```ts
+// Hard to scan — the intent is buried in the glue argument
+sql.join([sql.fragment`bar = ${1}`, sql.fragment`baz = ${2}`], sql.fragment` AND `);
+
+// Clear at a glance
+sql.and([sql.fragment`bar = ${1}`, sql.fragment`baz = ${2}`]);
+```
+
+With `sql.join`, you only learn what the expression does when you reach the glue argument at the end. With `sql.and`, `sql.or`, and `sql.list`, the intent is immediately obvious from the method name. This matters most in code review and when scanning unfamiliar code.
+
+`sql.and` and `sql.or` also filter out `false`, `null`, and `undefined` members, which makes conditional WHERE clauses concise:
+
+```ts
+sql.and([
+  sql.fragment`status = ${status}`,
+  name && sql.fragment`name = ${name}`,
+  minAge && sql.fragment`age >= ${minAge}`,
+]);
+```
+
+Reserve `sql.join` for cases where you need a custom glue that isn't `AND`, `OR`, or `, ` — such as `UNION ALL` or `INTERSECT`.
+
+### Hoist Zod schemas with <code>babel-plugin-zod-hoist</code>
+
+Every Slonik query requires a result schema (via `sql.type` or `sql.typeAlias`). When schemas are defined inline, they are re-initialized on every function call:
+
+```ts
+const getUser = (id: number) => {
+  // A new Zod object is allocated every time getUser is called
+  return pool.one(
+    sql.type(
+      z.object({
+        id: z.number(),
+        name: z.string(),
+      }),
+    )`SELECT id, name FROM users WHERE id = ${id}`,
+  );
+};
+```
+
+[`babel-plugin-zod-hoist`](https://github.com/gajus/babel-plugin-zod-hoist) automatically lifts Zod schemas to module scope at build time, so the schema is allocated once and reused:
+
+```ts
+// After babel-plugin-zod-hoist transforms the code:
+const _schema = z.object({
+  id: z.number(),
+  name: z.string(),
+});
+
+const getUser = (id: number) => {
+  return pool.one(sql.type(_schema)`SELECT id, name FROM users WHERE id = ${id}`);
+};
+```
+
+This eliminates repeated allocations without requiring you to manually extract schemas.
 
 ## Query methods
 

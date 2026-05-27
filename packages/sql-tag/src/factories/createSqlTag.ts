@@ -186,6 +186,13 @@ export const createSqlTag = <
         value,
       });
     },
+    list: (members) => {
+      return Object.freeze({
+        glue: Object.freeze({ sql: ", ", type: FragmentToken, values: [] }),
+        members,
+        type: ListToken,
+      });
+    },
     literalValue: (value) => {
       return Object.freeze({
         sql: escapeLiteralValue(value),

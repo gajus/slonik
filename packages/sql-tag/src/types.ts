@@ -127,6 +127,7 @@ export type SqlTag<Z extends Record<string, StandardSchemaV1> = Record<string, S
     join: (members: readonly ValueExpression[], glue: FragmentSqlToken) => ListSqlToken;
     json: (value: SerializableValue) => JsonSqlToken;
     jsonb: (value: SerializableValue) => JsonBinarySqlToken;
+    list: (members: readonly ValueExpression[]) => ListSqlToken;
     literalValue: (value: string) => FragmentSqlToken;
     or: (
       members: ReadonlyArray<false | null | undefined | ValueExpression>,
