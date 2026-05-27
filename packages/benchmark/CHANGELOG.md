@@ -1,5 +1,12 @@
 # @slonik/benchmark
 
+## 49.3.0
+
+### Patch Changes
+
+- Updated dependencies []:
+  - slonik@49.3.0
+
 ## 49.2.1
 
 ### Patch Changes
