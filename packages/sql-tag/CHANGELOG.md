@@ -1,5 +1,17 @@
 # @slonik/sql-tag
 
+## 49.3.0
+
+### Minor Changes
+
+- [`dce1bb5`](https://github.com/gajus/slonik/commit/dce1bb544572743157bb51a3419d8a10938631bb) Thanks [@gajus](https://github.com/gajus)! - feat: add `sql.and` and `sql.or` convenience methods for joining SQL expressions with `AND` / `OR`
+
+### Patch Changes
+
+- Updated dependencies []:
+  - @slonik/errors@49.3.0
+  - @slonik/types@49.3.0
+
 ## 49.2.1
 
 ### Patch Changes
