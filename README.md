@@ -1536,29 +1536,38 @@ If this is your first time using Slonik, read [Dynamically generating SQL querie
 ### <code>sql.and</code>
 
 ```ts
-(members: ValueExpression[]) => ListSqlToken;
+(members: (ValueExpression | false | null | undefined)[]) => FragmentSqlToken | ListSqlToken;
 ```
 
-A convenience wrapper around `sql.join` that concatenates SQL expressions using `AND`, e.g.
+Concatenates SQL expressions using `AND`. Members that are `false`, `null`, or `undefined` are silently filtered out, making it easy to build conditional WHERE clauses:
 
 ```ts
 await connection.query(sql.unsafe`
   SELECT *
   FROM foo
-  WHERE ${sql.and([sql.fragment`bar = ${1}`, sql.fragment`baz = ${2}`])}
+  WHERE ${sql.and([
+    sql.fragment`bar = ${1}`,
+    name && sql.fragment`name = ${name}`,
+    age && sql.fragment`age > ${age}`,
+  ])}
 `);
 ```
 
-Produces:
+If `name` is `undefined` and `age` is `30`, this produces:
 
 ```ts
 {
-  sql: 'SELECT * FROM foo WHERE bar = $1 AND baz = $2',
-  values: [1, 2]
+  sql: 'SELECT * FROM foo WHERE bar = $1 AND age > $2',
+  values: [1, 30]
 }
 ```
 
-This is equivalent to `sql.join(members, sql.fragment` AND `)`.
+If all members are filtered out (or the array is empty), `sql.and` produces `TRUE`:
+
+```ts
+sql.fragment`WHERE ${sql.and([false, null, undefined])}`;
+// WHERE TRUE
+```
 
 ### <code>sql.array</code>
 
@@ -1965,29 +1974,25 @@ Produces:
 ### <code>sql.or</code>
 
 ```ts
-(members: ValueExpression[]) => ListSqlToken;
+(members: (ValueExpression | false | null | undefined)[]) => FragmentSqlToken | ListSqlToken;
 ```
 
-A convenience wrapper around `sql.join` that concatenates SQL expressions using `OR`, e.g.
+Concatenates SQL expressions using `OR`. Like [`sql.and`](#sqland), members that are `false`, `null`, or `undefined` are silently filtered out:
 
 ```ts
 await connection.query(sql.unsafe`
   SELECT *
   FROM foo
-  WHERE ${sql.or([sql.fragment`bar = ${1}`, sql.fragment`baz = ${2}`])}
+  WHERE ${sql.or([name && sql.fragment`name = ${name}`, email && sql.fragment`email = ${email}`])}
 `);
 ```
 
-Produces:
+If all members are filtered out (or the array is empty), `sql.or` produces `FALSE`:
 
 ```ts
-{
-  sql: 'SELECT * FROM foo WHERE bar = $1 OR baz = $2',
-  values: [1, 2]
-}
+sql.fragment`WHERE ${sql.or([false, null, undefined])}`;
+// WHERE FALSE
 ```
-
-This is equivalent to `sql.join(members, sql.fragment` OR `)`.
 
 ### <code>sql.literalValue</code>
 

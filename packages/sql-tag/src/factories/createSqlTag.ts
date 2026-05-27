@@ -113,9 +113,17 @@ export const createSqlTag = <
 
   return {
     and: (members) => {
+      const filtered = members.filter(
+        (member) => member !== false && member !== null && member !== undefined,
+      );
+
+      if (filtered.length === 0) {
+        return Object.freeze({ sql: "TRUE", type: FragmentToken, values: [] });
+      }
+
       return Object.freeze({
         glue: Object.freeze({ sql: " AND ", type: FragmentToken, values: [] }),
-        members,
+        members: filtered,
         type: ListToken,
       });
     },
@@ -186,9 +194,17 @@ export const createSqlTag = <
       });
     },
     or: (members) => {
+      const filtered = members.filter(
+        (member) => member !== false && member !== null && member !== undefined,
+      );
+
+      if (filtered.length === 0) {
+        return Object.freeze({ sql: "FALSE", type: FragmentToken, values: [] });
+      }
+
       return Object.freeze({
         glue: Object.freeze({ sql: " OR ", type: FragmentToken, values: [] }),
-        members,
+        members: filtered,
         type: ListToken,
       });
     },

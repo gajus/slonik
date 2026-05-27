@@ -36,3 +36,38 @@ test("supports primitive values", (t) => {
     values: [1, 2],
   });
 });
+
+test("filters out false, null, and undefined members", (t) => {
+  const query = sql.fragment`SELECT * FROM foo WHERE ${sql.or([
+    false,
+    null,
+    undefined,
+    sql.fragment`bar = ${1}`,
+  ])}`;
+
+  t.deepEqual(query, {
+    sql: "SELECT * FROM foo WHERE bar = $slonik_1",
+    type: FragmentToken,
+    values: [1],
+  });
+});
+
+test("returns FALSE when all members are filtered out", (t) => {
+  const query = sql.fragment`SELECT * FROM foo WHERE ${sql.or([false, null, undefined])}`;
+
+  t.deepEqual(query, {
+    sql: "SELECT * FROM foo WHERE FALSE",
+    type: FragmentToken,
+    values: [],
+  });
+});
+
+test("returns FALSE for empty array", (t) => {
+  const query = sql.fragment`SELECT * FROM foo WHERE ${sql.or([])}`;
+
+  t.deepEqual(query, {
+    sql: "SELECT * FROM foo WHERE FALSE",
+    type: FragmentToken,
+    values: [],
+  });
+});
