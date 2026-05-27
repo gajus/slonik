@@ -1,5 +1,17 @@
 # @slonik/sql-tag
 
+## 49.4.0
+
+### Minor Changes
+
+- [`4cca58c`](https://github.com/gajus/slonik/commit/4cca58c605c9702948798ae55ad09d64672c9e65) Thanks [@gajus](https://github.com/gajus)! - feat: `sql.and` and `sql.or` filter out `false`, `null`, and `undefined` members, and produce `TRUE` / `FALSE` when all members are filtered out
+
+### Patch Changes
+
+- Updated dependencies []:
+  - @slonik/errors@49.4.0
+  - @slonik/types@49.4.0
+
 ## 49.3.0
 
 ### Minor Changes
