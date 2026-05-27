@@ -101,6 +101,7 @@ Note: Using this project does not require TypeScript. It is a regular ES6 module
     - [Manually constructing the query](#manually-constructing-the-query)
     - [Nesting `sql`](#nesting-sql)
   - [Query building](#query-building)
+    - [`sql.and`](#sqland)
     - [`sql.array`](#sqlarray)
     - [`sql.binary`](#sqlbinary)
     - [`sql.date`](#sqldate)
@@ -109,6 +110,7 @@ Note: Using this project does not require TypeScript. It is a regular ES6 module
     - [`sql.interval`](#sqlinterval)
     - [`sql.join`](#sqljoin)
     - [`sql.json`](#sqljson)
+    - [`sql.or`](#sqlor)
     - [`sql.jsonb`](#sqljsonb)
     - [`sql.literalValue`](#sqlliteralvalue)
     - [`sql.timestamp`](#sqltimestamp)
@@ -1531,6 +1533,33 @@ Queries are built using methods of the `sql` tagged template literal.
 
 If this is your first time using Slonik, read [Dynamically generating SQL queries using Node.js](https://dev.to/gajus/dynamically-generating-sql-queries-using-node-js-2c1g).
 
+### <code>sql.and</code>
+
+```ts
+(members: ValueExpression[]) => ListSqlToken;
+```
+
+A convenience wrapper around `sql.join` that concatenates SQL expressions using `AND`, e.g.
+
+```ts
+await connection.query(sql.unsafe`
+  SELECT *
+  FROM foo
+  WHERE ${sql.and([sql.fragment`bar = ${1}`, sql.fragment`baz = ${2}`])}
+`);
+```
+
+Produces:
+
+```ts
+{
+  sql: 'SELECT * FROM foo WHERE bar = $1 AND baz = $2',
+  values: [1, 2]
+}
+```
+
+This is equivalent to `sql.join(members, sql.fragment` AND `)`.
+
 ### <code>sql.array</code>
 
 ```ts
@@ -1834,67 +1863,53 @@ sql.unsafe`
 
 ### <code>sql.join</code>
 
+> [!CAUTION]
+> In most cases, prefer [`sql.array`](#sqlarray) for value lists, [`sql.and`](#sqland) for `AND`-separated conditions, or [`sql.or`](#sqlor) for `OR`-separated conditions. `sql.join` is useful in a narrow set of scenarios where a custom glue is needed, such as `ORDER BY` clauses, `UNION` construction, or comma-separated fragment lists.
+
 ```ts
 (members: SqlSqlToken[], glue: SqlSqlToken) => ListSqlToken;
 ```
 
-Concatenates SQL expressions using `glue` separator, e.g.
+Concatenates SQL expressions using `glue` separator. Use `sql.join` when you need a custom glue that isn't covered by [`sql.and`](#sqland), [`sql.or`](#sqlor), or [`sql.array`](#sqlarray).
+
+Dynamic ORDER BY:
 
 ```ts
-await connection.query(sql.unsafe`
-  SELECT ${sql.join([1, 2, 3], sql.fragment`, `)}
-`);
-```
+const orderClauses = [sql.fragment`created_at DESC`, sql.fragment`id ASC`];
 
-Produces:
-
-```ts
-{
-  sql: 'SELECT $1, $2, $3',
-  values: [
-    1,
-    2,
-    3
-  ]
-}
-```
-
-`sql.join` is the primary building block for most of the SQL, e.g.
-
-Boolean expressions:
-
-```ts
 sql.unsafe`
-  SELECT ${sql.join([1, 2], sql.fragment` AND `)}
+  SELECT * FROM foo
+  ORDER BY ${sql.join(orderClauses, sql.fragment`, `)}
 `;
 
-// SELECT $1 AND $2
+// SELECT * FROM foo ORDER BY created_at DESC, id ASC
 ```
 
-Tuple:
+UNION:
 
 ```ts
 sql.unsafe`
-  SELECT (${sql.join([1, 2], sql.fragment`, `)})
-`;
-
-// SELECT ($1, $2)
-```
-
-Tuple list:
-
-```ts
-sql.unsafe`
-  SELECT ${sql.join(
-    [
-      sql.fragment`(${sql.join([1, 2], sql.fragment`, `)})`,
-      sql.fragment`(${sql.join([3, 4], sql.fragment`, `)})`,
-    ],
-    sql.fragment`, `,
+  ${sql.join(
+    [sql.fragment`SELECT * FROM foo`, sql.fragment`SELECT * FROM bar`],
+    sql.fragment` UNION ALL `,
   )}
 `;
 
-// SELECT ($1, $2), ($3, $4)
+// SELECT * FROM foo UNION ALL SELECT * FROM bar
+```
+
+Dynamic SELECT columns:
+
+```ts
+const columns = [sql.fragment`foo.name`, sql.fragment`bar.created_at`];
+
+sql.unsafe`
+  SELECT ${sql.join(columns, sql.fragment`, `)}
+  FROM foo
+  JOIN bar ON bar.foo_id = foo.id
+`;
+
+// SELECT foo.name, bar.created_at FROM foo JOIN bar ON bar.foo_id = foo.id
 ```
 
 ### <code>sql.json</code>
@@ -1946,6 +1961,33 @@ Produces:
   ]
 }
 ```
+
+### <code>sql.or</code>
+
+```ts
+(members: ValueExpression[]) => ListSqlToken;
+```
+
+A convenience wrapper around `sql.join` that concatenates SQL expressions using `OR`, e.g.
+
+```ts
+await connection.query(sql.unsafe`
+  SELECT *
+  FROM foo
+  WHERE ${sql.or([sql.fragment`bar = ${1}`, sql.fragment`baz = ${2}`])}
+`);
+```
+
+Produces:
+
+```ts
+{
+  sql: 'SELECT * FROM foo WHERE bar = $1 OR baz = $2',
+  values: [1, 2]
+}
+```
+
+This is equivalent to `sql.join(members, sql.fragment` OR `)`.
 
 ### <code>sql.literalValue</code>
 

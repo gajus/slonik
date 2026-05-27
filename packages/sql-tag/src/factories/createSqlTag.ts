@@ -112,6 +112,13 @@ export const createSqlTag = <
   const typeAliases = configuration.typeAliases;
 
   return {
+    and: (members) => {
+      return Object.freeze({
+        glue: Object.freeze({ sql: " AND ", type: FragmentToken, values: [] }),
+        members,
+        type: ListToken,
+      });
+    },
     array: <T extends TypeNameIdentifier>(
       values: readonly PrimitiveValueExpression[],
       memberType: FragmentSqlToken | T,
@@ -176,6 +183,13 @@ export const createSqlTag = <
         sql: escapeLiteralValue(value),
         type: FragmentToken,
         values: [],
+      });
+    },
+    or: (members) => {
+      return Object.freeze({
+        glue: Object.freeze({ sql: " OR ", type: FragmentToken, values: [] }),
+        members,
+        type: ListToken,
       });
     },
     prepared: (statementName, parser) => {

@@ -112,6 +112,7 @@ export type SerializableValue =
 
 export type SqlTag<Z extends Record<string, StandardSchemaV1> = Record<string, StandardSchemaV1>> =
   {
+    and: (members: readonly ValueExpression[]) => ListSqlToken;
     array: <T extends TypeNameIdentifier>(
       values: readonly PrimitiveValueExpression[],
       memberType: FragmentSqlToken | T,
@@ -125,6 +126,7 @@ export type SqlTag<Z extends Record<string, StandardSchemaV1> = Record<string, S
     json: (value: SerializableValue) => JsonSqlToken;
     jsonb: (value: SerializableValue) => JsonBinarySqlToken;
     literalValue: (value: string) => FragmentSqlToken;
+    or: (members: readonly ValueExpression[]) => ListSqlToken;
     /**
      * Creates a named prepared statement. The statement name is used by PostgreSQL
      * to cache the query plan, which can improve performance for frequently executed queries.
