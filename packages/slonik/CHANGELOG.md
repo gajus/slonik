@@ -1,5 +1,18 @@
 # slonik
 
+## 49.2.1
+
+### Patch Changes
+
+- [`5475137`](https://github.com/gajus/slonik/commit/54751378e47d1fdbc8567b445d16c17510f292c4) Thanks [@gajus](https://github.com/gajus)! - fix: explicit `undefined` for timeout options now falls back to defaults instead of disabling timeouts (fixes #743)
+
+- Updated dependencies []:
+  - @slonik/driver@49.2.1
+  - @slonik/errors@49.2.1
+  - @slonik/pg-driver@49.2.1
+  - @slonik/sql-tag@49.2.1
+  - @slonik/utilities@49.2.1
+
 ## 49.2.0
 
 ### Minor Changes
