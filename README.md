@@ -1991,7 +1991,8 @@ This is equivalent to `sql.join(members, sql.fragment` OR `)`.
 
 ### <code>sql.literalValue</code>
 
-> ⚠️ Do not use. This method interpolates values as literals and it must be used only for [building utility statements](#building-utility-statements). You are most likely looking for [value placeholders](#value-placeholders).
+> [!WARNING]
+> Do not use. This method interpolates values as literals and it must be used only for [building utility statements](#building-utility-statements). You are most likely looking for [value placeholders](#value-placeholders).
 
 ```ts
 (value: string) => SqlSqlToken;
