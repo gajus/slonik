@@ -1943,6 +1943,8 @@ Produces:
 }
 ```
 
+See [`sql.jsonb`](#sqljsonb) for notes on accepted payload types, payload validation, and the recommended sanitizer pattern. They apply equally to `sql.json`.
+
 ### <code>sql.jsonb</code>
 
 ```ts
