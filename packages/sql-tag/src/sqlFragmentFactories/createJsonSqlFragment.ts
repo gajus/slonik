@@ -1,6 +1,7 @@
 import { Logger } from "../Logger.js";
 import { FragmentToken } from "../tokens.js";
 import type { FragmentSqlToken, JsonBinarySqlToken, JsonSqlToken } from "../types.js";
+import { assertJsonPayloadCharacters } from "../utilities/assertJsonPayloadCharacters.js";
 import { formatSlonikPlaceholder } from "../utilities/formatSlonikPlaceholder.js";
 import { isPlainObject } from "../utilities/isPlainObject.js";
 import { safeStringify } from "../utilities/safeStringify.js";
@@ -31,6 +32,8 @@ export const createJsonSqlFragment = (
   ) {
     throw new InvalidInputError("JSON payload must be a primitive value or a plain object.");
   } else {
+    assertJsonPayloadCharacters(token.value);
+
     try {
       value = safeStringify(token.value);
     } catch (error) {
@@ -41,7 +44,11 @@ export const createJsonSqlFragment = (
         "payload cannot be stringified",
       );
 
-      throw new InvalidInputError("JSON payload cannot be stringified.");
+      const reason = error instanceof Error ? error.message : String(error);
+
+      throw new InvalidInputError(`JSON payload cannot be stringified: ${reason}`, {
+        cause: error instanceof Error ? error : undefined,
+      });
     }
 
     if (value === undefined) {

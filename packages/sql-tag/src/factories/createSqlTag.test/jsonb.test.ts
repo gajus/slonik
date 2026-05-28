@@ -101,3 +101,71 @@ test("Object types with optional properties are allowed", (t) => {
     values: ['{"foo":"bar"}'],
   });
 });
+
+test("accepts Record<string, unknown> payloads", (t) => {
+  const payload: Record<string, unknown> = {
+    foo: "bar",
+    nested: { count: 1 },
+  };
+
+  const query = sql.fragment`SELECT ${sql.jsonb(payload)}`;
+
+  t.deepEqual(query, {
+    sql: "SELECT $slonik_1::jsonb",
+    type: FragmentToken,
+    values: ['{"foo":"bar","nested":{"count":1}}'],
+  });
+});
+
+test("throws when payload contains a null byte at the top level", (t) => {
+  const error = t.throws(() => {
+    sql.fragment`SELECT ${sql.jsonb("hello\u0000world")}`;
+  });
+
+  t.regex(error?.message ?? "", /null byte/);
+  t.regex(error?.message ?? "", /\$/);
+});
+
+test("throws when payload contains a null byte inside an object", (t) => {
+  const error = t.throws(() => {
+    sql.fragment`SELECT ${sql.jsonb({ outer: { inner: "bad\u0000value" } })}`;
+  });
+
+  t.regex(error?.message ?? "", /null byte/);
+  t.regex(error?.message ?? "", /\$\.outer\.inner/);
+});
+
+test("throws when payload contains a null byte inside an array", (t) => {
+  const error = t.throws(() => {
+    sql.fragment`SELECT ${sql.jsonb(["ok", "bad\u0000"])}`;
+  });
+
+  t.regex(error?.message ?? "", /null byte/);
+  t.regex(error?.message ?? "", /\$\[1\]/);
+});
+
+test("throws when payload contains a lone high surrogate", (t) => {
+  const error = t.throws(() => {
+    sql.fragment`SELECT ${sql.jsonb({ s: "\uD800x" })}`;
+  });
+
+  t.regex(error?.message ?? "", /surrogate/);
+});
+
+test("throws when payload contains a lone low surrogate", (t) => {
+  const error = t.throws(() => {
+    sql.fragment`SELECT ${sql.jsonb({ s: "x\uDC00" })}`;
+  });
+
+  t.regex(error?.message ?? "", /surrogate/);
+});
+
+test("accepts valid surrogate pairs (e.g. emoji)", (t) => {
+  const query = sql.fragment`SELECT ${sql.jsonb({ s: "hi 😀" })}`;
+
+  t.deepEqual(query, {
+    sql: "SELECT $slonik_1::jsonb",
+    type: FragmentToken,
+    values: ['{"s":"hi 😀"}'],
+  });
+});

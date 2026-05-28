@@ -1968,6 +1968,22 @@ Produces:
 }
 ```
 
+`sql.json` and `sql.jsonb` accept `Record<string, unknown>` and `unknown[]` payloads directly (e.g. values from `JSON.parse` or generic event payloads), so no cast is required.
+
+Before serializing, the payload is walked for characters that PostgreSQL rejects in JSON values — null bytes (`U+0000`) and unpaired UTF-16 surrogates. Either causes an `InvalidInputError` with a JSON path (e.g. `$.foo.bar[1]`) pointing at the offending value. This surfaces the bug at the call site rather than letting PostgreSQL fail the query with a generic error.
+
+If your input is untrusted or may contain JS values that don't survive `JSON.stringify` cleanly (e.g. `Error`, `Map`, `Set`, `BigInt`, `Date` with custom shape requirements, circular references), pre-sanitize before passing it in:
+
+```ts
+const safeJsonb = (value: unknown) => sql.jsonb(sanitizeJsonPayload(value));
+
+await connection.query(sql.unsafe`
+  INSERT INTO event (payload) VALUES (${safeJsonb(eventPayload)})
+`);
+```
+
+slonik does not bundle a sanitizer because the right policy (how to serialize `Error`, whether to strip or throw on null bytes, how to represent `BigInt`, etc.) is application-specific.
+
 ### <code>sql.list</code>
 
 ```ts

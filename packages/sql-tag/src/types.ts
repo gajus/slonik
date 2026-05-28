@@ -102,12 +102,12 @@ export type SerializableValue =
   | boolean
   | null
   | number
-  | readonly SerializableValue[]
-  | SerializableValue[]
+  | readonly unknown[]
   | string
   | undefined
+  | unknown[]
   | {
-      [key: string]: SerializableValue;
+      [key: string]: unknown;
     };
 
 export type SqlTag<Z extends Record<string, StandardSchemaV1> = Record<string, StandardSchemaV1>> =

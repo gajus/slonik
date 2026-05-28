@@ -48,10 +48,10 @@ export type SerializableValue =
   | boolean
   | null
   | number
-  | readonly SerializableValue[]
-  | SerializableValue[]
+  | readonly unknown[]
   | string
   | undefined
+  | unknown[]
   | {
-      [key: string]: SerializableValue;
+      [key: string]: unknown;
     };
