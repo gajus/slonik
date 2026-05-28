@@ -1,5 +1,27 @@
 # @slonik/sql-tag
 
+## 49.7.0
+
+### Minor Changes
+
+- [`4a18a70`](https://github.com/gajus/slonik/commit/4a18a70934bc4b328d7a2e321397b13f098fd5e3) Thanks [@gajus](https://github.com/gajus)! - feat: widen `SerializableValue` to `object` and drop `undefined`
+
+  `SerializableValue` is now `boolean | null | number | object | string`.
+
+  - The previous `{ [key: string]: unknown }` and `unknown[]` branches required
+    TypeScript to see an explicit string index signature, so values typed as
+    `object` or as interfaces with named properties (e.g.
+    `{ name: string; payload: Record<string, unknown> }`) still failed to
+    type-check. Using `object` accepts both.
+  - `undefined` is removed from the union. It was always rejected at runtime
+    with `JSON payload must not be undefined.`; the type now matches.
+
+### Patch Changes
+
+- Updated dependencies [[`4a18a70`](https://github.com/gajus/slonik/commit/4a18a70934bc4b328d7a2e321397b13f098fd5e3)]:
+  - @slonik/types@49.7.0
+  - @slonik/errors@49.7.0
+
 ## 49.6.0
 
 ### Minor Changes
