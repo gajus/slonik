@@ -1,5 +1,12 @@
 # @slonik/errors
 
+## 49.6.0
+
+### Patch Changes
+
+- Updated dependencies [[`7bb0a65`](https://github.com/gajus/slonik/commit/7bb0a655eec886c4463cbe20bc4d922b80651292)]:
+  - @slonik/types@49.6.0
+
 ## 49.5.0
 
 ### Patch Changes
