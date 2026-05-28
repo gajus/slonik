@@ -1987,7 +1987,7 @@ await connection.query(sql.unsafe`
 `);
 ```
 
-slonik does not bundle a sanitizer because the right policy (how to serialize `Error`, whether to strip or throw on null bytes, how to represent `BigInt`, etc.) is application-specific.
+Slonik does not bundle a sanitizer because the right policy (how to serialize `Error`, whether to strip or throw on null bytes, how to represent `BigInt`, etc.) is application-specific.
 
 ### <code>sql.list</code>
 
