@@ -1,5 +1,7 @@
 # slonik-interceptor-field-name-transformation
 
+## 49.6.0
+
 ## 49.5.0
 
 ## 49.4.0

@@ -1,5 +1,16 @@
 # @slonik/pg-driver
 
+## 49.6.0
+
+### Patch Changes
+
+- Updated dependencies [[`7bb0a65`](https://github.com/gajus/slonik/commit/7bb0a655eec886c4463cbe20bc4d922b80651292)]:
+  - @slonik/sql-tag@49.6.0
+  - @slonik/types@49.6.0
+  - @slonik/driver@49.6.0
+  - @slonik/errors@49.6.0
+  - @slonik/utilities@49.6.0
+
 ## 49.5.0
 
 ### Patch Changes

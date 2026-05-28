@@ -1,5 +1,29 @@
 # @slonik/sql-tag
 
+## 49.6.0
+
+### Minor Changes
+
+- [#803](https://github.com/gajus/slonik/pull/803) [`7bb0a65`](https://github.com/gajus/slonik/commit/7bb0a655eec886c4463cbe20bc4d922b80651292) Thanks [@gajus](https://github.com/gajus)! - feat: relax `SerializableValue` and validate `sql.jsonb` / `sql.json` payloads
+
+  - `SerializableValue` now accepts `Record<string, unknown>` and `unknown[]` for its
+    recursive branches, so payloads from `JSON.parse`, external APIs, or generic
+    event types no longer require a cast when passed to `sql.jsonb` / `sql.json`.
+  - Payloads are now walked for characters PostgreSQL rejects in `jsonb`/`json`
+    values (null byte U+0000 and unpaired UTF-16 surrogates). A
+    descriptive `InvalidInputError` is thrown with the JSON path of the
+    offending value (e.g. `$.foo.bar[1]`) instead of letting PostgreSQL fail
+    the query with a generic error.
+  - When `JSON.stringify` of a payload fails (e.g. `BigInt`), the resulting
+    `InvalidInputError` now attaches the original error as `cause` so the
+    underlying reason is recoverable without losing the static message.
+
+### Patch Changes
+
+- Updated dependencies [[`7bb0a65`](https://github.com/gajus/slonik/commit/7bb0a655eec886c4463cbe20bc4d922b80651292)]:
+  - @slonik/types@49.6.0
+  - @slonik/errors@49.6.0
+
 ## 49.5.0
 
 ### Minor Changes
