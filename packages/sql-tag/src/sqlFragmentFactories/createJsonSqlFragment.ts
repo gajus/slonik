@@ -44,9 +44,7 @@ export const createJsonSqlFragment = (
         "payload cannot be stringified",
       );
 
-      const reason = error instanceof Error ? error.message : String(error);
-
-      throw new InvalidInputError(`JSON payload cannot be stringified: ${reason}`, {
+      throw new InvalidInputError("JSON payload cannot be stringified.", {
         cause: error instanceof Error ? error : undefined,
       });
     }

@@ -1920,6 +1920,9 @@ sql.unsafe`
 
 ### <code>sql.json</code>
 
+> [!NOTE]
+> See [`sql.jsonb`](#sqljsonb) for notes on accepted payload types, payload validation, and the recommended sanitizer pattern. They apply equally to `sql.json`.
+
 ```ts
 (value: SerializableValue) => JsonSqlToken;
 ```
@@ -1942,8 +1945,6 @@ Produces:
   ]
 }
 ```
-
-See [`sql.jsonb`](#sqljsonb) for notes on accepted payload types, payload validation, and the recommended sanitizer pattern. They apply equally to `sql.json`.
 
 ### <code>sql.jsonb</code>
 
@@ -1969,6 +1970,8 @@ Produces:
   ]
 }
 ```
+
+#### Payload handling
 
 `sql.json` and `sql.jsonb` accept `Record<string, unknown>` and `unknown[]` payloads directly (e.g. values from `JSON.parse` or generic event payloads), so no cast is required.
 

@@ -14,5 +14,5 @@ feat: relax `SerializableValue` and validate `sql.jsonb` / `sql.json` payloads
   offending value (e.g. `$.foo.bar[1]`) instead of letting PostgreSQL fail
   the query with a generic error.
 - When `JSON.stringify` of a payload fails (e.g. `BigInt`), the resulting
-  `InvalidInputError` now includes the underlying reason and attaches the
-  original error as `cause`.
+  `InvalidInputError` now attaches the original error as `cause` so the
+  underlying reason is recoverable without losing the static message.
