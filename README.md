@@ -1964,7 +1964,7 @@ Slonik does not bundle a sanitizer because the right policy (how to serialize `E
 ### <code>sql.jsonb</code>
 
 > [!NOTE]
-> See [`sql.json` → Payload handling](#payload-handling) for notes on accepted payload types, payload validation, and the recommended sanitizer pattern. They apply equally to `sql.jsonb`.
+> See [Payload handling](#payload-handling) for notes on accepted payload types, payload validation, and the recommended sanitizer pattern. They apply equally to `sql.jsonb`.
 
 ```ts
 (value: SerializableValue) => JsonBinarySqlToken;
