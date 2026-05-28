@@ -98,17 +98,7 @@ export type QuerySqlToken<T extends StandardSchemaV1 = StandardSchemaV1<unknown,
   readonly values: readonly PrimitiveValueExpression[];
 };
 
-export type SerializableValue =
-  | boolean
-  | null
-  | number
-  | readonly unknown[]
-  | string
-  | undefined
-  | unknown[]
-  | {
-      [key: string]: unknown;
-    };
+export type SerializableValue = boolean | null | number | object | string;
 
 export type SqlTag<Z extends Record<string, StandardSchemaV1> = Record<string, StandardSchemaV1>> =
   {

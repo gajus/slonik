@@ -72,6 +72,7 @@ test("JSON encodes boolean values", (t) => {
 
 test("throws if payload is undefined", (t) => {
   const error = t.throws(() => {
+    // @ts-expect-error - intentional: undefined is rejected at compile time and at runtime
     sql.fragment`SELECT ${sql.jsonb(undefined)}`;
   });
 
@@ -80,7 +81,6 @@ test("throws if payload is undefined", (t) => {
 
 test("throws if payload cannot be stringified (non-primitive object)", (t) => {
   const error = t.throws(() => {
-    // @ts-expect-error - intentional
     sql.fragment`SELECT ${sql.jsonb(() => {})}`;
   });
 
@@ -114,6 +114,31 @@ test("accepts Record<string, unknown> payloads", (t) => {
     sql: "SELECT $slonik_1::jsonb",
     type: FragmentToken,
     values: ['{"foo":"bar","nested":{"count":1}}'],
+  });
+});
+
+test("accepts object-typed payloads", (t) => {
+  const payload: object = { foo: "bar" };
+
+  const query = sql.fragment`SELECT ${sql.jsonb(payload)}`;
+
+  t.deepEqual(query, {
+    sql: "SELECT $slonik_1::jsonb",
+    type: FragmentToken,
+    values: ['{"foo":"bar"}'],
+  });
+});
+
+test("accepts interface-typed payloads without an index signature", (t) => {
+  type Payload = { meta: Record<string, unknown>; name: string };
+  const payload: Payload = { meta: { count: 1 }, name: "x" };
+
+  const query = sql.fragment`SELECT ${sql.jsonb(payload)}`;
+
+  t.deepEqual(query, {
+    sql: "SELECT $slonik_1::jsonb",
+    type: FragmentToken,
+    values: ['{"meta":{"count":1},"name":"x"}'],
   });
 });
 

@@ -44,14 +44,4 @@ export type Query = {
 
 export type QueryResultRow = Record<string, PrimitiveValueExpression>;
 
-export type SerializableValue =
-  | boolean
-  | null
-  | number
-  | readonly unknown[]
-  | string
-  | undefined
-  | unknown[]
-  | {
-      [key: string]: unknown;
-    };
+export type SerializableValue = boolean | null | number | object | string;
