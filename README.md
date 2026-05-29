@@ -2919,6 +2919,8 @@ try {
 
 `ForeignKeyIntegrityConstraintViolationError` is thrown when PostgreSQL responds with [`foreign_key_violation`](https://www.postgresql.org/docs/9.4/static/errcodes-appendix.html) (`23503`) error.
 
+It exposes the same `columns`, `constraint`, `table` and `detail` properties as [`UniqueIntegrityConstraintViolationError`](#handling-uniqueintegrityconstraintviolationerror); `columns` holds the column(s) named in the error (the referencing column(s) for a missing key, or the referenced column(s) when a row is still referenced).
+
 ### Handling <code>NotFoundError</code>
 
 > [!NOTE]
@@ -2947,6 +2949,8 @@ if (row) {
 ### Handling <code>NotNullIntegrityConstraintViolationError</code>
 
 `NotNullIntegrityConstraintViolationError` is thrown when PostgreSQL responds with [`not_null_violation`](https://www.postgresql.org/docs/9.4/static/errcodes-appendix.html) (`23502`) error.
+
+It exposes the same properties as [`UniqueIntegrityConstraintViolationError`](#handling-uniqueintegrityconstraintviolationerror). For this error PostgreSQL populates `column` directly, and `columns` contains that single column.
 
 ### Handling <code>StatementCancelledError</code>
 
@@ -2985,6 +2989,30 @@ await pool.connect(async (connection0) => {
 ### Handling <code>UniqueIntegrityConstraintViolationError</code>
 
 `UniqueIntegrityConstraintViolationError` is thrown when PostgreSQL responds with [`unique_violation`](https://www.postgresql.org/docs/9.4/static/errcodes-appendix.html) (`23505`) error.
+
+Like all `IntegrityConstraintViolationError` subclasses, it exposes the table, constraint and the column(s) involved in the violation:
+
+- `columns: readonly string[]` – the column(s) named in the violation. Prefer branching on these over the physical index name (`constraint`), which is an implementation detail that can change. PostgreSQL only reports the column(s) of a unique or foreign key violation inside `detail`, so Slonik parses them out for you. Expression and partial index columns are not extracted; in that case `columns` is empty – fall back to `constraint` or `detail`.
+- `constraint: null | string` – the name of the violated constraint (or index).
+- `table: null | string` – the table that the constraint belongs to.
+- `detail: null | string` – the raw PostgreSQL error detail, e.g. `Key (email)=(foo@bar.com) already exists.`.
+- `column: null | string` – a single column name. PostgreSQL only populates this for `not_null_violation`; for unique and foreign key violations use `columns`.
+
+```ts
+import { UniqueIntegrityConstraintViolationError } from "slonik";
+
+try {
+  await pool.query(sql.typeAlias("void")`
+    INSERT INTO person (email) VALUES (${email})
+  `);
+} catch (error) {
+  if (error instanceof UniqueIntegrityConstraintViolationError && error.columns.includes("email")) {
+    throw new Error("A person with this email address already exists.");
+  }
+
+  throw error;
+}
+```
 
 ### Handling <code>TupleMovedToAnotherPartitionError</code>
 
