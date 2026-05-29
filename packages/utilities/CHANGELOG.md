@@ -1,5 +1,13 @@
 # @slonik/utilities
 
+## 49.8.0
+
+### Patch Changes
+
+- Updated dependencies [[`73b5dab`](https://github.com/gajus/slonik/commit/73b5dabf2b29f7314c08154a11500b02f56f6ab4)]:
+  - @slonik/errors@49.8.0
+  - @slonik/types@49.8.0
+
 ## 49.7.0
 
 ### Patch Changes
