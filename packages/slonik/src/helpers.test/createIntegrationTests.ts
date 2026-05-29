@@ -155,6 +155,7 @@ export const createIntegrationTests = (
 
     t.is(notNullIntegrityConstraintViolationError?.table, "person");
     t.is(notNullIntegrityConstraintViolationError?.column, "name");
+    t.deepEqual(notNullIntegrityConstraintViolationError?.columns, ["name"]);
   });
 
   test("properly handles terminated connections", async (t) => {
@@ -1163,6 +1164,8 @@ export const createIntegrationTests = (
     );
 
     t.true(error instanceof UniqueIntegrityConstraintViolationError);
+
+    t.deepEqual((error as UniqueIntegrityConstraintViolationError).columns, ["name"]);
   });
 
   test("throws CheckExclusionConstraintViolationError if exclusion constraint is violated", async (t) => {
@@ -1223,6 +1226,8 @@ export const createIntegrationTests = (
     );
 
     t.true(error instanceof ForeignKeyIntegrityConstraintViolationError);
+
+    t.deepEqual((error as ForeignKeyIntegrityConstraintViolationError).columns, ["parent_id"]);
   });
 
   test("throws NotNullIntegrityConstraintViolationError if not null constraint is violated", async (t) => {

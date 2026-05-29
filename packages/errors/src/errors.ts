@@ -4,6 +4,7 @@ import type { StandardSchemaV1 } from "@standard-schema/spec";
 type IntegrityConstraintViolationErrorCause = Error & {
   column?: string;
   constraint?: string;
+  detail?: string;
   table?: string;
 };
 
@@ -32,10 +33,42 @@ export class BackendTerminatedUnexpectedlyError extends SlonikError {
   }
 }
 
+const INDEX_VALUE_DESCRIPTION_PATTERN = /\(([^)]+)\)=\(/u;
+
+/**
+ * Postgres only populates the wire-protocol `column` field for not-NULL
+ * violations (23502). For unique (23505) and foreign key (23503) violations the
+ * offending column(s) are described only inside the `detail` string, e.g.
+ * `Key (email)=(foo@bar.com) already exists.`. We extract the column list from
+ * the leading `(columns)=(values)` descriptor, which Postgres emits verbatim
+ * regardless of `lc_messages` (only the surrounding prose is localized).
+ * Expression and partial index columns are intentionally not extracted – the
+ * array is left empty rather than reporting a partial or misleading name.
+ */
+const parseIntegrityConstraintViolationColumns = (
+  error: IntegrityConstraintViolationErrorCause,
+): readonly string[] => {
+  if (error.column) {
+    return [error.column];
+  }
+
+  const indexValueDescription = error.detail?.match(INDEX_VALUE_DESCRIPTION_PATTERN);
+
+  if (!indexValueDescription) {
+    return [];
+  }
+
+  return indexValueDescription[1].split(",").map((column) => column.trim());
+};
+
 export class IntegrityConstraintViolationError extends SlonikError {
   public column: null | string;
 
+  public columns: readonly string[];
+
   public constraint: null | string;
+
+  public detail: null | string;
 
   public table: null | string;
 
@@ -45,6 +78,10 @@ export class IntegrityConstraintViolationError extends SlonikError {
     this.constraint = error.constraint ?? null;
 
     this.column = error.column ?? null;
+
+    this.columns = parseIntegrityConstraintViolationColumns(error);
+
+    this.detail = error.detail ?? null;
 
     this.table = error.table ?? null;
   }
