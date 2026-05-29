@@ -6,9 +6,6 @@
 
 A [battle-tested](#battle-tested) Node.js PostgreSQL client with strict types, detailed logging and assertions.
 
-> [!NOTE]
-> NEW! Use Slonik with [`eslint-plugin-slonik`](https://github.com/gajus/eslint-plugin-slonik) to validate your SQL queries against your database schema.
-
 ![Tailing Slonik logs](./.README/slonik-log-tailing.gif)
 
 (The above GIF shows Slonik producing [query logs](https://github.com/gajus/slonik#logging). Slonik produces logs using [Roarr](https://github.com/gajus/roarr). Logs include stack trace of the actual query invocation location and values used to execute the query.)
@@ -115,6 +112,7 @@ Note: Using this project does not require TypeScript. It is a regular ES6 module
   - [Tips](#tips)
     - [Prefer `sql.and`, `sql.or`, and `sql.list` over `sql.join`](#prefer-sqland-sqlor-and-sqllist-over-sqljoin)
     - [Hoist Zod schemas with `babel-plugin-zod-hoist`](#hoist-zod-schemas-with-babel-plugin-zod-hoist)
+    - [Validate SQL queries with `eslint-plugin-slonik`](#validate-sql-queries-with-eslint-plugin-slonik)
   - [Query methods](#query-methods)
     - [`any`](#any)
     - [`anyFirst`](#anyfirst)
@@ -2391,6 +2389,10 @@ const getUser = (id: number) => {
 ```
 
 This eliminates repeated allocations without requiring you to manually extract schemas.
+
+### Validate SQL queries with <code>eslint-plugin-slonik</code>
+
+[`eslint-plugin-slonik`](https://github.com/gajus/eslint-plugin-slonik) validates SQL queries written with Slonik against your database schema at lint time. It catches references to non-existent tables and columns, type mismatches between query results and Zod schemas, and other common mistakes before they reach runtime.
 
 ## Query methods
 
