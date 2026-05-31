@@ -1,5 +1,22 @@
 # slonik
 
+## 49.9.0
+
+### Minor Changes
+
+- [`1329b45`](https://github.com/gajus/slonik/commit/1329b4569b5249b26fea78467c7277b3ce383a7e) Thanks [@gajus](https://github.com/gajus)! - Add `maxPoolSize` and `minPoolSize` configuration options
+
+  `maximumPoolSize` and `minimumPoolSize` have been renamed to `maxPoolSize` and `minPoolSize`. The original options continue to work but are now deprecated and will be removed in a future major release. When both a new and a deprecated option are provided, the new option takes precedence.
+
+### Patch Changes
+
+- Updated dependencies [[`1329b45`](https://github.com/gajus/slonik/commit/1329b4569b5249b26fea78467c7277b3ce383a7e)]:
+  - @slonik/driver@49.9.0
+  - @slonik/errors@49.9.0
+  - @slonik/pg-driver@49.9.0
+  - @slonik/sql-tag@49.9.0
+  - @slonik/utilities@49.9.0
+
 ## 49.8.0
 
 ### Patch Changes
