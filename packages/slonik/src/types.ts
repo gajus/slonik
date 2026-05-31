@@ -58,12 +58,22 @@ export type ClientConfiguration = {
   readonly maximumConnectionAge?: "DISABLE_TIMEOUT" | number;
   /**
    * Do not allow more than this many connections. (Default: 10)
+   * @deprecated Use `maxPoolSize` instead.
    */
   readonly maximumPoolSize?: number;
   /**
+   * Do not allow more than this many connections. (Default: 10)
+   */
+  readonly maxPoolSize?: number;
+  /**
    * Ensure that at least this many connections are available in the pool. (Default: 0)
+   * @deprecated Use `minPoolSize` instead.
    */
   readonly minimumPoolSize?: number;
+  /**
+   * Ensure that at least this many connections are available in the pool. (Default: 0)
+   */
+  readonly minPoolSize?: number;
   /**
    * Human-readable identifier for distinguishing multiple pools within the same application,
    * e.g. "read", "write", "replica-us-east-1".

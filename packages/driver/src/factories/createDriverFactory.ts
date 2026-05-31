@@ -62,8 +62,16 @@ export type DriverConfiguration = {
   readonly idleInTransactionSessionTimeout: "DISABLE_TIMEOUT" | number;
   readonly idleTimeout?: "DISABLE_TIMEOUT" | number;
   readonly maximumConnectionAge?: "DISABLE_TIMEOUT" | number;
+  /**
+   * @deprecated Use `maxPoolSize` instead.
+   */
   readonly maximumPoolSize?: number;
+  readonly maxPoolSize?: number;
+  /**
+   * @deprecated Use `minPoolSize` instead.
+   */
   readonly minimumPoolSize?: number;
+  readonly minPoolSize?: number;
   readonly password?: (() => Promise<string> | string) | string;
   readonly resetConnection?: (connection: BasicConnection) => Promise<void>;
   readonly ssl?: TlsConnectionOptions;
@@ -263,7 +271,7 @@ export const createDriverFactory = (setup: DriverSetup): DriverFactory => {
           // (release throws if a query is active). Either one can hang if the
           // database is unreachable (e.g. DISCARD ALL during release), causing
           // the connection to stay in PENDING_DESTROY and count toward
-          // maximumPoolSize, which blocks the pool from creating new connections.
+          // maxPoolSize, which blocks the pool from creating new connections.
           const pendingOperation = activeQueryPromise ?? releasePromise;
 
           if (pendingOperation) {

@@ -61,12 +61,12 @@ export const createPoolConfiguration = (
     poolConfiguration.maximumConnectionAge = resolvedMaxAge;
   }
 
-  if (clientConfiguration.maximumPoolSize) {
-    poolConfiguration.maximumPoolSize = clientConfiguration.maximumPoolSize;
+  if (clientConfiguration.maxPoolSize) {
+    poolConfiguration.maximumPoolSize = clientConfiguration.maxPoolSize;
   }
 
-  if (clientConfiguration.minimumPoolSize) {
-    poolConfiguration.minimumPoolSize = clientConfiguration.minimumPoolSize;
+  if (clientConfiguration.minPoolSize) {
+    poolConfiguration.minimumPoolSize = clientConfiguration.minPoolSize;
   }
 
   if (clientConfiguration.poolName) {

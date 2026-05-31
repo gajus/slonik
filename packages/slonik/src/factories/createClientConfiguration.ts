@@ -23,8 +23,6 @@ export const createClientConfiguration = (
     idleInTransactionSessionTimeout: 60_000,
     idleTimeout: 5_000,
     interceptors: [],
-    maximumPoolSize: 10,
-    minimumPoolSize: 0,
     queryRetryLimit: 5,
     resetConnection: ({ query }) => {
       return query(`DISCARD ALL`);
@@ -34,19 +32,31 @@ export const createClientConfiguration = (
     transactionRetryLimit: 5,
     typeParsers,
     ...definedUserConfiguration,
+    // `maximumPoolSize` and `minimumPoolSize` are deprecated aliases of
+    // `maxPoolSize` and `minPoolSize`. The new names take precedence when both
+    // are provided; otherwise we fall back to the deprecated name, then the
+    // default.
+    maxPoolSize:
+      clientUserConfigurationInput?.maxPoolSize ??
+      clientUserConfigurationInput?.maximumPoolSize ??
+      10,
+    minPoolSize:
+      clientUserConfigurationInput?.minPoolSize ??
+      clientUserConfigurationInput?.minimumPoolSize ??
+      0,
   };
 
-  if (configuration.maximumPoolSize < 1) {
-    throw new InvalidConfigurationError("maximumPoolSize must be equal to or greater than 1.");
+  if (configuration.maxPoolSize < 1) {
+    throw new InvalidConfigurationError("maxPoolSize must be equal to or greater than 1.");
   }
 
-  if (configuration.minimumPoolSize < 0) {
-    throw new InvalidConfigurationError("minimumPoolSize must be equal to or greater than 0.");
+  if (configuration.minPoolSize < 0) {
+    throw new InvalidConfigurationError("minPoolSize must be equal to or greater than 0.");
   }
 
-  if (configuration.maximumPoolSize < configuration.minimumPoolSize) {
+  if (configuration.maxPoolSize < configuration.minPoolSize) {
     throw new InvalidConfigurationError(
-      "maximumPoolSize must be equal to or greater than minimumPoolSize.",
+      "maxPoolSize must be equal to or greater than minPoolSize.",
     );
   }
 
