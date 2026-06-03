@@ -8,16 +8,12 @@ A [battle-tested](#battle-tested) Node.js PostgreSQL client with strict types, d
 
 ![Tailing Slonik logs](./.README/slonik-log-tailing.gif)
 
-(The above GIF shows Slonik producing [query logs](https://github.com/gajus/slonik#logging). Slonik produces logs using [Roarr](https://github.com/gajus/roarr). Logs include stack trace of the actual query invocation location and values used to execute the query.)
-
 ## Principles
 
 - Promotes writing raw SQL.
 - Discourages ad-hoc dynamic generation of SQL.
 
 Read: [Stop using Knex.js](https://medium.com/@gajus/bf410349856c)
-
-Note: Using this project does not require TypeScript. It is a regular ES6 module. Ignore the type definitions used in the documentation if you do not use a type system.
 
 ## Features
 
