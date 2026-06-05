@@ -40,6 +40,7 @@ export type IntegrityValidation = {
     | "MANY_COLUMNS"
     | "MANY_ROWS"
     | "MANY_ROWS_ONE_COLUMN"
+    | "MAYBE_MANY_ROWS_KEY_VALUE_COLUMNS"
     | "MAYBE_MANY_ROWS_ONE_COLUMN"
     | "MAYBE_ONE_COLUMN"
     | "MAYBE_ONE_ROW"
@@ -495,6 +496,37 @@ const executeQueryInternal = async (
         firstRowColumnCount !== 1
       ) {
         throw new DataIntegrityError("Query returned rows with multiple columns.", actualQuery);
+      }
+
+      if (
+        integrityValidation.validationType === "MAYBE_MANY_ROWS_KEY_VALUE_COLUMNS" &&
+        result.rows.length > 0
+      ) {
+        const firstRowColumnNames = Object.keys(result.rows[0]);
+
+        if (
+          firstRowColumnNames.length !== 2 ||
+          !firstRowColumnNames.includes("key") ||
+          !firstRowColumnNames.includes("value")
+        ) {
+          throw new DataIntegrityError(
+            'Query returned rows with columns other than "key" and "value".',
+            actualQuery,
+          );
+        }
+
+        const seenKeys = new Set<string>();
+
+        for (const row of result.rows) {
+          // Keys are stringified because that is how they will be represented in the resulting record.
+          const key = String((row as Record<string, unknown>).key);
+
+          if (seenKeys.has(key)) {
+            throw new DataIntegrityError("Query returned duplicate keys.", actualQuery);
+          }
+
+          seenKeys.add(key);
+        }
       }
     }
   } catch (error) {

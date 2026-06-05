@@ -2561,6 +2561,43 @@ await connection.query(sql.typeAlias("foo")`SELECT foo`);
 // }
 ```
 
+### <code>record</code>
+
+Returns the result rows as a `key` → `value` record (a plain object).
+
+The query must return exactly two columns, named `"key"` and `"value"`. The record key type must be a `string` or a `number`, which is enforced by requiring that the query is typed using `sql.type` (or `sql.typeAlias`).
+
+- Throws `DataIntegrityError` if query returns rows with columns other than `key` and `value`.
+- Throws `DataIntegrityError` if query returns duplicate keys.
+
+Example:
+
+```ts
+const memberCounts = await connection.record(sql.type(
+  z.object({
+    key: z.number(),
+    value: z.number(),
+  }),
+)`
+  SELECT
+    team_id AS "key",
+    count(*)::int AS "value"
+  FROM team_member
+  GROUP BY team_id
+`);
+
+// memberCounts is Record<number, number>, e.g. { 1: 2, 2: 5 }
+```
+
+Returns an empty object if query returns no rows.
+
+> Note:
+>
+> `record` is not just a convenience method – it asserts the integrity of the result.
+> Building the record manually (e.g. using `Object.fromEntries`) silently drops rows
+> that share the same key, e.g. as a result of an incorrect `GROUP BY` clause.
+> `record` makes that a `DataIntegrityError`.
+
 ### <code>stream</code>
 
 Streams query results.

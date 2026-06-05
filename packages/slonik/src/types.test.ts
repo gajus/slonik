@@ -102,6 +102,21 @@ export const queryMethods = async (): Promise<void> => {
   const queryZodTypedQuery = await client.query(sql.type(ZodRow)``);
   expectTypeOf(queryZodTypedQuery).toMatchTypeOf<{ rows: readonly Row[] }>();
 
+  // record
+  const KeyValueRow = z.object({
+    key: z.number(),
+    value: z.string(),
+  });
+
+  const record = await client.record(sql.type(KeyValueRow)``);
+  expectTypeOf(record).toEqualTypeOf<Readonly<Record<number, string>>>();
+
+  // @ts-expect-error - `record` requires a typed query.
+  await client.record(sql.unsafe``);
+
+  // @ts-expect-error - `record` requires a query with `key` and `value` columns.
+  await client.record(sql.type(ZodRow)``);
+
   const FooBarRow = z.object({
     x: z.string(),
     y: z.number(),

@@ -8,6 +8,7 @@ import { maybeOneFirst } from "../connectionMethods/maybeOneFirst.js";
 import { one } from "../connectionMethods/one.js";
 import { oneFirst } from "../connectionMethods/oneFirst.js";
 import { query as queryMethod } from "../connectionMethods/query.js";
+import { record } from "../connectionMethods/record.js";
 import { stream } from "../connectionMethods/stream.js";
 import { transaction } from "../connectionMethods/transaction.js";
 import type { ConnectionPoolClient } from "../factories/createConnectionPool.js";
@@ -71,6 +72,10 @@ class BoundPoolConnection {
 
   query(slonikSql) {
     return queryMethod(this.parentLog, this.connection, this.clientConfiguration, slonikSql);
+  }
+
+  record(slonikSql) {
+    return record(this.parentLog, this.connection, this.clientConfiguration, slonikSql);
   }
 
   stream(slonikSql, streamHandler) {

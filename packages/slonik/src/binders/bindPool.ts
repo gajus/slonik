@@ -183,6 +183,21 @@ export const bindPool = (
         query,
       );
     },
+    record: (query) => {
+      return createConnection(
+        parentLog,
+        pool,
+        clientConfiguration,
+        "IMPLICIT_QUERY",
+        (connectionLog, connection, boundConnection) => {
+          return boundConnection.record(query);
+        },
+        (newPool) => {
+          return newPool.record(query);
+        },
+        query,
+      );
+    },
     state: () => {
       return pool.state();
     },

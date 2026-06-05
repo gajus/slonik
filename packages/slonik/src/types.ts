@@ -124,6 +124,7 @@ export type CommonQueryMethods = {
   readonly one: QueryOneFunction;
   readonly oneFirst: QueryOneFirstFunction;
   readonly query: QueryFunction;
+  readonly record: QueryRecordFunction;
   readonly stream: StreamFunction;
   readonly transaction: <T>(
     handler: TransactionFunction<T>,
@@ -463,6 +464,15 @@ type QueryOneFunction = <T extends StandardSchemaV1>(
   sql: QuerySqlToken<T>,
   values?: PrimitiveValueExpression[],
 ) => Promise<StandardSchemaV1.InferOutput<T>>;
+
+type QueryRecordFunction = <
+  T extends StandardSchemaV1<unknown, { key: PropertyKey; value: unknown }>,
+>(
+  sql: QuerySqlToken<T>,
+  values?: PrimitiveValueExpression[],
+) => Promise<
+  Readonly<Record<StandardSchemaV1.InferOutput<T>["key"], StandardSchemaV1.InferOutput<T>["value"]>>
+>;
 
 type StreamFunction = <T extends StandardSchemaV1>(
   sql: QuerySqlToken<T>,

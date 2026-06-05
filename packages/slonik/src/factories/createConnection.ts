@@ -57,6 +57,7 @@ const boundConnectionMethods = [
   "one",
   "oneFirst",
   "query",
+  "record",
   "stream",
   "transaction",
 ];
