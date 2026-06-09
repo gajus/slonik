@@ -50,10 +50,18 @@ export const createNodeByIdLoaderClass = <T extends ZodType>(config: {
             `,
           );
 
+          const recordsByKey = new Map<string, (typeof records)[number]>();
+
+          for (const record of records) {
+            const key = String(record[columnName as keyof typeof record]);
+
+            if (!recordsByKey.has(key)) {
+              recordsByKey.set(key, record);
+            }
+          }
+
           return loaderKeys.map((value) => {
-            const targetRecord = records.find((record) => {
-              return String(record[columnName as keyof typeof record]) === String(value);
-            });
+            const targetRecord = recordsByKey.get(String(value));
 
             if (targetRecord) {
               return targetRecord as z.infer<T>;
