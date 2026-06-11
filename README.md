@@ -2357,7 +2357,14 @@ sql.and([
 
 Reserve `sql.join` for cases where you need a custom glue that isn't `AND`, `OR`, or `, ` — such as `UNION ALL` or `INTERSECT`.
 
+### Compile Zod schemas at build time
+
+Use [zod-compiler](https://github.com/gajus/zod-compiler) to compile Zod schemas at build time. Get 2-74x faster validation.
+
 ### Hoist Zod schemas with <code>babel-plugin-zod-hoist</code>
+
+> [!NOTE]
+> Prefer `zod-compiler` over `babel-plugin-zod-hoist`.
 
 Every Slonik query requires a result schema (via `sql.type` or `sql.typeAlias`). When schemas are defined inline, they are re-initialized on every function call:
 
