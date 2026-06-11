@@ -1,5 +1,50 @@
 # slonik
 
+## 49.10.1
+
+### Patch Changes
+
+- Updated dependencies []:
+  - @slonik/driver@49.10.1
+  - @slonik/errors@49.10.1
+  - @slonik/pg-driver@49.10.1
+  - @slonik/sql-tag@49.10.1
+  - @slonik/utilities@49.10.1
+
+## 49.10.0
+
+### Minor Changes
+
+- [`fbff275`](https://github.com/gajus/slonik/commit/fbff275a8e31c3c397be9da7ea0424ac9ee13f51) Thanks [@gajus](https://github.com/gajus)! - Add `record()` query method
+
+  `record()` returns the result rows as a `key` → `value` record. The query must return exactly two columns, named `"key"` and `"value"`, which is enforced at the type level by requiring a typed query (`sql.type`). Throws `DataIntegrityError` if the query returns rows with any other columns, or if the query returns duplicate keys.
+
+  ```ts
+  const memberCounts = await pool.record(sql.type(
+    z.object({
+      key: z.number(),
+      value: z.number(),
+    })
+  )`
+    SELECT
+      team_id AS "key",
+      count(*)::int AS "value"
+    FROM team_member
+    GROUP BY team_id
+  `);
+
+  // Record<number, number>, e.g. { 1: 2, 2: 5 }
+  ```
+
+### Patch Changes
+
+- Updated dependencies []:
+  - @slonik/driver@49.10.0
+  - @slonik/errors@49.10.0
+  - @slonik/pg-driver@49.10.0
+  - @slonik/sql-tag@49.10.0
+  - @slonik/utilities@49.10.0
+
 ## 49.9.0
 
 ### Minor Changes
