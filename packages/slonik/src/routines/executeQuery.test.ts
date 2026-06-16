@@ -81,7 +81,7 @@ test("throws a descriptive error if the entire query is a value binding", async 
 
 test("throws a descriptive error if the entire query is a value binding (constructed via tag)", async (t) => {
   // Regression test: a real tagged query emits Slonik's internal `$slonik_1`
-  // placeholder, which must still be recognised as a value-only query. Unlike the
+  // placeholder, which must still be recognized as a value-only query. Unlike the
   // test above, this exercises the actual tag output rather than a hand-built `$1`.
   const sql = createSqlTag();
 
