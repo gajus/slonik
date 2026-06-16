@@ -19,20 +19,12 @@ const executionRoutine: ExecutionRoutine = async (
     queryTokens.name ? { name: queryTokens.name } : undefined,
   );
 
-  const fields: Field[] = [];
-
-  if (result.fields) {
-    for (const field of result.fields) {
-      fields.push({
-        dataTypeId: field.dataTypeId,
-        name: field.name,
-      });
-    }
-  }
-
   return {
     command: result.command as QueryResult<unknown>["command"],
-    fields,
+    // The driver already returns fields in Slonik's `{ dataTypeId, name }` shape
+    // (see `DriverField`), so we forward the array directly instead of
+    // re-allocating an identical array of objects on every query.
+    fields: (result.fields ?? []) as Field[],
     notices: result.notices ?? [],
     rowCount: result.rowCount || 0,
     rows: (result.rows || []) as QueryResultRow[],
