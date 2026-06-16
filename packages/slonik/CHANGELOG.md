@@ -1,5 +1,20 @@
 # slonik
 
+## 49.10.7
+
+### Patch Changes
+
+- [`df0ff9c`](https://github.com/gajus/slonik/commit/df0ff9c78cd380d40ef14a81a9819edd0f46ea1c) Thanks [@gajus](https://github.com/gajus)! - Reduce allocations in `anyFirst()` and `manyFirst()` on large result sets
+
+  Both methods previously projected the first column of every row with `Array.prototype.map`, which allocates a callback closure on each call. They now pre-size the output array and fill it by index, avoiding the closure and the result array's dynamic growth. In an isolated micro-benchmark this was roughly 15% faster on a 1,000-row result, with correspondingly fewer garbage-collection scavenges. Behavior is unchanged.
+
+- Updated dependencies []:
+  - @slonik/driver@49.10.7
+  - @slonik/errors@49.10.7
+  - @slonik/pg-driver@49.10.7
+  - @slonik/sql-tag@49.10.7
+  - @slonik/utilities@49.10.7
+
 ## 49.10.6
 
 ### Patch Changes
