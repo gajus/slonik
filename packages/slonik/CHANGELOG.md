@@ -1,5 +1,18 @@
 # slonik
 
+## 49.10.4
+
+### Patch Changes
+
+- [`f7feb3e`](https://github.com/gajus/slonik/commit/f7feb3ea0d48232e77fd22274849394f82a933d6) Thanks [@gajus](https://github.com/gajus)! - fix: avoid double trim
+
+- Updated dependencies []:
+  - @slonik/driver@49.10.4
+  - @slonik/errors@49.10.4
+  - @slonik/pg-driver@49.10.4
+  - @slonik/sql-tag@49.10.4
+  - @slonik/utilities@49.10.4
+
 ## 49.10.3
 
 ### Patch Changes
