@@ -7,7 +7,6 @@ import type { ConnectionPoolClient } from "../factories/createConnectionPool.js"
 import { getPoolClientState } from "../state.js";
 import type {
   ClientConfiguration,
-  Interceptor,
   Logger,
   Query,
   QueryContext,
@@ -426,7 +425,10 @@ const executeQueryInternal = async (
   // @ts-expect-error -- We want to keep notices as readonly for consumer, but write to it here.
   result.notices = notices;
 
-  const interceptors: Interceptor[] = clientConfiguration.interceptors.slice();
+  // `clientConfiguration.interceptors` is `readonly` and never mutated during a
+  // query (the before/error hooks above already iterate it directly), so we read
+  // it as-is instead of copying it on every query.
+  const interceptors = clientConfiguration.interceptors;
 
   if (result.type !== "QueryResult") {
     return result;
