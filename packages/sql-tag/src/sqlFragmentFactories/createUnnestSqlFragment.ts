@@ -13,8 +13,6 @@ export const createUnnestSqlFragment = (
 ): FragmentSqlToken => {
   const { columnTypes } = token;
 
-  const values: PrimitiveValueExpression[] = [];
-
   const unnestBindings: PrimitiveValueExpression[][] = [];
   const unnestSqlTokens: string[] = [];
 
@@ -99,13 +97,13 @@ export const createUnnestSqlFragment = (
     }
   }
 
-  values.push(...unnestBindings);
-
   const sql = "unnest(" + unnestSqlTokens.join(", ") + ")";
 
+  // `unnestBindings` already holds one binding array per column, so it is the
+  // values array — no separate array + spread copy is required.
   return {
     sql,
     type: FragmentToken,
-    values,
+    values: unnestBindings,
   };
 };

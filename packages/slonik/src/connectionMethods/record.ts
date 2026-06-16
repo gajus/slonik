@@ -19,11 +19,25 @@ export const record: InternalQueryMethod = async (
     validationType: "MAYBE_MANY_ROWS_KEY_VALUE_COLUMNS",
   });
 
-  // Object.fromEntries creates own properties, which makes it safe to use
-  // with keys like "__proto__" (as opposed to assigning object properties).
-  return Object.fromEntries(
-    (rows as Array<{ key: PropertyKey; value: unknown }>).map((row): [PropertyKey, unknown] => {
-      return [row.key, row.value];
-    }),
-  );
+  // Build the record without allocating an entry tuple per row (as
+  // Object.fromEntries would). The "__proto__" key is assigned via
+  // defineProperty so it becomes an own property instead of invoking the
+  // prototype setter — preserving the prototype-pollution safety while still
+  // returning a normal (Object.prototype) object.
+  const result: Record<PropertyKey, unknown> = {};
+
+  for (const row of rows as Array<{ key: PropertyKey; value: unknown }>) {
+    if (row.key === "__proto__") {
+      Object.defineProperty(result, row.key, {
+        configurable: true,
+        enumerable: true,
+        value: row.value,
+        writable: true,
+      });
+    } else {
+      result[row.key] = row.value;
+    }
+  }
+
+  return result;
 };

@@ -1,4 +1,3 @@
-import { createPrimitiveValueExpressions } from "../factories/createPrimitiveValueExpressions.js";
 import { createSqlTokenSqlFragment } from "../factories/createSqlTokenSqlFragment.js";
 import { FragmentToken } from "../tokens.js";
 import type { FragmentSqlToken, ListSqlToken, PrimitiveValueExpression } from "../types.js";
@@ -38,9 +37,11 @@ export const createListSqlFragment = (
     }
   }
 
+  // `values` is assembled from members that were already narrowed to SQL tokens
+  // or primitive value expressions above, so it needs no further validation/copy.
   return {
     sql: placeholders.join(token.glue.sql),
     type: FragmentToken,
-    values: createPrimitiveValueExpressions(values),
+    values,
   };
 };

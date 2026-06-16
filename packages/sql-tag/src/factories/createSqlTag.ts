@@ -100,6 +100,10 @@ const createFragment = (parts: TemplateStringsArray, values: readonly ValueExpre
   };
 };
 
+const isPresentMember = (
+  member: false | null | undefined | ValueExpression,
+): member is ValueExpression => member !== false && member !== null && member !== undefined;
+
 export const createSqlTag = <
   K extends PropertyKey,
   P extends StandardSchemaV1,
@@ -113,9 +117,7 @@ export const createSqlTag = <
 
   return {
     and: (members) => {
-      const filtered = members.filter(
-        (member) => member !== false && member !== null && member !== undefined,
-      );
+      const filtered = members.filter(isPresentMember);
 
       if (filtered.length === 0) {
         return Object.freeze({ sql: "TRUE", type: FragmentToken, values: [] });
@@ -201,9 +203,7 @@ export const createSqlTag = <
       });
     },
     or: (members) => {
-      const filtered = members.filter(
-        (member) => member !== false && member !== null && member !== undefined,
-      );
+      const filtered = members.filter(isPresentMember);
 
       if (filtered.length === 0) {
         return Object.freeze({ sql: "FALSE", type: FragmentToken, values: [] });
