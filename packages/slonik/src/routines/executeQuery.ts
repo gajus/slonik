@@ -153,11 +153,13 @@ const executeQueryInternal = async (
     throw new BackendTerminatedError(poolClientState.terminated);
   }
 
-  if (query.sql.trim() === "") {
+  const trimmedSql = query.sql.trim();
+
+  if (trimmedSql === "") {
     throw new InvalidInputError("Unexpected SQL input. Query cannot be empty.");
   }
 
-  if (query.sql.trim() === "$1") {
+  if (trimmedSql === "$1") {
     throw new InvalidInputError(
       "Unexpected SQL input. Query cannot be empty. Found only value binding.",
     );
