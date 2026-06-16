@@ -153,7 +153,13 @@ const executeQueryInternal = async (
     throw new BackendTerminatedError(poolClientState.terminated);
   }
 
-  const trimmedSql = query.sql.trim();
+  // Convert Slonik's internal `$slonik_N` placeholders to `$N` once, up front, so the
+  // input-validation guards below see real Postgres placeholders. In particular, a query
+  // that is only a value binding arrives here as `$slonik_1` and must normalize to `$1`
+  // for the guard to fire. See the comment in `formatSlonikPlaceholder` for why the
+  // internal prefix exists.
+  const normalizedSql = query.sql.replaceAll("$slonik_", "$");
+  const trimmedSql = normalizedSql.trim();
 
   if (trimmedSql === "") {
     throw new InvalidInputError("Unexpected SQL input. Query cannot be empty.");
@@ -192,8 +198,7 @@ const executeQueryInternal = async (
   const originalQuery = {
     // Include statement name for prepared statements if provided
     name: query.name,
-    // See comments in `formatSlonikPlaceholder` for more information.
-    sql: query.sql.replaceAll("$slonik_", "$"),
+    sql: normalizedSql,
     values: query.values,
   };
 

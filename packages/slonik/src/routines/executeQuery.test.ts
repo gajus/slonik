@@ -4,6 +4,7 @@ import type { QuerySqlToken } from "../index.js";
 import { poolClientStateMap } from "../state.js";
 import { executeQuery } from "./executeQuery.js";
 import { InvalidInputError } from "@slonik/errors";
+import { createSqlTag } from "@slonik/sql-tag";
 import anyTest from "ava";
 import type { TestFn } from "ava";
 import { Roarr } from "roarr";
@@ -68,6 +69,28 @@ test("throws a descriptive error if the entire query is a value binding", async 
         sql: "$1",
         values: [],
       } as unknown as QuerySqlToken,
+      "foo",
+      t.context.executionRoutine,
+      false,
+    );
+  });
+
+  t.true(error instanceof InvalidInputError);
+  t.is(error?.message, "Unexpected SQL input. Query cannot be empty. Found only value binding.");
+});
+
+test("throws a descriptive error if the entire query is a value binding (constructed via tag)", async (t) => {
+  // Regression test: a real tagged query emits Slonik's internal `$slonik_1`
+  // placeholder, which must still be recognised as a value-only query. Unlike the
+  // test above, this exercises the actual tag output rather than a hand-built `$1`.
+  const sql = createSqlTag();
+
+  const error = await t.throwsAsync(async () => {
+    return await executeQuery(
+      t.context.logger,
+      t.context.connection,
+      createClientConfiguration(),
+      sql.unsafe`${"something"}`,
       "foo",
       t.context.executionRoutine,
       false,
