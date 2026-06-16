@@ -25,7 +25,19 @@ export const anyFirst: InternalQueryMethod = async (
 
   const firstColumnName = keys[0];
 
-  return (rows as Array<Record<string, unknown>>).map((row) => {
-    return row[firstColumnName];
-  });
+  // Pre-size the output array and fill it by index to avoid the per-call
+  // closure that Array.prototype.map allocates on large result sets. The array
+  // literal + `length` assignment produces the same pre-sized allocation as
+  // `new Array(n)` while satisfying the no-new-array lint rule.
+  const typedRows = rows as Array<Record<string, unknown>>;
+
+  const result: unknown[] = [];
+
+  result.length = typedRows.length;
+
+  for (let index = 0; index < typedRows.length; index++) {
+    result[index] = typedRows[index][firstColumnName];
+  }
+
+  return result;
 };

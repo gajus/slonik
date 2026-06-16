@@ -46,20 +46,20 @@ importers:
         specifier: ^3.4.7
         version: 3.4.8
       slonik:
-        specifier: ^49.10.4
+        specifier: ^49.10.6
         version: link:../slonik
 
   packages/driver:
     dependencies:
       '@slonik/types':
-        specifier: ^49.10.4
+        specifier: ^49.10.6
         version: link:../types
       '@slonik/utilities':
-        specifier: ^49.10.4
+        specifier: ^49.10.6
         version: link:../utilities
       roarr:
-        specifier: ^7.21.5
-        version: 7.21.5
+        specifier: ^7.21.6
+        version: 7.21.6
       serialize-error:
         specifier: ^12.0.0
         version: 12.0.0
@@ -89,7 +89,7 @@ importers:
   packages/errors:
     dependencies:
       '@slonik/types':
-        specifier: ^49.10.4
+        specifier: ^49.10.6
         version: link:../types
     devDependencies:
       '@standard-schema/spec':
@@ -114,19 +114,19 @@ importers:
   packages/pg-driver:
     dependencies:
       '@slonik/driver':
-        specifier: ^49.10.4
+        specifier: ^49.10.6
         version: link:../driver
       '@slonik/errors':
-        specifier: ^49.10.4
+        specifier: ^49.10.6
         version: link:../errors
       '@slonik/sql-tag':
-        specifier: ^49.10.4
+        specifier: ^49.10.6
         version: link:../sql-tag
       '@slonik/types':
-        specifier: ^49.10.4
+        specifier: ^49.10.6
         version: link:../types
       '@slonik/utilities':
-        specifier: ^49.10.4
+        specifier: ^49.10.6
         version: link:../utilities
       pg:
         specifier: ^8.18.0
@@ -169,19 +169,19 @@ importers:
         specifier: ^1.9.0
         version: 1.9.0
       '@slonik/driver':
-        specifier: ^49.10.4
+        specifier: ^49.10.6
         version: link:../driver
       '@slonik/errors':
-        specifier: ^49.10.4
+        specifier: ^49.10.6
         version: link:../errors
       '@slonik/pg-driver':
-        specifier: ^49.10.4
+        specifier: ^49.10.6
         version: link:../pg-driver
       '@slonik/sql-tag':
-        specifier: ^49.10.4
+        specifier: ^49.10.6
         version: link:../sql-tag
       '@slonik/utilities':
-        specifier: ^49.10.4
+        specifier: ^49.10.6
         version: link:../utilities
       '@standard-schema/spec':
         specifier: ^1.0.0
@@ -196,8 +196,8 @@ importers:
         specifier: ^4.0.2
         version: 4.0.2
       roarr:
-        specifier: ^7.21.5
-        version: 7.21.5
+        specifier: ^7.21.6
+        version: 7.21.6
       serialize-error:
         specifier: ^12.0.0
         version: 12.0.0
@@ -249,13 +249,13 @@ importers:
         version: 4.3.6
     devDependencies:
       '@slonik/types':
-        specifier: ^49.10.4
+        specifier: ^49.10.6
         version: link:../types
       '@standard-schema/spec':
         specifier: ^1.0.0
         version: 1.1.0
       slonik:
-        specifier: ^49.10.4
+        specifier: ^49.10.6
         version: link:../slonik
       typescript:
         specifier: ^5.9.3
@@ -274,7 +274,7 @@ importers:
         specifier: ^6.4.1
         version: 6.4.1(rollup@4.55.1)
       slonik:
-        specifier: ^49.10.4
+        specifier: ^49.10.6
         version: link:../slonik
       tsimp:
         specifier: ^2.0.12
@@ -289,8 +289,8 @@ importers:
         specifier: ^1.7.6
         version: 1.7.6
       roarr:
-        specifier: ^7.21.5
-        version: 7.21.5
+        specifier: ^7.21.6
+        version: 7.21.6
       tiny-lru:
         specifier: ^11.2.11
         version: 11.4.7
@@ -299,7 +299,7 @@ importers:
         specifier: ^6.4.1
         version: 6.4.1(rollup@4.55.1)
       slonik:
-        specifier: ^49.10.4
+        specifier: ^49.10.6
         version: link:../slonik
       tsimp:
         specifier: ^2.0.12
@@ -324,7 +324,7 @@ importers:
         specifier: ^6.4.1
         version: 6.4.1(rollup@4.55.1)
       slonik:
-        specifier: ^49.10.4
+        specifier: ^49.10.6
         version: link:../slonik
       tsimp:
         specifier: ^2.0.12
@@ -336,17 +336,17 @@ importers:
   packages/slonik-sql-tag-raw:
     dependencies:
       '@slonik/sql-tag':
-        specifier: ^49.10.4
+        specifier: ^49.10.6
         version: link:../sql-tag
       roarr:
-        specifier: ^7.21.5
-        version: 7.21.5
+        specifier: ^7.21.6
+        version: 7.21.6
     devDependencies:
       ava:
         specifier: ^6.4.1
         version: 6.4.1(rollup@4.55.1)
       slonik:
-        specifier: ^49.10.4
+        specifier: ^49.10.6
         version: link:../slonik
       tsimp:
         specifier: ^2.0.12
@@ -358,14 +358,14 @@ importers:
   packages/sql-tag:
     dependencies:
       '@slonik/errors':
-        specifier: ^49.10.4
+        specifier: ^49.10.6
         version: link:../errors
       '@slonik/types':
-        specifier: ^49.10.4
+        specifier: ^49.10.6
         version: link:../types
       roarr:
-        specifier: ^7.21.5
-        version: 7.21.5
+        specifier: ^7.21.6
+        version: 7.21.6
       safe-stable-stringify:
         specifier: ^2.5.0
         version: 2.5.0
@@ -426,10 +426,10 @@ importers:
   packages/utilities:
     dependencies:
       '@slonik/errors':
-        specifier: workspace:^49.10.4
+        specifier: workspace:^49.10.6
         version: link:../errors
       '@slonik/types':
-        specifier: ^49.10.4
+        specifier: ^49.10.6
         version: link:../types
     devDependencies:
       '@slonik/test-ssls':
@@ -3161,8 +3161,8 @@ packages:
     engines: {node: 20 || >=22}
     hasBin: true
 
-  roarr@7.21.5:
-    resolution: {integrity: sha512-nvelZ4llbfodVanR/gG17H8jpnqgyPX01c4ekQYfoghjEKvAXn7aPPToVG8ngyxf4qtvTC1O5AxQe5PysnF4xg==}
+  roarr@7.21.6:
+    resolution: {integrity: sha512-bE9gaDGzWu4BxkyxUEVHfnHruvF4gX9NAZBz86EVJoun2J18exVR/3Wwk0hhu8MWXtabkTVveNcOk1lzHaZbVw==}
     engines: {node: '>=18.0'}
 
   rollup@4.55.1:
@@ -6143,7 +6143,7 @@ snapshots:
       glob: 13.0.0
       package-json-from-dist: 1.0.1
 
-  roarr@7.21.5:
+  roarr@7.21.6:
     dependencies:
       fast-printf: 1.6.10
       safe-stable-stringify: 2.5.0

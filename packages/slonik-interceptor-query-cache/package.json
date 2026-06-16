@@ -27,7 +27,7 @@
   },
   "dependencies": {
     "@node-rs/xxhash": "^1.7.6",
-    "roarr": "^7.21.5",
+    "roarr": "^7.21.6",
     "tiny-lru": "^11.2.11"
   },
   "devDependencies": {
