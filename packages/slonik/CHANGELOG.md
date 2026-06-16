@@ -1,5 +1,26 @@
 # slonik
 
+## 49.10.3
+
+### Patch Changes
+
+- [`e445fea`](https://github.com/gajus/slonik/commit/e445feab3970ee26571bf29f17b179429f921162) Thanks [@gajus](https://github.com/gajus)! - Avoid copying the interceptor array on every query
+
+  `executeQueryInternal` copied `clientConfiguration.interceptors` with `.slice()`
+  on every query before running the result hooks. The array is `readonly` and is
+  never mutated during a query — the before-query and error hooks already iterate
+  it directly — so the copy was a wasted array allocation per query.
+
+  The interceptors are now read directly. Behaviour is unchanged; this removes
+  fixed-per-query allocation, most noticeable on high-throughput workloads.
+
+- Updated dependencies []:
+  - @slonik/driver@49.10.3
+  - @slonik/errors@49.10.3
+  - @slonik/pg-driver@49.10.3
+  - @slonik/sql-tag@49.10.3
+  - @slonik/utilities@49.10.3
+
 ## 49.10.2
 
 ### Patch Changes
