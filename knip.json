@@ -1,11 +1,13 @@
 {
-  "$schema": "https://unpkg.com/knip@2/schema.json",
-  "entry": ["src/index.ts!", "src/**/*.test.ts"],
-  "ignoreDependencies": [
-    "@changesets/cli",
-    "@slonik/test-ssls",
-    "husky",
-    "oxlint-config-canonical"
-  ],
-  "project": ["src/**/*.ts"]
+  "$schema": "https://unpkg.com/knip@6/schema.json",
+  "ignoreDependencies": ["@changesets/cli", "@slonik/test-ssls", "husky"],
+  "ignoreWorkspaces": ["packages/test-ssls"],
+  "workspaces": {
+    "packages/*": {
+      "project": ["src/**/*.ts"]
+    },
+    "packages/benchmark": {
+      "project": ["**/*.js"]
+    }
+  }
 }
