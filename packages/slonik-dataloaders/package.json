@@ -33,6 +33,7 @@
   "devDependencies": {
     "@slonik/types": "^49.10.8",
     "@standard-schema/spec": "^1.0.0",
+    "@types/node": "^24.10.13",
     "slonik": "^49.10.8",
     "typescript": "^5.9.3",
     "vitest": "^4.0.18"
