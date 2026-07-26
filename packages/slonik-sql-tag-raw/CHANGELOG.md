@@ -1,5 +1,18 @@
 # slonik-sql-tag-raw
 
+## 49.10.9
+
+### Patch Changes
+
+- [`5c4e88c`](https://github.com/gajus/slonik/commit/5c4e88c616a492e8f7ca11c6b5b80c11b645871b) Thanks [@gajus](https://github.com/gajus)! - Declare `@types/node` where Node globals are used
+
+  `roarr@7.21.7` dropped the `/// <reference types="node" />` directive from its type declarations. These packages use `process` and `Buffer` but never declared `@types/node` themselves — they were picking up the Node globals transitively through `roarr`, so removing the directive broke their builds. Each now declares `@types/node` directly.
+
+- [`de20433`](https://github.com/gajus/slonik/commit/de20433bc2b21a8f3a0320408ac1e80f7be29a12) Thanks [@gajus](https://github.com/gajus)! - Update `roarr` to `^7.21.7`
+
+- Updated dependencies [[`de20433`](https://github.com/gajus/slonik/commit/de20433bc2b21a8f3a0320408ac1e80f7be29a12)]:
+  - @slonik/sql-tag@49.10.9
+
 ## 49.10.8
 
 ### Patch Changes
