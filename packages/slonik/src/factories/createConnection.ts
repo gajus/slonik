@@ -74,16 +74,20 @@ const raceError = async <T>(
 ): Promise<T> => {
   const connectionErrorPromise = Promise.withResolvers<T>();
 
-  const onError = (error: Error) => {
-    connectionErrorPromise.reject(error);
-  };
-
-  connection.on("error", onError);
+  // `resolve` and `reject` are idempotent — the first settlement wins and later
+  // calls are no-ops — so forwarding both the routine and the connection error
+  // into the same deferred gives the same semantics as racing them, without
+  // allocating the race machinery on every checkout. A connection error that
+  // arrives after the routine has settled is discarded, as before.
+  connection.on("error", connectionErrorPromise.reject);
 
   try {
-    return await Promise.race([connectionErrorPromise.promise, routine()]);
+    // eslint-disable-next-line promise/prefer-await-to-then
+    routine().then(connectionErrorPromise.resolve, connectionErrorPromise.reject);
+
+    return await connectionErrorPromise.promise;
   } finally {
-    connection.removeListener("error", onError);
+    connection.removeListener("error", connectionErrorPromise.reject);
   }
 };
 
