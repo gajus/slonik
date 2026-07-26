@@ -7,7 +7,7 @@
   },
   "dependencies": {
     "benny": "^3.7.1",
-    "pg": "^8.18.0",
+    "pg": "^8.22.0",
     "pg-promise": "^11.15.0",
     "postgres": "^3.4.7",
     "slonik": "^49.10.7"
