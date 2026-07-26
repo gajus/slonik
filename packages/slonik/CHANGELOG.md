@@ -1,5 +1,18 @@
 # slonik
 
+## 49.10.9
+
+### Patch Changes
+
+- [`de20433`](https://github.com/gajus/slonik/commit/de20433bc2b21a8f3a0320408ac1e80f7be29a12) Thanks [@gajus](https://github.com/gajus)! - Update `roarr` to `^7.21.7`
+
+- Updated dependencies [[`de20433`](https://github.com/gajus/slonik/commit/de20433bc2b21a8f3a0320408ac1e80f7be29a12)]:
+  - @slonik/sql-tag@49.10.9
+  - @slonik/driver@49.10.9
+  - @slonik/errors@49.10.9
+  - @slonik/pg-driver@49.10.9
+  - @slonik/utilities@49.10.9
+
 ## 49.10.8
 
 ### Patch Changes
