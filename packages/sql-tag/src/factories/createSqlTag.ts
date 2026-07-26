@@ -37,6 +37,11 @@ const log = Logger.child({
   namespace: "sql",
 });
 
+// `sql.unsafe` applies no result validation. The schema is stateless and
+// immutable, so a single shared instance serves every token; constructing one
+// per tagged-template call showed up as a significant share of query CPU.
+const unknownParser = z.unknown();
+
 const createFragment = (parts: TemplateStringsArray, values: readonly ValueExpression[]) => {
   if (!Array.isArray(parts.raw) || !Object.isFrozen(parts.raw)) {
     throw new InvalidInputError("Function must be called as a template literal.");
@@ -263,7 +268,7 @@ export const createSqlTag = <
     unsafe: (parts, ...args) => {
       return Object.freeze({
         ...createFragment(parts, args),
-        parser: z.unknown(),
+        parser: unknownParser,
         type: QueryToken,
       });
     },
