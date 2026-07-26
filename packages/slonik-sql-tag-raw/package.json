@@ -27,7 +27,7 @@
   },
   "dependencies": {
     "@slonik/sql-tag": "^49.10.8",
-    "roarr": "^7.21.6"
+    "roarr": "^7.21.7"
   },
   "devDependencies": {
     "ava": "^6.4.1",
