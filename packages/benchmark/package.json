@@ -1,6 +1,6 @@
 {
   "name": "@slonik/benchmark",
-  "version": "49.10.8",
+  "version": "49.10.9",
   "private": true,
   "scripts": {
     "benchmark": "NODE_ENV=production node benchmark.js"
@@ -10,6 +10,6 @@
     "pg": "^8.22.0",
     "pg-promise": "^11.15.0",
     "postgres": "^3.4.7",
-    "slonik": "^49.10.8"
+    "slonik": "^49.10.9"
   }
 }
