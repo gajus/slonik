@@ -35,7 +35,6 @@ Read: [Stop using Knex.js](https://medium.com/@gajus/bf410349856c)
 ## Contents
 
 - [Slonik](#slonik)
-  - [Sponsors](#sponsors)
   - [Principles](#principles)
   - [Features](#features)
   - [Contents](#contents)
@@ -46,7 +45,6 @@ Read: [Stop using Knex.js](https://medium.com/@gajus/bf410349856c)
     - [Protecting against unsafe connection handling](#protecting-against-unsafe-connection-handling)
     - [Protecting against unsafe transaction handling](#protecting-against-unsafe-transaction-handling)
     - [Protecting against unsafe value interpolation](#protecting-against-unsafe-value-interpolation)
-  - [Documentation](#documentation)
   - [Usage](#usage)
     - [Connection URI](#connection-uri)
     - [Create connection](#create-connection)
@@ -107,6 +105,7 @@ Read: [Stop using Knex.js](https://medium.com/@gajus/bf410349856c)
     - [`sql.prepared`](#sqlprepared)
   - [Tips](#tips)
     - [Prefer `sql.and`, `sql.or`, and `sql.list` over `sql.join`](#prefer-sqland-sqlor-and-sqllist-over-sqljoin)
+    - [Compile Zod schemas at build time](#compile-zod-schemas-at-build-time)
     - [Hoist Zod schemas with `babel-plugin-zod-hoist`](#hoist-zod-schemas-with-babel-plugin-zod-hoist)
     - [Validate SQL queries with `eslint-plugin-slonik`](#validate-sql-queries-with-eslint-plugin-slonik)
   - [Query methods](#query-methods)
@@ -120,6 +119,7 @@ Read: [Stop using Knex.js](https://medium.com/@gajus/bf410349856c)
     - [`one`](#one)
     - [`oneFirst`](#onefirst)
     - [`query`](#query)
+    - [`record`](#record)
     - [`stream`](#stream)
     - [`transaction`](#transaction)
   - [Utilities](#utilities)
@@ -147,7 +147,6 @@ Read: [Stop using Knex.js](https://medium.com/@gajus/bf410349856c)
   - [Syntax Highlighting](#syntax-highlighting)
     - [Atom Syntax Highlighting Plugin](#atom-syntax-highlighting-plugin)
     - [VS Code Syntax Highlighting Extension](#vs-code-syntax-highlighting-extension)
-  - [Development](#development)
 
 ## About Slonik
 
@@ -298,7 +297,7 @@ The default behaviour is to execute `DISCARD ALL` command. This behaviour can be
 import { createPool, sql } from "slonik";
 import { createPgDriverFactory } from "@slonik/pg-driver";
 
-const pool = createPool("postgres://", {
+const pool = await createPool("postgres://", {
   driverFactory: createPgDriverFactory(),
   resetConnection: async (connection) => {
     await connection.query("DISCARD ALL");
@@ -313,7 +312,7 @@ const pool = createPool("postgres://", {
 > import { createPool } from "slonik";
 > import { createPgDriverFactory } from "@slonik/pg-driver";
 >
-> const pool = createPool("postgres://", {
+> const pool = await createPool("postgres://", {
 >   driverFactory: createPgDriverFactory(),
 >   resetConnection: async () => {},
 > });
@@ -428,8 +427,6 @@ WHERE foo.b IN ($7, $8)
 This query is executed with the parameters provided by the user.
 
 To sum up, Slonik is designed to prevent accidental creation of queries vulnerable to SQL injections.
-
-## Documentation
 
 ## Usage
 
@@ -632,8 +629,8 @@ Note: `pool.end()` does not terminate active connections/ transactions.
  */
 createPool(
   connectionUri: string,
-  clientConfiguration: ClientConfiguration
-): DatabasePool;
+  clientConfiguration?: ClientConfigurationInput
+): Promise<DatabasePool>;
 
 /**
  * @property captureStackTrace Dictates whether to capture stack trace before executing query. Middlewares access stack trace through query execution context. (Default: false)
@@ -645,38 +642,49 @@ createPool(
  * @property idleInTransactionSessionTimeout Timeout (in milliseconds) after which idle clients are closed. Use 'DISABLE_TIMEOUT' constant to disable the timeout. (Default: 60000)
  * @property idleTimeout Timeout (in milliseconds) after which idle clients are closed. Use 'DISABLE_TIMEOUT' constant to disable the timeout. (Default: 5000)
  * @property interceptors An array of [Slonik interceptors](https://github.com/gajus/slonik#interceptors).
- * @property maximumConnectionAge The maximum age of a connection allowed in the pool. After this age, the connection will be destroyed. (Default: 30 minutes)
+ * @property maximumConnectionAge The maximum age of a connection allowed in the pool. After this age, the connection will be destroyed. Use 'DISABLE_TIMEOUT' constant to disable the timeout. (Default: 30 minutes)
  * @property maximumPoolSize (Deprecated: use maxPoolSize) Do not allow more than this many connections. (Default: 10)
  * @property maxPoolSize Do not allow more than this many connections. (Default: 10)
  * @property minimumPoolSize (Deprecated: use minPoolSize) Ensure that at least this many connections are available in the pool. (Default: 0)
  * @property minPoolSize Ensure that at least this many connections are available in the pool. (Default: 0)
+ * @property password Overrides the password in the connection URI. Accepts a string, or a callback (sync or async) that is invoked for every new connection. See [Dynamic passwords](#dynamic-passwords).
+ * @property poolName Human-readable identifier for distinguishing multiple pools within the same application, e.g. "read", "write", "replica-us-east-1".
  * @property queryRetryLimit Number of times a query failing with Transaction Rollback class error, that doesn't belong to a transaction, is retried. (Default: 5)
+ * @property resetConnection Routine that is invoked to reset the connection after it is released. (Default: executes `DISCARD ALL`) See [Resetting connection state](#resetting-connection-state).
  * @property ssl [tls.connect options](https://nodejs.org/api/tls.html#tlsconnectoptions-callback)
  * @property statementTimeout Timeout (in milliseconds) after which database is instructed to abort the query. Use 'DISABLE_TIMEOUT' constant to disable the timeout. (Default: 60000)
  * @property tracing Controls whether Slonik creates OpenTelemetry spans. (Default: false)
  * @property transactionRetryLimit Number of times a transaction failing with Transaction Rollback class error is retried. (Default: 5)
  * @property typeParsers An array of [Slonik type parsers](https://github.com/gajus/slonik#type-parsers).
  */
-type ClientConfiguration = {
+type ClientConfigurationInput = {
   captureStackTrace?: boolean,
   connectionRetryLimit?: number,
   connectionTimeout?: number | 'DISABLE_TIMEOUT',
+  dangerouslyAllowForeignConnections?: boolean,
   driverFactory?: DriverFactory,
   gracefulTerminationTimeout?: number,
   idleInTransactionSessionTimeout?: number | 'DISABLE_TIMEOUT',
   idleTimeout?: number | 'DISABLE_TIMEOUT',
-  interceptors?: Interceptor[],
-  maximumConnectionAge?: number,
+  interceptors?: readonly Interceptor[],
+  maximumConnectionAge?: number | 'DISABLE_TIMEOUT',
   maximumPoolSize?: number, // deprecated, use maxPoolSize
   maxPoolSize?: number,
   minimumPoolSize?: number, // deprecated, use minPoolSize
   minPoolSize?: number,
+  password?: string | (() => Promise<string> | string),
+  poolName?: string,
   queryRetryLimit?: number,
-  ssl?: Parameters<tls.connect>[0],
+  resetConnection?: (basicConnection: BasicConnection) => Promise<void>,
+  ssl?: tls.ConnectionOptions,
   statementTimeout?: number | 'DISABLE_TIMEOUT',
   tracing?: boolean,
   transactionRetryLimit?: number,
-  typeParsers?: TypeParser[],
+  typeParsers?: readonly DriverTypeParser[],
+};
+
+type BasicConnection = {
+  readonly query: (query: string) => Promise<void>;
 };
 ```
 
@@ -717,7 +725,7 @@ These type parsers are enabled by default:
 To disable the default type parsers, pass an empty array, e.g.
 
 ```ts
-createPool("postgres://", {
+await createPool("postgres://", {
   typeParsers: [],
 });
 ```
@@ -728,7 +736,7 @@ You can create default type parser collection using `createTypeParserPreset`, e.
 import { createTypeParserPreset } from "slonik";
 import { createPgDriverFactory } from "@slonik/pg-driver";
 
-createPool("postgres://", {
+await createPool("postgres://", {
   driverFactory: createPgDriverFactory(),
   typeParsers: [...createTypeParserPreset()],
 });
@@ -813,7 +821,7 @@ As the name suggests, [`pg-promise`](https://github.com/vitaly-t/pg-promise) was
 
 The primary difference between Slonik and `pg-promise`:
 
-- Slonik does not allow to execute raw text queries. Slonik queries can only be constructed using [`sql` tagged template literals](#value-placeholders-tagged-template-literals). This design [protects against unsafe value interpolation](#protecting-against-unsafe-value-interpolation).
+- Slonik does not allow to execute raw text queries. Slonik queries can only be constructed using [`sql` tagged template literals](#tagged-template-literals). This design [protects against unsafe value interpolation](#protecting-against-unsafe-value-interpolation).
 - Slonik implements [interceptor API](#interceptors) (middleware). Middlewares allow to modify connection handling, override queries and modify the query results. Example Slonik interceptors include [field name transformation](https://github.com/gajus/slonik-interceptor-field-name-transformation), [query normalization](https://github.com/gajus/slonik-interceptor-query-normalisation) and [query benchmarking](https://github.com/gajus/slonik-interceptor-query-benchmarking).
 
 Note: Author of `pg-promise` has [objected to the above claims](https://github.com/gajus/slonik/issues/122). I have removed a difference that was clearly wrong. I maintain that the above two differences remain valid differences: even though `pg-promise` might have substitute functionality for variable interpolation and interceptors, it implements them in a way that does not provide the same benefits that Slonik provides, namely: guaranteed security and support for extending library functionality using multiple plugins.
@@ -842,9 +850,9 @@ Work on `pg-promise` began [Wed Mar 4 02:00:34 2015](https://github.com/vitaly-t
 Type parsers describe how to parse PostgreSQL types.
 
 ```ts
-type TypeParser = {
-  name: string;
-  parse: (value: string) => *;
+type DriverTypeParser<T = unknown> = {
+  readonly name: string;
+  readonly parse: (value: string) => T;
 };
 ```
 
@@ -927,50 +935,64 @@ Interceptor is an object that implements methods that can change the behaviour o
 
 ```ts
 type Interceptor = {
-  afterPoolConnection?: (
+  readonly afterPoolConnection?: (
     connectionContext: ConnectionContext,
     connection: DatabasePoolConnection,
   ) => MaybePromise<null>;
-  afterQueryExecution?: (
-    queryContext: QueryContext,
-    query: Query,
-    result: QueryResult<QueryResultRow>,
-  ) => MaybePromise<QueryResult<QueryResultRow>>;
-  beforePoolConnection?: (connectionContext: PoolContext) => MaybePromise<?DatabasePool>;
-  beforePoolConnectionRelease?: (
-    connectionContext: ConnectionContext,
-    connection: DatabasePoolConnection,
-  ) => MaybePromise<null>;
-  beforeQueryExecution?: (
-    queryContext: QueryContext,
-    query: Query,
-  ) => MaybePromise<QueryResult<QueryResultRow>> | MaybePromise<null>;
-  beforeQueryResult?: (
+  readonly afterQueryExecution?: (
     queryContext: QueryContext,
     query: Query,
     result: QueryResult<QueryResultRow>,
   ) => MaybePromise<null>;
-  beforeTransformQuery?: (queryContext: QueryContext, query: Query) => MaybePromise<null>;
-  dataIntegrityError?: (
+  readonly beforePoolConnection?: (
+    connectionContext: PoolContext,
+  ) => MaybePromise<DatabasePool | null | undefined>;
+  readonly beforePoolConnectionRelease?: (
+    connectionContext: ConnectionContext,
+    connection: DatabasePoolConnection,
+  ) => MaybePromise<null>;
+  readonly beforeQueryExecution?: (
+    queryContext: QueryContext,
+    query: Query,
+  ) => MaybePromise<null | QueryResult<QueryResultRow>>;
+  readonly beforeQueryResult?: (
+    queryContext: QueryContext,
+    query: Query,
+    result: QueryResult<QueryResultRow>,
+  ) => MaybePromise<null>;
+  readonly beforeTransformQuery?: (queryContext: QueryContext, query: Query) => MaybePromise<null>;
+  readonly dataIntegrityError?: (
     queryContext: QueryContext,
     query: Query,
     error: DataIntegrityError,
     result: QueryResult<QueryResultRow>,
   ) => MaybePromise<null>;
-  queryExecutionError?: (
+  readonly name: string;
+  readonly queryExecutionError?: (
     queryContext: QueryContext,
     query: Query,
     error: SlonikError,
+    notices: readonly DriverNotice[],
   ) => MaybePromise<null>;
-  transformQuery?: (queryContext: QueryContext, query: Query) => Query;
-  transformRow?: (
+  readonly transformQuery?: (queryContext: QueryContext, query: Query) => Query;
+  readonly transformRow?: (
     queryContext: QueryContext,
     query: Query,
     row: QueryResultRow,
-    fields: Field[],
-  ) => MaybePromise<QueryResultRow>;
+    fields: readonly Field[],
+  ) => QueryResultRow;
+  readonly transformRowAsync?: (
+    queryContext: QueryContext,
+    query: Query,
+    row: QueryResultRow,
+    fields: readonly Field[],
+  ) => Promise<QueryResultRow>;
 };
 ```
+
+> [!IMPORTANT]
+> `name` is the only required property. Every interceptor must declare one – it identifies the
+> interceptor in logs and in OpenTelemetry spans.
 
 For a given connection attempt, Slonik reuses the same context object across
 `beforePoolConnection`, `afterPoolConnection`, and `beforePoolConnectionRelease`.
@@ -1052,6 +1074,17 @@ Transforms row.
 
 Use `transformRow` to modify the query result.
 
+Note: `transformRow` is synchronous. Use [`transformRowAsync`](#transformrowasync) if the
+transformation is asynchronous.
+
+#### <code>transformRowAsync</code>
+
+The asynchronous counterpart of [`transformRow`](#transformrow), executed after it.
+
+Use `transformRowAsync` when transforming a row requires awaiting, e.g. when validating the row
+against a schema without blocking the event loop. This is the method used by the
+[result parser interceptor](#result-parser-interceptor).
+
 ### Community interceptors
 
 | Name                                                                                                                    | Description                                 |
@@ -1111,6 +1144,7 @@ const readOnlyPool = await createPool("postgres://read-only");
 const pool = await createPool("postgres://main", {
   interceptors: [
     {
+      name: "slonik-interceptor-read-only-routing",
       beforePoolConnection: (connectionContext) => {
         if (!connectionContext.query?.sql.trim().startsWith("SELECT ")) {
           // Returning null falls back to using the DatabasePool from which the query originates.
@@ -1148,8 +1182,8 @@ Parameter symbols only work in optimizable SQL commands (SELECT, INSERT, UPDATE,
 
 In the context of Slonik, if you are building utility statements you must use query building methods that interpolate values directly into queries:
 
-- [`sql.identifier`](#sql-identifier) – for identifiers.
-- [`sql.literalValue`](#sql-literalvalue) – for values.
+- [`sql.identifier`](#sqlidentifier) – for identifiers.
+- [`sql.literalValue`](#sqlliteralvalue) – for values.
 
 Example:
 
@@ -1242,7 +1276,7 @@ To use it, simply add it as a middleware:
 import { createPool } from "slonik";
 import { createPgDriverFactory } from "@slonik/pg-driver";
 
-createPool("postgresql://", {
+await createPool("postgresql://", {
   driverFactory: createPgDriverFactory(),
   interceptors: [createResultParserInterceptor()],
 });
@@ -1532,7 +1566,8 @@ If this is your first time using Slonik, read [Dynamically generating SQL querie
 ### <code>sql.and</code>
 
 ```ts
-(members: (ValueExpression | false | null | undefined)[]) => FragmentSqlToken | ListSqlToken;
+(members: ReadonlyArray<false | null | undefined | ValueExpression>) =>
+  FragmentSqlToken | ListSqlToken;
 ```
 
 Concatenates SQL expressions using `AND`. Members that are `false`, `null`, or `undefined` are silently filtered out, making it easy to build conditional WHERE clauses:
@@ -1568,10 +1603,10 @@ sql.fragment`WHERE ${sql.and([false, null, undefined])}`;
 ### <code>sql.array</code>
 
 ```ts
-(
+<T extends TypeNameIdentifier>(
   values: readonly PrimitiveValueExpression[],
-  memberType: SqlFragment | TypeNameIdentifier,
-) => ArraySqlToken,
+  memberType: FragmentSqlToken | T,
+) => ArraySqlToken<T>;
 ```
 
 Creates an array value binding, e.g.
@@ -1722,7 +1757,7 @@ await connection.query(sql.unsafe`
 ### <code>sql.fragment</code>
 
 ```ts
-(template: TemplateStringsArray, ...values: ValueExpression[]) => SqlFragment;
+(template: TemplateStringsArray, ...values: ValueExpression[]) => FragmentSqlToken;
 ```
 
 A SQL fragment, e.g.
@@ -1767,7 +1802,7 @@ There are two primary differences:
 ### <code>sql.identifier</code>
 
 ```ts
-(names: string[]) => IdentifierSqlToken;
+(names: readonly string[]) => IdentifierSqlToken;
 ```
 
 [Delimited identifiers](https://www.postgresql.org/docs/current/static/sql-syntax-lexical.html#SQL-SYNTAX-IDENTIFIERS) are created by enclosing an arbitrary sequence of characters in double-quotes ("). To create a delimited identifier, create an `sql` tag function placeholder value using `sql.identifier`, e.g.
@@ -1791,19 +1826,17 @@ Produces:
 ### <code>sql.interval</code>
 
 ```ts
-(
-  interval:
-    | {
-        years?: number;
-        months?: number;
-        weeks?: number;
-        days?: number;
-        hours?: number;
-        minutes?: number;
-        seconds?: number;
-      }
-    | TemporalDuration,
-) => IntervalSqlToken;
+(interval: IntervalInput | TemporalDuration) => IntervalSqlToken;
+
+type IntervalInput = {
+  days?: number;
+  hours?: number;
+  minutes?: number;
+  months?: number;
+  seconds?: number;
+  weeks?: number;
+  years?: number;
+};
 ```
 
 Inserts an [interval](https://www.postgresql.org/docs/current/datatype-datetime.html#DATATYPE-INTERVAL-INPUT), e.g.
@@ -1872,7 +1905,7 @@ sql.unsafe`
 > In most cases, prefer [`sql.array`](#sqlarray) for value lists, [`sql.and`](#sqland) for `AND`-separated conditions, or [`sql.or`](#sqlor) for `OR`-separated conditions. `sql.join` is useful in a narrow set of scenarios where a custom glue is needed, such as `ORDER BY` clauses, `UNION` construction, or comma-separated fragment lists.
 
 ```ts
-(members: SqlSqlToken[], glue: SqlSqlToken) => ListSqlToken;
+(members: readonly ValueExpression[], glue: FragmentSqlToken) => ListSqlToken;
 ```
 
 Concatenates SQL expressions using `glue` separator. Use `sql.join` when you need a custom glue that isn't covered by [`sql.and`](#sqland), [`sql.or`](#sqlor), or [`sql.array`](#sqlarray).
@@ -1991,7 +2024,7 @@ Produces:
 ### <code>sql.list</code>
 
 ```ts
-(members: ValueExpression[]) => ListSqlToken;
+(members: readonly ValueExpression[]) => ListSqlToken;
 ```
 
 Concatenates SQL expressions using `, `. Use for SELECT columns, ORDER BY clauses, tuple construction, and other comma-separated lists:
@@ -2019,7 +2052,8 @@ This is equivalent to `sql.join(members, sql.fragment`, `)`.
 ### <code>sql.or</code>
 
 ```ts
-(members: (ValueExpression | false | null | undefined)[]) => FragmentSqlToken | ListSqlToken;
+(members: ReadonlyArray<false | null | undefined | ValueExpression>) =>
+  FragmentSqlToken | ListSqlToken;
 ```
 
 Concatenates SQL expressions using `OR`. Like [`sql.and`](#sqland), members that are `false`, `null`, or `undefined` are silently filtered out:
@@ -2045,7 +2079,7 @@ sql.fragment`WHERE ${sql.or([false, null, undefined])}`;
 > Do not use. This method interpolates values as literals and it must be used only for [building utility statements](#building-utility-statements). You are most likely looking for [value placeholders](#value-placeholders).
 
 ```ts
-(value: string) => SqlSqlToken;
+(value: string) => FragmentSqlToken;
 ```
 
 Escapes and interpolates a literal value into a query.
@@ -2105,8 +2139,10 @@ await connection.query(sql.unsafe`
 ```ts
 (
   tuples: ReadonlyArray<readonly any[]>,
-  columnTypes:  Array<[...string[], TypeNameIdentifier]> | Array<SqlSqlToken | TypeNameIdentifier>
-): UnnestSqlToken;
+  columnTypes:
+    | Array<[...string[], TypeNameIdentifier]>
+    | Array<FragmentSqlToken | TypeNameIdentifier>,
+) => UnnestSqlToken;
 ```
 
 Creates an `unnest` expressions, e.g.
@@ -2241,7 +2277,7 @@ const result = await connection.one(sql.unsafe`
 ### <code>sql.uuid</code>
 
 ```ts
-(uuid: string) => TimestampSqlToken;
+(uuid: string) => UuidSqlToken;
 ```
 
 Inserts a UUID, e.g.
@@ -2266,9 +2302,9 @@ Produces:
 ### <code>sql.prepared</code>
 
 ```ts
-<Schema extends StandardSchemaV1 | ZodTypeAny>(name: string, schema: Schema) =>
+<Y extends StandardSchemaV1>(statementName: string, parser: Y) =>
   (template: TemplateStringsArray, ...values: ValueExpression[]) =>
-    QuerySqlToken;
+    QuerySqlToken<Y>;
 ```
 
 Creates a [named prepared statement](https://www.postgresql.org/docs/current/sql-prepare.html). Named prepared statements allow PostgreSQL to parse and plan a query once, then execute it multiple times with different parameter values. This can significantly improve performance for frequently executed queries.

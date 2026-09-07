@@ -11,7 +11,7 @@ import type { StrictEventEmitter } from "strict-event-emitter-types";
 
 export type ClientConfiguration = {
   /**
-   * Dictates whether to capture stack trace before executing query. Middlewares access stack trace through query execution context. (Default: true)
+   * Dictates whether to capture stack trace before executing query. Middlewares access stack trace through query execution context. (Default: false)
    */
   readonly captureStackTrace: boolean;
   /**
@@ -19,7 +19,7 @@ export type ClientConfiguration = {
    */
   readonly connectionRetryLimit: number;
   /**
-   * Timeout (in milliseconds) after which an error is raised if connection cannot cannot be established. (Default: 5000)
+   * Timeout (in milliseconds) after which an error is raised if connection cannot be established. (Default: 5000)
    */
   readonly connectionTimeout: "DISABLE_TIMEOUT" | number;
   /**
@@ -75,10 +75,14 @@ export type ClientConfiguration = {
    */
   readonly minPoolSize?: number;
   /**
+   * Overrides the password in the connection URI. Accepts a string, or a callback
+   * (sync or async) that is invoked by the driver for every new connection.
+   */
+  readonly password?: (() => Promise<string> | string) | string;
+  /**
    * Human-readable identifier for distinguishing multiple pools within the same application,
    * e.g. "read", "write", "replica-us-east-1".
    */
-  readonly password?: (() => Promise<string> | string) | string;
   readonly poolName?: string;
   /**
    * Number of times a query failing with Transaction Rollback class error, that doesn't belong to a transaction, is retried. (Default: 5)
@@ -90,7 +94,7 @@ export type ClientConfiguration = {
    */
   readonly resetConnection?: (basicConnection: BasicConnection) => Promise<void>;
   /**
-   * tls.connect options *
+   * [tls.connect options](https://nodejs.org/api/tls.html#tlsconnectoptions-callback)
    */
   readonly ssl?: TlsConnectionOptions;
   /**
