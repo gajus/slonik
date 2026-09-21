@@ -1,5 +1,7 @@
 # slonik-interceptor-query-logging
 
+## 49.10.10
+
 ## 49.10.9
 
 ### Patch Changes
