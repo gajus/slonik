@@ -1,5 +1,11 @@
 # @slonik/dataloaders
 
+## 49.10.10
+
+### Patch Changes
+
+- [`91e658e`](https://github.com/gajus/slonik/commit/91e658e141da22badf2901ebd1e05dde36f5a8cf) Thanks [@gajus](https://github.com/gajus)! - support graphql v17 in addition to v16
+
 ## 49.10.9
 
 ### Patch Changes
