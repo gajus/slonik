@@ -1,5 +1,6 @@
 export const ArrayToken = Symbol.for("SLONIK_TOKEN_ARRAY");
 export const BinaryToken = Symbol.for("SLONIK_TOKEN_BINARY");
+export const BooleanExpressionToken = Symbol.for("SLONIK_TOKEN_BOOLEAN_EXPRESSION");
 export const ComparisonPredicateToken = Symbol.for("SLONIK_TOKEN_COMPARISON_PREDICATE");
 export const DateToken = Symbol.for("SLONIK_TOKEN_DATE");
 export const FragmentToken = Symbol.for("SLONIK_TOKEN_FRAGMENT");

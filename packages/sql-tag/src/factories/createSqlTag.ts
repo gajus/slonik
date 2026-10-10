@@ -3,6 +3,7 @@ import type { UUID } from "../sqlFragmentFactories/createUuidSqlFragment.js";
 import {
   ArrayToken,
   BinaryToken,
+  BooleanExpressionToken,
   DateToken,
   FragmentToken,
   IdentifierToken,
@@ -122,16 +123,10 @@ export const createSqlTag = <
 
   return {
     and: (members) => {
-      const filtered = members.filter(isPresentMember);
-
-      if (filtered.length === 0) {
-        return Object.freeze({ sql: "TRUE", type: FragmentToken, values: [] });
-      }
-
       return Object.freeze({
-        glue: Object.freeze({ sql: " AND ", type: FragmentToken, values: [] }),
-        members: filtered,
-        type: ListToken,
+        members: members.filter(isPresentMember),
+        operator: "AND",
+        type: BooleanExpressionToken,
       });
     },
     array: <T extends TypeNameIdentifier>(
@@ -208,16 +203,10 @@ export const createSqlTag = <
       });
     },
     or: (members) => {
-      const filtered = members.filter(isPresentMember);
-
-      if (filtered.length === 0) {
-        return Object.freeze({ sql: "FALSE", type: FragmentToken, values: [] });
-      }
-
       return Object.freeze({
-        glue: Object.freeze({ sql: " OR ", type: FragmentToken, values: [] }),
-        members: filtered,
-        type: ListToken,
+        members: members.filter(isPresentMember),
+        operator: "OR",
+        type: BooleanExpressionToken,
       });
     },
     prepared: (statementName, parser) => {

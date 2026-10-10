@@ -36,6 +36,12 @@ export type BinarySqlToken = {
   readonly type: typeof tokens.BinaryToken;
 };
 
+export type BooleanExpressionSqlToken = {
+  readonly members: readonly ValueExpression[];
+  readonly operator: "AND" | "OR";
+  readonly type: typeof tokens.BooleanExpressionToken;
+};
+
 export type DateSqlToken = {
   readonly date: Date | TemporalPlainDate;
   readonly type: typeof tokens.DateToken;
@@ -104,7 +110,7 @@ export type SqlTag<Z extends Record<string, StandardSchemaV1> = Record<string, S
   {
     and: (
       members: ReadonlyArray<false | null | undefined | ValueExpression>,
-    ) => FragmentSqlToken | ListSqlToken;
+    ) => BooleanExpressionSqlToken;
     array: <T extends TypeNameIdentifier>(
       values: readonly PrimitiveValueExpression[],
       memberType: FragmentSqlToken | T,
@@ -121,7 +127,7 @@ export type SqlTag<Z extends Record<string, StandardSchemaV1> = Record<string, S
     literalValue: (value: string) => FragmentSqlToken;
     or: (
       members: ReadonlyArray<false | null | undefined | ValueExpression>,
-    ) => FragmentSqlToken | ListSqlToken;
+    ) => BooleanExpressionSqlToken;
     /**
      * Creates a named prepared statement. The statement name is used by PostgreSQL
      * to cache the query plan, which can improve performance for frequently executed queries.
@@ -160,6 +166,7 @@ export type SqlTag<Z extends Record<string, StandardSchemaV1> = Record<string, S
 export type SqlToken =
   | ArraySqlToken<TypeNameIdentifier>
   | BinarySqlToken
+  | BooleanExpressionSqlToken
   | DateSqlToken
   | FragmentSqlToken
   | IdentifierSqlToken

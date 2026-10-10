@@ -1566,8 +1566,7 @@ If this is your first time using Slonik, read [Dynamically generating SQL querie
 ### <code>sql.and</code>
 
 ```ts
-(members: ReadonlyArray<false | null | undefined | ValueExpression>) =>
-  FragmentSqlToken | ListSqlToken;
+(members: ReadonlyArray<false | null | undefined | ValueExpression>) => BooleanExpressionSqlToken;
 ```
 
 Concatenates SQL expressions using `AND`. Members that are `false`, `null`, or `undefined` are silently filtered out, making it easy to build conditional WHERE clauses:
@@ -1588,10 +1587,22 @@ If `name` is `undefined` and `age` is `30`, this produces:
 
 ```ts
 {
-  sql: 'SELECT * FROM foo WHERE bar = $1 AND age > $2',
+  sql: 'SELECT * FROM foo WHERE ((bar = $1) AND (age > $2))',
   values: [1, 30]
 }
 ```
+
+Each member is wrapped in parentheses, and so is the combined expression. This keeps conditions intact when `sql.and` and `sql.or` are nested or embedded next to other operators. `AND` binds tighter than `OR`, so without the parentheses the following would produce `status = $1 OR status = $2 AND owner_id = $3`, which PostgreSQL evaluates as `status = $1 OR (status = $2 AND owner_id = $3)`:
+
+```ts
+sql.fragment`WHERE ${sql.and([
+  sql.or([sql.fragment`status = ${"open"}`, sql.fragment`status = ${"pending"}`]),
+  sql.fragment`owner_id = ${ownerId}`,
+])}`;
+// WHERE (((status = $1) OR (status = $2)) AND (owner_id = $3))
+```
+
+Values, identifiers, and nested `sql.and` / `sql.or` expressions are already a single operand, so they are not wrapped again.
 
 If all members are filtered out (or the array is empty), `sql.and` produces `TRUE`:
 
@@ -2052,8 +2063,7 @@ This is equivalent to `sql.join(members, sql.fragment`, `)`.
 ### <code>sql.or</code>
 
 ```ts
-(members: ReadonlyArray<false | null | undefined | ValueExpression>) =>
-  FragmentSqlToken | ListSqlToken;
+(members: ReadonlyArray<false | null | undefined | ValueExpression>) => BooleanExpressionSqlToken;
 ```
 
 Concatenates SQL expressions using `OR`. Like [`sql.and`](#sqland), members that are `false`, `null`, or `undefined` are silently filtered out:
@@ -2064,6 +2074,16 @@ await connection.query(sql.unsafe`
   FROM foo
   WHERE ${sql.or([name && sql.fragment`name = ${name}`, email && sql.fragment`email = ${email}`])}
 `);
+```
+
+Like `sql.and`, `sql.or` wraps each member and the combined expression in parentheses, so the result can be embedded next to other operators without changing its meaning:
+
+```ts
+sql.fragment`WHERE tenant_id = ${tenantId} AND ${sql.or([
+  sql.fragment`name = ${name}`,
+  sql.fragment`email = ${email}`,
+])}`;
+// WHERE tenant_id = $1 AND ((name = $2) OR (email = $3))
 ```
 
 If all members are filtered out (or the array is empty), `sql.or` produces `FALSE`:
@@ -2389,6 +2409,16 @@ sql.and([
   name && sql.fragment`name = ${name}`,
   minAge && sql.fragment`age >= ${minAge}`,
 ]);
+```
+
+They also parenthesize each member and the combined expression, so conditions compose safely. `sql.join` does not:
+
+```ts
+sql.join([sql.fragment`a OR b`, sql.fragment`c`], sql.fragment` AND `);
+// a OR b AND c, which PostgreSQL evaluates as a OR (b AND c)
+
+sql.and([sql.fragment`a OR b`, sql.fragment`c`]);
+// ((a OR b) AND (c))
 ```
 
 Reserve `sql.join` for cases where you need a custom glue that isn't `AND`, `OR`, or `, ` — such as `UNION ALL` or `INTERSECT`.

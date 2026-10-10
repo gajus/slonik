@@ -1,5 +1,6 @@
 import { createArraySqlFragment } from "../sqlFragmentFactories/createArraySqlFragment.js";
 import { createBinarySqlFragment } from "../sqlFragmentFactories/createBinarySqlFragment.js";
+import { createBooleanExpressionSqlFragment } from "../sqlFragmentFactories/createBooleanExpressionSqlFragment.js";
 import { createDateSqlFragment } from "../sqlFragmentFactories/createDateSqlFragment.js";
 import { createFragmentSqlFragment } from "../sqlFragmentFactories/createFragmentSqlFragment.js";
 import { createIdentifierSqlFragment } from "../sqlFragmentFactories/createIdentifierSqlFragment.js";
@@ -13,6 +14,7 @@ import { createUuidSqlFragment } from "../sqlFragmentFactories/createUuidSqlFrag
 import {
   ArrayToken,
   BinaryToken,
+  BooleanExpressionToken,
   DateToken,
   FragmentToken,
   IdentifierToken,
@@ -28,6 +30,7 @@ import {
 import type {
   ArraySqlToken,
   BinarySqlToken,
+  BooleanExpressionSqlToken,
   DateSqlToken,
   FragmentSqlToken,
   IdentifierSqlToken,
@@ -48,6 +51,10 @@ type TokenHandler = (token: SqlTokenType, greatestParameterPosition: number) => 
 const tokenHandlers = new Map<symbol, TokenHandler>([
   [ArrayToken, (token, pos) => createArraySqlFragment(token as ArraySqlToken, pos)],
   [BinaryToken, (token, pos) => createBinarySqlFragment(token as BinarySqlToken, pos)],
+  [
+    BooleanExpressionToken,
+    (token, pos) => createBooleanExpressionSqlFragment(token as BooleanExpressionSqlToken, pos),
+  ],
   [DateToken, (token, pos) => createDateSqlFragment(token as DateSqlToken, pos)],
   [FragmentToken, (token, pos) => createFragmentSqlFragment(token as FragmentSqlToken, pos)],
   [IdentifierToken, (token) => createIdentifierSqlFragment(token as IdentifierSqlToken)],
