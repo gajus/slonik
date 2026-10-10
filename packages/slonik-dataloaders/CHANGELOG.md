@@ -1,5 +1,7 @@
 # @slonik/dataloaders
 
+## 49.11.0
+
 ## 49.10.10
 
 ### Patch Changes
