@@ -1,5 +1,6 @@
 export {
   type ConnectionOptions,
+  type DriverTypeParser,
   type Field,
   type PrimitiveValueExpression,
   type Query,

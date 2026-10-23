@@ -18,6 +18,14 @@ export type ConnectionOptions = {
   username?: string;
 };
 
+/**
+ * @property name Value of "pg_type"."typname" (e.g. "int8", "timestamp", "timestamptz").
+ */
+export type DriverTypeParser<T = unknown> = {
+  readonly name: string;
+  readonly parse: (value: string) => T;
+};
+
 export type Field = {
   readonly dataTypeId: number;
   readonly name: string;
@@ -39,6 +47,11 @@ export type Query = {
    */
   readonly name?: string;
   readonly sql: string;
+  /**
+   * Type parsers that apply to this query only. For the types they name, they
+   * take precedence over the type parsers configured for the pool.
+   */
+  readonly typeParsers?: readonly DriverTypeParser[];
   readonly values: readonly PrimitiveValueExpression[];
 };
 

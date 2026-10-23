@@ -1,5 +1,5 @@
 import type * as tokens from "./tokens.js";
-import type { PrimitiveValueExpression } from "@slonik/types";
+import type { DriverTypeParser, PrimitiveValueExpression } from "@slonik/types";
 import type { StandardSchemaV1 } from "@standard-schema/spec";
 
 export { type PrimitiveValueExpression } from "@slonik/types";
@@ -101,6 +101,11 @@ export type QuerySqlToken<T extends StandardSchemaV1 = StandardSchemaV1<unknown,
   readonly parser: T;
   readonly sql: string;
   readonly type: typeof tokens.QueryToken;
+  /**
+   * Type parsers that apply to this query only. For the types they name, they
+   * take precedence over the type parsers configured for the pool.
+   */
+  readonly typeParsers?: readonly DriverTypeParser[];
   readonly values: readonly PrimitiveValueExpression[];
 };
 

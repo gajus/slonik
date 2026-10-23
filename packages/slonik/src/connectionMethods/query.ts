@@ -15,8 +15,10 @@ const executionRoutine: ExecutionRoutine = async (
     finalSql,
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     finalValues as any[],
-    // Pass query options including statement name for prepared statements
-    queryTokens.name ? { name: queryTokens.name } : undefined,
+    // Pass query options (statement name for prepared statements and per-query type parsers)
+    queryTokens.name || queryTokens.typeParsers
+      ? { name: queryTokens.name, typeParsers: queryTokens.typeParsers }
+      : undefined,
   );
 
   return {

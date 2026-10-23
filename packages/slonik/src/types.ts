@@ -318,6 +318,11 @@ export type Query = {
    */
   readonly name?: string;
   readonly sql: string;
+  /**
+   * Type parsers that apply to this query only. For the types they name, they
+   * take precedence over the type parsers configured for the pool.
+   */
+  readonly typeParsers?: readonly DriverTypeParser[];
   readonly values: readonly PrimitiveValueExpression[];
 };
 

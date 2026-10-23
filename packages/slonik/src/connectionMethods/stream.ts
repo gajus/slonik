@@ -78,7 +78,11 @@ const createExecutionRoutine = <T>(
   onStream: StreamHandler<T>,
 ): ExecutionRoutine => {
   return async (connection, sql, values, executionContext, actualQuery) => {
-    const queryStream = connection.stream(sql, values as unknown[]);
+    const queryStream = connection.stream(
+      sql,
+      values as unknown[],
+      actualQuery.typeParsers ? { typeParsers: actualQuery.typeParsers } : undefined,
+    );
 
     const transformStream = createTransformStream(
       clientConfiguration,

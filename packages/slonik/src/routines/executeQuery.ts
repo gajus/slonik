@@ -17,7 +17,7 @@ import type {
 } from "../types.js";
 import { getStackTrace } from "./getStackTrace.js";
 import { SpanStatusCode, trace } from "@opentelemetry/api";
-import type { DriverNotice } from "@slonik/driver";
+import type { DriverNotice, DriverTypeParser } from "@slonik/driver";
 import {
   BackendTerminatedError,
   BackendTerminatedUnexpectedlyError,
@@ -64,6 +64,7 @@ type TransactionQuery = {
   readonly executionRoutine: ExecutionRoutine;
   readonly name?: string;
   readonly sql: string;
+  readonly typeParsers?: readonly DriverTypeParser[];
   readonly values: readonly PrimitiveValueExpression[];
 };
 
@@ -103,6 +104,7 @@ const retryQuery = async (
         {
           name: query.name,
           sql: query.sql,
+          typeParsers: query.typeParsers,
           values: query.values,
         },
       );
@@ -199,12 +201,14 @@ const executeQueryInternal = async (
     // Include statement name for prepared statements if provided
     name: query.name,
     sql: normalizedSql,
+    typeParsers: query.typeParsers,
     values: query.values,
   };
 
   let actualQuery: Query = {
     name: originalQuery.name,
     sql: originalQuery.sql,
+    typeParsers: originalQuery.typeParsers,
     values: originalQuery.values,
   };
 
@@ -344,6 +348,7 @@ const executeQueryInternal = async (
     executionRoutine,
     name: actualQuery.name,
     sql: actualQuery.sql,
+    typeParsers: actualQuery.typeParsers,
     values: actualQuery.values,
   };
 
