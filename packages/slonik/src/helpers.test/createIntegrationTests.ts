@@ -106,10 +106,10 @@ export const createIntegrationTests = (
     });
 
     const result = await pool.oneFirst(sql.unsafe`
-      SELECT ${BigInt(9_007_199_254_740_999n)}::bigint
+      SELECT ${9_007_199_254_740_999n}::bigint
     `);
 
-    t.is(result, BigInt(9_007_199_254_740_999n));
+    t.is(result, 9_007_199_254_740_999n);
 
     await pool.end();
   });
