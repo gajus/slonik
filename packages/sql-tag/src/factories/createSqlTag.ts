@@ -31,6 +31,7 @@ import { isSqlToken } from "../utilities/isSqlToken.js";
 import { safeStringify } from "../utilities/safeStringify.js";
 import { createSqlTokenSqlFragment } from "./createSqlTokenSqlFragment.js";
 import { InvalidInputError } from "@slonik/errors";
+import type { DriverTypeParser } from "@slonik/types";
 import type { StandardSchemaV1 } from "@standard-schema/spec";
 import { z } from "zod";
 
@@ -117,9 +118,19 @@ export const createSqlTag = <
 >(
   configuration: {
     typeAliases?: Z;
+    /**
+     * Type parsers for the queries created by this tag. For the types they name,
+     * they take precedence over the type parsers configured for the pool.
+     */
+    typeParsers?: readonly DriverTypeParser[];
   } = {},
 ): SqlTag<Z> => {
   const typeAliases = configuration.typeAliases;
+
+  // Spread into every query token, so that the queries carry the tag's type parsers.
+  const queryTypeParsers = configuration.typeParsers
+    ? { typeParsers: configuration.typeParsers }
+    : undefined;
 
   return {
     and: (members) => {
@@ -213,6 +224,7 @@ export const createSqlTag = <
       return (parts: TemplateStringsArray, ...args: readonly ValueExpression[]) => {
         return Object.freeze({
           ...createFragment(parts, args),
+          ...queryTypeParsers,
           name: statementName,
           parser,
           type: QueryToken,
@@ -229,6 +241,7 @@ export const createSqlTag = <
       return (parts: TemplateStringsArray, ...args: readonly ValueExpression[]) => {
         return Object.freeze({
           ...createFragment(parts, args),
+          ...queryTypeParsers,
           parser,
           type: QueryToken,
         });
@@ -242,6 +255,7 @@ export const createSqlTag = <
       return (parts: TemplateStringsArray, ...args: readonly ValueExpression[]) => {
         return Object.freeze({
           ...createFragment(parts, args),
+          ...queryTypeParsers,
           parser: typeAliases[parserAlias],
           type: QueryToken,
         });
@@ -257,6 +271,7 @@ export const createSqlTag = <
     unsafe: (parts, ...args) => {
       return Object.freeze({
         ...createFragment(parts, args),
+        ...queryTypeParsers,
         parser: unknownParser,
         type: QueryToken,
       });

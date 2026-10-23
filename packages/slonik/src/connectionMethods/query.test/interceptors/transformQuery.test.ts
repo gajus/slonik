@@ -60,7 +60,7 @@ test("does not pass queryOptions when statement name is not provided", async (t)
   t.is(spy.query.firstCall.args[2], undefined);
 });
 
-test("passes per-query type parsers to driver", async (t) => {
+test("passes sql tag type parsers to driver", async (t) => {
   const { pool, spy } = await createPoolWithSpy(t.context.dsn, {
     driverFactory,
   });
@@ -74,16 +74,17 @@ test("passes per-query type parsers to driver", async (t) => {
     },
   ];
 
-  const result = await pool.oneFirst({
-    ...sql.unsafe`SELECT 1.5::numeric`,
+  const textSql = createSqlTag({
     typeParsers,
   });
+
+  const result = await pool.oneFirst(textSql.unsafe`SELECT 1.5::numeric`);
 
   t.is(spy.query.firstCall.args[2]?.typeParsers, typeParsers);
   t.is(result, "1.5");
 });
 
-test("transforms query to use per-query type parsers", async (t) => {
+test("transforms query to use type parsers", async (t) => {
   const typeParsers = [
     {
       name: "numeric",

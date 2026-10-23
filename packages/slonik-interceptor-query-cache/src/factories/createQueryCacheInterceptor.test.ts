@@ -59,7 +59,7 @@ test("caches queries with cache attributes", async (t) => {
   });
 });
 
-test("does not cache queries that use per-query type parsers", async (t) => {
+test("does not cache queries that override type parsers", async (t) => {
   const calls = await runCacheHooks({
     sql: "-- @cache-ttl 60\nSELECT 1.5::numeric foo",
     typeParsers: [

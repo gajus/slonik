@@ -147,7 +147,7 @@ test("retries an implicit query that failed due to a transaction error", async (
   });
 });
 
-test("retries an implicit query with its per-query type parsers", async (t) => {
+test("retries an implicit query with its type parsers", async (t) => {
   const executionRoutineStub = sinon.stub();
 
   executionRoutineStub

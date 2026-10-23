@@ -39,7 +39,7 @@ type Storage = {
   ) => Promise<void>;
 };
 
-// The cache key does not account for per-query type parsers,
+// The cache key does not account for the type parsers of the query,
 // so a cached result could have been parsed differently.
 const usesTypeParsers = (query: Query) => {
   return Boolean(query.typeParsers?.length);

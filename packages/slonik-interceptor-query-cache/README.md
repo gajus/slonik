@@ -15,7 +15,7 @@ Which queries are cached is controlled using cache attributes. Cache attributes 
 ## Behavior
 
 - Does not cache queries inside of a transaction.
-- Does not cache queries that use per-query type parsers.
+- Does not cache queries that override type parsers, e.g. queries created using a `sql` tag with `typeParsers`.
 
 ## Cache attributes
 

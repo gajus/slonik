@@ -102,8 +102,8 @@ export type QuerySqlToken<T extends StandardSchemaV1 = StandardSchemaV1<unknown,
   readonly sql: string;
   readonly type: typeof tokens.QueryToken;
   /**
-   * Type parsers that apply to this query only. For the types they name, they
-   * take precedence over the type parsers configured for the pool.
+   * Type parsers of the `sql` tag that created the query (see `createSqlTag`). For the
+   * types they name, they take precedence over the type parsers configured for the pool.
    */
   readonly typeParsers?: readonly DriverTypeParser[];
   readonly values: readonly PrimitiveValueExpression[];

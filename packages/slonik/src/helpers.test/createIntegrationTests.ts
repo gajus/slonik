@@ -7,6 +7,7 @@ import {
   CheckIntegrityConstraintViolationError,
   createNumericTypeParser,
   createPool,
+  createSqlTag,
   ForeignKeyIntegrityConstraintViolationError,
   IdleTransactionTimeoutError,
   InputSyntaxError,
@@ -419,32 +420,30 @@ export const createIntegrationTests = (
     await pool.end();
   });
 
-  test("overrides type parsers for a single query", async (t) => {
+  test("overrides type parsers using a sql tag", async (t) => {
     const pool = await createPool(t.context.dsn, {
       driverFactory,
     });
 
-    const query = sql.unsafe`
+    const textSql = createSqlTag({
+      typeParsers: [createTextTypeParser("numeric"), createTextTypeParser("timestamp")],
+    });
+
+    const selection = sql.fragment`
       SELECT
         12345678901234567890.123456789::numeric "total",
         '2026-01-02 03:04:05.123456'::timestamp "issuedAt",
         1::int8 "count"
     `;
 
-    t.deepEqual(
-      await pool.one({
-        ...query,
-        typeParsers: [createTextTypeParser("numeric"), createTextTypeParser("timestamp")],
-      }),
-      {
-        count: 1n,
-        issuedAt: "2026-01-02 03:04:05.123456",
-        total: "12345678901234567890.123456789",
-      },
-    );
+    t.deepEqual(await pool.one(textSql.unsafe`${selection}`), {
+      count: 1n,
+      issuedAt: "2026-01-02 03:04:05.123456",
+      total: "12345678901234567890.123456789",
+    });
 
-    // The pool's type parsers continue to apply to other queries.
-    t.deepEqual(await pool.one(query), {
+    // Queries created with other tags continue to use the pool's type parsers.
+    t.deepEqual(await pool.one(sql.unsafe`${selection}`), {
       count: 1n,
       issuedAt: Date.parse("2026-01-02 03:04:05.123456 UTC"),
       total: Number.parseFloat("12345678901234567890.123456789"),
@@ -453,47 +452,45 @@ export const createIntegrationTests = (
     await pool.end();
   });
 
-  test("overrides type parsers for a single query (connection and transaction)", async (t) => {
+  test("overrides type parsers using a sql tag (connection and transaction)", async (t) => {
     const pool = await createPool(t.context.dsn, {
       driverFactory,
     });
 
-    const query = sql.unsafe`SELECT 1.5::numeric`;
-
-    const textQuery = {
-      ...query,
+    const textSql = createSqlTag({
       typeParsers: [createTextTypeParser("numeric")],
-    };
+    });
 
     await pool.connect(async (connection) => {
-      t.is(await connection.oneFirst(textQuery), "1.5");
-      t.is(await connection.oneFirst(query), 1.5);
+      t.is(await connection.oneFirst(textSql.unsafe`SELECT 1.5::numeric`), "1.5");
+      t.is(await connection.oneFirst(sql.unsafe`SELECT 1.5::numeric`), 1.5);
     });
 
     await pool.transaction(async (transaction) => {
-      t.is(await transaction.oneFirst(textQuery), "1.5");
-      t.is(await transaction.oneFirst(query), 1.5);
+      t.is(await transaction.oneFirst(textSql.unsafe`SELECT 1.5::numeric`), "1.5");
+      t.is(await transaction.oneFirst(sql.unsafe`SELECT 1.5::numeric`), 1.5);
     });
 
     await pool.end();
   });
 
-  test("applies per-query type parsers to arrays of the type", async (t) => {
+  test("applies sql tag type parsers to arrays of the type", async (t) => {
     const pool = await createPool(t.context.dsn, {
       driverFactory,
     });
 
-    const result = await pool.oneFirst({
-      ...sql.unsafe`SELECT ARRAY[1.5, 2.5]::numeric[]`,
+    const textSql = createSqlTag({
       typeParsers: [createTextTypeParser("numeric")],
     });
+
+    const result = await pool.oneFirst(textSql.unsafe`SELECT ARRAY[1.5, 2.5]::numeric[]`);
 
     t.deepEqual(result, ["1.5", "2.5"]);
 
     await pool.end();
   });
 
-  test("looks up types named only by per-query type parsers", async (t) => {
+  test("looks up types named only by sql tag type parsers", async (t) => {
     const pool = await createPool(t.context.dsn, {
       driverFactory,
     });
@@ -501,8 +498,7 @@ export const createIntegrationTests = (
     // The type is created after the pool, so it cannot have been looked up when the pool was created.
     await pool.query(sql.unsafe`CREATE TYPE mood AS ENUM ('happy', 'sad')`);
 
-    const result = await pool.one({
-      ...sql.unsafe`SELECT 'happy'::mood "mood", ARRAY['happy', 'sad']::mood[] "moods"`,
+    const moodSql = createSqlTag({
       typeParsers: [
         {
           name: "mood",
@@ -513,6 +509,10 @@ export const createIntegrationTests = (
       ],
     });
 
+    const result = await pool.one(
+      moodSql.unsafe`SELECT 'happy'::mood "mood", ARRAY['happy', 'sad']::mood[] "moods"`,
+    );
+
     t.deepEqual(result, {
       mood: "HAPPY",
       moods: ["HAPPY", "SAD"],
@@ -521,40 +521,37 @@ export const createIntegrationTests = (
     await pool.end();
   });
 
-  test("throws if a per-query type parser names a type that does not exist", async (t) => {
+  test("throws if a sql tag type parser names a type that does not exist", async (t) => {
     const pool = await createPool(t.context.dsn, {
       driverFactory,
     });
 
-    const error = await t.throwsAsync(
-      pool.query({
-        ...sql.unsafe`SELECT 1`,
-        typeParsers: [createTextTypeParser("does_not_exist")],
-      }),
-    );
+    const unknownTypeSql = createSqlTag({
+      typeParsers: [createTextTypeParser("does_not_exist")],
+    });
+
+    const error = await t.throwsAsync(pool.query(unknownTypeSql.unsafe`SELECT 1`));
 
     t.is(error?.message, 'Database type "does_not_exist" not found.');
 
     await pool.end();
   });
 
-  test("streams rows using per-query type parsers", async (t) => {
+  test("streams rows using sql tag type parsers", async (t) => {
     const pool = await createPool(t.context.dsn, {
       driverFactory,
     });
 
+    const textSql = createSqlTag({
+      // The pool's type parsers name "numeric", but not "bool", which has to be looked up.
+      typeParsers: [createTextTypeParser("numeric"), createTextTypeParser("bool")],
+    });
+
     const onData = sinon.spy();
 
-    await pool.stream(
-      {
-        ...sql.unsafe`SELECT 1.5::numeric "value", true "flag"`,
-        // The pool's type parsers name "numeric", but not "bool", which has to be looked up.
-        typeParsers: [createTextTypeParser("numeric"), createTextTypeParser("bool")],
-      },
-      (stream) => {
-        stream.on("data", onData);
-      },
-    );
+    await pool.stream(textSql.unsafe`SELECT 1.5::numeric "value", true "flag"`, (stream) => {
+      stream.on("data", onData);
+    });
 
     t.true(onData.calledOnce);
 
@@ -580,39 +577,39 @@ export const createIntegrationTests = (
     await pool.end();
   });
 
-  test("stream throws if a per-query type parser names a type that does not exist", async (t) => {
+  test("stream throws if a sql tag type parser names a type that does not exist", async (t) => {
     const pool = await createPool(t.context.dsn, {
       driverFactory,
     });
 
-    const error = await t.throwsAsync(
-      pool.stream(
-        {
-          ...sql.unsafe`SELECT 1`,
-          typeParsers: [createTextTypeParser("does_not_exist")],
-        },
-        () => {},
-      ),
-    );
+    const unknownTypeSql = createSqlTag({
+      typeParsers: [createTextTypeParser("does_not_exist")],
+    });
+
+    const error = await t.throwsAsync(pool.stream(unknownTypeSql.unsafe`SELECT 1`, () => {}));
 
     t.is(error?.message, 'Database type "does_not_exist" not found.');
 
     await pool.end();
   });
 
-  test("combines per-query type parsers with named prepared statements", async (t) => {
+  test("combines sql tag type parsers with named prepared statements", async (t) => {
     const pool = await createPool(t.context.dsn, {
       driverFactory,
+    });
+
+    const textSql = createSqlTag({
+      typeParsers: [createTextTypeParser("numeric")],
     });
 
     const ResultSchema = z.object({
       value: z.string(),
     });
 
-    const query = {
-      ...sql.prepared("get_numeric_as_text", ResultSchema)`SELECT 1.5::numeric "value"`,
-      typeParsers: [createTextTypeParser("numeric")],
-    };
+    const query = textSql.prepared(
+      "get_numeric_as_text",
+      ResultSchema,
+    )`SELECT 1.5::numeric "value"`;
 
     await pool.connect(async (connection) => {
       t.deepEqual(await connection.one(query), { value: "1.5" });
