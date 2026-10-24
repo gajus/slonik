@@ -1,5 +1,12 @@
 # slonik-sql-tag-raw
 
+## 49.12.0
+
+### Patch Changes
+
+- Updated dependencies [[`3fb9109`](https://github.com/gajus/slonik/commit/3fb9109ae59f8d3d9cebc8ae833145d47392b437)]:
+  - @slonik/sql-tag@49.12.0
+
 ## 49.11.0
 
 ### Patch Changes
