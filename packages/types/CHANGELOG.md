@@ -1,5 +1,11 @@
 # @slonik/types
 
+## 49.12.0
+
+### Minor Changes
+
+- [#824](https://github.com/gajus/slonik/pull/824) [`3fb9109`](https://github.com/gajus/slonik/commit/3fb9109ae59f8d3d9cebc8ae833145d47392b437) Thanks [@gajus](https://github.com/gajus)! - add `typeParsers` option to `createSqlTag`: queries created by the tag override the pool's type parsers for the types they name, e.g. `createSqlTag({ typeParsers: [{ name: "numeric", parse: (value) => value }] })`. `slonik-interceptor-query-cache` does not cache queries that override type parsers.
+
 ## 49.11.0
 
 ## 49.10.10
