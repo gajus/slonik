@@ -39,6 +39,12 @@ type Storage = {
   ) => Promise<void>;
 };
 
+// The cache key does not account for the type parsers of the query,
+// so a cached result could have been parsed differently.
+const usesTypeParsers = (query: Query) => {
+  return Boolean(query.typeParsers?.length);
+};
+
 export const createQueryCacheInterceptor = (
   configurationInput: ConfigurationInput,
 ): Interceptor => {
@@ -48,7 +54,7 @@ export const createQueryCacheInterceptor = (
 
   return {
     beforeQueryExecution: async (context, query) => {
-      if (context.transactionId) {
+      if (context.transactionId || usesTypeParsers(query)) {
         return null;
       }
 
@@ -74,7 +80,7 @@ export const createQueryCacheInterceptor = (
       return null;
     },
     beforeQueryResult: async (context, query, result) => {
-      if (context.transactionId) {
+      if (context.transactionId || usesTypeParsers(query)) {
         return null;
       }
 

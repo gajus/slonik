@@ -27,7 +27,11 @@ import type { Field, Query } from "@slonik/types";
 import { parseDsn } from "@slonik/utilities";
 import { Transform } from "node:stream";
 import { Client } from "pg";
-import type { DatabaseError, ClientConfig as NativePostgresClientConfiguration } from "pg";
+import type {
+  CustomTypesConfig,
+  DatabaseError,
+  ClientConfig as NativePostgresClientConfiguration,
+} from "pg";
 import QueryStream from "pg-query-stream";
 import { getTypeParser as getNativeTypeParser } from "pg-types";
 import { parse as parseArray } from "postgres-array";
@@ -41,15 +45,11 @@ type PostgresType = {
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 type TypeOverrides = (oid: number) => any;
 
-const createTypeOverrides = async (
+const queryPostgresTypes = async (
   connection: Client,
-  typeParsers: readonly DriverTypeParser[],
-): Promise<TypeOverrides> => {
-  const typeNames = typeParsers.map((typeParser) => {
-    return typeParser.name;
-  });
-
-  const postgresTypes = (
+  typeNames: readonly string[],
+): Promise<PostgresType[]> => {
+  return (
     await connection.query(
       `
         SELECT
@@ -62,13 +62,29 @@ const createTypeOverrides = async (
       [typeNames],
     )
   ).rows as PostgresType[];
+};
 
+const cachePostgresTypes = (
+  postgresTypeCache: Map<string, PostgresType>,
+  postgresTypes: readonly PostgresType[],
+) => {
+  for (const postgresType of postgresTypes) {
+    // Type names are unique only within a schema. Keep the first match.
+    if (!postgresTypeCache.has(postgresType.typname)) {
+      postgresTypeCache.set(postgresType.typname, postgresType);
+    }
+  }
+};
+
+const createTypeOverrides = (
+  postgresTypeCache: ReadonlyMap<string, PostgresType>,
+  typeParsers: readonly DriverTypeParser[],
+  fallback: TypeOverrides,
+): TypeOverrides => {
   const parsers = {};
 
   for (const typeParser of typeParsers) {
-    const postgresType = postgresTypes.find((maybeTargetPostgresType) => {
-      return maybeTargetPostgresType.typname === typeParser.name;
-    });
+    const postgresType = postgresTypeCache.get(typeParser.name);
 
     if (!postgresType) {
       throw new Error('Database type "' + typeParser.name + '" not found.');
@@ -92,7 +108,7 @@ const createTypeOverrides = async (
       return parsers[oid];
     }
 
-    return getNativeTypeParser(oid);
+    return fallback(oid);
   };
 };
 
@@ -154,15 +170,20 @@ const createClientConfiguration = (
   return poolConfiguration;
 };
 
-const queryTypeOverrides = async (
+const queryPoolPostgresTypes = async (
   pgClientConfiguration: NativePostgresClientConfiguration,
   driverConfiguration: DriverConfiguration,
-): Promise<TypeOverrides> => {
+): Promise<PostgresType[]> => {
   const client = new Client(pgClientConfiguration);
 
   try {
     await client.connect();
-    return await createTypeOverrides(client, driverConfiguration.typeParsers);
+    return await queryPostgresTypes(
+      client,
+      driverConfiguration.typeParsers.map((typeParser) => {
+        return typeParser.name;
+      }),
+    );
   } finally {
     await client.end();
   }
@@ -248,9 +269,43 @@ export const createPgDriverFactory = (): DriverFactory => {
   return createDriverFactory(async ({ driverConfiguration }) => {
     const clientConfiguration = createClientConfiguration(driverConfiguration);
 
+    // Postgres types by name. Starts with the types named by the pool's type parsers;
+    // types named only by per-query type parsers are looked up the first time they are used.
+    const postgresTypeCache = new Map<string, PostgresType>();
+
+    cachePostgresTypes(
+      postgresTypeCache,
+      await queryPoolPostgresTypes(clientConfiguration, driverConfiguration),
+    );
+
+    const getTypeParser = createTypeOverrides(
+      postgresTypeCache,
+      driverConfiguration.typeParsers,
+      getNativeTypeParser,
+    );
+
     // eslint-disable-next-line require-atomic-updates
     clientConfiguration.types = {
-      getTypeParser: await queryTypeOverrides(clientConfiguration, driverConfiguration),
+      getTypeParser,
+    };
+
+    // Per-query type parsers take precedence over the pool's type parsers for the types they name.
+    const createQueryTypes = async (client: Client, typeParsers: readonly DriverTypeParser[]) => {
+      const uncachedTypeNames = typeParsers
+        .map((typeParser) => {
+          return typeParser.name;
+        })
+        .filter((typeName) => {
+          return !postgresTypeCache.has(typeName);
+        });
+
+      if (uncachedTypeNames.length > 0) {
+        cachePostgresTypes(postgresTypeCache, await queryPostgresTypes(client, uncachedTypeNames));
+      }
+
+      return {
+        getTypeParser: createTypeOverrides(postgresTypeCache, typeParsers, getTypeParser),
+      };
     };
 
     return {
@@ -302,12 +357,15 @@ export const createPgDriverFactory = (): DriverFactory => {
             let result;
 
             try {
-              // Use query config object when statement name is provided
-              // to enable PostgreSQL named prepared statements
-              if (queryOptions?.name) {
+              // Use query config object when statement name or per-query type parsers are provided
+              // to enable PostgreSQL named prepared statements and per-query type parsing
+              if (queryOptions?.name || queryOptions?.typeParsers?.length) {
                 result = await client.query({
                   name: queryOptions.name,
                   text: sql,
+                  types: queryOptions.typeParsers?.length
+                    ? await createQueryTypes(client, queryOptions.typeParsers)
+                    : undefined,
                   values: values as unknown[],
                 });
               } else {
@@ -336,9 +394,7 @@ export const createPgDriverFactory = (): DriverFactory => {
               rows: result.rows,
             };
           },
-          stream: (sql, values) => {
-            const stream = client.query(new QueryStream(sql, values as unknown[]));
-
+          stream: (sql, values, streamOptions) => {
             let fields: readonly Field[] = [];
 
             // `rowDescription` will not fire if the query produces a syntax error.
@@ -352,12 +408,6 @@ export const createPgDriverFactory = (): DriverFactory => {
                 };
               });
             };
-
-            client.connection.once("rowDescription", onRowDescription);
-
-            stream.once("close", () => {
-              client.connection.removeListener("rowDescription", onRowDescription);
-            });
 
             const transform = new Transform({
               objectMode: true,
@@ -377,17 +427,55 @@ export const createPgDriverFactory = (): DriverFactory => {
               },
             });
 
-            stream.on("error", (error) => {
-              transform.emit(
-                "error",
-                wrapError(error, {
-                  sql,
-                  values: values as PrimitiveValueExpression[],
-                }),
-              );
-            });
+            const startStream = (types?: CustomTypesConfig) => {
+              const stream = client.query(new QueryStream(sql, values as unknown[], { types }));
 
-            return stream.pipe(transform);
+              client.connection.once("rowDescription", onRowDescription);
+
+              stream.once("close", () => {
+                client.connection.removeListener("rowDescription", onRowDescription);
+              });
+
+              stream.on("error", (error) => {
+                transform.emit(
+                  "error",
+                  wrapError(error, {
+                    sql,
+                    values: values as PrimitiveValueExpression[],
+                  }),
+                );
+              });
+
+              stream.pipe(transform);
+            };
+
+            const typeParsers = streamOptions?.typeParsers;
+
+            if (typeParsers?.length) {
+              // Resolving per-query type parsers may require a lookup query,
+              // so the stream starts once they are resolved.
+              // eslint-disable-next-line promise/prefer-await-to-then
+              createQueryTypes(client, typeParsers).then(
+                (types) => {
+                  // The consumer may have destroyed the stream in the meantime.
+                  if (!transform.destroyed) {
+                    startStream(types);
+                  }
+                },
+                (error) => {
+                  transform.destroy(
+                    wrapError(error, {
+                      sql,
+                      values: values as PrimitiveValueExpression[],
+                    }),
+                  );
+                },
+              );
+            } else {
+              startStream();
+            }
+
+            return transform;
           },
         };
       },

@@ -147,6 +147,53 @@ test("retries an implicit query that failed due to a transaction error", async (
   });
 });
 
+test("retries an implicit query with its type parsers", async (t) => {
+  const executionRoutineStub = sinon.stub();
+
+  executionRoutineStub
+    .onFirstCall()
+    .rejects(createErrorWithCode("40P01"))
+    .onSecondCall()
+    .resolves({
+      command: "SELECT",
+      fields: [],
+      notices: [],
+      rowCount: 1,
+      rows: [
+        {
+          foo: "1",
+        },
+      ],
+    });
+
+  const typeParsers = [
+    {
+      name: "numeric",
+      parse: (value: string) => {
+        return value;
+      },
+    },
+  ];
+
+  await executeQuery(
+    t.context.logger,
+    t.context.connection,
+    createClientConfiguration(),
+    {
+      sql: "SELECT 1::numeric AS foo",
+      typeParsers,
+      values: [],
+    } as unknown as QuerySqlToken,
+    "foo",
+    executionRoutineStub,
+    false,
+  );
+
+  t.is(executionRoutineStub.callCount, 2);
+  t.is(executionRoutineStub.firstCall.args[4].typeParsers, typeParsers);
+  t.is(executionRoutineStub.secondCall.args[4].typeParsers, typeParsers);
+});
+
 test("returns the thrown transaction error if the retry limit is reached", async (t) => {
   const executionRoutineStub = sinon.stub();
 

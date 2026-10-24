@@ -1,12 +1,14 @@
 /* eslint-disable @typescript-eslint/consistent-type-definitions */
 import { Logger } from "../Logger.js";
-import type { Field } from "@slonik/types";
+import type { DriverTypeParser, Field } from "@slonik/types";
 import { generateUid } from "@slonik/utilities";
 import EventEmitter from "node:events";
 import type { Readable } from "node:stream";
 import type { ConnectionOptions as TlsConnectionOptions } from "node:tls";
 import { serializeError } from "serialize-error";
 import type { StrictEventEmitter } from "strict-event-emitter-types";
+
+export { type DriverTypeParser } from "@slonik/types";
 
 const delay = (ms: number | undefined) =>
   new Promise<void>((resolve) => {
@@ -32,7 +34,11 @@ export type DriverClient = {
   release: () => Promise<void>;
   removeListener: DriverClientEventEmitter["removeListener"];
   state: () => DriverClientState;
-  stream: (query: string, values?: unknown[]) => DriverStream<DriverStreamResult>;
+  stream: (
+    query: string,
+    values?: unknown[],
+    streamOptions?: Pick<DriverQueryOptions, "typeParsers">,
+  ) => DriverStream<DriverStreamResult>;
 };
 
 export type DriverClientEventEmitter = StrictEventEmitter<
@@ -100,9 +106,12 @@ export type DriverNotice = {
  * Options for query execution.
  * @property name - Optional name for the prepared statement. When provided,
  *   PostgreSQL will create a named prepared statement that can be reused.
+ * @property typeParsers - Optional type parsers that apply to this query only.
+ *   For the types they name, they take precedence over the pool's type parsers.
  */
 export type DriverQueryOptions = {
   readonly name?: string;
+  readonly typeParsers?: readonly DriverTypeParser[];
 };
 
 export type DriverQueryResult = {
@@ -121,14 +130,6 @@ export interface DriverStream<T> extends Omit<Readable, "on" | typeof Symbol.asy
 export type DriverStreamResult = {
   readonly fields: DriverField[];
   readonly row: Record<string, unknown>;
-};
-
-/**
- * @property name Value of "pg_type"."typname" (e.g. "int8", "timestamp", "timestamptz").
- */
-export type DriverTypeParser<T = unknown> = {
-  readonly name: string;
-  readonly parse: (value: string) => T;
 };
 
 type BasicConnection = {
@@ -161,7 +162,11 @@ type InternalPoolClient = {
     values?: unknown[],
     queryOptions?: DriverQueryOptions,
   ) => Promise<DriverQueryResult>;
-  stream: (query: string, values?: unknown[]) => DriverStream<DriverStreamResult>;
+  stream: (
+    query: string,
+    values?: unknown[],
+    streamOptions?: Pick<DriverQueryOptions, "typeParsers">,
+  ) => DriverStream<DriverStreamResult>;
 };
 
 type InternalPoolClientFactory = {
@@ -466,7 +471,7 @@ export const createDriverFactory = (setup: DriverSetup): DriverFactory => {
             return clientEventEmitter.removeListener(event, listener);
           },
           state,
-          stream: (sql, values) => {
+          stream: (sql, values, streamOptions) => {
             const currentState = state();
 
             if (currentState === "PENDING_DESTROY") {
@@ -488,7 +493,7 @@ export const createDriverFactory = (setup: DriverSetup): DriverFactory => {
             // Note: Stream lifecycle management should be handled by the caller.
             // The client can be released while streaming, but the stream will continue to work.
 
-            return stream(sql, values);
+            return stream(sql, values, streamOptions);
           },
         };
 

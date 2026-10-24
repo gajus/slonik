@@ -60,6 +60,7 @@ Read: [Stop using Knex.js](https://medium.com/@gajus/bf410349856c)
     - [`postgres` vs `slonik`](#postgres-vs-slonik)
   - [Type parsers](#type-parsers)
     - [Built-in type parsers](#built-in-type-parsers)
+    - [Overriding type parsers for a `sql` tag](#overriding-type-parsers-for-a-sql-tag)
   - [Interceptors](#interceptors)
     - [Interceptor methods](#interceptor-methods)
     - [Community interceptors](#community-interceptors)
@@ -907,6 +908,45 @@ createTimestampTypeParser();
 // }
 ```
 
+### Overriding type parsers for a <code>sql</code> tag
+
+A `sql` tag created using `createSqlTag` with `typeParsers` overrides the pool's type parsers for the queries that it creates. For the types they name (and arrays of those types), these type parsers take precedence over the pool's type parsers; all other types are parsed by the pool's type parsers as usual.
+
+```ts
+import { createSqlTag } from "slonik";
+import { z } from "zod";
+
+const createTextTypeParser = (name: string) => {
+  return {
+    name,
+    parse: (value: string) => {
+      return value;
+    },
+  };
+};
+
+// "numeric" and "timestamptz" values are returned as the text that PostgreSQL sent.
+const sql = createSqlTag({
+  typeParsers: [createTextTypeParser("numeric"), createTextTypeParser("timestamptz")],
+});
+
+const Invoice = z.object({
+  id: z.number(),
+  issued_at: z.string(),
+  total: z.string(),
+});
+
+const invoice = await pool.one(sql.type(Invoice)`
+  SELECT id, total, issued_at
+  FROM invoice
+  WHERE id = ${id}
+`);
+```
+
+Queries created using other `sql` tags are unaffected, even when they run on the same connection or in the same transaction. The type parsers apply to every query method (including `stream`). Interceptors can change the type parsers of a query using `transformQuery`.
+
+Type names are resolved to OIDs the first time they are used and cached for the lifetime of the pool. Types named by the pool's type parsers are resolved when the pool is created. Resolving any other type requires a lookup query the first time it is used, which runs on the connection that executes the query.
+
 ## Interceptors
 
 Functionality can be added to Slonik client by adding interceptors (middleware).
@@ -1443,6 +1483,8 @@ import { createSqlTag } from "slonik";
 
 const sql = createSqlTag();
 ```
+
+A custom `sql` tag can also [override type parsers](#overriding-type-parsers-for-a-sql-tag) for the queries that it creates.
 
 ### Type aliases
 

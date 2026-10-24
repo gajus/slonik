@@ -26,7 +26,7 @@ test("binds bigint", (t) => {
     sql: 'SELECT $slonik_1::"int8"[]',
     type: FragmentToken,
     // eslint-disable-next-line unicorn/numeric-separators-style
-    values: [[BigInt(9007199254740999n)]],
+    values: [[9007199254740999n]],
   });
 });
 

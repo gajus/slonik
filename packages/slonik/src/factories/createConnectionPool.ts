@@ -47,7 +47,11 @@ export type ConnectionPoolClient = {
   release: () => Promise<void>;
   removeListener: DriverClientEventEmitter["removeListener"];
   state: () => DriverClientState;
-  stream: (query: string, values?: unknown[]) => DriverStream<DriverStreamResult>;
+  stream: (
+    query: string,
+    values?: unknown[],
+    streamOptions?: Pick<DriverQueryOptions, "typeParsers">,
+  ) => DriverStream<DriverStreamResult>;
 };
 
 type ConnectionMetadata = {
