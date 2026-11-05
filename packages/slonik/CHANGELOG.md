@@ -1,5 +1,32 @@
 # slonik
 
+## 49.13.0
+
+### Minor Changes
+
+- [#826](https://github.com/gajus/slonik/pull/826) [`4f74b91`](https://github.com/gajus/slonik/commit/4f74b91351b583a8beadff374bf4dbc03f4d8ad4) Thanks [@gajus](https://github.com/gajus)! - fix: `UnexpectedForeignConnectionError` is raised only while the transaction is open. Previously, async work that was started inside of a transaction (e.g. a deferred side effect, or a `commit` / `rollback` event listener) raised the error for any query that it ran on another connection, even after the transaction had ended. Add `runOutsideTransaction(routine)` to run queries on other connections while a transaction is open, e.g. `await runOutsideTransaction(() => pool.query(auditLogQuery))`.
+
+- [#826](https://github.com/gajus/slonik/pull/826) [`4f74b91`](https://github.com/gajus/slonik/commit/4f74b91351b583a8beadff374bf4dbc03f4d8ad4) Thanks [@gajus](https://github.com/gajus)! - add `foreignConnections` configuration (`"reject"` (default) or `"allow"`), which replaces `dangerouslyAllowForeignConnections`. `dangerouslyAllowForeignConnections: true` keeps working as a deprecated alias of `foreignConnections: "allow"`; `foreignConnections` takes precedence when both are provided.
+
+- [#829](https://github.com/gajus/slonik/pull/829) [`bed6b20`](https://github.com/gajus/slonik/commit/bed6b20f1327390940a5295b2f924f2f18be3fff) Thanks [@gajus](https://github.com/gajus)! - fix: `oneFirst` throws `DataIntegrityError` (instead of `UnexpectedStateError`) when the query returns multiple columns, like `maybeOneFirst`, `anyFirst` and `manyFirst`.
+
+- [#829](https://github.com/gajus/slonik/pull/829) [`bed6b20`](https://github.com/gajus/slonik/commit/bed6b20f1327390940a5295b2f924f2f18be3fff) Thanks [@gajus](https://github.com/gajus)! - remove the `values` parameter from the types of the query methods (e.g. `pool.query(query, values)`). The parameter was accepted, but ignored; values are bound using the `sql` tag.
+
+- [#829](https://github.com/gajus/slonik/pull/829) [`bed6b20`](https://github.com/gajus/slonik/commit/bed6b20f1327390940a5295b2f924f2f18be3fff) Thanks [@gajus](https://github.com/gajus)! - fix: a query that fails with `NotFoundError`, `DataIntegrityError` or `SchemaValidationError` (e.g. `pool.one()` that finds no rows) no longer destroys its connection; the connection is returned to the pool. This applies to queries and transactions on the pool. Connections used by `pool.connect()` are still destroyed when the routine fails.
+
+- [#829](https://github.com/gajus/slonik/pull/829) [`bed6b20`](https://github.com/gajus/slonik/commit/bed6b20f1327390940a5295b2f924f2f18be3fff) Thanks [@gajus](https://github.com/gajus)! - fix: `stream()` rejects with the error of a `transformRow` or `transformRowAsync` interceptor (e.g. a `SchemaValidationError` of a result parser). Previously, the error was an unhandled rejection, `stream()` never settled, and the connection was never released. `stream()` also waits for the promise returned by the stream handler (e.g. an `async` function that uses `for await`). When the consumer of a stream fails, the driver closes the cursor, so that the connection can be used again (e.g. to roll back the transaction).
+
+- [#829](https://github.com/gajus/slonik/pull/829) [`bed6b20`](https://github.com/gajus/slonik/commit/bed6b20f1327390940a5295b2f924f2f18be3fff) Thanks [@gajus](https://github.com/gajus)! - add the `retryLimit` option to `transaction()`, e.g. `pool.transaction(handler, { retryLimit: 3 })`. Passing the retry limit as the second argument (`pool.transaction(handler, 3)`) is deprecated. Also fixes `pool.transaction()` dropping the retry limit when a `beforePoolConnection` interceptor returns another pool: the options are now passed to that pool.
+
+### Patch Changes
+
+- Updated dependencies [[`bed6b20`](https://github.com/gajus/slonik/commit/bed6b20f1327390940a5295b2f924f2f18be3fff), [`bed6b20`](https://github.com/gajus/slonik/commit/bed6b20f1327390940a5295b2f924f2f18be3fff)]:
+  - @slonik/pg-driver@49.13.0
+  - @slonik/driver@49.13.0
+  - @slonik/errors@49.13.0
+  - @slonik/sql-tag@49.13.0
+  - @slonik/utilities@49.13.0
+
 ## 49.12.0
 
 ### Minor Changes

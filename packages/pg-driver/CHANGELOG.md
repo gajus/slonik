@@ -1,5 +1,22 @@
 # @slonik/pg-driver
 
+## 49.13.0
+
+### Minor Changes
+
+- [#829](https://github.com/gajus/slonik/pull/829) [`bed6b20`](https://github.com/gajus/slonik/commit/bed6b20f1327390940a5295b2f924f2f18be3fff) Thanks [@gajus](https://github.com/gajus)! - fix: `InvalidInputError` raised for SQLSTATE 22P02 (invalid text representation) includes the original error as `cause`, like the other errors that the driver maps.
+
+- [#829](https://github.com/gajus/slonik/pull/829) [`bed6b20`](https://github.com/gajus/slonik/commit/bed6b20f1327390940a5295b2f924f2f18be3fff) Thanks [@gajus](https://github.com/gajus)! - fix: `stream()` rejects with the error of a `transformRow` or `transformRowAsync` interceptor (e.g. a `SchemaValidationError` of a result parser). Previously, the error was an unhandled rejection, `stream()` never settled, and the connection was never released. `stream()` also waits for the promise returned by the stream handler (e.g. an `async` function that uses `for await`). When the consumer of a stream fails, the driver closes the cursor, so that the connection can be used again (e.g. to roll back the transaction).
+
+### Patch Changes
+
+- Updated dependencies []:
+  - @slonik/driver@49.13.0
+  - @slonik/errors@49.13.0
+  - @slonik/sql-tag@49.13.0
+  - @slonik/types@49.13.0
+  - @slonik/utilities@49.13.0
+
 ## 49.12.0
 
 ### Minor Changes

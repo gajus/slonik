@@ -1,5 +1,12 @@
 # @slonik/benchmark
 
+## 49.13.0
+
+### Patch Changes
+
+- Updated dependencies [[`4f74b91`](https://github.com/gajus/slonik/commit/4f74b91351b583a8beadff374bf4dbc03f4d8ad4), [`4f74b91`](https://github.com/gajus/slonik/commit/4f74b91351b583a8beadff374bf4dbc03f4d8ad4), [`bed6b20`](https://github.com/gajus/slonik/commit/bed6b20f1327390940a5295b2f924f2f18be3fff), [`bed6b20`](https://github.com/gajus/slonik/commit/bed6b20f1327390940a5295b2f924f2f18be3fff), [`bed6b20`](https://github.com/gajus/slonik/commit/bed6b20f1327390940a5295b2f924f2f18be3fff), [`bed6b20`](https://github.com/gajus/slonik/commit/bed6b20f1327390940a5295b2f924f2f18be3fff), [`bed6b20`](https://github.com/gajus/slonik/commit/bed6b20f1327390940a5295b2f924f2f18be3fff)]:
+  - slonik@49.13.0
+
 ## 49.12.0
 
 ### Patch Changes
