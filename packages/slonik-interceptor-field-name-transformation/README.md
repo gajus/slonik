@@ -19,7 +19,7 @@ connection.any(sql`
 `);
 ```
 
-Field name transformation uses the `afterQuery` interceptor method to format field names.
+Field name transformation uses the `transformRow` interceptor method to format field names. Rows are copied by a function that is compiled once per set of fields, and rows whose field names do not need to be transformed are returned as they are.
 
 ## Installation
 
