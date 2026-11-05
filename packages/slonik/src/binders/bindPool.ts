@@ -232,7 +232,7 @@ export const bindPool = (
           );
         },
         (newPool) => {
-          return newPool.transaction(transactionHandler);
+          return newPool.transaction(transactionHandler, transactionRetryLimit);
         },
       );
     },

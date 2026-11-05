@@ -211,7 +211,7 @@ const wrapError = (error: Error, query: null | Query) => {
   }
 
   if (error.code === "22P02") {
-    return new InvalidInputError(error.message);
+    return new InvalidInputError(error.message, { cause: error });
   }
 
   if (error.code === "25P03") {

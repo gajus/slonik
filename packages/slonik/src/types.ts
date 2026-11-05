@@ -360,7 +360,6 @@ export type QueryContext = {
 
 export type QueryFunction = <T extends StandardSchemaV1>(
   sql: QuerySqlToken<T>,
-  values?: PrimitiveValueExpression[],
 ) => Promise<QueryResult<StandardSchemaV1.InferOutput<T>>>;
 
 export type QueryId = string;
@@ -447,46 +446,34 @@ type InferColumnValue<T extends StandardSchemaV1> =
 
 type QueryAnyFirstFunction = <T extends StandardSchemaV1>(
   sql: QuerySqlToken<T>,
-  values?: PrimitiveValueExpression[],
 ) => Promise<ReadonlyArray<InferColumnValue<T>>>;
 type QueryAnyFunction = <T extends StandardSchemaV1>(
   sql: QuerySqlToken<T>,
-  values?: PrimitiveValueExpression[],
 ) => Promise<ReadonlyArray<StandardSchemaV1.InferOutput<T>>>;
-type QueryExistsFunction = <T extends StandardSchemaV1>(
-  sql: QuerySqlToken<T>,
-  values?: PrimitiveValueExpression[],
-) => Promise<boolean>;
+type QueryExistsFunction = <T extends StandardSchemaV1>(sql: QuerySqlToken<T>) => Promise<boolean>;
 type QueryManyFirstFunction = <T extends StandardSchemaV1>(
   sql: QuerySqlToken<T>,
-  values?: PrimitiveValueExpression[],
 ) => Promise<ReadonlyArray<InferColumnValue<T>>>;
 type QueryManyFunction = <T extends StandardSchemaV1>(
   sql: QuerySqlToken<T>,
-  values?: PrimitiveValueExpression[],
 ) => Promise<ReadonlyArray<StandardSchemaV1.InferOutput<T>>>;
 type QueryMaybeOneFirstFunction = <T extends StandardSchemaV1>(
   sql: QuerySqlToken<T>,
-  values?: PrimitiveValueExpression[],
 ) => Promise<InferColumnValue<T> | null>;
 type QueryMaybeOneFunction = <T extends StandardSchemaV1>(
   sql: QuerySqlToken<T>,
-  values?: PrimitiveValueExpression[],
 ) => Promise<null | StandardSchemaV1.InferOutput<T>>;
 type QueryOneFirstFunction = <T extends StandardSchemaV1>(
   sql: QuerySqlToken<T>,
-  values?: PrimitiveValueExpression[],
 ) => Promise<InferColumnValue<T>>;
 type QueryOneFunction = <T extends StandardSchemaV1>(
   sql: QuerySqlToken<T>,
-  values?: PrimitiveValueExpression[],
 ) => Promise<StandardSchemaV1.InferOutput<T>>;
 
 type QueryRecordFunction = <
   T extends StandardSchemaV1<unknown, { key: PropertyKey; value: unknown }>,
 >(
   sql: QuerySqlToken<T>,
-  values?: PrimitiveValueExpression[],
 ) => Promise<
   Readonly<Record<StandardSchemaV1.InferOutput<T>["key"], StandardSchemaV1.InferOutput<T>["value"]>>
 >;

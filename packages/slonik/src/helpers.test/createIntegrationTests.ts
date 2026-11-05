@@ -1382,6 +1382,7 @@ export const createIntegrationTests = (
     );
 
     t.true(error instanceof InvalidInputError);
+    t.is((error?.cause as undefined | { code?: string })?.code, "22P02");
   });
 
   test("terminates transaction if any of the queries fails", async (t) => {

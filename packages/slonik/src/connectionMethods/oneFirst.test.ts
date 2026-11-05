@@ -1,6 +1,6 @@
 import { createPool } from "../factories/createPool.js";
 import { createTestRunner } from "../helpers.test/createTestRunner.js";
-import { DataIntegrityError, NotFoundError, UnexpectedStateError } from "@slonik/errors";
+import { DataIntegrityError, NotFoundError } from "@slonik/errors";
 import { createPgDriverFactory } from "@slonik/pg-driver";
 import { createSqlTag } from "@slonik/sql-tag";
 import { expectTypeOf } from "expect-type";
@@ -68,7 +68,8 @@ test("throws an error if more than one column is returned", async (t) => {
     `),
   );
 
-  t.true(error instanceof UnexpectedStateError);
+  t.true(error instanceof DataIntegrityError);
+  t.is(error?.message, "Query returned rows with multiple columns.");
 });
 
 test("describes zod object associated with the query", async (t) => {

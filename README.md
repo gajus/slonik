@@ -389,9 +389,7 @@ To begin with, Slonik does not allow running plain-text queries.
 connection.query("SELECT 1");
 ```
 
-The above invocation would produce an error:
-
-> TypeError: Query must be constructed using `sql` tagged template literal.
+Query methods only accept queries constructed using the `sql` tagged template literal, so TypeScript rejects the above invocation.
 
 This means that the only way to run a query is by constructing it using [`sql` tagged template literal](https://github.com/gajus/slonik#value-placeholders-tagged-template-literals), e.g.
 
@@ -808,7 +806,7 @@ Read: [Protecting against unsafe connection handling](#protecting-against-unsafe
 
 The `DatabasePool` extends `DatabasePoolEventEmitter` and exposes the following events:
 
-- `error`: `(error: SlonikError) => void` – emitted for all errors that happen within the pool.
+- `error`: `(error: SlonikError) => void` – emitted when a query (including `stream`) fails with a `SlonikError`. Database errors that Slonik does not map to its own [error classes](#error-handling) are not emitted.
 
 ```ts
 import { createPool, type DatabasePoolEventEmitter } from "slonik";
@@ -1069,17 +1067,21 @@ pool.connect();
 
 Executed after query has been executed and before rows were transformed using `transformRow`.
 
-Note: When query is executed using `stream`, then `afterQuery` is called with empty result set.
+Note: Not executed for queries executed using `stream`.
 
 #### <code>beforeQueryExecution</code>
 
 This function can optionally return a direct result of the query which will cause the actual query never to be executed.
+
+Note: Not executed for queries executed using `stream`.
 
 #### <code>beforeQueryResult</code>
 
 Executed just before the result is returned to the client.
 
 Use this method to capture the result that will be returned to the client.
+
+Note: Not executed for queries executed using `stream`.
 
 #### <code>beforeTransformQuery</code>
 
@@ -1573,25 +1575,18 @@ query with 'baz' value binding.
 
 ### Manually constructing the query
 
-Manually constructing queries is not allowed.
-
-There is an internal mechanism that checks to see if query was created using `sql` tagged template literal, i.e.
+Query methods only accept queries constructed using the `sql` tagged template literal, so TypeScript rejects a manually constructed query, e.g.
 
 ```ts
 const query = {
   sql: "SELECT 1 AS id FROM foo WHERE bar = $1",
-  type: "SQL",
   values: ["baz"],
 };
 
 connection.query(query);
 ```
 
-Will result in an error:
-
-> Query must be constructed using `sql` tagged template literal.
-
-This is a security measure designed to prevent unsafe query execution.
+The `sql` tag functions must be called as tagged template literals. Calling one as a regular function, e.g. `sql.unsafe("SELECT 1")`, throws `InvalidInputError` ("Function must be called as a template literal."). This prevents passing a plain string (e.g. user input) as the query text.
 
 Furthermore, a query object constructed using `sql` tagged template literal is [frozen](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/freeze) to prevent further manipulation.
 
@@ -2853,7 +2848,7 @@ await connection.transaction(async (t1) => {
   await t1.transaction(async (t2) => {
     await t2.query(sql.typeAlias("void")`INSERT INTO qux (quux) VALUES ('corge')`);
 
-    await t1.transaction(async (t3) => {
+    await t2.transaction(async (t3) => {
       await t3.query(sql.typeAlias("void")`INSERT INTO uier (grault) VALUES ('garply')`);
 
       return Promise.reject(new Error("foo"));
