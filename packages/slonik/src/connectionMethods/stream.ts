@@ -54,13 +54,20 @@ const createTransformStream = (
 
       let finalRow = datum.row as QueryResultRow;
 
-      // apply row transformers. Note this is done sequentially, as one transformer's result will be passed to the next.
-      for (const rowTransformer of rowTransformers) {
-        finalRow = rowTransformer(queryContext, query, finalRow, datum.fields);
-      }
+      // Node.js ignores the promise returned by `transform`, so errors must be passed to `callback`.
+      try {
+        // apply row transformers. Note this is done sequentially, as one transformer's result will be passed to the next.
+        for (const rowTransformer of rowTransformers) {
+          finalRow = rowTransformer(queryContext, query, finalRow, datum.fields);
+        }
 
-      for (const rowTransformer of asyncRowTransformers) {
-        finalRow = await rowTransformer(queryContext, query, finalRow, datum.fields);
+        for (const rowTransformer of asyncRowTransformers) {
+          finalRow = await rowTransformer(queryContext, query, finalRow, datum.fields);
+        }
+      } catch (error) {
+        callback(error);
+
+        return;
       }
 
       this.push({
@@ -107,10 +114,16 @@ const createExecutionRoutine = <T>(
       transformStream.once("finish", resolve);
     });
 
-    onStream(transformStream);
+    // The handler can be an async function (e.g. one that consumes the stream using `for await`),
+    // which rejects when the stream fails. Waiting for it reports that rejection through
+    // `stream()` instead of leaving it unhandled.
+    const handlerPromise = Promise.resolve(onStream(transformStream));
 
     try {
-      await Promise.race([pipeline(queryStream, transformStream), streamErrorPromise]);
+      await Promise.all([
+        Promise.race([pipeline(queryStream, transformStream), streamErrorPromise]),
+        handlerPromise,
+      ]);
     } catch (error) {
       if (streamDestroyError) {
         queryStream.destroy();

@@ -14,6 +14,7 @@ import {
   InvalidInputError,
   NotNullIntegrityConstraintViolationError,
   runOutsideTransaction,
+  SchemaValidationError,
   sql,
   StatementCancelledError,
   StatementTimeoutError,
@@ -22,7 +23,13 @@ import {
   UnexpectedStateError,
   UniqueIntegrityConstraintViolationError,
 } from "../index.js";
-import type { DatabaseTransactionConnection, DriverTypeParser } from "../index.js";
+import type {
+  DatabaseTransactionConnection,
+  DriverTypeParser,
+  Interceptor,
+  Query,
+  QueryResultRow,
+} from "../index.js";
 import { createErrorWithCode } from "./createErrorWithCode.js";
 import type { TestContextType } from "./createTestRunner.js";
 import { waitForConnectionRelease } from "./waitForConnectionRelease.js";
@@ -188,6 +195,121 @@ export const createIntegrationTests = (
 
     // The insert did not use the transaction's connection, so the rollback did not undo it.
     t.is(await pool.oneFirst(sql.unsafe`SELECT count(*)::int4 FROM person`), 1);
+  });
+
+  // Fails to process the row with `id` 2, like a result parser interceptor does for an invalid row.
+  const createFailRowInterceptor = (
+    interceptorMethod: "transformRow" | "transformRowAsync",
+  ): Interceptor => {
+    const failRow = (query: Query, row: QueryResultRow) => {
+      if (row.id === 2) {
+        throw new SchemaValidationError(query, row, []);
+      }
+
+      return row;
+    };
+
+    return interceptorMethod === "transformRow"
+      ? {
+          name: "fail-row",
+          transformRow: (queryContext, query, row) => {
+            return failRow(query, row);
+          },
+        }
+      : {
+          name: "fail-row",
+          transformRowAsync: async (queryContext, query, row) => {
+            return failRow(query, row);
+          },
+        };
+  };
+
+  const failingStreamQuery = sql.unsafe`SELECT generate_series(1, 10000) AS id`;
+
+  for (const [interceptorMethod, consumer] of [
+    ["transformRow", "data event listener"],
+    ["transformRowAsync", "data event listener"],
+    ["transformRow", "async iterator"],
+  ] as const) {
+    test(`stream rejects with the error of a ${interceptorMethod} interceptor (${consumer})`, async (t) => {
+      const pool = await createPool(t.context.dsn, {
+        driverFactory,
+        interceptors: [createFailRowInterceptor(interceptorMethod)],
+        maxPoolSize: 1,
+      });
+
+      const firstConnectionPid = await pool.oneFirst(sql.unsafe`SELECT pg_backend_pid()`);
+
+      await t.throwsAsync(
+        consumer === "data event listener"
+          ? pool.stream(failingStreamQuery, (stream) => {
+              stream.on("data", () => {});
+            })
+          : pool.stream(failingStreamQuery, async (stream) => {
+              for await (const row of stream) {
+                t.truthy(row);
+              }
+            }),
+        {
+          instanceOf: SchemaValidationError,
+        },
+      );
+
+      // The connection is returned to the pool (the stream is closed) and can be used again.
+      t.is(await pool.oneFirst(sql.unsafe`SELECT pg_backend_pid()`), firstConnectionPid);
+
+      t.deepEqual(await pool.anyFirst(sql.unsafe`SELECT generate_series(1, 3)`), [1, 2, 3]);
+
+      await pool.end();
+    });
+  }
+
+  test("rolls back a transaction in which a stream failed to process a row", async (t) => {
+    const pool = await createPool(t.context.dsn, {
+      driverFactory,
+      interceptors: [createFailRowInterceptor("transformRow")],
+      maxPoolSize: 1,
+    });
+
+    await t.throwsAsync(
+      pool.transaction(async (transaction) => {
+        await transaction.query(sql.unsafe`INSERT INTO person (name) VALUES ('foo')`);
+
+        await transaction.stream(failingStreamQuery, (stream) => {
+          stream.on("data", () => {});
+        });
+      }),
+      {
+        instanceOf: SchemaValidationError,
+      },
+    );
+
+    t.is(await pool.oneFirst(sql.unsafe`SELECT count(*)::int4 FROM person`), 0);
+
+    await pool.end();
+  });
+
+  test("runs queries using a connection after a stream failed to process a row", async (t) => {
+    const pool = await createPool(t.context.dsn, {
+      driverFactory,
+      interceptors: [createFailRowInterceptor("transformRow")],
+      maxPoolSize: 1,
+    });
+
+    await pool.connect(async (connection) => {
+      await t.throwsAsync(
+        connection.stream(failingStreamQuery, (stream) => {
+          stream.on("data", () => {});
+        }),
+        {
+          instanceOf: SchemaValidationError,
+        },
+      );
+
+      t.is(await connection.oneFirst(sql.unsafe`SELECT 1`), 1);
+    });
+
+    await pool.end();
   });
 
   test("streams data", async (t) => {

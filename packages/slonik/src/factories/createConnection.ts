@@ -230,8 +230,9 @@ export const createConnection = async (
         clientConfiguration,
       );
     } catch (error) {
-      // These errors describe the result of a query that succeeded, i.e. the connection is
-      // healthy. A routine passed to `connect()` can leave the connection in any state, though.
+      // These errors describe the result of a query (e.g. a row that failed validation), i.e. the
+      // connection is healthy (the cursor of a failed stream is closed by the driver). A routine
+      // passed to `connect()` can leave the connection in any state, though.
       if (
         connectionType !== "EXPLICIT" &&
         (error instanceof DataIntegrityError || error instanceof SchemaValidationError)

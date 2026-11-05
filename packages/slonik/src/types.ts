@@ -380,7 +380,7 @@ export type QueryResultRow = Record<string, PrimitiveValueExpression>;
 
 export type QueryResultRowColumn = PrimitiveValueExpression;
 
-export type StreamHandler<T> = (stream: DriverStream<T>) => void;
+export type StreamHandler<T> = (stream: DriverStream<T>) => MaybePromise<void>;
 
 export type StreamResult = {
   readonly notices: readonly DriverNotice[];

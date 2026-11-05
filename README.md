@@ -2779,6 +2779,8 @@ await connection.stream(sql.typeAlias("foo")`SELECT foo`, async (stream) => {
 });
 ```
 
+If the function passed to `stream` returns a promise (e.g. it is an `async` function), `stream` waits for the promise. If the stream fails (e.g. because an interceptor fails to transform a row), `stream` rejects with the error.
+
 ### <code>transaction</code>
 
 `transaction` method is used wrap execution of queries in `START TRANSACTION` and `COMMIT` or `ROLLBACK`. `COMMIT` is called if the transaction handler returns a promise that resolves; `ROLLBACK` is called otherwise.
