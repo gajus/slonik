@@ -13,12 +13,20 @@ export const createClientConfiguration = (
     Object.entries(clientUserConfigurationInput ?? {}).filter(([, v]) => v !== undefined),
   );
 
+  // `dangerouslyAllowForeignConnections: true` is a deprecated alias of
+  // `foreignConnections: "allow"`. `foreignConnections` takes precedence when both
+  // are provided.
+  const foreignConnections: ClientConfiguration["foreignConnections"] =
+    clientUserConfigurationInput?.foreignConnections ??
+    (clientUserConfigurationInput?.dangerouslyAllowForeignConnections === true
+      ? "allow"
+      : "reject");
+
   const configuration = {
     captureStackTrace: false,
     connectionRetryLimit: 3,
     connectionTimeout: 5_000,
     connectionUri,
-    dangerouslyAllowForeignConnections: false,
     gracefulTerminationTimeout: 5_000,
     idleInTransactionSessionTimeout: 60_000,
     idleTimeout: 5_000,
@@ -32,6 +40,7 @@ export const createClientConfiguration = (
     transactionRetryLimit: 5,
     typeParsers,
     ...definedUserConfiguration,
+    foreignConnections,
     // `maximumPoolSize` and `minimumPoolSize` are deprecated aliases of
     // `maxPoolSize` and `minPoolSize`. The new names take precedence when both
     // are provided; otherwise we fall back to the deprecated name, then the
@@ -45,6 +54,10 @@ export const createClientConfiguration = (
       clientUserConfigurationInput?.minimumPoolSize ??
       0,
   };
+
+  if (!["allow", "reject"].includes(configuration.foreignConnections)) {
+    throw new InvalidConfigurationError('foreignConnections must be "allow" or "reject".');
+  }
 
   if (configuration.maxPoolSize < 1) {
     throw new InvalidConfigurationError("maxPoolSize must be equal to or greater than 1.");

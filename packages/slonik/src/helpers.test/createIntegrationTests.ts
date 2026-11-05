@@ -13,6 +13,7 @@ import {
   InputSyntaxError,
   InvalidInputError,
   NotNullIntegrityConstraintViolationError,
+  runOutsideTransaction,
   sql,
   StatementCancelledError,
   StatementTimeoutError,
@@ -22,6 +23,7 @@ import {
   UniqueIntegrityConstraintViolationError,
 } from "../index.js";
 import type { DatabaseTransactionConnection, DriverTypeParser } from "../index.js";
+import { createErrorWithCode } from "./createErrorWithCode.js";
 import type { TestContextType } from "./createTestRunner.js";
 import { waitForConnectionRelease } from "./waitForConnectionRelease.js";
 import type { DriverFactory } from "@slonik/driver";
@@ -57,10 +59,10 @@ export const createIntegrationTests = (
     t.true(error instanceof UnexpectedForeignConnectionError);
   });
 
-  test("does not allow to reference a non-transaction connection inside of a transaction (disabled)", async (t) => {
+  test("allows to reference a non-transaction connection inside of a transaction (foreignConnections: allow)", async (t) => {
     const pool = await createPool(t.context.dsn, {
-      dangerouslyAllowForeignConnections: true,
       driverFactory,
+      foreignConnections: "allow",
     });
 
     await t.notThrowsAsync(
@@ -68,6 +70,124 @@ export const createIntegrationTests = (
         await pool.query(sql.unsafe`SELECT 1`);
       }),
     );
+  });
+
+  test("does not allow to reference a non-transaction connection inside of a retried transaction", async (t) => {
+    const pool = await createPool(t.context.dsn, {
+      driverFactory,
+    });
+
+    let attempt = 0;
+
+    const error = await t.throwsAsync(
+      pool.transaction(async () => {
+        attempt++;
+
+        if (attempt === 1) {
+          // Transaction Rollback class errors cause the transaction to be retried.
+          throw createErrorWithCode("40P01");
+        }
+
+        await pool.query(sql.unsafe`SELECT 1`);
+      }),
+    );
+
+    t.is(attempt, 2);
+    t.true(error instanceof UnexpectedForeignConnectionError);
+  });
+
+  test("allows to reference a non-transaction connection from async work that outlives the transaction", async (t) => {
+    const pool = await createPool(t.context.dsn, {
+      driverFactory,
+    });
+
+    let lateQuery: Promise<unknown> = Promise.resolve("not started");
+
+    await pool.transaction(async (transactionConnection) => {
+      await transactionConnection.query(sql.unsafe`SELECT 1`);
+
+      // Started inside of the transaction (so it inherits the transaction's async context),
+      // but runs after the transaction has been committed.
+      lateQuery = delay(50)
+        .then(async () => {
+          return await pool.query(sql.unsafe`SELECT 1`);
+        })
+        .then(
+          () => "ok",
+          (error: unknown) => error,
+        );
+    });
+
+    t.is(await lateQuery, "ok");
+  });
+
+  test("allows to reference a non-transaction connection from a commit event listener", async (t) => {
+    const pool = await createPool(t.context.dsn, {
+      driverFactory,
+    });
+
+    let listenerQuery: Promise<unknown> = Promise.resolve("not started");
+
+    await pool.transaction(async (transactionConnection) => {
+      transactionConnection.on("commit", () => {
+        listenerQuery = pool.query(sql.unsafe`SELECT 1`).then(
+          () => "ok",
+          (error: unknown) => error,
+        );
+      });
+
+      await transactionConnection.query(sql.unsafe`SELECT 1`);
+    });
+
+    t.is(await listenerQuery, "ok");
+  });
+
+  test("allows to reference a non-transaction connection from a rollback event listener", async (t) => {
+    const pool = await createPool(t.context.dsn, {
+      driverFactory,
+    });
+
+    let listenerQuery: Promise<unknown> = Promise.resolve("not started");
+
+    await t.throwsAsync(
+      pool.transaction(async (transactionConnection) => {
+        transactionConnection.on("rollback", () => {
+          listenerQuery = pool.query(sql.unsafe`SELECT 1`).then(
+            () => "ok",
+            (error: unknown) => error,
+          );
+        });
+
+        throw new Error("foo");
+      }),
+      {
+        message: "foo",
+      },
+    );
+
+    t.is(await listenerQuery, "ok");
+  });
+
+  test("allows to reference a non-transaction connection inside of a transaction using runOutsideTransaction", async (t) => {
+    const pool = await createPool(t.context.dsn, {
+      driverFactory,
+    });
+
+    await t.throwsAsync(
+      pool.transaction(async () => {
+        await runOutsideTransaction(async () => {
+          await pool.query(sql.unsafe`INSERT INTO person (name) VALUES ('foo')`);
+        });
+
+        throw new Error("foo");
+      }),
+      {
+        message: "foo",
+      },
+    );
+
+    // The insert did not use the transaction's connection, so the rollback did not undo it.
+    t.is(await pool.oneFirst(sql.unsafe`SELECT count(*)::int4 FROM person`), 1);
   });
 
   test("streams data", async (t) => {
