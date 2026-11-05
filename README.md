@@ -463,7 +463,8 @@ Supported parameters:
 | `sslmode`          | [`sslmode`](https://www.postgresql.org/docs/current/libpq-ssl.html#LIBPQ-SSL-PROTECTION) (supported values: `disable`, `no-verify`, `require`) | `disable` |
 | `sslrootcert`      | The location of the [root certificate](<(https://www.postgresql.org/docs/current/libpq-ssl.html#LIBQ-SSL-CERTIFICATES)>) file.                 |           |
 
-Note that unless listed above, other [libpq parameters](https://www.postgresql.org/docs/current/libpq-connect.html#LIBPQ-PARAMKEYWORDS) are not supported.
+> [!NOTE]
+> Unless listed above, other [libpq parameters](https://www.postgresql.org/docs/current/libpq-connect.html#LIBPQ-PARAMKEYWORDS) are not supported.
 
 Examples of valid DSNs:
 
@@ -519,7 +520,8 @@ const pool = await createPool("postgres://", {
 });
 ```
 
-> **Note:** If you are new to Slonik, then you should read [Integrating Slonik with Express.js](https://dev.to/gajus/integrating-slonik-with-expressjs-33kn).
+> [!NOTE]
+> If you are new to Slonik, then you should read [Integrating Slonik with Express.js](https://dev.to/gajus/integrating-slonik-with-expressjs-33kn).
 
 Instance of Slonik connection pool can be then used to create a new connection, e.g.
 
@@ -566,7 +568,8 @@ const main = async () => {
 main();
 ```
 
-Note: `pool.end()` does not terminate active connections/ transactions.
+> [!NOTE]
+> `pool.end()` does not terminate active connections/ transactions.
 
 ### Describing the current state of the connection pool
 
@@ -633,7 +636,8 @@ const main = async () => {
 main();
 ```
 
-Note: `pool.end()` does not terminate active connections/ transactions.
+> [!NOTE]
+> `pool.end()` does not terminate active connections/ transactions.
 
 ### API
 
@@ -840,7 +844,8 @@ The primary difference between Slonik and `pg-promise`:
 - Slonik does not allow to execute raw text queries. Slonik queries can only be constructed using [`sql` tagged template literals](#tagged-template-literals). This design [protects against unsafe value interpolation](#protecting-against-unsafe-value-interpolation).
 - Slonik implements [interceptor API](#interceptors) (middleware). Middlewares allow to modify connection handling, override queries and modify the query results. Example Slonik interceptors include [field name transformation](https://github.com/gajus/slonik-interceptor-field-name-transformation), [query normalization](https://github.com/gajus/slonik-interceptor-query-normalisation) and [query benchmarking](https://github.com/gajus/slonik-interceptor-query-benchmarking).
 
-Note: Author of `pg-promise` has [objected to the above claims](https://github.com/gajus/slonik/issues/122). I have removed a difference that was clearly wrong. I maintain that the above two differences remain valid differences: even though `pg-promise` might have substitute functionality for variable interpolation and interceptors, it implements them in a way that does not provide the same benefits that Slonik provides, namely: guaranteed security and support for extending library functionality using multiple plugins.
+> [!NOTE]
+> Author of `pg-promise` has [objected to the above claims](https://github.com/gajus/slonik/issues/122). I have removed a difference that was clearly wrong. I maintain that the above two differences remain valid differences: even though `pg-promise` might have substitute functionality for variable interpolation and interceptors, it implements them in a way that does not provide the same benefits that Slonik provides, namely: guaranteed security and support for extending library functionality using multiple plugins.
 
 Other differences are primarily in how the equivalent features are implemented, e.g.
 
@@ -883,7 +888,8 @@ Example:
 }
 ```
 
-Note: Unlike [`pg-types`](https://github.com/brianc/node-pg-types) that uses OIDs to identify types, Slonik identifies types using their names.
+> [!NOTE]
+> Unlike [`pg-types`](https://github.com/brianc/node-pg-types) that uses OIDs to identify types, Slonik identifies types using their names.
 
 Use this query to find type names:
 
@@ -1067,13 +1073,15 @@ pool.connect();
 
 Executed after query has been executed and before rows were transformed using `transformRow`.
 
-Note: Not executed for queries executed using `stream`.
+> [!NOTE]
+> Not executed for queries executed using `stream`.
 
 #### <code>beforeQueryExecution</code>
 
 This function can optionally return a direct result of the query which will cause the actual query never to be executed.
 
-Note: Not executed for queries executed using `stream`.
+> [!NOTE]
+> Not executed for queries executed using `stream`.
 
 #### <code>beforeQueryResult</code>
 
@@ -1081,7 +1089,8 @@ Executed just before the result is returned to the client.
 
 Use this method to capture the result that will be returned to the client.
 
-Note: Not executed for queries executed using `stream`.
+> [!NOTE]
+> Not executed for queries executed using `stream`.
 
 #### <code>beforeTransformQuery</code>
 
@@ -1133,8 +1142,9 @@ Transforms row.
 
 Use `transformRow` to modify the query result.
 
-Note: `transformRow` is synchronous. Use [`transformRowAsync`](#transformrowasync) if the
-transformation is asynchronous.
+> [!NOTE]
+> `transformRow` is synchronous. Use [`transformRowAsync`](#transformrowasync) if the
+> transformation is asynchronous.
 
 #### <code>transformRowAsync</code>
 
@@ -1189,13 +1199,12 @@ On the other hand, `beforePoolConnection` makes it easy to route based on conven
 
 The first option is self-explanatory to implement, but this recipe demonstrates my convention for using `beforePoolConnection` to route queries.
 
-Note: How you determine which queries are safe to route to a read-only instance is outside of scope for this documentation.
-
-Note: `beforePoolConnection` only works for connections initiated by a query, i.e. `pool#query` and not `pool#connect()`.
-
-Note: `pool#transaction` triggers `beforePoolConnection` but has no `query`.
-
-Note: This particular implementation does not handle [`SELECT INTO`](https://www.postgresql.org/docs/current/sql-selectinto.html).
+> [!NOTE]
+>
+> - How you determine which queries are safe to route to a read-only instance is outside of scope for this documentation.
+> - `beforePoolConnection` only works for connections initiated by a query, i.e. `pool#query` and not `pool#connect()`.
+> - `pool#transaction` triggers `beforePoolConnection` but has no `query`.
+> - This particular implementation does not handle [`SELECT INTO`](https://www.postgresql.org/docs/current/sql-selectinto.html).
 
 ```ts
 const readOnlyPool = await createPool("postgres://read-only");
@@ -1410,7 +1419,8 @@ Conversely you can allow unknown keys to be passed through by using [`.passthrou
 z.object({ foo: z.string() }).passthrough();
 ```
 
-_Note_: Using `.passthrough()` is not recommended as it reduces type safety and may lead to unexpected behaviour.
+> [!NOTE]
+> Using `.passthrough()` is not recommended as it reduces type safety and may lead to unexpected behaviour.
 
 ### Handling schema validation errors
 
@@ -2643,8 +2653,7 @@ const row = await connection.one(sql.typeAlias("foo")`SELECT foo`);
 // row.foo is the result of the `foo` column value of the first row.
 ```
 
-> Note:
->
+> [!NOTE]
 > I've been asked "What makes this different from [knex.js](http://knexjs.org/) `knex('foo').limit(1)`?".
 > `knex('foo').limit(1)` simply generates "SELECT \* FROM foo LIMIT 1" query.
 > `knex` is a query builder; it does not assert the value of the result.
@@ -2718,8 +2727,7 @@ const memberCounts = await connection.record(sql.type(
 
 Returns an empty object if query returns no rows.
 
-> Note:
->
+> [!NOTE]
 > `record` is not just a convenience method – it asserts the integrity of the result.
 > Building the record manually (e.g. using `Object.fromEntries`) silently drops rows
 > that share the same key, e.g. as a result of an incorrect `GROUP BY` clause.
@@ -2877,7 +2885,21 @@ Transactions that are failing with [Transaction Rollback](https://www.postgresql
 
 A failing transaction will be rolled back and the callback function passed to the transaction method call will be executed again. Nested transactions are also retried until the retry limit is reached. If the nested transaction keeps failing with a [Transaction Rollback](https://www.postgresql.org/docs/current/errcodes-appendix.html) error, then the parent transaction will be retried until the retry limit is reached.
 
-How many times a transaction is retried is controlled using `transactionRetryLimit` configuration (default: 5) and the `transactionRetryLimit` parameter of the `transaction` method (default: undefined). If a `transactionRetryLimit` is given to the method call then it is used otherwise the `transactionRetryLimit` configuration is used.
+How many times a transaction is retried is controlled using `transactionRetryLimit` configuration (default: 5). Use the `retryLimit` option of the `transaction` method to override it for a transaction, e.g.
+
+```ts
+await connection.transaction(
+  async (transactionConnection) => {
+    await transactionConnection.query(sql.unsafe`INSERT INTO foo (bar) VALUES ('baz')`);
+  },
+  {
+    retryLimit: 3,
+  },
+);
+```
+
+> [!NOTE]
+> Passing the retry limit as the second argument (`connection.transaction(handler, 3)`) is deprecated.
 
 #### Transaction events
 
@@ -3244,7 +3266,8 @@ Query-level logging can be added using [`slonik-interceptor-query-logging`](http
 
 ### Capture stack trace
 
-Note: Requires [`slonik-interceptor-query-logging`](https://github.com/gajus/slonik-interceptor-query-logging).
+> [!NOTE]
+> Requires [`slonik-interceptor-query-logging`](https://github.com/gajus/slonik-interceptor-query-logging).
 
 Enabling `captureStackTrace` configuration will create a stack trace before invoking the query and include the stack trace in the logs, e.g.
 

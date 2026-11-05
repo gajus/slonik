@@ -30,7 +30,7 @@ test("`beforePoolConnection` is called before `connect`", async (t) => {
   t.true(beforePoolConnection.calledBefore(spy.acquire));
 });
 
-test("`beforePoolConnection` that returns a pool runs the transaction using that pool, with the same retry limit", async (t) => {
+test("`beforePoolConnection` that returns a pool runs the transaction using that pool, with the same options", async (t) => {
   const transaction = sinon.stub().resolves("foo");
 
   const { pool } = await createPoolWithSpy(t.context.dsn, {
@@ -51,8 +51,12 @@ test("`beforePoolConnection` that returns a pool runs the transaction using that
     return "bar";
   };
 
-  t.is(await pool.transaction(handler, 3), "foo");
-  t.deepEqual(transaction.firstCall.args, [handler, 3]);
+  t.is(await pool.transaction(handler, { retryLimit: 3 }), "foo");
+  t.deepEqual(transaction.firstCall.args, [handler, { retryLimit: 3 }]);
+
+  // Deprecated: the retry limit as the second argument.
+  t.is(await pool.transaction(handler, 2), "foo");
+  t.deepEqual(transaction.secondCall.args, [handler, 2]);
 });
 
 test("pool connection lifecycle reuses the same context object", async (t) => {

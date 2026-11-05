@@ -138,10 +138,13 @@ export type CommonQueryMethods = {
   readonly query: QueryFunction;
   readonly record: QueryRecordFunction;
   readonly stream: StreamFunction;
-  readonly transaction: <T>(
-    handler: TransactionFunction<T>,
-    transactionRetryLimit?: number,
-  ) => Promise<T>;
+  readonly transaction: {
+    <T>(handler: TransactionFunction<T>, options?: TransactionOptions): Promise<T>;
+    /**
+     * @deprecated Use `transaction(handler, { retryLimit })` instead.
+     */
+    <T>(handler: TransactionFunction<T>, transactionRetryLimit?: number): Promise<T>;
+  };
 };
 
 export type Connection = "EXPLICIT" | "IMPLICIT_QUERY" | "IMPLICIT_TRANSACTION";
@@ -382,6 +385,14 @@ export type StreamHandler<T> = (stream: DriverStream<T>) => void;
 export type StreamResult = {
   readonly notices: readonly DriverNotice[];
   readonly type: "StreamResult";
+};
+
+export type TransactionOptions = {
+  /**
+   * Number of times the transaction is retried if it fails with a Transaction Rollback class
+   * error. (Default: `transactionRetryLimit` of the client configuration)
+   */
+  readonly retryLimit?: number;
 };
 
 /**

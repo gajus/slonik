@@ -122,6 +122,32 @@ test("returns the thrown transaction error if the retry limit is reached", async
     .rejects(createErrorWithCode("40P01"));
 
   const error: any = await t.throwsAsync(
+    pool.transaction(
+      async (transactionConnection) => {
+        return await transactionConnection.transaction(handlerStub, { retryLimit: 1 });
+      },
+      { retryLimit: 0 },
+    ),
+  );
+
+  t.is(handlerStub.callCount, 2);
+
+  t.true(error instanceof Error);
+  t.is(error?.code, "40P01");
+});
+
+test("returns the thrown transaction error if the retry limit is reached (deprecated retry limit argument)", async (t) => {
+  const pool = await createPool(t.context.dsn);
+
+  const handlerStub = sinon.stub();
+
+  handlerStub
+    .onFirstCall()
+    .rejects(createErrorWithCode("40P01"))
+    .onSecondCall()
+    .rejects(createErrorWithCode("40P01"));
+
+  const error: any = await t.throwsAsync(
     pool.transaction(async (transactionConnection) => {
       return await transactionConnection.transaction(handlerStub, 1);
     }, 0),

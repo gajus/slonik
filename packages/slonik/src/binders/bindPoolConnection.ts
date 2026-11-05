@@ -12,6 +12,7 @@ import { record } from "../connectionMethods/record.js";
 import { stream } from "../connectionMethods/stream.js";
 import { transaction } from "../connectionMethods/transaction.js";
 import type { ConnectionPoolClient } from "../factories/createConnectionPool.js";
+import { getTransactionRetryLimit } from "../routines/getTransactionRetryLimit.js";
 import { getPoolClientState } from "../state.js";
 import type { ClientConfiguration, DatabasePoolConnection, Logger } from "../types.js";
 
@@ -89,13 +90,13 @@ class BoundPoolConnection {
     );
   }
 
-  transaction(handler, transactionRetryLimit) {
+  transaction(handler, options) {
     return transaction(
       this.parentLog,
       this.connection,
       this.clientConfiguration,
       handler,
-      transactionRetryLimit,
+      getTransactionRetryLimit(options),
     );
   }
 }

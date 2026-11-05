@@ -1,6 +1,7 @@
 import { transaction } from "../connectionMethods/transaction.js";
 import { createConnection } from "../factories/createConnection.js";
 import type { ConnectionPool } from "../factories/createConnectionPool.js";
+import { getTransactionRetryLimit } from "../routines/getTransactionRetryLimit.js";
 import type {
   ClientConfiguration,
   DatabasePool,
@@ -216,7 +217,7 @@ export const bindPool = (
         streamQuery,
       );
     },
-    transaction: (transactionHandler, transactionRetryLimit) => {
+    transaction: (transactionHandler, options) => {
       return createConnection(
         parentLog,
         pool,
@@ -228,11 +229,11 @@ export const bindPool = (
             connection,
             clientConfiguration,
             transactionHandler,
-            transactionRetryLimit,
+            getTransactionRetryLimit(options),
           );
         },
         (newPool) => {
-          return newPool.transaction(transactionHandler, transactionRetryLimit);
+          return newPool.transaction(transactionHandler, options);
         },
       );
     },
