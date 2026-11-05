@@ -1,5 +1,11 @@
 # slonik-interceptor-field-name-transformation
 
+## 49.13.0
+
+### Minor Changes
+
+- [#828](https://github.com/gajus/slonik/pull/828) [`370c0d3`](https://github.com/gajus/slonik/commit/370c0d31b577a8cd2c097459a641133e310d3936) Thanks [@gajus](https://github.com/gajus)! - improve `transformRow` performance: rows are copied by a function that is compiled once per set of fields into an object literal, instead of being assembled one property at a time on a null-prototype object (which V8 keeps in slower dictionary mode). Transforming 200,000 rows of 12 fields is ~25x faster, and reading fields of the transformed rows ~12x faster. Rows are now plain objects, and rows whose field names do not need to be transformed are returned as they are. Also fixes reusing the transformation of a different set of fields when field names contain commas, or when `test` depends on the field type.
+
 ## 49.12.0
 
 ## 49.11.0

@@ -1,5 +1,7 @@
 # slonik-interceptor-query-cache
 
+## 49.13.0
+
 ## 49.12.0
 
 ### Minor Changes
