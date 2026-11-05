@@ -1,6 +1,7 @@
 import { bindTransactionConnection } from "../binders/bindTransactionConnection.js";
 import { TRANSACTION_ROLLBACK_ERROR_PREFIX } from "../constants.js";
 import { transactionContext } from "../contexts/transactionContext.js";
+import type { TransactionContext } from "../contexts/transactionContext.js";
 import { getPoolClientState } from "../state.js";
 import type { DatabaseTransactionEventEmitter, InternalTransactionFunction } from "../types.js";
 import { BackendTerminatedError, UnexpectedStateError } from "@slonik/errors";
@@ -19,7 +20,16 @@ const execTransaction: InternalTransactionFunction = async (
 ) => {
   const poolClientState = getPoolClientState(connection);
 
+  // The context created by `transaction` for this transaction.
+  const context = transactionContext.getStore();
+
+  if (!context) {
+    throw new UnexpectedStateError("Transaction context is required for transaction execution.");
+  }
+
   await connection.query("START TRANSACTION");
+
+  context.open = true;
 
   if (typeof poolClientState.transactionDepth !== "number") {
     throw new UnexpectedStateError(
@@ -51,6 +61,9 @@ const execTransaction: InternalTransactionFunction = async (
 
     await connection.query("COMMIT");
 
+    // Closed before emitting the event, so that listeners can use other connections.
+    context.open = false;
+
     if (poolClientState.transactionDepth === 0) {
       eventEmitter.emit("commit", {
         transactionDepth: poolClientState.transactionDepth,
@@ -70,6 +83,10 @@ const execTransaction: InternalTransactionFunction = async (
         "rolling back transaction due to an error",
       );
     }
+
+    // Closed before emitting the event, so that listeners can use other connections.
+    // A retry opens the transaction again (see above).
+    context.open = false;
 
     eventEmitter.emit("rollback", {
       error: error as Error,
@@ -149,28 +166,49 @@ export const transaction: InternalTransactionFunction = async (
   const transactionId = generateUid();
   const eventEmitter = new EventEmitter() as DatabaseTransactionEventEmitter;
 
-  return transactionContext.run(
-    {
-      transactionId,
-    },
-    async () => {
-      const poolClientState = getPoolClientState(connection);
+  // Opened by `execTransaction` once the transaction starts.
+  const context: TransactionContext = {
+    open: false,
+    transactionId,
+  };
 
-      if (poolClientState.transactionDepth !== null) {
-        throw new UnexpectedStateError(
-          "Cannot use the same connection to start a new transaction before completing the last transaction.",
-        );
-      }
+  return transactionContext.run(context, async () => {
+    const poolClientState = getPoolClientState(connection);
 
-      poolClientState.transactionDepth = 0;
-      poolClientState.transactionId = transactionId;
+    if (poolClientState.transactionDepth !== null) {
+      throw new UnexpectedStateError(
+        "Cannot use the same connection to start a new transaction before completing the last transaction.",
+      );
+    }
 
-      const log = parentLog.child({
-        transactionId: poolClientState.transactionId,
-      });
+    poolClientState.transactionDepth = 0;
+    poolClientState.transactionId = transactionId;
 
-      try {
-        return await execTransaction(
+    const log = parentLog.child({
+      transactionId: poolClientState.transactionId,
+    });
+
+    try {
+      return await execTransaction(
+        log,
+        connection,
+        clientConfiguration,
+        handler,
+        transactionRetryLimit,
+        eventEmitter,
+        transactionId,
+      );
+    } catch (error) {
+      const transactionRetryLimitToUse =
+        transactionRetryLimit ?? clientConfiguration.transactionRetryLimit;
+
+      const shouldRetry =
+        typeof error.code === "string" &&
+        error.code.startsWith(TRANSACTION_ROLLBACK_ERROR_PREFIX) &&
+        transactionRetryLimitToUse > 0;
+
+      if (shouldRetry) {
+        return await retryTransaction(
           log,
           connection,
           clientConfiguration,
@@ -179,32 +217,15 @@ export const transaction: InternalTransactionFunction = async (
           eventEmitter,
           transactionId,
         );
-      } catch (error) {
-        const transactionRetryLimitToUse =
-          transactionRetryLimit ?? clientConfiguration.transactionRetryLimit;
-
-        const shouldRetry =
-          typeof error.code === "string" &&
-          error.code.startsWith(TRANSACTION_ROLLBACK_ERROR_PREFIX) &&
-          transactionRetryLimitToUse > 0;
-
-        if (shouldRetry) {
-          return await retryTransaction(
-            log,
-            connection,
-            clientConfiguration,
-            handler,
-            transactionRetryLimit,
-            eventEmitter,
-            transactionId,
-          );
-        } else {
-          throw error;
-        }
-      } finally {
-        poolClientState.transactionDepth = null;
-        poolClientState.transactionId = null;
+      } else {
+        throw error;
       }
-    },
-  );
+    } finally {
+      poolClientState.transactionDepth = null;
+      poolClientState.transactionId = null;
+
+      // In case the transaction ended without COMMIT or ROLLBACK, e.g. the connection was terminated.
+      context.open = false;
+    }
+  });
 };

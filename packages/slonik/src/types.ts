@@ -28,12 +28,20 @@ export type ClientConfiguration = {
   readonly connectionUri: string;
   /**
    * Allow using connections that are not associated with the transaction. (Default: false)
+   * @deprecated Use `foreignConnections: "allow"` instead.
    */
-  readonly dangerouslyAllowForeignConnections: boolean;
+  readonly dangerouslyAllowForeignConnections?: boolean;
   /**
    * Overrides the default DriverFactory. (Default: "pg" driver factory)
    */
   readonly driverFactory?: DriverFactory;
+  /**
+   * What to do when a query that runs while a transaction is open uses a connection that is not
+   * associated with the transaction. "reject" throws `UnexpectedForeignConnectionError`; "allow"
+   * runs the query, outside of the transaction. Use `runOutsideTransaction` to allow such queries
+   * individually. (Default: "reject")
+   */
+  readonly foreignConnections: "allow" | "reject";
   /**
    * Timeout (in milliseconds) that kicks in after a connection with an active query is requested to end. This is the amount of time that is allowed for query to complete before terminating it. (Default: 5000)
    */

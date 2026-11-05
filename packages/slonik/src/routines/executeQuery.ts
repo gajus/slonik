@@ -175,9 +175,11 @@ const executeQueryInternal = async (
 
   const transactionStore = transactionContext.getStore();
 
+  // Async work that is started inside of a transaction inherits the transaction's context,
+  // even if it outlives the transaction. Only an open transaction rejects foreign connections.
   if (
-    clientConfiguration.dangerouslyAllowForeignConnections !== true &&
-    transactionStore?.transactionId &&
+    clientConfiguration.foreignConnections !== "allow" &&
+    transactionStore?.open &&
     transactionStore.transactionId !== poolClientState.transactionId
   ) {
     throw new UnexpectedForeignConnectionError();

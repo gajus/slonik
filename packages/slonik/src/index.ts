@@ -1,5 +1,6 @@
 import { createSqlTag } from "@slonik/sql-tag";
 
+export { runOutsideTransaction } from "./contexts/transactionContext.js";
 export { createPool } from "./factories/createPool.js";
 
 export const sql = createSqlTag();

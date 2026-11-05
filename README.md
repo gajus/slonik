@@ -342,7 +342,22 @@ This pattern ensures that the transaction is either committed or aborted the mom
 > ```
 >
 > In this example, the query is executed using the `connection` that is not associated with the transaction. This is unsafe because the query is not part of the transaction and will not be rolled back if the transaction is aborted.
-> This behaviour can be disabled by setting `dangerouslyAllowForeignConnections` to `true` in the `ClientConfiguration`.
+>
+> The check applies only while the transaction is open. Async work that is started inside of the transaction but runs after the transaction has been committed or rolled back (e.g. a deferred side effect or a [`commit` event](#transaction-events) listener) can use any connection.
+>
+> If a query is meant to run outside of the transaction (e.g. an audit log entry that must persist even if the transaction is rolled back), wrap it in `runOutsideTransaction`:
+>
+> ```ts
+> import { runOutsideTransaction } from "slonik";
+>
+> pool.transaction(async (transactionConnection) => {
+>   await runOutsideTransaction(async () => {
+>     await pool.query(sql.typeAlias("void")`INSERT INTO audit_log (event) VALUES ('baz')`);
+>   });
+> });
+> ```
+>
+> The check can be disabled for all queries by setting `foreignConnections` to `"allow"` in the `ClientConfiguration`.
 
 ### Protecting against unsafe value interpolation
 
@@ -637,8 +652,9 @@ createPool(
  * @property captureStackTrace Dictates whether to capture stack trace before executing query. Middlewares access stack trace through query execution context. (Default: false)
  * @property connectionRetryLimit Number of times to retry establishing a new connection. (Default: 3)
  * @property connectionTimeout Timeout (in milliseconds) after which an error is raised if connection cannot be established. (Default: 5000)
- * @property dangerouslyAllowForeignConnections Allow using connections that are not associated with the transaction. (Default: false)
+ * @property dangerouslyAllowForeignConnections (Deprecated: use foreignConnections: "allow") Allow using connections that are not associated with the transaction. (Default: false)
  * @property driverFactory Overrides the default DriverFactory. (Default: "pg" driver factory)
+ * @property foreignConnections What to do when a query that runs while a transaction is open uses a connection that is not associated with the transaction: "reject" throws `UnexpectedForeignConnectionError`, "allow" runs the query outside of the transaction. See [Protecting against unsafe transaction handling](#protecting-against-unsafe-transaction-handling). (Default: "reject")
  * @property gracefulTerminationTimeout Timeout (in milliseconds) that kicks in after a connection with an active query is requested to end. This is the amount of time that is allowed for query to complete before terminating it. (Default: 5000)
  * @property idleInTransactionSessionTimeout Timeout (in milliseconds) after which idle clients are closed. Use 'DISABLE_TIMEOUT' constant to disable the timeout. (Default: 60000)
  * @property idleTimeout Timeout (in milliseconds) after which idle clients are closed. Use 'DISABLE_TIMEOUT' constant to disable the timeout. (Default: 5000)
@@ -662,8 +678,9 @@ type ClientConfigurationInput = {
   captureStackTrace?: boolean,
   connectionRetryLimit?: number,
   connectionTimeout?: number | 'DISABLE_TIMEOUT',
-  dangerouslyAllowForeignConnections?: boolean,
+  dangerouslyAllowForeignConnections?: boolean, // deprecated, use foreignConnections: 'allow'
   driverFactory?: DriverFactory,
+  foreignConnections?: 'allow' | 'reject',
   gracefulTerminationTimeout?: number,
   idleInTransactionSessionTimeout?: number | 'DISABLE_TIMEOUT',
   idleTimeout?: number | 'DISABLE_TIMEOUT',
