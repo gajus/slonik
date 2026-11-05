@@ -36,6 +36,7 @@ export type {
   QueryResult,
   QueryResultRow,
   QueryResultRowColumn,
+  TransactionOptions,
   TypeNameIdentifier,
   ValueExpression,
 } from "./types.js";

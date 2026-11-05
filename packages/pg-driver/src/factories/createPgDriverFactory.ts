@@ -211,7 +211,7 @@ const wrapError = (error: Error, query: null | Query) => {
   }
 
   if (error.code === "22P02") {
-    return new InvalidInputError(error.message);
+    return new InvalidInputError(error.message, { cause: error });
   }
 
   if (error.code === "25P03") {
@@ -447,6 +447,15 @@ export const createPgDriverFactory = (): DriverFactory => {
               });
 
               stream.pipe(transform);
+
+              // `pipe` does not destroy the query stream when `transform` is destroyed (e.g. because
+              // the consumer failed to process a row). That would leave the cursor open and block
+              // every subsequent query of the connection; destroying the query stream closes it.
+              transform.once("close", () => {
+                if (!stream.destroyed) {
+                  stream.destroy();
+                }
+              });
             };
 
             const typeParsers = streamOptions?.typeParsers;

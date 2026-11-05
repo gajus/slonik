@@ -12,7 +12,7 @@ import type {
 } from "../types.js";
 import type { ConnectionPool, ConnectionPoolClient } from "./createConnectionPool.js";
 import { SpanStatusCode, trace } from "@opentelemetry/api";
-import { UnexpectedStateError } from "@slonik/errors";
+import { DataIntegrityError, SchemaValidationError, UnexpectedStateError } from "@slonik/errors";
 import type { QuerySqlToken } from "@slonik/sql-tag";
 
 const tracer = trace.getTracer("slonik.interceptors");
@@ -195,21 +195,6 @@ export const createConnection = async (
       throw error;
     }
 
-    let result;
-
-    try {
-      result = await connectionHandler(
-        connectionLog,
-        connection,
-        boundConnection,
-        clientConfiguration,
-      );
-    } catch (error) {
-      await connection.destroy();
-
-      throw error;
-    }
-
     const releaseConnection = async () => {
       try {
         for (const interceptor of clientConfiguration.interceptors) {
@@ -234,6 +219,31 @@ export const createConnection = async (
         await connection.destroy();
       }
     };
+
+    let result;
+
+    try {
+      result = await connectionHandler(
+        connectionLog,
+        connection,
+        boundConnection,
+        clientConfiguration,
+      );
+    } catch (error) {
+      // These errors describe the result of a query (e.g. a row that failed validation), i.e. the
+      // connection is healthy (the cursor of a failed stream is closed by the driver). A routine
+      // passed to `connect()` can leave the connection in any state, though.
+      if (
+        connectionType !== "EXPLICIT" &&
+        (error instanceof DataIntegrityError || error instanceof SchemaValidationError)
+      ) {
+        releaseConnection().catch(() => {});
+      } else {
+        await connection.destroy();
+      }
+
+      throw error;
+    }
 
     releaseConnection().catch(() => {});
 

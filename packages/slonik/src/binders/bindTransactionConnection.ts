@@ -12,6 +12,7 @@ import { query as queryMethod } from "../connectionMethods/query.js";
 import { record } from "../connectionMethods/record.js";
 import { stream } from "../connectionMethods/stream.js";
 import type { ConnectionPoolClient } from "../factories/createConnectionPool.js";
+import { getTransactionRetryLimit } from "../routines/getTransactionRetryLimit.js";
 import { getPoolClientState } from "../state.js";
 import type { PoolClientState } from "../state.js";
 import type {
@@ -124,7 +125,7 @@ class BoundTransactionConnection {
     );
   }
 
-  transaction(handler, transactionRetryLimit) {
+  transaction(handler, options) {
     this.assertTransactionDepth();
     return nestedTransaction(
       this.parentLog,
@@ -132,7 +133,7 @@ class BoundTransactionConnection {
       this.clientConfiguration,
       handler,
       this.transactionDepth,
-      transactionRetryLimit,
+      getTransactionRetryLimit(options),
       this.eventEmitter,
       this.transactionId,
     );

@@ -1,7 +1,15 @@
 /* eslint-disable id-length */
 /* cspell:ignore tstzrange */
 
-import { BackendTerminatedError, createPool, parseDsn, sql } from "../index.js";
+import {
+  BackendTerminatedError,
+  createPool,
+  DataIntegrityError,
+  NotFoundError,
+  parseDsn,
+  SchemaValidationError,
+  sql,
+} from "../index.js";
 import type { DatabasePoolConnection } from "../index.js";
 import type { TestContextType } from "./createTestRunner.js";
 import { waitForConnectionRelease } from "./waitForConnectionRelease.js";
@@ -477,6 +485,100 @@ export const createPoolTests = (test: TestFn<TestContextType>, driverFactory: Dr
       pool.query(sql.unsafe`
         SELECT 1 / 0;
       `),
+    );
+
+    const secondConnectionPid = await pool.oneFirst(sql.unsafe`
+      SELECT pg_backend_pid();
+    `);
+
+    t.not(firstConnectionPid, secondConnectionPid);
+  });
+
+  test("re-uses connection if a query result failed validation", async (t) => {
+    const pool = await createPool(t.context.dsn, {
+      driverFactory,
+      interceptors: [
+        {
+          name: "schema-validation",
+          transformRow: (queryContext, query, row) => {
+            if (query.sql.includes("invalid_row")) {
+              throw new SchemaValidationError(query, row, []);
+            }
+
+            return row;
+          },
+        },
+      ],
+      maxPoolSize: 1,
+    });
+
+    const firstConnectionPid = await pool.oneFirst(sql.unsafe`
+      SELECT pg_backend_pid();
+    `);
+
+    await t.throwsAsync(pool.one(sql.unsafe`SELECT 1 WHERE false`), {
+      instanceOf: NotFoundError,
+    });
+
+    await t.throwsAsync(pool.one(sql.unsafe`SELECT * FROM (VALUES (1), (2)) AS t(id)`), {
+      instanceOf: DataIntegrityError,
+    });
+
+    await t.throwsAsync(pool.query(sql.unsafe`SELECT 1 AS invalid_row`), {
+      instanceOf: SchemaValidationError,
+    });
+
+    const secondConnectionPid = await pool.oneFirst(sql.unsafe`
+      SELECT pg_backend_pid();
+    `);
+
+    t.is(firstConnectionPid, secondConnectionPid);
+  });
+
+  test("re-uses connection if a query result failed validation inside of a transaction", async (t) => {
+    const pool = await createPool(t.context.dsn, {
+      driverFactory,
+      maxPoolSize: 1,
+    });
+
+    const firstConnectionPid = await pool.oneFirst(sql.unsafe`
+      SELECT pg_backend_pid();
+    `);
+
+    await t.throwsAsync(
+      pool.transaction(async (transaction) => {
+        await transaction.one(sql.unsafe`SELECT 1 WHERE false`);
+      }),
+      {
+        instanceOf: NotFoundError,
+      },
+    );
+
+    const secondConnectionPid = await pool.oneFirst(sql.unsafe`
+      SELECT pg_backend_pid();
+    `);
+
+    t.is(firstConnectionPid, secondConnectionPid);
+  });
+
+  test("does not re-use connection if a query result failed validation inside of connect()", async (t) => {
+    const pool = await createPool(t.context.dsn, {
+      driverFactory,
+      maxPoolSize: 1,
+    });
+
+    const firstConnectionPid = await pool.oneFirst(sql.unsafe`
+      SELECT pg_backend_pid();
+    `);
+
+    // The routine can leave the connection in any state, e.g. inside of a transaction.
+    await t.throwsAsync(
+      pool.connect(async (connection) => {
+        await connection.one(sql.unsafe`SELECT 1 WHERE false`);
+      }),
+      {
+        instanceOf: NotFoundError,
+      },
     );
 
     const secondConnectionPid = await pool.oneFirst(sql.unsafe`
