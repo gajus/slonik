@@ -223,21 +223,12 @@ export const createDriverFactory = (setup: DriverSetup): DriverFactory => {
 
         let isAcquired = false;
         let isDestroyed = false;
-        let idleTimeout: NodeJS.Timeout | null = null;
 
         let activeQueryPromise: null | Promise<DriverQueryResult> = null;
         let destroyPromise: null | Promise<void> = null;
         let releasePromise: null | Promise<void> = null;
 
         const id = generateUid();
-
-        const clearIdleTimeout = () => {
-          if (idleTimeout) {
-            clearTimeout(idleTimeout);
-
-            idleTimeout = null;
-          }
-        };
 
         const state = () => {
           if (destroyPromise) {
@@ -269,8 +260,6 @@ export const createDriverFactory = (setup: DriverSetup): DriverFactory => {
           if (currentState === "DESTROYED") {
             throw new Error("Client is destroyed.");
           }
-
-          clearIdleTimeout();
 
           // activeQueryPromise and releasePromise are mutually exclusive
           // (release throws if a query is active). Either one can hang if the
@@ -368,16 +357,6 @@ export const createDriverFactory = (setup: DriverSetup): DriverFactory => {
             throw error;
           }
 
-          if (driverConfiguration.idleTimeout !== "DISABLE_TIMEOUT") {
-            clearIdleTimeout();
-
-            idleTimeout = setTimeout(() => {
-              void destroy();
-
-              idleTimeout = null;
-            }, driverConfiguration.idleTimeout).unref?.();
-          }
-
           isAcquired = false;
 
           releasePromise = null;
@@ -418,8 +397,6 @@ export const createDriverFactory = (setup: DriverSetup): DriverFactory => {
             if (currentState === "ACQUIRED") {
               throw new Error("Client is already acquired.");
             }
-
-            clearIdleTimeout();
 
             isAcquired = true;
 

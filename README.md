@@ -659,7 +659,7 @@ createPool(
  * @property foreignConnections What to do when a query that runs while a transaction is open uses a connection that is not associated with the transaction: "reject" throws `UnexpectedForeignConnectionError`, "allow" runs the query outside of the transaction. See [Protecting against unsafe transaction handling](#protecting-against-unsafe-transaction-handling). (Default: "reject")
  * @property gracefulTerminationTimeout Timeout (in milliseconds) that kicks in after a connection with an active query is requested to end. This is the amount of time that is allowed for query to complete before terminating it. (Default: 5000)
  * @property idleInTransactionSessionTimeout Timeout (in milliseconds) after which idle clients are closed. Use 'DISABLE_TIMEOUT' constant to disable the timeout. (Default: 60000)
- * @property idleTimeout Timeout (in milliseconds) after which idle clients are closed. Use 'DISABLE_TIMEOUT' constant to disable the timeout. (Default: 5000)
+ * @property idleTimeout Timeout (in milliseconds) after which idle clients are closed. The pool keeps `minPoolSize` clients open. Use 'DISABLE_TIMEOUT' constant to disable the timeout. (Default: 5000)
  * @property interceptors An array of [Slonik interceptors](https://github.com/gajus/slonik#interceptors).
  * @property maximumConnectionAge The maximum age of a connection allowed in the pool. After this age, the connection will be destroyed. Use 'DISABLE_TIMEOUT' constant to disable the timeout. (Default: 30 minutes)
  * @property maximumPoolSize (Deprecated: use maxPoolSize) Do not allow more than this many connections. (Default: 10)
@@ -766,12 +766,12 @@ await createPool("postgres://", {
 
 There are 4 types of configurable timeouts:
 
-| Configuration                     | Description                                                                                                                             | Default |
-| --------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------- | ------- |
-| `connectionTimeout`               | Timeout (in milliseconds) after which an error is raised if connection cannot be established.                                           | 5000    |
-| `idleInTransactionSessionTimeout` | Timeout (in milliseconds) after which idle clients are closed. Use 'DISABLE_TIMEOUT' constant to disable the timeout.                   | 60000   |
-| `idleTimeout`                     | Timeout (in milliseconds) after which idle clients are closed. Use 'DISABLE_TIMEOUT' constant to disable the timeout.                   | 5000    |
-| `statementTimeout`                | Timeout (in milliseconds) after which database is instructed to abort the query. Use 'DISABLE_TIMEOUT' constant to disable the timeout. | 60000   |
+| Configuration                     | Description                                                                                                                                                      | Default |
+| --------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------- |
+| `connectionTimeout`               | Timeout (in milliseconds) after which an error is raised if connection cannot be established.                                                                    | 5000    |
+| `idleInTransactionSessionTimeout` | Timeout (in milliseconds) after which idle clients are closed. Use 'DISABLE_TIMEOUT' constant to disable the timeout.                                            | 60000   |
+| `idleTimeout`                     | Timeout (in milliseconds) after which idle clients are closed. The pool keeps `minPoolSize` clients open. Use 'DISABLE_TIMEOUT' constant to disable the timeout. | 5000    |
+| `statementTimeout`                | Timeout (in milliseconds) after which database is instructed to abort the query. Use 'DISABLE_TIMEOUT' constant to disable the timeout.                          | 60000   |
 
 Slonik sets aggressive timeouts by default. These timeouts are designed to provide safe interface to the database. These timeouts might not work for all programs. If your program has long running statements, consider adjusting timeouts just for those statements instead of changing the defaults.
 

@@ -1016,8 +1016,8 @@ export const createPoolTests = (test: TestFn<TestContextType>, driverFactory: Dr
       "initial state",
     );
 
-    await pool.query(sql.unsafe`
-      SELECT 1
+    const firstConnectionPid = await pool.oneFirst(sql.unsafe`
+      SELECT pg_backend_pid();
     `);
 
     await waitForConnectionRelease(pool);
@@ -1050,6 +1050,16 @@ export const createPoolTests = (test: TestFn<TestContextType>, driverFactory: Dr
         waitingClients: 0,
       },
       "shows idle clients because minimum pool size is 1",
+    );
+
+    const secondConnectionPid = await pool.oneFirst(sql.unsafe`
+      SELECT pg_backend_pid();
+    `);
+
+    t.is(
+      secondConnectionPid,
+      firstConnectionPid,
+      "retains the connection instead of replacing it after the idle timeout",
     );
 
     await pool.end();
