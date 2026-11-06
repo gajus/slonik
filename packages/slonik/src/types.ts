@@ -380,6 +380,11 @@ export type QueryResult<T> = {
   readonly command: DriverCommand | null;
   readonly fields: readonly Field[];
   readonly notices: readonly DriverNotice[];
+  /**
+   * The number of rows that the statement affected or returned, as reported by the database (e.g.
+   * the number of rows updated by `UPDATE`). For statements that do not report a count (e.g. `SHOW`
+   * and `EXPLAIN`), the number of returned rows.
+   */
   readonly rowCount: number;
   readonly rows: readonly T[];
   readonly type: "QueryResult";

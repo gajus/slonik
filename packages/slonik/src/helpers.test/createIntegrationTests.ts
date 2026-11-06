@@ -1071,6 +1071,32 @@ export const createIntegrationTests = (
     await pool.end();
   });
 
+  test("uses the number of returned rows as the row count of statements that do not report one", async (t) => {
+    const pool = await createPool(t.context.dsn, {
+      driverFactory,
+    });
+
+    const showResult = await pool.query(sql.unsafe`
+      SHOW application_name
+    `);
+
+    t.is(showResult.rowCount, 1);
+
+    const explainResult = await pool.query(sql.unsafe`
+      EXPLAIN (COSTS OFF) SELECT 1
+    `);
+
+    t.is(explainResult.rowCount, 1);
+
+    const setResult = await pool.query(sql.unsafe`
+      SET application_name = 'slonik'
+    `);
+
+    t.is(setResult.rowCount, 0);
+
+    await pool.end();
+  });
+
   test("terminated backend produces BackendTerminatedError error", async (t) => {
     const pool = await createPool(t.context.dsn, {
       driverFactory,

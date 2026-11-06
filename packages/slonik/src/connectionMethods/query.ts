@@ -21,6 +21,8 @@ const executionRoutine: ExecutionRoutine = async (
       : undefined,
   );
 
+  const rows = (result.rows || []) as QueryResultRow[];
+
   return {
     command: result.command,
     // The driver already returns fields in Slonik's `{ dataTypeId, name }` shape
@@ -28,8 +30,9 @@ const executionRoutine: ExecutionRoutine = async (
     // re-allocating an identical array of objects on every query.
     fields: (result.fields ?? []) as Field[],
     notices: result.notices ?? [],
-    rowCount: result.rowCount || 0,
-    rows: (result.rows || []) as QueryResultRow[],
+    // Statements whose command tag has no row count (e.g. SHOW, EXPLAIN) can still return rows.
+    rowCount: result.rowCount ?? rows.length,
+    rows,
     type: "QueryResult",
   };
 };
