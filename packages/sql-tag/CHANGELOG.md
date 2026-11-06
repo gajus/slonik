@@ -1,5 +1,17 @@
 # @slonik/sql-tag
 
+## 49.14.0
+
+### Minor Changes
+
+- [`625c3e7`](https://github.com/gajus/slonik/commit/625c3e74de2a67bb2343171b002eb4d0fe3cdced) Thanks [@gajus](https://github.com/gajus)! - fix: the types no longer accept arrays and buffers as values interpolated in a query, or as members of `sql.join`, `sql.list`, `sql.and` and `sql.or`. They passed type-checking, but always threw at runtime (e.g. "Unexpected value expression."). Bind arrays using `sql.array` and buffers using `sql.binary`. Code that interpolates a value typed as `PrimitiveValueExpression` (which includes arrays and buffers) no longer compiles; type the value as `ValueExpression` instead.
+
+### Patch Changes
+
+- Updated dependencies []:
+  - @slonik/errors@49.14.0
+  - @slonik/types@49.14.0
+
 ## 49.13.0
 
 ### Patch Changes

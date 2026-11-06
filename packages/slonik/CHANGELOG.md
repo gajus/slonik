@@ -1,5 +1,26 @@
 # slonik
 
+## 49.14.0
+
+### Minor Changes
+
+- [`8eb25b2`](https://github.com/gajus/slonik/commit/8eb25b2919d02ba7619eede1d5592fe29cf81674) Thanks [@gajus](https://github.com/gajus)! - fix: the type of `QueryResult.command` (and of `DriverCommand`) now includes every command that Postgres reports, e.g. `MERGE`, `SET` and `CREATE` (for `CREATE TABLE`), not only `COPY`, `DELETE`, `INSERT`, `SELECT` and `UPDATE`. The command is `null` if the query has no statement (e.g. it consists only of a comment), which was already the case at runtime. Code that handles the commands exhaustively, or that uses the command without checking for `null`, may need to be updated.
+
+- [`625c3e7`](https://github.com/gajus/slonik/commit/625c3e74de2a67bb2343171b002eb4d0fe3cdced) Thanks [@gajus](https://github.com/gajus)! - fix: the types no longer accept arrays and buffers as values interpolated in a query, or as members of `sql.join`, `sql.list`, `sql.and` and `sql.or`. They passed type-checking, but always threw at runtime (e.g. "Unexpected value expression."). Bind arrays using `sql.array` and buffers using `sql.binary`. Code that interpolates a value typed as `PrimitiveValueExpression` (which includes arrays and buffers) no longer compiles; type the value as `ValueExpression` instead.
+
+### Patch Changes
+
+- [`777d254`](https://github.com/gajus/slonik/commit/777d254577d499da6438f3bd2d3d3601eb949ae7) Thanks [@gajus](https://github.com/gajus)! - fix: the connections that the pool keeps open for `minPoolSize` are no longer closed and replaced after `idleTimeout`. Besides the pool, the driver closed every connection `idleTimeout` after it was released, regardless of `minPoolSize`, so the pool kept opening new connections to replace them. Now only the pool closes idle connections, and it keeps `minPoolSize` connections open.
+
+- [`4edcfd6`](https://github.com/gajus/slonik/commit/4edcfd6f317afacd9eccef2b240a4cce372d6470) Thanks [@gajus](https://github.com/gajus)! - fix: `rowCount` is the number of returned rows for statements that do not report a row count (e.g. `SHOW` and `EXPLAIN`), instead of 0. This also stops `slonik-interceptor-query-cache` from treating the results of such statements as empty (`discardEmpty`).
+
+- Updated dependencies [[`8eb25b2`](https://github.com/gajus/slonik/commit/8eb25b2919d02ba7619eede1d5592fe29cf81674), [`777d254`](https://github.com/gajus/slonik/commit/777d254577d499da6438f3bd2d3d3601eb949ae7), [`625c3e7`](https://github.com/gajus/slonik/commit/625c3e74de2a67bb2343171b002eb4d0fe3cdced)]:
+  - @slonik/driver@49.14.0
+  - @slonik/sql-tag@49.14.0
+  - @slonik/errors@49.14.0
+  - @slonik/pg-driver@49.14.0
+  - @slonik/utilities@49.14.0
+
 ## 49.13.0
 
 ### Minor Changes

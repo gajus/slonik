@@ -1,5 +1,19 @@
 # @slonik/driver
 
+## 49.14.0
+
+### Minor Changes
+
+- [`8eb25b2`](https://github.com/gajus/slonik/commit/8eb25b2919d02ba7619eede1d5592fe29cf81674) Thanks [@gajus](https://github.com/gajus)! - fix: the type of `QueryResult.command` (and of `DriverCommand`) now includes every command that Postgres reports, e.g. `MERGE`, `SET` and `CREATE` (for `CREATE TABLE`), not only `COPY`, `DELETE`, `INSERT`, `SELECT` and `UPDATE`. The command is `null` if the query has no statement (e.g. it consists only of a comment), which was already the case at runtime. Code that handles the commands exhaustively, or that uses the command without checking for `null`, may need to be updated.
+
+### Patch Changes
+
+- [`777d254`](https://github.com/gajus/slonik/commit/777d254577d499da6438f3bd2d3d3601eb949ae7) Thanks [@gajus](https://github.com/gajus)! - fix: the connections that the pool keeps open for `minPoolSize` are no longer closed and replaced after `idleTimeout`. Besides the pool, the driver closed every connection `idleTimeout` after it was released, regardless of `minPoolSize`, so the pool kept opening new connections to replace them. Now only the pool closes idle connections, and it keeps `minPoolSize` connections open.
+
+- Updated dependencies []:
+  - @slonik/types@49.14.0
+  - @slonik/utilities@49.14.0
+
 ## 49.13.0
 
 ### Patch Changes
