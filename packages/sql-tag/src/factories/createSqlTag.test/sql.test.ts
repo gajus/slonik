@@ -78,6 +78,24 @@ test("throws if bound an undefined value", (t) => {
   t.is(error?.message, "SQL tag cannot be bound to undefined value at index 1.");
 });
 
+test("throws if bound an array", (t) => {
+  const error = t.throws(() => {
+    // @ts-expect-error - intentional: arrays are rejected at compile time and at runtime (use sql.array)
+    sql.fragment`SELECT ${[1, 2, 3]}`;
+  });
+
+  t.is(error?.message, "Unexpected value expression.");
+});
+
+test("throws if bound a buffer", (t) => {
+  const error = t.throws(() => {
+    // @ts-expect-error - intentional: buffers are rejected at compile time and at runtime (use sql.binary)
+    sql.fragment`SELECT ${Buffer.from("foo")}`;
+  });
+
+  t.is(error?.message, "Unexpected value expression.");
+});
+
 // eslint-disable-next-line n/no-process-env
 if (process.env.ROARR_LOG === "1") {
   // This test is only valid when ROARR_LOG=1.

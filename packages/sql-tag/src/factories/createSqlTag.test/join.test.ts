@@ -119,3 +119,20 @@ test("throws is member is not a SQL token or a primitive value expression", (t) 
     "Invalid list member type. Must be a SQL token or a primitive value expression.",
   );
 });
+
+test("throws if a member is an array", (t) => {
+  const error = t.throws(() => {
+    sql.fragment`${sql.join(
+      [
+        // @ts-expect-error - intentional: arrays are rejected at compile time and at runtime (use sql.array)
+        [1, 2, 3],
+      ],
+      sql.fragment`, `,
+    )}`;
+  });
+
+  t.is(
+    error?.message,
+    "Invalid list member type. Must be a SQL token or a primitive value expression.",
+  );
+});

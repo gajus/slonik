@@ -211,7 +211,7 @@ export type UnnestSqlToken = {
   readonly columnTypes:
     | Array<[...string[], TypeNameIdentifier]>
     | Array<FragmentSqlToken | TypeNameIdentifier>;
-  readonly tuples: ReadonlyArray<readonly ValueExpression[]>;
+  readonly tuples: ReadonlyArray<readonly PrimitiveValueExpression[]>;
   readonly type: typeof tokens.UnnestToken;
 };
 
@@ -220,4 +220,8 @@ export type UuidSqlToken = {
   readonly uuid: `${string}-${string}-${string}-${string}-${string}`;
 };
 
-export type ValueExpression = FragmentSqlToken | PrimitiveValueExpression | SqlToken;
+/**
+ * A value that can be interpolated in a query, or used as a member of `sql.join`, `sql.list`,
+ * `sql.and` and `sql.or`. Arrays and buffers must be bound using `sql.array` and `sql.binary`.
+ */
+export type ValueExpression = bigint | boolean | null | number | SqlToken | string;

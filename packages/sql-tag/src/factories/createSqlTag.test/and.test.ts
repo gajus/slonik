@@ -167,3 +167,17 @@ test("returns TRUE for empty array", (t) => {
     values: [],
   });
 });
+
+test("throws if a member is an array", (t) => {
+  const error = t.throws(() => {
+    sql.fragment`SELECT * FROM foo WHERE ${sql.and([
+      // @ts-expect-error - intentional: arrays are rejected at compile time and at runtime (use sql.array)
+      [1, 2, 3],
+    ])}`;
+  });
+
+  t.is(
+    error?.message,
+    "Invalid boolean expression member type. Must be a SQL token or a primitive value expression.",
+  );
+});

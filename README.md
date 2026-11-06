@@ -1583,6 +1583,8 @@ WHERE bar = $1
 
 query with 'baz' value binding.
 
+The interpolated values can be strings, numbers, booleans, bigints, `null` and SQL tokens (e.g. `sql.fragment`). Arrays and buffers must be bound using [`sql.array`](#sqlarray) and [`sql.binary`](#sqlbinary).
+
 ### Manually constructing the query
 
 Query methods only accept queries constructed using the `sql` tagged template literal, so TypeScript rejects a manually constructed query, e.g.
