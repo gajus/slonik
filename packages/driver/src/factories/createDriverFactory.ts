@@ -59,7 +59,18 @@ export type DriverClientState =
   | "PENDING_DESTROY"
   | "PENDING_RELEASE";
 
-export type DriverCommand = "COPY" | "DELETE" | "INSERT" | "SELECT" | "UPDATE";
+/**
+ * The first word of the command tag of a statement, e.g. "CREATE" for `CREATE TABLE`. Any command can
+ * be reported; the literal values only assist auto suggestions.
+ */
+export type DriverCommand =
+  | "COPY"
+  | "DELETE"
+  | "INSERT"
+  | "MERGE"
+  | "SELECT"
+  | "UPDATE"
+  | (string & {});
 
 export type DriverConfiguration = {
   readonly connectionTimeout: "DISABLE_TIMEOUT" | number;
@@ -115,7 +126,10 @@ export type DriverQueryOptions = {
 };
 
 export type DriverQueryResult = {
-  readonly command: DriverCommand;
+  /**
+   * `null` if the query has no statement (e.g. it consists only of a comment).
+   */
+  readonly command: DriverCommand | null;
   readonly fields: DriverField[];
   readonly rowCount: null | number;
   readonly rows: Array<Record<string, unknown>>;

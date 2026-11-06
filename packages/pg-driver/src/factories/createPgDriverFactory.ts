@@ -1,12 +1,7 @@
 /* eslint-disable canonical/id-match */
 
 import { createDriverFactory } from "@slonik/driver";
-import type {
-  DriverCommand,
-  DriverConfiguration,
-  DriverFactory,
-  DriverTypeParser,
-} from "@slonik/driver";
+import type { DriverConfiguration, DriverFactory, DriverTypeParser } from "@slonik/driver";
 import {
   BackendTerminatedError,
   BackendTerminatedUnexpectedlyError,
@@ -383,7 +378,7 @@ export const createPgDriverFactory = (): DriverFactory => {
             }
 
             return {
-              command: result.command as DriverCommand,
+              command: result.command,
               fields: result.fields.map((field) => {
                 return {
                   dataTypeId: field.dataTypeID,

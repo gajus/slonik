@@ -1,6 +1,12 @@
 import type { ConnectionPoolClient } from "./factories/createConnectionPool.js";
 import type { IntegrityValidation } from "./routines/executeQuery.js";
-import type { DriverFactory, DriverNotice, DriverStream, DriverTypeParser } from "@slonik/driver";
+import type {
+  DriverCommand,
+  DriverFactory,
+  DriverNotice,
+  DriverStream,
+  DriverTypeParser,
+} from "@slonik/driver";
 import type { DataIntegrityError, SlonikError } from "@slonik/errors";
 import type { PrimitiveValueExpression, QuerySqlToken, SqlToken } from "@slonik/sql-tag";
 import type { StandardSchemaV1 } from "@standard-schema/spec";
@@ -368,7 +374,10 @@ export type QueryFunction = <T extends StandardSchemaV1>(
 export type QueryId = string;
 
 export type QueryResult<T> = {
-  readonly command: "COPY" | "DELETE" | "INSERT" | "SELECT" | "UPDATE";
+  /**
+   * `null` if the query has no statement (e.g. it consists only of a comment).
+   */
+  readonly command: DriverCommand | null;
   readonly fields: readonly Field[];
   readonly notices: readonly DriverNotice[];
   readonly rowCount: number;

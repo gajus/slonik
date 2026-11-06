@@ -1024,6 +1024,53 @@ export const createIntegrationTests = (
     await pool.end();
   });
 
+  test("returns the command of a MERGE statement", async (t) => {
+    const pool = await createPool(t.context.dsn, {
+      driverFactory,
+    });
+
+    const result = await pool.query(sql.unsafe`
+      MERGE INTO person
+      USING (VALUES ('foo')) AS source (name)
+      ON person.name = source.name
+      WHEN NOT MATCHED THEN
+        INSERT (name) VALUES (source.name)
+    `);
+
+    t.is(result.command, "MERGE");
+    t.is(result.rowCount, 1);
+
+    await pool.end();
+  });
+
+  test("returns the command of a utility statement", async (t) => {
+    const pool = await createPool(t.context.dsn, {
+      driverFactory,
+    });
+
+    const result = await pool.query(sql.unsafe`
+      SET application_name = 'slonik'
+    `);
+
+    t.is(result.command, "SET");
+
+    await pool.end();
+  });
+
+  test("returns null command if the query has no statement", async (t) => {
+    const pool = await createPool(t.context.dsn, {
+      driverFactory,
+    });
+
+    const result = await pool.query(sql.unsafe`
+      -- A comment is not a statement.
+    `);
+
+    t.is(result.command, null);
+
+    await pool.end();
+  });
+
   test("terminated backend produces BackendTerminatedError error", async (t) => {
     const pool = await createPool(t.context.dsn, {
       driverFactory,

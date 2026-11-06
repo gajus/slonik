@@ -1,6 +1,6 @@
 import { executeQuery } from "../routines/executeQuery.js";
 import type { ExecutionRoutine } from "../routines/executeQuery.js";
-import type { Field, InternalQueryMethod, QueryResult, QueryResultRow } from "../types.js";
+import type { Field, InternalQueryMethod, QueryResultRow } from "../types.js";
 import type { DriverNotice, DriverQueryResult } from "@slonik/driver";
 import { SlonikError } from "@slonik/errors";
 
@@ -22,7 +22,7 @@ const executionRoutine: ExecutionRoutine = async (
   );
 
   return {
-    command: result.command as QueryResult<unknown>["command"],
+    command: result.command,
     // The driver already returns fields in Slonik's `{ dataTypeId, name }` shape
     // (see `DriverField`), so we forward the array directly instead of
     // re-allocating an identical array of objects on every query.
