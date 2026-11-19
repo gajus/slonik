@@ -409,7 +409,12 @@ export const createConnectionPool = ({
         // If we're below the minimum pool size, add a new connection.
         // Don't create if we just created one for a waiting client (it will satisfy minimumPoolSize).
         // If there are waiting clients, create for them instead of an idle connection.
-        if (!createdConnectionForWaitingClient && activeConnectionCount() < minimumPoolSize) {
+        // Connections that are being established count toward the minimum, otherwise the pool
+        // exceeds maximumPoolSize once they are established.
+        if (
+          !createdConnectionForWaitingClient &&
+          pendingConnections.size + activeConnectionCount() < minimumPoolSize
+        ) {
           addConnection().then(
             (newConnection) => {
               // Check for waiting clients at resolution time, not at creation time,
@@ -621,6 +626,24 @@ export const createConnectionPool = ({
 
         // Removing the client from the queue ensures that a connection released later goes to the next client.
         waitingClients.splice(waitingClientIndex, 1);
+
+        // A connection that is being destroyed no longer counts toward maximumPoolSize, but the queue is served
+        // only once the connection has been destroyed (e.g. after its active query ends). Until then, the pool
+        // can have capacity for the client.
+        if (pendingConnections.size + activeConnectionCount() < maximumPoolSize) {
+          addConnection().then(
+            (newConnection) => {
+              newConnection.acquire();
+              deferred.resolve(newConnection);
+            },
+            (error) => {
+              deferred.reject(error);
+              drainWaitingClientsOnConnectionFailure(error);
+            },
+          );
+
+          return;
+        }
 
         deferred.reject(
           new QueueTimeoutError(
