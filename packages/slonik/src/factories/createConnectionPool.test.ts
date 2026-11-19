@@ -1170,6 +1170,39 @@ test("connections that are being established count toward minimumPoolSize when a
   await pool.end();
 });
 
+test("queued clients are rejected when the connection that they were queued behind cannot be established", async (t) => {
+  const clock = useFakeTimeouts();
+
+  t.teardown(() => {
+    clock.restore();
+  });
+
+  const driver = new MockDriver({ connectionDelay: 50, shouldFailConnection: true });
+  const pool = createTestPool(driver, { maximumPoolSize: 1 });
+
+  const firstAcquire = trackOutcome(pool.acquire());
+
+  // Queued, because the pool is full with the connection that is being established.
+  const queuedAcquire = trackOutcome(pool.acquire());
+
+  assertPoolState(t, pool, {
+    pendingConnections: 1,
+    waitingClients: 1,
+  });
+
+  await clock.tickAsync(50);
+
+  t.is((firstAcquire.error as Error | undefined)?.message, "Failed to create client");
+  t.is((queuedAcquire.error as Error | undefined)?.message, "Failed to create client");
+
+  assertPoolState(t, pool, {
+    pendingConnections: 0,
+    waitingClients: 0,
+  });
+
+  await pool.end();
+});
+
 test("queued client waits until a connection is released when queueTimeout is DISABLE_TIMEOUT", async (t) => {
   const clock = useFakeTimeouts();
 

@@ -590,7 +590,13 @@ export const createConnectionPool = ({
     }
 
     if (pendingConnections.size + activeConnectionCount() - destroyedInLoop < maximumPoolSize) {
-      const newConnection = await addConnection(span);
+      const newConnection = await addConnection(span).catch((error) => {
+        // Clients that were queued while this connection was being established are served only
+        // when a connection is released or destroyed. Without one, they would wait forever.
+        drainWaitingClientsOnConnectionFailure(error);
+
+        throw error;
+      });
 
       newConnection.acquire();
 
