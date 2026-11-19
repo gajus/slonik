@@ -2,6 +2,7 @@ import { Logger as log } from "../Logger.js";
 import type { ClientConfiguration } from "../types.js";
 
 type PoolConfiguration = {
+  connectionTimeout: number;
   idleTimeout: number;
   /**
    * The maximum age of a connection allowed in the pool.
@@ -43,6 +44,7 @@ export const createPoolConfiguration = (
   clientConfiguration: ClientConfiguration,
 ): PoolConfiguration => {
   const poolConfiguration: PoolConfiguration = {
+    connectionTimeout: resolveTimeout("connectionTimeout", clientConfiguration.connectionTimeout),
     idleTimeout: 10_000,
     maximumConnectionAge: 30 * 60 * 1_000,
     maximumPoolSize: 10,

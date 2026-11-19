@@ -63,6 +63,34 @@ test("explicit undefined for idleTimeout uses default", (t) => {
   t.is(poolConfig.idleTimeout, 5_000);
 });
 
+test("connectionTimeout positive number is passed through", (t) => {
+  const config = makeConfig({ connectionTimeout: 2_000 });
+  const poolConfig = createPoolConfiguration(config);
+
+  t.is(poolConfig.connectionTimeout, 2_000);
+});
+
+test("connectionTimeout DISABLE_TIMEOUT is passed through", (t) => {
+  const config = makeConfig({ connectionTimeout: "DISABLE_TIMEOUT" });
+  const poolConfig = createPoolConfiguration(config);
+
+  t.is(poolConfig.connectionTimeout, Number.POSITIVE_INFINITY);
+});
+
+test("connectionTimeout=0 clamps to 1", (t) => {
+  const config = makeConfig({ connectionTimeout: 0 });
+  const poolConfig = createPoolConfiguration(config);
+
+  t.is(poolConfig.connectionTimeout, 1);
+});
+
+test("explicit undefined for connectionTimeout uses default", (t) => {
+  const config = makeConfig({ connectionTimeout: undefined });
+  const poolConfig = createPoolConfiguration(config);
+
+  t.is(poolConfig.connectionTimeout, 5_000);
+});
+
 test("explicit undefined for statementTimeout uses default", (t) => {
   const config = makeConfig({ statementTimeout: undefined });
 

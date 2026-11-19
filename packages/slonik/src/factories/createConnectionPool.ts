@@ -13,7 +13,7 @@ import type {
   DriverStream,
   DriverStreamResult,
 } from "@slonik/driver";
-import { UnexpectedStateError } from "@slonik/errors";
+import { ConnectionError, UnexpectedStateError } from "@slonik/errors";
 import { generateUid } from "@slonik/utilities";
 import { setTimeout as delay } from "node:timers/promises";
 import { serializeError } from "serialize-error";
@@ -84,6 +84,7 @@ type WaitingClient = {
 };
 
 export const createConnectionPool = ({
+  connectionTimeout,
   driver,
   events,
   idleTimeout,
@@ -93,6 +94,11 @@ export const createConnectionPool = ({
   poolName,
   tracing = true,
 }: {
+  /**
+   * How long (in milliseconds) a client waits for a connection when the pool is full.
+   * Use Number.POSITIVE_INFINITY to disable.
+   */
+  connectionTimeout: number;
   driver: Driver;
   events: DatabasePoolEventEmitter;
   /**
@@ -598,9 +604,37 @@ export const createConnectionPool = ({
 
     const deferred = Promise.withResolvers<ConnectionPoolClient>();
 
-    waitingClients.push({
+    const waitingClient: WaitingClient = {
       deferred,
-    });
+    };
+
+    waitingClients.push(waitingClient);
+
+    if (Number.isFinite(connectionTimeout)) {
+      const connectionTimeoutTimer = setTimeout(() => {
+        const waitingClientIndex = waitingClients.indexOf(waitingClient);
+
+        // A client that has left the queue has been given a connection, or a new connection is being created for it.
+        if (waitingClientIndex === -1) {
+          return;
+        }
+
+        // Removing the client from the queue ensures that a connection released later goes to the next client.
+        waitingClients.splice(waitingClientIndex, 1);
+
+        deferred.reject(
+          new ConnectionError(
+            `Connection pool is full and no connection became available within ${connectionTimeout} ms.`,
+          ),
+        );
+      }, connectionTimeout);
+
+      const clearConnectionTimeoutTimer = () => {
+        clearTimeout(connectionTimeoutTimer);
+      };
+
+      deferred.promise.then(clearConnectionTimeoutTimer, clearConnectionTimeoutTimer);
+    }
 
     const queuedAt = process.hrtime.bigint();
 

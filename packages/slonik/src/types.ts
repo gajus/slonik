@@ -25,7 +25,7 @@ export type ClientConfiguration = {
    */
   readonly connectionRetryLimit: number;
   /**
-   * Timeout (in milliseconds) after which an error is raised if connection cannot be established. (Default: 5000)
+   * Timeout (in milliseconds) after which an error is raised if a connection cannot be established, or if the pool is full and no connection becomes available. Use 'DISABLE_TIMEOUT' constant to disable the timeout. (Default: 5000)
    */
   readonly connectionTimeout: "DISABLE_TIMEOUT" | number;
   /**

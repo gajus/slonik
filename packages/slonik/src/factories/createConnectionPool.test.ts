@@ -9,6 +9,7 @@ import type {
   DriverStream,
   DriverStreamResult,
 } from "@slonik/driver";
+import { ConnectionError } from "@slonik/errors";
 import { generateUid } from "@slonik/utilities";
 import test from "ava";
 import { EventEmitter } from "node:events";
@@ -272,6 +273,7 @@ const resolveTestTimeout = (
 const createTestPool = (
   driver: Driver,
   options: Partial<{
+    connectionTimeout: "DISABLE_TIMEOUT" | number;
     idleTimeout: "DISABLE_TIMEOUT" | number;
     maximumConnectionAge: "DISABLE_TIMEOUT" | number;
     maximumPoolSize: number;
@@ -281,6 +283,7 @@ const createTestPool = (
   const events = new EventEmitter();
 
   return createConnectionPool({
+    connectionTimeout: resolveTestTimeout(options.connectionTimeout, Number.POSITIVE_INFINITY),
     driver,
     events,
     idleTimeout: resolveTestTimeout(options.idleTimeout, 1_000),
@@ -792,6 +795,149 @@ test("queued clients are resolved in FIFO order", async (t) => {
   // Check FIFO order
   t.deepEqual(results, [1, 2, 3]);
 
+  await pool.end();
+});
+
+test("queued client is rejected after connectionTimeout and leaves the queue", async (t) => {
+  const driver = new MockDriver();
+  const pool = createTestPool(driver, { connectionTimeout: 50, maximumPoolSize: 1 });
+
+  const connection1 = await pool.acquire();
+
+  const queuedAt = Date.now();
+
+  await t.throwsAsync(pool.acquire(), {
+    instanceOf: ConnectionError,
+    message: "Connection pool is full and no connection became available within 50 ms.",
+  });
+
+  t.true(Date.now() - queuedAt >= 45);
+
+  assertPoolState(t, pool, {
+    acquiredConnections: 1,
+    waitingClients: 0,
+  });
+
+  await connection1.release();
+
+  // The released connection is not handed to the client that timed out.
+  assertPoolState(t, pool, {
+    acquiredConnections: 0,
+    idleConnections: 1,
+  });
+
+  const connection2 = await pool.acquire();
+
+  t.is(connection2.id(), connection1.id());
+
+  await connection2.release();
+  await pool.end();
+});
+
+test("connection released after a queued client timed out goes to the next queued client", async (t) => {
+  const driver = new MockDriver();
+  const pool = createTestPool(driver, { connectionTimeout: 100, maximumPoolSize: 1 });
+
+  const connection1 = await pool.acquire();
+
+  const timedOutAcquire = pool.acquire();
+
+  await wait(50);
+
+  const laterAcquire = pool.acquire();
+
+  await t.throwsAsync(timedOutAcquire, { instanceOf: ConnectionError });
+
+  await connection1.release();
+
+  const connection2 = await laterAcquire;
+
+  t.is(connection2.id(), connection1.id());
+
+  assertPoolState(t, pool, {
+    acquiredConnections: 1,
+    waitingClients: 0,
+  });
+
+  await connection2.release();
+  await pool.end();
+});
+
+test("queued client that receives a connection within connectionTimeout keeps it", async (t) => {
+  const driver = new MockDriver();
+  const pool = createTestPool(driver, { connectionTimeout: 50, maximumPoolSize: 1 });
+
+  const connection1 = await pool.acquire();
+
+  const acquirePromise = pool.acquire();
+
+  await wait(10);
+
+  await connection1.release();
+
+  const connection2 = await acquirePromise;
+
+  await wait(100);
+
+  t.is(connection2.state(), "ACQUIRED");
+
+  assertPoolState(t, pool, {
+    acquiredConnections: 1,
+    waitingClients: 0,
+  });
+
+  await connection2.release();
+  await pool.end();
+});
+
+test("connectionTimeout does not reject a queued client that is waiting for a replacement connection", async (t) => {
+  const driver = new MockDriver({ connectionDelay: 100 });
+  const pool = createTestPool(driver, { connectionTimeout: 50, maximumPoolSize: 1 });
+
+  const connection1 = await pool.acquire();
+
+  const acquirePromise = pool.acquire();
+
+  await wait(10);
+
+  // The pool takes the client off the queue and creates a replacement connection for it,
+  // which takes longer than connectionTimeout.
+  await connection1.destroy();
+
+  const connection2 = await acquirePromise;
+
+  t.not(connection2.id(), connection1.id());
+  t.is(connection2.state(), "ACQUIRED");
+
+  await connection2.release();
+  await pool.end();
+});
+
+test("queued client waits indefinitely when connectionTimeout is DISABLE_TIMEOUT", async (t) => {
+  const driver = new MockDriver();
+  const pool = createTestPool(driver, {
+    connectionTimeout: "DISABLE_TIMEOUT",
+    maximumPoolSize: 1,
+  });
+
+  const connection1 = await pool.acquire();
+
+  const acquirePromise = pool.acquire();
+
+  await wait(100);
+
+  assertPoolState(t, pool, {
+    acquiredConnections: 1,
+    waitingClients: 1,
+  });
+
+  await connection1.release();
+
+  const connection2 = await acquirePromise;
+
+  t.is(connection2.id(), connection1.id());
+
+  await connection2.release();
   await pool.end();
 });
 
