@@ -63,32 +63,46 @@ test("explicit undefined for idleTimeout uses default", (t) => {
   t.is(poolConfig.idleTimeout, 5_000);
 });
 
-test("connectionTimeout positive number is passed through", (t) => {
+test("queueTimeout is disabled by default", (t) => {
+  const config = makeConfig();
+  const poolConfig = createPoolConfiguration(config);
+
+  t.is(poolConfig.queueTimeout, Number.POSITIVE_INFINITY);
+});
+
+test("explicit undefined for queueTimeout uses default", (t) => {
+  const config = makeConfig({ queueTimeout: undefined });
+  const poolConfig = createPoolConfiguration(config);
+
+  t.is(poolConfig.queueTimeout, Number.POSITIVE_INFINITY);
+});
+
+test("queueTimeout positive number is passed through", (t) => {
+  const config = makeConfig({ queueTimeout: 2_000 });
+  const poolConfig = createPoolConfiguration(config);
+
+  t.is(poolConfig.queueTimeout, 2_000);
+});
+
+test("queueTimeout DISABLE_TIMEOUT is passed through", (t) => {
+  const config = makeConfig({ queueTimeout: "DISABLE_TIMEOUT" });
+  const poolConfig = createPoolConfiguration(config);
+
+  t.is(poolConfig.queueTimeout, Number.POSITIVE_INFINITY);
+});
+
+test("queueTimeout=0 clamps to 1", (t) => {
+  const config = makeConfig({ queueTimeout: 0 });
+  const poolConfig = createPoolConfiguration(config);
+
+  t.is(poolConfig.queueTimeout, 1);
+});
+
+test("connectionTimeout does not limit how long a client waits in the queue", (t) => {
   const config = makeConfig({ connectionTimeout: 2_000 });
   const poolConfig = createPoolConfiguration(config);
 
-  t.is(poolConfig.connectionTimeout, 2_000);
-});
-
-test("connectionTimeout DISABLE_TIMEOUT is passed through", (t) => {
-  const config = makeConfig({ connectionTimeout: "DISABLE_TIMEOUT" });
-  const poolConfig = createPoolConfiguration(config);
-
-  t.is(poolConfig.connectionTimeout, Number.POSITIVE_INFINITY);
-});
-
-test("connectionTimeout=0 clamps to 1", (t) => {
-  const config = makeConfig({ connectionTimeout: 0 });
-  const poolConfig = createPoolConfiguration(config);
-
-  t.is(poolConfig.connectionTimeout, 1);
-});
-
-test("explicit undefined for connectionTimeout uses default", (t) => {
-  const config = makeConfig({ connectionTimeout: undefined });
-  const poolConfig = createPoolConfiguration(config);
-
-  t.is(poolConfig.connectionTimeout, 5_000);
+  t.is(poolConfig.queueTimeout, Number.POSITIVE_INFINITY);
 });
 
 test("explicit undefined for statementTimeout uses default", (t) => {

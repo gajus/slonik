@@ -13,7 +13,7 @@ import type {
   DriverStream,
   DriverStreamResult,
 } from "@slonik/driver";
-import { ConnectionError, UnexpectedStateError } from "@slonik/errors";
+import { QueueTimeoutError, UnexpectedStateError } from "@slonik/errors";
 import { generateUid } from "@slonik/utilities";
 import { setTimeout as delay } from "node:timers/promises";
 import { serializeError } from "serialize-error";
@@ -84,7 +84,6 @@ type WaitingClient = {
 };
 
 export const createConnectionPool = ({
-  connectionTimeout,
   driver,
   events,
   idleTimeout,
@@ -92,13 +91,9 @@ export const createConnectionPool = ({
   maximumPoolSize,
   minimumPoolSize,
   poolName,
+  queueTimeout,
   tracing = true,
 }: {
-  /**
-   * How long (in milliseconds) a client waits for a connection when the pool is full.
-   * Use Number.POSITIVE_INFINITY to disable.
-   */
-  connectionTimeout: number;
   driver: Driver;
   events: DatabasePoolEventEmitter;
   /**
@@ -114,6 +109,11 @@ export const createConnectionPool = ({
   maximumPoolSize: number;
   minimumPoolSize: number;
   poolName?: string;
+  /**
+   * How long (in milliseconds) a client waits in the queue for a connection when the pool is full.
+   * Use Number.POSITIVE_INFINITY to disable.
+   */
+  queueTimeout: number;
   tracing?: boolean;
 }): ConnectionPool => {
   // See test "waits for all connections to be established before attempting to terminate the pool"
@@ -610,8 +610,8 @@ export const createConnectionPool = ({
 
     waitingClients.push(waitingClient);
 
-    if (Number.isFinite(connectionTimeout)) {
-      const connectionTimeoutTimer = setTimeout(() => {
+    if (Number.isFinite(queueTimeout)) {
+      const queueTimeoutTimer = setTimeout(() => {
         const waitingClientIndex = waitingClients.indexOf(waitingClient);
 
         // A client that has left the queue has been given a connection, or a new connection is being created for it.
@@ -623,17 +623,17 @@ export const createConnectionPool = ({
         waitingClients.splice(waitingClientIndex, 1);
 
         deferred.reject(
-          new ConnectionError(
-            `Connection pool is full and no connection became available within ${connectionTimeout} ms.`,
+          new QueueTimeoutError(
+            `Connection pool is full and no connection became available within ${queueTimeout} ms.`,
           ),
         );
-      }, connectionTimeout);
+      }, queueTimeout);
 
-      const clearConnectionTimeoutTimer = () => {
-        clearTimeout(connectionTimeoutTimer);
+      const clearQueueTimeoutTimer = () => {
+        clearTimeout(queueTimeoutTimer);
       };
 
-      deferred.promise.then(clearConnectionTimeoutTimer, clearConnectionTimeoutTimer);
+      deferred.promise.then(clearQueueTimeoutTimer, clearQueueTimeoutTimer);
     }
 
     const queuedAt = process.hrtime.bigint();
@@ -652,24 +652,34 @@ export const createConnectionPool = ({
       `connection pool full; client has been queued`,
     );
 
-    return deferred.promise.then((connection) => {
-      logger.debug(
-        {
-          connectionId: connection.id(),
-          duration: Number(process.hrtime.bigint() - queuedAt) / 1e6,
-        },
-        "connection has been acquired from the queue",
-      );
+    return deferred.promise.then(
+      (connection) => {
+        logger.debug(
+          {
+            connectionId: connection.id(),
+            duration: Number(process.hrtime.bigint() - queuedAt) / 1e6,
+          },
+          "connection has been acquired from the queue",
+        );
 
-      if (span) {
-        span.setAttribute("queuedMs", Number(process.hrtime.bigint() - queuedAt) / 1e6);
-        span.setAttribute("slonik.connection.id", connection.id());
-        span.setAttribute("method", "acquire:queued");
-        span.setStatus({ code: SpanStatusCode.OK });
-      }
+        if (span) {
+          span.setAttribute("queuedMs", Number(process.hrtime.bigint() - queuedAt) / 1e6);
+          span.setAttribute("slonik.connection.id", connection.id());
+          span.setAttribute("method", "acquire:queued");
+          span.setStatus({ code: SpanStatusCode.OK });
+        }
 
-      return connection;
-    });
+        return connection;
+      },
+      (error: unknown) => {
+        if (span) {
+          span.setAttribute("queuedMs", Number(process.hrtime.bigint() - queuedAt) / 1e6);
+          span.setAttribute("method", "acquire:queued");
+        }
+
+        throw error;
+      },
+    );
   };
 
   const acquire = async () => {

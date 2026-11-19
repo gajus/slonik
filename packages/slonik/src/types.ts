@@ -25,7 +25,7 @@ export type ClientConfiguration = {
    */
   readonly connectionRetryLimit: number;
   /**
-   * Timeout (in milliseconds) after which an error is raised if a connection cannot be established, or if the pool is full and no connection becomes available. Use 'DISABLE_TIMEOUT' constant to disable the timeout. (Default: 5000)
+   * Timeout (in milliseconds) after which an error is raised if connection cannot be established. (Default: 5000)
    */
   readonly connectionTimeout: "DISABLE_TIMEOUT" | number;
   /**
@@ -102,6 +102,10 @@ export type ClientConfiguration = {
    * Number of times a query failing with Transaction Rollback class error, that doesn't belong to a transaction, is retried. (Default: 5)
    */
   readonly queryRetryLimit: number;
+  /**
+   * Timeout (in milliseconds) after which an error (`QueueTimeoutError`) is raised if the pool is full and no connection becomes available. The error is not retried (`connectionRetryLimit` applies to establishing a connection). Use 'DISABLE_TIMEOUT' constant to disable the timeout. (Default: 'DISABLE_TIMEOUT')
+   */
+  readonly queueTimeout?: "DISABLE_TIMEOUT" | number;
   /**
    * Routine that's invoked to reset the connection.
    * The default routine invokes `DISCARD ALL`.

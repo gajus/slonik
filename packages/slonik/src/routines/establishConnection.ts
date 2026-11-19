@@ -2,7 +2,7 @@ import type { ConnectionPool, ConnectionPoolClient } from "../factories/createCo
 import { poolClientStateMap } from "../state.js";
 import type { Logger } from "../types.js";
 import { SpanStatusCode, trace } from "@opentelemetry/api";
-import { ConnectionError, UnexpectedStateError } from "@slonik/errors";
+import { ConnectionError, QueueTimeoutError, UnexpectedStateError } from "@slonik/errors";
 import { generateUid } from "@slonik/utilities";
 import { serializeError } from "serialize-error";
 
@@ -39,6 +39,13 @@ const acquireConnection = async (
         },
         "cannot establish connection",
       );
+
+      // A retry would wait again, at the back of the queue.
+      if (error instanceof QueueTimeoutError) {
+        throw new QueueTimeoutError(error.message, {
+          cause: error,
+        });
+      }
 
       if (remainingConnectionRetryLimit > 1) {
         parentLog.info("retrying connection");
