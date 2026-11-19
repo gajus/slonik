@@ -73,6 +73,23 @@ export const createClientConfiguration = (
     );
   }
 
+  const queueTimeout = clientUserConfigurationInput?.queueTimeout;
+
+  if (
+    queueTimeout !== undefined &&
+    queueTimeout !== "DISABLE_TIMEOUT" &&
+    !(
+      typeof queueTimeout === "number" &&
+      queueTimeout >= 0 &&
+      // The longest delay that setTimeout supports; longer delays fire immediately.
+      queueTimeout <= 2_147_483_647
+    )
+  ) {
+    throw new InvalidConfigurationError(
+      'queueTimeout must be "DISABLE_TIMEOUT" or a number between 0 and 2147483647.',
+    );
+  }
+
   if (!configuration.typeParsers || configuration.typeParsers === typeParsers) {
     configuration.typeParsers = createTypeParserPreset();
   }

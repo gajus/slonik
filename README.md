@@ -136,6 +136,7 @@ Read: [Stop using Knex.js](https://medium.com/@gajus/bf410349856c)
     - [Handling `IntegrityConstraintViolationError`](#handling-integrityconstraintviolationerror)
     - [Handling `NotFoundError`](#handling-notfounderror)
     - [Handling `NotNullIntegrityConstraintViolationError`](#handling-notnullintegrityconstraintviolationerror)
+    - [Handling `QueueTimeoutError`](#handling-queuetimeouterror)
     - [Handling `StatementCancelledError`](#handling-statementcancellederror)
     - [Handling `StatementTimeoutError`](#handling-statementtimeouterror)
     - [Handling `UniqueIntegrityConstraintViolationError`](#handling-uniqueintegrityconstraintviolationerror)
@@ -669,6 +670,7 @@ createPool(
  * @property password Overrides the password in the connection URI. Accepts a string, or a callback (sync or async) that is invoked for every new connection. See [Dynamic passwords](#dynamic-passwords).
  * @property poolName Human-readable identifier for distinguishing multiple pools within the same application, e.g. "read", "write", "replica-us-east-1".
  * @property queryRetryLimit Number of times a query failing with Transaction Rollback class error, that doesn't belong to a transaction, is retried. (Default: 5)
+ * @property queueTimeout Timeout (in milliseconds) after which an error ([`QueueTimeoutError`](#handling-queuetimeouterror)) is raised if the pool is full and no connection becomes available. The error is not retried (`connectionRetryLimit` applies to establishing a connection). Use 'DISABLE_TIMEOUT' constant to disable the timeout. (Default: 'DISABLE_TIMEOUT')
  * @property resetConnection Routine that is invoked to reset the connection after it is released. (Default: executes `DISCARD ALL`) See [Resetting connection state](#resetting-connection-state).
  * @property ssl [tls.connect options](https://nodejs.org/api/tls.html#tlsconnectoptions-callback)
  * @property statementTimeout Timeout (in milliseconds) after which database is instructed to abort the query. Use 'DISABLE_TIMEOUT' constant to disable the timeout. (Default: 60000)
@@ -695,6 +697,7 @@ type ClientConfigurationInput = {
   password?: string | (() => Promise<string> | string),
   poolName?: string,
   queryRetryLimit?: number,
+  queueTimeout?: number | 'DISABLE_TIMEOUT',
   resetConnection?: (basicConnection: BasicConnection) => Promise<void>,
   ssl?: tls.ConnectionOptions,
   statementTimeout?: number | 'DISABLE_TIMEOUT',
@@ -764,14 +767,15 @@ await createPool("postgres://", {
 
 #### Default timeouts
 
-There are 4 types of configurable timeouts:
+There are 5 types of configurable timeouts:
 
-| Configuration                     | Description                                                                                                                                                      | Default |
-| --------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------- |
-| `connectionTimeout`               | Timeout (in milliseconds) after which an error is raised if connection cannot be established.                                                                    | 5000    |
-| `idleInTransactionSessionTimeout` | Timeout (in milliseconds) after which idle clients are closed. Use 'DISABLE_TIMEOUT' constant to disable the timeout.                                            | 60000   |
-| `idleTimeout`                     | Timeout (in milliseconds) after which idle clients are closed. The pool keeps `minPoolSize` clients open. Use 'DISABLE_TIMEOUT' constant to disable the timeout. | 5000    |
-| `statementTimeout`                | Timeout (in milliseconds) after which database is instructed to abort the query. Use 'DISABLE_TIMEOUT' constant to disable the timeout.                          | 60000   |
+| Configuration                     | Description                                                                                                                                                                                                                   | Default           |
+| --------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------- |
+| `connectionTimeout`               | Timeout (in milliseconds) after which an error is raised if connection cannot be established.                                                                                                                                 | 5000              |
+| `idleInTransactionSessionTimeout` | Timeout (in milliseconds) after which idle clients are closed. Use 'DISABLE_TIMEOUT' constant to disable the timeout.                                                                                                         | 60000             |
+| `idleTimeout`                     | Timeout (in milliseconds) after which idle clients are closed. The pool keeps `minPoolSize` clients open. Use 'DISABLE_TIMEOUT' constant to disable the timeout.                                                              | 5000              |
+| `queueTimeout`                    | Timeout (in milliseconds) after which an error ([`QueueTimeoutError`](#handling-queuetimeouterror)) is raised if the pool is full and no connection becomes available. Use 'DISABLE_TIMEOUT' constant to disable the timeout. | `DISABLE_TIMEOUT` |
+| `statementTimeout`                | Timeout (in milliseconds) after which database is instructed to abort the query. Use 'DISABLE_TIMEOUT' constant to disable the timeout.                                                                                       | 60000             |
 
 Slonik sets aggressive timeouts by default. These timeouts are designed to provide safe interface to the database. These timeouts might not work for all programs. If your program has long running statements, consider adjusting timeouts just for those statements instead of changing the defaults.
 
@@ -3086,7 +3090,7 @@ It inherits the `columns`, `constraint`, `table` and `detail` properties describ
 
 ### Handling <code>ConnectionError</code>
 
-`ConnectionError` is thrown when connection cannot be established to the PostgreSQL server.
+`ConnectionError` is thrown when connection cannot be established to the PostgreSQL server. [`QueueTimeoutError`](#handling-queuetimeouterror), which is thrown when the pool is full and no connection becomes available within `queueTimeout`, extends `ConnectionError`.
 
 ### Handling <code>DataIntegrityError</code>
 
@@ -3170,6 +3174,24 @@ if (row) {
 `NotNullIntegrityConstraintViolationError` is thrown when PostgreSQL responds with [`not_null_violation`](https://www.postgresql.org/docs/9.4/static/errcodes-appendix.html) (`23502`) error.
 
 It inherits the properties described under [`IntegrityConstraintViolationError`](#handling-integrityconstraintviolationerror). For this error PostgreSQL populates `column` directly, and `columns` contains that single column.
+
+### Handling <code>QueueTimeoutError</code>
+
+`QueueTimeoutError` is thrown when the pool is full and no connection becomes available within [`queueTimeout`](#default-timeouts), e.g. because every connection is held by a long-running transaction. The query is not retried. `QueueTimeoutError` extends `ConnectionError`.
+
+```ts
+import { QueueTimeoutError } from "slonik";
+
+try {
+  await pool.query(sql.typeAlias("void")`SELECT pg_sleep(1)`);
+} catch (error) {
+  if (error instanceof QueueTimeoutError) {
+    // Every connection was in use for longer than queueTimeout, e.g. respond with 503 Service Unavailable.
+  } else {
+    throw error;
+  }
+}
+```
 
 ### Handling <code>StatementCancelledError</code>
 

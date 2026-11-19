@@ -13,6 +13,7 @@ export {
   InvalidInputError,
   NotFoundError,
   NotNullIntegrityConstraintViolationError,
+  QueueTimeoutError,
   SchemaValidationError,
   SlonikError,
   StatementCancelledError,

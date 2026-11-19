@@ -3,10 +3,12 @@
 
 import {
   BackendTerminatedError,
+  ConnectionError,
   createPool,
   DataIntegrityError,
   NotFoundError,
   parseDsn,
+  QueueTimeoutError,
   SchemaValidationError,
   sql,
 } from "../index.js";
@@ -469,6 +471,41 @@ export const createPoolTests = (test: TestFn<TestContextType>, driverFactory: Dr
     ]);
 
     t.true(Date.now() - startTime >= 200);
+  });
+
+  test("fails a query that waits for a connection for longer than queueTimeout", async (t) => {
+    t.timeout(10_000);
+
+    const pool = await createPool(t.context.dsn, {
+      driverFactory,
+      maxPoolSize: 1,
+      queueTimeout: 100,
+    });
+
+    const blockingQuery = pool.query(sql.unsafe`
+      SELECT pg_sleep(1)
+    `);
+
+    const startTime = Date.now();
+
+    const error = await t.throwsAsync(
+      pool.query(sql.unsafe`
+        SELECT 1
+      `),
+      {
+        instanceOf: QueueTimeoutError,
+        message: "Connection pool is full and no connection became available within 100 ms.",
+      },
+    );
+
+    t.true(error instanceof ConnectionError);
+
+    // The query is not retried, and fails before the blocking query releases the connection.
+    t.true(Date.now() - startTime < 1_000);
+
+    await blockingQuery;
+
+    await pool.end();
   });
 
   test("does not re-use connection if there was an unhandled error", async (t) => {

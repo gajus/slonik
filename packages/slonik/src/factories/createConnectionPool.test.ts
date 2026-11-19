@@ -9,10 +9,11 @@ import type {
   DriverStream,
   DriverStreamResult,
 } from "@slonik/driver";
+import { QueueTimeoutError } from "@slonik/errors";
 import { generateUid } from "@slonik/utilities";
 import test from "ava";
 import { EventEmitter } from "node:events";
-import type * as sinon from "sinon";
+import * as sinon from "sinon";
 
 const acquireConnections = async (
   pool: ConnectionPool,
@@ -39,6 +40,30 @@ const wait = (ms: number, clock?: sinon.SinonFakeTimers) => {
   }
 
   return new Promise((resolve) => setTimeout(resolve, ms));
+};
+
+// Fakes only setTimeout and clearTimeout. MockDriverClient#release() and #destroy() use setImmediate,
+// and pool.end() uses node:timers/promises, which keep running on the real clock.
+const useFakeTimeouts = () => {
+  return sinon.useFakeTimers({ toFake: ["setTimeout", "clearTimeout"] });
+};
+
+// Records the outcome of a promise without awaiting it, so that a rejection is never unhandled.
+const trackOutcome = <T>(promise: Promise<T>) => {
+  const outcome: { error?: unknown; settled: boolean; value?: T } = { settled: false };
+
+  void promise.then(
+    (value) => {
+      outcome.settled = true;
+      outcome.value = value;
+    },
+    (error: unknown) => {
+      outcome.settled = true;
+      outcome.error = error;
+    },
+  );
+
+  return outcome;
 };
 
 // Helper to wait for pool to stabilize - updated to work with fake timers
@@ -72,12 +97,16 @@ const waitForPoolStabilization = async (
 class MockDriverClient extends EventEmitter implements DriverClient, DriverClientEventEmitter {
   protected queryBehavior?: (query: string, values?: unknown[]) => Promise<DriverQueryResult>;
 
+  // How long it takes to destroy the connection while it is in use, e.g. until its active query ends.
+  private _destroyDelay: number;
+
   private _id: string;
 
   private _state: DriverClientState = "IDLE";
 
-  constructor() {
+  constructor(options: { destroyDelay?: number } = {}) {
     super();
+    this._destroyDelay = options.destroyDelay || 0;
     this._id = generateUid();
   }
 
@@ -90,8 +119,10 @@ class MockDriverClient extends EventEmitter implements DriverClient, DriverClien
   }
 
   async destroy(): Promise<void> {
+    const destroyDelay = this._state === "ACQUIRED" ? this._destroyDelay : 0;
+
     this._state = "PENDING_DESTROY";
-    await waitTick();
+    await (destroyDelay > 0 ? wait(destroyDelay) : waitTick());
     this._state = "DESTROYED";
     this.emit("destroy");
   }
@@ -192,10 +223,19 @@ class MockDriver implements Driver {
 
   protected createdClients: MockDriverClient[] = [];
 
+  protected destroyDelay: number;
+
   protected shouldFailConnection: boolean;
 
-  constructor(options: { connectionDelay?: number; shouldFailConnection?: boolean } = {}) {
+  constructor(
+    options: {
+      connectionDelay?: number;
+      destroyDelay?: number;
+      shouldFailConnection?: boolean;
+    } = {},
+  ) {
     this.connectionDelay = options.connectionDelay || 0;
+    this.destroyDelay = options.destroyDelay || 0;
     this.shouldFailConnection = options.shouldFailConnection || false;
   }
 
@@ -208,7 +248,7 @@ class MockDriver implements Driver {
       throw new Error("Failed to create client");
     }
 
-    const client = new MockDriverClient();
+    const client = new MockDriverClient({ destroyDelay: this.destroyDelay });
 
     this.createdClients.push(client);
 
@@ -276,6 +316,7 @@ const createTestPool = (
     maximumConnectionAge: "DISABLE_TIMEOUT" | number;
     maximumPoolSize: number;
     minimumPoolSize: number;
+    queueTimeout: "DISABLE_TIMEOUT" | number;
   }> = {},
 ): ConnectionPool => {
   const events = new EventEmitter();
@@ -287,6 +328,7 @@ const createTestPool = (
     maximumConnectionAge: resolveTestTimeout(options.maximumConnectionAge, 30 * 60 * 1_000),
     maximumPoolSize: options.maximumPoolSize || 10,
     minimumPoolSize: options.minimumPoolSize || 0,
+    queueTimeout: resolveTestTimeout(options.queueTimeout, Number.POSITIVE_INFINITY),
   });
 };
 
@@ -792,6 +834,409 @@ test("queued clients are resolved in FIFO order", async (t) => {
   // Check FIFO order
   t.deepEqual(results, [1, 2, 3]);
 
+  await pool.end();
+});
+
+test("queued client is rejected with QueueTimeoutError when queueTimeout elapses", async (t) => {
+  const clock = useFakeTimeouts();
+
+  t.teardown(() => {
+    clock.restore();
+  });
+
+  const driver = new MockDriver();
+  const pool = createTestPool(driver, { maximumPoolSize: 1, queueTimeout: 5_000 });
+
+  const connection1 = await pool.acquire();
+
+  const queuedAcquire = trackOutcome(pool.acquire());
+
+  await clock.tickAsync(4_999);
+
+  t.false(queuedAcquire.settled);
+
+  assertPoolState(t, pool, {
+    acquiredConnections: 1,
+    waitingClients: 1,
+  });
+
+  await clock.tickAsync(1);
+
+  t.true(queuedAcquire.error instanceof QueueTimeoutError);
+  t.is(
+    (queuedAcquire.error as Error).message,
+    "Connection pool is full and no connection became available within 5000 ms.",
+  );
+
+  assertPoolState(t, pool, {
+    acquiredConnections: 1,
+    waitingClients: 0,
+  });
+
+  await connection1.release();
+
+  // The released connection is not handed to the client that timed out.
+  assertPoolState(t, pool, {
+    acquiredConnections: 0,
+    idleConnections: 1,
+  });
+
+  await pool.end();
+});
+
+test("connection released after a queued client timed out goes to the next queued client", async (t) => {
+  const clock = useFakeTimeouts();
+
+  t.teardown(() => {
+    clock.restore();
+  });
+
+  const driver = new MockDriver();
+  const pool = createTestPool(driver, { maximumPoolSize: 1, queueTimeout: 100 });
+
+  const connection1 = await pool.acquire();
+
+  const timedOutAcquire = trackOutcome(pool.acquire());
+
+  await clock.tickAsync(50);
+
+  const laterAcquire = pool.acquire();
+
+  await clock.tickAsync(50);
+
+  t.true(timedOutAcquire.error instanceof QueueTimeoutError);
+
+  await connection1.release();
+
+  const connection2 = await laterAcquire;
+
+  t.is(connection2.id(), connection1.id());
+
+  assertPoolState(t, pool, {
+    acquiredConnections: 1,
+    waitingClients: 0,
+  });
+
+  await connection2.release();
+  await pool.end();
+});
+
+test("queueTimeout timer is cleared once the queued client is served or rejected", async (t) => {
+  const clock = useFakeTimeouts();
+
+  t.teardown(() => {
+    clock.restore();
+  });
+
+  const driver = new MockDriver();
+  const pool = createTestPool(driver, {
+    idleTimeout: "DISABLE_TIMEOUT",
+    maximumPoolSize: 1,
+    queueTimeout: 5_000,
+  });
+
+  const connection1 = await pool.acquire();
+
+  const servedAcquire = pool.acquire();
+
+  t.is(clock.countTimers(), 1);
+
+  await connection1.release();
+
+  await servedAcquire;
+
+  t.is(clock.countTimers(), 0, "the timer is cleared when the client is served");
+
+  const rejectedAcquire = pool.acquire();
+
+  t.is(clock.countTimers(), 1);
+
+  const endPromise = pool.end();
+
+  await t.throwsAsync(rejectedAcquire, {
+    message: "Connection pool is being terminated.",
+  });
+
+  t.is(clock.countTimers(), 0, "the timer is cleared when the client is rejected");
+
+  await endPromise;
+});
+
+test("queued client is not affected when the queueTimeout of a client that was served before it elapses", async (t) => {
+  const clock = useFakeTimeouts();
+
+  t.teardown(() => {
+    clock.restore();
+  });
+
+  const driver = new MockDriver();
+  const pool = createTestPool(driver, { maximumPoolSize: 1, queueTimeout: 100 });
+
+  const connection1 = await pool.acquire();
+
+  // Times out at 100 ms, unless it is served.
+  const servedAcquire = pool.acquire();
+
+  await clock.tickAsync(60);
+
+  // Times out at 160 ms.
+  const queuedAcquire = pool.acquire();
+
+  await connection1.release();
+
+  const connection2 = await servedAcquire;
+
+  // 120 ms: past the deadline of the client that was served, before the deadline of the queued client.
+  await clock.tickAsync(60);
+
+  assertPoolState(t, pool, {
+    acquiredConnections: 1,
+    waitingClients: 1,
+  });
+
+  await connection2.release();
+
+  const connection3 = await queuedAcquire;
+
+  t.is(connection3.id(), connection1.id());
+
+  await connection3.release();
+  await pool.end();
+});
+
+test("queueTimeout does not reject a client that left the queue to wait for a new connection", async (t) => {
+  const clock = useFakeTimeouts();
+
+  t.teardown(() => {
+    clock.restore();
+  });
+
+  const driver = new MockDriver({ connectionDelay: 100 });
+  const pool = createTestPool(driver, { maximumPoolSize: 1, queueTimeout: 50 });
+
+  const initialAcquire = pool.acquire();
+
+  await clock.tickAsync(100);
+
+  const connection1 = await initialAcquire;
+
+  // The times below are relative to this point.
+
+  // Queued at 0 ms; would time out at 50 ms.
+  const firstAcquire = pool.acquire();
+
+  await clock.tickAsync(30);
+
+  // Queued at 30 ms; times out at 80 ms.
+  const secondAcquire = trackOutcome(pool.acquire());
+
+  // The pool takes the first client off the queue and creates a new connection for it, which is ready at 130 ms.
+  await connection1.destroy();
+
+  // 60 ms: past the deadline of the first client, before the deadline of the second client.
+  await clock.tickAsync(30);
+
+  t.false(secondAcquire.settled);
+
+  assertPoolState(t, pool, {
+    pendingConnections: 1,
+    waitingClients: 1,
+  });
+
+  // 80 ms: the second client times out, because the pool is full with the connection that is being created.
+  await clock.tickAsync(20);
+
+  t.true(secondAcquire.error instanceof QueueTimeoutError);
+
+  // 130 ms: the new connection is ready.
+  await clock.tickAsync(50);
+
+  const connection2 = await firstAcquire;
+
+  t.not(connection2.id(), connection1.id());
+  t.is(connection2.state(), "ACQUIRED");
+
+  await connection2.release();
+  await pool.end();
+});
+
+test("queued client gets a new connection when queueTimeout elapses while a connection is being destroyed", async (t) => {
+  const clock = useFakeTimeouts();
+
+  t.teardown(() => {
+    clock.restore();
+  });
+
+  // A connection that is being destroyed no longer counts toward maximumPoolSize, but the pool serves the queue
+  // only once the connection has been destroyed.
+  const driver = new MockDriver({ destroyDelay: 1_000 });
+  const pool = createTestPool(driver, { maximumPoolSize: 1, queueTimeout: 100 });
+
+  const connection1 = await pool.acquire();
+
+  const queuedAcquire = pool.acquire();
+
+  void connection1.destroy();
+
+  assertPoolState(t, pool, {
+    pendingDestroyConnections: 1,
+    waitingClients: 1,
+  });
+
+  await clock.tickAsync(100);
+
+  const connection2 = await queuedAcquire;
+
+  t.not(connection2.id(), connection1.id());
+
+  assertPoolState(t, pool, {
+    acquiredConnections: 1,
+    pendingDestroyConnections: 1,
+    waitingClients: 0,
+  });
+
+  await clock.tickAsync(1_000);
+
+  assertPoolState(t, pool, {
+    acquiredConnections: 1,
+    pendingConnections: 0,
+    pendingDestroyConnections: 0,
+  });
+
+  await connection2.release();
+  await pool.end();
+});
+
+test("connections that are being established count toward minimumPoolSize when a destroyed connection is replaced", async (t) => {
+  const clock = useFakeTimeouts();
+
+  t.teardown(() => {
+    clock.restore();
+  });
+
+  const driver = new MockDriver({ connectionDelay: 200, destroyDelay: 150 });
+  const pool = createTestPool(driver, {
+    maximumPoolSize: 1,
+    minimumPoolSize: 1,
+    queueTimeout: 100,
+  });
+
+  const initialAcquire = pool.acquire();
+
+  await clock.tickAsync(200);
+
+  const connection1 = await initialAcquire;
+
+  // The times below are relative to this point.
+
+  // Queued at 0 ms; times out at 100 ms.
+  const queuedAcquire = pool.acquire();
+
+  // Destroyed at 150 ms.
+  void connection1.destroy();
+
+  // 100 ms: the pool creates a connection for the queued client, which is ready at 300 ms.
+  await clock.tickAsync(100);
+
+  assertPoolState(t, pool, {
+    pendingConnections: 1,
+    pendingDestroyConnections: 1,
+  });
+
+  // 150 ms: the destroyed connection is replaced by the connection that is being established.
+  await clock.tickAsync(50);
+
+  assertPoolState(t, pool, {
+    pendingConnections: 1,
+    pendingDestroyConnections: 0,
+  });
+
+  // 300 ms: the connection is ready.
+  await clock.tickAsync(150);
+
+  const connection2 = await queuedAcquire;
+
+  await clock.tickAsync(500);
+
+  t.is(driver.getCreatedClients().length, 2);
+
+  assertPoolState(t, pool, {
+    acquiredConnections: 1,
+    idleConnections: 0,
+    pendingConnections: 0,
+  });
+
+  await connection2.release();
+  await pool.end();
+});
+
+test("queued clients are rejected when the connection that they were queued behind cannot be established", async (t) => {
+  const clock = useFakeTimeouts();
+
+  t.teardown(() => {
+    clock.restore();
+  });
+
+  const driver = new MockDriver({ connectionDelay: 50, shouldFailConnection: true });
+  const pool = createTestPool(driver, { maximumPoolSize: 1 });
+
+  const firstAcquire = trackOutcome(pool.acquire());
+
+  // Queued, because the pool is full with the connection that is being established.
+  const queuedAcquire = trackOutcome(pool.acquire());
+
+  assertPoolState(t, pool, {
+    pendingConnections: 1,
+    waitingClients: 1,
+  });
+
+  await clock.tickAsync(50);
+
+  t.is((firstAcquire.error as Error | undefined)?.message, "Failed to create client");
+  t.is((queuedAcquire.error as Error | undefined)?.message, "Failed to create client");
+
+  assertPoolState(t, pool, {
+    pendingConnections: 0,
+    waitingClients: 0,
+  });
+
+  await pool.end();
+});
+
+test("queued client waits until a connection is released when queueTimeout is DISABLE_TIMEOUT", async (t) => {
+  const clock = useFakeTimeouts();
+
+  t.teardown(() => {
+    clock.restore();
+  });
+
+  const driver = new MockDriver();
+  const pool = createTestPool(driver, {
+    idleTimeout: "DISABLE_TIMEOUT",
+    maximumPoolSize: 1,
+    queueTimeout: "DISABLE_TIMEOUT",
+  });
+
+  const connection1 = await pool.acquire();
+
+  const queuedAcquire = pool.acquire();
+
+  t.is(clock.countTimers(), 0);
+
+  await clock.tickAsync(24 * 60 * 60 * 1_000);
+
+  assertPoolState(t, pool, {
+    acquiredConnections: 1,
+    waitingClients: 1,
+  });
+
+  await connection1.release();
+
+  const connection2 = await queuedAcquire;
+
+  t.is(connection2.id(), connection1.id());
+
+  await connection2.release();
   await pool.end();
 });
 

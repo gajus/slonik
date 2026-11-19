@@ -152,6 +152,8 @@ export class NotNullIntegrityConstraintViolationError extends IntegrityConstrain
   }
 }
 
+export class QueueTimeoutError extends ConnectionError {}
+
 export class SchemaValidationError extends SlonikError {
   public issues: readonly StandardSchemaV1.Issue[];
 

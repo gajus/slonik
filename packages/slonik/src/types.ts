@@ -103,6 +103,10 @@ export type ClientConfiguration = {
    */
   readonly queryRetryLimit: number;
   /**
+   * Timeout (in milliseconds) after which an error (`QueueTimeoutError`) is raised if the pool is full and no connection becomes available. The error is not retried (`connectionRetryLimit` applies to establishing a connection). Use 'DISABLE_TIMEOUT' constant to disable the timeout. (Default: 'DISABLE_TIMEOUT')
+   */
+  readonly queueTimeout?: "DISABLE_TIMEOUT" | number;
+  /**
    * Routine that's invoked to reset the connection.
    * The default routine invokes `DISCARD ALL`.
    */

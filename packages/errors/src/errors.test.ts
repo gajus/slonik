@@ -1,6 +1,8 @@
 import {
+  ConnectionError,
   ForeignKeyIntegrityConstraintViolationError,
   NotNullIntegrityConstraintViolationError,
+  QueueTimeoutError,
   SlonikError,
   UniqueIntegrityConstraintViolationError,
 } from "./errors.js";
@@ -10,6 +12,13 @@ test("should be able to create an error", (t) => {
   const error = new SlonikError("foo");
 
   t.true(error instanceof Error);
+});
+
+test("QueueTimeoutError is a ConnectionError", (t) => {
+  const error = new QueueTimeoutError("foo");
+
+  t.true(error instanceof ConnectionError);
+  t.true(error instanceof SlonikError);
 });
 
 test("extracts a single column from a unique violation detail", (t) => {

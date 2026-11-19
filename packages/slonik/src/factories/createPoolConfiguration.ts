@@ -12,6 +12,7 @@ type PoolConfiguration = {
   maximumPoolSize: number;
   minimumPoolSize: number;
   poolName?: string;
+  queueTimeout: number;
   tracing: boolean;
 };
 
@@ -47,6 +48,10 @@ export const createPoolConfiguration = (
     maximumConnectionAge: 30 * 60 * 1_000,
     maximumPoolSize: 10,
     minimumPoolSize: 0,
+    queueTimeout: resolveTimeout(
+      "queueTimeout",
+      clientConfiguration.queueTimeout ?? "DISABLE_TIMEOUT",
+    ),
     tracing: clientConfiguration.tracing,
   };
 
