@@ -1,5 +1,19 @@
 # @slonik/driver
 
+## 49.15.0
+
+### Minor Changes
+
+- [`e905699`](https://github.com/gajus/slonik/commit/e905699d5a5546bf6b622141f92be85c967b5ec2) Thanks [@gajus](https://github.com/gajus)! - add `socketTimeout` configuration, which closes a connection if the server does not send any data for that long while a query is in progress, e.g. because a proxy stopped forwarding traffic without closing the connection. The query fails with `SocketTimeoutError` and the pool replaces the connection. The timeout restarts whenever data arrives, so queries and streams that keep returning rows are not closed, and it does not apply while a connection is idle (in the pool, or held between queries) or while a stream waits for its consumer. It is disabled by default.
+
+### Patch Changes
+
+- [`e905699`](https://github.com/gajus/slonik/commit/e905699d5a5546bf6b622141f92be85c967b5ec2) Thanks [@gajus](https://github.com/gajus)! - fix: a connection that fails while it is reset after release (e.g. while it runs `DISCARD ALL`) is destroyed right away, instead of once `gracefulTerminationTimeout` elapses.
+
+- Updated dependencies []:
+  - @slonik/types@49.15.0
+  - @slonik/utilities@49.15.0
+
 ## 49.14.0
 
 ### Minor Changes

@@ -1,5 +1,7 @@
 # slonik-interceptor-query-logging
 
+## 49.15.0
+
 ## 49.14.0
 
 ## 49.13.0
