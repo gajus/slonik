@@ -1,5 +1,16 @@
 # @slonik/errors
 
+## 49.14.0
+
+### Minor Changes
+
+- [#832](https://github.com/gajus/slonik/pull/832) [`6090a3c`](https://github.com/gajus/slonik/commit/6090a3c6e001062a5f8dd81292e17c6db88734fd) Thanks [@sgtoj](https://github.com/sgtoj)! - add `queueTimeout` configuration, which limits how long a query waits for a connection when the pool is full. Once the timeout elapses, the query fails with `QueueTimeoutError`, which extends `ConnectionError`. The query is not retried: `connectionRetryLimit` applies to establishing a connection. The timeout is disabled by default, i.e. a query waits until a connection becomes available.
+
+### Patch Changes
+
+- Updated dependencies []:
+  - @slonik/types@49.14.0
+
 ## 49.13.0
 
 ### Patch Changes
