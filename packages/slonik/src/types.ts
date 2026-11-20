@@ -112,6 +112,10 @@ export type ClientConfiguration = {
    */
   readonly resetConnection?: (basicConnection: BasicConnection) => Promise<void>;
   /**
+   * Timeout (in milliseconds) after which the connection is closed if the server does not send any data while a query is in progress, e.g. because a proxy stopped forwarding traffic without closing the connection. The query fails with `SocketTimeoutError`. It does not apply while the connection is idle, or while a stream waits for its consumer. Set it higher than the longest time a query runs without returning rows, e.g. higher than `statementTimeout`. Use 'DISABLE_TIMEOUT' constant to disable the timeout. (Default: 'DISABLE_TIMEOUT')
+   */
+  readonly socketTimeout?: "DISABLE_TIMEOUT" | number;
+  /**
    * [tls.connect options](https://nodejs.org/api/tls.html#tlsconnectoptions-callback)
    */
   readonly ssl?: TlsConnectionOptions;

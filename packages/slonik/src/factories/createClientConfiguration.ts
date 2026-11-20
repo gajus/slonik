@@ -3,6 +3,21 @@ import { createTypeParserPreset } from "./createTypeParserPreset.js";
 import type { DriverTypeParser } from "@slonik/driver";
 import { InvalidConfigurationError } from "@slonik/errors";
 
+// The longest delay that setTimeout supports; longer delays fire immediately.
+const MAXIMUM_TIMEOUT = 2_147_483_647;
+
+const assertTimeout = (name: string, value: unknown, minimum: number) => {
+  if (
+    value !== undefined &&
+    value !== "DISABLE_TIMEOUT" &&
+    !(typeof value === "number" && value >= minimum && value <= MAXIMUM_TIMEOUT)
+  ) {
+    throw new InvalidConfigurationError(
+      `${name} must be "DISABLE_TIMEOUT" or a number between ${minimum} and ${MAXIMUM_TIMEOUT}.`,
+    );
+  }
+};
+
 export const createClientConfiguration = (
   connectionUri: string,
   clientUserConfigurationInput?: ClientConfigurationInput,
@@ -73,22 +88,9 @@ export const createClientConfiguration = (
     );
   }
 
-  const queueTimeout = clientUserConfigurationInput?.queueTimeout;
+  assertTimeout("queueTimeout", clientUserConfigurationInput?.queueTimeout, 0);
 
-  if (
-    queueTimeout !== undefined &&
-    queueTimeout !== "DISABLE_TIMEOUT" &&
-    !(
-      typeof queueTimeout === "number" &&
-      queueTimeout >= 0 &&
-      // The longest delay that setTimeout supports; longer delays fire immediately.
-      queueTimeout <= 2_147_483_647
-    )
-  ) {
-    throw new InvalidConfigurationError(
-      'queueTimeout must be "DISABLE_TIMEOUT" or a number between 0 and 2147483647.',
-    );
-  }
+  assertTimeout("socketTimeout", clientUserConfigurationInput?.socketTimeout, 1);
 
   if (!configuration.typeParsers || configuration.typeParsers === typeParsers) {
     configuration.typeParsers = createTypeParserPreset();

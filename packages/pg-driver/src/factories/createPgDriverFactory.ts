@@ -12,6 +12,7 @@ import {
   InputSyntaxError,
   InvalidInputError,
   NotNullIntegrityConstraintViolationError,
+  SocketTimeoutError,
   StatementCancelledError,
   StatementTimeoutError,
   UnexpectedStateError,
@@ -20,6 +21,7 @@ import {
 import type { PrimitiveValueExpression } from "@slonik/sql-tag";
 import type { Field, Query } from "@slonik/types";
 import { parseDsn } from "@slonik/utilities";
+import type { Socket } from "node:net";
 import { Transform } from "node:stream";
 import { Client } from "pg";
 import type {
@@ -188,6 +190,92 @@ const isErrorWithCode = (error: Error): error is DatabaseError => {
   return "code" in error;
 };
 
+type SocketTimeout = {
+  /**
+   * Starts waiting for the server. Returns a function that stops waiting; calling it more than once has no effect.
+   */
+  wait: () => () => void;
+};
+
+/**
+ * Closes the connection if the server does not send any data within `socketTimeout` milliseconds while the client
+ * waits for it, e.g. because a proxy stopped forwarding traffic without closing the connection. The client waits for
+ * the server while a query is in progress, and while a stream fetches rows. It does not wait while the connection is
+ * idle (in the pool, or held between queries), or while a stream waits for its consumer.
+ */
+const createSocketTimeout = (client: Client, socketTimeout: number): SocketTimeout => {
+  let waitCount = 0;
+
+  // The socket is replaced when the connection is upgraded to TLS, so it is looked up once the client is connected.
+  let socket: null | Socket = null;
+
+  const onTimeout = () => {
+    socket?.destroy(
+      new SocketTimeoutError(
+        `The server did not send any data within socketTimeout (${socketTimeout} ms) while a query was in progress.`,
+      ),
+    );
+  };
+
+  return {
+    wait: () => {
+      if (!socket) {
+        socket = client.connection.stream as Socket;
+        socket.on("timeout", onTimeout);
+      }
+
+      waitCount++;
+
+      if (waitCount === 1) {
+        // The timer restarts whenever the socket receives (or sends) data.
+        socket.setTimeout(socketTimeout);
+      }
+
+      let isWaiting = true;
+
+      return () => {
+        if (!isWaiting) {
+          return;
+        }
+
+        isWaiting = false;
+        waitCount--;
+
+        if (waitCount === 0) {
+          socket?.setTimeout(0);
+        }
+      };
+    },
+  };
+};
+
+type CursorReadCallback = (error: Error | null, ...rows: unknown[]) => void;
+
+/**
+ * Makes a stream wait for the server only while it fetches rows, and not while it waits for its consumer.
+ */
+const waitWhileFetchingRows = (queryStream: QueryStream, socketTimeout: SocketTimeout) => {
+  const cursor: { read: (rowCount: number, callback: CursorReadCallback) => void } =
+    queryStream.cursor;
+
+  const read = cursor.read.bind(cursor);
+
+  cursor.read = (rowCount, callback) => {
+    const stopWaiting = socketTimeout.wait();
+
+    // The callback is not called if the stream is destroyed while it fetches rows.
+    queryStream.once("close", stopWaiting);
+
+    read(rowCount, (error, ...rows) => {
+      queryStream.removeListener("close", stopWaiting);
+
+      stopWaiting();
+
+      callback(error, ...rows);
+    });
+  };
+};
+
 // query is not available for connection-level errors.
 // TODO evaluate if we can remove query from the error object.
 // I suspect we should not be even using InputSyntaxError as one of the error types.
@@ -303,6 +391,8 @@ export const createPgDriverFactory = (): DriverFactory => {
       };
     };
 
+    const { socketTimeout } = driverConfiguration;
+
     return {
       createPoolClient: async ({ clientEventEmitter }) => {
         let perConnectionConfig = clientConfiguration;
@@ -313,6 +403,9 @@ export const createPgDriverFactory = (): DriverFactory => {
         }
 
         const client = new Client(perConnectionConfig);
+
+        const clientSocketTimeout =
+          typeof socketTimeout === "number" ? createSocketTimeout(client, socketTimeout) : null;
 
         // We will see this triggered when the connection is terminated, e.g.
         // "terminates transactions that are idle beyond idleInTransactionSessionTimeout" test.
@@ -349,6 +442,8 @@ export const createPgDriverFactory = (): DriverFactory => {
             client.removeListener("notice", onNotice);
           },
           query: async (sql, values, queryOptions) => {
+            const stopWaiting = clientSocketTimeout?.wait();
+
             let result;
 
             try {
@@ -371,6 +466,8 @@ export const createPgDriverFactory = (): DriverFactory => {
                 sql,
                 values: values as readonly PrimitiveValueExpression[],
               });
+            } finally {
+              stopWaiting?.();
             }
 
             if (Array.isArray(result)) {
@@ -423,7 +520,13 @@ export const createPgDriverFactory = (): DriverFactory => {
             });
 
             const startStream = (types?: CustomTypesConfig) => {
-              const stream = client.query(new QueryStream(sql, values as unknown[], { types }));
+              const queryStream = new QueryStream(sql, values as unknown[], { types });
+
+              if (clientSocketTimeout) {
+                waitWhileFetchingRows(queryStream, clientSocketTimeout);
+              }
+
+              const stream = client.query(queryStream);
 
               client.connection.once("rowDescription", onRowDescription);
 

@@ -16,6 +16,7 @@ export {
   QueueTimeoutError,
   SchemaValidationError,
   SlonikError,
+  SocketTimeoutError,
   StatementCancelledError,
   StatementTimeoutError,
   TupleMovedToAnotherPartitionError,

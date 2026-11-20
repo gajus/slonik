@@ -10,9 +10,12 @@ import {
   parseDsn,
   QueueTimeoutError,
   SchemaValidationError,
+  SocketTimeoutError,
   sql,
+  stringifyDsn,
 } from "../index.js";
 import type { DatabasePoolConnection } from "../index.js";
+import { createSilentProxy } from "./createSilentProxy.js";
 import type { TestContextType } from "./createTestRunner.js";
 import { waitForConnectionRelease } from "./waitForConnectionRelease.js";
 import type { DriverFactory } from "@slonik/driver";
@@ -1202,6 +1205,230 @@ export const createPoolTests = (test: TestFn<TestContextType>, driverFactory: Dr
     await pool.query(sql.unsafe`SELECT 1`);
 
     t.true(passwordCallback.callCount >= 1);
+
+    await pool.end();
+  });
+
+  test("closes a connection that stops receiving data while a query is in progress (socketTimeout)", async (t) => {
+    t.timeout(10_000);
+
+    const connectionOptions = parseDsn(t.context.dsn);
+
+    const proxy = await createSilentProxy({
+      host: connectionOptions.host ?? "localhost",
+      port: connectionOptions.port ?? 5_432,
+    });
+
+    t.teardown(proxy.close);
+
+    const pool = await createPool(
+      stringifyDsn({ ...connectionOptions, host: "127.0.0.1", port: proxy.port }),
+      {
+        driverFactory,
+        maxPoolSize: 1,
+        socketTimeout: 500,
+      },
+    );
+
+    const firstConnectionPid = await pool.oneFirst(sql.unsafe`SELECT pg_backend_pid()`);
+
+    // The connection is reset after the result is returned.
+    await waitForConnectionRelease(pool);
+
+    proxy.silence();
+
+    const startTime = Date.now();
+
+    await t.throwsAsync(pool.query(sql.unsafe`SELECT 1`), {
+      instanceOf: SocketTimeoutError,
+      message:
+        "The server did not send any data within socketTimeout (500 ms) while a query was in progress.",
+    });
+
+    t.true(Date.now() - startTime >= 450);
+
+    proxy.resume();
+
+    // The pool replaced the connection.
+    t.not(await pool.oneFirst(sql.unsafe`SELECT pg_backend_pid()`), firstConnectionPid);
+
+    await pool.end();
+  });
+
+  test("closes a connection that stops receiving data while the connection is reset (socketTimeout)", async (t) => {
+    t.timeout(10_000);
+
+    const connectionOptions = parseDsn(t.context.dsn);
+
+    const proxy = await createSilentProxy({
+      host: connectionOptions.host ?? "localhost",
+      port: connectionOptions.port ?? 5_432,
+    });
+
+    t.teardown(proxy.close);
+
+    const pool = await createPool(
+      stringifyDsn({ ...connectionOptions, host: "127.0.0.1", port: proxy.port }),
+      {
+        driverFactory,
+        gracefulTerminationTimeout: 5_000,
+        maxPoolSize: 1,
+        // The connection is reset after the result is returned; the delay leaves time to stop the proxy.
+        resetConnection: async ({ query }) => {
+          await query("SELECT pg_sleep(0.2)");
+        },
+        socketTimeout: 500,
+      },
+    );
+
+    const firstConnectionPid = await pool.oneFirst(sql.unsafe`SELECT pg_backend_pid()`);
+
+    proxy.silence();
+
+    // Without socketTimeout, the reset would never finish, and the connection would never be returned to the pool.
+    await waitForConnectionRelease(pool);
+
+    const destroyStartTime = Date.now();
+
+    while (pool.state().pendingDestroyConnections > 0) {
+      await delay(1);
+    }
+
+    // The connection is destroyed right away, not once gracefulTerminationTimeout elapses.
+    t.true(Date.now() - destroyStartTime < 1_000);
+
+    proxy.resume();
+
+    // The pool replaced the connection.
+    t.not(await pool.oneFirst(sql.unsafe`SELECT pg_backend_pid()`), firstConnectionPid);
+
+    await pool.end();
+  });
+
+  test("closes a connection that stops receiving data while a stream fetches rows (socketTimeout)", async (t) => {
+    t.timeout(10_000);
+
+    const connectionOptions = parseDsn(t.context.dsn);
+
+    const proxy = await createSilentProxy({
+      host: connectionOptions.host ?? "localhost",
+      port: connectionOptions.port ?? 5_432,
+    });
+
+    t.teardown(proxy.close);
+
+    const pool = await createPool(
+      stringifyDsn({ ...connectionOptions, host: "127.0.0.1", port: proxy.port }),
+      {
+        driverFactory,
+        maxPoolSize: 1,
+        socketTimeout: 500,
+      },
+    );
+
+    await t.throwsAsync(
+      pool.stream(sql.unsafe`SELECT generate_series(1, 1000)`, async (stream) => {
+        for await (const row of stream) {
+          t.truthy(row);
+
+          // The stream fetches more rows after the server stopped answering.
+          proxy.silence();
+        }
+      }),
+      {
+        instanceOf: SocketTimeoutError,
+      },
+    );
+
+    proxy.resume();
+
+    t.is(await pool.oneFirst(sql.unsafe`SELECT 1`), 1);
+
+    await pool.end();
+  });
+
+  test("socketTimeout does not close connections while no query is in progress", async (t) => {
+    t.timeout(10_000);
+
+    const pool = await createPool(t.context.dsn, {
+      driverFactory,
+      maxPoolSize: 1,
+      socketTimeout: 200,
+    });
+
+    const connectionPid = await pool.oneFirst(sql.unsafe`SELECT pg_backend_pid()`);
+
+    // The connection is idle in the pool.
+    await delay(400);
+
+    t.is(await pool.oneFirst(sql.unsafe`SELECT pg_backend_pid()`), connectionPid);
+
+    await pool.connect(async (connection) => {
+      // The connection is held, but no query is in progress, e.g. while a transaction runs application code.
+      await delay(400);
+
+      t.is(await connection.oneFirst(sql.unsafe`SELECT pg_backend_pid()`), connectionPid);
+    });
+
+    await pool.end();
+  });
+
+  test("socketTimeout does not close a connection that keeps receiving data for longer than socketTimeout", async (t) => {
+    t.timeout(10_000);
+
+    const pool = await createPool(t.context.dsn, {
+      driverFactory,
+      socketTimeout: 300,
+    });
+
+    // Every row is larger than the output buffer of the server, so the server sends each row once it is produced.
+    const query = sql.unsafe`
+      SELECT pg_sleep(0.05), repeat('x', 10000) payload
+      FROM generate_series(1, 20)
+    `;
+
+    t.is((await pool.any(query)).length, 20);
+
+    let streamedRowCount = 0;
+
+    await pool.stream(query, async (stream) => {
+      for await (const row of stream) {
+        t.truthy(row);
+
+        streamedRowCount++;
+      }
+    });
+
+    t.is(streamedRowCount, 20);
+
+    await pool.end();
+  });
+
+  test("socketTimeout does not close a connection while a stream waits for its consumer", async (t) => {
+    t.timeout(10_000);
+
+    const pool = await createPool(t.context.dsn, {
+      driverFactory,
+      socketTimeout: 200,
+    });
+
+    let rowCount = 0;
+
+    // The stream fetches 100 rows at a time.
+    await pool.stream(sql.unsafe`SELECT generate_series(1, 300)`, async (stream) => {
+      for await (const row of stream) {
+        t.truthy(row);
+
+        rowCount++;
+
+        if (rowCount % 100 === 50) {
+          // The consumer is busy for longer than socketTimeout.
+          await delay(400);
+        }
+      }
+    });
+
+    t.is(rowCount, 300);
 
     await pool.end();
   });

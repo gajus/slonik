@@ -137,6 +137,7 @@ Read: [Stop using Knex.js](https://medium.com/@gajus/bf410349856c)
     - [Handling `NotFoundError`](#handling-notfounderror)
     - [Handling `NotNullIntegrityConstraintViolationError`](#handling-notnullintegrityconstraintviolationerror)
     - [Handling `QueueTimeoutError`](#handling-queuetimeouterror)
+    - [Handling `SocketTimeoutError`](#handling-sockettimeouterror)
     - [Handling `StatementCancelledError`](#handling-statementcancellederror)
     - [Handling `StatementTimeoutError`](#handling-statementtimeouterror)
     - [Handling `UniqueIntegrityConstraintViolationError`](#handling-uniqueintegrityconstraintviolationerror)
@@ -672,6 +673,7 @@ createPool(
  * @property queryRetryLimit Number of times a query failing with Transaction Rollback class error, that doesn't belong to a transaction, is retried. (Default: 5)
  * @property queueTimeout Timeout (in milliseconds) after which an error ([`QueueTimeoutError`](#handling-queuetimeouterror)) is raised if the pool is full and no connection becomes available. The error is not retried (`connectionRetryLimit` applies to establishing a connection). Use 'DISABLE_TIMEOUT' constant to disable the timeout. (Default: 'DISABLE_TIMEOUT')
  * @property resetConnection Routine that is invoked to reset the connection after it is released. (Default: executes `DISCARD ALL`) See [Resetting connection state](#resetting-connection-state).
+ * @property socketTimeout Timeout (in milliseconds) after which the connection is closed if the server does not send any data while a query is in progress, e.g. because a proxy stopped forwarding traffic without closing the connection. The query fails with [`SocketTimeoutError`](#handling-sockettimeouterror). See [Closing stalled connections](#closing-stalled-connections). Use 'DISABLE_TIMEOUT' constant to disable the timeout. (Default: 'DISABLE_TIMEOUT')
  * @property ssl [tls.connect options](https://nodejs.org/api/tls.html#tlsconnectoptions-callback)
  * @property statementTimeout Timeout (in milliseconds) after which database is instructed to abort the query. Use 'DISABLE_TIMEOUT' constant to disable the timeout. (Default: 60000)
  * @property tracing Controls whether Slonik creates OpenTelemetry spans. (Default: false)
@@ -699,6 +701,7 @@ type ClientConfigurationInput = {
   queryRetryLimit?: number,
   queueTimeout?: number | 'DISABLE_TIMEOUT',
   resetConnection?: (basicConnection: BasicConnection) => Promise<void>,
+  socketTimeout?: number | 'DISABLE_TIMEOUT',
   ssl?: tls.ConnectionOptions,
   statementTimeout?: number | 'DISABLE_TIMEOUT',
   tracing?: boolean,
@@ -767,17 +770,34 @@ await createPool("postgres://", {
 
 #### Default timeouts
 
-There are 5 types of configurable timeouts:
+There are 6 types of configurable timeouts:
 
-| Configuration                     | Description                                                                                                                                                                                                                   | Default           |
-| --------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------- |
-| `connectionTimeout`               | Timeout (in milliseconds) after which an error is raised if connection cannot be established.                                                                                                                                 | 5000              |
-| `idleInTransactionSessionTimeout` | Timeout (in milliseconds) after which idle clients are closed. Use 'DISABLE_TIMEOUT' constant to disable the timeout.                                                                                                         | 60000             |
-| `idleTimeout`                     | Timeout (in milliseconds) after which idle clients are closed. The pool keeps `minPoolSize` clients open. Use 'DISABLE_TIMEOUT' constant to disable the timeout.                                                              | 5000              |
-| `queueTimeout`                    | Timeout (in milliseconds) after which an error ([`QueueTimeoutError`](#handling-queuetimeouterror)) is raised if the pool is full and no connection becomes available. Use 'DISABLE_TIMEOUT' constant to disable the timeout. | `DISABLE_TIMEOUT` |
-| `statementTimeout`                | Timeout (in milliseconds) after which database is instructed to abort the query. Use 'DISABLE_TIMEOUT' constant to disable the timeout.                                                                                       | 60000             |
+| Configuration                     | Description                                                                                                                                                                                                                                                                                                      | Default           |
+| --------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------- |
+| `connectionTimeout`               | Timeout (in milliseconds) after which an error is raised if connection cannot be established.                                                                                                                                                                                                                    | 5000              |
+| `idleInTransactionSessionTimeout` | Timeout (in milliseconds) after which idle clients are closed. Use 'DISABLE_TIMEOUT' constant to disable the timeout.                                                                                                                                                                                            | 60000             |
+| `idleTimeout`                     | Timeout (in milliseconds) after which idle clients are closed. The pool keeps `minPoolSize` clients open. Use 'DISABLE_TIMEOUT' constant to disable the timeout.                                                                                                                                                 | 5000              |
+| `queueTimeout`                    | Timeout (in milliseconds) after which an error ([`QueueTimeoutError`](#handling-queuetimeouterror)) is raised if the pool is full and no connection becomes available. Use 'DISABLE_TIMEOUT' constant to disable the timeout.                                                                                    | `DISABLE_TIMEOUT` |
+| `socketTimeout`                   | Timeout (in milliseconds) after which the connection is closed ([`SocketTimeoutError`](#handling-sockettimeouterror)) if the server does not send any data while a query is in progress. See [Closing stalled connections](#closing-stalled-connections). Use 'DISABLE_TIMEOUT' constant to disable the timeout. | `DISABLE_TIMEOUT` |
+| `statementTimeout`                | Timeout (in milliseconds) after which database is instructed to abort the query. Use 'DISABLE_TIMEOUT' constant to disable the timeout.                                                                                                                                                                          | 60000             |
 
 Slonik sets aggressive timeouts by default. These timeouts are designed to provide safe interface to the database. These timeouts might not work for all programs. If your program has long running statements, consider adjusting timeouts just for those statements instead of changing the defaults.
+
+#### Closing stalled connections
+
+A connection can stop answering without being closed, e.g. when a proxy, a connector or a network device stops forwarding traffic. `statementTimeout` does not help, because the server may never receive the query, and neither does TCP keepalive when the connection goes through a proxy or a Unix socket. A query on such a connection waits forever, and so does every query that waits for its connection, unless `queueTimeout` is set.
+
+`socketTimeout` closes the connection if the server does not send any data for that long while a query is in progress or a stream fetches rows. The query fails with [`SocketTimeoutError`](#handling-sockettimeouterror), and the pool replaces the connection.
+
+```ts
+const pool = await createPool("postgres://", {
+  // Longer than the longest time a query runs without returning any rows.
+  socketTimeout: 90_000,
+  statementTimeout: 60_000,
+});
+```
+
+The timeout measures silence, not duration: it restarts whenever data arrives, so a query that keeps returning rows, or a stream that keeps fetching them, is not closed however long it runs. It does not apply while a connection is idle (in the pool, or held between queries, e.g. while a transaction runs application code), or while a stream waits for its consumer. Set it higher than the longest time a query runs without returning any data, e.g. higher than `statementTimeout`, so that the server cancels long queries first.
 
 #### Known limitations of using pg-native with Slonik
 
@@ -3192,6 +3212,10 @@ try {
   }
 }
 ```
+
+### Handling <code>SocketTimeoutError</code>
+
+`SocketTimeoutError` is thrown when the server does not send any data within [`socketTimeout`](#closing-stalled-connections) while a query is in progress. Slonik closes the connection, and the pool replaces it. The server may have executed the query (e.g. if only its response was lost), so retry only queries that are safe to run again.
 
 ### Handling <code>StatementCancelledError</code>
 

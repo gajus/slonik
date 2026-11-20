@@ -173,6 +173,8 @@ export class SchemaValidationError extends SlonikError {
   }
 }
 
+export class SocketTimeoutError extends SlonikError {}
+
 export class StatementCancelledError extends SlonikError {
   public constructor(error: Error) {
     super("Statement has been cancelled.", { cause: error });

@@ -91,6 +91,7 @@ export type DriverConfiguration = {
   readonly minPoolSize?: number;
   readonly password?: (() => Promise<string> | string) | string;
   readonly resetConnection?: (connection: BasicConnection) => Promise<void>;
+  readonly socketTimeout?: "DISABLE_TIMEOUT" | number;
   readonly ssl?: TlsConnectionOptions;
   readonly statementTimeout: "DISABLE_TIMEOUT" | number;
   readonly typeParsers: readonly DriverTypeParser[];
@@ -355,17 +356,21 @@ export const createDriverFactory = (setup: DriverSetup): DriverFactory => {
             // must not be returned to the pool.
             releasePromise = null;
 
-            try {
-              await destroy();
-            } catch (destroyError) {
-              Logger.warn(
-                {
-                  destroyError: serializeError(destroyError),
-                  error: serializeError(error),
-                  namespace: "driverClient",
-                },
-                "failed to destroy client after resetConnection error",
-              );
+            // A destroy that is already in progress (e.g. because the connection failed
+            // during the reset) waits for this release, so it must not be waited for here.
+            if (!destroyPromise) {
+              try {
+                await destroy();
+              } catch (destroyError) {
+                Logger.warn(
+                  {
+                    destroyError: serializeError(destroyError),
+                    error: serializeError(error),
+                    namespace: "driverClient",
+                  },
+                  "failed to destroy client after resetConnection error",
+                );
+              }
             }
 
             throw error;
